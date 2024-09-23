@@ -9,20 +9,21 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_ACTION_HANDLER;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.ComponentStateDelegate;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Creates the credential edit UI and is responsible for managing it. */
 class CredentialEditCoordinator implements ComponentStateDelegate {
+    private final Profile mProfile;
     private final CredentialEntryFragmentViewBase mFragmentView;
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final CredentialEditMediator mMediator;
     private final UiDismissalHandler mDismissalHandler;
-    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private PropertyModel mModel;
 
@@ -40,10 +41,11 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     }
 
     CredentialEditCoordinator(
+            Profile profile,
             CredentialEntryFragmentViewBase fragmentView,
             UiDismissalHandler dismissalHandler,
-            CredentialActionDelegate credentialActionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            CredentialActionDelegate credentialActionDelegate) {
+        mProfile = profile;
         mFragmentView = fragmentView;
         mReauthenticationHelper =
                 new PasswordAccessReauthenticationHelper(
@@ -57,7 +59,6 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
                         fragmentView instanceof BlockedCredentialFragmentView);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     void setCredential(
@@ -84,10 +85,11 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     }
 
     void handleHelp() {
-        mHelpAndFeedbackLauncher.show(
-                mFragmentView.getActivity(),
-                mFragmentView.getActivity().getString(R.string.help_context_passwords),
-                null);
+        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                .show(
+                        mFragmentView.getActivity(),
+                        mFragmentView.getActivity().getString(R.string.help_context_passwords),
+                        null);
     }
 
     @Override

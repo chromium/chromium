@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/browser_view_ash.h"
+
 #include <algorithm>
 
 #include "base/check.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/browser_view_ash.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -77,8 +78,16 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   const bool devtools_showing =
       contents_webview->bounds() != container->GetLocalBounds();
 
+  // With window controls overlay enabled, the web content extends over the
+  // entire window height, overlapping the window's top-two rounded corners.
+  // Consequently, we need to make the top two corners of the web_view
+  // rounded as well.
+  const bool round_content_webview_top_corner =
+      IsWindowControlsOverlayEnabled();
+
   const gfx::RoundedCornersF contents_webview_radii(
-      0, 0,
+      round_content_webview_top_corner ? corner_radius : 0,
+      round_content_webview_top_corner ? corner_radius : 0,
       right_aligned_side_panel_showing ||
               (devtools_showing &&
                devtools_placement != DevToolsDockedPlacement::kLeft)
@@ -100,7 +109,7 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
     // changes.
     if (auto* sad_tab_helper =
             SadTabHelper::FromWebContents(contents_webview->web_contents());
-        sad_tab_helper->sad_tab()) {
+        sad_tab_helper && sad_tab_helper->sad_tab()) {
       SadTabView* sad_tab_view =
           static_cast<SadTabView*>(sad_tab_helper->sad_tab());
       if (sad_tab_view->GetBackgroundRadii() != contents_webview_radii) {

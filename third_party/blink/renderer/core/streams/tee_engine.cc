@@ -65,7 +65,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
     }
 
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
 
     //   b. Set reading to true.
     engine_->reading_ = true;
@@ -90,14 +90,13 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
     void ChunkSteps(ScriptState* script_state,
                     v8::Local<v8::Value> chunk,
-                    ExceptionState& exception_state) const override {
+                    ExceptionState&) const override {
       scoped_refptr<scheduler::EventLoop> event_loop =
           ExecutionContext::From(script_state)->GetAgent()->event_loop();
       v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
       event_loop->EnqueueMicrotask(
           WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                        WrapPersistent(script_state), std::move(value),
-                        exception_state.GetContext()));
+                        WrapPersistent(script_state), std::move(value)));
     }
 
     void CloseSteps(ScriptState* script_state) const override {
@@ -137,32 +136,30 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
    private:
     void ChunkStepsBody(ScriptState* script_state,
-                        v8::Global<v8::Value> value,
-                        const ExceptionContext& exception_context) const {
+                        v8::Global<v8::Value> value) const {
       // This is called in a microtask, the ScriptState needs to be put back
       // in scope.
       ScriptState::Scope scope(script_state);
+      v8::Isolate* isolate = script_state->GetIsolate();
+      v8::TryCatch try_catch(isolate);
       // 1. Set readAgain to false.
       engine_->read_again_ = false;
 
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context);
-
       // 2. Let chunk1 and chunk2 be chunk.
-      v8::Local<v8::Value> chunk[2];
-      chunk[0] = value.Get(script_state->GetIsolate());
+      std::array<v8::Local<v8::Value>, 2> chunk;
+      chunk[0] = value.Get(isolate);
       chunk[1] = chunk[0];
 
       // 3. If canceled2 is false and cloneForBranch2 is true,
       if (!engine_->canceled_[1] && engine_->clone_for_branch2_) {
         //   a. Let cloneResult be StructuredClone(chunk2).
-        v8::MaybeLocal<v8::Value> clone_result_maybe =
-            engine_->StructuredClone(script_state, chunk[1], exception_state);
+        v8::MaybeLocal<v8::Value> clone_result_maybe = engine_->StructuredClone(
+            script_state, chunk[1], PassThroughException(isolate));
         v8::Local<v8::Value> clone_result;
         //   b. If cloneResult is an abrupt completion,
         if (!clone_result_maybe.ToLocal(&clone_result)) {
-          CHECK(exception_state.HadException());
-          v8::Local<v8::Value> exception = exception_state.GetException();
+          CHECK(try_catch.HasCaught());
+          v8::Local<v8::Value> exception = try_catch.Exception();
           //     i. Perform !
           //     ReadableStreamDefaultControllerError(branch1.[[controller]],
           //     cloneResult.[[Value]]).
@@ -176,13 +173,13 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
           //     iii. Resolve cancelPromise with !
           //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
           engine_->cancel_promise_->Resolve(
-              script_state, ReadableStream::Cancel(
-                                script_state, engine_->stream_, exception));
+              script_state,
+              ReadableStream::Cancel(script_state, engine_->stream_, exception)
+                  .V8Promise());
           //     iv. Return.
-          exception_state.ClearException();
           return;
         } else {
-          DCHECK(!exception_state.HadException());
+          DCHECK(!try_catch.HasCaught());
           //   c. Otherwise, set chunk2 to cloneResult.[[Value]].
           chunk[1] = clone_result;
         }
@@ -198,15 +195,14 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
                 engine_->controller_[branch])) {
           ReadableStreamDefaultController::Enqueue(
               script_state, engine_->controller_[branch], chunk[branch],
-              exception_state);
-          if (exception_state.HadException()) {
+              PassThroughException(isolate));
+          if (try_catch.HasCaught()) {
             // Instead of returning a rejection, which is inconvenient here,
             // call ControllerError(). The only difference this makes is that it
             // happens synchronously, but that should not be observable.
-            ReadableStreamDefaultController::Error(
-                script_state, engine_->controller_[branch],
-                exception_state.GetException());
-            exception_state.ClearException();
+            ReadableStreamDefaultController::Error(script_state,
+                                                   engine_->controller_[branch],
+                                                   try_catch.Exception());
             return;
           }
         }
@@ -266,7 +262,8 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // ii. Let cancelResult be ! ReadableStreamCancel(stream,
       //    compositeReason).
       auto cancel_result = ReadableStream::Cancel(
-          script_state, engine_->stream_, composite_reason);
+                               script_state, engine_->stream_, composite_reason)
+                               .V8Promise();
 
       // iii. Resolve cancelPromise with cancelResult.
       engine_->cancel_promise_->Resolve(script_state, cancel_result);
@@ -411,8 +408,8 @@ void TeeEngine::Start(ScriptState* script_state,
 
   // 19. Upon rejection of reader.[[closedPromise]] with reason r,
   StreamThenPromise(
-      script_state->GetContext(),
-      reader_->ClosedPromise()->V8Promise(script_state->GetIsolate()), nullptr,
+      script_state->GetContext(), reader_->closed(script_state).V8Promise(),
+      nullptr,
       MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<RejectFunction>(this)));
 

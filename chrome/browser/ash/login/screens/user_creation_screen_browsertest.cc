@@ -4,7 +4,10 @@
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -14,8 +17,8 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -24,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "content/public/test/browser_test.h"
+#include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
 namespace {
@@ -125,6 +129,21 @@ class UserCreationScreenTest
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
+IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, UserCreationNoExceptions) {
+  display::test::DisplayManagerTestApi display_manager(
+      ash::ShellTestApi().display_manager());
+
+  // Test minimum screen size and global ResizeObservers
+  display_manager.UpdateDisplay(std::string("900x600"));
+  // Test portrait transition
+  display_manager.UpdateDisplay(std::string("600x900"));
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+
+  OobeBaseTest::CheckJsExceptionErrors(0);
+}
+
 // Verify flow for setting up the device for self.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForSelf) {
   SelectUserTypeOnUserCreationScreen(kSelfButton);
@@ -159,14 +178,14 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, EnterpriseEnroll) {
 
 IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, NetworkOffline) {
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOffline);
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectVisiblePath(
       {"error-message", "error-guest-signin-link"});
 
   network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+      NetworkPortalDetectorMixin::NetworkStatus::kOnline);
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 
@@ -294,6 +313,35 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, NotEnrollDevice) {
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_TRIAGE);
 }
 
+// Verify that  gaia signin back button return to enroll triage step after
+// going through the enorll triage -> don't-enroll-the-device in user
+// creation screen.
+IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, BackFromGaia) {
+  // TODO(b/325017147) Check why ConsumerUpdateScreen
+  // is shown and updating in linux-chromemos
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+      false;
+
+  SelectUserTypeOnUserCreationScreen(kEnrollButton);
+  test::OobeJS().ExpectVisiblePath(kUserCreationEnrollTriageDialog);
+  test::OobeJS().TapOnPath(kTriageNotEnrollButton);
+  test::OobeJS().TapOnPath(kEnrollTriageNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_TRIAGE);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(
+          true, {"gaia-signin", "signin-frame-dialog", "signin-back-button"})
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kUserCreationEnrollTriageDialog);
+}
+
 // Verify that enroll-device in the enorll triage step in user creation
 // screen display device enrolllment when software update enabled.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, EnrollDevice) {
@@ -304,6 +352,14 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, EnrollDevice) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
 }
 
 // Verify that back button display create step in the child setup step

@@ -72,7 +72,7 @@ class ExperimentsManager {
 
   // Metadata for list of supported experiments.
   std::vector<ExperimentMetadata> experiments = {
-      // TODO(crbug.com/1147522): Clean up the test experiments when actual
+      // TODO(crbug.com/40156649): Clean up the test experiments when actual
       // experiments are introduced. These were added for e2e testing.
       {TEST_CLIENT_FLAG, "test_client_flag", "false"},
       {TEST_CLIENT_FLAG2, "test_client_flag2", "false"}};

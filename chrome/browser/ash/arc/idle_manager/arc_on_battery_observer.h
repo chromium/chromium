@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_ON_BATTERY_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_ON_BATTERY_OBSERVER_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace arc {

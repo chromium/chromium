@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/initial_preferences.h"
@@ -505,5 +506,81 @@ INSTANTIATE_TEST_SUITE_P(MachineLevelUnsupportedPathSetupTest,
 INSTANTIATE_TEST_SUITE_P(MachineLevelEmptyPathSetupTest,
                          GetChromeInstallPathWithPrefsTest,
                          testing::Values<Params>(Params(true, std::nullopt)));
+
+class FindInstallPathTest
+    : public ::testing::TestWithParam<std::tuple<bool, int>> {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(program_files_.CreateUniqueTempDir());
+    ASSERT_TRUE(program_files_x86_.CreateUniqueTempDir());
+    ASSERT_TRUE(program_files_6432_.CreateUniqueTempDir());
+    ASSERT_TRUE(local_app_data_.CreateUniqueTempDir());
+    program_files_override_.emplace(base::DIR_PROGRAM_FILES,
+                                    program_files_path());
+    program_files_x86_override_.emplace(base::DIR_PROGRAM_FILESX86,
+                                        program_files_x86_path());
+    program_files_6432_override_.emplace(base::DIR_PROGRAM_FILES6432,
+                                         program_files_6432_path());
+    local_data_app_override_.emplace(base::DIR_LOCAL_APP_DATA,
+                                     local_app_data_path());
+  }
+
+  static bool is_system_level() { return std::get<0>(GetParam()); }
+  static int target_path_key() { return std::get<1>(GetParam()); }
+  base::FilePath program_files_path() const { return program_files_.GetPath(); }
+  base::FilePath program_files_x86_path() const {
+    return program_files_x86_.GetPath();
+  }
+  base::FilePath program_files_6432_path() const {
+    return program_files_6432_.GetPath();
+  }
+  base::FilePath local_app_data_path() const {
+    return local_app_data_.GetPath();
+  }
+
+ private:
+  base::ScopedTempDir program_files_;
+  base::ScopedTempDir program_files_x86_;
+  base::ScopedTempDir program_files_6432_;
+  base::ScopedTempDir local_app_data_;
+  std::optional<base::ScopedPathOverride> program_files_override_;
+  std::optional<base::ScopedPathOverride> program_files_x86_override_;
+  std::optional<base::ScopedPathOverride> program_files_6432_override_;
+  std::optional<base::ScopedPathOverride> local_data_app_override_;
+};
+
+// Tests that FindInstallPath returns an empty string when no install directory
+// is present.
+TEST_P(FindInstallPathTest, NoDirectory) {
+  EXPECT_EQ(FindInstallPath(is_system_level(), base::Version("1.0.0.0")),
+            base::FilePath());
+}
+
+// Tests that FindInstallPath returns the path to the installed version
+// directory.
+TEST_P(FindInstallPathTest, Installed) {
+  const auto path = base::PathService::CheckedGet(target_path_key())
+                        .Append(install_static::GetChromeInstallSubDirectory())
+                        .Append(kInstallBinaryDir)
+                        .Append(L"1.0.0.0");
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(path, nullptr));
+  EXPECT_EQ(FindInstallPath(is_system_level(), base::Version("1.0.0.0")), path);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UserLevelTest,
+    FindInstallPathTest,
+    testing::Values(std::make_tuple(false, base::DIR_LOCAL_APP_DATA)));
+INSTANTIATE_TEST_SUITE_P(
+    SystemLevelTest,
+    FindInstallPathTest,
+    testing::Values(std::make_tuple(true, base::DIR_PROGRAM_FILES),
+#if defined(ARCH_CPU_64_BITS)
+                    std::make_tuple(true, base::DIR_PROGRAM_FILESX86)
+#else
+                    std::make_tuple(true, base::DIR_PROGRAM_FILES6432)
+#endif
+
+                        ));
 
 }  // namespace installer

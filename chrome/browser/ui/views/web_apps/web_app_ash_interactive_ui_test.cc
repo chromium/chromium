@@ -11,14 +11,14 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/test/browser_test.h"
 
-class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
+class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
  public:
   WebAppAshInteractiveUITest() = default;
 
@@ -28,10 +28,11 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
 
   ~WebAppAshInteractiveUITest() override = default;
 
-  // web_app::WebAppControllerBrowserTest override:
+  // web_app::WebAppBrowserTestBase override:
   void SetUpOnMainThread() override {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://test.org");
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://test.org"));
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
     Browser* browser = LaunchWebAppBrowser(app_id);

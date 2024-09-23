@@ -6,7 +6,9 @@
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
 #include <optional>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -14,9 +16,13 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 namespace cc {
+
+class PaintFilter;
 
 // This implementation of PaintCanvas records paint operations into the given
 // PaintOpBuffer. The methods that inspect the current clip or CTM are not
@@ -31,6 +37,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
 
   virtual PaintRecord ReleaseAsRecord();
+
+  // See comments around `maybe_draw_lines_as_paths_` for details.
+  void DisableLineDrawingAsPaths();
 
   bool HasRecordedDrawOps() const { return buffer_.has_draw_ops(); }
   size_t TotalOpCount() const { return buffer_.total_op_count(); }
@@ -48,6 +57,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
+  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                       const PaintFlags& flags) override;
   void restore() override;
   int getSaveCount() const final;
   void restoreToCount(int save_count) override;
@@ -80,6 +91,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                 SkScalar x1,
                 SkScalar y1,
                 const PaintFlags& flags) override;
+  void drawArc(const SkRect& oval,
+               SkScalar start_angle_degrees,
+               SkScalar sweep_angle_degrees,
+               const PaintFlags& flags) override;
   void drawRect(const SkRect& rect, const PaintFlags& flags) override;
   void drawIRect(const SkIRect& rect, const PaintFlags& flags) override;
   void drawOval(const SkRect& oval, const PaintFlags& flags) override;
@@ -125,6 +140,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                     NodeId node_id,
                     const PaintFlags& flags) override;
   void drawPicture(PaintRecord record) override;
+  void drawPicture(PaintRecord record, bool local_ctm) override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,
@@ -186,6 +202,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                                 bool antialias,
                                 UsePaintCache use_paint_cache);
 
+  bool IsDrawLinesAsPathsEnabled() const { return maybe_draw_lines_as_paths_; }
+
  private:
   template <typename T, typename... Args>
   void push(Args&&... args);
@@ -201,7 +219,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   // Rasterization may batch operations, and that batching may be disabled if
   // drawLine() is used instead of drawPath(). These members are used to
   // determine is a drawLine() should be rastered as a drawPath().
-  // TODO(https://crbug.com/1420380): figure out better heurstics.
+  // TODO(crbug.com/40045234): figure out better heurstics.
+  bool maybe_draw_lines_as_paths_ = true;
   uint32_t draw_path_count_ = 0;
   uint32_t draw_line_count_ = 0;
 };
@@ -218,6 +237,8 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
+  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                       const PaintFlags& flags) override;
   void restore() override;
 
   void translate(SkScalar dx, SkScalar dy) override;
@@ -236,6 +257,14 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   // Don't shadow non-virtual helper functions.
   using RecordPaintCanvas::clipRect;
 
+ protected:
+  // Creates a child canvas that has the same transform matrix and size as
+  // `parent`. `CreateChildCanvasTag` is used to differentiate this from a copy
+  // constructor.
+  struct CreateChildCanvasTag {};
+  InspectableRecordPaintCanvas(CreateChildCanvasTag,
+                               const InspectableRecordPaintCanvas& parent);
+
  private:
   void clipRRectInternal(const SkRRect& rrect,
                          SkClipOp op,
@@ -248,6 +277,11 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   int CheckSaveCount(int super_prev_save_count, int canvas_prev_save_count);
 
   SkNoDrawCanvas canvas_;
+
+  // Cached value of `canvas.getDeviceClipBounds()`. Cached as this value is
+  // used in every fill/stroke operation and calculating is on the expensive
+  // side.
+  mutable std::optional<SkIRect> device_clip_bounds_;
 };
 
 }  // namespace cc

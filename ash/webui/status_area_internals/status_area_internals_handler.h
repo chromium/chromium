@@ -17,6 +17,7 @@ class WebUI;
 namespace ash {
 
 class ScopedFakeSystemTrayModel;
+class ScopedFakePowerStatus;
 
 // WebUI message handler for chrome://status-area-internals from the Chrome page
 // to the System UI.
@@ -38,20 +39,24 @@ class StatusAreaInternalsHandler
   void ToggleVirtualKeyboardTray(bool visible) override;
   void ToggleDictationTray(bool visible) override;
   void ToggleVideoConferenceTray(bool visible) override;
-  void ToggleProjectorTray(bool visible) override;
-  void SetActiveDirectoryManaged(bool managed) override;
+  void ToggleAnnotationTray(bool visible) override;
   void SetIsInUserChildSession(bool in_child_session) override;
-
   void TriggerPrivacyIndicators(const std::string& app_id,
                                 const std::string& app_name,
                                 bool is_camera_used,
                                 bool is_microphone_used) override;
+  void ResetHmrConsentStatus() override;
+  void SetBatteryIcon(const PageHandler::BatteryIcon icon) override;
+  void SetBatteryPercent(double percent) override;
 
  private:
   friend class StatusAreaInternalsHandlerTest;
+  friend class StatusAreaInternalsHandlerBatteryTest;
   mojo::Receiver<mojom::status_area_internals::PageHandler> receiver_;
 
   std::unique_ptr<ScopedFakeSystemTrayModel> scoped_fake_model_;
+
+  std::unique_ptr<ScopedFakePowerStatus> scoped_fake_power_status_;
 
   base::WeakPtrFactory<StatusAreaInternalsHandler> weak_pointer_factory_{this};
 };

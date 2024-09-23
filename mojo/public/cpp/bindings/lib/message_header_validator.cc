@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/public/cpp/bindings/message_header_validator.h"
 
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
@@ -31,9 +36,14 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     } else if (header->version == 2) {
       if (header->num_bytes == sizeof(internal::MessageHeaderV2))
         break;
-    } else if (header->version > 2) {
-      if (header->num_bytes >= sizeof(internal::MessageHeaderV2))
+    } else if (header->version == 3) {
+      if (header->num_bytes == sizeof(internal::MessageHeaderV3)) {
         break;
+      }
+    } else if (header->version > 3) {
+      if (header->num_bytes >= sizeof(internal::MessageHeaderV3)) {
+        break;
+      }
     }
     internal::ReportValidationError(
         validation_context,

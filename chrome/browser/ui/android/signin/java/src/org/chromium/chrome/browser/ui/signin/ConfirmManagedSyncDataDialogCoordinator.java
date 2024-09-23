@@ -22,10 +22,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class ConfirmManagedSyncDataDialogCoordinator {
     /**
-     * A listener to allow the Dialog to report on the action taken. Either
-     * {@link Listener#onConfirm} or {@link Listener#onCancel} will be called once.
+     * A listener to allow the Dialog to report on the action taken. Either {@link
+     * Listener#onConfirm} or {@link Listener#onCancel} will be called once.
      */
-    interface Listener {
+    public interface Listener {
         /** The user has accepted the dialog. */
         void onConfirm();
 
@@ -42,10 +42,11 @@ public class ConfirmManagedSyncDataDialogCoordinator {
     /**
      * Creates {@link ConfirmManagedSyncDataDialogCoordinator} when signing in to a managed account
      * (either through sign in or when switching accounts) and shows the dialog.
-     * @param context         Context to create the view.
-     * @param dialogManager   ModalDialogManager to show the dialog.
-     * @param listener        Callback for result.
-     * @param managedDomain   The domain of the managed account.
+     *
+     * @param context Context to create the view.
+     * @param dialogManager ModalDialogManager to show the dialog.
+     * @param listener Callback for result.
+     * @param managedDomain The domain of the managed account.
      */
     @MainThread
     public ConfirmManagedSyncDataDialogCoordinator(
@@ -62,12 +63,15 @@ public class ConfirmManagedSyncDataDialogCoordinator {
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(
-                                        R.string.sign_in_managed_account_description,
+                                        R.string.managed_signin_with_user_policy_subtitle,
                                         managedDomain))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getString(R.string.policy_dialog_proceed))
+                                context.getString(R.string.continue_button))
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getString(R.string.cancel))

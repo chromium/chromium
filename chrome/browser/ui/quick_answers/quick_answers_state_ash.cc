@@ -8,7 +8,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -24,12 +26,6 @@ using quick_answers::prefs::kQuickAnswersEnabled;
 using quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
 using quick_answers::prefs::kQuickAnswersTranslationEnabled;
 using quick_answers::prefs::kQuickAnswersUnitConversionEnabled;
-
-void IncrementPrefCounter(PrefService* prefs,
-                          const std::string& path,
-                          int count) {
-  prefs->SetInteger(path, prefs->GetInteger(path) + count);
-}
 
 }  // namespace
 
@@ -108,6 +104,10 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled,
       base::BindRepeating(&QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      kQuickAnswersNoticeImpressionCount,
+      base::BindRepeating(&QuickAnswersStateAsh::UpdateNoticeImpressionCount,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
@@ -117,71 +117,45 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   OnApplicationLocaleReady();
   UpdatePreferredLanguages();
   UpdateSpokenFeedbackEnabled();
+  UpdateNoticeImpressionCount();
 
   prefs_initialized_ = true;
   for (auto& observer : observers_) {
     observer.OnPrefsInitialized();
   }
 
-  quick_answers::RecordFeatureEnabled(
-      pref_service->GetBoolean(kQuickAnswersEnabled));
+  quick_answers::RecordFeatureEnabled(IsEnabledAs(FeatureType::kQuickAnswers));
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
+  MaybeNotifyIsEnabledChanged();
 }
 
-void QuickAnswersStateAsh::StartConsent() {
-  consent_start_time_ = base::TimeTicks::Now();
+void QuickAnswersStateAsh::AsyncWriteConsentUiImpressionCount(int32_t count) {
+  pref_change_registrar_->prefs()->SetInteger(
+      kQuickAnswersNoticeImpressionCount, count);
 }
 
-void QuickAnswersStateAsh::OnConsentResult(ConsentResultType result) {
-  auto* prefs = pref_change_registrar_->prefs();
+void QuickAnswersStateAsh::AsyncWriteConsentStatus(
+    ConsentStatus consent_status) {
+  pref_change_registrar_->prefs()->SetInteger(kQuickAnswersConsentStatus,
+                                              consent_status);
+}
 
-  DCHECK(!consent_start_time_.is_null());
-  auto duration = base::TimeTicks::Now() - consent_start_time_;
-
-  // Only increase the counter and record the impression if the minimum duration
-  // has been reached.
-  if (duration.InSeconds() >= kConsentImpressionMinimumDuration) {
-    // Increments impression count.
-    IncrementPrefCounter(pref_change_registrar_->prefs(),
-                         kQuickAnswersNoticeImpressionCount, 1);
-    RecordConsentResult(result,
-                        prefs->GetInteger(kQuickAnswersNoticeImpressionCount),
-                        duration);
-  }
-
-  switch (result) {
-    case ConsentResultType::kAllow:
-      // Enable Quick Answers if the user accepted the consent.
-      prefs->SetBoolean(kQuickAnswersEnabled, true);
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
-      break;
-    case ConsentResultType::kNoThanks:
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
-      prefs->SetBoolean(kQuickAnswersEnabled, false);
-      break;
-    case ConsentResultType::kDismiss:
-      // If the impression count cap is reached, set the consented status to
-      // false;
-      bool impression_cap_reached =
-          prefs->GetInteger(kQuickAnswersNoticeImpressionCount) >=
-          kConsentImpressionCap;
-      if (impression_cap_reached) {
-        prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
-        prefs->SetBoolean(kQuickAnswersEnabled, false);
-      }
-  }
-
-  consent_start_time_ = base::TimeTicks();
+void QuickAnswersStateAsh::AsyncWriteEnabled(bool enabled) {
+  pref_change_registrar_->prefs()->SetBoolean(kQuickAnswersEnabled, enabled);
 }
 
 void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   auto* prefs = pref_change_registrar_->prefs();
 
-  auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
+  // TODO(b/340628526): modifying a state is error-prone. For example, if a
+  // state is read before a modification happens, a stale state will be read.
+  // Instead, each state (e.g., IsEnabled) should be calculated from other
+  // dependent states (e.g., IsKioskSession).
+  bool settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
 
   // Quick answers should be disabled for kiosk session.
-  if (chromeos::IsKioskSession() && settings_enabled) {
+  if (chromeos::IsKioskSession()) {
     settings_enabled = false;
     prefs->SetBoolean(kQuickAnswersEnabled, false);
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
@@ -196,52 +170,62 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
   }
 
-  if (settings_enabled_ == settings_enabled) {
-    return;
-  }
-  settings_enabled_ = settings_enabled;
+  bool turned_on = quick_answers_enabled_.has_value() &&
+                   !quick_answers_enabled_.value() && settings_enabled;
 
   // If the user turn on the Quick Answers in settings, set the consented status
   // to true.
-  if (settings_enabled_) {
+  // TODO(b/340628526): move this logic to `QuickAnswersState`.
+  // `QuickAnswersStateAsh` should only have logic unique to ash. Plan is to
+  // make `quick_answers_enabled_` as private and add void
+  // SetQuickAnswersEnabled(bool) as a protected method.
+  if (turned_on) {
+    CHECK(quick_answers_enabled_.has_value());
+    CHECK(!quick_answers_enabled_.value());
+    CHECK(settings_enabled);
+
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnSettingsEnabled(settings_enabled_);
-  }
+  quick_answers_enabled_ = settings_enabled;
+  MaybeNotifyIsEnabledChanged();
 }
 
 void QuickAnswersStateAsh::UpdateConsentStatus() {
   auto consent_status = static_cast<ConsentStatus>(
       pref_change_registrar_->prefs()->GetInteger(kQuickAnswersConsentStatus));
 
-  consent_status_ = consent_status;
-
-  for (auto& observer : observers_) {
-    observer.OnConsentStatusUpdated(consent_status_);
-  }
+  SetQuickAnswersFeatureConsentStatus(consent_status);
 }
 
 void QuickAnswersStateAsh::UpdateDefinitionEnabled() {
   auto definition_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersDefinitionEnabled);
 
-  definition_enabled_ = definition_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     definition_enabled);
 }
 
 void QuickAnswersStateAsh::UpdateTranslationEnabled() {
   auto translation_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersTranslationEnabled);
 
-  translation_enabled_ = translation_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     translation_enabled);
 }
 
 void QuickAnswersStateAsh::UpdateUnitConversionEnabled() {
   auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersUnitConversionEnabled);
 
-  unit_conversion_enabled_ = unit_conversion_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     unit_conversion_enabled);
 }
 
 void QuickAnswersStateAsh::OnApplicationLocaleReady() {
@@ -269,7 +253,7 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
     observer.OnApplicationLocaleReady(resolved_locale);
   }
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
 }
 
 void QuickAnswersStateAsh::UpdatePreferredLanguages() {
@@ -288,4 +272,9 @@ void QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled() {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
   spoken_feedback_enabled_ = spoken_feedback_enabled;
+}
+
+void QuickAnswersStateAsh::UpdateNoticeImpressionCount() {
+  consent_ui_impression_count_ = pref_change_registrar_->prefs()->GetInteger(
+      kQuickAnswersNoticeImpressionCount);
 }

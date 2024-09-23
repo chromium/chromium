@@ -148,7 +148,7 @@ std::string SerializeAttributionReportingEligibleHeader(
   const char* grease2;
   switch (eligibility) {
     case AttributionReportingEligibility::kUnset:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case AttributionReportingEligibility::kEmpty:
       grease1 = kEventSource;
       grease2 = kTrigger;
@@ -214,6 +214,8 @@ std::string GetAttributionSupportHeader(
       grease1 = "os";
       grease2 = "web";
       break;
+    case mojom::AttributionSupport::kUnset:
+      NOTREACHED();
   }
 
   ApplyGrease(registrars, options, grease1, grease2);

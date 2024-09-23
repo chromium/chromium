@@ -4,9 +4,11 @@
 
 #include "base/android/jni_android.h"
 #include "components/webxr/android/cardboard_device_provider.h"
-#include "components/webxr/android/xr_jni_headers/CardboardUtils_jni.h"
 #include "device/vr/android/cardboard/cardboard_device_params.h"
 #include "device/vr/android/cardboard/mock_cardboard_sdk.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webxr/android/xr_jni_headers/CardboardUtils_jni.h"
 
 namespace webxr {
 

@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/net/timeout.h"
@@ -41,8 +40,7 @@ Status ExecuteGetAlert(Session* session,
                        WebView* web_view,
                        const base::Value::Dict& params,
                        std::unique_ptr<base::Value>* value) {
-  *value = std::make_unique<base::Value>(
-      web_view->GetJavaScriptDialogManager()->IsDialogOpen());
+  *value = std::make_unique<base::Value>(web_view->IsDialogOpen());
   return Status(kOk);
 }
 
@@ -51,8 +49,7 @@ Status ExecuteGetAlertText(Session* session,
                            const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
   std::string message;
-  Status status =
-      web_view->GetJavaScriptDialogManager()->GetDialogMessage(&message);
+  Status status = web_view->GetDialogMessage(message);
   if (status.IsError())
     return status;
   *value = std::make_unique<base::Value>(message);
@@ -67,19 +64,17 @@ Status ExecuteSetAlertText(Session* session,
   if (!text)
     return Status(kInvalidArgument, "missing or invalid 'text'");
 
-  JavaScriptDialogManager* dialog_manager =
-      web_view->GetJavaScriptDialogManager();
-
-  if (!dialog_manager->IsDialogOpen())
+  if (!web_view->IsDialogOpen()) {
     return Status(kNoSuchAlert);
+  }
 
   std::string type;
-  Status status = dialog_manager->GetTypeOfDialog(&type);
+  Status status = web_view->GetTypeOfDialog(type);
   if (status.IsError())
     return status;
 
   if (type == "prompt")
-    session->prompt_text = std::make_unique<std::string>(*text);
+    session->prompt_text = std::make_optional<std::string>(*text);
   else if (type == "alert" || type == "confirm")
     return Status(kElementNotInteractable,
                   "User dialog does not have a text box input field.");
@@ -93,8 +88,7 @@ Status ExecuteAcceptAlert(Session* session,
                           WebView* web_view,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value) {
-  Status status = web_view->GetJavaScriptDialogManager()
-      ->HandleDialog(true, session->prompt_text.get());
+  Status status = web_view->HandleDialog(true, session->prompt_text);
   session->prompt_text.reset();
   return status;
 }
@@ -103,8 +97,7 @@ Status ExecuteDismissAlert(Session* session,
                            WebView* web_view,
                            const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
-  Status status = web_view->GetJavaScriptDialogManager()
-      ->HandleDialog(false, session->prompt_text.get());
+  Status status = web_view->HandleDialog(false, session->prompt_text);
   session->prompt_text.reset();
   return status;
 }

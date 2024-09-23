@@ -47,6 +47,8 @@ enum class State {
   kCancelled,
 };
 
+std::ostream& operator<<(std::ostream& out, State state);
+
 enum class OperationType {
   kCopy,
   kDelete,
@@ -338,7 +340,7 @@ class IOTask {
   // Executes the task. |progress_callback| should be called every so often to
   // give updates, and |complete_callback| should be only called once at the end
   // to signify completion with a |kSuccess|, |kError| or |kCancelled| state.
-  // |progress_callback| should be called on the same sequeuence Execute() was.
+  // |progress_callback| should be called on the same sequence Execute() was.
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback) = 0;
 

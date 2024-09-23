@@ -17,7 +17,7 @@ namespace {
 using AudioNodeOutputSet = HashSet<AudioNodeOutput*>;
 
 struct FindOutputResult {
-  const raw_ref<AudioNodeOutputSet, ExperimentalRenderer> output_set;
+  const raw_ref<AudioNodeOutputSet> output_set;
   AudioNodeOutputSet::const_iterator iterator;
   bool is_disabled;
 };
@@ -42,7 +42,7 @@ FindOutputResult FindOutput(AudioNodeOutput& output,
     return {raw_ref(disabled_outputs), it, true};
   }
 
-  NOTREACHED() << "The output must be connected to the input.";
+  NOTREACHED_IN_MIGRATION() << "The output must be connected to the input.";
   return {raw_ref(outputs), {}, false};
 }
 

@@ -62,13 +62,13 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have.  Then the
   // TableLayout will stretch it back out into any additional space available.
-  const int min_label_width =
+  min_label_width_ =
       PageInfoViewFactory::kMinBubbleWidth - side_margin * 2 -
       PageInfoViewFactory::GetConnectionSecureIcon().Size().width() -
       icon_label_spacing;
-  security_summary_label_->SizeToFit(min_label_width);
+  security_summary_label_->SizeToFit(min_label_width_);
 
-  auto start_secondary_row = [=]() {
+  auto start_secondary_row = [=, this]() {
     layout->AddRows(1, views::TableLayout::kFixedSize);
     AddChildView(std::make_unique<views::View>());  // Skipping the icon column.
   };
@@ -79,7 +79,7 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
   security_details_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  security_details_label_->SizeToFit(min_label_width);
+  security_details_label_->SizeToFit(min_label_width_);
 
   start_secondary_row();
   reset_decisions_label_container_ =
@@ -201,7 +201,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
       change_password_template = IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   std::unique_ptr<views::MdTextButton> change_password_button;
@@ -220,7 +220,8 @@ void SecurityInformationView::AddPasswordReuseButtons(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   int kSpacingBetweenButtons = 8;
-  // TODO(crbug.com/1263516): Fix alignment if the buttons don't fit in one row.
+  // TODO(crbug.com/40800258): Fix alignment if the buttons don't fit in one
+  // row.
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kSpacingBetweenButtons);
@@ -248,8 +249,17 @@ void SecurityInformationView::AddPasswordReuseButtons(
   // Add padding at the top.
   password_reuse_button_container_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(8, 0, 0, 0)));
+  int w = password_reuse_button_container_->GetPreferredSize().width();
+  if (w > min_label_width_) {
+    AdjustContentWidth(w);
+  }
 
   InvalidateLayout();
+}
+
+void SecurityInformationView::AdjustContentWidth(int w) {
+  security_summary_label_->SizeToFit(w);
+  security_details_label_->SizeToFit(w);
 }
 
 BEGIN_METADATA(SecurityInformationView)

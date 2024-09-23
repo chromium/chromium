@@ -40,10 +40,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/bindings_policy.h"
+#include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -169,18 +171,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
 
-  // The URL rewrite rules manager must be initialized only for the root
-  // CastWebContents that is created with this public ctor. All the inner
-  // CastWebContents created in |InnerWebContentsCreated()| callback will use
-  // the private ctor with |parent| specified which allows sharing the same
-  // manager, so that the whole Cast session applies the same rules.
-  if (params_->enable_url_rewrite_rules) {
-    if (!parent_cast_web_contents_) {
-      url_rewrite_rules_manager_.emplace();
-    }
-    url_rewrite_rules_manager()->AddWebContents(web_contents_);
-  }
-
   if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
@@ -190,6 +180,17 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   if (GetSwitchValueBoolean(switches::kDisableMojoRenderer, false) &&
       params_->renderer_type == mojom::RendererType::MOJO_RENDERER) {
     params_->renderer_type = mojom::RendererType::DEFAULT_RENDERER;
+  } else if (GetSwitchValueBoolean(switches::kForceMojoRenderer, false)) {
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) && BUILDFLAG(ENABLE_CAST_RENDERER)
+    LOG(INFO) << "Enabling mojo renderer";
+#else
+    LOG(ERROR)
+        << "The switch " << switches::kForceMojoRenderer
+        << " was used, but either the mojo renderer or cast renderer is "
+           "disabled via GN args. Check the values of enable_cast_renderer and "
+           "mojo_media_services in your GN args";
+#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER) && BUILDFLAG(ENABLE_CAST_RENDERER)
+    params_->renderer_type = mojom::RendererType::MOJO_RENDERER;
   }
 
   web_contents_->SetPageBaseBackgroundColor(chromecast::GetSwitchValueColor(
@@ -197,7 +198,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   if (params_->enable_webui_bindings_permission) {
     web_contents_->GetPrimaryMainFrame()->AllowBindings(
-        content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
+        content::kWebUIBindingsPolicySet);
   }
 }
 
@@ -232,15 +233,6 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
-url_rewrite::UrlRequestRewriteRulesManager*
-CastWebContentsImpl::url_rewrite_rules_manager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (parent_cast_web_contents_) {
-    return parent_cast_web_contents_->url_rewrite_rules_manager();
-  }
-  return &*url_rewrite_rules_manager_;
-}
-
 const media_control::MediaBlocker* CastWebContentsImpl::media_blocker() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return media_blocker_.get();
@@ -253,14 +245,6 @@ void CastWebContentsImpl::AddRendererFeatures(base::Value::Dict features) {
 void CastWebContentsImpl::SetInterfacesForRenderer(
     mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) {
   remote_interfaces_.SetProvider(std::move(remote_interfaces));
-}
-
-void CastWebContentsImpl::SetUrlRewriteRules(
-    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) {
-  DCHECK(params_->enable_url_rewrite_rules);
-  if (!url_rewrite_rules_manager()->OnRulesUpdated(std::move(rules))) {
-    LOG(ERROR) << "URL rewrite rules update failed.";
-  }
 }
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {
@@ -722,6 +706,13 @@ void CastWebContentsImpl::ReadyToCommitNavigation(
     script_injector_.InjectScriptsForURL(
         navigation_handle->GetURL(), navigation_handle->GetRenderFrameHost());
   }
+
+  // Always allow mixed content (https and http in the same page) for cast.
+  // TODO(https://crbug.com/333795270): Decide whether to use
+  // kKeyAllowInsecureContent to configure allowing mixed content.
+  auto content_settings = blink::CreateDefaultRendererContentSettings();
+  content_settings->allow_mixed_content = true;
+  navigation_handle->SetContentSettings(std::move(content_settings));
 
   // Notifies observers that the navigation of the main frame is ready.
   for (Observer& observer : sync_observers_) {

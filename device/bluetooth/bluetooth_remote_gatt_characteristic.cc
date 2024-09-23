@@ -442,6 +442,10 @@ bool BluetoothRemoteGattCharacteristic::IsNotificationTypeSupported(
       return hasNotify;
     case NotificationType::kIndication:
       return hasIndicate;
+    case NotificationType::kNone:
+      LOG(WARNING) << __func__ << ": Unexpected NotificationType "
+                   << static_cast<uint16_t>(NotificationType::kNone);
+      return false;
   }
 }
 

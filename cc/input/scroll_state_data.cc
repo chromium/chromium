@@ -14,8 +14,6 @@ ScrollStateData::ScrollStateData()
       delta_y_hint(0),
       position_x(0),
       position_y(0),
-      velocity_x(0),
-      velocity_y(0),
       is_beginning(false),
       is_in_inertial_phase(false),
       is_ending(false),

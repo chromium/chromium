@@ -4,8 +4,8 @@
 
 import {isRecentRootType} from '../../common/js/entry_utils.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {FileTable} from './ui/file_table.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {FileTable} from './ui/file_table.js';
 
 /**
  * Controls last modified column in the file table.
@@ -14,7 +14,7 @@ export class LastModifiedController {
   constructor(
       private fileTable_: FileTable, private directoryModel_: DirectoryModel) {
     this.directoryModel_.addEventListener(
-        'scan-started', this.onScanStarted_.bind(this));
+        'cur-dir-scan-started', this.onScanStarted_.bind(this));
   }
 
   /**

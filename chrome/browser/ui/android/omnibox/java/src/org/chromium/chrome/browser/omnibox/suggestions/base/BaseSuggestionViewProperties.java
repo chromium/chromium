@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 /** The base set of properties for most omnibox suggestions. */
 public @interface BaseSuggestionViewProperties {
+
     /** Describes density of the suggestions. */
     @IntDef({Density.DEFAULT, Density.COMPACT})
     @Retention(RetentionPolicy.SOURCE)
@@ -89,6 +91,9 @@ public @interface BaseSuggestionViewProperties {
         }
     }
 
+    /** {@see BaseSuggestionView#setActionChipLeadInSpacing(int)} */
+    WritableIntPropertyKey ACTION_CHIP_LEAD_IN_SPACING = new WritableIntPropertyKey();
+
     /** OmniboxDrawableState to show as a suggestion icon. */
     @VisibleForTesting
     public static final WritableObjectPropertyKey<OmniboxDrawableState> ICON =
@@ -123,15 +128,31 @@ public @interface BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT =
             new WritableObjectPropertyKey<>();
 
+    /** {@see BaseSuggestionView#setShowDecorationIcon(boolean} */
+    WritableBooleanPropertyKey SHOW_DECORATION = new WritableBooleanPropertyKey();
+
+    /**
+     * The top padding to apply to the BaseSuggestionView. This is distinct from the padding for the
+     * contained content view, which is controlled separately.
+     */
+    WritableIntPropertyKey TOP_PADDING = new WritableIntPropertyKey();
+
+    /** {@see BaseSuggestionView#setUseLargeDecorationIcon(boolean)} */
+    WritableBooleanPropertyKey USE_LARGE_DECORATION = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
+                ACTION_CHIP_LEAD_IN_SPACING,
                 ICON,
                 ACTION_BUTTONS,
                 ON_FOCUS_VIA_SELECTION,
                 DENSITY,
                 ON_CLICK,
                 ON_LONG_CLICK,
-                ON_TOUCH_DOWN_EVENT
+                ON_TOUCH_DOWN_EVENT,
+                SHOW_DECORATION,
+                TOP_PADDING,
+                USE_LARGE_DECORATION
             };
 
     public static final PropertyKey[] ALL_KEYS =

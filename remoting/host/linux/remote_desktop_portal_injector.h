@@ -15,7 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/linux/ei_event_watcher_glib.h"
-#include "third_party/libei/include/libei.h"
+#include "third_party/libei/cipd/include/libei.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screen_capture_portal_interface.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screencast_portal.h"
 #include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"

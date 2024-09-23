@@ -18,15 +18,21 @@ class MockReportPageProcessesPolicy : public ReportPageProcessesPolicy {
     ReportPageProcessesPolicy::HandlePageNodeEvents();
   }
 
-  std::vector<PageProcess> GetPageProcesses() { return processes_; }
+  base::flat_map<base::ProcessId, PageState> GetReportedPages() {
+    return processes_;
+  }
+
+  int report_page_processes_count_ = 0;
 
  protected:
-  void ReportPageProcesses(std::vector<PageProcess> processes) override {
+  void ReportPageProcesses(
+      base::flat_map<base::ProcessId, PageState> processes) override {
     processes_ = processes;
+    report_page_processes_count_++;
   }
 
  private:
-  std::vector<PageProcess> processes_;
+  base::flat_map<base::ProcessId, PageState> processes_;
 };
 
 class ReportPageProcessesPolicyTest
@@ -76,7 +82,9 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node1->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
   // Set page node 1 audible to raise its priority.
   page_node1->SetIsAudible(true);
@@ -89,7 +97,9 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node2->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node2.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node3 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -100,7 +110,9 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node3->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node3.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node4 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -111,7 +123,9 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
       CreateFrameNodeAutoId(process_node4.get(), page_node4.get());
   testing::MakePageNodeDiscardable(page_node4.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node4->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node4.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
 
   auto process_node5 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
@@ -133,7 +147,9 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
       CreateFrameNodeAutoId(process_node6.get(), page_node6.get());
   testing::MakePageNodeDiscardable(page_node6.get(), task_env());
   AdvanceClock(base::Minutes(30));
-  main_frame_node6->SetIsCurrent(false);
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node6.get(),
+      /*current_frame_node=*/nullptr, graph());
   AdvanceClock(base::Minutes(30));
   // Set page node 6 focused to raise its priority.
   page_node6->SetIsVisible(true);
@@ -143,31 +159,283 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   policy()->HandlePageNodeEvents();
 
   // Processes with descending importance.
-  auto processes = policy()->GetPageProcesses();
+  auto processes = policy()->GetReportedPages();
   ASSERT_EQ(processes.size(), 6u);
 
-  ASSERT_EQ(processes[0].pid, kProcessId6);
-  ASSERT_EQ(processes[0].host_protected_page, true);
-  ASSERT_EQ(processes[0].host_visible_page, true);
-  ASSERT_EQ(processes[0].host_focused_page, true);
+  ASSERT_TRUE(processes.contains(kProcessId6));
+  ASSERT_EQ(processes[kProcessId6].host_protected_page, true);
+  ASSERT_EQ(processes[kProcessId6].host_visible_page, true);
+  ASSERT_EQ(processes[kProcessId6].host_focused_page, true);
 
-  ASSERT_EQ(processes[1].pid, kProcessId5);
-  ASSERT_EQ(processes[1].host_protected_page, true);
-  ASSERT_EQ(processes[1].host_visible_page, true);
+  ASSERT_TRUE(processes.contains(kProcessId5));
+  ASSERT_EQ(processes[kProcessId5].host_protected_page, true);
+  ASSERT_EQ(processes[kProcessId5].host_visible_page, true);
 
   // Because page node 1 is audible, it's protected.
-  ASSERT_EQ(processes[2].pid, kProcessId1);
-  ASSERT_EQ(processes[2].host_protected_page, true);
-  ASSERT_EQ(processes[2].host_visible_page, false);
-  ASSERT_EQ(processes[3].pid, kProcessId4);
-  ASSERT_EQ(processes[3].host_protected_page, false);
-  ASSERT_EQ(processes[3].host_visible_page, false);
-  ASSERT_EQ(processes[4].pid, kProcessId3);
-  ASSERT_EQ(processes[4].host_protected_page, false);
-  ASSERT_EQ(processes[4].host_visible_page, false);
-  ASSERT_EQ(processes[5].pid, kProcessId2);
-  ASSERT_EQ(processes[5].host_protected_page, false);
-  ASSERT_EQ(processes[5].host_visible_page, false);
+  ASSERT_TRUE(processes.contains(kProcessId1));
+  ASSERT_EQ(processes[kProcessId1].host_protected_page, true);
+  ASSERT_EQ(processes[kProcessId1].host_visible_page, false);
+  ASSERT_TRUE(processes.contains(kProcessId4));
+  ASSERT_EQ(processes[kProcessId4].host_protected_page, false);
+  ASSERT_EQ(processes[kProcessId4].host_visible_page, false);
+  ASSERT_TRUE(processes.contains(kProcessId3));
+  ASSERT_EQ(processes[kProcessId3].host_protected_page, false);
+  ASSERT_EQ(processes[kProcessId3].host_visible_page, false);
+  ASSERT_TRUE(processes.contains(kProcessId2));
+  ASSERT_EQ(processes[kProcessId2].host_protected_page, false);
+  ASSERT_EQ(processes[kProcessId2].host_visible_page, false);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, TestSamePagesAreNotReportedTwice) {
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+
+  // The first event should report the page properly.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 1);
+
+  policy()->HandlePageNodeEvents();
+  // The second event should not report anything since no state was changed.
+  ASSERT_EQ(policy()->report_page_processes_count_, 1);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, TestPageStateChangesCausesNewReport) {
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+
+  // The first event should report the page properly.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 1);
+
+  // Now that the page is audible, the pages should have been reported again.
+  page_node1->SetIsAudible(true);
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 2);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, TestAddingPageCausesNewReport) {
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+
+  // The first event should report the page properly.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 1);
+
+  auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node2->SetProcessWithPid(2, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node2 =
+      CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+  testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+
+  // Since there is a new page, the pages should both be reported.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 2);
+  ASSERT_EQ(policy()->GetReportedPages().size(), 2U);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, TestRemovingPageCausesNewReport) {
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+
+  // Creation of the first page should trigger a report.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 1);
+  ASSERT_EQ(policy()->GetReportedPages().size(), 1U);
+
+  {
+    auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+    process_node2->SetProcessWithPid(2, base::Process::Current(),
+                                     /* launch_time=*/base::TimeTicks::Now());
+    auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+    auto main_frame_node2 =
+        CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+    testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+
+    // Creation of the second page should create another new report
+    policy()->HandlePageNodeEvents();
+    ASSERT_EQ(policy()->report_page_processes_count_, 2);
+    ASSERT_EQ(policy()->GetReportedPages().size(), 2U);
+  }
+
+  // Since a page was removed, another report should be sent.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 3);
+  ASSERT_EQ(policy()->GetReportedPages().size(), 1U);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, TestZeroTabsIsReported) {
+  {
+    auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+    process_node1->SetProcessWithPid(1, base::Process::Current(),
+                                     /* launch_time=*/base::TimeTicks::Now());
+    auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+    auto main_frame_node1 =
+        CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+    testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+
+    policy()->HandlePageNodeEvents();
+    ASSERT_EQ(policy()->report_page_processes_count_, 1);
+    ASSERT_EQ(policy()->GetReportedPages().size(), 1U);
+  }
+
+  // Creation of the first page should trigger a report.
+  policy()->HandlePageNodeEvents();
+  ASSERT_EQ(policy()->report_page_processes_count_, 2);
+  ASSERT_EQ(policy()->GetReportedPages().size(), 0U);
+}
+
+TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
+  constexpr base::ProcessId kProcessId1 = 1;
+  constexpr base::ProcessId kProcessId2 = 2;
+
+  // Creates 2 pages.
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+  // Set page node 1 audible to raise its priority.
+  page_node1->SetIsAudible(true);
+
+  auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node2->SetProcessWithPid(kProcessId2, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node2 =
+      CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+  testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node2.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+
+  // Set process 1 as marked
+  PageDiscardingHelper::GetFromGraph(graph())
+      ->AddDiscardAttemptMarkerForTesting(page_node1.get());
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Since page node 1 was marked, only one process should be reported (process
+  // 2).
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+  ASSERT_TRUE(processes.contains(kProcessId2));
+}
+
+TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimeCurrent) {
+  constexpr base::ProcessId kProcessId1 = 6;
+
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+  // Set page node 6 focused to raise its priority.
+  page_node1->SetIsVisible(true);
+  page_node1->SetIsFocused(true);
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Processes with descending importance.
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+
+  ASSERT_TRUE(processes.contains(kProcessId1));
+  ASSERT_EQ(processes[kProcessId1].last_visible, base::TimeTicks::Now());
+}
+
+TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimePast) {
+  constexpr base::ProcessId kProcessId1 = 6;
+
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  FrameNodeImpl::UpdateCurrentFrame(
+      /*previous_frame_node=*/main_frame_node1.get(),
+      /*current_frame_node=*/nullptr, graph());
+  AdvanceClock(base::Minutes(30));
+  // Set page node 6 focused to raise its priority.
+  page_node1->SetIsVisible(true);
+  page_node1->SetIsFocused(true);
+  AdvanceClock(base::Minutes(30));
+  page_node1->SetIsVisible(false);
+  page_node1->SetIsFocused(false);
+  AdvanceClock(base::Minutes(30));
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Processes with descending importance.
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+
+  ASSERT_TRUE(processes.contains(kProcessId1));
+  ASSERT_EQ(processes[kProcessId1].last_visible,
+            base::TimeTicks::Now() - base::Minutes(30));
 }
 
 }  // namespace performance_manager::policies

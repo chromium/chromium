@@ -1,9 +1,9 @@
 Name: winapi-util
 URL: https://crates.io/crates/winapi-util
-Description: A dumping ground for high level safe wrappers over winapi.
-Version: 0.1.6
+Description: A dumping ground for high level safe wrappers over windows-sys.
+Version: 0.1.9
 Security Critical: yes
 Shipped: no
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/LICENSE-MIT
-Revision: 9453203cc11d5cadd73aa5fa0e5e5825d2e19b0f
+License File: //third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/LICENSE-MIT
+Revision: 1ba3b31fedf941f345732331dada2362245c97f4

@@ -157,11 +157,10 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
 
   ChromeClient* chrome_client = GetChromeClient();
   if (chrome_client && !HasOpenedPopup()) {
-    UseCounter::Count(
-        document,
-        (event.UnderlyingEvent() && event.UnderlyingEvent()->isTrusted())
-            ? WebFeature::kColorInputTypeChooserByTrustedClick
-            : WebFeature::kColorInputTypeChooserByUntrustedClick);
+    UseCounter::Count(document,
+                      event.IsFullyTrusted()
+                          ? WebFeature::kColorInputTypeChooserByTrustedClick
+                          : WebFeature::kColorInputTypeChooserByUntrustedClick);
     OpenPopupView();
   }
 

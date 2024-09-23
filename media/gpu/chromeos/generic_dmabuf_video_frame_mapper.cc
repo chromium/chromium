@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
 
 #include <sys/mman.h>
@@ -12,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -80,7 +84,7 @@ bool IsFormatSupported(VideoPixelFormat format) {
       PIXEL_FORMAT_I420,
       PIXEL_FORMAT_NV12,
       PIXEL_FORMAT_YV12,
-      PIXEL_FORMAT_P016LE,
+      PIXEL_FORMAT_P010LE,
 
       // Compressed format.
       PIXEL_FORMAT_MJPEG,
@@ -106,7 +110,7 @@ GenericDmaBufVideoFrameMapper::GenericDmaBufVideoFrameMapper(
 
 scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
     scoped_refptr<const FrameResource> video_frame,
-    int permissions) const {
+    int permissions) {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
     return nullptr;
@@ -115,12 +119,6 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
   if (video_frame->storage_type() != VideoFrame::StorageType::STORAGE_DMABUFS) {
     VLOGF(1) << "VideoFrame's storage type is not DMABUF: "
              << video_frame->storage_type();
-    return nullptr;
-  }
-
-  if (IsIntelMediaCompressedModifier(video_frame->layout().modifier())) {
-    VLOGF(1)
-        << "This mapper doesn't support Intel media compressed VideoFrames";
     return nullptr;
   }
 

@@ -15,7 +15,11 @@ import {FakeShortcutInputProvider} from './fake_shortcut_input_provider.js';
 import {KeyEvent} from './input_device_settings.mojom-webui.js';
 import {getTemplate} from './shortcut_input.html.js';
 import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
-import {getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
+import {getSortedModifiers, KeyInputState, KeyToIconNameMap, MetaKey, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
+
+// <if expr="_google_chrome" >
+import {KeyToInternalIconNameMap} from './shortcut_utils.js';
+// </if>
 
 export interface ShortcutInputElement {
   $: {
@@ -55,9 +59,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         type: Boolean,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
-      },
+      metaKey: Object,
 
       // When `updateOnKeyPress` is true, always show edit-view and and updates
       // occur on key press events rather than on key release.
@@ -82,10 +84,16 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       shouldIgnoreKeyRelease: {
         type: Boolean,
       },
+
+      hasFunctionKey: {
+        type: Boolean,
+      },
+
     };
   }
 
-  hasLauncherButton: boolean = true;
+  metaKey: MetaKey = MetaKey.kSearch;
+  hasFunctionKey: boolean = false;
   shortcutInputProvider: ShortcutInputProviderInterface|null = null;
   pendingKeyEvent: KeyEvent|null = null;
   pendingPrerewrittenKeyEvent: KeyEvent|null = null;
@@ -120,17 +128,20 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Updates UI to the newly received KeyEvent.
    */
   onShortcutInputEventPressed(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
-    this.pendingKeyEvent = keyEvent;
-    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        this.pendingKeyEvent = prerewrittenKeyEvent;
+        this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
+    } else {
+      this.pendingKeyEvent = keyEvent;
+      this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+    }
 
     if (this.updateOnKeyPress) {
-      // TODO(jimmyxgong): Should be able to do this unconditionally, but for
-      // now the modifiers trigger observable events that may unintentionally
-      // update the UI.
-      this.pendingKeyEvent.modifiers = keyEvent.modifiers;
-      this.pendingPrerewrittenKeyEvent.modifiers =
-          prerewrittenKeyEvent.modifiers;
       this.dispatchEvent(new CustomEvent('shortcut-input-event', {
         bubbles: true,
         composed: true,
@@ -146,9 +157,17 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * parent elements.
    */
   onShortcutInputEventReleased(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
     if (this.shouldIgnoreKeyRelease) {
       return;
+    }
+
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        keyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
     }
 
     // Ignore the release event if no key was pressed before. This is to
@@ -270,10 +289,14 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
+      // <if expr="_google_chrome" >
+      if (keyDisplay in KeyToInternalIconNameMap) {
+        return keyDisplay;
+      }
+      // </if>
       return keyDisplay.toLowerCase();
     }
-    // TODO(dpad, b/286930911): Reset to localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   getKeyState(): string {
@@ -291,10 +314,14 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
+      // <if expr="_google_chrome" >
+      if (keyDisplay in KeyToInternalIconNameMap) {
+        return keyDisplay;
+      }
+      // </if>
       return keyDisplay.toLowerCase();
     }
-    // TODO(dpad, b/286930911): Reset to localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   getConfirmKeyState(): string {
@@ -350,6 +377,13 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   /**
    * Returns the specified CSS state of the modifier key element.
    */
+  protected getFunctionState(): string {
+    return this.getModifierState(Modifier.FN_KEY);
+  }
+
+  /**
+   * Returns the specified CSS state of the modifier key element.
+   */
   private getModifierState(modifier: Modifier): KeyInputState {
     const keyEvent = this.getPendingKeyEvent();
     if (keyEvent && keyEvent?.modifiers & modifier) {
@@ -369,6 +403,8 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         return 'alt';
       case Modifier.COMMAND:
         return 'meta';
+      case Modifier.FN_KEY:
+        return 'fn';
     }
     return assertNotReached();
   }

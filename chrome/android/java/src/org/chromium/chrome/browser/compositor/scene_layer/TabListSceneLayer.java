@@ -15,8 +15,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -89,7 +89,7 @@ public class TabListSceneLayer extends SceneLayer {
 
         TabListSceneLayerJni.get().beginBuildingFrame(mNativePtr, TabListSceneLayer.this);
 
-        // TODO(crbug.com/1070281): Use Supplier to get viewport and forward it to native, then
+        // TODO(crbug.com/40126259): Use Supplier to get viewport and forward it to native, then
         // updateLayer can become obsolete.
         TabListSceneLayerJni.get()
                 .updateLayer(

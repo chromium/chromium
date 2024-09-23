@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/fetch/request.h"
 
 #include <memory>
@@ -35,7 +40,7 @@ class RequestBodyTest : public testing::Test {
 
   static RequestInit* CreateRequestInit(
       V8TestingScope& scope,
-      const v8::MaybeLocal<v8::Value>& body_value) {
+      const v8::Local<v8::Value>& body_value) {
     auto* request_init = RequestInit::Create();
     request_init->setMethod("POST");
     request_init->setBody(blink::ScriptValue(scope.GetIsolate(), body_value));
@@ -74,7 +79,7 @@ TEST_F(RequestBodyTest, InitWithBodyString) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
   V8TestingScope scope;
   String body = "test body!";
-  auto* buffer = DOMArrayBuffer::Create(body.Bytes(), body.length());
+  auto* buffer = DOMArrayBuffer::Create(body.Span8());
   auto* init = CreateRequestInit(
       scope, ToV8Traits<DOMArrayBuffer>::ToV8(scope.GetScriptState(), buffer));
 
@@ -89,8 +94,7 @@ TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBufferView) {
   V8TestingScope scope;
   String body = "test body!";
-  DOMArrayBufferView* buffer_view =
-      DOMUint8Array::Create(body.Span8().data(), body.length());
+  DOMArrayBufferView* buffer_view = DOMUint8Array::Create(body.Span8());
   auto* init =
       CreateRequestInit(scope, ToV8Traits<DOMArrayBufferView>::ToV8(
                                    scope.GetScriptState(), buffer_view));
@@ -138,7 +142,7 @@ TEST_F(RequestBodyTest, InitWithUrlSearchParams) {
 TEST_F(RequestBodyTest, InitWithBlob) {
   V8TestingScope scope;
   String body = "test body!";
-  auto* blob = Blob::Create(body.Span8().data(), body.length(), "text/html");
+  auto* blob = Blob::Create(body.Span8(), "text/html");
   auto* init = CreateRequestInit(
       scope, ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob));
 

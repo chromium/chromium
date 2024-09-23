@@ -41,7 +41,7 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
   }
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137771): rewrite test to not use verifier.
+    // TODO(crbug.com/40724973): rewrite test to not use verifier.
     return true;
   }
 

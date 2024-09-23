@@ -8,15 +8,3 @@ NSString* const kTabsSettingsTableViewId = @"kTabsSettingsTableViewId";
 
 NSString* const kInactiveTabsSettingsTableViewId =
     @"kInactiveTabsSettingsTableViewId";
-
-NSString* const kTabPickupSettingsTableViewId =
-    @"kTabPickupSettingsTableViewId";
-
-NSString* const kTabPickupSettingsSwitchItemId =
-    @"kTabPickupSettingsSwitchItemId";
-
-NSString* const kTabPickupSettingsManagedItemId =
-    @"kTabPickupSettingsManagedItemId";
-
-NSString* const kTabPickupSettingsPrivacyFooterId =
-    @"kTabPickupSettingsPrivacyFooterId";

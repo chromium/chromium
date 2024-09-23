@@ -1,0 +1,87 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CampaignSlot">
+  <int value="0" label="Demo Mode App"/>
+  <int value="1" label="Demo Mode Free Play Apps"/>
+  <int value="2" label="Nudge"/>
+  <int value="3" label="Notification"/>
+  <int value="4" label="OOBE Perk Discovery Page"/>
+</enum>
+
+<enum name="CampaignsManagerError">
+  <int value="0" label="Loading campaigns component failed"/>
+  <int value="1" label="Loading campaigns file failed"/>
+  <int value="2" label="Parsing campaigns file failed"/>
+  <int value="3" label="User pref is not available at campaigns matching"/>
+  <int value="4" label="Invalid campaign"/>
+  <int value="5" label="Invalid targeting"/>
+  <int value="6" label="Invalid scheduling targeting"/>
+  <int value="7" label="Invalid scheduling"/>
+  <int value="8" label="Demo Mode app version is not available at matching"/>
+  <int value="9" label="Serializing Demo Mode payload failed"/>
+  <int value="10" label="Parsing open url params failed"/>
+  <int value="11" label="Missing action type"/>
+  <int value="12" label="Invalid app targeting"/>
+  <int value="13" label="Invalid anchor type"/>
+  <int value="14" label="Unrecognized built in icon"/>
+  <int value="15" label="Missing campaign ID"/>
+  <int value="16" label="Invalid action"/>
+  <int value="17" label="Perofrm action failed"/>
+  <int value="18" label="Invalid event targeting condition"/>
+  <int value="19" label="Invalid event targeting condition param"/>
+  <int value="20" label="No opened window to anchor"/>
+  <int value="21" label="No opened window widget to anchor"/>
+  <int value="22" label="No root view to get anchor view"/>
+  <int value="23" label="Invalid image config in nudge payload"/>
+  <int value="24" label="Missing body in nudge payload"/>
+  <int value="25" label="Anchor view not found for anchoring nudge"/>
+  <int value="26" label="Missing icon config in notification payload"/>
+  <int value="27" label="Invalid icon config in notification payload"/>
+  <int value="28" label="Invalid button config in notification payload"/>
+  <int value="29" label="Missing button label in notification payload"/>
+  <int value="30" label="Invalid button action in notification payload"/>
+  <int value="31" label="Invalid notification payload"/>
+  <int value="32" label="Invalid trigger targeting"/>
+  <int value="33" label="Anchor widget not found for anchoring nudge"/>
+  <int value="34" label="Position not supported for anchoring nudge"/>
+  <int value="35" label="Initializing tracker failed"/>
+  <int value="36" label="Tracker is not available in session"/>
+  <int value="37" label="User pref service not available"/>
+  <int value="38" label="User pref value type mismatched"/>
+  <int value="39" label="Invalid user pref"/>
+  <int value="40" label="Invalid user pref targeting"/>
+  <int value="41" label="Parsing user pref targeting failed"/>
+  <int value="42" label="Missing action performer action"/>
+  <int value="43" label="Minor user state is unknown"/>
+  <int value="44" label="Profile becomes nullptr in session"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -55,7 +55,7 @@ Exception BidirectionalStream::Close() {
     return input_exception;
   if (!output_exception.Ok())
     return output_exception;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {Exception::kFailed};
 }
 

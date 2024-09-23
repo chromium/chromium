@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -18,94 +19,78 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAllowUnmutedAutoplayForTWA);
+#endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
+BASE_DECLARE_FEATURE(kBookmarksTreeView);
+BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
+BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
+BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
 BASE_DECLARE_FEATURE(kClosedTabCache);
 
-BASE_DECLARE_FEATURE(kDeferredSpareRendererForTopChromeWebUI);
-extern const base::FeatureParam<base::TimeDelta> kSpareRendererWarmupDelay;
-extern const base::FeatureParam<bool>
-    kSpareRendererWarmupDelayUntilPageStopsLoading;
+#if BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kDbusSecretPortal);
+#endif
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
-BASE_DECLARE_FEATURE(kDevToolsTabTarget);
-BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
-extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
-extern const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsAidaEndpoint;
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
+extern const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn;
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
+extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
+extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 
-BASE_DECLARE_FEATURE(kPromoBrowserCommands);
-extern const char kBrowserCommandIdParam[];
+enum class DevToolsFreestylerUserTier {
+  // Users who are internal testers or validators.
+  // AIDA does not log these users in product usage metrics.
+  // In future, the data from these users will be excluded from training data
+  // when logging is enabled.
+  kTesters,
+  // Users who are early adopters.
+  kBeta,
+  // Users in the general public.
+  kPublic
+};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
-#endif
+extern const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier;
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
-#endif
+BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsExplainThisResourceDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsExplainThisResourceDogfoodTemperature;
+
+BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
+BASE_DECLARE_FEATURE(kDevToolsTabTarget);
+BASE_DECLARE_FEATURE(kDevToolsVeLogging);
+extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
-#else
-BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
-#endif
-
-BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
-BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
-BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
-
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
-#endif
-
-BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
-
-BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
-
-BASE_DECLARE_FEATURE(kLargeFaviconFromGoogle);
-extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
-
-BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
-
-BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
-
 #if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
-BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
-BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
-BASE_DECLARE_FEATURE(kNoPreReadMainDll);
-BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
-BASE_DECLARE_FEATURE(kEnableDPAPIEncryptionProvider);
+BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
-
-BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);
-
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
+BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 
-// This flag is used for enabling Omnibox triggered prerendering. See
-// crbug.com/1166085 for more details of Omnibox triggered prerendering.
-BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
+#endif
 
-// This flag is used for enabling Bookmark triggered prerendering. See
-// crbug.com/1422819 for more details of Bookmark triggered prerendering.
-BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
+#endif
 
-// This flag is used for enabling New Tab Page triggered prerendering. See
-// crbug.com/1462832 for more details of New Tab Page triggered prerendering.
+BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
 // This parameter is used to set a time threshold for triggering onMouseHover
 // prerender. For example, if the value is 300, the New Tab Page prerender
@@ -118,35 +103,74 @@ const base::FeatureParam<int>
     kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "preconnect_start_delay_on_mouse_hover_ms", 100};
+const base::FeatureParam<bool> kPrerenderNewTabPageOnMousePressedTrigger{
+    &features::kNewTabPageTriggerForPrerender2,
+    "prerender_new_tab_page_on_mouse_pressed_trigger", true};
+// The hover trigger is not enabled as we're aware that this negatively
+// affects other navigations like Omnibox search.
+const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
+    &features::kNewTabPageTriggerForPrerender2,
+    "prerender_new_tab_page_on_mouse_hover_trigger", false};
 
-// This flag controls whether to trigger prerendering when the default search
-// engine suggests to prerender a search result.
-BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-// Indicates whether to make search prefetch response shareable to prerender.
-// When allowing this, prerender can only copy the cache but cannot take over
-// the ownership.
-enum class SearchPreloadShareableCacheType {
-  kEnabled,
-  kDisabled,
-};
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+#endif
 
-extern const base::FeatureParam<SearchPreloadShareableCacheType>
-    kSearchPreloadShareableCacheTypeParam;
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
+extern base::FeatureParam<bool>
+    kNotificationOneTapUnsubscribeUseServiceIntentParam;
+#endif
 
-// Disables prerendering on the default search engine predictor. This is useful
-// in comparing the impact of the SupportSearchSuggestionForPrerender2 feature
-// during its rollout. Once that rollout is complete, this feature should be
-// removed and instead we should add a new long-term holdback to
-// PreloadingConfig.
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 BASE_DECLARE_FEATURE(kPrerenderDSEHoldback);
+BASE_DECLARE_FEATURE(kPromoBrowserCommands);
+extern const char kBrowserCommandIdParam[];
 
-// This is used to enable an experiment for modifying confidence cutoff of
-// prerender and preconnect for autocomplete action predictor.
-BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
+#endif
 
-BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
+#endif
 
-BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
+
+#if BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
+#endif
+
+BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kTaskManagerDesktopRefresh);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
+
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
+#endif
+
+BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
+
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
+#endif
+
+BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
+
+BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 
 }  // namespace features
 

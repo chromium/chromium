@@ -9,10 +9,6 @@
 
 namespace metrics::structured {
 
-BASE_FEATURE(kAppDiscoveryLogging,
-             "AppDiscoveryLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<int> kOobeUploadCount{
     &kEnabledStructuredMetricsService, "oobe_upload_count", 10};
 

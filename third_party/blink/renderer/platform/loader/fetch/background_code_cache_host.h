@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_BACKGROUND_CODE_CACHE_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_BACKGROUND_CODE_CACHE_HOST_H_
 
-#include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -22,7 +22,7 @@ class CodeCacheHost;
 // a background thread. Used only when BackgroundResourceFetch feature is
 // enabled.
 class BLINK_PLATFORM_EXPORT BackgroundCodeCacheHost
-    : public base::RefCountedThreadSafe<BackgroundCodeCacheHost> {
+    : public ThreadSafeRefCounted<BackgroundCodeCacheHost> {
  public:
   explicit BackgroundCodeCacheHost(
       mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote);
@@ -35,7 +35,7 @@ class BLINK_PLATFORM_EXPORT BackgroundCodeCacheHost
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
  private:
-  friend class base::RefCountedThreadSafe<BackgroundCodeCacheHost>;
+  friend class ThreadSafeRefCounted<BackgroundCodeCacheHost>;
   ~BackgroundCodeCacheHost();
 
   mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote_;

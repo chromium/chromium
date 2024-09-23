@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
+
+#include <string_view>
 
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -47,13 +54,13 @@ constexpr char kCorsExemptRequestedWithHeaderName[] = "X-Requested-With";
 
 // TODO(yhirano) Dedupe this and the same-name function in
 // web_url_request_util.cc.
-std::string TrimLWSAndCRLF(const base::StringPiece& input) {
-  base::StringPiece string = net::HttpUtil::TrimLWS(input);
+std::string TrimLWSAndCRLF(const std::string_view& input) {
+  std::string_view string = net::HttpUtil::TrimLWS(input);
   const char* begin = string.data();
   const char* end = string.data() + string.size();
   while (begin < end && (end[-1] == '\r' || end[-1] == '\n'))
     --end;
-  return std::string(base::StringPiece(begin, end - begin));
+  return std::string(std::string_view(begin, end - begin));
 }
 
 mojom::ResourceType RequestContextToResourceType(
@@ -150,11 +157,11 @@ mojom::ResourceType RequestContextToResourceType(
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::FRAME:
     case mojom::blink::RequestContextType::IFRAME:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return mojom::ResourceType::kSubResource;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return mojom::ResourceType::kSubResource;
   }
 }
@@ -247,9 +254,6 @@ scoped_refptr<network::ResourceRequestBody> NetworkResourceRequestBodyFor(
     dest_body->SetToChunkedDataPipe(
         ToCrossVariantMojoType(std::move(stream_body)),
         network::ResourceRequestBody::ReadOnlyOnce(true));
-  }
-  if (dest_body) {
-    dest_body->SetAllowHTTP1ForStreamingUpload(false);
   }
   return dest_body;
 }
@@ -390,9 +394,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->original_destination = src.GetOriginalDestination();
 
-  if (dest->load_flags & net::LOAD_PREFETCH)
-    dest->corb_detachable = true;
-
   if (src.GetURLRequestExtraData()) {
     src.GetURLRequestExtraData()->CopyToResourceRequest(dest);
   }
@@ -412,15 +413,12 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->load_flags |= net::LOAD_DO_NOT_USE_EMBEDDED_IDENTITY;
   }
 
-  dest->has_storage_access = src.GetHasStorageAccess();
+  dest->storage_access_api_status = src.GetStorageAccessApiStatus();
 
   dest->attribution_reporting_support = src.GetAttributionReportingSupport();
 
   dest->attribution_reporting_eligibility =
       src.GetAttributionReportingEligibility();
-
-  dest->attribution_reporting_runtime_features =
-      src.GetAttributionReportingRuntimeFeatures();
 
   dest->attribution_reporting_src_token = src.GetAttributionSrcToken();
 

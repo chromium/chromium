@@ -44,6 +44,8 @@
 #include "sandbox/policy/linux/bpf_cros_amd_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_arm_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cros_intel_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_cros_nvidia_gpu_policy_linux.h"
+#include "sandbox/policy/linux/bpf_cros_virtio_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/bpf_network_policy_linux.h"
 #include "sandbox/policy/linux/bpf_ppapi_policy_linux.h"
@@ -59,11 +61,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_ime_policy_linux.h"
+#include "sandbox/policy/linux/bpf_nearby_policy_linux.h"
 #include "sandbox/policy/linux/bpf_tts_policy_linux.h"
-
-#include "chromeos/ash/components/assistant/buildflags.h"
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "sandbox/policy/linux/bpf_libassistant_policy_linux.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -132,6 +134,12 @@ std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
     }
     if (options.use_intel_specific_policies) {
       return std::make_unique<CrosIntelGpuProcessPolicy>();
+    }
+    if (options.use_nvidia_specific_policies) {
+      return std::make_unique<CrosNvidiaGpuProcessPolicy>();
+    }
+    if (options.use_virtio_specific_policies) {
+      return std::make_unique<CrosVirtIoGpuProcessPolicy>();
     }
   }
   return std::make_unique<GpuProcessPolicy>();
@@ -210,6 +218,11 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
 #endif
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
+#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       return std::make_unique<HardwareVideoDecodingProcessPolicy>(
@@ -226,6 +239,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ImeProcessPolicy>();
     case sandbox::mojom::Sandbox::kTts:
       return std::make_unique<TtsProcessPolicy>();
+    case sandbox::mojom::Sandbox::kNearby:
+      return std::make_unique<NearbyProcessPolicy>();
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
       return std::make_unique<LibassistantProcessPolicy>();
@@ -233,7 +248,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
     case sandbox::mojom::Sandbox::kNoSandbox:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -277,6 +292,11 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       CHECK_EQ(EPERM, errno);
 #endif  // !defined(NDEBUG)
     } break;
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
+#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,6 +304,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
+    case sandbox::mojom::Sandbox::kNearby:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -325,10 +346,7 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     sandbox.SetProcFd(std::move(proc_fd));
     bool enable_ibpb = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(
-            features::kForceSpectreVariant2Mitigation)) {
-      enable_ibpb = true;
-    } else if (force_disable_spectre_variant2_mitigation) {
+    if (force_disable_spectre_variant2_mitigation) {
       enable_ibpb = false;
     } else {
       enable_ibpb =

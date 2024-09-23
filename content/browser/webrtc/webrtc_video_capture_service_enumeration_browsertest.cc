@@ -58,9 +58,7 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
       public testing::WithParamInterface<TestParams>,
       public video_capture::mojom::DevicesChangedObserver {
  public:
-  WebRtcVideoCaptureServiceEnumerationBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
-  }
+  WebRtcVideoCaptureServiceEnumerationBrowserTest() = default;
 
   WebRtcVideoCaptureServiceEnumerationBrowserTest(
       const WebRtcVideoCaptureServiceEnumerationBrowserTest&) = delete;
@@ -193,7 +191,6 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
  private:
   mojo::Receiver<video_capture::mojom::DevicesChangedObserver>
       devices_changed_observer_receiver_{this};
-  base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   base::OnceClosure closure_to_be_called_on_devices_changed_;
@@ -213,8 +210,16 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
   DisconnectFromService();
 }
 
+// TODO: crbug.com/352672009 - Fix the flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RemoveVirtualDeviceAfterItHasBeenEnumerated \
+  DISABLED_RemoveVirtualDeviceAfterItHasBeenEnumerated
+#else
+#define MAYBE_RemoveVirtualDeviceAfterItHasBeenEnumerated \
+  RemoveVirtualDeviceAfterItHasBeenEnumerated
+#endif
 IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
-                       RemoveVirtualDeviceAfterItHasBeenEnumerated) {
+                       MAYBE_RemoveVirtualDeviceAfterItHasBeenEnumerated) {
   Initialize();
   ConnectToService();
 

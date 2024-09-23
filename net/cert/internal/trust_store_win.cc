@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -14,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/x509_util.h"
+#include "net/cert/x509_util_win.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -23,6 +25,19 @@
 namespace net {
 
 namespace {
+
+// Certificates in the Windows roots store may be used as either trust
+// anchors or trusted leafs (if self-signed).
+constexpr bssl::CertificateTrust kRootCertTrust =
+    bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+        .WithEnforceAnchorExpiry()
+        .WithEnforceAnchorConstraints()
+        .WithRequireLeafSelfSigned();
+
+// Certificates in the Trusted People store may be trusted leafs (if
+// self-signed).
+constexpr bssl::CertificateTrust kTrustedPeopleTrust =
+    bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
 
 // Returns true if the cert can be used for server authentication, based on
 // certificate properties.
@@ -73,14 +88,26 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
         return false;
     }
   }
-  for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    std::string_view eku = std::string_view(usage->rgpszUsageIdentifier[i]);
+
+  // SAFETY: `usage->rgpszUsageIdentifier` is an array of LPSTR (pointer to null
+  // terminated string) of length `usage->cUsageIdentifier`.
+  base::span<LPSTR> usage_identifiers = UNSAFE_BUFFERS(
+      base::make_span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
+  for (std::string_view eku : usage_identifiers) {
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;
     }
   }
   return false;
+}
+
+void AddCertWithTrust(
+    PCCERT_CONTEXT cert,
+    const bssl::CertificateTrust trust,
+    std::vector<net::PlatformTrustStore::CertWithTrust>* certs) {
+  certs->push_back(net::PlatformTrustStore::CertWithTrust(
+      base::ToVector(x509_util::CertContextAsSpan(cert)), trust));
 }
 
 }  // namespace
@@ -271,14 +298,11 @@ class TrustStoreWin::Impl {
     cert_issuer_blob.pbData = const_cast<uint8_t*>(issuer_span.data());
 
     PCCERT_CONTEXT cert_from_store = nullptr;
-    // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if
-    // we need locking here
     while ((cert_from_store = CertFindCertificateInStore(
                 all_certs_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
-      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
-          x509_util::CreateCryptoBuffer(base::make_span(
-              cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
+      bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
+          x509_util::CertContextAsSpan(cert_from_store));
       bssl::CertErrors errors;
       bssl::ParsedCertificate::CreateAndAddToVector(
           std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
@@ -294,7 +318,7 @@ class TrustStoreWin::Impl {
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert();
-    base::SHA1Digest cert_hash = base::SHA1HashSpan(cert_span);
+    base::SHA1Digest cert_hash = base::SHA1Hash(cert_span);
     CRYPT_HASH_BLOB cert_hash_blob;
     cert_hash_blob.cbData = static_cast<DWORD>(cert_hash.size());
     cert_hash_blob.pbData = cert_hash.data();
@@ -305,8 +329,8 @@ class TrustStoreWin::Impl {
     while ((cert_from_store = CertFindCertificateInStore(
                 disallowed_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       // If a cert is in the windows distruted store, it is considered
       // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
@@ -314,51 +338,30 @@ class TrustStoreWin::Impl {
       }
     }
 
-    // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if
-    // we need locking here
     while ((cert_from_store = CertFindCertificateInStore(
                 root_cert_store_.get(), X509_ASN_ENCODING, 0,
                 CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-      base::span<const uint8_t> cert_from_store_span = base::make_span(
-          cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
         // If we find at least one version of the cert that is trusted for TLS
         // Server Auth, we will trust the cert.
         if (IsCertTrustedForServerAuth(cert_from_store)) {
-          if (base::FeatureList::IsEnabled(
-                  features::kTrustStoreTrustedLeafSupport)) {
-            // Certificates in the Roots store may be used as either trust
-            // anchors or trusted leafs (if self-signed).
-            return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-                .WithEnforceAnchorExpiry()
-                .WithEnforceAnchorConstraints(
-                    IsLocalAnchorConstraintsEnforcementEnabled())
-                .WithRequireLeafSelfSigned();
-          } else {
-            return bssl::CertificateTrust::ForTrustAnchor()
-                .WithEnforceAnchorExpiry()
-                .WithEnforceAnchorConstraints(
-                    IsLocalAnchorConstraintsEnforcementEnabled());
-          }
+          return kRootCertTrust;
         }
       }
     }
 
-    if (base::FeatureList::IsEnabled(features::kTrustStoreTrustedLeafSupport)) {
-      while ((cert_from_store = CertFindCertificateInStore(
-                  trusted_people_cert_store_.get(), X509_ASN_ENCODING, 0,
-                  CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-        base::span<const uint8_t> cert_from_store_span = base::make_span(
-            cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-        if (base::ranges::equal(cert_span, cert_from_store_span)) {
-          // If we find at least one version of the cert that is trusted for TLS
-          // Server Auth, we will trust the cert.
-          if (IsCertTrustedForServerAuth(cert_from_store)) {
-            // Certificates in the Trusted People store may be trusted leafs (if
-            // self-signed).
-            return bssl::CertificateTrust::ForTrustedLeaf()
-                .WithRequireLeafSelfSigned();
-          }
+    while ((cert_from_store = CertFindCertificateInStore(
+                trusted_people_cert_store_.get(), X509_ASN_ENCODING, 0,
+                CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
+      base::span<const uint8_t> cert_from_store_span =
+          x509_util::CertContextAsSpan(cert_from_store);
+      if (base::ranges::equal(cert_span, cert_from_store_span)) {
+        // If we find at least one version of the cert that is trusted for TLS
+        // Server Auth, we will trust the cert.
+        if (IsCertTrustedForServerAuth(cert_from_store)) {
+          return kTrustedPeopleTrust;
         }
       }
     }
@@ -375,6 +378,44 @@ class TrustStoreWin::Impl {
     //
     // (b) Haven't found the cert. Tell everyone Unspecified.
     return bssl::CertificateTrust::ForUnspecified();
+  }
+
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts() {
+    std::vector<net::PlatformTrustStore::CertWithTrust> certs;
+    if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
+        !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
+        !disallowed_cert_store_.get()) {
+      return certs;
+    }
+
+    PCCERT_CONTEXT cert_from_store = nullptr;
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                disallowed_cert_store_.get(), cert_from_store))) {
+      AddCertWithTrust(cert_from_store, bssl::CertificateTrust::ForDistrusted(),
+                       &certs);
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                trusted_people_cert_store_.get(), cert_from_store))) {
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        AddCertWithTrust(cert_from_store, kTrustedPeopleTrust, &certs);
+      }
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                root_cert_store_.get(), cert_from_store))) {
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        AddCertWithTrust(cert_from_store, kRootCertTrust, &certs);
+      }
+    }
+
+    while ((cert_from_store = CertEnumCertificatesInStore(
+                intermediate_cert_store_.get(), cert_from_store))) {
+      AddCertWithTrust(cert_from_store,
+                       bssl::CertificateTrust::ForUnspecified(), &certs);
+    }
+
+    return certs;
   }
 
  private:
@@ -394,7 +435,7 @@ class TrustStoreWin::Impl {
   crypto::ScopedHCERTSTORE disallowed_cert_store_;
 };
 
-// TODO(https://crbug.com/1239268): support CTLs.
+// TODO(crbug.com/40784681): support CTLs.
 TrustStoreWin::TrustStoreWin() = default;
 
 void TrustStoreWin::InitializeStores() {
@@ -459,6 +500,11 @@ void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 bssl::CertificateTrust TrustStoreWin::GetTrust(
     const bssl::ParsedCertificate* cert) {
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
+}
+
+std::vector<net::PlatformTrustStore::CertWithTrust>
+TrustStoreWin::GetAllUserAddedCerts() {
+  return MaybeInitializeAndGetImpl()->GetAllUserAddedCerts();
 }
 
 }  // namespace net

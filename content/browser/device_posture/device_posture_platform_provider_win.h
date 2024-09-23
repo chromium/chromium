@@ -5,19 +5,16 @@
 #ifndef CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 #define CONTENT_BROWSER_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 
-#include <optional>
-#include <string_view>
-#include <vector>
-
-#include "base/strings/string_piece.h"
-#include "base/values.h"
-#include "base/win/registry.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "content/browser/device_posture/device_posture_platform_provider.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
-class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
+class DevicePostureRegistryWatcherWin;
+
+class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider,
+                                         public base::CheckedObserver {
  public:
   DevicePosturePlatformProviderWin();
   ~DevicePosturePlatformProviderWin() override;
@@ -27,22 +24,16 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   DevicePosturePlatformProviderWin& operator=(
       const DevicePosturePlatformProviderWin&) = delete;
 
- private:
-  friend class DevicePosturePlatformProviderWinTest;
+  void UpdateDevicePosture(const blink::mojom::DevicePostureType& posture);
+  void UpdateDisplayFeatureBounds(const gfx::Rect& display_feature_bounds);
 
+ private:
   void StartListening() override;
   void StopListening() override;
-  void OnRegistryKeyChanged();
-  void ComputeFoldableState(const base::win::RegKey& registry_key,
-                            bool notify_changes);
-  CONTENT_EXPORT static std::optional<std::vector<gfx::Rect>>
-  ParseViewportSegments(const base::Value::List& viewport_segments);
-  CONTENT_EXPORT static std::optional<blink::mojom::DevicePostureType>
-  ParsePosture(std::string_view posture_state);
 
-  // This member is used to watch the registry after StartListening is called.
-  // It will be destroyed when calling StopListening.
-  std::optional<base::win::RegKey> registry_key_;
+  base::ScopedObservation<DevicePostureRegistryWatcherWin,
+                          DevicePosturePlatformProviderWin>
+      registry_watcher_observation_{this};
 };
 
 }  // namespace content

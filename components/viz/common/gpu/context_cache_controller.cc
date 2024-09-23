@@ -4,7 +4,6 @@
 
 #include "components/viz/common/gpu/context_cache_controller.h"
 
-#include <chrono>
 #include <utility>
 
 #include "base/check_op.h"
@@ -14,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 namespace {

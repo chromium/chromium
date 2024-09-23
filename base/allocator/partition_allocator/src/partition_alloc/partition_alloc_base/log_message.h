@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
 
 #include <cstddef>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
@@ -41,7 +41,7 @@ constexpr LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
 // LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
 // mode.
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #else
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
@@ -102,9 +102,9 @@ class LogMessageVoidify {
   void operator&(base::strings::CStringBuilder&) {}
 };
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 typedef unsigned long SystemErrorCode;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 typedef int SystemErrorCode;
 #endif
 
@@ -113,7 +113,7 @@ typedef int SystemErrorCode;
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 SystemErrorCode GetLastSystemErrorCode();
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // Appends a formatted system message of the GetLastError() type.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Win32ErrorLogMessage
     : public LogMessage {
@@ -130,7 +130,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Win32ErrorLogMessage
  private:
   SystemErrorCode err_;
 };
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ErrnoLogMessage
     : public LogMessage {
@@ -147,8 +147,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ErrnoLogMessage
  private:
   SystemErrorCode err_;
 };
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::logging
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_

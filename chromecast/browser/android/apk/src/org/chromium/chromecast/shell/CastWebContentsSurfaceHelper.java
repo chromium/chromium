@@ -16,7 +16,7 @@ import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Unit;
-import org.chromium.content.browser.MediaSessionImpl;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.function.Consumer;
@@ -106,8 +106,7 @@ class CastWebContentsSurfaceHelper {
             Consumer<Uri> finishCallback, Observable<Unit> surfaceAvailable) {
         Handler handler = new Handler();
 
-        mMediaSessionGetter =
-                (WebContents webContents) -> MediaSessionImpl.fromWebContents(webContents);
+        mMediaSessionGetter = MediaSession::fromWebContents;
 
         Observable<Uri> uriState = mStartParamsState.map(params -> params.uri);
         Controller<WebContents> webContentsState = new Controller<>();
@@ -169,9 +168,10 @@ class CastWebContentsSurfaceHelper {
         // to take audio focus when starting the Cast UI, but there are some exceptions, such as
         // when launching a remote control app or when starting an app by voice request, when the
         // TTS may still be retaining audio focus.
-        mStartParamsState.filter(params -> params.shouldRequestAudioFocus)
+        mStartParamsState
+                .filter(params -> params.shouldRequestAudioFocus)
                 .map(params -> mMediaSessionGetter.get(params.webContents))
-                .subscribe(Observer.onOpen(MediaSessionImpl::requestSystemAudioFocus));
+                .subscribe(Observer.onOpen(MediaSession::requestSystemAudioFocus));
 
         // When onDestroy() is called after onNewStartParams(), log and reset StartParams states.
         uriState.andThen(Observable.not(mCreatedState))
@@ -223,6 +223,6 @@ class CastWebContentsSurfaceHelper {
     }
 
     interface MediaSessionGetter {
-        MediaSessionImpl get(WebContents webContents);
+        MediaSession get(WebContents webContents);
     }
 }

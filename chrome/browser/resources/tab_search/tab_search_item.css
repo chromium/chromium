@@ -1,0 +1,174 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/mwb_element_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/mwb_shared_vars.css.js
+ * #import=./icons.html.js
+ * #scheme=relative
+ * #include=mwb-element-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+   --audio-icon-color: var(--color-tab-search-media-icon);
+   --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
+ }
+
+:host(:focus) {
+  outline: none;
+}
+
+:host(:is(.hovered, .selected)) .button-container {
+  height: auto;
+  overflow: visible;
+  visibility: visible;
+  width: auto;
+}
+
+.button-container {
+  height: 0;
+  margin-inline-start: 2px;
+  overflow: hidden;
+  width: 0;
+}
+
+.button-container.allocate-space-while-hidden {
+  height: auto;
+  overflow: visible;
+  visibility: hidden;
+  width: auto;
+}
+
+.button-container cr-icon-button {
+  --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+}
+
+.favicon {
+  background-repeat: no-repeat;
+  background-size: var(--mwb-icon-size);
+  flex-shrink: 0;
+  height: var(--mwb-icon-size);
+  width: var(--mwb-icon-size);
+}
+
+.text-container {
+  flex-grow: 1;
+  overflow: hidden;
+  user-select: none;
+}
+
+#groupTitle,
+#primaryText,
+#secondaryText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#primaryText {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: var(--mwb-primary-text-font-weight);
+}
+
+#secondaryContainer {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: var(--mwb-secondary-text-font-size);
+  font-weight: var(--mwb-secondary-text-font-weight);
+}
+
+:host([compact]) #secondaryContainer {
+  display: none;
+}
+
+#primaryContainer {
+  display: flex;
+  gap: 3px;
+}
+
+#secondaryTimestamp {
+  flex-shrink: 0;
+}
+
+#textAriaLabel {
+  clip: rect(0,0,0,0);
+  display: inline-block;
+  position: fixed;
+}
+
+.separator {
+  margin-inline-end: 4px;
+  margin-inline-start: 4px;
+}
+
+cr-icon-button {
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+.search-highlight-hit {
+  --search-highlight-hit-background-color: none;
+  --search-highlight-hit-color: none;
+  font-weight: bold;
+}
+
+#groupSvg {
+  flex-shrink: 0;
+  height: 8px;
+  margin-inline-end: 6px;
+  width: 8px;
+}
+
+#groupDot {
+  fill: var(--group-dot-color);
+}
+
+#mediaAlert[display = 'block'] {
+  -webkit-mask: center / contain no-repeat;
+  flex-shrink: 0;
+  height: var(--mwb-icon-size);
+  margin-inline-end: 8px;
+  margin-inline-start:  4px;
+  width: var(--mwb-icon-size);
+}
+
+#mediaAlert[class = 'media-recording'],
+#mediaAlert[class = 'audio-recording'],
+#mediaAlert[class = 'video-recording'] {
+  -webkit-mask-image: url(alert_indicators/tab_media_recording.svg);
+  background-color:  var(--media-recording-icon-color);
+}
+
+#mediaAlert[class = 'audio-playing'] {
+  -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  background-color:  var(--audio-icon-color);
+}
+
+#mediaAlert[class = 'audio-muting'] {
+-webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  background-color:  var(--audio-icon-color);
+}
+
+#iconContainer {
+  align-items: center;
+  background: var(--tab-search-favicon-background,
+      var(--color-list-item-url-favicon-background));
+  border-radius: 8px;
+  display: flex;
+  flex-shrink: 0;
+  height: 40px;
+  justify-content: center;
+  overflow: hidden;
+  margin-inline-end: var(--tab-search-item-icon-margin, 16px);
+  width: 40px;
+}
+
+:host([compact]) #iconContainer {
+  height: 24px;
+  width: 24px;
+}

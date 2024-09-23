@@ -14,8 +14,8 @@
 
 namespace gl {
 
-// Base class for providers based on extensions like GLX_OML_sync_control and
-// EGL_CHROMIUM_sync_control.
+// Base class for providers based on extensions like EGL_CHROMIUM_sync_control.
+// TODO(344606399): Consider folding the EGL implementation in this class.
 class SyncControlVSyncProvider : public gfx::VSyncProvider {
  public:
   SyncControlVSyncProvider();

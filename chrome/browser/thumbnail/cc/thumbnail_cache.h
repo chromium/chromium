@@ -184,7 +184,7 @@ class ThumbnailCache : ThumbnailDelegate {
   const bool save_jpeg_thumbnails_;
   base::TimeDelta capture_min_request_time_ms_;
 
-  // TODO(crbug/1402843): Determine if these limits are still relevant.
+  // TODO(crbug.com/40885026): Determine if these limits are still relevant.
   // Remove or tune accordingly (i.e. split by jpeg and etc1).
   size_t compression_tasks_count_;
   size_t write_tasks_count_;

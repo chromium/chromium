@@ -132,7 +132,7 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
     return {BatteryDischargeMode::kInsufficientResolution, std::nullopt};
   }
 
-  // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
+  // TODO(crbug.com/40756364): Change CHECK to DCHECK in October 2022 after
   // verifying that there are no crash reports.
   CHECK(previous_battery_state->current_capacity.has_value());
   CHECK(previous_battery_state->full_charged_capacity.has_value());

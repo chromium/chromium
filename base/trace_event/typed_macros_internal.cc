@@ -39,7 +39,6 @@ GetPhaseAndIdForTraceLog(bool explicit_track, uint64_t track_uuid, char phase) {
       break;
     default:
       NOTREACHED();
-      break;
   }
   return std::make_pair(phase, static_cast<unsigned long long>(track_uuid));
 }

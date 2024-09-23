@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<!--
+  Copyright 2024 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<project>
+  <root dir="."/>
+  <sdk dir="../../../android_sdk/public"/>
+  <module name="main" android="true" library="false" compile_sdk_version="34">
+    <manifest file="AndroidManifest.xml"/>
+    <classpath file="../../../androidx/cipd/libs/androidx_annotation_annotation_jvm/annotation-jvm-1.9.0-SNAPSHOT.jar"/>
+    <src file="Playground.java"/>
+  </module>
+</project>

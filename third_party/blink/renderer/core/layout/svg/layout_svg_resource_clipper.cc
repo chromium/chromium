@@ -59,8 +59,9 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
     return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->StyleRef();
   if (style.Display() == EDisplay::kNone ||
-      style.Visibility() != EVisibility::kVisible)
+      style.UsedVisibility() != EVisibility::kVisible) {
     return ClipStrategy::kNone;
+  }
   ClipStrategy strategy = ClipStrategy::kNone;
   // Only shapes, paths and texts are allowed for clipping.
   if (layout_object->IsSVGShape()) {
@@ -184,7 +185,7 @@ PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {
   if (cached_paint_record_)
     return *cached_paint_record_;
 
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder;
   // Switch to a paint behavior where all children of this <clipPath> will be
   // laid out using special constraints:
   // - fill-opacity/stroke-opacity/opacity set to 1
@@ -192,7 +193,8 @@ PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
   PaintInfo info(
-      builder->Context(), CullRect::Infinite(), PaintPhase::kForeground,
+      builder.Context(), CullRect::Infinite(), PaintPhase::kForeground,
+      ChildPaintBlockedByDisplayLock(),
       PaintFlag::kPaintingClipPathAsMask | PaintFlag::kPaintingResourceSubtree);
 
   for (const SVGElement& child_element :
@@ -205,7 +207,7 @@ PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {
     layout_object->Paint(info);
   }
 
-  cached_paint_record_ = builder->EndRecording();
+  cached_paint_record_ = builder.EndRecording();
   return *cached_paint_record_;
 }
 

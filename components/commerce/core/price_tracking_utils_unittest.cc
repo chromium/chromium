@@ -35,9 +35,11 @@ namespace {
 class PriceTrackingUtilsTest : public testing::Test {
  protected:
   void SetUp() override {
-    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+    bookmark_model_ =
+        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
-    shopping_service_->SetBookmarkModelUsedForSync(bookmark_model_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
   }
@@ -116,10 +118,7 @@ TEST_F(PriceTrackingUtilsTest,
   base::RunLoop run_loop;
   SetPriceTrackingStateForBookmark(
       shopping_service_.get(), bookmark_model_.get(), product, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop),
-      true);
+      base::BindOnce([](bool success) {}).Then(run_loop.QuitClosure()), true);
   run_loop.Run();
 
   EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
@@ -127,9 +126,7 @@ TEST_F(PriceTrackingUtilsTest,
   base::RunLoop run_loop2;
   SetPriceTrackingStateForBookmark(
       shopping_service_.get(), bookmark_model_.get(), product, false,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop2));
+      base::BindOnce([](bool success) {}).Then(run_loop2.QuitClosure()));
   run_loop2.Run();
 
   // The bookmark should not have been deleted.
@@ -163,18 +160,77 @@ TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_SubscribeOldBookmark) {
       .Times(1);
 
   base::RunLoop run_loop;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), existing_bookmark, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) {
-            EXPECT_TRUE(success);
-            run_loop->Quit();
-          },
-          &run_loop));
+  SetPriceTrackingStateForBookmark(shopping_service_.get(),
+                                   bookmark_model_.get(), existing_bookmark,
+                                   true, base::BindOnce([](bool success) {
+                                           EXPECT_TRUE(success);
+                                         }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_EQ(GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id)[0],
             existing_bookmark);
+}
+
+TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_ErrorCases_NoService) {
+  // This bookmark is intentionally a non-product bookmark to start with.
+  const bookmarks::BookmarkNode* existing_bookmark = bookmark_model_->AddURL(
+      bookmark_model_->other_node(), 0, u"Title", GURL("https://example.com"));
+
+  EXPECT_CALL(*shopping_service_, Subscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(nullptr, bookmark_model_.get(),
+                                   existing_bookmark, true,
+                                   base::BindOnce([](bool success) {
+                                     EXPECT_FALSE(success);
+                                   }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_ErrorCases_NoBookmark) {
+  const uint64_t cluster_id = 12345L;
+
+  // Since bookmarking, the shopping service detected that the bookmark is
+  // actually a product.
+  std::optional<ProductInfo> info;
+  info.emplace();
+  info->product_cluster_id = cluster_id;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Subscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(nullptr, bookmark_model_.get(), nullptr,
+                                   true, base::BindOnce([](bool success) {
+                                           EXPECT_FALSE(success);
+                                         }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_ErrorCases_NoInfo) {
+  // This bookmark is intentionally a non-product bookmark to start with.
+  const bookmarks::BookmarkNode* existing_bookmark = bookmark_model_->AddURL(
+      bookmark_model_->other_node(), 0, u"Title", GURL("https://example.com"));
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Subscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(shopping_service_.get(),
+                                   bookmark_model_.get(), existing_bookmark,
+                                   true, base::BindOnce([](bool success) {
+                                           EXPECT_FALSE(success);
+                                         }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_F(PriceTrackingUtilsTest, SetPriceTrackingForClusterId) {
@@ -253,7 +309,7 @@ TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {
 
   base::RunLoop run_loop;
   GetAllPriceTrackedBookmarks(
-      shopping_service_.get(),
+      shopping_service_.get(), bookmark_model_.get(),
       base::BindOnce(
           [](base::RunLoop* looper,
              const bookmarks::BookmarkNode* known_tracked_bookmark,
@@ -568,8 +624,8 @@ TEST_F(PriceTrackingUtilsTest, GetShoppingCollection) {
 
   // Deleting the collection should behave like any other bookmark node
   // deletion.
-  bookmark_model_->Remove(collection,
-                          bookmarks::metrics::BookmarkEditSource::kUser);
+  bookmark_model_->Remove(
+      collection, bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 
   collection = GetShoppingCollectionBookmarkFolder(bookmark_model_.get());
 

@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,18 +53,24 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
                 << VideoPixelFormatToString(format);
     return false;
   }
-  gpu::GpuMemoryBufferManager* gpu_buffer_manager =
-      VideoCaptureGpuChannelHost::GetInstance().GetGpuMemoryBufferManager();
-  if (!gpu_buffer_manager) {
-    DLOG(ERROR) << "Invalid GPU memory buffer manager!";
+  gfx::BufferUsage usage = GetBufferUsage(*gfx_format);
+
+  auto* sii = VideoCaptureGpuChannelHost::GetInstance().SharedImageInterface();
+  if (!sii) {
+    LOG(ERROR) << "Failed to get SharedImageInterface.";
     return false;
   }
 
-  gfx::BufferUsage usage = GetBufferUsage(*gfx_format);
-  buffer_ = gpu_buffer_manager->CreateGpuMemoryBuffer(
-      dimensions, *gfx_format, usage, gpu::kNullSurfaceHandle, nullptr);
-  if (!buffer_) {
-    DLOG(ERROR) << "Failed to create GPU memory buffer";
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage =
+      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const auto si_format = viz::GetSharedImageFormat(*gfx_format);
+  shared_image_ = sii->CreateSharedImage(
+      {si_format, dimensions, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "V4L2GpuMemoryBufferTracker"},
+      gpu::kNullSurfaceHandle, usage);
+  if (!shared_image_) {
+    LOG(ERROR) << "Failed to create a mappable shared image.";
     return false;
   }
 
@@ -82,24 +91,23 @@ bool V4L2GpuMemoryBufferTracker::IsReusableForFormat(
   if (!gfx_format) {
     return false;
   }
-  return (*gfx_format == buffer_->GetFormat() &&
-          dimensions == buffer_->GetSize());
+  return (viz::GetSharedImageFormat(*gfx_format) == shared_image_->format() &&
+          dimensions == shared_image_->size());
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
 V4L2GpuMemoryBufferTracker::GetMemoryMappedAccess() {
-  NOTREACHED_NORETURN() << "Unsupported operation";
+  NOTREACHED() << "Unsupported operation";
 }
 
 base::UnsafeSharedMemoryRegion
 V4L2GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
-  NOTREACHED_NORETURN() << "Unsupported operation";
+  NOTREACHED() << "Unsupported operation";
 }
 
 gfx::GpuMemoryBufferHandle
 V4L2GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
-  DCHECK(buffer_);
-  return buffer_->CloneHandle();
+  return shared_image_->CloneGpuMemoryBufferHandle();
 }
 
 VideoCaptureBufferType V4L2GpuMemoryBufferTracker::GetBufferType() {
@@ -107,13 +115,10 @@ VideoCaptureBufferType V4L2GpuMemoryBufferTracker::GetBufferType() {
 }
 
 uint32_t V4L2GpuMemoryBufferTracker::GetMemorySizeInBytes() {
-  DCHECK(buffer_);
-  switch (buffer_->GetFormat()) {
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return buffer_->GetSize().width() * buffer_->GetSize().height() * 3 / 2;
-    default:
-      NOTREACHED_NORETURN() << "Unsupported gfx buffer format";
+  if (shared_image_->format() == viz::MultiPlaneFormat::kNV12) {
+    return shared_image_->format().EstimatedSizeInBytes(shared_image_->size());
   }
+  NOTREACHED() << "Unsupported shared image format";
 }
 
 void V4L2GpuMemoryBufferTracker::OnContextLost() {

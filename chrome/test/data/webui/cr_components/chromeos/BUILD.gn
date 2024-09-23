@@ -2,39 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+  tsconfig_base = "tsconfig_base.json"
 
   in_files = [
-    "bluetooth/bluetooth_base_page_test.js",
-    "bluetooth/bluetooth_battery_icon_percentage_tests.js",
-    "bluetooth/bluetooth_device_battery_info_tests.js",
-    "bluetooth/bluetooth_icon_test.js",
-    "bluetooth/bluetooth_pairing_confirm_code_page_test.js",
-    "bluetooth/bluetooth_pairing_device_item_test.js",
-    "bluetooth/bluetooth_pairing_device_selection_page_test.js",
-    "bluetooth/bluetooth_pairing_enter_code_page_test.js",
-    "bluetooth/bluetooth_pairing_request_code_page_test.js",
-    "bluetooth/bluetooth_pairing_ui_test.js",
-    "bluetooth/bluetooth_spinner_page_test.js",
-    "bluetooth/fake_bluetooth_config.js",
-    "bluetooth/fake_bluetooth_discovery_delegate.js",
-    "bluetooth/fake_device_pairing_handler.js",
+    "bluetooth/bluetooth_base_page_test.ts",
+    "bluetooth/bluetooth_battery_icon_percentage_test.ts",
+    "bluetooth/bluetooth_device_battery_info_test.ts",
+    "bluetooth/bluetooth_icon_test.ts",
+    "bluetooth/bluetooth_pairing_confirm_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_device_item_test.ts",
+    "bluetooth/bluetooth_pairing_device_selection_page_test.ts",
+    "bluetooth/bluetooth_pairing_enter_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_request_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_ui_test.ts",
+    "bluetooth/bluetooth_spinner_page_test.ts",
+    "bluetooth/fake_bluetooth_config.ts",
+    "bluetooth/fake_bluetooth_discovery_delegate.ts",
+    "bluetooth/fake_device_pairing_handler.ts",
+    "bluetooth/fake_hid_preserving_bluetooth_state_controller.ts",
     "cellular_setup/activation_code_page_test.ts",
     "cellular_setup/base_page_test.ts",
     "cellular_setup/button_bar_test.ts",
     "cellular_setup/cellular_setup_test.ts",
-    "cellular_setup/confirmation_code_page_legacy_test.ts",
     "cellular_setup/confirmation_code_page_test.ts",
-    "cellular_setup/esim_flow_ui_legacy_test.ts",
+    "cellular_setup/profile_discovery_list_page_test.ts",
     "cellular_setup/esim_flow_ui_test.ts",
     "cellular_setup/fake_barcode_detector.ts",
     "cellular_setup/fake_cellular_setup_delegate.ts",
@@ -48,6 +48,8 @@ ts_library("build_ts") {
     "cellular_setup/setup_loading_page_test.ts",
     "network/apn_list_item_test.js",
     "network/apn_list_test.js",
+    "network/apn_selection_dialog_test.js",
+    "network/apn_selection_dialog_list_item_test.js",
     "network/cr_policy_network_behavior_mojo_tests.js",
     "network/cr_policy_network_indicator_mojo_tests.js",
     "network/cr_policy_strings.js",
@@ -71,12 +73,12 @@ ts_library("build_ts") {
     "network/network_proxy_input_test.js",
     "network/network_proxy_test.js",
     "network/network_select_test.js",
-    "network/network_siminfo_test.js",
+    "network/network_siminfo_test.ts",
     "network/sim_lock_dialogs_test.js",
-    "network_health/fake_network_diagnostics_routines.js",
-    "network_health/network_diagnostics_test.js",
-    "network_health/network_health_test_utils.js",
-    "network_health/routine_group_test.js",
+    "network_health/fake_network_diagnostics_routines.ts",
+    "network_health/network_diagnostics_test.ts",
+    "network_health/network_health_test_utils.ts",
+    "network_health/routine_group_test.ts",
     "traffic_counters/traffic_counters_test.ts",
   ]
 
@@ -125,8 +127,4 @@ generate_grd("build_grdp") {
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
-}
-
-group("closure_compile") {
-  deps = [ "network_health:closure_compile" ]
 }

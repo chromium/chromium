@@ -8,4 +8,5 @@ include_rules = [
     "+net/base/network_interfaces.h",
     "+net/base/port_util.h",
     "+net/traffic_annotation/network_traffic_annotation.h",
+    "+net/traffic_annotation/network_traffic_annotation_test_helper.h",
 ]

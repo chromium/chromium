@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <limits.h>
 #include <stddef.h>
@@ -12,15 +15,17 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -82,7 +87,6 @@ TEST_P(GLES2DecoderTest, CheckFramebufferStatusWithNoBoundTarget) {
 
 TEST_P(GLES2DecoderWithShaderTest, BindAndDeleteFramebuffer) {
   SetupTexture();
-  AddExpectationsForSimulatedAttrib0(kNumVertices, 0);
   SetupExpectationsForApplyingDefaultDirtyState();
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
@@ -426,7 +430,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   SetupTexture();
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 1, 1, GL_NO_ERROR);
 
   cmds::GetRenderbufferParameteriv cmd;
   cmd.Init(GL_RENDERBUFFER,
@@ -469,7 +473,7 @@ TEST_P(GLES2DecoderWithShaderTest, RenderbufferStorageRebindRenderbuffer) {
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   RestoreRenderbufferBindings();
   EnsureRenderbufferBound(true);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 1, 1, GL_NO_ERROR);
 }
 
 TEST_P(GLES2DecoderTest, RenderbufferStorageWithNoBoundTarget) {
@@ -561,8 +565,8 @@ class ReadPixelsEmulator {
   GLsizei height_;
   GLint pack_alignment_;
   GLint bytes_per_pixel_;
-  const int8_t* src_pixels_;
-  const int8_t* expected_pixels_;
+  raw_ptr<const int8_t> src_pixels_;
+  raw_ptr<const int8_t> expected_pixels_;
 };
 
 }  // anonymous namespace
@@ -651,28 +655,27 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
   GLint unpadded_row_size = emu.ComputeImageDataSize(in_read_width, 1);
-  std::unique_ptr<int8_t[]> zero(new int8_t[unpadded_row_size]);
-  std::unique_ptr<int8_t[]> pack(new int8_t[kPackAlignment]);
-  memset(zero.get(), kInitialMemoryValue, unpadded_row_size);
-  memset(pack.get(), kInitialMemoryValue, kPackAlignment);
+  auto zero = base::HeapArray<int8_t>::Uninit(unpadded_row_size);
+  auto pack = base::HeapArray<int8_t>::Uninit(kPackAlignment);
+  memset(zero.data(), kInitialMemoryValue, unpadded_row_size);
+  memset(pack.data(), kInitialMemoryValue, kPackAlignment);
   for (GLint yy = 0; yy < in_read_height; ++yy) {
     const int8_t* row = static_cast<const int8_t*>(
         emu.ComputePackAlignmentAddress(0, yy, in_read_width, dest));
     GLint y = in_read_y + yy;
     if (y < 0 || y >= kHeight) {
-      EXPECT_EQ(0, memcmp(zero.get(), row, unpadded_row_size));
+      EXPECT_EQ(0, memcmp(zero.data(), row, unpadded_row_size));
     } else {
       // check off left.
       GLint num_left_pixels = std::max(-in_read_x, 0);
       GLint num_left_bytes = num_left_pixels * kBytesPerPixel;
-      EXPECT_EQ(0, memcmp(zero.get(), row, num_left_bytes));
+      EXPECT_EQ(0, memcmp(zero.data(), row, num_left_bytes));
 
       // check off right.
       GLint num_right_pixels = std::max(in_read_x + in_read_width - kWidth, 0);
       GLint num_right_bytes = num_right_pixels * kBytesPerPixel;
       EXPECT_EQ(0,
-                memcmp(zero.get(),
-                       row + unpadded_row_size - num_right_bytes,
+                memcmp(zero.data(), row + unpadded_row_size - num_right_bytes,
                        num_right_bytes));
 
       // check middle.
@@ -689,8 +692,8 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
       GLint padded_row_size = (temp / kPackAlignment ) * kPackAlignment;
       GLint num_padding_bytes = padded_row_size - unpadded_row_size;
       if (num_padding_bytes) {
-        EXPECT_EQ(0, memcmp(pack.get(),
-                            row + unpadded_row_size, num_padding_bytes));
+        EXPECT_EQ(
+            0, memcmp(pack.data(), row + unpadded_row_size, num_padding_bytes));
       }
     }
   }
@@ -1895,7 +1898,7 @@ TEST_P(GLES2DecoderTest, RenderbufferStorageGLError) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_OUT_OF_MEMORY))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, RenderbufferStorageEXT(GL_RENDERBUFFER, GL_RGBA, 100, 50))
+  EXPECT_CALL(*gl_, RenderbufferStorageEXT(GL_RENDERBUFFER, GL_RGBA4, 100, 50))
       .Times(1)
       .RetiresOnSaturation();
   cmds::RenderbufferStorage cmd;
@@ -1924,8 +1927,7 @@ TEST_P(GLES3DecoderTest, ClearBufferivImmediateValidArgs) {
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_RGBA8I, GL_RGBA8I, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8I, 1, 1, GL_NO_ERROR);
   DoFramebufferRenderbuffer(
       GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
       client_renderbuffer_id_, kServiceRenderbufferId, GL_NO_ERROR);
@@ -1954,8 +1956,7 @@ TEST_P(GLES3DecoderTest, ClearBufferuivImmediateValidArgs) {
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_RGBA8UI, GL_RGBA8UI, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8UI, 1, 1, GL_NO_ERROR);
   DoFramebufferRenderbuffer(
       GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
       client_renderbuffer_id_, kServiceRenderbufferId, GL_NO_ERROR);
@@ -1984,9 +1985,8 @@ TEST_P(GLES3DecoderTest, ClearBufferfvImmediateValidArgs) {
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT32F,
-      1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, 1, 1,
+                        GL_NO_ERROR);
   DoFramebufferRenderbuffer(
       GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
       client_renderbuffer_id_, kServiceRenderbufferId, GL_NO_ERROR);
@@ -2020,9 +2020,8 @@ TEST_P(GLES3DecoderTest, ClearBufferfiValidArgs) {
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8,
-      1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1,
+                        GL_NO_ERROR);
   DoFramebufferRenderbuffer(
       GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
       client_renderbuffer_id_, kServiceRenderbufferId, GL_NO_ERROR);
@@ -2059,7 +2058,7 @@ TEST_P(GLES3DecoderTest, ClearBufferfiValidArgs) {
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMGLError) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2069,7 +2068,9 @@ TEST_P(GLES2DecoderManualInitTest,
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_OUT_OF_MEMORY))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, RenderbufferStorageMultisample(GL_RENDERBUFFER, 1, GL_RGBA,
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
+  EXPECT_CALL(*gl_, RenderbufferStorageMultisample(GL_RENDERBUFFER, 1, GL_RGBA4,
                                                    100, 50))
       .Times(1)
       .RetiresOnSaturation();
@@ -2082,7 +2083,7 @@ TEST_P(GLES2DecoderManualInitTest,
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMBadArgs) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2096,54 +2097,62 @@ TEST_P(GLES2DecoderManualInitTest,
            GL_RGBA4,
            TestHelper::kMaxRenderbufferSize,
            1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
   cmd.Init(GL_RENDERBUFFER,
            TestHelper::kMaxSamples,
            GL_RGBA4,
            TestHelper::kMaxRenderbufferSize + 1,
            1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+
   cmd.Init(GL_RENDERBUFFER,
            TestHelper::kMaxSamples,
            GL_RGBA4,
            1,
            TestHelper::kMaxRenderbufferSize + 1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
 }
 
 TEST_P(GLES2DecoderManualInitTest, RenderbufferStorageMultisampleCHROMIUM) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   InSequence sequence;
   DoRenderbufferStorageMultisampleCHROMIUM(
-      GL_RENDERBUFFER, TestHelper::kMaxSamples, GL_RGBA4, GL_RGBA,
+      GL_RENDERBUFFER, TestHelper::kMaxSamples, GL_RGBA4,
       TestHelper::kMaxRenderbufferSize, 1, false);
 }
 
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMRebindRenderbuffer) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   RestoreRenderbufferBindings();
   InSequence sequence;
   DoRenderbufferStorageMultisampleCHROMIUM(
-      GL_RENDERBUFFER, TestHelper::kMaxSamples, GL_RGBA4, GL_RGBA,
+      GL_RENDERBUFFER, TestHelper::kMaxSamples, GL_RGBA4,
       TestHelper::kMaxRenderbufferSize, 1, true);
 }
 
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleEXTNotSupported) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2748,7 +2757,7 @@ TEST_P(GLES3DecoderTest, CopyTexImage2DInvalidInternalFormat_sRGB) {
 TEST_P(GLES2DecoderManualInitTest,
        UnClearedAttachmentsGetClearedOnReadPixelsAndDrawBufferGetsRestored) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   const GLuint kFBOClientTextureId = 4100;
@@ -2831,7 +2840,7 @@ TEST_P(GLES2DecoderWithShaderTest, CopyTexImageWithInCompleteFBOFails) {
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 0, 0, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 0, 0, GL_NO_ERROR);
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
@@ -2856,7 +2865,7 @@ void GLES2DecoderWithShaderTest::CheckRenderbufferChangesMarkFBOAsNotComplete(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
   DoBindFramebuffer(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 1, 1, GL_NO_ERROR);
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER,
                             GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER,
@@ -2875,7 +2884,7 @@ void GLES2DecoderWithShaderTest::CheckRenderbufferChangesMarkFBOAsNotComplete(
   EXPECT_TRUE(framebuffer_manager->IsComplete(framebuffer));
 
   // Test that renderbufferStorage marks fbo as not complete.
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, GL_RGBA, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, 1, 1, GL_NO_ERROR);
   EXPECT_FALSE(framebuffer_manager->IsComplete(framebuffer));
   framebuffer_manager->MarkAsComplete(framebuffer);
   EXPECT_TRUE(framebuffer_manager->IsComplete(framebuffer));
@@ -2942,7 +2951,6 @@ void GLES2DecoderWithShaderTest::CheckTextureChangesMarkFBOAsNotComplete(
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoRenderbufferStorage(GL_RENDERBUFFER,
                         GL_DEPTH_COMPONENT16,
-                        GL_DEPTH_COMPONENT,
                         1,
                         1,
                         GL_NO_ERROR);
@@ -3032,7 +3040,7 @@ TEST_P(GLES2DecoderTest, CanChangeSurface) {
   decoder_->SetSurface(other_surface);
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateSuccceeds) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTImmediateSucceeds) {
   const GLsizei count = 1;
   const GLenum bufs[] = {GL_COLOR_ATTACHMENT0};
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
@@ -3057,7 +3065,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateFails) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
   const GLsizei count = 1;
   const GLenum bufs[] = {GL_BACK};
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
@@ -3076,7 +3084,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTMainFramebuffer) {
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
   {
     const GLenum bufs[] = {GL_BACK};
@@ -3106,7 +3114,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
 
     EXPECT_CALL(*gl_, DrawBuffersARB(_, _)).Times(0).RetiresOnSaturation();
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(bufs)));
-    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
   }
 }
 
@@ -3452,7 +3460,7 @@ TEST_P(GLES2DecoderManualInitTest,
   EXPECT_FALSE(framebuffer_manager->IsComplete(framebuffer));
 }
 
-TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
+TEST_P(GLES3DecoderTest, ImplementationReadColorFormatAndType) {
   ClearSharedMemory();
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -3476,6 +3484,9 @@ TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, _))
+      .WillOnce(SetArgPointee<1>(GL_RGBA))
+      .RetiresOnSaturation();
   cmd.Init(GL_IMPLEMENTATION_COLOR_READ_FORMAT,
            shared_memory_id_,
            shared_memory_offset_);
@@ -3487,6 +3498,9 @@ TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, _))
+      .WillOnce(SetArgPointee<1>(GL_UNSIGNED_BYTE))
       .RetiresOnSaturation();
   cmd.Init(GL_IMPLEMENTATION_COLOR_READ_TYPE,
            shared_memory_id_,
@@ -3557,9 +3571,8 @@ TEST_P(GLES3DecoderTest, InvalidateFramebufferDepthStencilAttachment) {
       GL_FRAMEBUFFER, client_framebuffer_id_, kServiceFramebufferId);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
-  DoRenderbufferStorage(
-      GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8,
-      1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1,
+                        GL_NO_ERROR);
   DoFramebufferRenderbuffer(
       GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
       client_renderbuffer_id_, kServiceRenderbufferId, GL_NO_ERROR);
@@ -3631,7 +3644,7 @@ TEST_P(GLES3DecoderTest, BlitFramebufferDisabledReadBuffer) {
                     kServiceFramebufferId);
   DoBindRenderbuffer(GL_RENDERBUFFER, client_renderbuffer_id_,
                      kServiceRenderbufferId);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, GL_RGBA8, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, 1, 1, GL_NO_ERROR);
   DoFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, client_renderbuffer_id_,
                             kServiceRenderbufferId, GL_NO_ERROR);
@@ -3679,8 +3692,8 @@ TEST_P(GLES3DecoderTest, BlitFramebufferMissingDepthOrStencil) {
   // INVALID_OPERATION.
   DoBindRenderbuffer(GL_RENDERBUFFER, client_renderbuffer_id_,
                      kServiceRenderbufferId);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
-                        GL_DEPTH24_STENCIL8, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1,
+                        GL_NO_ERROR);
   GLuint color_renderbuffer = client_renderbuffer_id_ + 1;
   GLuint color_renderbuffer_service = kServiceRenderbufferId + 1;
   EXPECT_CALL(*gl_, GenRenderbuffersEXT(1, _))
@@ -3688,7 +3701,7 @@ TEST_P(GLES3DecoderTest, BlitFramebufferMissingDepthOrStencil) {
       .RetiresOnSaturation();
   DoBindRenderbuffer(GL_RENDERBUFFER, color_renderbuffer,
                      color_renderbuffer_service);
-  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, GL_RGBA8, 1, 1, GL_NO_ERROR);
+  DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, 1, 1, GL_NO_ERROR);
   DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, client_framebuffer_id_,
                     kServiceFramebufferId);
   DoFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,

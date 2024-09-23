@@ -26,7 +26,7 @@
 #import "components/sync/service/sync_service_observer.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -115,7 +116,7 @@ void ShowSendingMessage(CommandDispatcher* dispatcher, NSString* deviceName) {
   NSString* text =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
                               base::SysNSStringToUTF16(deviceName));
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
   message.accessibilityLabel = text;
   message.duration = 2.0;
   message.category = kActivityServicesSnackbarCategory;
@@ -250,10 +251,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
                       targetDeviceName:(NSString*)deviceName {
-  send_tab_to_self::RecordSendingEvent(
-      send_tab_to_self::ShareEntryPoint::kShareMenu,
-      send_tab_to_self::SendingEvent::kClickItem);
-
   SendTabToSelfSyncServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->GetSendTabToSelfModel()
@@ -291,14 +288,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   switch (*displayReason) {
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
-      const auto sending_event =
-          *displayReason ==
-                  send_tab_to_self::EntryPointDisplayReason::kOfferFeature
-              ? send_tab_to_self::SendingEvent::kShowDeviceList
-              : send_tab_to_self::SendingEvent::kShowNoTargetDeviceMessage;
-      send_tab_to_self::RecordSendingEvent(
-          send_tab_to_self::ShareEntryPoint::kShareMenu, sending_event);
-
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       send_tab_to_self::SendTabToSelfSyncService* syncService =
           SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
@@ -334,10 +323,6 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       break;
     }
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
-      send_tab_to_self::RecordSendingEvent(
-          send_tab_to_self::ShareEntryPoint::kShareMenu,
-          send_tab_to_self::SendingEvent::kShowSigninPromo);
-
       __weak __typeof(self) weakSelf = self;
       ShowSigninCommandCompletionCallback callback =
           ^(SigninCoordinatorResult result,

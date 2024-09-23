@@ -7,10 +7,9 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 from core.perfetto_binary_roller import binary_deps_manager
-
-import mock
 
 
 class BinaryDepsManagerTests(unittest.TestCase):

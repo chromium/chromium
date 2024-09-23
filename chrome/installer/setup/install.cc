@@ -86,7 +86,7 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
       message.append("Start menu ");
       break;
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:
       message.append(
@@ -94,7 +94,7 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
           base::WideToUTF8(InstallUtil::GetChromeAppsShortcutDirName()) + " ");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   message.push_back('"');
@@ -161,8 +161,8 @@ void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
   if (!base::CopyFile(prefs_source_path,
                       InitialPreferences::Path(installer_state.target_path(),
                                                /*for_read=*/false))) {
-    VLOG(1) << "Failed to copy initial preferences from:"
-            << prefs_source_path.value() << " gle: " << ::GetLastError();
+    VPLOG(1) << "Failed to copy initial preferences from \""
+             << prefs_source_path << "\"";
   }
 }
 
@@ -298,6 +298,30 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
   return true;
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
+                                   const std::wstring& installed_version) {
+  auto os_update_handler_cmd =
+      GetOsUpdateHandlerCommand(installer_state, installed_version,
+                                *base::CommandLine::ForCurrentProcess());
+  if (!os_update_handler_cmd.has_value()) {
+    return;
+  }
+  base::LaunchOptions launch_options;
+  launch_options.feedback_cursor_off = true;
+  launch_options.force_breakaway_from_job_ = true;
+
+  ::SetLastError(ERROR_SUCCESS);
+  base::Process process =
+      base::LaunchProcess(os_update_handler_cmd.value(), launch_options);
+  if (!process.IsValid()) {
+    PLOG(ERROR) << "Failed to launch \""
+                << os_update_handler_cmd->GetCommandLineString() << "\"";
+  }
+  // There's no need to wait for this to finish.
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 }  // namespace
 
 bool CreateVisualElementsManifest(const base::FilePath& src_path,
@@ -322,6 +346,33 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
   return false;
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns a CommandLine to run if os_update_handler.exe should be run,
+// i.e. a Windows update has been detected; null otherwise.
+std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
+    const InstallerState& installer_state,
+    const std::wstring& installed_version,
+    const base::CommandLine& command_line) {
+  const auto args = command_line.GetArgs();
+  if (args.size() != 1) {
+    return std::nullopt;
+  }
+  // Use the Windows version update string set by Omaha on the command line
+  // as the version update string to pass to os_update_handler.exe.
+  base::CommandLine os_update_handler_cmd(installer_state.target_path()
+                                              .Append(installed_version)
+                                              .Append(kOsUpdateHandlerExe));
+  InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
+  // args[0] has the form "<prev_windows_version>-<new_windows_version>".
+  os_update_handler_cmd.AppendArgNative(args[0]);
+
+  if (installer_state.system_install()) {
+    os_update_handler_cmd.AppendSwitch(installer::switches::kSystemLevel);
+  }
+  return os_update_handler_cmd;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 void CreateOrUpdateShortcuts(const base::FilePath& target,
                              const InitialPreferences& prefs,
                              InstallShortcutLevel install_level,
@@ -342,6 +393,11 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
                 &do_not_create_quick_launch_shortcut);
   prefs.GetBool(initial_preferences::kDoNotCreateTaskbarShortcut,
                 &do_not_create_taskbar_shortcut);
+
+  // Pinning to taskbar only makes sense for per-user shortcuts.
+  if (install_level != CURRENT_USER) {
+    do_not_create_taskbar_shortcut = true;
+  }
 
   // The default operation on update is to overwrite shortcuts with the
   // currently desired properties, but do so only for shortcuts that still
@@ -536,10 +592,15 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
     installer_state.SetStage(CREATING_SHORTCUTS);
     InstallShortcutOperation install_operation =
         INSTALL_SHORTCUT_REPLACE_EXISTING;
-    if (result == FIRST_INSTALL_SUCCESS || result == INSTALL_REPAIRED ||
+    if (result == FIRST_INSTALL_SUCCESS ||
         !original_state.GetProductState(installer_state.system_install())) {
-      // Always create the shortcuts on a new install, a repair install, and
-      // when the Chrome product is being added to the current install.
+      // Always create the shortcuts on a new install and when the Chrome
+      // product is being added to the current install.
+      install_operation = INSTALL_SHORTCUT_CREATE_ALL;
+    } else if (result == INSTALL_REPAIRED &&
+               InstallUtil::IsRunningAsInteractiveUser()) {
+      // If the install was a user initiated repair, create the shortcuts.
+      VLOG(1) << "User initiated repair, will create shortcuts.";
       install_operation = INSTALL_SHORTCUT_CREATE_ALL;
     }
     InstallShortcutLevel install_level =
@@ -654,6 +715,10 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
     LOG(WARNING) << "Failed to reinstall Active Setup keys.";
     work_item_list->Rollback();
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  LaunchOSUpdateHandlerIfNeeded(
+      installer_state, base::ASCIIToWide(installed_version.GetString()));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   UpdateOsUpgradeBeacon();
 

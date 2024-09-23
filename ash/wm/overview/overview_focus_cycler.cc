@@ -1,316 +1,308 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/overview/overview_focus_cycler.h"
 
-#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/accessibility/magnifier/magnifier_utils.h"
-#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
-#include "ash/style/icon_button.h"
-#include "ash/wm/desks/desk_icon_button.h"
-#include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/desk_name_view.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desk_profiles_button.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
-#include "ash/wm/desks/templates/saved_desk_grid_view.h"
-#include "ash/wm/desks/templates/saved_desk_item_view.h"
-#include "ash/wm/desks/templates/saved_desk_library_view.h"
-#include "ash/wm/desks/templates/saved_desk_name_view.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/splitview/faster_split_view.h"
-#include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "ui/views/view.h"
+#include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
 namespace {
 
-void AddDesksBarTraversableViews(
-    OverviewGrid* grid,
-    std::vector<OverviewFocusableView*>& out_traversable_views) {
-  auto* bar_view = grid->desks_bar_view();
-  if (!bar_view) {
-    return;
+// Returns true if any child is focusable in `view`'s tree.
+bool IsViewFocusable(const views::View* view, bool for_accessibility) {
+  CHECK(view);
+
+  // A regular focusable view is focusable for ChromeVox as well.
+  if (view->IsFocusable()) {
+    return true;
   }
 
-  // The desk items are always traversable from left to right, even in RTL
-  // languages.
-  if (bar_view->IsZeroState()) {
-    out_traversable_views.push_back(bar_view->default_desk_button());
-  } else {
-    for (ash::DeskMiniView* mini_view : bar_view->mini_views()) {
-      out_traversable_views.push_back(mini_view->desk_preview());
-      if (auto* profiles_button = mini_view->desk_profiles_button()) {
-        out_traversable_views.push_back(profiles_button);
-      }
-      out_traversable_views.push_back(mini_view->desk_name_view());
-    }
-  }
-  auto* new_desk_button = bar_view->new_desk_button();
-  if (new_desk_button->GetEnabled()) {
-    out_traversable_views.push_back(new_desk_button);
+  if (for_accessibility &&
+      view->GetViewAccessibility().IsAccessibilityFocusable()) {
+    return true;
   }
 
-  if (auto* library_button = bar_view->library_button()) {
-    if (library_button->GetVisible()) {
-      out_traversable_views.push_back(library_button);
+  // If any of the children are focusable we are done.
+  for (const views::View* child : view->children()) {
+    if (IsViewFocusable(child, for_accessibility)) {
+      return true;
     }
   }
+
+  return false;
 }
+
+views::View* GetFirstOrLastFocusableView(views::Widget* widget, bool reverse) {
+  views::View* view = widget->GetFocusManager()->GetNextFocusableView(
+      /*starting_view=*/nullptr, widget, reverse, /*dont_loop=*/false);
+  CHECK(view);
+  return view;
+}
+
+// Determines whether we should rotate focus to the next widget. We rotate focus
+// if we are forward tabbing and the current focused view is the last focusable
+// view of the widget, or if we are reverse tabbing and the current focused view
+// is the first focusable view of the widget.
+bool ShouldRotateFocus(views::View* current_focused_view, bool reverse) {
+  views::Widget* widget = current_focused_view->GetWidget();
+  return current_focused_view == GetFirstOrLastFocusableView(widget, !reverse);
+}
+
+int AdvanceIndex(int previous_index, int size, bool reverse) {
+  if (reverse) {
+    return previous_index == 0 ? (size - 1) : (previous_index - 1);
+  }
+  return previous_index == (size - 1) ? 0 : (previous_index + 1);
+}
+
+// Class that temporary makes a widget activatable so that we can focus it. This
+// is meant to be used while keyboard traversing through overview item widgets.
+// These widgets are not activatable normally for both historical reasons, and
+// to prevent activation change while mouse dragging.
+class ScopedActivatable : public views::WidgetObserver {
+ public:
+  explicit ScopedActivatable(views::Widget* widget) {
+    views::WidgetDelegate* delegate = widget->widget_delegate();
+    if (!delegate->CanActivate()) {
+      observation_.Observe(widget);
+      delegate->SetCanActivate(true);
+    }
+  }
+  ScopedActivatable(const ScopedActivatable&) = delete;
+  ScopedActivatable& operator=(const ScopedActivatable&) = delete;
+  ~ScopedActivatable() override {
+    if (observation_.IsObserving()) {
+      observation_.GetSource()->widget_delegate()->SetCanActivate(false);
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    observation_.Reset();
+  }
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (!active) {
+      return;
+    }
+
+    // If an overview item received focus, we need to restack the original
+    // window above the overview item widget, otherwise the overview backdrop
+    // would end up covering the original window.
+    auto* item_view =
+        views::AsViewClass<OverviewItemView>(widget->GetContentsView());
+    if (!item_view) {
+      return;
+    }
+
+    OverviewItemBase* item = item_view->overview_item();
+    if (!item) {
+      return;
+    }
+
+    aura::Window* parent = widget->GetNativeWindow()->parent();
+    if (parent == item->GetWindow()->parent()) {
+      parent->StackChildAbove(item->GetWindow(), widget->GetNativeWindow());
+    }
+  }
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
 
 }  // namespace
 
 OverviewFocusCycler::OverviewFocusCycler(OverviewSession* overview_session)
-    : overview_session_(overview_session),
-      scoped_a11y_overrider_(
-          std::make_unique<ScopedA11yOverrideWindowSetter>()) {}
+    : overview_session_(overview_session) {}
 
 OverviewFocusCycler::~OverviewFocusCycler() = default;
 
 void OverviewFocusCycler::MoveFocus(bool reverse) {
-  const std::vector<OverviewFocusableView*> traversable_views =
-      GetTraversableViews();
-  const int count = static_cast<int>(traversable_views.size());
-
-  // |count| can be zero when there are no overview items and no desk views (eg.
-  // "No recent items" or PIP windows are shown but they aren't traversable).
-  if (count == 0) {
+  views::View* focused_view = GetOverviewFocusedView();
+  if (focused_view && !ShouldRotateFocus(focused_view, reverse)) {
+    // If we don't need to rotate focus to the next widget, let the focus
+    // manager advance focus.
+    focused_view->GetWidget()->GetFocusManager()->AdvanceFocus(reverse);
     return;
   }
 
-  int index = 0;
-  bool item_was_deleted = false;
-  if (!focused_view_) {
-    // Pick up where we left off if |deleted_index_| has a value.
-    if (deleted_index_) {
-      item_was_deleted = true;
-      index = *deleted_index_ >= count ? 0 : *deleted_index_;
-      deleted_index_.reset();
-    } else if (reverse) {
-      index = count - 1;
-    }
-  } else {
-    auto it = base::ranges::find(traversable_views, focused_view_);
-    DCHECK(it != traversable_views.end());
-    const int current_index = std::distance(traversable_views.begin(), it);
-    DCHECK_GE(current_index, 0);
-    index = (((reverse ? -1 : 1) + current_index) + count) % count;
-  }
-
-  // If we are moving over either end of the list of traversible views and there
-  // is an active toast with an undo button for desk removal  that can be
-  // focused, then we unfocus any traversible views while the dismiss button
-  // is focused.
-  if (((index == 0 && !reverse) || (index == count - 1 && reverse)) &&
-      !item_was_deleted &&
-      DesksController::Get()
-          ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
-    SetFocusVisibility(false);
-    focused_view_ = nullptr;
+  const std::vector<views::Widget*> widgets =
+      GetTraversableWidgets(/*for_accessibility=*/false);
+  // `widgets` can be empty when there are only non traversable overview widgets
+  // shown (ex. "No recent items" label).
+  if (widgets.empty()) {
     return;
   }
 
-  UpdateFocus(traversable_views[index]);
-}
-
-void OverviewFocusCycler::UpdateA11yFocusWindow(
-    OverviewFocusableView* name_view) {
-  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-      name_view->GetView()->GetWidget()->GetNativeWindow());
-}
-
-void OverviewFocusCycler::MoveFocusToView(OverviewFocusableView* target_view,
-                                          bool suppress_accessibility_event) {
-  const std::vector<OverviewFocusableView*> traversable_views =
-      GetTraversableViews();
-  DCHECK(base::Contains(traversable_views, target_view));
-
-  UpdateFocus(target_view, suppress_accessibility_event);
-}
-
-void OverviewFocusCycler::OnViewDestroyingOrDisabling(
-    OverviewFocusableView* view) {
-  DCHECK(view);
-
-  // TODO(afakhry): Refactor this code.
-  const std::vector<OverviewFocusableView*> traversable_views =
-      GetTraversableViews();
-  const auto it = base::ranges::find(traversable_views, view);
-  if (it == traversable_views.end()) {
+  // If there is no current focused view request either the last focusable view
+  // of the last widget in the traversal or the first focusable view of the
+  // first widget, depending on `reverse`.
+  if (!focused_view) {
+    views::Widget* widget = reverse ? widgets.back() : widgets.front();
+    ScopedActivatable scoped_activatable(widget);
+    GetFirstOrLastFocusableView(widget, reverse)->RequestFocus();
     return;
   }
 
-  const int view_index = std::distance(traversable_views.begin(), it);
-  DCHECK_GE(view_index, 0);
+  auto it = base::ranges::find(widgets, focused_view->GetWidget());
+  CHECK(it != widgets.end());
 
-  if (view != focused_view_) {
-    if (!deleted_index_) {
+  const int previous_index = std::distance(widgets.begin(), it);
+  const int size = static_cast<int>(widgets.size());
+
+  // Jump to the desk removal toast if it exists. We introduce special logic
+  // here since it's not an overview UI.
+  if ((reverse && previous_index == 0) ||
+      (!reverse && previous_index == size - 1)) {
+    const bool ignore_activations = overview_session_->ignore_activations();
+    overview_session_->set_ignore_activations(true);
+    const bool focused_toast =
+        DesksController::Get()->RequestFocusOnUndoDeskRemovalToast();
+    overview_session_->set_ignore_activations(ignore_activations);
+    if (focused_toast) {
       return;
     }
-
-    // We need to update the `deleted_index_` in case the destroying view
-    // resides before a previously removed focused view in the traversal
-    // order.
-    if (view_index < *deleted_index_) {
-      deleted_index_ = std::max(0, --(*deleted_index_));
-    }
-    return;
   }
 
-  deleted_index_ = view_index;
-  focused_view_->SetFocused(false);
-  focused_view_ = nullptr;
+  // Focus the last focusable view of the previous widget if `reverse`, or the
+  // first focusable view of the next widget otherwise.
+  const int next_index = AdvanceIndex(previous_index, size, reverse);
+  ScopedActivatable scoped_activatable(widgets[next_index]);
+  GetFirstOrLastFocusableView(widgets[next_index], reverse)->RequestFocus();
 }
 
-void OverviewFocusCycler::SetFocusVisibility(bool visible) {
-  if (focused_view_) {
-    focused_view_->SetFocused(visible);
+bool OverviewFocusCycler::AcceptSelection() {
+  views::View* focused_view = GetOverviewFocusedView();
+  if (!focused_view) {
+    return false;
   }
-}
 
-bool OverviewFocusCycler::IsFocusVisible() const {
-  return focused_view_ && focused_view_->is_focused();
-}
-
-bool OverviewFocusCycler::MaybeActivateFocusedView() {
-  if (DesksController::Get()
-          ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
+  if (auto* preview_view = views::AsViewClass<DeskPreviewView>(focused_view)) {
+    preview_view->AcceptSelection();
     return true;
   }
 
-  if (!focused_view_) {
-    return false;
+  if (auto* item_view = views::AsViewClass<OverviewItemView>(focused_view)) {
+    item_view->AcceptSelection(overview_session_);
+    return true;
   }
 
-  focused_view_->MaybeActivateFocusedView();
-  return true;
+  return false;
 }
 
-bool OverviewFocusCycler::MaybeCloseFocusedView(bool primary_action) {
-  if (!focused_view_) {
-    return false;
+views::View* OverviewFocusCycler::GetOverviewFocusedView() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window) {
+    return nullptr;
   }
 
-  focused_view_->MaybeCloseFocusedView(primary_action);
-  return true;
-}
-
-bool OverviewFocusCycler::MaybeSwapFocusedView(bool right) {
-  if (!focused_view_) {
-    return false;
+  if (!active_window->GetProperty(kOverviewUiKey)) {
+    return nullptr;
   }
 
-  focused_view_->MaybeSwapFocusedView(right);
-  return true;
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(active_window);
+  if (!widget) {
+    return nullptr;
+  }
+
+  return widget->GetFocusManager()->GetFocusedView();
 }
 
-bool OverviewFocusCycler::MaybeActivateFocusedViewOnOverviewExit() {
-  return focused_view_ && focused_view_->MaybeActivateFocusedViewOnOverviewExit(
-                              overview_session_);
-}
-
-OverviewItemBase* OverviewFocusCycler::GetFocusedItem() const {
-  return focused_view_ ? focused_view_->GetOverviewItem() : nullptr;
-}
-
-void OverviewFocusCycler::ResetFocusedView() {
-  if (!focused_view_) {
+void OverviewFocusCycler::UpdateAccessibilityFocus() {
+  const std::vector<views::Widget*> a11y_widgets =
+      GetTraversableWidgets(/*for_accessibility=*/true);
+  if (a11y_widgets.empty()) {
     return;
   }
 
-  deleted_index_.reset();
-  focused_view_->SetFocused(false);
-  focused_view_ = nullptr;
-}
+  auto get_view_a11y = [&a11y_widgets](int index) -> views::ViewAccessibility& {
+    return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+  };
 
-std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
-    const {
-  std::vector<OverviewFocusableView*> traversable_views;
-  traversable_views.reserve(32);  // Conservative default.
-
-  // Note that this order matches the order of the chromevox cycling in
-  // `OverviewSession::UpdateAccessibilityFocus()`.
-  for (auto& grid : overview_session_->grid_list()) {
-    // If the saved desk library is visible, we shouldn't try to add any
-    // overview items.
-    if (grid->IsShowingSavedDeskLibrary()) {
-      SavedDeskLibraryView* desk_library_view = grid->GetSavedDeskLibraryView();
-      DCHECK(desk_library_view);
-      for (SavedDeskGridView* saved_desk_grid_view :
-           desk_library_view->grid_views()) {
-        for (SavedDeskItemView* saved_desk_item :
-             saved_desk_grid_view->grid_items()) {
-          traversable_views.push_back(saved_desk_item);
-
-          // Admin templates names cannot be edited or focused.
-          SavedDeskNameView* name_view = saved_desk_item->name_view();
-          if (name_view->IsFocusable()) {
-            traversable_views.push_back(name_view);
-          }
-        }
-      }
-    } else {
-      for (const auto& item : grid->window_list()) {
-        for (auto* focusable_view : item->GetFocusableViews()) {
-          traversable_views.push_back(focusable_view);
-        }
-      }
-    }
-
-    AddDesksBarTraversableViews(grid.get(), traversable_views);
-
-    if (grid->IsSaveDeskAsTemplateButtonVisible()) {
-      traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());
-    }
-    if (grid->IsSaveDeskForLaterButtonVisible()) {
-      traversable_views.push_back(grid->GetSaveDeskForLaterButton());
-    }
-    if (auto* faster_split_view = grid->GetFasterSplitView()) {
-      traversable_views.push_back(faster_split_view->toast());
-      traversable_views.push_back(faster_split_view->settings_button());
-    }
-  }
-  return traversable_views;
-}
-
-void OverviewFocusCycler::UpdateFocus(OverviewFocusableView* view_to_be_focused,
-                                      bool suppress_accessibility_event) {
-  if (focused_view_ == view_to_be_focused) {
+  // If there is only one widget left, clear the focus overrides so that they
+  // do not point to deleted objects.
+  if (a11y_widgets.size() == 1) {
+    get_view_a11y(/*index=*/0).SetPreviousFocus(nullptr);
+    get_view_a11y(/*index=*/0).SetNextFocus(nullptr);
+    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
     return;
   }
 
-  OverviewFocusableView* previous_view = focused_view_;
-  focused_view_ = view_to_be_focused;
-
-  // Perform accessibility related tasks.
-  if (!suppress_accessibility_event) {
-    // Don't emit if focusing since focusing will emit an accessibility event as
-    // well.
-    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-        focused_view_->GetView()->GetWidget()->GetNativeWindow());
-    focused_view_->GetView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kSelection, true);
+  int size = a11y_widgets.size();
+  for (int i = 0; i < size; ++i) {
+    int previous_index = (i + size - 1) % size;
+    int next_index = (i + 1) % size;
+    get_view_a11y(i).SetPreviousFocus(a11y_widgets[previous_index]);
+    get_view_a11y(i).SetNextFocus(a11y_widgets[next_index]);
+    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
   }
-  // The overview "focus" works differently from regular focusing so we need to
-  // update the magnifier manually here.
-  magnifier_utils::MaybeUpdateActiveMagnifierFocus(
-      focused_view_->GetMagnifierFocusPointInScreen());
+}
 
-  if (previous_view) {
-    previous_view->SetFocused(false);
+std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
+    bool for_accessibility) const {
+  std::vector<views::Widget*> traversable_widgets;
+  traversable_widgets.reserve(40);  // Conservative default.
+
+  auto maybe_add_widget = [for_accessibility,
+                           &traversable_widgets](views::Widget* widget) {
+    if (!widget ||
+        widget->GetNativeWindow()->layer()->GetTargetOpacity() == 0.f) {
+      return;
+    }
+
+    // Focus is tied to activation except in ChromeVox where labels and other
+    // normally unfocusable elements can be ChromeVox focused.
+    if (!for_accessibility && !widget->CanActivate() &&
+        !widget->GetNativeWindow()->GetProperty(kIsOverviewItemKey)) {
+      return;
+    }
+
+    // Skip this widget if it has no focusable views. (i.e. Saved desks library
+    // with all saved desks deleted or saved desk button container with all
+    // buttons disabled.)
+    if (!IsViewFocusable(widget->GetContentsView(), for_accessibility)) {
+      return;
+    }
+
+    traversable_widgets.push_back(widget);
+  };
+
+  maybe_add_widget(overview_session_->overview_focus_widget());
+
+  for (const auto& grid : overview_session_->grid_list()) {
+    for (const auto& item : grid->item_list()) {
+      // There may be two widgets if the item is a snap group item.
+      for (views::Widget* item_widget : item->GetFocusableWidgets()) {
+        maybe_add_widget(item_widget);
+      }
+    }
+    maybe_add_widget(grid->saved_desk_library_widget());
+    maybe_add_widget(grid->desks_widget());
+    maybe_add_widget(grid->save_desk_button_container_widget());
+    maybe_add_widget(grid->informed_restore_widget());
+    maybe_add_widget(grid->birch_bar_widget());
+    maybe_add_widget(grid->split_view_setup_widget());
+    maybe_add_widget(grid->no_windows_widget());
   }
-  focused_view_->SetFocused(true);
+  return traversable_widgets;
 }
 
 }  // namespace ash

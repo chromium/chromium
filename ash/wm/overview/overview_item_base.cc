@@ -8,7 +8,10 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/templates/saved_desk_animations.h"
+#include "ash/wm/drag_window_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -21,6 +24,8 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 
@@ -46,7 +51,8 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
       return std::make_unique<OverviewGroupItem>(
           std::vector<raw_ptr<aura::Window, VectorExperimental>>{
-              snap_group->window1(), snap_group->window2()},
+              snap_group->GetPhysicallyLeftOrTopWindow(),
+              snap_group->GetPhysicallyRightOrBottomWindow()},
           overview_session, overview_grid);
     }
   }
@@ -58,20 +64,40 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
 }
 
 bool OverviewItemBase::IsDragItem() const {
-  return overview_session_->GetCurrentDraggedOverviewItem() == this;
+  // `overview_session_` may be null in tests.
+  // TODO(https://b/299391958): `overview_session_` should not be null even in
+  // tests.
+  return overview_session_ &&
+         overview_session_->GetCurrentDraggedOverviewItem() == this;
+}
+
+void OverviewItemBase::SetVisibleDuringItemDragging(bool visible,
+                                                    bool animate) {
+  SetWindowsVisibleDuringItemDragging(GetWindowsForHomeGesture(), visible,
+                                      animate);
 }
 
 void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
-  // Shadow is normally turned off during animations and reapplied when on
-  // animation complete. On destruction, `shadow_` is cleaned up before
-  // `transform_window_`, which may call this function, so early exit if
-  // `shadow_` is nullptr.
+  const bool should_have_shadow = ShouldHaveShadow();
+  if (should_have_shadow != !!shadow_) {
+    if (should_have_shadow) {
+      CreateShadow();
+    } else {
+      shadow_.reset();
+    }
+  }
+
+  // On destruction, `shadow_` is cleaned up before `transform_window_`, which
+  // may call this function, so early exit if `shadow_` is nullptr.
   if (!shadow_) {
     return;
   }
 
   const gfx::RectF shadow_bounds_in_screen = target_bounds_;
   auto* shadow_layer = shadow_->GetLayer();
+
+  // Shadow is normally turned off during animations and reapplied when on
+  // animation complete.
   if (!shadow_visible || shadow_bounds_in_screen.IsEmpty()) {
     shadow_layer->SetVisible(false);
     return;
@@ -82,11 +108,14 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(kWindowMiniViewCornerRadius);
+  shadow_->SetRoundedCornerRadius(
+      window_util::GetMiniWindowRoundedCornerRadius());
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
-  shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+  if (shadow_) {
+    shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+  }
 }
 
 void OverviewItemBase::HandleGestureEventForTabletModeLayout(
@@ -97,7 +126,7 @@ void OverviewItemBase::HandleGestureEventForTabletModeLayout(
       overview_grid()->grid_event_handler();
   const bool is_drag_item = IsDragItem();
   switch (event->type()) {
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       if (is_drag_item) {
         HandleFlingStartEvent(location, event->details().velocity_x(),
                               event->details().velocity_y());
@@ -105,7 +134,7 @@ void OverviewItemBase::HandleGestureEventForTabletModeLayout(
         grid_event_handler->OnGestureEvent(event);
       }
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (std::abs(event->details().scroll_y_hint()) >
           std::abs(event->details().scroll_x_hint())) {
         HandlePressEvent(location, /*from_touch_gesture=*/true,
@@ -114,29 +143,29 @@ void OverviewItemBase::HandleGestureEventForTabletModeLayout(
         grid_event_handler->OnGestureEvent(event);
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (is_drag_item) {
         HandleDragEvent(location);
       } else {
         grid_event_handler->OnGestureEvent(event);
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       if (is_drag_item) {
         HandleReleaseEvent(location);
       } else {
         grid_event_handler->OnGestureEvent(event);
       }
       break;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       HandlePressEvent(location, /*from_touch_gesture=*/true,
                        event_source_item);
       HandleLongPressEvent(location);
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       HandleTapEvent(location, event_source_item);
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       HandleGestureEndEvent();
       break;
     default:
@@ -159,19 +188,18 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event,
       event.target() ? event.target()->GetScreenLocationF(event)
                      : gfx::PointF(GetWindowsUnionScreenBounds().CenterPoint());
   switch (event.type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       HandlePressEvent(screen_location, /*from_touch_gesture=*/false,
                        event_source_item);
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       HandleReleaseEvent(screen_location);
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       HandleDragEvent(screen_location);
       break;
     default:
       NOTREACHED();
-      break;
   }
 }
 
@@ -190,27 +218,27 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event,
 
   const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       HandlePressEvent(location, /*from_touch_gesture=*/true,
                        event_source_item);
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       HandleDragEvent(location);
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       HandleFlingStartEvent(location, event->details().velocity_x(),
                             event->details().velocity_y());
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       HandleReleaseEvent(location);
       break;
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       HandleLongPressEvent(location);
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       HandleTapEvent(location, event_source_item);
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       HandleGestureEndEvent();
       break;
     default:
@@ -218,24 +246,103 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event,
   }
 }
 
+void OverviewItemBase::SetOpacity(float opacity) {
+  item_widget_->SetOpacity(opacity);
+  if (cannot_snap_widget_) {
+    cannot_snap_widget_->SetOpacity(opacity);
+  }
+}
+
+aura::Window::Windows OverviewItemBase::GetWindowsForHomeGesture() {
+  aura::Window::Windows windows = {item_widget_->GetNativeWindow()};
+
+  if (cannot_snap_widget_) {
+    windows.push_back(cannot_snap_widget_->GetNativeWindow());
+  }
+
+  return windows;
+}
+
+void OverviewItemBase::HideForSavedDeskLibrary(bool animate) {
+  // Temporarily hide this window in overview, so that dark/light theme change
+  // does not reset the layer visible. If `animate` is false, the callback will
+  // not run in `PerformFadeOutLayer`. Thus, here we make sure the window is
+  // also hidden in that case.
+  DCHECK(item_widget_);
+  hide_window_in_overview_callback_.Reset(base::BindOnce(
+      &OverviewItemBase::HideItemWidgetWindow, weak_ptr_factory_.GetWeakPtr()));
+  PerformFadeOutLayer(item_widget_->GetLayer(), animate,
+                      hide_window_in_overview_callback_.callback());
+  if (!animate) {
+    // Cancel the callback if we are going to run it directly.
+    hide_window_in_overview_callback_.Cancel();
+    HideItemWidgetWindow();
+  }
+
+  item_widget_event_blocker_ =
+      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
+          item_widget_->GetNativeWindow());
+
+  // TODO(http://b/339108996): Determine how to inform users when a group item
+  // cannot be snapped.
+  HideCannotSnapWarning(animate);
+}
+
+void OverviewItemBase::RevertHideForSavedDeskLibrary(bool animate) {
+  // This might run before `HideForSavedDeskLibrary()`, thus cancel the
+  // callback to prevent such case.
+  hide_window_in_overview_callback_.Cancel();
+
+  // Restore and show the window back to overview.
+  ShowItemWidgetWindow();
+
+  // `item_widget_` may be null during shutdown if the window is minimized.
+  if (item_widget_) {
+    PerformFadeInLayer(item_widget_->GetLayer(), animate);
+  }
+
+  item_widget_event_blocker_.reset();
+
+  // TODO(http://b/339108996): Determine how to inform users when a group item
+  // cannot be snapped.
+  UpdateCannotSnapWarningVisibility(animate);
+}
+
+void OverviewItemBase::UpdateMirrorsForDragging(bool is_touch_dragging) {
+  CHECK_GT(Shell::GetAllRootWindows().size(), 1u);
+
+  if (!item_mirror_for_dragging_) {
+    item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+        item_widget_->GetNativeWindow(), is_touch_dragging);
+  }
+
+  item_mirror_for_dragging_->Update();
+}
+
+// Resets the mirrors needed for multi display dragging.
+void OverviewItemBase::DestroyMirrorsForDragging() {
+  item_mirror_for_dragging_.reset();
+}
+
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
     aura::Window* parent_window,
     const std::string& widget_name,
-    bool accept_events) const {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    bool accept_event) const {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = widget_name;
-  params.activatable = views::Widget::InitParams::Activatable::kDefault;
-  params.accept_events = accept_events;
+  params.accept_events = accept_event;
   params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.init_properties_container.SetProperty(kOverviewUiKey, true);
   return params;
 }
 
-void OverviewItemBase::ConfigureTheShadow() {
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(kDefaultShadowType);
+void OverviewItemBase::CreateShadow() {
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
+      kDefaultShadowType, SystemShadow::LayerRecreatedCallback());
   auto* shadow_layer = shadow_->GetLayer();
   auto* widget_layer = item_widget_->GetLayer();
   widget_layer->Add(shadow_layer);
@@ -246,6 +353,31 @@ void OverviewItemBase::ConfigureTheShadow() {
 void OverviewItemBase::HandleDragEvent(const gfx::PointF& location_in_screen) {
   if (IsDragItem()) {
     overview_session_->Drag(this, location_in_screen);
+  }
+}
+
+void OverviewItemBase::HideItemWidgetWindow() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  DCHECK(hide_windows);
+
+  // Hide the overview item window.
+  if (item_widget_ &&
+      !hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->AddWindow(item_widget_->GetNativeWindow());
+  }
+}
+
+void OverviewItemBase::ShowItemWidgetWindow() {
+  ScopedOverviewHideWindows* hide_windows =
+      overview_session_->hide_windows_for_saved_desks_grid();
+  DCHECK(hide_windows);
+
+  // Show the overview item window.
+  if (item_widget_ &&
+      hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+    hide_windows->RemoveWindow(item_widget_->GetNativeWindow(),
+                               /*show_window=*/true);
   }
 }
 
@@ -271,9 +403,9 @@ void OverviewItemBase::HandleReleaseEvent(
 
 void OverviewItemBase::HandleLongPressEvent(
     const gfx::PointF& location_in_screen) {
-  if (IsDragItem() &&
-      (ShouldAllowSplitView() || (desks_util::ShouldDesksBarBeCreated() &&
-                                  overview_grid_->IsDesksBarViewActive()))) {
+  if (IsDragItem() && (IsEligibleForDraggingToSnapInOverview(this) ||
+                       (desks_util::ShouldDesksBarBeCreated() &&
+                        overview_grid_->IsDesksBarViewActive()))) {
     overview_session_->StartNormalDragMode(location_in_screen);
   }
 }

@@ -5,12 +5,14 @@
 #include "chrome/browser/download/download_prefs.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prompt_status.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_features.h"
@@ -27,6 +29,7 @@
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -556,9 +559,10 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   base::FilePath preinstalled_web_app_config_dir;
   base::FilePath preinstalled_web_app_extra_config_dir;
   chrome::SetLacrosDefaultPaths(
-      documents_path, default_dir, drivefs_dir, removable_media_dir,
-      android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir,
-      preinstalled_web_app_config_dir, preinstalled_web_app_extra_config_dir);
+      documents_path, default_dir, drivefs_dir, /*onedrive=*/base::FilePath(),
+      removable_media_dir, android_files_dir, linux_files_dir,
+      ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
+      preinstalled_web_app_extra_config_dir);
 #endif
 
   // Test a valid subdirectory of downloads.
@@ -646,6 +650,18 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                    "/media/fuse/drivefs-something-else/root");
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Temp for OneDrive.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(features::kSkyVault);
+
+    base::FilePath temp_path;
+    base::GetTempDir(&temp_path);
+    ExpectValidDownloadDir(&profile, &prefs, temp_path);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -707,22 +723,6 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   profile.GetTestingPrefService()->SetManagedPref(
       prefs::kPromptForDownload, std::make_unique<base::Value>(false));
   EXPECT_FALSE(prefs.PromptForDownload());
-}
-
-// Verifies the returned value of PromptForDownload()
-// when prefs::kPromptForDownload is managed by enterprise policy,
-TEST(DownloadPrefsTest, AutoOpenPdfEnabled) {
-  content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome::android::kOpenDownloadDialog);
-  TestingProfile profile;
-  DownloadPrefs prefs(&profile);
-
-  EXPECT_FALSE(prefs.IsAutoOpenPdfEnabled());
-
-  profile.GetPrefs()->SetBoolean(prefs::kAutoOpenPdfEnabled, true);
-  EXPECT_TRUE(prefs.IsAutoOpenPdfEnabled());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

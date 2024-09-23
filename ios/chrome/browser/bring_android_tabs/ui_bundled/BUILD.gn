@@ -1,0 +1,174 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+source_set("coordinator") {
+  sources = [
+    "bring_android_tabs_prompt_coordinator.h",
+    "bring_android_tabs_prompt_coordinator.mm",
+    "bring_android_tabs_prompt_mediator.h",
+    "bring_android_tabs_prompt_mediator.mm",
+    "tab_list_from_android_coordinator.h",
+    "tab_list_from_android_coordinator.mm",
+    "tab_list_from_android_mediator.h",
+    "tab_list_from_android_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":ui",
+    ":ui_swift",
+    "//base",
+    "//components/favicon/core",
+    "//ios/chrome/browser/bring_android_tabs/model",
+    "//ios/chrome/browser/bring_android_tabs/model:metrics",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "bring_android_tabs_prompt_view_controller_delegate.h",
+    "tab_list_from_android_consumer.h",
+    "tab_list_from_android_table_view_item.h",
+    "tab_list_from_android_table_view_item.mm",
+    "tab_list_from_android_view_controller.h",
+    "tab_list_from_android_view_controller.mm",
+    "tab_list_from_android_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bring_android_tabs/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/web/public",
+  ]
+}
+
+swift_source_set("ui_swift") {
+  bridge_header = "bring_android_tabs_swift_bridge.h"
+  sources =
+      [ "bring_android_tabs_prompt_confirmation_alert_view_controller.swift" ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bring_android_tabs/ui_bundled/resources",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bring_android_tabs_prompt_mediator_unittest.mm",
+    "tab_list_from_android_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/bring_android_tabs/model",
+    "//ios/chrome/browser/bring_android_tabs/model:metrics",
+    "//ios/chrome/browser/bring_android_tabs/model:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest:gtest",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_app_interface.h",
+    "bring_android_tabs_app_interface.mm",
+    "bring_android_tabs_test_session.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//url",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_app_interface.h",
+    "bring_android_tabs_app_interface_stub.mm",
+    "bring_android_tabs_test_session.h",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_confirmation_alert_egtest.mm",
+    "bring_android_tabs_no_initial_alert_egtest.mm",
+    "bring_android_tabs_tab_list_egtest.mm",
+    "bring_android_tabs_test_utils.h",
+    "bring_android_tabs_test_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

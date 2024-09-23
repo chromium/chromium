@@ -1,0 +1,116 @@
+This is a testharness.js-based test.
+Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (-0.25) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0) should be [2 4 6 8]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.25) should be [27 29 31 33]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.5) should be [52 54 56 58]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.75) should be [77 79 81 83]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (1) should be [102 104 106 108]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (1.25) should be [127 129 131 133]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (-0.25) should be [175 250 300 450]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (0) should be [200 300 400 500]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (0.25) should be [225 350 500 550]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (0.5) should be [250 400 600 600]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (0.75) should be [275 450 700 650]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (1) should be [300 500 800 700]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [100 200 300 400] from add [100] to add [200 300 500] at (1.25) should be [325 550 900 750]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (-0.25) should be [0 0 0px 0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (0) should be [2 4 6px 8%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (0.25) should be [27 29 31px 33%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (0.5) should be [52 54 56px 58%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (0.75) should be [77 79 81px 83%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (1) should be [102 104 106px 108%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [1 2 3px 4%] from add [1 2 3px 4%] to add [101 102 103px 104%] at (1.25) should be [127 129 131px 133%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (-0.25) should be [225px 225px 350px 350px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (0) should be [200px 200px 300px 300px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (0.25) should be [175px 175px 250px 250px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (0.5) should be [150px 150px 200px 200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (0.75) should be [125px 125px 150px 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (1) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20px] from add [190px 180px 290px 280px] to add [90px 80px] at (1.25) should be [75px 75px 50px 50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (-0.25) should be [75 75px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (0) should be [100 100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (0.25) should be [125 125px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (0.5) should be [150 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (0.75) should be [175 175px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (1) should be [200 200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20px] from replace [100 100px] to add [190 180px] at (1.25) should be [225 225px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (-0.25) should be [125px 125]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (0) should be [100px 100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (0.25) should be [75px 75]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (0.5) should be [50px 50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (0.75) should be [25px 25]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (1) should be [0px 0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10px 20] from add [90px 80] to replace [0px 0 0px 0] at (1.25) should be [0px 0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (-0.25) should be [75px 125px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (0) should be [100px 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (0.25) should be [125px 175px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (0.5) should be [150px 200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (0.75) should be [175px 225px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (1) should be [200px 250px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100px 150px] to add [200px 250px] at (1.25) should be [225px 275px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (-0.25) should be [100 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (0) should be [100 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (0.25) should be [100 150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (0.5) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (0.75) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (1) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-width> underlying [10 20] from add [100 150px] to add [200% 250] at (1.25) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

@@ -141,6 +141,9 @@ bool IfaddrsToNetworkInterfaceList(int policy,
   for (const ifaddrs* interface = interfaces; interface != nullptr;
        interface = interface->ifa_next) {
     // Skip loopback interfaces, and ones which are down.
+    if (!(IFF_UP & interface->ifa_flags)) {
+      continue;
+    }
     if (!(IFF_RUNNING & interface->ifa_flags))
       continue;
     if (IFF_LOOPBACK & interface->ifa_flags)
@@ -250,7 +253,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     // under the name Getifaddrs.
     getifaddrs_result = Getifaddrs(&interfaces);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     getifaddrs_result = getifaddrs(&interfaces);
@@ -273,7 +276,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 #if BUILDFLAG(IS_ANDROID)
     Freeifaddrs(interfaces);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     freeifaddrs(interfaces);

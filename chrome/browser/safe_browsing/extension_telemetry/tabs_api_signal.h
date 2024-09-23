@@ -9,6 +9,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "extensions/common/stack_frame.h"
 
 namespace safe_browsing {
 
@@ -20,7 +21,8 @@ class TabsApiSignal : public ExtensionSignal {
   TabsApiSignal(const extensions::ExtensionId& extension_id,
                 TabsApiInfo::ApiMethod api_method,
                 const std::string& current_url,
-                const std::string& new_url);
+                const std::string& new_url,
+                extensions::StackTrace js_callstack = extensions::StackTrace());
   ~TabsApiSignal() override;
 
   // ExtensionSignal:
@@ -33,11 +35,13 @@ class TabsApiSignal : public ExtensionSignal {
   TabsApiInfo::ApiMethod api_method() const { return api_method_; }
   const std::string& current_url() const { return current_url_; }
   const std::string& new_url() const { return new_url_; }
+  const extensions::StackTrace& js_callstack() const { return js_callstack_; }
 
  protected:
   TabsApiInfo::ApiMethod api_method_;
   std::string current_url_;
   std::string new_url_;
+  extensions::StackTrace js_callstack_;
 };
 
 }  // namespace safe_browsing

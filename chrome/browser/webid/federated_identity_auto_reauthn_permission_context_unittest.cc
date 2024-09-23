@@ -118,7 +118,7 @@ TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
   EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // User signing out sets the `RequiresUserMediation` bit.
-  context_->SetRequiresUserMediation(rp_url, true);
+  context_->SetRequiresUserMediation(url::Origin::Create(rp_url), true);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(rp_url));
 
   // Auto re-authn is still in embargo state.

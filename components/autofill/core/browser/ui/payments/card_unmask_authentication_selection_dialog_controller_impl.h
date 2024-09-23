@@ -19,7 +19,13 @@ class CardUnmaskAuthenticationSelectionDialog;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
     : public CardUnmaskAuthenticationSelectionDialogController {
  public:
-  CardUnmaskAuthenticationSelectionDialogControllerImpl();
+  // Initialize this controller's parameters.
+  // `challenge_options` must not be empty.
+  CardUnmaskAuthenticationSelectionDialogControllerImpl(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmasking_method_callback,
+      base::OnceClosure cancel_unmasking_closure);
   CardUnmaskAuthenticationSelectionDialogControllerImpl(
       const CardUnmaskAuthenticationSelectionDialogControllerImpl&) = delete;
   CardUnmaskAuthenticationSelectionDialogControllerImpl& operator=(
@@ -31,12 +37,9 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
       base::OnceCallback<CardUnmaskAuthenticationSelectionDialog*(
           CardUnmaskAuthenticationSelectionDialogController*)>;
 
-  void ShowDialog(
-      const std::vector<CardUnmaskChallengeOption>& challenge_options,
-      base::OnceCallback<void(const std::string&)>
-          confirm_unmasking_method_callback,
-      base::OnceClosure cancel_unmasking_closure,
-      CreateAndShowCallback create_and_show_callback);
+  // Show the dialog (and log metrics.)
+  void ShowDialog(CreateAndShowCallback create_and_show_callback);
+
   // Called when we receive a server response after the user accepts (clicks the
   // ok button) on a challenge option. |server_success| represents a successful
   // server response, where true means success and false means an error was
@@ -79,6 +82,9 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
     challenge_options_ = challenge_options;
   }
 
+  base::WeakPtr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+  GetWeakPtr();
+
  private:
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
@@ -94,14 +100,14 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // Tracks whether a challenge option was selected in the current
   // `dialog_view_`.
-  // TODO(crbug.com/1392939): Rename this to `challenge_option_accepted_`, as it
-  // only gets set when the user clicks the accept button after selecting a
+  // TODO(crbug.com/40247983): Rename this to `challenge_option_accepted_`, as
+  // it only gets set when the user clicks the accept button after selecting a
   // challenge option.
   bool challenge_option_selected_ = false;
 
   // The currently unique identifier of the challenge option selected in the
   // Card Authentication Selection Dialog View.
-  // TODO(crbug.com/1392939): Remove this and just add a
+  // TODO(crbug.com/40247983): Remove this and just add a
   // `selected_challenge_option_` object once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOption::ChallengeOptionId selected_challenge_option_id_ =
@@ -109,11 +115,14 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // Contains the challenge option type selected by the user. Currently only
   // kCvc and kSmsOtp are supported.
-  // TODO(crbug.com/1392939): Remove this and just add a
+  // TODO(crbug.com/40247983): Remove this and just add a
   // `selected_challenge_option_` object once we refactor
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOptionType selected_challenge_option_type_ =
       CardUnmaskChallengeOptionType::kUnknownType;
+
+  base::WeakPtrFactory<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

@@ -13,6 +13,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -27,8 +30,8 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback)
     : on_cancel_callback_(std::move(on_cancel_callback)) {
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetModalType(ui::mojom::ModalType::kSystem);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ASH_YES_BUTTON));
   SetAcceptCallback(std::move(on_accept_callback));
   SetShowCloseButton(false);
@@ -79,8 +82,7 @@ AccessibilityFeatureDisableDialog::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const char* AccessibilityFeatureDisableDialog::GetClassName() const {
-  return "AccessibilityFeatureDisableDialog";
-}
+BEGIN_METADATA(AccessibilityFeatureDisableDialog)
+END_METADATA
 
 }  // namespace ash

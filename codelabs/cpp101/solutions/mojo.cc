@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   mojo::core::Init();
 
-  if (argc <= 2) {
+  if (argc < 3) {
     LOG(INFO) << argv[0] << ": missing operand";
     return -1;
   }

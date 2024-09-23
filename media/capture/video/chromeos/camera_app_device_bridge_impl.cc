@@ -206,6 +206,7 @@ void CameraAppDeviceBridgeImpl::GetCameraAppDevice(
     GetCameraAppDeviceCallback callback) {
   CHECK(is_supported_);
   CHECK(ipc_task_runner_->BelongsToCurrentThread());
+  CHECK(ui_task_runner_);
 
   mojo::PendingRemote<cros::mojom::CameraAppDevice> device_remote;
   {
@@ -216,8 +217,8 @@ void CameraAppDeviceBridgeImpl::GetCameraAppDevice(
     if (it != camera_app_devices_.end()) {
       device = it->second.get();
     } else {
-      auto device_impl =
-          std::make_unique<media::CameraAppDeviceImpl>(device_id);
+      auto device_impl = std::make_unique<media::CameraAppDeviceImpl>(
+          device_id, ui_task_runner_);
       const auto& iterator =
           camera_app_devices_.emplace(device_id, std::move(device_impl)).first;
       device = iterator->second.get();
@@ -274,6 +275,11 @@ void CameraAppDeviceBridgeImpl::StopOnIPCThread() {
   base::AutoLock lock(device_map_lock_);
   camera_app_devices_.clear();
   receivers_.Clear();
+}
+
+void CameraAppDeviceBridgeImpl::SetUITaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
+  ui_task_runner_ = ui_task_runner;
 }
 
 }  // namespace media

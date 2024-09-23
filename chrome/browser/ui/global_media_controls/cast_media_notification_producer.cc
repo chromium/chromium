@@ -27,13 +27,13 @@ namespace {
 // until the next time |OnRoutesUpdated()| is called.
 bool ShouldHideNotification(Profile* profile,
                             const media_router::MediaRoute& route) {
-  // TODO(crbug.com/1195382): Display multizone group route.
+  // TODO(crbug.com/40176012): Display multizone group route.
   if (route.is_connecting()) {
     return true;
   }
   // If the user changes the pref to show all Cast sessions, they won't be shown
   // until `OnRoutesUpdated()` is called again.
-  // TODO(crbug.com/726823): Ash currently considers Lacros routes non-local
+  // TODO(crbug.com/41321719): Ash currently considers Lacros routes non-local
   // and hides them if the pref is set to false.
   if (!route.is_local() &&
       !profile->GetPrefs()->GetBoolean(

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/win/jumplist_updater.h"
 
-#include <windows.h>
 #include <objbase.h>
-#include <propkey.h>
+
 #include <shobjidl.h>
+#include <windows.h>
+
+#include <propkey.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"

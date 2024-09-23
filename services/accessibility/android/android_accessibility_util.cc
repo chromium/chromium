@@ -72,7 +72,7 @@ std::optional<ax::mojom::Event> ToAXEvent(
     case mojom::AccessibilityEventType::ANNOUNCEMENT: {
       // NOTE: Announcement event is handled in
       // ArcAccessibilityHelperBridge::OnAccessibilityEvent.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case mojom::AccessibilityEventType::VIEW_SCROLLED:
@@ -88,7 +88,7 @@ std::optional<ax::mojom::Event> ToAXEvent(
       }
     }
     case mojom::AccessibilityEventType::INVALID_ENUM_VALUE: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED:
@@ -221,7 +221,7 @@ ax::mojom::Action ConvertToChromeAction(
     case ax::android::mojom::AccessibilityActionType::SET_PROGRESS:
       return ax::mojom::Action::kNone;
     case mojom::AccessibilityActionType::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ax::mojom::Action::kNone;
   }
 }
@@ -292,7 +292,7 @@ std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type) {
     case mojom::AccessibilityLiveRegionType::ASSERTIVE:
       return "assertive";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();  // Placeholder.
 }

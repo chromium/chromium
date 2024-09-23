@@ -8,21 +8,21 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 7
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='banner'",
+      "name": "LayoutBlockFlow (positioned) DIV id='banner'",
       "bounds": [785, 120],
       "backgroundColor": "#00000080"
     },

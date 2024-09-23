@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <strstream>
 #include <utility>
 #include <vector>
 
@@ -14,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
@@ -158,7 +158,9 @@ TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
           /*show_reason_bfcache_restore=*/false,
           /*show_reason_unfold=*/false));
   const auto end = start + kDuration;
-  std::move(callback).Run(end);
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = end;
+  std::move(callback).Run(details);
 
   std::vector<std::string> expected_histograms;
   base::Extend(expected_histograms, duration_histograms_);
@@ -215,7 +217,9 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
           /*show_reason_bfcache_restore=*/false,
           /*show_reason_unfold=*/false));
   const auto end2 = start2 + kOtherDuration;
-  std::move(callback2).Run(end2);
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = end2;
+  std::move(callback2).Run(details);
 
   // Now the tab switch completes, and adds a duration histogram.
   base::Extend(expected_histograms, duration_histograms_);
@@ -263,7 +267,9 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
           /*show_reason_bfcache_restore=*/false,
           /*show_reason_unfold=*/false));
   const auto end2 = start2 + kOtherDuration;
-  std::move(callback2).Run(end2);
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = end2;
+  std::move(callback2).Run(details);
 
   // IncompleteDuration should be logged for the first TabWasShown, and Duration
   // for the second.
@@ -300,7 +306,9 @@ TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
           /*show_reason_bfcache_restore=*/true,
           /*show_reason_unfold=*/false));
   const auto end = start + kDuration;
-  std::move(callback).Run(end);
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = end;
+  std::move(callback).Run(details);
 
   ExpectHistogramsEmptyExcept({kBfcacheRestoreHistogram});
 
@@ -322,7 +330,9 @@ TEST_P(ContentToVisibleTimeReporterTest,
           /*show_reason_bfcache_restore=*/true,
           /*show_reason_unfold=*/false));
   const auto end = start + kDuration;
-  std::move(callback).Run(end);
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = end;
+  std::move(callback).Run(details);
 
   std::vector<std::string> expected_histograms{kBfcacheRestoreHistogram};
   base::Extend(expected_histograms, duration_histograms_);

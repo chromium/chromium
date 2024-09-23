@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -132,7 +133,7 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
 
 - (void)removeEntryFromItem:(id<ReadingListListItem>)item {
   [self logDeletionOfItem:item];
-  self.model->RemoveEntryByURL(item.entryURL);
+  self.model->RemoveEntryByURL(item.entryURL, FROM_HERE);
 }
 
 - (void)fillReadItems:(NSMutableArray<id<ReadingListListItem>>*)readArray

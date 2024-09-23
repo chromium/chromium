@@ -182,6 +182,15 @@ MemorySummaryResult FakeMemorySummaryResult(
 
 }  // namespace
 
+namespace internal {
+
+// Allow EXPECT_EQ to compare QueryParams, not including the QueryId.
+bool operator==(const QueryParams& a, const QueryParams& b) {
+  return a.resource_types == b.resource_types && a.contexts == b.contexts;
+}
+
+}  // namespace internal
+
 TEST_F(ResourceAttrQueriesTest, QueryBuilder_Params) {
   performance_manager::MockSinglePageInSingleProcessGraph mock_graph(graph());
 
@@ -562,6 +571,13 @@ TEST_F(ResourceAttrQueriesPMTest, RepeatingQueries) {
   MockQueryResultObserver observer;
   scoped_query->AddObserver(&observer);
 
+  // Query should not get a QueryId until it's started. Id's are assigned on the
+  // PM sequence.
+  performance_manager::RunInGraph(
+      [params = scoped_query->GetParamsForTesting()] {
+        EXPECT_EQ(params->GetIdForTesting(), std::nullopt);
+      });
+
   // Returns a gMock matcher expecting that a QueryResultMap has a
   // MemorySummaryResult for main_frame_context().
   auto memory_result_matcher = [&](base::TimeTicks expected_measurement_time) {
@@ -585,6 +601,17 @@ TEST_F(ResourceAttrQueriesPMTest, RepeatingQueries) {
   }
 
   scoped_query->Start(kDelay);
+
+  performance_manager::RunInGraph(
+      [params = scoped_query->GetParamsForTesting()] {
+        EXPECT_NE(params->GetIdForTesting(), std::nullopt);
+
+        // Cloning the params should not clone the id.
+        std::unique_ptr<QueryParams> cloned_params = params->Clone();
+        EXPECT_EQ(*cloned_params, *params);
+        EXPECT_EQ(cloned_params->GetIdForTesting(), std::nullopt);
+      });
+
   task_environment()->FastForwardBy(kDelay * kRepetitions);
 
   // Test changes that happen between repetitions.
@@ -672,6 +699,17 @@ TEST_F(ResourceAttrQueriesPMTest, ThrottleQueryOnce) {
                                       base::TimeTicks::Now());
   };
 
+  // Queries should not get a QueryId until they're started. Id's are assigned
+  // on the PM sequence.
+  QueryParams* cpu_params = cpu_query.GetParamsForTesting();
+  QueryParams* memory_params = memory_query.GetParamsForTesting();
+  QueryParams* memory_cpu_params = memory_cpu_query.GetParamsForTesting();
+  performance_manager::RunInGraph([&] {
+    EXPECT_EQ(cpu_params->GetIdForTesting(), std::nullopt);
+    EXPECT_EQ(memory_params->GetIdForTesting(), std::nullopt);
+    EXPECT_EQ(memory_cpu_params->GetIdForTesting(), std::nullopt);
+  });
+
   // Each observer has its own sequence, since at each tick they could fire in
   // any order.
   ::testing::Sequence cpu_sequence, memory_sequence, memory_cpu_sequence;
@@ -679,6 +717,17 @@ TEST_F(ResourceAttrQueriesPMTest, ThrottleQueryOnce) {
   cpu_query.Start(repeating_query_delay);
   memory_query.Start(repeating_query_delay);
   memory_cpu_query.Start(repeating_query_delay);
+
+  performance_manager::RunInGraph([&] {
+    EXPECT_NE(cpu_params->GetIdForTesting(), std::nullopt);
+    EXPECT_NE(cpu_params->GetIdForTesting(), memory_params->GetIdForTesting());
+    EXPECT_NE(memory_params->GetIdForTesting(), std::nullopt);
+    EXPECT_NE(memory_params->GetIdForTesting(),
+              memory_cpu_params->GetIdForTesting());
+    EXPECT_NE(memory_cpu_params->GetIdForTesting(), std::nullopt);
+    EXPECT_NE(memory_cpu_params->GetIdForTesting(),
+              cpu_params->GetIdForTesting());
+  });
 
   // QueryOnce just before the timer fires the first time.
   EXPECT_CALL(cpu_observer, OnResourceUsageUpdated(_)).InSequence(cpu_sequence);

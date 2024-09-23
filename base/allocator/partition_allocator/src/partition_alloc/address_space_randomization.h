@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_
+#ifndef PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_
+#define PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_
 
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -36,7 +36,7 @@ AslrMask(uintptr_t bits) {
 //
 // clang-format off
 
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
   #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -54,7 +54,7 @@ AslrMask(uintptr_t bits) {
       return AslrAddress(0x7e8000000000ULL);
     }
 
-  #elif BUILDFLAG(IS_WIN)
+  #elif PA_BUILDFLAG(IS_WIN)
 
     // Windows 8.10 and newer support the full 48 bit address range. Since
     // ASLROffset() is non-zero and may cause a carry, use 47 bit masks. See
@@ -67,7 +67,7 @@ AslrMask(uintptr_t bits) {
       return 0x80000000ULL;
     }
 
-  #elif BUILDFLAG(IS_APPLE)
+  #elif PA_BUILDFLAG(IS_APPLE)
 
     // macOS as of 10.12.5 does not clean up entries in page map levels 3/4
     // [PDP/PML4] created from mmap or mach_vm_allocate, even after the region
@@ -80,8 +80,8 @@ AslrMask(uintptr_t bits) {
     // https://chromium-review.googlesource.com/c/v8/v8/+/557958. The difference
     // is that here we clamp to 39 bits, not 32.
     //
-    // TODO(crbug.com/738925): Remove this limitation if/when the macOS behavior
-    // changes.
+    // TODO(crbug.com/40528509): Remove this limitation if/when the macOS
+    // behavior changes.
     PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLRMask() {
       return AslrMask(38);
@@ -98,23 +98,22 @@ AslrMask(uintptr_t bits) {
       return AslrAddress(0x10000000000ULL);
     }
 
-  #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  #elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
-    #if defined(ARCH_CPU_X86_64)
+    #if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 
       // Linux (and macOS) support the full 47-bit user space of x64 processors.
       // Use only 46 to allow the kernel a chance to fulfill the request.
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLRMask() {
         return AslrMask(46);
       }
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLROffset() {
         return AslrAddress(0);
       }
 
-    #elif defined(ARCH_CPU_ARM64)
-
-      #if BUILDFLAG(IS_ANDROID)
-
+    #elif PA_BUILDFLAG(IS_ANDROID) && (PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || PA_BUILDFLAG(PA_ARCH_CPU_RISCV64))
       // Restrict the address range on Android to avoid a large performance
       // regression in single-process WebViews. See https://crbug.com/837640.
       PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
@@ -125,8 +124,8 @@ AslrMask(uintptr_t bits) {
       ASLROffset() {
         return AslrAddress(0x20000000ULL);
       }
-
-      #elif BUILDFLAG(IS_LINUX)
+    #elif PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
+      #if PA_BUILDFLAG(IS_LINUX)
 
       // Linux on arm64 can use 39, 42, 48, or 52-bit user space, depending on
       // page size and number of levels of translation pages used. We use
@@ -154,9 +153,9 @@ AslrMask(uintptr_t bits) {
 
       #endif
 
-    #elif defined(ARCH_CPU_PPC64)
+    #elif PA_BUILDFLAG(PA_ARCH_CPU_PPC64)
 
-      #if BUILDFLAG(IS_AIX)
+      #if PA_BUILDFLAG(IS_AIX)
 
         // AIX has 64 bits of virtual addressing, but we limit the address range
         // to (a) minimize segment lookaside buffer (SLB) misses; and (b) use
@@ -168,7 +167,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x400000000000ULL);
         }
 
-      #elif defined(ARCH_CPU_BIG_ENDIAN)
+      #elif PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
 
         // Big-endian Linux PPC has 44 bits of virtual addressing. Use 42.
         PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
@@ -178,9 +177,19 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0);
         }
 
-      #else  // !BUILDFLAG(IS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
+      #else  // !PA_BUILDFLAG(IS_AIX) && !PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
+        #if PA_BUILDFLAG(IS_LINUX)
 
         // Little-endian Linux PPC has 48 bits of virtual addressing. Use 46.
+        PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t ASLRMask() {
+          return AslrMask(46);
+        }
+        PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t ASLROffset() {
+          return AslrAddress(0);
+        }
+
+        #else
+
         PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
           return AslrMask(46);
         }
@@ -188,9 +197,11 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0);
         }
 
-      #endif  // !BUILDFLAG(IS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
+        #endif
 
-    #elif defined(ARCH_CPU_S390X)
+      #endif  // !PA_BUILDFLAG(IS_AIX) && !PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
+
+    #elif PA_BUILDFLAG(PA_ARCH_CPU_S390X)
 
       // Linux on Z uses bits 22 - 32 for Region Indexing, which translates to
       // 42 bits of virtual addressing. Truncate to 40 bits to allow kernel a
@@ -202,7 +213,7 @@ AslrMask(uintptr_t bits) {
         return AslrAddress(0);
       }
 
-    #elif defined(ARCH_CPU_S390)
+    #elif PA_BUILDFLAG(PA_ARCH_CPU_S390)
 
       // 31 bits of virtual addressing. Truncate to 29 bits to allow the kernel
       // a chance to fulfill the request.
@@ -213,15 +224,16 @@ AslrMask(uintptr_t bits) {
         return AslrAddress(0);
       }
 
-    #else  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_PPC64) &&
-           // !defined(ARCH_CPU_S390X) && !defined(ARCH_CPU_S390)
+    #else  // !PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && !PA_BUILDFLAG(PA_ARCH_CPU_PPC64) &&
+           // !PA_BUILDFLAG(PA_ARCH_CPU_S390X) && !PA_BUILDFLAG(PA_ARCH_CPU_S390)
 
       // For all other POSIX variants, use 30 bits.
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLRMask() {
         return AslrMask(30);
       }
 
-      #if BUILDFLAG(IS_SOLARIS)
+      #if PA_BUILDFLAG(IS_SOLARIS)
 
         // For our Solaris/illumos mmap hint, we pick a random address in the
         // bottom half of the top half of the address space (that is, the third
@@ -237,7 +249,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x80000000ULL);
         }
 
-      #elif BUILDFLAG(IS_AIX)
+      #elif PA_BUILDFLAG(IS_AIX)
 
         // The range 0x30000000 - 0xD0000000 is available on AIX; choose the
         // upper range.
@@ -245,23 +257,24 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x90000000ULL);
         }
 
-      #else  // !BUILDFLAG(IS_SOLARIS) && !BUILDFLAG(IS_AIX)
+      #else  // !PA_BUILDFLAG(IS_SOLARIS) && !PA_BUILDFLAG(IS_AIX)
 
         // The range 0x20000000 - 0x60000000 is relatively unpopulated across a
         // variety of ASLR modes (PAE kernel, NX compat mode, etc) and on macOS
         // 10.6 and 10.7.
-        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+        ASLROffset() {
           return AslrAddress(0x20000000ULL);
         }
 
-      #endif  // !BUILDFLAG(IS_SOLARIS) && !BUILDFLAG(IS_AIX)
+      #endif  // !PA_BUILDFLAG(IS_SOLARIS) && !PA_BUILDFLAG(IS_AIX)
 
-    #endif  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_PPC64) &&
-            // !defined(ARCH_CPU_S390X) && !defined(ARCH_CPU_S390)
+    #endif  // !PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && !PA_BUILDFLAG(PA_ARCH_CPU_PPC64) &&
+            // !PA_BUILDFLAG(PA_ARCH_CPU_S390X) && !PA_BUILDFLAG(PA_ARCH_CPU_S390)
 
-  #endif  // BUILDFLAG(IS_POSIX)
+  #endif  // PA_BUILDFLAG(IS_POSIX)
 
-#elif defined(ARCH_CPU_32_BITS)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
 
   // This is a good range on 32-bit Windows and Android (the only platforms on
   // which we support 32-bitness). Allocates in the 0.5 - 1.5 GiB region. There
@@ -277,12 +290,12 @@ AslrMask(uintptr_t bits) {
 
   #error Please tell us about your exotic hardware! Sounds interesting.
 
-#endif  // defined(ARCH_CPU_32_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
 
-// clang-format on
+    // clang-format on
 
 }  // namespace internal
 
 }  // namespace partition_alloc
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_
+#endif  // PARTITION_ALLOC_ADDRESS_SPACE_RANDOMIZATION_H_

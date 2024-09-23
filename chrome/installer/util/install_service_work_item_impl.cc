@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/install_service_work_item_impl.h"
 
 #include <cguid.h>
@@ -123,6 +128,7 @@ bool operator==(const InstallServiceWorkItemImpl::ServiceConfig& lhs,
 InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const std::wstring& service_name,
     const std::wstring& display_name,
+    const std::wstring& description,
     uint32_t start_type,
     const base::CommandLine& service_cmd_line,
     const base::CommandLine& com_service_cmd_line_args,
@@ -132,6 +138,7 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     : com_registration_work_items_(WorkItem::CreateWorkItemList()),
       service_name_(service_name),
       display_name_(display_name),
+      description_(description),
       start_type_(start_type),
       service_cmd_line_(service_cmd_line),
       com_service_cmd_line_args_(com_service_cmd_line_args),
@@ -534,6 +541,45 @@ std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
   return std::vector<wchar_t>(multi_sz, scan + 1);
 }
 
+std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDescription() const {
+  DCHECK(service_.IsValid());
+
+  constexpr uint32_t kMaxQueryConfigBufferBytes = 8 * 1024;
+
+  // ::QueryServiceConfig2 expects a buffer of at most 8K bytes, according to
+  // documentation. While the size of the buffer can be dynamically computed,
+  // we just assume the maximum size for simplicity.
+  auto buffer = std::make_unique<uint8_t[]>(kMaxQueryConfigBufferBytes);
+  DWORD bytes_needed_ignored = 0;
+  SERVICE_DESCRIPTION* description =
+      reinterpret_cast<SERVICE_DESCRIPTION*>(buffer.get());
+  if (!::QueryServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
+                             buffer.get(), kMaxQueryConfigBufferBytes,
+                             &bytes_needed_ignored)) {
+    PLOG(ERROR) << "QueryServiceConfig2 failed "
+                << GetCurrentServiceName().c_str();
+    return {};
+  }
+
+  return description->lpDescription ? description->lpDescription : L"";
+}
+
+void InstallServiceWorkItemImpl::SetDescription() {
+  DCHECK(service_.IsValid());
+
+  if (description_.empty()) {
+    return;
+  }
+
+  std::wstring desc = description_;
+  SERVICE_DESCRIPTION description = {desc.data()};
+  if (!::ChangeServiceConfig2(service_.Get(), SERVICE_CONFIG_DESCRIPTION,
+                              &description)) {
+    PLOG(WARNING) << "Failed to set service description: "
+                  << GetCurrentServiceName().c_str() << ": " << description_;
+  }
+}
+
 bool InstallServiceWorkItemImpl::InstallNewService() {
   DCHECK(!service_.IsValid());
   bool success = InstallService(
@@ -542,6 +588,8 @@ bool InstallServiceWorkItemImpl::InstallNewService() {
                     kServiceDependencies, GetCurrentServiceDisplayName()));
   if (success)
     rollback_new_service_ = true;
+
+  SetDescription();
   return success;
 }
 
@@ -570,6 +618,7 @@ bool InstallServiceWorkItemImpl::UpgradeService() {
   if (success && upgrade_needed)
     rollback_existing_service_ = true;
 
+  SetDescription();
   return success;
 }
 

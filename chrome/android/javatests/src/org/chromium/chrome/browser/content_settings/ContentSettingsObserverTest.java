@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.content_settings;
 
 import android.text.TextUtils;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -14,13 +15,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -28,7 +30,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsObserver;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ContentSettingsTypeSet;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -49,9 +50,9 @@ public class ContentSettingsObserverTest {
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {BrowsingDataType.SITE_SETTINGS},
@@ -64,7 +65,7 @@ public class ContentSettingsObserverTest {
     @SmallTest
     @UiThreadTest
     public void testContentSettingChanges() throws TimeoutException {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         ContentSettingsObserver observer =
                 new ContentSettingsObserver(profile) {
                     @Override
@@ -84,7 +85,7 @@ public class ContentSettingsObserverTest {
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.BLOCK);
 
-        mCallbackHelper.waitForFirst();
+        mCallbackHelper.waitForOnly();
         Assert.assertNotNull("ContentSettingsTypeSet should not be null.", mLastTypeSet);
         Assert.assertTrue(
                 "ContentSettingsType.JAVASCRIPT should be the latest changed content type.",

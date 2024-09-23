@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/v8-isolate.h"
@@ -75,6 +76,11 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::GetPolicy() const {
   return policy_;
 }
 
+SchedulingPolicy::Feature
+FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::GetFeature() const {
+  return feature_;
+}
+
 const FeatureAndJSLocationBlockingBFCache& FrameOrWorkerScheduler::
     SchedulingAffectingFeatureHandle::GetFeatureAndJSLocationBlockingBFCache()
         const {
@@ -109,12 +115,11 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
-  if (IsRegisterJSSourceLocationBlockingBFCache()) {
+  if (IsRegisterJSSourceLocationBlockingBFCache() &&
+      v8::Isolate::TryGetCurrent()) {
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
-    if (v8::Isolate::TryGetCurrent()) {
-      OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
-    }
+    OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
   } else {
     OnStartedUsingStickyFeature(feature, policy, nullptr);
   }
@@ -135,7 +140,7 @@ void FrameOrWorkerScheduler::RemoveLifecycleObserver(
     LifecycleObserverHandle* handle) {
   DCHECK(handle);
   const auto found = lifecycle_observers_.find(handle);
-  DCHECK(lifecycle_observers_.end() != found);
+  CHECK(lifecycle_observers_.end() != found, base::NotFatalUntil::M130);
   lifecycle_observers_.erase(found);
 }
 

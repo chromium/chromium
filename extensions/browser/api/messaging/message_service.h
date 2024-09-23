@@ -287,8 +287,9 @@ class MessageService : public BrowserContextKeyedAPI,
       const PortId& port_id,
       const Message& message,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
-    if (context_info)
+    if (context_info) {
       PostMessage(port_id, message);
+    }
   }
 
   void DispatchPendingMessages(const PendingMessagesQueue& queue,

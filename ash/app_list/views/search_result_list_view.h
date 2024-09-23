@@ -96,7 +96,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
                                    SearchResultActionType action);
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
@@ -128,7 +129,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from views::View:
   void Layout(PassKey) override;
-  int GetHeightForWidth(int w) const override;
 
   // Fetches the category of results this view should show.
   SearchResult::Category GetSearchCategory();

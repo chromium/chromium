@@ -66,8 +66,8 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
   const auto* const promo_spec = registry_.GetParamsForFeature(feature);
   const bool is_unlimited =
-      promo_spec->promo_subtype() ==
-          user_education::FeaturePromoSpecification::PromoSubtype::kPerApp ||
+      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
+                                         PromoSubtype::kKeyedNotice ||
       promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
                                          PromoSubtype::kLegalNotice ||
       promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
@@ -96,12 +96,13 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
     case user_education::FeaturePromoSpecification::PromoType::kToast:
     case user_education::FeaturePromoSpecification::PromoType::kLegacy:
-      // Toasts can always show and do not impact other IPH.
+    case user_education::FeaturePromoSpecification::PromoType::kRotating:
+      // Toasts and rotating promos can always show and do not impact other IPH.
       break;
 
     case user_education::FeaturePromoSpecification::PromoType::kUnspecified:
       // Should never get here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // All IPH block all other IPH.
@@ -149,6 +150,15 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   }
   if (config.used.storage < config.used.window) {
     config.used.storage = config.used.window;
+  }
+
+  // In V2, since trigger config is overwritten, also remove additional
+  // references in the existing event configs.
+  if (use_v2_behavior_) {
+    std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
+                                            const auto& event_config) {
+      return event_config.name == trigger_name;
+    });
   }
 
   // Set up additional constraints, if specified and not overridden in the

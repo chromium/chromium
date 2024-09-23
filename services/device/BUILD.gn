@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -22,6 +24,7 @@ source_set("lib") {
     ":test_support",
     ":tests",
     "//content/browser",
+    "//content/test:test_support",
     "//services/device/public/cpp:test_support",
   ]
   sources = [
@@ -34,18 +37,19 @@ source_set("lib") {
   deps = [
     ":binder_overrides",
     "//build:chromeos_buildflags",
-    "//services/device/compute_pressure",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/device/public/mojom:geolocation_internals",
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
     "//services/device/screen_orientation",
     "//services/device/time_zone_monitor",
     "//services/device/usb/mojo",
+    "//services/device/vibration",
     "//services/device/wake_lock",
     "//services/service_manager/public/cpp",
     "//ui/gfx",
@@ -64,8 +68,11 @@ source_set("lib") {
     deps += [
       "//services/device/battery",
       "//services/device/hid",
-      "//services/device/vibration",
     ]
+  }
+
+  if (enable_compute_pressure) {
+    deps += [ "//services/device/compute_pressure" ]
   }
 
   if (is_chromeos_ash && use_dbus) {
@@ -130,8 +137,6 @@ source_set("tests") {
 
   sources = [
     "battery/battery_status_service_unittest.cc",
-    "compute_pressure/cpu_probe_manager_unittest.cc",
-    "compute_pressure/pressure_manager_impl_unittest.cc",
     "generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer_unittest.cc",
     "generic_sensor/fake_platform_sensor_and_provider.cc",
     "generic_sensor/fake_platform_sensor_and_provider.h",
@@ -152,7 +157,7 @@ source_set("tests") {
     "geolocation/geolocation_impl_unittest.cc",
     "geolocation/geolocation_provider_impl_unittest.cc",
     "geolocation/geolocation_service_unittest.cc",
-    "geolocation/location_arbitrator_unittest.cc",
+    "geolocation/location_provider_manager_unittest.cc",
     "geolocation/network_location_provider_unittest.cc",
     "geolocation/position_cache_impl_unittest.cc",
     "geolocation/public_ip_address_geolocator_unittest.cc",
@@ -170,7 +175,6 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/system_cpu:test_support",
     "//components/variations",
@@ -178,7 +182,6 @@ source_set("tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
-    "//services/device/compute_pressure",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/geolocation:test_support",
@@ -187,11 +190,20 @@ source_set("tests") {
     "//services/device/public/cpp/power_monitor",
     "//services/device/public/mojom",
     "//services/device/public/mojom:geolocation_internals",
+    "//services/device/vibration",
     "//services/device/wake_lock",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "compute_pressure/cpu_probe_manager_unittest.cc",
+      "compute_pressure/pressure_manager_impl_unittest.cc",
+    ]
+    deps += [ "//services/device/compute_pressure" ]
+  }
 
   if (is_android) {
     sources += [ "generic_sensor/platform_sensor_provider_unittest_android.cc" ]
@@ -205,9 +217,8 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos || is_mac) {
-    sources +=
-        [ "public/cpp/geolocation/geolocation_system_permissions_unittest.cc" ]
+  if (os_level_geolocation_permission_supported) {
+    sources += [ "public/cpp/geolocation/geolocation_system_permission_manager_unittest.cc" ]
   }
 
   if (is_chromeos) {
@@ -258,12 +269,7 @@ source_set("tests") {
       "geolocation/network_location_provider_unittest.cc",
       "geolocation/wifi_data_provider_common_unittest.cc",
     ]
-    deps += [
-      ":device_service_jni_headers",
-      "//services/device/public/java:geolocation_java_test_support",
-      "//services/device/usb:java",
-      "//services/device/vibration/android:vibration_jni_headers",
-    ]
+    deps += [ ":device_service_jni_headers" ]
   } else {
     sources += [
       "battery/battery_monitor_impl_unittest.cc",
@@ -275,7 +281,6 @@ source_set("tests") {
       "//components/variations:test_support",
       "//services/device/battery",
       "//services/device/hid",
-      "//services/device/vibration",
     ]
 
     if ((!is_linux && !is_chromeos) || use_udev) {
@@ -348,6 +353,7 @@ source_set("tests") {
     deps += [
       ":usb_test_gadget",
       "//device/base",
+      "//mojo/public/cpp/test_support:test_utils",
       "//net:test_support",
       "//services/device/public/cpp:test_support",
       "//services/device/public/cpp/usb",
@@ -363,11 +369,25 @@ source_set("tests") {
   }
 
   if (is_apple) {
-    sources += [ "geolocation/core_location_provider_unittest.mm" ]
+    sources += [
+      "geolocation/core_location_provider_unittest.cc",
+      "public/cpp/geolocation/system_geolocation_source_apple_unittest.mm",
+    ]
+    deps += [
+      "//services/device/public/cpp/geolocation",
+      "//third_party/ocmock",
+    ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Foundation.framework",
+    ]
+    if (is_mac) {
+      frameworks += [ "CoreWLAN.framework" ]
+    }
   }
 
   # UsbContext is a libusb-specific object.
-  # TODO(https://crbug.com/1096743) Remove these tests.
+  # TODO(crbug.com/40136337) Remove these tests.
   if (is_mac) {
     sources += [ "usb/usb_context_unittest.cc" ]
     deps += [ "//third_party/libusb" ]

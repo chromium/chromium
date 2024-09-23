@@ -4,13 +4,15 @@
 
 #include "remoting/host/audio_capturer_win.h"
 
+#include <objbase.h>
+
+#include <windows.h>
+
 #include <avrt.h>
 #include <mmreg.h>
 #include <mmsystem.h>
-#include <objbase.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <memory>

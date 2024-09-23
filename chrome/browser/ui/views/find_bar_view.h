@@ -10,10 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
-#include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -43,7 +43,6 @@ class Textfield;
 //
 ////////////////////////////////////////////////////////////////////////////////
 class FindBarView : public views::BoxLayoutView,
-                    public DropdownBarHostDelegate,
                     public views::TextfieldController {
   METADATA_HEADER(FindBarView, views::BoxLayoutView)
 
@@ -54,6 +53,7 @@ class FindBarView : public views::BoxLayoutView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLensButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 
@@ -84,13 +84,14 @@ class FindBarView : public views::BoxLayoutView,
   // Clears the current Match Count value in the Find text box.
   void ClearMatchCount();
 
+  // Claims focus for the text field and selects its contents.
+  void FocusAndSelectAll();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
-
-  // DropdownBarHostDelegate:
-  void FocusAndSelectAll() override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -99,6 +100,10 @@ class FindBarView : public views::BoxLayoutView,
   void OnAfterPaste() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(LegacyFindInPageTest, AccessibleName);
+  const views::ViewAccessibility&
+  GetFindBarMatchCountLabelViewAccessibilityForTesting();
+
   // Starts finding |search_text|.  If the text is empty, stops finding.
   void Find(const std::u16string& search_text);
 
@@ -113,6 +118,16 @@ class FindBarView : public views::BoxLayoutView,
 
   // Returns the color for the icons on the buttons per the current NativeTheme.
   SkColor GetTextColorForIcon();
+
+  // Hides the Lens Overlay entrypoint if search_text is not empty, else, shows
+  // the button.
+  void UpdateLensButtonVisibility(const std::u16string& search_text);
+
+  // Returns the IDS to use for the Lens message.
+  int GetLensOverlayFindBarMessageIds();
+
+  // Returns the IDS to use for the Lens button label.
+  int GetLensOverlayFindBarButtonLabelIds();
 
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
@@ -130,6 +145,7 @@ class FindBarView : public views::BoxLayoutView,
   raw_ptr<views::ImageButton> find_previous_button_;
   raw_ptr<views::ImageButton> find_next_button_;
   raw_ptr<views::ImageButton> close_button_;
+  raw_ptr<views::BoxLayoutView> lens_entrypoint_container_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)

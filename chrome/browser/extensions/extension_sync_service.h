@@ -51,6 +51,12 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // Convenience function to get the ExtensionSyncService for a BrowserContext.
   static ExtensionSyncService* Get(content::BrowserContext* context);
 
+  // Returns whether the given extension should be synced by this class.
+  // Filters out unsyncable extensions as well as themes (which are handled by
+  // ThemeSyncableService instead).
+  static bool ShouldSync(content::BrowserContext* context,
+                         const extensions::Extension& extension);
+
   // Notifies Sync (if needed) of a newly-installed extension or a change to
   // an existing extension. Call this when you change an extension setting that
   // is synced as part of ExtensionSyncData (e.g. incognito_enabled).
@@ -59,11 +65,11 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  void StopSyncing(syncer::DataType type) override;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -75,7 +81,8 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // Special hack: There was a bug where themes incorrectly ended up in the
   // syncer::EXTENSIONS type. This is for cleaning up the data. crbug.com/558299
   // DO NOT USE FOR ANYTHING ELSE!
-  // TODO(crbug.com/862665): This *should* be safe to remove now, but it's not.
+  // TODO(crbug.com/41401013): This *should* be safe to remove now, but it's
+  // not.
   void DeleteThemeDoNotUse(const extensions::Extension& theme);
 
  private:
@@ -101,8 +108,8 @@ class ExtensionSyncService final : public syncer::SyncableService,
                                         int disabled_reasons) override;
 
   // Gets the SyncBundle for the given |type|.
-  extensions::SyncBundle* GetSyncBundle(syncer::ModelType type);
-  const extensions::SyncBundle* GetSyncBundle(syncer::ModelType type) const;
+  extensions::SyncBundle* GetSyncBundle(syncer::DataType type);
+  const extensions::SyncBundle* GetSyncBundle(syncer::DataType type) const;
 
   // Creates the ExtensionSyncData for the given app/extension.
   extensions::ExtensionSyncData CreateSyncData(
@@ -113,18 +120,13 @@ class ExtensionSyncService final : public syncer::SyncableService,
 
   // Collects the ExtensionSyncData for all installed apps or extensions.
   std::vector<extensions::ExtensionSyncData> GetLocalSyncDataList(
-      syncer::ModelType type) const;
+      syncer::DataType type) const;
 
   // Helper for GetLocalSyncDataList.
   void FillSyncDataList(
       const extensions::ExtensionSet& extensions,
-      syncer::ModelType type,
+      syncer::DataType type,
       std::vector<extensions::ExtensionSyncData>* sync_data_list) const;
-
-  // Returns whether the given extension should be synced by this class.
-  // Filters out unsyncable extensions as well as themes (which are handled by
-  // ThemeSyncableService instead).
-  bool ShouldSync(const extensions::Extension& extension) const;
 
   // The normal profile associated with this ExtensionSyncService.
   raw_ptr<Profile> profile_;

@@ -26,6 +26,10 @@ message AttributionFilterData {
   map<string, AttributionFilterValues> filter_values = 1;
 }
 
+message TriggerData {
+  repeated uint32 trigger_data = 1;
+}
+
 // Eventually will migrate other non indexed source fields into this proto.
 message AttributionReadOnlySourceData {
   // Must be non-negative.
@@ -47,6 +51,11 @@ message AttributionReadOnlySourceData {
   optional bool debug_cookie_set = 6;
 
   optional double event_level_epsilon = 7;
+
+  // If absent, will be deserialized using the defaults for the source type.
+  optional TriggerData trigger_data = 8;
+
+  optional AttributionAggregationKey aggregatable_debug_key_piece = 9;
 }
 
 message AttributionEventLevelMetadata {
@@ -60,12 +69,12 @@ message AttributionCommonAggregatableMetadata {
     EXCLUDE = 1;
   }
 
-  optional string verification_token = 2;
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
   optional string coordinator_origin = 4;
   optional string trigger_context_id = 5;
+  optional uint32 filtering_id_max_bytes = 6;
 
-  reserved 1;
+  reserved 1, 2;
   reserved "coordinator";
 }
 
@@ -75,6 +84,7 @@ message AttributionAggregatableMetadata {
   message Contribution {
     optional AttributionAggregationKey key = 1;
     optional uint32 value = 2;
+    optional uint64 filtering_id = 3;
   }
   repeated Contribution contributions = 2;
 }
@@ -83,4 +93,12 @@ message AttributionNullAggregatableMetadata {
   optional AttributionCommonAggregatableMetadata common_data = 1;
   // Stored as microseconds since the Windows epoch (1601-01-01 00:00:00 UTC).
   optional int64 fake_source_time = 2;
+}
+
+message AttributionScopesData {
+  repeated string scopes = 1;
+  // Must be positive.
+  optional uint32 scope_limit = 2;
+  // Must be positive.
+  optional uint32 max_event_states = 3;
 }

@@ -16,10 +16,15 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "net/cookies/canonical_cookie.h"
 
 class Profile;
+
+namespace signin {
+class IdentityManager;
+}
 
 namespace signin_util {
 
@@ -31,10 +36,22 @@ enum class ProfileSeparationPolicyState {
   kMaxValue = kKeepsBrowsingData
 };
 
+// Enum used to share the sign in state with the WebUI.
+enum class SignedInState {
+  kSignedOut = 0,
+  kSignedIn = 1,
+  kSyncing = 2,
+  kSignInPending = 3,
+  kWebOnlySignedIn = 4,
+  kSyncPaused = 5,
+};
+
 using ProfileSeparationPolicyStateSet =
     base::EnumSet<ProfileSeparationPolicyState,
                   ProfileSeparationPolicyState::kEnforcedByExistingProfile,
                   ProfileSeparationPolicyState::kMaxValue>;
+
+using PrimaryAccountError = signin::PrimaryAccountMutator::PrimaryAccountError;
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
 // ForcedSigning doesn't leak across tests.
@@ -129,6 +146,27 @@ bool IsAccountExemptedFromEnterpriseProfileSeparation(Profile* profile,
 void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
                                                bool created);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// TODO(b/339214136): Add a standalone unit for this function.
+// Add an account with `user_email` and `gaia_id` to `profile`, and then set it
+// as the primary account. A invalid refresh token will be set to mimic the
+// behavior of a signed-out user. It is expected that the user is not tracked
+// yet.
+PrimaryAccountError SetPrimaryAccountWithInvalidToken(
+    Profile* profile,
+    const std::string& user_email,
+    const std::string& gaia_id,
+    bool is_under_advanced_protection,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::SourceForRefreshTokenOperation source);
+
+// Returns true if the Chrome is signed into with an account that is in
+// persistent error state. Always return false for Syncing users, even if in
+// error state.
+bool IsSigninPending(signin::IdentityManager* identity_manager);
+
+// Returns the current state of the primary account that is used in Chrome.
+SignedInState GetSignedInState(signin::IdentityManager* identity_manager);
 
 }  // namespace signin_util
 

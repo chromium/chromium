@@ -65,6 +65,12 @@ gfx::TransformOperations TransformAnimationCurveAdapter::GetValue(
   return WrapTransform(gfx::Transform::Compose(to_return));
 }
 
+gfx::TransformOperations TransformAnimationCurveAdapter::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection) const {
+  return GetValue(t);
+}
+
 bool TransformAnimationCurveAdapter::PreservesAxisAlignment() const {
   return (initial_value_.IsIdentity() ||
           initial_value_.IsScaleOrTranslation()) &&

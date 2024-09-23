@@ -17,7 +17,7 @@ BASE_EXPORT size_t
 RecommendedMaxNumberOfThreadsInThreadGroup(size_t min,
                                            size_t max,
                                            double cores_multiplier,
-                                           size_t offset);
+                                           int offset);
 
 }  // namespace base
 

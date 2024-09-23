@@ -5,23 +5,23 @@
 // https://w3c.github.io/webappsec-csp/#idl-index
 
 dictionary SecurityPolicyViolationEventInit : EventInit {
-              // TODO(foolip): The spec says "USVString documentURL".
-    required  DOMString documentURI;
-              // TODO(foolip): The spec says USVString.
-              DOMString referrer = "";
-              // TODO(foolip): The spec says "USVString blockedURL".
-              DOMString blockedURI = "";
-    required  DOMString effectiveDirective;
-    required  DOMString originalPolicy;
-              // TODO(foolip): The spec says USVString.
-              DOMString sourceFile = "";
-              DOMString sample = "";
-    required  SecurityPolicyViolationEventDisposition disposition;
-    required  unsigned short statusCode;
-              // TODO(foolip): The spec says "unsigned long lineno"
-              long      lineNumber = 0;
-              // TODO(foolip): The spec says "unsigned long colno"
-              long      columnNumber = 0;
+    // TODO(foolip): The spec says "USVString documentURL".
+    DOMString documentURI = "";
+    // TODO(foolip): The spec says USVString.
+    DOMString referrer = "";
+    // TODO(foolip): The spec says "USVString blockedURL".
+    DOMString blockedURI = "";
+    DOMString effectiveDirective = "";
+    DOMString originalPolicy = "";
+    // TODO(foolip): The spec says USVString.
+    DOMString sourceFile = "";
+    DOMString sample = "";
+    SecurityPolicyViolationEventDisposition disposition = "enforce";
+    unsigned short statusCode = 0;
+    // TODO(foolip): The spec says "unsigned long lineno"
+    long lineNumber = 0;
+    // TODO(foolip): The spec says "unsigned long colno"
+    long columnNumber = 0;
 
-    required  DOMString violatedDirective;
+    DOMString violatedDirective = "";
 };

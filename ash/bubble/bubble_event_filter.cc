@@ -18,7 +18,7 @@ namespace ash {
 
 BubbleEventFilter::BubbleEventFilter(views::Widget* bubble_widget,
                                      views::View* button,
-                                     base::RepeatingClosure on_click_outside)
+                                     OnClickedOutsideCallback on_click_outside)
     : bubble_widget_(bubble_widget),
       button_(button),
       on_click_outside_(on_click_outside) {
@@ -34,13 +34,13 @@ void BubbleEventFilter::SetButton(views::View* button) {
 }
 
 void BubbleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     ProcessPressedEvent(*event);
   }
 }
 
 void BubbleEventFilter::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     ProcessPressedEvent(*event);
   }
 }
@@ -83,7 +83,7 @@ bool BubbleEventFilter::ShouldRunOnClickOutsideCallback(
 
 void BubbleEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   if (ShouldRunOnClickOutsideCallback(event)) {
-    on_click_outside_.Run();
+    on_click_outside_.Run(event);
   }
 }
 

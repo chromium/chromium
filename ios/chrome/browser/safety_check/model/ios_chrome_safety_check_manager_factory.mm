@@ -9,12 +9,11 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -38,10 +37,15 @@ std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
 
 // static
 IOSChromeSafetyCheckManager*
-IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSChromeSafetyCheckManagerFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+IOSChromeSafetyCheckManager* IOSChromeSafetyCheckManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<IOSChromeSafetyCheckManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

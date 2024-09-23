@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "url/gurl.h"
 
 namespace prerender {

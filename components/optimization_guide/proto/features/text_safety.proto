@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "TextSafetyProto";
+
+package optimization_guide.proto;
+
+message TextSafetyRequest {
+  // The URL of the page that this request originates from, if any.
+  string url = 1;
+
+  // The text to evaluate for safety.
+  string text = 2;
+}
+
+message TextSafetyResponse {
+  // This is intentionally empty, as we will rely on the FILTERED response code
+  // to signal whether the text is unsafe.
+}

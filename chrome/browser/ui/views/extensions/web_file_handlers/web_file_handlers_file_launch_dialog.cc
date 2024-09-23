@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kWebFileHandlersFileLaunchDialogCheckbox);
@@ -107,7 +108,7 @@ void ShowWebFileHandlersFileLaunchDialog(
   checkbox_params.SetIsChecked(g_default_remember_selection);
   checkbox_params.SetVisible(true);
 
-  // TODO(crbug.com/1448893): Add extension name and icon. Show files. Design:
+  // TODO(crbug.com/40269541): Add extension name and icon. Show files. Design:
   // https://docs.google.com/document/d/1h7ZjryB2zYEjUG9DqPLzAM1iSUXr8ZadUUY02ycExAQ
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique))
@@ -135,7 +136,7 @@ void ShowWebFileHandlersFileLaunchDialog(
 
   std::unique_ptr<views::BubbleDialogModelHost> dialog =
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::MODAL_TYPE_WINDOW);
+                                                ui::mojom::ModalType::kWindow);
   dialog->SetOwnedByWidget(true);
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       std::move(dialog), /*context=*/nullptr, /*parent=*/nullptr);

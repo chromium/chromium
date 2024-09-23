@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -29,7 +29,8 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   UpdateVirtualCardEnrollmentRequest(
       const PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
           request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+          callback);
   UpdateVirtualCardEnrollmentRequest(
       const UpdateVirtualCardEnrollmentRequest&) = delete;
   UpdateVirtualCardEnrollmentRequest& operator=(
@@ -42,7 +43,10 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   friend class UpdateVirtualCardEnrollmentRequestTest;
@@ -57,7 +61,7 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
 
   PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       request_details_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback_;
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)> callback_;
   std::optional<std::string> enroll_result_;
 };
 

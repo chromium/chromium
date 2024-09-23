@@ -3,15 +3,25 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
+#include <memory>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "chromeos/ash/components/osauth/impl/auth_factor_presence_cache.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_mode_lifecycle.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_vector_lifecycle.h"
+#include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
-#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/string_utils.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -27,6 +37,16 @@ void AuthHubImpl::InitializeForMode(AuthHubMode target) {
   SwitchToModeImpl(target);
 }
 
+void AuthHubImpl::CancelCurrentAttempt(AuthHubConnector* connector) {
+  if (attempt_handler_->HasOngoingAttempt()) {
+    attempt_handler_->PrepareForShutdown(
+        base::BindOnce(&AuthHubImpl::OnFactorAttemptFinishedForCancel,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  vector_lifecycle_->CancelAttempt();
+}
+
 void AuthHubImpl::Shutdown() {
   SwitchToModeImpl(AuthHubMode::kNone);
 }
@@ -37,8 +57,9 @@ void AuthHubImpl::SwitchToModeImpl(AuthHubMode target) {
     // Eventually, after the current attempt gets canceled, `OnIdle()` will be
     // triggered, which then switches the mode to `target_mode_`.
     if (attempt_handler_->HasOngoingAttempt()) {
-      attempt_handler_->PrepareForShutdown(base::BindOnce(
-          &AuthHubImpl::OnFactorAttemptFinished, weak_factory_.GetWeakPtr()));
+      attempt_handler_->PrepareForShutdown(
+          base::BindOnce(&AuthHubImpl::OnFactorAttemptFinishedForCancel,
+                         weak_factory_.GetWeakPtr()));
       return;
     }
     vector_lifecycle_->CancelAttempt();
@@ -47,7 +68,7 @@ void AuthHubImpl::SwitchToModeImpl(AuthHubMode target) {
   mode_lifecycle_->SwitchToMode(target);
 }
 
-void AuthHubImpl::OnFactorAttemptFinished() {
+void AuthHubImpl::OnFactorAttemptFinishedForCancel() {
   vector_lifecycle_->CancelAttempt();
 }
 
@@ -81,8 +102,9 @@ void AuthHubImpl::StartAuthentication(AccountId account_id,
       pending_attempt_ = attempt;
       pending_consumer_ = consumer;
       if (attempt_handler_->HasOngoingAttempt()) {
-        attempt_handler_->PrepareForShutdown(base::BindOnce(
-            &AuthHubImpl::OnFactorAttemptFinished, weak_factory_.GetWeakPtr()));
+        attempt_handler_->PrepareForShutdown(
+            base::BindOnce(&AuthHubImpl::OnFactorAttemptFinishedForCancel,
+                           weak_factory_.GetWeakPtr()));
         return;
       }
       vector_lifecycle_->CancelAttempt();
@@ -148,7 +170,7 @@ bool AuthHubImpl::PurposeMatchesMode(AuthPurpose purpose, AuthHubMode mode) {
     case AuthHubMode::kInSession:
       return purpose != AuthPurpose::kLogin;
     case AuthHubMode::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -211,7 +233,24 @@ void AuthHubImpl::OnAttemptStarted(const AuthAttemptVector& attempt,
   attempt_handler_->OnFactorsChecked(available_factors, failed_factors);
 }
 
+void AuthHubImpl::OnAttemptCleanedUp(const AuthAttemptVector& attempt) {
+  CHECK(attempt == *current_attempt_);
+  if (authenticated_factor_.has_value()) {
+    AuthProofToken token =
+        engines_[*authenticated_factor_]->StoreAuthenticationContext();
+    attempt_consumer_->OnUserAuthSuccess(*authenticated_factor_, token);
+    authenticated_factor_.reset();
+  }
+}
+
 void AuthHubImpl::OnAttemptFinished(const AuthAttemptVector& attempt) {
+  CHECK(attempt == *current_attempt_);
+  attempt_consumer_ = nullptr;
+  current_attempt_.reset();
+  attempt_handler_.reset();
+}
+
+void AuthHubImpl::OnAttemptCancelled(const AuthAttemptVector& attempt) {
   CHECK(attempt == *current_attempt_);
   attempt_consumer_->OnUserAuthAttemptCancelled();
   attempt_consumer_ = nullptr;
@@ -272,8 +311,13 @@ void AuthHubImpl::OnAuthenticationSuccess(const AuthAttemptVector& attempt,
                                           AshAuthFactor factor) {
   CHECK(attempt == *current_attempt_);
   CHECK(engines_.contains(factor));
-  AuthProofToken token = engines_[factor]->StoreAuthenticationContext();
-  attempt_consumer_->OnUserAuthSuccess(factor, token);
+
+  // Record the authenticated factor and start terminating all engines.
+  // AuthProofToken will be retrieved after all auth engines clean up their
+  // internal states during the termination process, to avoid race conditions
+  // on authenticated UserContext.
+  authenticated_factor_ = factor;
+  vector_lifecycle_->CancelAttempt();
 }
 
 }  // namespace ash

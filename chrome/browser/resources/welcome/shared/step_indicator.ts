@@ -6,52 +6,67 @@
  * @fileoverview This element contains a set of SVGs that together acts as an
  * animated and responsive background for any page that contains it.
  */
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './navi_colors.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {StepIndicatorModel} from './nux_types.js';
-import {getTemplate} from './step_indicator.html.js';
+import {getCss} from './step_indicator.css.js';
+import {getHtml} from './step_indicator.html.js';
 
-const StepIndicatorElementBase = I18nMixin(PolymerElement);
+const StepIndicatorElementBase = I18nMixinLit(CrLitElement);
 
-/** @polymer */
 export class StepIndicatorElement extends StepIndicatorElementBase {
   static get is() {
     return 'step-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      model: Object,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      dots_: {
-        type: Array,
-        computed: 'computeDots_(model.total)',
-      },
+  static override get properties() {
+    return {
+      model: {type: Object},
+      dots_: {type: Array},
     };
   }
 
   model?: StepIndicatorModel;
-  private dots_?: undefined[];
+  protected dots_: number[] = [];
 
-  private computeLabel_(active: number, total: number): string {
-    return this.i18n('stepsLabel', active + 1, total);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('model')) {
+      this.dots_ = this.computeDots_();
+    }
   }
 
-  private computeDots_(): undefined[] {
+  protected getLabel_(): string {
+    return this.model ?
+        this.i18n('stepsLabel', this.model!.active + 1, this.model!.total) :
+        '';
+  }
+
+  private computeDots_(): number[] {
+    assert(this.model);
     // If total is 1, show nothing.
-    return new Array(this.model!.total > 1 ? this.model!.total : 0);
+    const array: number[] = new Array(this.model.total > 1 ? this.model.total : 0);
+    array.fill(0);
+    return array;
   }
 
-  private getActiveClass_(index: number): string {
-    return index === this.model!.active ? 'active' : '';
+  protected getActiveClass_(index: number): string {
+    assert(this.model);
+    return index === this.model.active ? 'active' : '';
   }
 }
+
 customElements.define(StepIndicatorElement.is, StepIndicatorElement);

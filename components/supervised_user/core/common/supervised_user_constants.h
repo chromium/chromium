@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -34,6 +33,22 @@ enum class WebFilterType {
   kMaxValue = kMixed,
 };
 
+// Returns the string equivalent of a Web Filter type. This is a user-visible
+// string included in the user feedback log.
+std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ToggleState)
+enum class ToggleState {
+  kDisabled = 0,
+  kEnabled = 1,
+  kMixed = 2,
+  kMaxValue = kMixed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserToggleState)
+
 // These values corresponds to SupervisedUserSafetyFilterResult in
 // tools/metrics/histograms/enums.xml. If you change anything here, make
 // sure to also update enums.xml accordingly.
@@ -44,7 +59,7 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_BLOCK_SAFESITES = 4,
   FILTERING_BEHAVIOR_BLOCK_MANUAL = 5,
   FILTERING_BEHAVIOR_BLOCK_DEFAULT = 6,
-  FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,
+  FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,  // deprecated
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
 };
 
@@ -78,7 +93,6 @@ extern const char kContentPackDefaultFilteringBehavior[];
 extern const char kContentPackManualBehaviorHosts[];
 extern const char kContentPackManualBehaviorURLs[];
 extern const char kCookiesAlwaysAllowed[];
-extern const char kForceSafeSearch[];
 extern const char kGeolocationDisabled[];
 extern const char kSafeSitesEnabled[];
 extern const char kSigninAllowed[];
@@ -102,17 +116,18 @@ extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
 extern const char kSyncGoogleDashboardURL[];
 
-// URLs for RPCs in the KidsManagement service.
-GURL KidsManagementGetFamilyMembersURL();
-GURL KidsManagementPermissionRequestsURL();
-GURL KidsManagementClassifyURLRequestURL();
-
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
 
 // Histogram name to log Family Link user web filter type segmentation.
 // This filter only applies to supervised user accounts.
 extern const char kFamilyLinkUserLogSegmentWebFilterHistogramName[];
+
+// Histogram name to log Family Link site permissions toggle state.
+extern const char kSitesMayRequestCameraMicLocationHistogramName[];
+
+// Histogram name to log Family Link extensions permissions toggle state.
+extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 
 // Histogram name to log URL filtering results with reason for filter and page
 // transition.
@@ -121,6 +136,19 @@ extern const char kSupervisedUserURLFilteringResultHistogramName[];
 // Histogram name to log top level URL filtering results with reason for filter.
 extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 
+// The URL which the "Managed by your parent" UI links to.
+extern const char kManagedByParentUiMoreInfoUrl[];
+
+// The string used to denote an account that does not have a family member role.
+extern const char kDefaultEmptyFamilyMemberRole[];
+
+// Feedback source name for family member role in Family Link.
+extern const char kFamilyMemberRoleFeedbackTag[];
+
+// Histogram name for the ::ClassifyUrlLoaderThrottle
+extern const char kClassifiedEarlierThanContentResponseHistogramName[];
+extern const char kClassifiedLaterThanContentResponseHistogramName[];
+extern const char kClassifyUrlThrottleStatusHistogramName[];
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

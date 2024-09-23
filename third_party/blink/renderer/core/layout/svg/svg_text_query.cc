@@ -254,8 +254,16 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
     return 0.0f;
   }
   float rotation = item->GetSvgFragmentData()->angle;
-  if (item->Style().IsHorizontalWritingMode()) {
-    return rotation;
+  switch (item->Style().GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      return rotation;
+    case WritingMode::kSidewaysRl:
+      return rotation + 90.0f;
+    case WritingMode::kSidewaysLr:
+      return rotation - 90.0f;
+    case WritingMode::kVerticalRl:
+    case WritingMode::kVerticalLr:
+      break;
   }
   ETextOrientation orientation = item->Style().GetTextOrientation();
   if (orientation == ETextOrientation::kUpright) {
@@ -312,12 +320,14 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
       hit_item->OffsetInContainerFragment();
   // FragmentItem::TextOffsetForPoint() is not suitable here because it
   // returns an offset for the nearest glyph edge.
+  LayoutUnit inline_offset =
+      WritingModeConverter({hit_item->GetWritingMode(), TextDirection::kLtr},
+                           hit_item->Size())
+          .ToLogical(transformed_point, {})
+          .inline_offset;
   unsigned offset_in_item =
       hit_item->TextShapeResult()->CreateShapeResult()->OffsetForPosition(
-          hit_item->ScaleInlineOffset(hit_item->IsHorizontal()
-                                          ? transformed_point.left
-                                          : transformed_point.top),
-          BreakGlyphsOption(true));
+          hit_item->ScaleInlineOffset(inline_offset), BreakGlyphsOption(true));
   return addressable_code_unit_count + offset_in_item;
 }
 

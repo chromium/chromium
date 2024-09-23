@@ -196,7 +196,7 @@ Polymer({
         BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
 
     document.addEventListener('keyup', event => {
-      if (event.key == 'Escape') {
+      if (event.key === 'Escape') {
         this.cancelOrBack_();
         event.preventDefault();
       }
@@ -319,6 +319,7 @@ Polymer({
 
   /**
    * @param {State} state
+   * @param {String} error
    * @returns {string}
    * @private
    */
@@ -333,6 +334,7 @@ Polymer({
         titleId = 'installingTitle';
         break;
       case State.ERROR:
+        // eslint-disable-next-line eqeqeq
         if (error == InstallerError.kNeedUpdate) {
           titleId = 'needUpdateTitle';
         } else {
@@ -366,7 +368,8 @@ Polymer({
    */
   showInstallButton_(state, error) {
     return state === State.CONFIGURE ||
-        (state === State.ERROR && error != NoDiskSpaceError &&
+        (state === State.ERROR && error !== NoDiskSpaceError &&
+         // eslint-disable-next-line eqeqeq
          error != InstallerError.kNeedUpdate);
   },
 
@@ -400,6 +403,7 @@ Polymer({
    * @private
    */
   showSettingsButton_(state, error) {
+    // eslint-disable-next-line eqeqeq
     return state === State.ERROR && error == InstallerError.kNeedUpdate;
   },
 

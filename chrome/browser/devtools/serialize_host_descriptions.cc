@@ -5,10 +5,9 @@
 #include "chrome/browser/devtools/serialize_host_descriptions.h"
 
 #include <map>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
-
-#include "base/strings/string_piece.h"
 
 namespace {
 
@@ -19,7 +18,7 @@ namespace {
 // key |child_key| in the parent's |representation|. This is destructive to the
 // representation stored with the nodes (which gets moved out of them).
 base::Value Serialize(
-    base::StringPiece child_key,
+    std::string_view child_key,
     base::Value* root,
     const std::map<base::Value*, std::vector<base::Value*>>& children) {
   base::Value::List children_list;
@@ -48,7 +47,7 @@ void CreateDictionaryForest(
     base::Value::List* representations) {
   representations->reserve(hosts.size());
 
-  std::map<base::StringPiece, base::Value*> name_to_representation;
+  std::map<std::string_view, base::Value*> name_to_representation;
 
   // First move the representations and map the names to them.
   for (HostDescriptionNode& node : hosts) {
@@ -62,7 +61,7 @@ void CreateDictionaryForest(
   // Now compute children.
   for (HostDescriptionNode& node : hosts) {
     base::Value* node_rep = name_to_representation[node.name];
-    base::StringPiece parent_name = node.parent_name;
+    std::string_view parent_name = node.parent_name;
     if (parent_name.empty()) {
       roots->insert(node_rep);
       continue;
@@ -80,7 +79,7 @@ void CreateDictionaryForest(
 
 base::Value::List SerializeHostDescriptions(
     std::vector<HostDescriptionNode> hosts,
-    base::StringPiece child_key) {
+    std::string_view child_key) {
   // |representations| must outlive |children| and |roots|, which contain
   // pointers to objects in |representations|.
   base::Value::List representations;

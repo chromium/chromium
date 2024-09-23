@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
@@ -28,7 +29,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.BackgroundSyncNetworkUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -88,7 +88,7 @@ public final class BackgroundSyncTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskScheduler.getInstance()
                             .removeObserver(mSchedulerObserver);
@@ -154,14 +154,14 @@ public final class BackgroundSyncTest {
     }
 
     private void forceConnectionType(int connectionType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncNetworkUtils.setConnectionTypeForTesting(connectionType);
                 });
     }
 
     private void disableGooglePlayServicesVersionCheck() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskSchedulerJni.get()
                             .setPlayServicesVersionCheckDisabledForTests(/* disabled= */ true);
@@ -189,7 +189,7 @@ public final class BackgroundSyncTest {
                     }
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackgroundSyncBackgroundTaskScheduler.getInstance()
                             .addObserver(mSchedulerObserver);

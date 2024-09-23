@@ -7,11 +7,12 @@
 
 #include <elf.h>
 
+#include <optional>
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Functions for querying metadata from ELF binaries. All functions are signal
 // safe and require that the file be fully memory mapped.
@@ -38,7 +39,7 @@ size_t BASE_EXPORT ReadElfBuildId(const void* elf_mapped_base,
 
 // Returns the library name from the ELF file mapped at |elf_mapped_base|.
 // Returns an empty result if the name could not be read.
-absl::optional<StringPiece> BASE_EXPORT
+std::optional<std::string_view> BASE_EXPORT
 ReadElfLibraryName(const void* elf_mapped_base);
 
 // Returns a span of ELF program headers for the ELF file mapped at

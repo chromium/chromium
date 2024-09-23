@@ -51,7 +51,8 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   void ExecuteManagePasswordsCommand();
 
   // Put the controller, icon, and bubble into a managing-password state.
-  // TODO(1518786): Make password form url stable without having to override it.
+  // TODO(crbug.com/41491760): Make password form url stable without having to
+  // override it.
   void SetupManagingPasswords(const GURL& password_form_url = GURL());
 
   // Put the controller, icon, and bubble into the confirmation state.
@@ -88,9 +89,16 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   // Get the UI controller for the current WebContents.
   ManagePasswordsUIController* GetController();
 
- private:
-  std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
+ protected:
+  // Creates a form manager using the given password password stores.
+  // If |profile_store| is nullptr, password_manager::StubFormSaver is used for
+  // the profile store. If |account_store| is nullptr, a nullptr
+  // password_manager::FormSaver is used for the account store.
+  std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
+      password_manager::PasswordStoreInterface* profile_store = nullptr,
+      password_manager::PasswordStoreInterface* account_store = nullptr);
 
+ private:
   password_manager::PasswordForm password_form_;
   password_manager::PasswordForm insecure_credential_;
   base::HistogramTester histogram_tester_;

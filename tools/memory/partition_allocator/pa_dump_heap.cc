@@ -13,15 +13,10 @@
 #include <optional>
 #include <string>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -30,6 +25,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/in_slot_metadata.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/thread_cache.h"
 #include "third_party/snappy/src/snappy.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
@@ -37,9 +38,14 @@ namespace partition_alloc::tools {
 
 using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
-using partition_alloc::internal::PartitionPageMetadata;
+using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionPageSize;
-using partition_alloc::internal::PartitionSuperPageExtentEntry;
+template <MetadataKind kind>
+using PartitionPageMetadata =
+    partition_alloc::internal::PartitionPageMetadata<kind>;
+template <MetadataKind kind>
+using PartitionSuperPageExtentEntry =
+    partition_alloc::internal::PartitionSuperPageExtentEntry<kind>;
 using partition_alloc::internal::SystemPageSize;
 
 // See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
@@ -129,10 +135,12 @@ class HeapDumper {
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
       auto extent =
-          RawBuffer<PartitionSuperPageExtentEntry>::ReadFromProcessMemory(
-              reader_, extent_address);
+          RawBuffer<PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>>::
+              ReadFromProcessMemory(reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
-          reinterpret_cast<PartitionSuperPageExtentEntry*>(extent_address));
+          reinterpret_cast<
+              PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*>(
+              extent_address));
       for (uintptr_t super_page = first_super_page_address;
            super_page < first_super_page_address +
                             extent->get()->number_of_consecutive_super_pages *
@@ -173,8 +181,9 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
-        const auto* page_metadata = PartitionPageMetadata::FromAddr(
-            reinterpret_cast<uintptr_t>(data + offset));
+        const auto* page_metadata =
+            PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
+                reinterpret_cast<uintptr_t>(data + offset));
         ret.Set("page_index_in_span", page_metadata->slot_span_metadata_offset);
         if (page_metadata->slot_span_metadata_offset == 0 &&
             page_metadata->slot_span_metadata.bucket) {
@@ -281,7 +290,7 @@ class HeapDumper {
     return super_pages_value;
   }
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   base::Value::List DumpAllocatedSizes() {
     // Note: Here and below, it is safe to follow pointers into the super page,
     // or to the root or buckets, since they share the same address in the this
@@ -344,8 +353,9 @@ class HeapDumper {
           }
           uintptr_t slot_start =
               slot_span_start + slot_index * metadata.bucket->slot_size;
-          auto* ref_count = PartitionRoot::RefCountPointerFromSlotStartAndSize(
-              slot_start, metadata.bucket->slot_size);
+          auto* ref_count =
+              PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
+                  slot_start, metadata.bucket->slot_size);
           uint32_t requested_size = ref_count->requested_size();
 
           // Address space dumping is not synchronized with allocation, meaning
@@ -366,7 +376,7 @@ class HeapDumper {
 
     return ret;
   }
-#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
   base::Value::List DumpBuckets() {
     base::Value::List ret;
@@ -451,9 +461,9 @@ int main(int argc, char** argv) {
   base::Value::Dict overall_dump;
   overall_dump.Set("superpages", dumper.Dump());
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   overall_dump.Set("allocated_sizes", dumper.DumpAllocatedSizes());
-#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
   overall_dump.Set("buckets", dumper.DumpBuckets());
 
@@ -467,7 +477,7 @@ int main(int argc, char** argv) {
     auto f = base::File(json_filename, base::File::Flags::FLAG_CREATE_ALWAYS |
                                            base::File::Flags::FLAG_WRITE);
     if (f.IsValid()) {
-      f.WriteAtCurrentPos(json_string.c_str(), json_string.size());
+      f.WriteAtCurrentPos(base::as_byte_span(json_string));
       LOG(WARNING) << "\n\nDumped JSON to " << json_filename;
       return 0;
     }

@@ -27,7 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_WIDTH_VARIANT_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -44,7 +47,7 @@ const unsigned kFontWidthVariantWidth = 2;
 static_assert(kLastFontWidthVariant >> kFontWidthVariantWidth == 0,
               "FontWidthVariantWidth must be correct");
 
-PLATFORM_EXPORT String ToString(FontWidthVariant);
+PLATFORM_EXPORT WTF::String ToString(FontWidthVariant);
 
 }  // namespace blink
 

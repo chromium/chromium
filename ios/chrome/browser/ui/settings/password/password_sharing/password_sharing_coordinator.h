@@ -34,6 +34,10 @@ class SavedPasswordsPresenter;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Initializes appropriate coordinator displaying the first step in the flow
+// based on the fetched status.
+- (void)showFirstStep;
+
 // Delegate handling coordinator dismissal.
 @property(nonatomic, weak) id<PasswordSharingCoordinatorDelegate> delegate;
 

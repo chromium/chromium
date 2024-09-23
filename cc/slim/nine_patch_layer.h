@@ -10,10 +10,6 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace cc {
-class NinePatchLayer;
-}
-
 namespace cc::slim {
 
 class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
@@ -52,10 +48,8 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
                    float opacity) override;
 
  private:
-  explicit NinePatchLayer(scoped_refptr<cc::NinePatchLayer> cc_layer);
+  NinePatchLayer();
   ~NinePatchLayer() override;
-
-  cc::NinePatchLayer* cc_layer() const;
 
   gfx::Rect border_;
   gfx::Rect aperture_;

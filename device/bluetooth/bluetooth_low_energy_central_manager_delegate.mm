@@ -58,8 +58,13 @@ class BluetoothLowEnergyCentralManagerBridge {
   }
 
  private:
-  raw_ptr<BluetoothLowEnergyDiscoveryManagerMac> discovery_manager_;
-  raw_ptr<BluetoothLowEnergyAdapterApple> adapter_;
+  // TODO(https://crbug.com/330009945): Fix those dangling dangling pointers.
+  // They are dangling on mac_chromium_10.15_rel_ng during
+  // ChromeDriverSecureContextTest.testRemoveAllCredentials test.
+  raw_ptr<BluetoothLowEnergyDiscoveryManagerMac, AcrossTasksDanglingUntriaged>
+      discovery_manager_;
+  raw_ptr<BluetoothLowEnergyAdapterApple, AcrossTasksDanglingUntriaged>
+      adapter_;
 };
 
 }  // namespace device

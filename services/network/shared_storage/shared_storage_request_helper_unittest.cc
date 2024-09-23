@@ -301,10 +301,9 @@ TEST_F(SharedStorageRequestHelperTest,
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
-  std::string value;
-  EXPECT_TRUE(request->extra_request_headers().GetHeader(
-      kSecSharedStorageWritableHeader, &value));
-  EXPECT_EQ(value, kSecSharedStorageWritableValue);
+  EXPECT_THAT(request->extra_request_headers().GetHeader(
+                  kSecSharedStorageWritableHeader),
+              testing::Optional((kSecSharedStorageWritableValue)));
 }
 
 TEST_F(SharedStorageRequestHelperTest,
@@ -314,9 +313,9 @@ TEST_F(SharedStorageRequestHelperTest,
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
-  std::string value;
-  EXPECT_FALSE(request->extra_request_headers().GetHeader(
-      kSecSharedStorageWritableHeader, &value));
+  EXPECT_EQ(request->extra_request_headers().GetHeader(
+                kSecSharedStorageWritableHeader),
+            std::nullopt);
 }
 
 TEST_F(SharedStorageRequestHelperTest,
@@ -406,10 +405,9 @@ class SharedStorageRequestHelperProcessHeaderTest
     auto request = CreateTestUrlRequest(request_url);
     RunProcessOutgoingRequest(request.get());
 
-    std::string value;
-    EXPECT_TRUE(request->extra_request_headers().GetHeader(
-        kSecSharedStorageWritableHeader, &value));
-    EXPECT_EQ(value, kSecSharedStorageWritableValue);
+    EXPECT_THAT(request->extra_request_headers().GetHeader(
+                    kSecSharedStorageWritableHeader),
+                testing::Optional(kSecSharedStorageWritableValue));
     return request;
   }
 

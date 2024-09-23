@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/lazy_filler.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom-forward.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 
@@ -25,15 +26,18 @@ class AuctionSharedStorageHost;
 class AuctionV8Logger;
 class ForDebuggingOnlyBindings;
 class PrivateAggregationBindings;
-class SharedStorageBindings;
+class RealTimeReportingBindings;
 class RegisterAdBeaconBindings;
 class RegisterAdMacroBindings;
 class ReportBindings;
 class SetBidBindings;
 class SetPriorityBindings;
 class SetPrioritySignalsOverrideBindings;
+class SharedStorageBindings;
+class AuctionConfigLazyFiller;
 class BiddingBrowserSignalsLazyFiller;
 class InterestGroupLazyFiller;
+class SellerBrowserSignalsLazyFiller;
 
 // Base class for bindings used with contexts used with ContextRecycler.
 // The expected lifecycle is:
@@ -90,16 +94,15 @@ class CONTENT_EXPORT ContextRecycler {
   }
 
   void AddPrivateAggregationBindings(
-      bool private_aggregation_permissions_policy_allowed);
+      bool private_aggregation_permissions_policy_allowed,
+      bool reserved_once_allowed);
   PrivateAggregationBindings* private_aggregation_bindings() {
     return private_aggregation_bindings_.get();
   }
 
-  void AddSharedStorageBindings(
-      mojom::AuctionSharedStorageHost* shared_storage_host,
-      bool shared_storage_permissions_policy_allowed);
-  SharedStorageBindings* shared_storage_bindings() {
-    return shared_storage_bindings_.get();
+  void AddRealTimeReportingBindings();
+  RealTimeReportingBindings* real_time_reporting_bindings() {
+    return real_time_reporting_bindings_.get();
   }
 
   void AddRegisterAdBeaconBindings();
@@ -128,6 +131,14 @@ class CONTENT_EXPORT ContextRecycler {
     return set_priority_signals_override_bindings_.get();
   }
 
+  void AddSharedStorageBindings(
+      mojom::AuctionSharedStorageHost* shared_storage_host,
+      mojom::AuctionWorkletFunction source_auction_worklet_function,
+      bool shared_storage_permissions_policy_allowed);
+  SharedStorageBindings* shared_storage_bindings() {
+    return shared_storage_bindings_.get();
+  }
+
   void AddInterestGroupLazyFiller();
   InterestGroupLazyFiller* interest_group_lazy_filler() {
     return interest_group_lazy_filler_.get();
@@ -136,6 +147,17 @@ class CONTENT_EXPORT ContextRecycler {
   void AddBiddingBrowserSignalsLazyFiller();
   BiddingBrowserSignalsLazyFiller* bidding_browser_signals_lazy_filler() {
     return bidding_browser_signals_lazy_filler_.get();
+  }
+
+  void AddSellerBrowserSignalsLazyFiller();
+  SellerBrowserSignalsLazyFiller* seller_browser_signals_lazy_filler() {
+    return seller_browser_signals_lazy_filler_.get();
+  }
+
+  void EnsureAuctionConfigLazyFillers(size_t required);
+  std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
+  auction_config_lazy_fillers() {
+    return auction_config_lazy_fillers_;
   }
 
  private:
@@ -160,7 +182,7 @@ class CONTENT_EXPORT ContextRecycler {
 
   std::unique_ptr<ForDebuggingOnlyBindings> for_debugging_only_bindings_;
   std::unique_ptr<PrivateAggregationBindings> private_aggregation_bindings_;
-  std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
+  std::unique_ptr<RealTimeReportingBindings> real_time_reporting_bindings_;
   std::unique_ptr<RegisterAdBeaconBindings> register_ad_beacon_bindings_;
   std::unique_ptr<RegisterAdMacroBindings> register_ad_macro_bindings_;
   std::unique_ptr<ReportBindings> report_bindings_;
@@ -168,6 +190,7 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<SetPriorityBindings> set_priority_bindings_;
   std::unique_ptr<SetPrioritySignalsOverrideBindings>
       set_priority_signals_override_bindings_;
+  std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
 
   // everything here is owned by one of the unique_ptr's above.
   std::vector<raw_ptr<Bindings, VectorExperimental>> bindings_list_;
@@ -175,6 +198,12 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<InterestGroupLazyFiller> interest_group_lazy_filler_;
   std::unique_ptr<BiddingBrowserSignalsLazyFiller>
       bidding_browser_signals_lazy_filler_;
+  // Pointer stability is needed for these since V8 keeps pointers to them.
+  std::vector<std::unique_ptr<AuctionConfigLazyFiller>>
+      auction_config_lazy_fillers_;
+
+  std::unique_ptr<SellerBrowserSignalsLazyFiller>
+      seller_browser_signals_lazy_filler_;
 };
 
 // Helper to enter a context scope on creation and reset all bindings

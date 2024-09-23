@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -56,7 +57,7 @@ void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
   std::move(callback).Run(error, std::string(), std::string(), std::string());
 }
 
-std::string GetKeyName(base::StringPiece request_origin) {
+std::string GetKeyName(std::string_view request_origin) {
   return base::StrCat(
       {ash::attestation::kContentProtectionKeyPrefix, request_origin});
 }
@@ -358,7 +359,7 @@ PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
       return EXPIRY_STATUS_INVALID_X509;
   }
 
-  NOTREACHED() << "Unknown certificate status";
+  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
 }
 
 void PlatformVerificationFlow::RenewCertificateCallback(

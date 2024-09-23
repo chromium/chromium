@@ -27,14 +27,13 @@ class MockResourcePrefetchPredictor : public ResourcePrefetchPredictor {
                                 Profile* profile);
   ~MockResourcePrefetchPredictor() override;
 
-  void RecordPageRequestSummary(
-      std::unique_ptr<PageRequestSummary> summary) override {
-    RecordPageRequestSummaryProxy(summary.get());
+  void RecordPageRequestSummary(const PageRequestSummary& summary) override {
+    RecordPageRequestSummaryProxy(summary);
   }
 
   MOCK_CONST_METHOD2(PredictPreconnectOrigins,
                      bool(const GURL&, PreconnectPrediction*));
-  MOCK_METHOD1(RecordPageRequestSummaryProxy, void(PageRequestSummary*));
+  MOCK_METHOD1(RecordPageRequestSummaryProxy, void(const PageRequestSummary&));
 };
 
 // |include_scheme| and |include_port| can be set to false to simulate legacy
@@ -60,33 +59,13 @@ RedirectData CreateRedirectData(const std::string& primary_key,
                                 uint64_t last_visit_time = 0);
 OriginData CreateOriginData(const std::string& host,
                             uint64_t last_visit_time = 0);
-LcppData CreateLcppData(const std::string& host, uint64_t last_visit_time = 0);
-
-void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
-                                       const std::string& lcp_element_locator,
-                                       double frequency);
-void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
-                                             const std::vector<GURL>& urls,
-                                             double frequency);
-void InitializeFontUrlsBucket(LcppData& lcpp_data,
-                              const std::vector<GURL>& urls,
-                              double frequency);
-void InitializeSubresourceUrlsBucket(LcppData& lcpp_data,
-                                     const std::vector<GURL>& urls,
-                                     double frequency);
-void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
-                                            double frequency);
-void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
-                                                  double frequency);
-void InitializeFontUrlsOtherBucket(LcppData& lcpp_data, double frequency);
-void InitializeSubresourceUrlsOtherBucket(LcppData& lcpp_data,
-                                          double frequency);
 
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
     const std::string& initial_url,
     const std::vector<blink::mojom::ResourceLoadInfoPtr>& resource_load_infos,
-    base::TimeTicks navigation_started = base::TimeTicks::Now());
+    base::TimeTicks navigation_started = base::TimeTicks::Now(),
+    bool main_frame_load_complete = true);
 
 blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
     const std::string& url,
@@ -122,9 +101,6 @@ std::ostream& operator<<(std::ostream& os, const OriginStat& redirect);
 std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request);
 std::ostream& operator<<(std::ostream& os,
                          const PreconnectPrediction& prediction);
-std::ostream& operator<<(std::ostream& os, const LcppData& data);
-std::ostream& operator<<(std::ostream& os,
-                         const LcpElementLocatorBucket& bucket);
 
 bool operator==(const RedirectData& lhs, const RedirectData& rhs);
 bool operator==(const RedirectStat& lhs, const RedirectStat& rhs);
@@ -132,14 +108,6 @@ bool operator==(const PageRequestSummary& lhs, const PageRequestSummary& rhs);
 bool operator==(const OriginRequestSummary& lhs,
                 const OriginRequestSummary& rhs);
 bool operator==(const OriginData& lhs, const OriginData& rhs);
-bool operator==(const LcpElementLocatorBucket& lhs,
-                const LcpElementLocatorBucket& rhs);
-bool operator==(const LcpElementLocatorStat& lhs,
-                const LcpElementLocatorStat& rhs);
-bool operator==(const LcppData& lhs, const LcppData& rhs);
-bool operator==(const LcppStat& lhs, const LcppStat& rhs);
-bool operator==(const LcppStringFrequencyStatData& lhs,
-                const LcppStringFrequencyStatData& rhs);
 bool operator==(const OriginStat& lhs, const OriginStat& rhs);
 bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs);
 bool operator==(const PreconnectPrediction& lhs,

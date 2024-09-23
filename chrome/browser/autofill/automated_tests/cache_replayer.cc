@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 
 #include <algorithm>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -106,8 +106,7 @@ bool CheckNodeType(const base::Value* node,
   return true;
 }
 
-// Parse AutofillQueryContents or AutofillQueryResponseContents from the given
-// |http_text|.
+// Parse AutofillQueryResponse from the given |http_text|.
 template <class T>
 ErrorOr<T> ParseProtoContents(const std::string& http_text) {
   T proto_contents;
@@ -246,7 +245,7 @@ bool RetrieveValueFromRequestNode(const base::Value::Dict& request_node,
   return true;
 }
 
-// Gets AutofillQueryContents from WPR recorded HTTP request body for POST.
+// Gets AutofillPageQueryRequest from WPR recorded HTTP request body for POST.
 ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
     const base::Value::Dict& request_node) {
   std::string decoded_request_text;
@@ -260,7 +259,7 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
       ParseProtoContents<AutofillPageQueryRequest>);
 }
 
-// Gets AutofillQueryResponseContents from WPR recorded HTTP response body.
+// Gets AutofillQueryResponse from WPR recorded HTTP response body.
 // Also populates and returns the split |response_header_text|.
 ErrorOr<AutofillQueryResponse> GetAutofillResponseFromRequestNode(
     const base::Value::Dict& request_node,
@@ -367,7 +366,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
   bool fail_on_error = FailOnError(options);
   bool split_requests_by_form = SplitRequestsByForm(options);
   for (const base::Value& request : query_node.node->GetList()) {
-    // Get AutofillQueryContents from request.
+    // Get AutofillPageQueryRequest from request.
     bool is_post_request =
         GetRequestTypeFromURL(query_node.url) == RequestType::kQueryProtoPOST;
     ErrorOr<AutofillPageQueryRequest> query_request_statusor =
@@ -394,7 +393,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
           continue;
         }
       } else {
-        // Get AutofillQueryResponseContents and response header text.
+        // Get AutofillQueryResponse and response header text.
         std::string response_header_text;
         ErrorOr<AutofillQueryResponse> query_response_statusor =
             GetAutofillResponseFromRequestNode(request.GetDict(),
@@ -405,7 +404,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
           continue;
         }
         // We have a proper request and a proper response, we can populate for
-        // each form in the AutofillQueryContents.
+        // each form in the AutofillPageQueryRequest.
         if (FillFormSplitCache(
                 query_request_statusor.value(), response_header_text,
                 query_response_statusor.value(), cache_to_fill)) {
@@ -415,7 +414,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
     }
     // If we've fallen to this level, something went bad with adding the request
     // node. If fail_on_error is set then abort, else log and try the next one.
-    constexpr base::StringPiece status_msg =
+    constexpr std::string_view status_msg =
         "could not cache query node content";
     if (fail_on_error) {
       return ServerCacheReplayer::Status{
@@ -557,7 +556,7 @@ bool RetrieveAndDecompressStoredHTTP(const ServerCache& cache,
     VLOG(1) << "There is no HTTP body to decompress: " << http_text;
     return true;
   }
-  // TODO(crbug.com/945925): Add compression format detection, return an
+  // TODO(crbug.com/40620146): Add compression format detection, return an
   // error if not supported format.
   // Decompress the body.
   std::string decompressed_body;

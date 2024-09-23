@@ -33,6 +33,10 @@ class CertDbInitializerIOImpl : public net::NSSCertDatabase::Observer {
   // `callback` when it is created.
   net::NSSCertDatabase* GetNssCertDatabase(GetNSSCertDatabaseCallback callback);
 
+  // Similar to LoadSoftwareNssDb(), but will use the internal slot as the
+  // public slot instead of loading the software NSS database from disk.
+  void InitReadOnlyPublicSlot(base::OnceClosure done_callback);
+
   // Loads the software NSS certificate database (a.k.a. public slot). This step
   // should be executed as soon as possbile because the database may contain
   // user defined CA trust settings that are required for loading web pages.

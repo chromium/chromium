@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/office_tasks.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
@@ -30,6 +31,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -54,12 +57,6 @@ namespace display {
 enum class TabletState;
 }  // namespace display
 
-namespace ash::file_system_provider {
-
-class ScopedUserInteraction;
-
-}
-
 namespace file_manager {
 
 // Monitors changes in disk mounts, network connection state and preferences
@@ -77,7 +74,8 @@ class EventRouter
       guest_os::GuestOsMountProviderRegistry::Observer,
       chromeos::DlpClient::Observer,
       apps::AppRegistryCache::Observer,
-      network::NetworkConnectionTracker::NetworkConnectionObserver {
+      network::NetworkConnectionTracker::NetworkConnectionObserver,
+      policy::local_user_files::LocalUserFilesPolicyObserver {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -218,6 +216,14 @@ class EventRouter
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(const network::mojom::ConnectionType type) override;
 
+  // policy::local_user_files::Observer:
+  void OnLocalUserFilesPolicyChanged() override;
+
+  // Records that there's a `CloudOpenTask` for the `file_url`.
+  bool AddCloudOpenTask(const storage::FileSystemURL& file_url);
+  // Removes the record of a `CloudOpenTask` for the `file_url`.
+  void RemoveCloudOpenTask(const storage::FileSystemURL& file_url);
+
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.
   void ForceBroadcastingForTesting(bool enabled) {
@@ -328,16 +334,12 @@ class EventRouter
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<SystemNotificationManager> notification_manager_;
+  std::unique_ptr<OfficeTasks> office_tasks_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   const std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
-
-  // Keeps track of IO tasks interacting with ODFS.
-  std::map<io_task::IOTaskId,
-           std::unique_ptr<ash::file_system_provider::ScopedUserInteraction>>
-      odfs_interactions_;
 
   // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
   bool force_broadcasting_for_testing_ = false;

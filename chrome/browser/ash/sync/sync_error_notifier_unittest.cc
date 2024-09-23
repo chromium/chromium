@@ -94,21 +94,21 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
-  service_.SetPassphraseRequiredForPreferredDataTypes(false);
+  ASSERT_FALSE(service_.GetUserSettings()->IsPassphraseRequired());
   service_.SetInitialSyncFeatureSetupComplete(true);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(false);
 }
 
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
-  service_.SetPassphraseRequiredForPreferredDataTypes(true);
+  service_.GetUserSettings()->SetPassphraseRequired();
   service_.SetInitialSyncFeatureSetupComplete(true);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(true);
 }
 
 TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
-  service_.SetPassphraseRequiredForPreferredDataTypes(true);
+  service_.GetUserSettings()->SetPassphraseRequired();
   service_.SetInitialSyncFeatureSetupComplete(true);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(true);

@@ -79,10 +79,10 @@ class CORE_EXPORT TextOffsetMapping final {
     // The block-in-inline in |block_flow_| before |first_|, e.g.
     //  <span><div>...</div>abc</span>
     //  LayoutInline {SPAN}
-    //    LayoutNGBlockFlow (anonymous) <= block-in-inline
-    //      LayoutNGBlockFlow {DIV}
+    //    LayoutBlockFlow (anonymous) <= block-in-inline
+    //      LayoutBlockFlow {DIV}
     //        ...
-    //      LayoutNGBlockFlow (anonymous)
+    //      LayoutBlockFlow (anonymous)
     //        LayoutText "abc"
     const LayoutObject* block_in_inline_before_ = nullptr;
     const LayoutObject* first_ = nullptr;

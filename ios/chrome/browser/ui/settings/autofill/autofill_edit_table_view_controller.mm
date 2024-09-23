@@ -7,9 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 @interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {
@@ -40,6 +40,14 @@
                                  navigationDelegate:self];
   [self setShouldHideDoneButton:YES];
   [self updateUIForEditState];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector
+                       (hideFormInputAccessoryViewOnTraitChange)];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -59,11 +67,16 @@
               object:nil];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  self.formInputAccessoryView.hidden = IsCompactHeight(self);
+  [self hideFormInputAccessoryViewOnTraitChange];
 }
+#endif
 
 #pragma mark - SettingsRootTableViewController
 
@@ -131,7 +144,8 @@
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED() << "The typing shield should only be present on web";
+  NOTREACHED_IN_MIGRATION()
+      << "The typing shield should only be present on web";
 }
 
 #pragma mark - Helper methods
@@ -192,7 +206,7 @@
 }
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return YES;
 }
 
@@ -229,6 +243,12 @@
       nextPath && [[self.tableView cellForRowAtIndexPath:nextPath]
                       isKindOfClass:TableViewTextEditCell.class];
   self.formInputAccessoryView.nextButton.enabled = isValidNextPath;
+}
+
+// Hides the `formInputAccessoryView` when the UITraitVerticalSizeClass changes
+// on device and the height is deemed to be compact.
+- (void)hideFormInputAccessoryViewOnTraitChange {
+  self.formInputAccessoryView.hidden = IsCompactHeight(self);
 }
 
 #pragma mark - Keyboard handling

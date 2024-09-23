@@ -10,9 +10,11 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -23,7 +25,6 @@
 
 namespace history {
 
-const char URLDatabase::kURLRowFields[] = HISTORY_URL_ROW_FIELDS;
 const int URLDatabase::kNumURLRowFields = 9;
 
 URLDatabase::URLEnumeratorBase::URLEnumeratorBase()
@@ -174,19 +175,16 @@ URLID URLDatabase::AddURLInternal(const URLRow& info, bool is_temporary) {
       " (url, title, visit_count, typed_count, "\
       "last_visit_time, hidden) "\
       "VALUES (?,?,?,?,?,?)"
-  size_t statement_line;
-  const char* statement_sql;
+  sql::Statement statement;
   if (is_temporary) {
-    statement_line = __LINE__;
-    statement_sql = "INSERT INTO temp_urls" ADDURL_COMMON_SUFFIX;
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "INSERT INTO temp_urls" ADDURL_COMMON_SUFFIX));
   } else {
-    statement_line = __LINE__;
-    statement_sql = "INSERT INTO urls" ADDURL_COMMON_SUFFIX;
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "INSERT INTO urls" ADDURL_COMMON_SUFFIX));
   }
   #undef ADDURL_COMMON_SUFFIX
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      sql::StatementID(__FILE__, statement_line), statement_sql));
   statement.BindString(0, database_utils::GurlToDatabaseUrl(info.url()));
   statement.BindString16(1, info.title());
   statement.BindInt(2, info.visit_count());
@@ -275,11 +273,11 @@ bool URLDatabase::CommitTemporaryURLTable() {
 
   // Swap the url table out and replace it with the temporary one.
   if (!GetDB().Execute("DROP TABLE urls")) {
-    NOTREACHED() << GetDB().GetErrorMessage();
+    DUMP_WILL_BE_NOTREACHED() << GetDB().GetErrorMessage();
     return false;
   }
   if (!GetDB().Execute("ALTER TABLE temp_urls RENAME TO urls")) {
-    NOTREACHED() << GetDB().GetErrorMessage();
+    NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
     return false;
   }
 
@@ -290,25 +288,20 @@ bool URLDatabase::CommitTemporaryURLTable() {
 
 bool URLDatabase::InitURLEnumeratorForEverything(URLEnumerator* enumerator) {
   DCHECK(!enumerator->initialized_);
-  std::string sql("SELECT ");
-  sql.append(kURLRowFields);
-  sql.append(" FROM urls");
-  enumerator->statement_.Assign(GetDB().GetUniqueStatement(sql.c_str()));
+  enumerator->statement_.Assign(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT " HISTORY_URL_ROW_FIELDS " FROM urls"));
   enumerator->initialized_ = enumerator->statement_.is_valid();
   return enumerator->statement_.is_valid();
 }
 
 bool URLDatabase::InitURLEnumeratorForSignificant(URLEnumerator* enumerator) {
   DCHECK(!enumerator->initialized_);
-  std::string sql("SELECT ");
-  sql.append(kURLRowFields);
-  sql.append(
-      " FROM urls WHERE hidden = 0 AND "
-      "(last_visit_time >= ? OR visit_count >= ? OR typed_count >= ?)");
-  sql.append(
-      " ORDER BY typed_count DESC, last_visit_time DESC, visit_count "
-      "DESC");
-  enumerator->statement_.Assign(GetDB().GetUniqueStatement(sql.c_str()));
+  static constexpr char kSql[] =
+      "SELECT" HISTORY_URL_ROW_FIELDS
+      "FROM urls WHERE hidden = 0 AND "
+      "(last_visit_time >= ? OR visit_count >= ? OR typed_count >= ?)"
+      " ORDER BY typed_count DESC, last_visit_time DESC, visit_count DESC";
+  enumerator->statement_.Assign(GetDB().GetUniqueStatement(kSql));
   enumerator->statement_.BindTime(0, AutocompleteAgeThreshold());
   enumerator->statement_.BindInt(1, kLowQualityMatchVisitLimit);
   enumerator->statement_.BindInt(2, kLowQualityMatchTypedLimit);
@@ -325,23 +318,24 @@ bool URLDatabase::AutocompleteForPrefix(const std::string& prefix,
   // by clause.
   results->clear();
 
-  const char* sql;
-  size_t line;
+  sql::Statement statement;
   if (typed_only) {
-    sql = "SELECT" HISTORY_URL_ROW_FIELDS "FROM urls "
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT" HISTORY_URL_ROW_FIELDS
+        "FROM urls "
         "WHERE url >= ? AND url < ? AND hidden = 0 AND typed_count > 0 "
         "ORDER BY typed_count DESC, visit_count DESC, last_visit_time DESC "
-        "LIMIT ?";
-    line = __LINE__;
+        "LIMIT ?"));
   } else {
-    sql = "SELECT" HISTORY_URL_ROW_FIELDS "FROM urls "
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT" HISTORY_URL_ROW_FIELDS
+        "FROM urls "
         "WHERE url >= ? AND url < ? AND hidden = 0 "
         "ORDER BY typed_count DESC, visit_count DESC, last_visit_time DESC "
-        "LIMIT ?";
-    line = __LINE__;
+        "LIMIT ?"));
   }
-  sql::Statement statement(
-      GetDB().GetCachedStatement(sql::StatementID(__FILE__, line), sql));
 
   // We will find all strings between "prefix" and this string, which is prefix
   // followed by the maximum character size. Use 8-bit strings for everything
@@ -395,18 +389,16 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
   // could do this query with a couple of LIKE or GLOB statements as well, but
   // those wouldn't use the index, and would run into problems with "wildcard"
   // characters that appear in URLs (% for LIKE, or *, ? for GLOB).
-  std::string sql("SELECT ");
-  sql.append(kURLRowFields);
-  sql.append(" FROM urls WHERE url ");
-  sql.append(allow_base ? ">=" : ">");
-  // Avoid limiting to 1 read to guard against the hypothetical case that a
-  // URL stored in the database is invalid, which requires moving on to the
-  // next best.
-  sql.append(
-      " ? AND url < :end AND url = substr(:end, 1, length(url)) "
-      "AND hidden = 0 AND visit_count >= ? AND typed_count >= ? "
-      "ORDER BY url");
-  sql::Statement statement(GetDB().GetUniqueStatement(sql.c_str()));
+  std::string sql =
+      base::StrCat({"SELECT" HISTORY_URL_ROW_FIELDS "FROM urls WHERE url ",
+                    allow_base ? ">=" : ">",
+                    // Avoid limiting to 1 read to guard against the
+                    // hypothetical case that a URL stored in the database is
+                    // invalid, which requires moving on to the next best.
+                    " ? AND url < :end AND url = substr(:end, 1, length(url)) "
+                    "AND hidden = 0 AND visit_count >= ? AND typed_count >= ? "
+                    "ORDER BY url"});
+  sql::Statement statement(GetDB().GetUniqueStatement(sql));
   statement.BindString(0, base);
   statement.BindString(1, url);   // :end
   statement.BindInt(2, min_visits);
@@ -534,6 +526,29 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   statement.BindString16(
       3, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
   return statement.Run();
+}
+
+bool URLDatabase::GetAggregateURLDataForKeywordSearchTerm(
+    const std::u16string& term,
+    URLRow* url_info) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT SUM(u.visit_count), SUM(u.typed_count), MAX(u.last_visit_time) "
+      "FROM keyword_search_terms kst JOIN urls u ON kst.url_id = u.id "
+      "WHERE kst.normalized_term=? GROUP BY kst.normalized_term"));
+  statement.BindString16(
+      0, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
+
+  if (!statement.Step()) {
+    return false;
+  }
+
+  if (url_info) {
+    url_info->set_visit_count(statement.ColumnInt(0));
+    url_info->set_typed_count(statement.ColumnInt(1));
+    url_info->set_last_visit(statement.ColumnTime(2));
+  }
+  return true;
 }
 
 bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
@@ -696,33 +711,37 @@ bool URLDatabase::DropStarredIDFromURLs() {
 
 bool URLDatabase::CreateURLTable(bool is_temporary) {
   const char* name = is_temporary ? "temp_urls" : "urls";
-  if (GetDB().DoesTableExist(name))
-    return true;
+  if (GetDB().DoesTableExist(name)) {
+    if (!is_temporary) {
+      return true;
+    }
+    if (!GetDB().Execute("DROP TABLE temp_urls")) {
+      NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
+      return false;
+    }
+  }
 
   // Note: revise implementation for InsertOrUpdateURLRowByID() if you add any
   // new constraints to the schema.
-  std::string sql;
-  sql.append("CREATE TABLE ");
-  sql.append(name);
-  sql.append(
-      "("
-      // The id uses AUTOINCREMENT is for sync propose. Sync uses this `id` as
-      // an unique key to identify the URLs. If here did not use AUTOINCREMENT,
-      // and Sync was not working somehow, a ROWID could be deleted and re-used
-      // during this period. Once Sync come back, Sync would use ROWIDs and
-      // timestamps to see if there are any updates need to be synced. And sync
-      // will only see the new URL, but missed the deleted URL.
-      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-      "url LONGVARCHAR,"
-      "title LONGVARCHAR,"
-      "visit_count INTEGER DEFAULT 0 NOT NULL,"
-      "typed_count INTEGER DEFAULT 0 NOT NULL,"
-      "last_visit_time INTEGER NOT NULL,"
-      "hidden INTEGER DEFAULT 0 NOT NULL)");
+  std::string sql = base::StrCat(
+      {"CREATE TABLE ", name,
+       // The id uses AUTOINCREMENT is for sync propose. Sync uses this `id` as
+       // an unique key to identify the URLs. If here did not use AUTOINCREMENT,
+       // and Sync was not working somehow, a ROWID could be deleted and re-used
+       // during this period. Once Sync come back, Sync would use ROWIDs and
+       // timestamps to see if there are any updates need to be synced. And sync
+       // will only see the new URL, but missed the deleted URL.
+       "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+       "url LONGVARCHAR,"
+       "title LONGVARCHAR,"
+       "visit_count INTEGER DEFAULT 0 NOT NULL,"
+       "typed_count INTEGER DEFAULT 0 NOT NULL,"
+       "last_visit_time INTEGER NOT NULL,"
+       "hidden INTEGER DEFAULT 0 NOT NULL)"});
   // IMPORTANT: If you change the columns, also update in_memory_database.cc
   // where the values are copied (InitFromDisk).
 
-  return GetDB().Execute(sql.c_str());
+  return GetDB().Execute(sql);
 }
 
 bool URLDatabase::CreateMainURLIndex() {
@@ -733,7 +752,7 @@ bool URLDatabase::CreateMainURLIndex() {
 bool URLDatabase::RecreateURLTableWithAllContents() {
   // Create a temporary table to contain the new URLs table.
   if (!CreateTemporaryURLTable()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -743,7 +762,15 @@ bool URLDatabase::RecreateURLTableWithAllContents() {
           "last_visit_time, hidden) "
           "SELECT id, url, title, visit_count, typed_count, last_visit_time, "
           "hidden FROM urls")) {
-    NOTREACHED() << GetDB().GetErrorMessage();
+    const char* error_message = GetDB().GetErrorMessage();
+    if (error_message) {
+      // TODO(crbug.com/40901889): used in understanding why this is happening.
+      // Remove once bug is fixed.
+      static crash_reporter::CrashKeyString<256> error_message_crash_key(
+          "recreate_url_table_description");
+      error_message_crash_key.Set(error_message);
+    }
+    DUMP_WILL_BE_NOTREACHED() << error_message;
     return false;
   }
 

@@ -62,7 +62,7 @@ void PulsingInkDropMask::AnimationProgressed(const gfx::Animation* animation) {
 
   // This is a workaround for crbug.com/935808: for scale factors >1,
   // invalidating the mask layer doesn't cause the whole layer to be repainted
-  // on screen. TODO(crbug.com/935808): remove this workaround once the bug is
+  // on screen. TODO(crbug.com/40615539): remove this workaround once the bug is
   // fixed.
   layer_container_->SchedulePaint();
 }

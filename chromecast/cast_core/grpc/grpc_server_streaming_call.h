@@ -114,7 +114,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
       } else {
         response_callback_.Run(status, true);
       }
-      delete this;
+      ReactorBase::DeleteThis();
     }
 
     using AsyncStubCall =

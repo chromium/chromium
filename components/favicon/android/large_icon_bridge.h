@@ -34,7 +34,6 @@ class LargeIconBridge {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_browser_context,
       const base::android::JavaParamRef<jobject>& j_page_url,
-      jboolean may_page_url_be_private,
       jboolean should_trim_page_url_path,
       jint j_network_annotation_hash_code,
       const base::android::JavaParamRef<jobject>& j_callback);
@@ -50,7 +49,8 @@ class LargeIconBridge {
       const base::android::JavaRef<jobject>& j_callback,
       favicon_base::GoogleFaviconServerRequestStatus status) const;
 
-  // TODO(crbug.com/1513063): Remove this when LargeIconService no longer relies
+  // TODO(crbug.com/41485636): Remove this when LargeIconService no longer
+  // relies
   //                          on CancelableTaskTracker.
   base::CancelableTaskTracker cancelable_task_tracker_;
 

@@ -54,4 +54,4 @@ class TextDecoder : public gin::Wrappable<TextDecoder>,
 
 }  // namespace ax
 
-#endif  // SERVICES_ACCESSIBILITY_FEATURES_MOJO_TEXT_ENCODER_H_
+#endif  // SERVICES_ACCESSIBILITY_FEATURES_TEXT_DECODER_H_

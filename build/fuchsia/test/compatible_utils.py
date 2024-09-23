@@ -13,7 +13,8 @@ from typing import Iterable, List, Tuple
 
 _FILTER_DIR = 'testing/buildbot/filters'
 _SSH_KEYS = os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
-
+_CHROME_HEADLESS = 'CHROME_HEADLESS'
+_SWARMING_SERVER = 'SWARMING_SERVER'
 
 class VersionNotFoundError(Exception):
     """Thrown when version info cannot be retrieved from device."""
@@ -31,8 +32,25 @@ def running_unattended() -> bool:
     When running unattended, confirmation prompts and the like are suppressed.
     """
 
-    # TODO(crbug/1401387): Change to mixin based approach.
-    return 'SWARMING_SERVER' in os.environ
+    # TODO(crbug.com/40884247): Change to mixin based approach.
+    # And remove SWARMING_SERVER check when it's no longer needed by dart,
+    # eureka and flutter to partially revert https://crrev.com/c/4112522.
+    return _CHROME_HEADLESS in os.environ or _SWARMING_SERVER in os.environ
+
+
+def force_running_unattended() -> None:
+    """Treats everything as running non-interactively."""
+    if not running_unattended():
+        os.environ[_CHROME_HEADLESS] = '1'
+        assert running_unattended()
+
+
+def force_running_attended() -> None:
+    """Treats everything as running interactively."""
+    if running_unattended():
+        os.environ.pop(_CHROME_HEADLESS, None)
+        os.environ.pop(_SWARMING_SERVER, None)
+        assert not running_unattended()
 
 
 def get_host_arch() -> str:
@@ -114,7 +132,7 @@ def install_symbols(package_paths: Iterable[str],
                            symbol_file)
 
 
-# TODO(crbug.com/1279803): Until one can send files to the device when running
+# TODO(crbug.com/42050403): Until one can send files to the device when running
 # a test, filter files must be read from the test package.
 def map_filter_file_to_package_file(filter_file: str) -> str:
     """Returns the path to |filter_file| within the test component's package."""
@@ -125,7 +143,7 @@ def map_filter_file_to_package_file(filter_file: str) -> str:
     return '/pkg/' + filter_file[filter_file.index(_FILTER_DIR):]
 
 
-# TODO(crbug.com/1496426): Rename to get_product_version.
+# TODO(crbug.com/40938340): Rename to get_product_version.
 def get_sdk_hash(system_image_dir: str) -> Tuple[str, str]:
     """Read version of hash in pre-installed package directory.
     Returns:

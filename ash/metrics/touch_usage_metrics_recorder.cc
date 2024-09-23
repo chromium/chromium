@@ -124,7 +124,7 @@ TouchUsageMetricsRecorder::~TouchUsageMetricsRecorder() {
 }
 
 void TouchUsageMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     NotifyTouchscreenUsageRecorders();
   }
 }

@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
@@ -54,13 +54,14 @@ class ParsedMetadata {
     // are not present in the metadata, attempt to set them using ty.
     std::string ty;
     for (const std::string& entry : service_description.metadata) {
-      const base::StringPiece key_value(entry);
+      const std::string_view key_value(entry);
       const size_t equal_pos = key_value.find("=");
-      if (equal_pos == base::StringPiece::npos)
+      if (equal_pos == std::string_view::npos) {
         continue;
+      }
 
-      const base::StringPiece key = key_value.substr(0, equal_pos);
-      const base::StringPiece value = key_value.substr(equal_pos + 1);
+      const std::string_view key = key_value.substr(0, equal_pos);
+      const std::string_view value = key_value.substr(equal_pos + 1);
       if (key == "rs") {
         rs_ = std::string(value);
       } else if (key == "usb_MFG" || key == "mfg") {
@@ -261,6 +262,8 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
     lister_entry->second->DiscoverNewDevices();
   }
 
+  void OnPermissionRejected() override {}
+
  private:
   // Creates a new device lister for the given |service_type| and adds it to the
   // ones managed by this object.
@@ -299,7 +302,8 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
                    scanner->device_names.end()) {
           protocol = ScanProtocol::kLegacyNetwork;
         } else {
-          NOTREACHED() << "Zeroconf scanner with unknown protocol.";
+          NOTREACHED_IN_MIGRATION()
+              << "Zeroconf scanner with unknown protocol.";
         }
 
         it->second.device_names[protocol].insert(

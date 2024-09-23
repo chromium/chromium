@@ -35,42 +35,38 @@ using GrabSnapshotDataCallback =
 // Returns the snapshot via the provided `callback`. In case of an error, an
 // empty image (`gfx::Image::IsEmpty()`) will be returned.
 
-SNAPSHOT_EXPORT void GrabWindowSnapshotAsync(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    GrabSnapshotImageCallback callback);
+SNAPSHOT_EXPORT void GrabWindowSnapshot(gfx::NativeWindow window,
+                                        const gfx::Rect& source_rect,
+                                        GrabSnapshotImageCallback callback);
 
-SNAPSHOT_EXPORT void GrabViewSnapshotAsync(gfx::NativeView view,
-                                           const gfx::Rect& source_rect,
-                                           GrabSnapshotImageCallback callback);
+SNAPSHOT_EXPORT void GrabViewSnapshot(gfx::NativeView view,
+                                      const gfx::Rect& source_rect,
+                                      GrabSnapshotImageCallback callback);
 
-// Takes a snapshot as with `GrabWindowSnapshotAsync()` and scales it to
+// Takes a snapshot as with `GrabWindowSnapshot()` and scales it to
 // `target_size` (in physical pixels).
 //
 // Returns the snapshot via the provided `callback`. In case of an error, an
 // empty image (`gfx::Image::IsEmpty()`) will be returned.
-SNAPSHOT_EXPORT void GrabWindowSnapshotAndScaleAsync(
+SNAPSHOT_EXPORT void GrabWindowSnapshotAndScale(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
     const gfx::Size& target_size,
     GrabSnapshotImageCallback callback);
 
-// Takes a snapshot as with `GrabWindowSnapshotAsync()` and encodes it as PNG
-// data.
+// Takes a snapshot as with `GrabWindowSnapshot()` and encodes it as PNG data.
 //
 // Returns the data via the provided `callback`. In case of an error, a null
 // pointer will be returned.
-SNAPSHOT_EXPORT void GrabWindowSnapshotAsyncPNG(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    GrabSnapshotDataCallback callback);
+SNAPSHOT_EXPORT void GrabWindowSnapshotAsPNG(gfx::NativeWindow window,
+                                             const gfx::Rect& source_rect,
+                                             GrabSnapshotDataCallback callback);
 
-// Takes a snapshot as with `GrabWindowSnapshotAsync()` and encodes it as JPEG
-// data.
+// Takes a snapshot as with `GrabWindowSnapshot()` and encodes it as JPEG data.
 //
 // Returns the data via the provided `callback`. In case of an error, a null
 // pointer will be returned.
-SNAPSHOT_EXPORT void GrabWindowSnapshotAsyncJPEG(
+SNAPSHOT_EXPORT void GrabWindowSnapshotAsJPEG(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
     GrabSnapshotDataCallback callback);

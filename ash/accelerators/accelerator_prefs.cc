@@ -48,6 +48,10 @@ AcceleratorPrefs::~AcceleratorPrefs() {
 // static:
 void AcceleratorPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShortcutCustomizationAllowed, true);
+  registry->RegisterDictionaryPref(
+      prefs::kDeprecatedAcceleratorNotificationsShownCounts);
+  registry->RegisterDictionaryPref(
+      prefs::kDeprecatedAcceleratorNotificationsLastShown);
 }
 
 void AcceleratorPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {

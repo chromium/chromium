@@ -28,7 +28,7 @@ class SimpleWatcher;
 
 namespace content {
 
-// TODO(https://crbug.com/915966): This class needs unit tests.
+// TODO(crbug.com/40606905): This class needs unit tests.
 
 // Handle wrapper for MHTML serialization to abstract the handle which data
 // is written to. This is instantiated on the heap and is responsible for

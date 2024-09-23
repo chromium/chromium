@@ -17,25 +17,30 @@ import {ExternalDiskStateObserverReceiver, ShimlessRmaServiceInterface, UpdateRo
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 const STATUS_TEXT_KEY_MAP: {[key in UpdateRoFirmwareStatus]: string} = {
-  // kDownloading state is not used in V1.
-  [UpdateRoFirmwareStatus.kDownloading]: '',
+  [UpdateRoFirmwareStatus.kUnknown]: '',
   [UpdateRoFirmwareStatus.kWaitUsb]: 'firmwareUpdateWaitForUsbText',
   [UpdateRoFirmwareStatus.kFileNotFound]: 'firmwareUpdateFileNotFoundText',
+  [UpdateRoFirmwareStatus.kDownloading]: '',
   [UpdateRoFirmwareStatus.kUpdating]: 'firmwareUpdatingText',
   [UpdateRoFirmwareStatus.kRebooting]: 'firmwareUpdateRebootText',
   [UpdateRoFirmwareStatus.kComplete]: 'firmwareUpdateCompleteText',
 };
 
 const STATUS_IMG_MAP: {[key in UpdateRoFirmwareStatus]: string} = {
+  [UpdateRoFirmwareStatus.kUnknown]: '',
   [UpdateRoFirmwareStatus.kWaitUsb]: 'insert_usb',
   [UpdateRoFirmwareStatus.kFileNotFound]: 'error',
+  [UpdateRoFirmwareStatus.kDownloading]: '',
+  [UpdateRoFirmwareStatus.kUpdating]: '',
   [UpdateRoFirmwareStatus.kRebooting]: 'downloading',
   [UpdateRoFirmwareStatus.kComplete]: 'downloading',
 };
 
 const STATUS_ALT_MAP: {[key in UpdateRoFirmwareStatus]: string} = {
+  [UpdateRoFirmwareStatus.kUnknown]: '',
   [UpdateRoFirmwareStatus.kWaitUsb]: 'insertUsbAltText',
   [UpdateRoFirmwareStatus.kFileNotFound]: 'errorAltText',
+  [UpdateRoFirmwareStatus.kDownloading]: '',
   [UpdateRoFirmwareStatus.kUpdating]: 'updateOsAltText',
   [UpdateRoFirmwareStatus.kRebooting]: 'downloadingAltText',
   [UpdateRoFirmwareStatus.kComplete]: 'downloadingAltText',

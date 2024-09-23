@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -74,9 +75,9 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 
 }  // namespace
 
-// TODO(https://crbug.com/1271673): Crashes on Lacros.
-// TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.
-// TODO(https://crbug.com/1271711): Fails on Mac.
+// TODO(crbug.com/40805699): Crashes on Lacros.
+// TODO(crbug.com/40805704): Fails on the linux-wayland-rel bot.
+// TODO(crbug.com/40805725): Fails on Mac.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ChooseDesktopMedia DISABLED_ChooseDesktopMedia
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
                                        webrtc::kFullDesktopScreenId)},
     // cancelDialog()
     {.expect_screens = true, .expect_windows = true, .cancelled = true},
-  // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
+  // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithAudioPermissionGetStream()
       {.expect_tabs = true,
@@ -143,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
      .expect_audio = true,
      .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId, true)},
-  // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
+  // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithoutAudioPermissionGetStream()
       {.expect_tabs = true,
@@ -165,9 +166,9 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
   ASSERT_TRUE(RunExtensionTest("desktop_capture")) << message_;
 }
 
-// TODO(https://crbug.com/1271673): Crashes on Lacros.
-// TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.
-// TODO(https://crbug.com/1271711): Fails on Mac.
+// TODO(crbug.com/40805699): Crashes on Lacros.
+// TODO(crbug.com/40805704): Fails on the linux-wayland-rel bot.
+// TODO(crbug.com/40805725): Fails on Mac.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Delegation DISABLED_Delegation

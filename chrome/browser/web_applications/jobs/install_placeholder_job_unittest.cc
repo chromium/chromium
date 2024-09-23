@@ -29,8 +29,8 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,18 +110,10 @@ class InstallPlaceholderJobTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile());
-    shortcut_manager_ = shortcut_manager.get();
-    FakeWebAppProvider::Get(profile())
-        ->GetOsIntegrationManager()
-        .AsTestOsIntegrationManager()
-        ->SetShortcutManager(std::move(shortcut_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
-    shortcut_manager_ = nullptr;
     WebAppTest::TearDown();
   }
 
@@ -131,11 +123,6 @@ class InstallPlaceholderJobTest : public WebAppTest {
     return static_cast<FakeOsIntegrationManager&>(
         provider()->os_integration_manager());
   }
-
-  TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
-
- private:
-  raw_ptr<TestShortcutManager> shortcut_manager_;
 };
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
@@ -151,20 +138,12 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
-  auto last_install_options =
-      fake_os_integration_manager().get_last_install_options();
-  EXPECT_TRUE(last_install_options->add_to_desktop);
-  EXPECT_TRUE(last_install_options->add_to_quick_launch_bar);
-  EXPECT_FALSE(last_install_options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreOsIntegrationSubManagersEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::NOT_RUN);
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::NOT_RUN);
 }
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
@@ -203,13 +182,10 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
-  if (AreOsIntegrationSubManagersEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
 }
 
 }  // namespace

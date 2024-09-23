@@ -25,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.net.NetworkChangeNotifier;
@@ -48,12 +49,14 @@ import java.util.Set;
  * browser startup when no other promo or modals are shown.
  */
 public class AppLanguagePromoDialog {
-    private Activity mActivity;
-    private ModalDialogManager mModalDialogManager;
-    private PropertyModel mAppLanguageModal;
-    private PropertyModel mLoadingModal;
+    private final Activity mActivity;
+    private final Profile mProfile;
+    private final ModalDialogManager mModalDialogManager;
+    private final PropertyModel mAppLanguageModal;
+    private final PropertyModel mLoadingModal;
+    private final RestartAction mRestartAction;
+
     private LanguageItemAdapter mAdapter;
-    private RestartAction mRestartAction;
 
     /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
@@ -115,9 +118,11 @@ public class AppLanguagePromoDialog {
 
     public AppLanguagePromoDialog(
             Activity activity,
+            Profile profile,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             RestartAction restartAction) {
         mActivity = activity;
+        mProfile = profile;
         mModalDialogManager = modalDialogManagerSupplier.get();
         mRestartAction = restartAction;
 
@@ -149,8 +154,8 @@ public class AppLanguagePromoDialog {
     }
 
     /**
-     * Internal class for managing a list of languages in a RecyclerView.
-     * TODO(https://crbug.com/1325473) Refactor this to a separate file.
+     * Internal class for managing a list of languages in a RecyclerView. TODO(crbug.com/40225510)
+     * Refactor this to a separate file.
      */
     protected static class LanguageItemAdapter
             extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -305,11 +310,9 @@ public class AppLanguagePromoDialog {
 
         AppLanguagePromptRowViewHolder(View view) {
             super(view);
-            mPrimaryNameTextView = ((TextView) itemView.findViewById(R.id.primary_language_name));
-            mSecondaryNameTextView =
-                    ((TextView) itemView.findViewById(R.id.secondary_language_name));
-            mRadioButton =
-                    ((RadioButton) itemView.findViewById(R.id.app_language_prompt_radiobutton));
+            mPrimaryNameTextView = itemView.findViewById(R.id.primary_language_name);
+            mSecondaryNameTextView = itemView.findViewById(R.id.secondary_language_name);
+            mRadioButton = itemView.findViewById(R.id.app_language_prompt_radiobutton);
 
             view.setOnClickListener(this);
             mRadioButton.setOnClickListener(this);
@@ -373,14 +376,14 @@ public class AppLanguagePromoDialog {
      * current location's and users preferred languages at the top.
      */
     protected void showAppLanguageModal() {
+        LanguagesManager languagesManager = LanguagesManager.getForProfile(mProfile);
         // Setup initial language lists.
         LanguageItem currentOverrideLanguage =
-                LanguagesManager.getInstance().getLanguageItem(AppLocaleUtils.getAppLanguagePref());
+                languagesManager.getLanguageItem(AppLocaleUtils.getAppLanguagePref());
         LinkedHashSet<LanguageItem> uiLanguages =
-                new LinkedHashSet<LanguageItem>(
-                        LanguagesManager.getInstance().getAllPossibleUiLanguages());
+                new LinkedHashSet<LanguageItem>(languagesManager.getAllPossibleUiLanguages());
         LinkedHashSet<LanguageItem> topLanguages =
-                getTopLanguages(uiLanguages, currentOverrideLanguage);
+                getTopLanguages(mProfile, uiLanguages, currentOverrideLanguage);
         uiLanguages.removeAll(topLanguages);
         mAdapter = new LanguageItemAdapter(topLanguages, uiLanguages, currentOverrideLanguage);
         // Release all static LanguagesManager resources since they are no longer needed.
@@ -439,7 +442,7 @@ public class AppLanguagePromoDialog {
             recordDismissAction(ActionType.OTHER);
         }
         recordOtherLanguagesShown(mAdapter.areOtherLanguagesShown());
-        TranslateBridge.setAppLanguagePromptShown();
+        TranslateBridge.setAppLanguagePromptShown(mProfile);
     }
 
     public void onDismissConfirmModal(@DialogDismissalCause int dismissalCause) {
@@ -448,20 +451,24 @@ public class AppLanguagePromoDialog {
 
     /**
      * Return an ordered set of LanguageItems that should be shown at the top of the list. These
-     * languages come from the user's current location and preferred languages. The original
-     * system language is replaced with a value that follows the current device language and is
-     * added to the top of the list.
+     * languages come from the user's current location and preferred languages. The original system
+     * language is replaced with a value that follows the current device language and is added to
+     * the top of the list.
+     *
+     * @param profile The current {@link Profile} for this session.
      * @param uiLanguages Collection of possible UI languages.
      * @param currentOverrideLanguage The LanguageItem representing the current UI language.
      * @return An ordered set of LanguageItems.
      */
     private static LinkedHashSet<LanguageItem> getTopLanguages(
-            Collection<LanguageItem> uiLanguages, LanguageItem currentOverrideLanguage) {
+            Profile profile,
+            Collection<LanguageItem> uiLanguages,
+            LanguageItem currentOverrideLanguage) {
         LinkedHashSet<String> topLanguageCodes = new LinkedHashSet<>();
 
-        topLanguageCodes.addAll(LanguageBridge.getULPFromPreference());
+        topLanguageCodes.addAll(LanguageBridge.getULPFromPreference(profile));
         // Add current Accept-Languages to bottom of top languages list.
-        topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes());
+        topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes(profile));
 
         Locale originalSystemLocale =
                 GlobalAppLocaleController.getInstance().getOriginalSystemLocale();
@@ -618,32 +625,38 @@ public class AppLanguagePromoDialog {
 
     /**
      * Displays starts showing the App language prompt if the experiment is enabled.
+     *
      * @param activity The current activity to display the prompt into.
+     * @param profile The current {@link Profile} for this session.
      * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      * @return Whether the prompt was shown or not.
      */
     public static boolean maybeShowPrompt(
             Activity activity,
+            Profile profile,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             RestartAction restartAction) {
-        if (!shouldShowPrompt(NetworkChangeNotifier.isOnline())) return false;
+        if (!shouldShowPrompt(profile, NetworkChangeNotifier.isOnline())) return false;
 
         AppLanguagePromoDialog prompt =
-                new AppLanguagePromoDialog(activity, modalDialogManagerSupplier, restartAction);
+                new AppLanguagePromoDialog(
+                        activity, profile, modalDialogManagerSupplier, restartAction);
         prompt.showAppLanguageModal();
         return true;
     }
 
     /**
+     * @param profile The current {@link Profile} for this session.
      * @param isOnline True if the device is currently online.
      * @return Whether the app language prompt should be shown or not.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static boolean shouldShowPrompt(boolean isOnline) {
+    static boolean shouldShowPrompt(Profile profile, boolean isOnline) {
         // Don't show if prompt has already been shown.
-        if (TranslateBridge.getAppLanguagePromptShown()) return false;
+        if (TranslateBridge.getAppLanguagePromptShown(profile)) return false;
         @TopULPMatchType
-        int hasULPMatch = LanguageBridge.isTopULPBaseLanguage(Locale.getDefault().toLanguageTag());
+        int hasULPMatch =
+                LanguageBridge.isTopULPBaseLanguage(profile, Locale.getDefault().toLanguageTag());
         recordTopULPMatchStatus(hasULPMatch);
         // Don't show if UI language doesn't match the top ULP language.
         if (hasULPMatch != TopULPMatchType.NO) {

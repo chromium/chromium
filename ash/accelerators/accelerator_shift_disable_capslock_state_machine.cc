@@ -27,8 +27,8 @@ AcceleratorShiftDisableCapslockStateMachine::
 
 void AcceleratorShiftDisableCapslockStateMachine::OnKeyEvent(
     ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_RELEASED &&
-      event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyReleased &&
+      event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -44,7 +44,7 @@ void AcceleratorShiftDisableCapslockStateMachine::OnKeyEvent(
     // except kTrigger will allow the accelerator to be activated.
     case ShiftDisableState::kStart:
     case ShiftDisableState::kTrigger:
-      if (event->type() == ui::ET_KEY_RELEASED) {
+      if (event->type() == ui::EventType::kKeyReleased) {
         current_state_ = ShiftDisableState::kStart;
         return;
       }
@@ -61,7 +61,7 @@ void AcceleratorShiftDisableCapslockStateMachine::OnKeyEvent(
     // kSuppress.
     // If Shift is released, move to kTrigger.
     case ShiftDisableState::kPrimed:
-      if (event->type() == ui::ET_KEY_PRESSED) {
+      if (event->type() == ui::EventType::kKeyPressed) {
         if (kShiftKeys.contains(event->key_code())) {
           break;
         }
@@ -90,8 +90,8 @@ void AcceleratorShiftDisableCapslockStateMachine::OnKeyEvent(
 
 void AcceleratorShiftDisableCapslockStateMachine::OnMouseEvent(
     ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED &&
-      event->type() != ui::ET_MOUSE_RELEASED) {
+  if (event->type() != ui::EventType::kMousePressed &&
+      event->type() != ui::EventType::kMouseReleased) {
     return;
   }
 
@@ -101,7 +101,7 @@ void AcceleratorShiftDisableCapslockStateMachine::OnMouseEvent(
     case ShiftDisableState::kStart:
     case ShiftDisableState::kTrigger:
     case ShiftDisableState::kPrimed:
-      if (event->type() == ui::ET_MOUSE_PRESSED) {
+      if (event->type() == ui::EventType::kMousePressed) {
         current_state_ = ShiftDisableState::kSuppress;
       }
       break;
@@ -109,7 +109,7 @@ void AcceleratorShiftDisableCapslockStateMachine::OnMouseEvent(
     // If the mouse is released during kSuppress and there are no keys pressed,
     // move back to kStart.
     case ShiftDisableState::kSuppress:
-      if (event->type() == ui::ET_MOUSE_RELEASED &&
+      if (event->type() == ui::EventType::kMouseReleased &&
           !input_controller_->AreAnyKeysPressed()) {
         current_state_ = ShiftDisableState::kStart;
       }

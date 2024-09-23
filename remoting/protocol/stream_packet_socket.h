@@ -45,8 +45,6 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
   // the initialization succeeds.
   bool InitClientTcp(const rtc::SocketAddress& local_address,
                      const rtc::SocketAddress& remote_address,
-                     const rtc::ProxyInfo& proxy_info,
-                     const std::string& user_agent,
                      const rtc::PacketSocketTcpOptions& tcp_options);
 
   // rtc::AsyncPacketSocket interface.

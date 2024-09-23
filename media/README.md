@@ -60,8 +60,6 @@ playback.
 
 * test/ - Code and data for testing the media playback pipeline.
 
-* tools/ - Standalone media test tools.
-
 * video/ - Abstract hardware video decoder interfaces and tooling.
 
 

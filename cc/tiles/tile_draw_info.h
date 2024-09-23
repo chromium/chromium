@@ -31,7 +31,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool NeedsRaster() const {
@@ -43,7 +43,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -77,6 +77,7 @@ class CC_EXPORT TileDrawInfo {
   }
 
   inline bool has_resource() const { return !!resource_; }
+  bool is_resource_ready_to_draw() const { return is_resource_ready_to_draw_; }
 
   const ResourcePool::InUsePoolResource& GetResource() const;
 

@@ -7,13 +7,16 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
 #include <array>
 #include <concepts>
+#include <iosfwd>
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <span>
 #include <type_traits>
 #include <utility>
@@ -21,14 +24,11 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/template_util.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "base/types/to_address.h"
 
 namespace base {
-
-// [views.constants]
-constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
 
 template <typename T,
           size_t Extent = dynamic_extent,
@@ -52,15 +52,23 @@ concept CompatibleRange =
     LegalDataConversion<std::ranges::range_reference_t<R>, T> &&
     (std::ranges::borrowed_range<R> || std::is_const_v<T>);
 
+template <typename T>
+concept LegacyRangeDataIsPointer = std::is_pointer_v<T>;
+
+template <typename R>
+concept LegacyRange = requires(R& r) {
+  { std::ranges::data(r) } -> LegacyRangeDataIsPointer;
+  { std::ranges::size(r) } -> std::convertible_to<size_t>;
+};
+
 // NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
 // code that was written prior to C++20 being standardized and assumes providing
 // .data() and .size() is sufficient.
 // TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
 // callsites.
 template <typename T, typename R>
-concept LegacyCompatibleRange = requires(R& r) {
+concept LegacyCompatibleRange = LegacyRange<R> && requires(R& r) {
   { *std::ranges::data(r) } -> LegalDataConversion<T>;
-  std::ranges::size(r);
 };
 
 template <size_t I>
@@ -93,6 +101,18 @@ constexpr size_t must_not_be_dynamic_extent() {
       "EXTENT should only be used for containers with a static extent.");
   return kExtent;
 }
+
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::equality_comparable_with<T, U>)
+constexpr bool span_eq(span<T, N> l, span<U, M> r);
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::three_way_comparable_with<T, U>)
+constexpr auto span_cmp(span<T, N> l, span<U, M> r)
+    -> decltype(l[0u] <=> r[0u]);
+template <class T, size_t N>
+constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 
 }  // namespace internal
 
@@ -141,28 +161,31 @@ constexpr size_t must_not_be_dynamic_extent() {
 //     char str_buffer[100];
 //     SafeSNPrintf(str_buffer, "Pi ~= %lf", 3.14);
 //
-// Dynamic vs Fixed size spans
-// ---------------------------
+// Dynamic-extent spans vs fixed-extent spans
+// ------------------------------------------
 //
-// Normally spans have a dynamic size, which is represented as a type as
-// `span<T>`. However it is possible to encode the size of the span into the
-// type as a second parameter such as `span<T, N>`. When working with fixed-size
-// spans, the compiler will check the size of operations and prevent compilation
-// when an invalid size is used for an operation such as assignment or
-// `copy_from()`. However operations that produce a new span will make a
-// dynamic-sized span by default. See below for how to prevent that.
+// A `span<T>` has a dynamic extent—the size of the sequence of objects it
+// refers to is only known at runtime. It is also possible to create a span with
+// a fixed size at compile time by specifying the second template parameter,
+// e.g. `span<int, 6>` is a span of 6 elements. Operations on a fixed-extent
+// span will fail to compile if an index or size would lead to an out-of-bounds
+// access.
 //
-// Fixed-size spans implicitly convert to a dynamic-size span, throwing away the
-// compile-time size information from the type signature. So most code should
-// work with dynamic-sized `span<T>` types and not worry about the existence of
-// fixed-size spans.
+// A fixed-extent span implicitly converts to a dynamic-extent span (e.g.
+// `span<int, 6>` is implicitly convertible to `span<int>`), so most code that
+// operates on spans of arbitrary length can just accept a `span<T>`: there is
+// no need to add an additional overload for specially handling the `span<T, N>`
+// case.
 //
-// It is possible to convert from a dynamic-size to a fixed-size span (or to
-// move from a fixed-size span to another fixed-size span) but it requires
-// writing an the size explicitly in the code. Methods like `first` can be
-// passed a size as a template argument, such as `first<N>()` to generate a
-// fixed-size span. And the `make_span` function can be given a compile-time
-// size in a similar way with `make_span<N>()`.
+// There are several ways to go from a dynamic-extent span to a fixed-extent
+// span:
+// - Use the convenience `to_fixed_extent<N>()` method. This returns
+//   `std::nullopt` if `size() != N`.
+// - Use `first<N>()`, `last<N>()`, or `subspan<Index, N>()` to create a
+//   subsequence of the original span. These methods will `CHECK()` at runtime
+//   if the requested subsequence would lead to an out-of-bounds access.
+// - Explicitly construct `span<T, N>` from `span<T>`: this will `CHECK()` at
+//   runtime if the input span's `size()` is not exactly `N`.
 //
 // Spans with "const" and pointers
 // -------------------------------
@@ -207,6 +230,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 // Differences from [span.deduct]:
 // - The deduction guides from a contiguous range are folded into a single one,
 //   and treat borrowed ranges correctly.
+// - Add deduction guide from rvalue array.
 //
 // Other differences:
 // - Using StrictNumeric<size_t> instead of size_t where possible.
@@ -217,9 +241,18 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - as_byte_span() function.
 // - as_writable_byte_span() function.
 // - copy_from() method.
+// - copy_from_nonoverlapping() method.
 // - span_from_ref() function.
 // - byte_span_from_ref() function.
+// - span_from_cstring() function.
+// - span_with_nul_from_cstring() function.
+// - byte_span_from_cstring() function.
+// - byte_span_with_nul_from_cstring() function.
 // - split_at() method.
+// - to_fixed_extent() method.
+// - operator==() comparator function.
+// - operator<=>() comparator function.
+// - operator<<() printing function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -283,9 +316,14 @@ class GSL_POINTER span {
          // We can not protect here generally against an invalid iterator/count
          // being passed in, since we have no context to determine if the
          // iterator or count are valid.
-        data_(std::to_address(first)) {
+        data_(base::to_address(first)) {
     // Guarantees that the N in the type signature is correct.
     CHECK(N == count);
+
+    // `count != 0` implies non-null `data_`.  Consider using
+    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // accompanied by the actual data.
+    DCHECK(count == 0 || !!data_);
   }
 
   // Constructs a span from a contiguous iterator and a size.
@@ -325,6 +363,17 @@ class GSL_POINTER span {
 
   template <typename R, size_t X = internal::ExtentV<R>>
     requires(internal::CompatibleRange<T, R> && (X == N || X == dynamic_extent))
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
+      // SAFETY: The std::ranges::begin() and std::ranges:end() functions always
+      // give a valid iterator pair.
+      : UNSAFE_BUFFERS(
+            span(std::ranges::begin(range), std::ranges::end(range))) {}
+
+  template <typename R, size_t X = internal::ExtentV<R>>
+    requires(internal::LegacyCompatibleRange<T, R> &&
+             (X == N || X == dynamic_extent) &&
+             !internal::CompatibleRange<T, R>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
       // SAFETY: The std::ranges::size() function gives the number of elements
@@ -529,24 +578,94 @@ class GSL_POINTER span {
     return reverse_iterator(begin());
   }
 
-  // Bounds-checked copy from a non-overlapping span. The spans must be the
-  // exact same size or a hard CHECK() occurs. If the two spans overlap,
-  // Undefined Behaviour occurs.
+  // Bounds-checked copy from a span. The spans must be the exact same size for
+  // the method to be callable.
   //
   // This is a non-std extension that is inspired by the Rust
   // slice::copy_from_slice() method.
   //
+  // If it's known the spans can not overlap, `copy_from_nonoverlapping()`
+  // provides an unsafe alternative that avoids intermediate copies.
+  constexpr void copy_from(span<const T, N> other)
+    requires(!std::is_const_v<T>)
+  {
+    if constexpr (std::is_trivially_copyable_v<T>) {
+      if constexpr (N > 0) {
+        // Avoid having to look for overlap and pick a direction, memmove allows
+        // arbitrary overlap.
+        memmove(data(), other.data(), size_bytes());
+      }
+    } else {
+      // Use intptrs as pointers from different allocations are not comparable.
+      const auto data_intptr = reinterpret_cast<uintptr_t>(data());
+      const auto other_data_intptr = reinterpret_cast<uintptr_t>(other.data());
+      if (data_intptr < other_data_intptr) {
+        // SAFETY: The std::copy() here does not check bounds, but the compiler
+        // has verified that `this` and `other` have `N` elements (and are
+        // pointers of the same type) through the parameter's type, so `data()`
+        // and `other.data()` both point to at least `N` elements.
+        UNSAFE_BUFFERS(std::copy(other.data(), other.data() + N, data()));
+      } else if (data_intptr != other_data_intptr) {
+        // SAFETY: The std::copy() here does not check bounds, but the compiler
+        // has verified that `this` and `other` have `N` elements (and are
+        // pointers of the same type) through the parameter's type, so `data()`
+        // and `other.data()` both point to at least `N` elements.
+        UNSAFE_BUFFERS(
+            std::copy_backward(other.data(), other.data() + N, data() + N));
+      }
+    }
+  }
+
+  // Bounds-checked copy from a span. The spans must be the exact same size or a
+  // hard CHECK() occurs. The spans are allowed to overlap.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // If it's known the spans can not overlap, `copy_from_nonoverlapping()`
+  // provides an unsafe alternative that avoids intermediate copies.
+  //
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T, N> other) {
-    CHECK_EQ(size_bytes(), other.size_bytes());
-    // Verify non-overlapping in developer builds.
-    //
-    // SAFETY: span provides that data() points to at least size() many
-    // elements, so adding size() to the data() pointer is well-defined.
-    DCHECK(UNSAFE_BUFFERS(data() + size()) <= other.data() ||
-           data() >= UNSAFE_BUFFERS(other.data() + other.size()));
+  //
+  // # Implementation note
+  // The parameter is taken as a template to avoid implicit conversion where
+  // span<T, N> can also be constructed from it. If the input is a fixed-length
+  // span then we want to use the other overload and reject sizes that don't
+  // match at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
+  constexpr void copy_from(const R& other)
+    requires(!std::is_const_v<T>)
+  {
+    return copy_from(span<const T, N>(other));
+  }
+
+  // Bounds-checked copy from a non-overlapping span. The spans must be the
+  // exact same size for the method to be callable.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // # Safety
+  // The `other` span must not overlap with `this` or Undefined Behaviour may
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
+  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
+      span<const T, N> other)
+    requires(!std::is_const_v<T>)
+  {
+    // Verify non-overlapping in developer builds. Use intptrs as pointers from
+    // different allocations are not comparable.
+    const auto data_intptr = reinterpret_cast<uintptr_t>(data());
+    const auto other_data_intptr = reinterpret_cast<uintptr_t>(other.data());
+    DCHECK(data_intptr + size_bytes() <= other_data_intptr ||
+           data_intptr >= other_data_intptr + size_bytes());
     // When compiling with -Oz, std::ranges::copy() does not get inlined, which
     // makes copy_from() very expensive compared to memcpy for small sizes (up
     // to around 4x slower). We observe that this is because ranges::copy() uses
@@ -561,12 +680,75 @@ class GSL_POINTER span {
     // size_bytes(), which while computable at compile time when `other` has a
     // fixed size, the optimizer stumbles on with -Oz.
     //
-    // SAFETY: The copy() here does not check bounds, but we have verified that
-    // `this` and `other` have the same bounds above (and are pointers of the
-    // same type), so `data()` and `other.data()` both have at least
-    // `other.size()` elements.
-    UNSAFE_BUFFERS(
-        std::copy(other.data(), other.data() + other.size(), data()));
+    // SAFETY: The std::copy() here does not check bounds, but we have verified
+    // that `this` and `other` have the same bounds above (and are pointers of
+    // the same type), so `data()` and `other.data()` both have at least
+    // `N` elements.
+    UNSAFE_BUFFERS(std::copy(other.data(), other.data() + N, data()));
+  }
+
+  // Bounds-checked copy from a non-overlapping span. The spans must be the
+  // exact same size or a hard CHECK() occurs. If the two spans overlap,
+  // Undefined Behaviour may occur.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // # Checks
+  // The function CHECKs that the `other` span has the same size as itself and
+  // will terminate otherwise.
+  //
+  // # Safety
+  // The `other` span must not overlap with `this` or Undefined Behaviour may
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
+  //
+  // # Implementation note
+  // The parameter is taken as a template to avoid implicit conversion where
+  // span<T, N> can also be constructed from it. If the input is a fixed-length
+  // span then we want to use the other overload and reject sizes that don't
+  // match at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
+  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(const R& other)
+    requires(!std::is_const_v<T>)
+  {
+    // SAFETY: The caller must ensure the spans do not overlap.
+    UNSAFE_BUFFERS(copy_from_nonoverlapping(span<const T, N>(other)));
+  }
+
+  // Bounds-checked copy from a span into the front of this span. The `other`
+  // span must not be larger than this span.
+  //
+  // Prefer copy_from() when you expect the entire span to be written to. This
+  // method does not make that guarantee and may leave some bytes uninitialized
+  // in the destination span, while `copy_from()` ensures the entire span is
+  // written which helps prevent bugs.
+  //
+  // This is sugar for `span.first(other.size()).copy_from(other)` to avoid the
+  // need for writing the size twice, while also preserving compile-time size
+  // information.
+  //
+  // # Checks
+  // If `other` is dynamic-sized, then this function CHECKs if `other` is larger
+  // than this span. If `other` is fixed-size, then the same verification is
+  // done at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires((X <= N || X == dynamic_extent) &&
+             std::convertible_to<R, span<const T, X>>)
+  constexpr void copy_prefix_from(const R& other)
+    requires(!std::is_const_v<T>)
+  {
+    auto from = span<const T, X>(other);
+    if constexpr (X == dynamic_extent) {
+      return first(from.size()).copy_from(from);
+    } else {
+      return first<X>().copy_from(from);
+    }
   }
 
   // Implicit conversion from std::span<T, N> to base::span<T, N>.
@@ -596,9 +778,74 @@ class GSL_POINTER span {
     return std::span<const T, N>(*this);
   }
 
+  // Compares two spans for equality by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves comparable.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size()) == 0` can be written as `a == b` and
+  // can no longer go outside the bounds of `b`. Otherwise, it replaced
+  // std::equal or std::ranges::equal when working with spans, and when no
+  // projection is needed.
+  //
+  // If the spans are of different sizes, they are not equal. If both spans are
+  // empty, they are always equal (even though their data pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr bool operator==(span lhs, span rhs)
+    requires(std::is_const_v<T> && std::equality_comparable<T>)
+  {
+    return internal::span_eq(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  friend constexpr bool operator==(span lhs, span<const T, N> rhs)
+    requires(!std::is_const_v<T> && std::equality_comparable<const T>)
+  {
+    return internal::span_eq(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  template <class U, size_t M>
+    requires((N == M || M == dynamic_extent) &&
+             std::equality_comparable_with<const T, const U>)
+  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
+    return internal::span_eq(span<const T, N>(lhs), span<const U, M>(rhs));
+  }
+
+  // Compares two spans for ordering by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves ordered via `<=>`.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size()) < 0` can be written as `a < b` and
+  // can no longer go outside the bounds of `b`.
+  //
+  // If both spans are empty, they are always equal (even though their data
+  // pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr auto operator<=>(span lhs, span rhs)
+    requires(std::is_const_v<T> && std::three_way_comparable<T>)
+  {
+    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  friend constexpr auto operator<=>(span lhs, span<const T, N> rhs)
+    requires(!std::is_const_v<T> && std::three_way_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  template <class U, size_t M>
+    requires((N == M || M == dynamic_extent) &&
+             std::three_way_comparable_with<const T, const U>)
+  friend constexpr auto operator<=>(span lhs, span<U, M> rhs) {
+    return internal::span_cmp(span<const T, N>(lhs), span<const U, M>(rhs));
+  }
+
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field is not a raw_ptr<> since span is mostly used for stack
+  // variables. Use `raw_span` instead for class fields, which does use
+  // raw_ptr<> internally.
   InternalPtrType data_ = nullptr;
 };
 
@@ -649,7 +896,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       // We can not protect here generally against an invalid iterator/count
       // being passed in, since we have no context to determine if the
       // iterator or count are valid.
-      : data_(std::to_address(first)), size_(count) {}
+      : data_(base::to_address(first)), size_(count) {
+    // `count != 0` implies non-null `data_`.  Consider using
+    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // accompanied by the actual data.
+    DCHECK(count == 0 || !!data_);
+  }
 
   // Constructs a span from a contiguous iterator and a size.
   //
@@ -800,6 +1052,15 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return UNSAFE_BUFFERS({data() + offset, new_extent});
   }
 
+  // Convert a dynamic-extent span to a fixed-extent span. Returns a
+  // `span<T, Extent>` iff `size() == Extent`; otherwise, returns
+  // `std::nullopt`.
+  template <size_t Extent>
+  constexpr std::optional<span<T, Extent>> to_fixed_extent() const {
+    return size() == Extent ? std::optional(span<T, Extent>(*this))
+                            : std::nullopt;
+  }
+
   // Splits a span into two at the given `offset`, returning two spans that
   // cover the full range of the original span.
   //
@@ -905,9 +1166,52 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return reverse_iterator(begin());
   }
 
+  // Bounds-checked copy from a span. The spans must be the exact same size or a
+  // hard CHECK() occurs. The spans are allowed to overlap.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // If it's known the spans can not overlap, `copy_from_nonoverlapping()`
+  // provides an unsafe alternative that avoids intermediate copies.
+  //
+  // # Checks
+  // The function CHECKs that the `other` span has the same size as itself and
+  // will terminate otherwise.
+  constexpr void copy_from(span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
+    CHECK_EQ(size(), other.size());
+
+    if constexpr (std::is_trivially_copyable_v<T>) {
+      if (!empty()) {
+        // Avoid having to look for overlap and pick a direction, memmove allows
+        // arbitrary overlap.
+        memmove(data(), other.data(), size_bytes());
+      }
+    } else {
+      // Use intptrs as pointers from different allocations are not comparable.
+      const auto data_intptr = reinterpret_cast<uintptr_t>(data());
+      const auto other_data_intptr = reinterpret_cast<uintptr_t>(other.data());
+      if (data_intptr < other_data_intptr) {
+        // SAFETY: The std::copy() here does not check bounds, but we have
+        // verified that `this` and `other` have the same bounds above (and are
+        // pointers of the same type), so `data()` and `other.data()` both have
+        // at least `size()` elements.
+        UNSAFE_BUFFERS(std::copy(other.data(), other.data() + size(), data()));
+      } else if (data_intptr != other_data_intptr) {
+        // SAFETY: The std::copy() here does not check bounds, but we have
+        // verified that `this` and `other` have the same bounds above (and are
+        // pointers of the same type), so `data()` and `other.data()` both have
+        // at least `size()` elements.
+        UNSAFE_BUFFERS(std::copy_backward(other.data(), other.data() + size(),
+                                          data() + size()));
+      }
+    }
+  }
+
   // Bounds-checked copy from a non-overlapping span. The spans must be the
-  // exact same size or a hard CHECK() occurs. If the two spans overlap,
-  // Undefined Behaviour occurs.
+  // exact same size or a hard CHECK() occurs.
   //
   // This is a non-std extension that is inspired by the Rust
   // slice::copy_from_slice() method.
@@ -915,14 +1219,26 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T> other) {
-    CHECK_EQ(size_bytes(), other.size_bytes());
-    // Verify non-overlapping in developer builds.
-    //
-    // SAFETY: span provides that data() points to at least size() many
-    // elements, so adding size() to the data() pointer is well-defined.
-    DCHECK(UNSAFE_BUFFERS(data() + size()) <= other.data() ||
-           data() >= UNSAFE_BUFFERS(other.data() + other.size()));
+  //
+  // # Safety
+  // The `other` span must not overlap with `this` or Undefined Behaviour may
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
+  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
+      span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
+    CHECK_EQ(size(), other.size());
+    // Verify non-overlapping in developer builds. Use intptrs as pointers from
+    // different allocations are not comparable.
+    const auto data_intptr = reinterpret_cast<uintptr_t>(data());
+    const auto other_data_intptr = reinterpret_cast<uintptr_t>(other.data());
+    DCHECK(data_intptr + size_bytes() <= other_data_intptr ||
+           data_intptr >= other_data_intptr + size_bytes());
     // When compiling with -Oz, std::ranges::copy() does not get inlined, which
     // makes copy_from() very expensive compared to memcpy for small sizes (up
     // to around 4x slower). We observe that this is because ranges::copy() uses
@@ -937,17 +1253,100 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // size_bytes(), which while computable at compile time when `other` has a
     // fixed size, the optimizer stumbles on with -Oz.
     //
-    // SAFETY: The copy() here does not check bounds, but we have verified that
-    // `this` and `other` have the same bounds above (and are pointers of the
-    // same type), so `data()` and `other.data()` both have at least
-    // `other.size()` elements.
-    UNSAFE_BUFFERS(
-        std::copy(other.data(), other.data() + other.size(), data()));
+    // SAFETY: The std::copy() here does not check bounds, but we have verified
+    // that `this` and `other` have the same bounds above (and are pointers of
+    // the same type), so `data()` and `other.data()` both have at least
+    // `size()` elements.
+    UNSAFE_BUFFERS(std::copy(other.data(), other.data() + size(), data()));
+  }
+
+  // Bounds-checked copy from a span into the front of this span. The `other`
+  // span must not be larger than this span.
+  //
+  // Prefer copy_from() when you expect the entire span to be written to. This
+  // method does not make that guarantee and may leave some bytes uninitialized
+  // in the destination span, while `copy_from()` ensures the entire span is
+  // written which helps prevent bugs.
+  //
+  // This is sugar for `span.first(other.size()).copy_from(other)` to avoid the
+  // need for writing the size twice, while also preserving compile-time size
+  // information.
+  //
+  // # Checks
+  // If `other` is dynamic-sized, then this function CHECKs if `other` is larger
+  // than this span.
+  constexpr void copy_prefix_from(span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
+    return first(other.size()).copy_from(other);
+  }
+
+  // Compares two spans for equality by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves comparable.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size()) == 0` can be written as `a == b` and
+  // can no longer go outside the bounds of `b`. Otherwise, it replaced
+  // std::equal or std::ranges::equal when working with spans, and when no
+  // projection is needed.
+  //
+  // If the spans are of different sizes, they are not equal. If both spans are
+  // empty, they are always equal (even though their data pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr bool operator==(span lhs, span rhs)
+    requires(std::is_const_v<T> && std::equality_comparable<T>)
+  {
+    return internal::span_eq(span<const T>(lhs), span<const T>(rhs));
+  }
+  friend constexpr bool operator==(span lhs, span<const T> rhs)
+    requires(!std::is_const_v<T> && std::equality_comparable<const T>)
+  {
+    return internal::span_eq(span<const T>(lhs), span<const T>(rhs));
+  }
+  template <class U, size_t M>
+    requires(std::equality_comparable_with<const T, const U>)
+  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
+    return internal::span_eq(span<const T>(lhs), span<const U, M>(rhs));
+  }
+
+  // Compares two spans for ordering by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves ordered via `<=>`.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size()) < 0` can be written as `a < b` and
+  // can no longer go outside the bounds of `b`.
+  //
+  // If both spans are empty, they are always equal (even though their data
+  // pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr auto operator<=>(span lhs, span rhs)
+    requires(std::is_const_v<T> && std::three_way_comparable<T>)
+  {
+    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+  }
+  friend constexpr auto operator<=>(span lhs, span<const T> rhs)
+    requires(!std::is_const_v<T> && std::three_way_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+  }
+  template <class U, size_t M>
+    requires(std::three_way_comparable_with<const T, const U>)
+  friend constexpr auto operator<=>(span lhs, span<U, M> rhs) {
+    return internal::span_cmp(span<const T>(lhs), span<const U, M>(rhs));
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field is not a raw_ptr<> since span is mostly used for stack
+  // variables. Use `raw_span` instead for class fields, which does use
+  // raw_ptr<> internally.
   InternalPtrType data_ = nullptr;
   size_t size_ = 0;
 };
@@ -965,9 +1364,29 @@ span(R&&)
     -> span<std::conditional_t<std::ranges::borrowed_range<R>, T, const T>,
             internal::ExtentV<R>>;
 
+// This guide prefers to let the contiguous_range guide match, since it can
+// produce a fixed-size span. Whereas, LegacyRange only produces a dynamic-sized
+// span.
+template <typename R>
+  requires(!std::ranges::contiguous_range<R> && internal::LegacyRange<R>)
+span(R&& r) noexcept
+    -> span<std::remove_reference_t<decltype(*std::ranges::data(r))>>;
+
+template <typename T, size_t N>
+span(const T (&)[N]) -> span<const T, N>;
+
+// span can be printed and will print each of its values, including in Gtests.
+//
+// TODO(danakj): This could move to a ToString() member method if gtest printers
+// were hooked up to base::ToString().
+template <class T, size_t N>
+constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
+  return internal::span_stream(l, r);
+}
+
 // [span.objectrep], views of object representation
-template <typename T, size_t X>
-auto as_bytes(span<T, X> s) noexcept {
+template <typename T, size_t X, typename InternalPtrType>
+constexpr auto as_bytes(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is
@@ -979,9 +1398,9 @@ auto as_bytes(span<T, X> s) noexcept {
       reinterpret_cast<const uint8_t*>(s.data()), s.size_bytes()));
 }
 
-template <typename T, size_t X>
+template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
-auto as_writable_bytes(span<T, X> s) noexcept {
+constexpr auto as_writable_bytes(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is a
@@ -997,8 +1416,8 @@ auto as_writable_bytes(span<T, X> s) noexcept {
 // span of const char rather than const uint8_t. This non-std function is
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
-template <typename T, size_t X>
-auto as_chars(span<T, X> s) noexcept {
+template <typename T, size_t X, typename InternalPtrType>
+constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `char` has a size of 1 byte, the size_bytes() value is a
@@ -1010,13 +1429,34 @@ auto as_chars(span<T, X> s) noexcept {
       reinterpret_cast<const char*>(s.data()), s.size_bytes()));
 }
 
+// as_string_view() converts a span over byte-sized primitives (holding chars or
+// uint8_t) into a std::string_view, where each byte is represented as a char.
+// It also accepts any type that can implicitly convert to a span, such as
+// arrays.
+//
+// If you want to view an arbitrary span type as a string, first explicitly
+// convert it to bytes via `base::as_bytes()`.
+//
+// For spans over byte-sized primitives, this is sugar for:
+// ```
+// std::string_view(as_chars(span).begin(), as_chars(span).end())
+// ```
+constexpr std::string_view as_string_view(span<const char> s) noexcept {
+  return std::string_view(s.begin(), s.end());
+}
+constexpr std::string_view as_string_view(
+    span<const unsigned char> s) noexcept {
+  const auto c = as_chars(s);
+  return std::string_view(c.begin(), c.end());
+}
+
 // as_writable_chars() is the equivalent of as_writable_bytes(), except that
 // it returns a span of char rather than uint8_t. This non-std function is
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
-template <typename T, size_t X>
+template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
-auto as_writable_chars(span<T, X> s) noexcept {
+auto as_writable_chars(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `char` has a size of 1 byte, the size_bytes() value is
@@ -1076,86 +1516,11 @@ constexpr auto make_span(Container&& container) noexcept {
   return span<T, Extent::value>(std::forward<Container>(container));
 }
 
-// make_span utility function that allows callers to explicit specify the span's
-// extent, the value_type is deduced automatically. This is useful when passing
-// a dynamically sized container to a method expecting static spans, when the
-// container is known to have the correct size.
-//
-// Note: This will CHECK that N indeed matches size(container).
-//
-// # Usage
-// As this function is unsafe, the caller must guarantee that the size is
-// correct for the iterator, and will not allow the span to reach out of bounds.
-// ```
-// // SAFETY: <An explanation of how the size is checked/ensured to always be
-// // valid for the iterator>.
-// auto static_span = UNSAFE_BUFFERS(base::make_span<N>(it, size));
-// ```
-//
-// # Safety
-// The contiguous iterator `it` must point to the first element of at least
-// `size` many elements or Undefined Behaviour may result as the span may give
-// access beyond the bounds of the collection pointed to by `it`.
-template <size_t N, int&... ExplicitArgumentBarrier, typename It>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(
-    It it,
-    StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` is the first of at least `size`
-  // many elements.
-  return UNSAFE_BUFFERS(span<T, N>(it, size));
-}
-
-// make_span utility function that allows callers to explicit specify the span's
-// extent, the value_type is deduced automatically. This is useful when passing
-// a dynamically sized container to a method expecting static spans, when the
-// container is known to have the correct size.
-//
-// Note: This will CHECK that N indeed matches size(container).
-//
-// # Usage
-// As this function is unsafe, the caller must guarantee that the `end` is from
-// the same allocation as the `it` iterator.
-// ```
-// // SAFETY: <An explanation if non-trivial how the iterators are not from
-// // different containers/allocations>.
-// auto static_span = UNSAFE_BUFFERS(base::make_span<N>(it, end));
-// ```
-//
-// # Checks
-// The function CHECKs that `it <= end` and will terminate otherwise.
-//
-// # Safety
-// The contiguous iterator `it` and its end sentinel `end` must be for the same
-// allocation or Undefined Behaviour may result as the span may give access
-// beyond the bounds of the collection pointed to by `it`.
-template <size_t N,
-          int&... ExplicitArgumentBarrier,
-          typename It,
-          typename End,
-          typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` and `end` are iterators of the
-  // same allocation.
-  return UNSAFE_BUFFERS(span<T, N>(it, end));
-}
-
-template <size_t N, int&... ExplicitArgumentBarrier, typename Container>
-constexpr auto make_span(Container&& container) noexcept {
-  using T =
-      std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>;
-  // SAFETY: The std::size() function gives the number of elements pointed to by
-  // the std::data() function, which meets the requirement of span.
-  return UNSAFE_BUFFERS(span<T, N>(std::data(container), std::size(container)));
-}
-
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
 // non-std helper that is inspired by the `std::slice::from_ref()` function from
 // Rust.
 template <typename T>
-constexpr span<T, 1u> span_from_ref(
-    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+constexpr span<T, 1u> span_from_ref(T& single_object LIFETIME_BOUND) noexcept {
   // SAFETY: Given a valid reference to `single_object` the span of size 1 will
   // be a valid span that points to the `single_object`.
   return UNSAFE_BUFFERS(span<T, 1u>(std::addressof(single_object), 1u));
@@ -1169,13 +1534,97 @@ constexpr span<T, 1u> span_from_ref(
 // references are turned into a `span<T, sizeof(T)>`.
 template <typename T>
 constexpr span<const uint8_t, sizeof(T)> byte_span_from_ref(
-    const T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    const T& single_object LIFETIME_BOUND) noexcept {
   return as_bytes(span_from_ref(single_object));
 }
 template <typename T>
 constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
-    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    T& single_object LIFETIME_BOUND) noexcept {
   return as_writable_bytes(span_from_ref(single_object));
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `CharT` while
+// omitting the terminating NUL character. These two are equivalent:
+// ```
+// base::span<char, 5u> s1 = base::span_from_cstring("hello");
+// base::span<char, 5u> s2 = base::span(std::string_view("hello"));
+// ```
+//
+// If you want to include the NUL terminator in the span, then use
+// `span_with_nul_from_cstring()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <class CharT, size_t N>
+constexpr span<const CharT, N - 1> span_from_cstring(
+    const CharT (&lit LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
+                   "requires string literal as input") {
+  return span(lit).template first<N - 1>();
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `CharT` that
+// includes the terminating NUL character. These two are equivalent:
+// ```
+// base::span<char, 6u> s1 = base::span_with_nul_from_cstring("hello");
+// auto h = std::cstring_view("hello");
+// base::span<char, 6u> s2 =
+//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u));
+// ```
+//
+// If you do not want to include the NUL terminator, then use
+// `span_from_cstring()` or use a view type (e.g. `base::cstring_view` or
+// `std::string_view`) in place of a string literal.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <class CharT, size_t N>
+constexpr span<const CharT, N> span_with_nul_from_cstring(
+    const CharT (&lit LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
+                   "requires string literal as input") {
+  return span(lit);
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `uint8_t` while
+// omitting the terminating NUL character. These two are equivalent:
+// ```
+// base::span<uint8_t, 5u> s1 = base::byte_span_from_cstring("hello");
+// base::span<uint8_t, 5u> s2 = base::as_byte_span(std::string_view("hello"));
+// ```
+//
+// If you want to include the NUL terminator in the span, then use
+// `byte_span_with_nul_from_cstring()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <size_t N>
+constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
+    const char (&lit LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+  return as_bytes(span(lit).template first<N - 1>());
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `uint8_t` that
+// includes the terminating NUL character. These two are equivalent:
+// ```
+// base::span<uint8_t, 6u> s1 = base::byte_span_with_nul_from_cstring("hello");
+// auto h = base::cstring_view("hello");
+// base::span<uint8_t, 6u> s2 = base::as_bytes(
+//     UNSAFE_BUFFERS(base::span(h.data(), h.size() + 1u)));
+// ```
+//
+// If you do not want to include the NUL terminator, then use
+// `byte_span_from_cstring()` or use a view type (`base::cstring_view` or
+// `std::string_view`) in place of a string literal and `as_byte_span()`.
+//
+// Internal NUL characters (ie. that are not at the end of the string) are
+// always preserved.
+template <size_t N>
+constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
+    const char (&lit LIFETIME_BOUND)[N])
+    ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
+  return as_bytes(span(lit));
 }
 
 // Convenience function for converting an object which is itself convertible
@@ -1183,20 +1632,16 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires byte spans.
-template <typename T>
-  requires requires(const T& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-  }
-constexpr span<const uint8_t> as_byte_span(const T& arg) {
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(const Spannable& arg) { make_span(arg); }
+constexpr auto as_byte_span(const Spannable& arg) {
   return as_bytes(make_span(arg));
 }
 
-// This overload for arrays preserves the compile-time size N of the array in
-// the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
-constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(T (&arr)[N]) {
-  return as_bytes(make_span<N>(arr));
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(
+    const T (&arr LIFETIME_BOUND)[N]) {
+  return as_bytes(make_span(arr));
 }
 
 // Convenience function for converting an object which is itself convertible
@@ -1204,23 +1649,71 @@ constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(T (&arr)[N]) {
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires mutable byte spans.
-template <typename T>
-  requires requires(T&& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(Spannable&& arg) {
     make_span(arg);
     requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
   }
-constexpr span<uint8_t> as_writable_byte_span(T&& arg) {
-  return as_writable_bytes(make_span(arg));
+constexpr auto as_writable_byte_span(Spannable&& arg) {
+  return as_writable_bytes(make_span(std::forward<Spannable>(arg)));
 }
 
 // This overload for arrays preserves the compile-time size N of the array in
 // the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
-  requires(!std::is_const_v<T>)
-constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(T (&arr)[N]) {
-  return as_writable_bytes(make_span<N>(arr));
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
+    T (&arr LIFETIME_BOUND)[N]) {
+  return as_writable_bytes(make_span(arr));
 }
+
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
+    T (&&arr LIFETIME_BOUND)[N]) {
+  return as_writable_bytes(make_span(arr));
+}
+
+namespace internal {
+
+// Template helper for implementing operator==.
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::equality_comparable_with<T, U>)
+constexpr bool span_eq(span<T, N> l, span<U, M> r) {
+  return l.size() == r.size() && std::equal(l.begin(), l.end(), r.begin());
+}
+
+// Template helper for implementing operator<=>.
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::three_way_comparable_with<T, U>)
+constexpr auto span_cmp(span<T, N> l, span<U, M> r)
+    -> decltype(l[0u] <=> r[0u]) {
+  return std::lexicographical_compare_three_way(l.begin(), l.end(), r.begin(),
+                                                r.end());
+}
+
+// Template helper for implementing printing.
+template <class T, size_t N>
+constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
+  l << "[";
+  if constexpr (!std::same_as<std::remove_cvref_t<T>, char>) {
+    if (!r.empty()) {
+      l << base::ToString(r.front());
+      for (const T& e : r.subspan(1u)) {
+        l << ", ";
+        l << base::ToString(e);
+      }
+    }
+  } else {
+    l << '\"';
+    l << as_string_view(r);
+    l << '\"';
+  }
+  l << "]";
+  return l;
+}
+
+}  // namespace internal
 
 }  // namespace base
 

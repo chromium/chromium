@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <optional>
+
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
 
@@ -19,7 +20,7 @@ namespace gpu {
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // This should match enum IntelGpuGeneration in
-//  \tools\metrics\histograms\enums.xml
+//  \tools\metrics\histograms\metadata\gpu\enums.xml
 enum class IntelGpuGeneration {
   kNonIntel = 0,
   kUnknownIntel = 1,  // Intel GPU, but not one of the following generations.
@@ -32,7 +33,8 @@ enum class IntelGpuGeneration {
   kGen10 = 10,
   kGen11 = 11,
   kGen12 = 12,
-  kMaxValue = kGen12,
+  kGen13 = 13,
+  kMaxValue = kGen13,
 };
 
 enum class HasDiscreteGpu {

@@ -41,9 +41,13 @@ void FeatureMap::Clear() {
   features_.clear();
 }
 
+BASE_FEATURE(kConditionalImageResize,
+             "ConditionalImageResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionRetryLimit,
              "ClientSideDetectionRetryLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kClientSideDetectionRetryLimitTime{
     &kClientSideDetectionRetryLimit, /*name=*/"RetryTimeMax",

@@ -132,8 +132,24 @@ void FakeConciergeClient::ImportDiskImage(
       FROM_HERE,
       base::BindOnce(std::move(callback), import_disk_image_response_));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeConciergeClient::NotifyDiskImageProgress,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FakeConciergeClient::ExportDiskImage(
+    std::vector<base::ScopedFD> fds,
+    const vm_tools::concierge::ExportDiskImageRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::ExportDiskImageResponse>
+        callback) {
+  export_disk_image_call_count_++;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), export_disk_image_response_));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FakeConciergeClient::CancelDiskImageOperation(
@@ -146,8 +162,12 @@ void FakeConciergeClient::CancelDiskImageOperation(
       FROM_HERE,
       base::BindOnce(std::move(callback), cancel_disk_image_response_));
 }
+void FakeConciergeClient::NotifyDiskImageProgress(
+    vm_tools::concierge::DiskImageStatusResponse signal) {
+  OnDiskImageProgress(signal);
+}
 
-void FakeConciergeClient::NotifyDiskImageProgress() {
+void FakeConciergeClient::NotifyAllDiskImageProgress() {
   // Trigger DiskImageStatus signals.
   for (auto const& signal : disk_image_status_signals_) {
     OnDiskImageProgress(signal);
@@ -220,14 +240,6 @@ void FakeConciergeClient::StartVm(
 
 void FakeConciergeClient::StartVmWithFd(
     base::ScopedFD fd,
-    const vm_tools::concierge::StartVmRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-        callback) {
-  StartVm(std::move(request), std::move(callback));
-}
-
-void FakeConciergeClient::StartVmWithFds(
-    std::vector<base::ScopedFD> fds,
     const vm_tools::concierge::StartVmRequest& request,
     chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
         callback) {
@@ -364,8 +376,9 @@ void FakeConciergeClient::ResizeDiskImage(
       FROM_HERE,
       base::BindOnce(std::move(callback), resize_disk_image_response_));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeConciergeClient::NotifyDiskImageProgress,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&FakeConciergeClient::NotifyAllDiskImageProgress,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FakeConciergeClient::ReclaimVmMemory(
@@ -460,7 +473,11 @@ void FakeConciergeClient::InitializeProtoResponses() {
       vm_tools::concierge::DISK_STATUS_DESTROYED);
 
   import_disk_image_response_.emplace();
+  export_disk_image_response_.emplace();
+  export_disk_image_response_->set_status(
+      vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
   cancel_disk_image_response_.emplace();
+  cancel_disk_image_response_->set_success(true);
   disk_image_status_response_.emplace();
 
   list_vm_disks_response_.emplace();

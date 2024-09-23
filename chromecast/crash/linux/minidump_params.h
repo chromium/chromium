@@ -25,7 +25,13 @@ struct MinidumpParams {
                  const std::string& p_extra_info = "",
                  const std::string& p_exec_name = "",
                  const std::string& p_signature = "",
-                 const std::string& p_crash_product_name = "");
+                 const std::string& p_crash_product_name = "",
+                 const std::string& p_comments = "",
+                 const std::string& p_js_engine = "",
+                 const std::string& p_js_build_label = "",
+                 const std::string& p_js_exception_category = "",
+                 const std::string& p_js_exception_details = "",
+                 const std::string& p_js_exception_signature = "");
   MinidumpParams(const MinidumpParams& params);
   ~MinidumpParams();
 
@@ -47,6 +53,14 @@ struct MinidumpParams {
   std::string signature;
   // Crash Product name, used to identify/group crash reports in go/crash.
   std::string crash_product_name;
+
+  // CastLite specific crash report data
+  std::string comments;
+  std::string js_engine;
+  std::string js_build_label;
+  std::string js_exception_category;
+  std::string js_exception_details;
+  std::string js_exception_signature;
 };
 
 }  // namespace chromecast

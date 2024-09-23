@@ -17,7 +17,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 
 namespace viz {
@@ -104,6 +103,12 @@ RenderPassBuilder& RenderPassBuilder::AddFilter(
 RenderPassBuilder& RenderPassBuilder::AddBackdropFilter(
     const cc::FilterOperation& filter) {
   pass_->backdrop_filters.Append(filter);
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetTransformToRootTarget(
+    const gfx::Transform& transform) {
+  pass_->transform_to_root_target = transform;
   return *this;
 }
 
@@ -211,7 +216,6 @@ RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
                gfx::PointF(1.0f, 1.0f), params.background_color, params.flipped,
                params.nearest_neighbor, params.secure_output_only,
                params.protected_video_type);
-  quad->set_vertex_opacity(params.vertex_opacity);
 
   return *this;
 }
@@ -252,11 +256,8 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
   if (quad->material == DrawQuad::Material::kTextureContent) {
     auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
     texture_quad->damage_rect = damage_rect;
-  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
-    auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
-    yuv_video_quad->damage_rect = damage_rect;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   pass_->has_per_quad_damage = true;
@@ -280,6 +281,12 @@ RenderPassBuilder& RenderPassBuilder::SetMaskFilter(
 RenderPassBuilder& RenderPassBuilder::SetQuadLayerId(uint32_t layer_id) {
   auto* sqs = GetLastQuadSharedQuadState();
   sqs->layer_id = layer_id;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadOffsetTag(const OffsetTag& tag) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->offset_tag = tag;
   return *this;
 }
 
@@ -445,10 +452,22 @@ CompositorFrameBuilder& CompositorFrameBuilder::SetSendFrameTokenToEmbedder(
   return *this;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::SetIsHandlingInteraction(
+    bool is_handling_interaction) {
+  frame_->metadata.is_handling_interaction = is_handling_interaction;
+  return *this;
+}
+
 CompositorFrameBuilder& CompositorFrameBuilder::AddDelegatedInkMetadata(
     const gfx::DelegatedInkMetadata& metadata) {
   frame_->metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
+  return *this;
+}
+
+CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
+    const OffsetTagDefinition& definition) {
+  frame_->metadata.offset_tag_definitions.push_back(definition);
   return *this;
 }
 
@@ -503,6 +522,14 @@ AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes) {
   return frame;
 }
 
+CompositorFrame MakeDefaultInteractiveCompositorFrame(uint64_t source_id) {
+  return CompositorFrameBuilder()
+      .AddDefaultRenderPass()
+      .SetBeginFrameSourceId(source_id)
+      .SetIsHandlingInteraction(true)
+      .Build();
+}
+
 CompositorFrame MakeEmptyCompositorFrame() {
   return CompositorFrameBuilder().Build();
 }
@@ -519,9 +546,10 @@ void PopulateTransferableResources(CompositorFrame& frame) {
 
         // Adds a TransferableResource the first time seeing a ResourceId.
         if (resources_added.insert(resource_id).second) {
-          frame.resource_list.push_back(TransferableResource::MakeSoftware(
-              SharedBitmap::GenerateId(), gpu::SyncToken(), quad->rect.size(),
-              SinglePlaneFormat::kRGBA_8888));
+          frame.resource_list.push_back(
+              TransferableResource::MakeSoftwareSharedBitmap(
+                  SharedBitmap::GenerateId(), gpu::SyncToken(),
+                  quad->rect.size(), SinglePlaneFormat::kRGBA_8888));
           frame.resource_list.back().id = resource_id;
         }
       }

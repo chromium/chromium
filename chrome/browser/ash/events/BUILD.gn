@@ -1,0 +1,77 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("events") {
+  sources = [
+    "event_rewriter_delegate_impl.cc",
+    "event_rewriter_delegate_impl.h",
+    "shortcut_mapping_pref_service.cc",
+    "shortcut_mapping_pref_service.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/common",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//components/prefs",
+    "//components/user_manager",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/events",
+    "//ui/events/ash",
+    "//ui/message_center",
+    "//ui/wm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "event_rewriter_unittest.cc" ]
+
+  deps = [
+    ":events",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//ash/public/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/preferences",
+    "//chrome/test:test_support_unit",
+    "//components/prefs",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//device/udev_linux:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/events/ash",
+    "//ui/events/devices:test_support",
+    "//ui/lottie",
+    "//ui/message_center",
+    "//ui/wm",
+  ]
+}

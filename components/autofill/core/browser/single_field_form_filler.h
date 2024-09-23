@@ -13,7 +13,8 @@
 namespace autofill {
 
 class AutofillClient;
-struct SuggestionsContext;
+class AutofillField;
+class FormStructure;
 
 // Interface for form-filling implementations that fill a single field at a
 // time, such as autocomplete or merchant promo codes.
@@ -23,7 +24,7 @@ class SingleFieldFormFiller {
   // callback is used to eventually return suggestions. `field_id` identifies
   // the field the query refer to. `suggestions` is the list of fetched
   // suggestions.
-  // TODO(crbug.com/1007974): This should be a `base::OnceCallback<>`. It is
+  // TODO(crbug.com/40100455): This should be a `base::OnceCallback<>`. It is
   // currently a repeating callback, because the `SingleFieldFormFillRouter`
   // asks all available `SingleFieldFormFiller`s using
   // `OnGetSingleFieldSuggestions()`, until the first one returns true. This
@@ -55,10 +56,11 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) = 0;
+      OnSuggestionsReturnedCallback on_suggestions_returned) = 0;
 
   // Runs when a form is going to be submitted. In the case of Autocomplete, it
   // saves the given |fields| that are eligible to be saved as new or updated
@@ -74,18 +76,18 @@ class SingleFieldFormFiller {
   virtual void CancelPendingQueries() = 0;
 
   // If applicable, removes the currently-selected suggestion from the database.
-  // `popup_item_id` is the PopupItemId of the suggestion to be removed.
+  // `type` is the SuggestionType of the suggestion to be
+  // removed.
   virtual void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
       const std::u16string& value,
-      PopupItemId popup_item_id) = 0;
+      SuggestionType type) = 0;
 
-  // Invoked when the user selects |value| in the list of suggestions. For
+  // Invoked when the user selects `suggestion` in the list of suggestions. For
   // Autocomplete, this function logs the DaysSinceLastUse of the Autocomplete
-  // entry associated with |value|. `popup_item_id` is the PopupItemId of the
-  // suggestion selected.
-  virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                               PopupItemId popup_item_id) = 0;
+  // entry associated with the value of the suggestion.
+  virtual void OnSingleFieldSuggestionSelected(
+      const Suggestion& suggestion) = 0;
 };
 
 }  // namespace autofill

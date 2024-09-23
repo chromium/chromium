@@ -94,20 +94,22 @@ class BASE_EXPORT TaskRunner
   // };
   //
   //
-  // class DataLoader : public SupportsWeakPtr<DataLoader> {
+  // class DataLoader {
   //  public:
   //    void GetData() {
   //      scoped_refptr<DataBuffer> buffer = new DataBuffer();
   //      target_thread_.task_runner()->PostTaskAndReply(
   //          FROM_HERE,
   //          base::BindOnce(&DataBuffer::AddData, buffer),
-  //          base::BindOnce(&DataLoader::OnDataReceived, AsWeakPtr(), buffer));
+  //          base::BindOnce(&DataLoader::OnDataReceived,
+  //                             weak_ptr_factory_.GetWeakPtr(), buffer));
   //    }
   //
   //  private:
   //    void OnDataReceived(scoped_refptr<DataBuffer> buffer) {
   //      // Do something with buffer.
   //    }
+  //    base::WeakPtrFactory<DataLoader> weak_ptr_factory_{this};
   // };
   //
   //

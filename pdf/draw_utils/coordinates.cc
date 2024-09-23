@@ -76,20 +76,20 @@ int GetMostVisiblePage(const std::vector<IndexedPage>& visible_pages,
   return most_visible_page_index;
 }
 
-PageInsetSizes GetPageInsetsForTwoUpView(
-    size_t page_index,
-    size_t num_of_pages,
-    const PageInsetSizes& single_view_insets,
-    int horizontal_separator) {
+gfx::Insets GetPageInsetsForTwoUpView(size_t page_index,
+                                      size_t num_of_pages,
+                                      const gfx::Insets& single_view_insets,
+                                      int horizontal_separator) {
   DCHECK_LT(page_index, num_of_pages);
 
   // Don't change `two_up_insets` if the page is on the left side and is the
   // last page. In this case, the shadows on both sides should be the same size.
-  PageInsetSizes two_up_insets = single_view_insets;
-  if (page_index % 2 == 1)
-    two_up_insets.left = horizontal_separator;
-  else if (page_index != num_of_pages - 1)
-    two_up_insets.right = horizontal_separator;
+  gfx::Insets two_up_insets = single_view_insets;
+  if (page_index % 2 == 1) {
+    two_up_insets.set_left(horizontal_separator);
+  } else if (page_index != num_of_pages - 1) {
+    two_up_insets.set_right(horizontal_separator);
+  }
 
   return two_up_insets;
 }
@@ -115,45 +115,42 @@ gfx::Rect GetScreenRect(const gfx::Rect& rect,
 
 gfx::Rect GetSurroundingRect(int page_y,
                              int page_height,
-                             const PageInsetSizes& inset_sizes,
+                             const gfx::Insets& insets,
                              int doc_width,
                              int bottom_separator) {
   return gfx::Rect(
-      0, page_y - inset_sizes.top, doc_width,
-      page_height + inset_sizes.top + inset_sizes.bottom + bottom_separator);
+      0, page_y - insets.top(), doc_width,
+      page_height + insets.top() + insets.bottom() + bottom_separator);
 }
 
 gfx::Rect GetLeftFillRect(const gfx::Rect& page_rect,
-                          const PageInsetSizes& inset_sizes,
+                          const gfx::Insets& insets,
                           int bottom_separator) {
-  DCHECK_GE(page_rect.x(), inset_sizes.left);
+  DCHECK_GE(page_rect.x(), insets.left());
 
-  return gfx::Rect(0, page_rect.y() - inset_sizes.top,
-                   page_rect.x() - inset_sizes.left,
-                   page_rect.height() + inset_sizes.top + inset_sizes.bottom +
-                       bottom_separator);
+  return gfx::Rect(
+      0, page_rect.y() - insets.top(), page_rect.x() - insets.left(),
+      page_rect.height() + insets.top() + insets.bottom() + bottom_separator);
 }
 
 gfx::Rect GetRightFillRect(const gfx::Rect& page_rect,
-                           const PageInsetSizes& inset_sizes,
+                           const gfx::Insets& insets,
                            int doc_width,
                            int bottom_separator) {
-  int right_gap_x = page_rect.right() + inset_sizes.right;
+  int right_gap_x = page_rect.right() + insets.right();
   DCHECK_GE(doc_width, right_gap_x);
 
-  return gfx::Rect(right_gap_x, page_rect.y() - inset_sizes.top,
-                   doc_width - right_gap_x,
-                   page_rect.height() + inset_sizes.top + inset_sizes.bottom +
-                       bottom_separator);
+  return gfx::Rect(
+      right_gap_x, page_rect.y() - insets.top(), doc_width - right_gap_x,
+      page_rect.height() + insets.top() + insets.bottom() + bottom_separator);
 }
 
 gfx::Rect GetBottomFillRect(const gfx::Rect& page_rect,
-                            const PageInsetSizes& inset_sizes,
+                            const gfx::Insets& insets,
                             int bottom_separator) {
-  return gfx::Rect(page_rect.x() - inset_sizes.left,
-                   page_rect.bottom() + inset_sizes.bottom,
-                   page_rect.width() + inset_sizes.left + inset_sizes.right,
-                   bottom_separator);
+  return gfx::Rect(
+      page_rect.x() - insets.left(), page_rect.bottom() + insets.bottom(),
+      page_rect.width() + insets.left() + insets.right(), bottom_separator);
 }
 
 gfx::Rect GetLeftRectForTwoUpView(const gfx::Size& rect_size,

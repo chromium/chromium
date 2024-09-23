@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -32,7 +34,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
@@ -56,6 +57,7 @@
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -180,14 +182,14 @@ class CrostiniManagerTest : public testing::Test {
 
   void SetUp() override {
     component_manager_ =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_->set_supported_components({"cros-termina"});
     component_manager_->ResetComponentState(
         "cros-termina",
-        component_updater::FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
+        component_updater::FakeComponentManagerAsh::ComponentInfo(
+            component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
-    browser_part_.InitializeCrosComponentManager(component_manager_);
+    browser_part_.InitializeComponentManager(component_manager_);
     ash::DlcserviceClient::InitializeFake();
 
     scoped_feature_list_.InitWithFeatures(
@@ -226,7 +228,7 @@ class CrostiniManagerTest : public testing::Test {
     profile_.reset();
     fake_user_manager_.Reset();
     ash::DlcserviceClient::Shutdown();
-    browser_part_.ShutdownCrosComponentManager();
+    browser_part_.ShutdownComponentManager();
     component_manager_.reset();
   }
 
@@ -252,7 +254,7 @@ class CrostiniManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<ScopedTestingLocalState> local_state_;
-  scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };
 
@@ -985,6 +987,20 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartContainer) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(crostini_manager()->HasRestarterForTesting(container_id()));
   EXPECT_FALSE(fake_cicerone_client_->configure_for_arc_sideload_called());
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForRestarterStart) {
+  crostini_manager_->AddStoppingVmForTesting(container_id().vm_name);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+  task_environment_.FastForwardBy(kLongTime);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_TIMED_OUT);
+
+  EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
+  ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoadedFirstInstall) {
@@ -1982,6 +1998,72 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
           ->GetPrefs()
           ->GetString(crostini::prefs::kCrostiniLastLaunchTerminaKernelVersion)
           .empty());
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageFailure) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::ExportDiskImageResponse failure_response;
+  failure_response.set_status(vm_tools::concierge::DISK_STATUS_FAILED);
+  fake_concierge_client_->set_export_disk_image_response(failure_response);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse no_space_signal;
+  no_space_signal.set_status(vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(no_space_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
+  base::ScopedTempFile export_path;
+  EXPECT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(done_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerTest, ExportContainerSuccess) {

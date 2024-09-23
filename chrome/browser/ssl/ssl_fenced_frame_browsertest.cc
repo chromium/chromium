@@ -6,12 +6,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -53,8 +55,8 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
 
  protected:
   Browser* InstallAndOpenTestWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
     web_app_info->description = u"Test description";
@@ -67,7 +69,7 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
     Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
     return app_browser;
   }
-
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
@@ -109,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), javascript));
 
   Browser* app_browser = InstallAndOpenTestWebApp(
-      embedded_test_server()->GetURL("/fenced_frames/basic.html"));
+      embedded_test_server()->GetURL("/fenced_frames/title2.html"));
   WebContents* app_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingSSLInterstitial(app_contents));

@@ -55,10 +55,6 @@ class HistoryClustersAction : public OmniboxAction {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
-      JNIEnv* env) const override;
-#endif
 
  private:
   ~HistoryClustersAction() override;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/variations/variations_seed_processor.h"
 
 #include <stddef.h>
@@ -19,8 +24,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +41,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -163,6 +171,7 @@ class TestOverrideStringCallback {
 class ChromeEnvironment {
  public:
   bool HasHighEntropy() { return true; }
+  bool HasLimitedEntropy() { return true; }
 
   void CreateTrialsFromSeed(
       const VariationsSeed& seed,
@@ -171,16 +180,17 @@ class ChromeEnvironment {
     auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
-    // TODO(crbug.com/1518674): Add test cases for seeds with a layer of LIMITED
-    // entropy mode.
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
         .high_entropy = kAlwaysUseFirstGroup,
+        .limited_entropy = kAlwaysUseFirstGroup,
     });
+
+    VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, feature_list);
+        seed, *client_state, callback, entropy_providers, layers, feature_list);
   }
 };
 
@@ -189,6 +199,7 @@ class ChromeEnvironment {
 class WebViewEnvironment {
  public:
   bool HasHighEntropy() { return false; }
+  bool HasLimitedEntropy() { return false; }
 
   void CreateTrialsFromSeed(
       const VariationsSeed& seed,
@@ -200,10 +211,12 @@ class WebViewEnvironment {
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
     });
+
+    VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, feature_list);
+        seed, *client_state, callback, entropy_providers, layers, feature_list);
   }
 };
 
@@ -357,6 +370,87 @@ TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag2) {
   this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup2Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
+  struct Case {
+    std::string name;
+    std::optional<int> experiment_id;
+    std::optional<int> triggering_experiment_id;
+    bool overridden = false;
+
+    int expected_experiment_id = 0;
+    int expected_triggering_id = 0;
+  };
+
+  std::vector<Case> cases = {
+      {
+          .name = "Override Enabled with experiment id",
+          .experiment_id = kExperimentId,
+          .overridden = true,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = 0,
+      },
+      {
+          .name = "Enabled with experiment id",
+          .experiment_id = kExperimentId,
+          .overridden = false,
+          .expected_experiment_id = kExperimentId,
+          .expected_triggering_id = 0,
+      },
+      {
+          .name = "Override Enabled with triggering id",
+          .triggering_experiment_id = kExperimentId,
+          .overridden = true,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = kExperimentId,
+      },
+      {
+          .name = "Enabled with triggering id",
+          .triggering_experiment_id = kExperimentId,
+          .overridden = false,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = kExperimentId,
+      },
+  };
+
+  for (auto& c : cases) {
+    SCOPED_TRACE(c.name);
+    base::test::ScopedFeatureList empty_state;
+    empty_state.InitWithEmptyFeatureAndFieldTrialLists();
+
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name(kRepeated.name);
+    Study::Experiment* experiment = AddExperiment("Enabled", 1, study);
+    experiment->mutable_feature_association()->add_enable_feature(
+        kRepeated.name);
+    if (c.experiment_id) {
+      experiment->set_google_web_experiment_id(*c.experiment_id);
+    }
+    if (c.triggering_experiment_id) {
+      experiment->set_google_web_trigger_experiment_id(
+          *c.triggering_experiment_id);
+    }
+
+    base::FieldTrialList::CreateFieldTrial(
+        "Repeated", "Enabled", /*is_low_anonymity=*/false, c.overridden);
+
+    auto feature_list = std::make_unique<base::FeatureList>();
+    this->CreateTrialsFromSeed(seed, feature_list.get());
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+    EXPECT_EQ(c.expected_experiment_id,
+              GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                   "Repeated", "Enabled"));
+    EXPECT_EQ(c.expected_triggering_id,
+              GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+                                   "Repeated", "Enabled"));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kRepeated));
+
+    testing::ClearAllVariationIDs();
+  }
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
@@ -580,15 +674,16 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     const char* disable_feature;
     bool expected_feature_off_state;
     bool expected_feature_on_state;
-  } test_cases[] = {
+  } test_cases_raw[] = {
       {nullptr, nullptr, false, true},
       {kFeatureOnByDefault.name, nullptr, false, true},
       {kFeatureOffByDefault.name, nullptr, true, true},
       {nullptr, kFeatureOnByDefault.name, false, false},
       {nullptr, kFeatureOffByDefault.name, false, true},
   };
+  const auto test_cases = base::span(test_cases_raw);
 
-  for (size_t i = 0; i < std::size(test_cases); i++) {
+  for (size_t i = 0; i < test_cases.size(); i++) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
@@ -662,7 +757,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     const char* expected_group;
     bool expected_feature_state;
     bool expected_trial_activated;
-  } test_cases[] = {
+  } test_cases_raw[] = {
       // Check what happens without and command-line forcing flags - that the
       // |one_hundred_percent_group| gets correctly selected and does the right
       // thing w.r.t. to affecting the feature / activating the trial.
@@ -713,8 +808,9 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
       {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
        DISABLE_GROUP, kForcedOffGroup, false, true},
   };
+  const auto test_cases = base::span(test_cases_raw);
 
-  for (size_t i = 0; i < std::size(test_cases); i++) {
+  for (size_t i = 0; i < test_cases.size(); i++) {
     const auto& test_case = test_cases[i];
     const int group = test_case.one_hundred_percent_group;
     SCOPED_TRACE(base::StringPrintf(
@@ -907,6 +1003,41 @@ TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
 }
 
+TYPED_TEST(VariationsSeedProcessorTest, LimitedEntropyStudyTest) {
+  VariationsSeed seed;
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(99);
+
+  Study* study = seed.add_study();
+  study->set_name("MyStudy");
+  study->set_consistency(Study::PERMANENT);
+  study->set_default_experiment_name("Default");
+  AddExperiment("Group1", 50, study);
+  AddExperiment(study->default_experiment_name(), 50, study);
+  LayerMemberReference* layer_member_reference = study->mutable_layer();
+  layer_member_reference->set_layer_id(layer->id());
+  layer_member_reference->add_layer_member_ids(member->id());
+
+  this->CreateTrialsFromSeed(seed);
+
+  if (this->env.HasLimitedEntropy()) {
+    // Expect the first group to be selected when using the limited entropy
+    // provider from the setup (`kAlwaysUseFirstGroup`).
+    EXPECT_EQ("Group1", base::FieldTrialList::FindFullName(study->name()));
+  } else {
+    // The study should be dropped on clients without a limited entropy
+    // provider.
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
+}
+
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
   VariationsSeed seed;
 
@@ -916,7 +1047,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
 
   LayerMemberReference* layer = study->mutable_layer();
   layer->set_layer_id(42);
-  layer->set_layer_member_id(82);
+  layer->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -944,7 +1075,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(88);
+  layer_membership->add_layer_member_ids(88);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -972,12 +1103,40 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerSelected) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member, which is what should be chosen.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLegacyLayerMemberReference) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  // `layer_member_id` is a legacy field that should still be considered.
+  // TODO(crbug.com/TBA): remove `layer_member_id` after it's fully deprecated.
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
@@ -998,7 +1157,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1026,7 +1185,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithUnsetSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1063,7 +1222,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1097,7 +1256,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1130,7 +1289,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1173,7 +1332,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   base::HistogramTester histogram_tester;
@@ -1224,7 +1383,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInterleavedLayerMember) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1232,6 +1391,111 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithInterleavedLayerMember) {
   // high entropy should select slot 0, and low entropy should select
   // slot 9, which both activate the study.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, StudyReferencingMultipleLayerMember) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member_1 = layer->add_members();
+  member_1->set_id(82);
+  {
+    Layer::LayerMember::SlotRange* range = member_1->add_slots();
+    range->set_start(0);
+    range->set_end(4);
+  }
+  Layer::LayerMember* member_2 = layer->add_members();
+  member_2->set_id(83);
+  {
+    Layer::LayerMember::SlotRange* range = member_2->add_slots();
+    range->set_start(5);
+    range->set_end(9);
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(layer->id());
+  layer_membership->add_layer_member_ids(member_1->id());
+  layer_membership->add_layer_member_ids(member_2->id());
+  AddExperiment("A", 1, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // The layer members with IDs 0 and 1 cover 100% of the population. By
+  // referencing both of the layer members the study must be active all the
+  // time.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           MultipleLayerMember_NoChangeToExistingClients_RemainderEntropy) {
+  VariationsSeed seed;
+
+  // Add a low entropy layer into the seed:
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  layer->set_entropy_mode(Layer::LOW);
+
+  // Populate the layer with two members covering all of the 10 slots:
+  Layer::LayerMember* member_1 = layer->add_members();
+  Layer::LayerMember* member_2 = layer->add_members();
+  member_1->set_id(82);
+  member_2->set_id(83);
+  {
+    Layer::LayerMember::SlotRange* range = member_1->add_slots();
+    range->set_start(0);
+    range->set_end(4);
+  }
+  {
+    Layer::LayerMember::SlotRange* range = member_2->add_slots();
+    range->set_start(5);
+    range->set_end(9);
+  }
+
+  // Add a permanently consistent, starts-active study, and constrained it to
+  // the layer member #2 in the layer:
+  Study* study = seed.add_study();
+  study->set_name("MyStudy");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  study->set_consistency(Study_Consistency_PERMANENT);
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(layer->id());
+  layer_membership->add_layer_member_ids(member_2->id());
+
+  // Add two experiments with google_web_experiment_id. This setup forces the
+  // study to be randomized using remainder entropy from the slot randomization.
+  // See VariationsLayers::SelectEntropyProviderForStudy().
+  AddExperiment("A", 1, study);
+  AddExperiment("B", 1, study);
+  study->mutable_experiment(0)->set_google_web_experiment_id(1001);
+  study->mutable_experiment(1)->set_google_web_experiment_id(1002);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // Verify that the study is active, with group A selected:
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
+
+  // Clear field trial states:
+  testing::ClearAllVariationIDs();
+  testing::ClearAllVariationParams();
+
+  // Give this study a new layer member constraint, and randomize it again:
+  layer_membership->add_layer_member_ids(member_1->id());
+  this->CreateTrialsFromSeed(seed);
+
+  // The randomization of this exact same client is not affected, and it will
+  // still randomize to group A. This verifies that existing clients using
+  // remainder entropy will not be re-shuffled if the study is constrained to
+  // another layer member.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
@@ -1268,7 +1532,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(0xDEAD);
+  layer_membership->add_layer_member_ids(0xDEAD);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1310,7 +1574,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(0xDEAD);
+  layer_membership->add_layer_member_ids(0xDEAD);
   AddExperiment("A", 1, study);
 
   this->CreateTrialsFromSeed(seed);
@@ -1455,7 +1719,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
 
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
   study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
@@ -1594,7 +1858,7 @@ TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
   study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   LayerMemberReference* layer_membership = study->mutable_layer();
   layer_membership->set_layer_id(42);
-  layer_membership->set_layer_member_id(82);
+  layer_membership->add_layer_member_ids(82);
   AddExperiment("A", 1, study);
   study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
   AddExperiment("B", 1, study);
@@ -1631,6 +1895,26 @@ TYPED_TEST(VariationsSeedProcessorTest,
       GetActiveFieldTrialGroupsForTesting(
           &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+// Tests that studies with filters with a `google_groups` parameter generate a
+// field trial parameter that contains the Google Groups ids for that study.
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithGoogleGroupFilterGeneratesFieldTrialParam) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+  AddGoogleGroupFilter(*study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  EXPECT_EQ(base::NumberToString(kExampleGoogleGroup),
+            base::GetFieldTrialParamValue(
+                "A", internal::kGoogleGroupFeatureParamName));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,

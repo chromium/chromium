@@ -16,11 +16,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/version_info/channel.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -29,7 +30,7 @@
 namespace supervised_user {
 namespace {
 
-using kids_chrome_management::ClassifyUrlResponse;
+using kidsmanagement::ClassifyUrlResponse;
 
 safe_search_api::ClientClassification ToSafeSearchClientClassification(
     ClassifyUrlResponse* classify_url_response) {
@@ -47,11 +48,8 @@ void OnResponse(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback client_callback,
     const ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
+    std::unique_ptr<kidsmanagement::ClassifyUrlResponse>
         classify_url_response) {
-  DVLOG(1) << "URL classification = "
-           << classify_url_response->display_classification();
-
   if (!status.IsOk()) {
     DVLOG(1) << "ClassifyUrl request failed with status: " << status.ToString();
     std::move(client_callback)
@@ -59,24 +57,38 @@ void OnResponse(
     return;
   }
 
+  DVLOG(1) << "URL classification = "
+           << classify_url_response->display_classification();
+
   std::move(client_callback)
       .Run(url, ToSafeSearchClientClassification(classify_url_response.get()));
 }
 
-// Flips order of arguments so that the sole unbound argument will be the
-// request.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
-ClassifyURL(signin::IdentityManager* identity_manager,
-            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-            const FetcherConfig& config,
-            const kids_chrome_management::ClassifyUrlRequest& request) {
+// Flips order of arguments so that the unbound arguments will be the
+// request and callback.
+std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const FetcherConfig& config,
+    version_info::Channel channel,
+    const kidsmanagement::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback) {
   return CreateClassifyURLFetcher(*identity_manager, url_loader_factory,
-                                  request, config);
+                                  request, std::move(callback), config,
+                                  channel);
 }
 
 FetcherConfig GetFetcherConfig() {
-  if (base::FeatureList::IsEnabled(kHighestRequestPriorityForClassifyUrl)) {
-    return kClassifyUrlConfigWithHighestPriority;
+  // Currently we only support 3 of the 4 possible combinations of the flags
+  // below. We don't anticipate a need for having BestEffort and
+  // WaitUntilAvailable at this time.
+  if (base::FeatureList::IsEnabled(
+          kUncredentialedFilteringFallbackForSupervisedUsers)) {
+    return kClassifyUrlConfigBestEffort;
+  }
+  if (base::FeatureList::IsEnabled(
+          kWaitUntilAccessTokenAvailableForClassifyUrl)) {
+    return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
   }
   return kClassifyUrlConfig;
 }
@@ -86,14 +98,14 @@ FetcherConfig GetFetcherConfig() {
 KidsChromeManagementURLCheckerClient::KidsChromeManagementURLCheckerClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view country)
-    : safe_search_client_(url_loader_factory,
-                          kClassifyUrlConfig.traffic_annotation()),
-      country_(country),
+    std::string_view country,
+    version_info::Channel channel)
+    : country_(country),
       fetch_manager_(base::BindRepeating(&ClassifyURL,
                                          identity_manager,
                                          url_loader_factory,
-                                         GetFetcherConfig())) {}
+                                         GetFetcherConfig(),
+                                         channel)) {}
 
 KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
     default;
@@ -101,16 +113,11 @@ KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
 void KidsChromeManagementURLCheckerClient::CheckURL(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback callback) {
-  kids_chrome_management::ClassifyUrlRequest request;
+  kidsmanagement::ClassifyUrlRequest request;
   request.set_url(url.spec());
   request.set_region_code(country_);
 
   fetch_manager_.Fetch(request,
                        base::BindOnce(&OnResponse, url, std::move(callback)));
-
-  if (IsShadowKidsApiWithSafeSitesEnabled()) {
-    // Actual client is timing the latency in Enterprise.SafeSites.Latency
-    safe_search_client_.CheckURL(url, base::DoNothing());
-  }
 }
 }  // namespace supervised_user

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
 class Profile;
@@ -31,16 +32,15 @@ class ShareActionCache {
   ShareActionCache(const ShareActionCache&) = delete;
   ShareActionCache& operator=(const ShareActionCache&) = delete;
 
-  ShareAction* GetActionFromName(const std::u16string& action_name);
+  ShareAction* GetActionFromType(ShareActionType action_type);
 
   const std::vector<std::unique_ptr<ShareAction>>& GetShareActions();
 
   bool HasVisibleActions(const apps::IntentPtr& intent,
                          bool contains_google_document);
 
-  // Returns null if |display_name| is not a valid ShareAction.
-  const gfx::VectorIcon* GetVectorIconFromName(
-      const std::u16string& display_name);
+  // Returns null if |action_type| is not a valid ShareAction.
+  const gfx::VectorIcon* GetVectorIconFromType(ShareActionType action_type);
 
   void AddShareActionForTesting();
 

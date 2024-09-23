@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -27,30 +27,23 @@ import java.util.concurrent.TimeoutException;
 public class LanguageProfileControllerUnitTest {
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
-        mController = new LanguageProfileController(mDelegate);
     }
-
-    LanguageProfileDelegate mDelegate =
-            new LanguageProfileDelegate() {
-                @Override
-                public boolean isULPSupported() {
-                    return true;
-                }
-
-                @Override
-                public List<String> getLanguagePreferences(
-                        String accountName, int timeoutInSeconds) {
-                    return new ArrayList<String>();
-                }
-            };
-    LanguageProfileController mController;
 
     @Test
     @SmallTest
     public void testSuccess() {
-        mController.getLanguagePreferences("myaccount");
+        ServiceLoaderUtil.setInstanceForTesting(
+                LanguageProfileDelegate.class,
+                new LanguageProfileDelegate() {
+                    @Override
+                    public List<String> getLanguagePreferences(
+                            String accountName, int timeoutInSeconds) {
+                        return Collections.emptyList();
+                    }
+                });
+
+        LanguageProfileController.getLanguagePreferences("myaccount");
 
         Assert.assertEquals(
                 1,
@@ -80,7 +73,17 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testSignedOut() {
-        mController.getLanguagePreferences(null);
+        ServiceLoaderUtil.setInstanceForTesting(
+                LanguageProfileDelegate.class,
+                new LanguageProfileDelegate() {
+                    @Override
+                    public List<String> getLanguagePreferences(
+                            String accountName, int timeoutInSeconds) {
+                        return Collections.emptyList();
+                    }
+                });
+
+        LanguageProfileController.getLanguagePreferences(null);
 
         Assert.assertEquals(
                 1,
@@ -110,22 +113,7 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testNotAvailable() {
-        mController =
-                new LanguageProfileController(
-                        new LanguageProfileDelegate() {
-                            @Override
-                            public boolean isULPSupported() {
-                                return false;
-                            }
-
-                            @Override
-                            public List<String> getLanguagePreferences(
-                                    String accountName, int timeoutInSeconds) {
-                                return new ArrayList<String>();
-                            }
-                        });
-
-        mController.getLanguagePreferences("myaccount");
+        LanguageProfileController.getLanguagePreferences("myaccount");
 
         Assert.assertEquals(
                 1,
@@ -141,23 +129,17 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testTimeout() {
-        mController =
-                new LanguageProfileController(
-                        new LanguageProfileDelegate() {
-                            @Override
-                            public boolean isULPSupported() {
-                                return true;
-                            }
+        ServiceLoaderUtil.setInstanceForTesting(
+                LanguageProfileDelegate.class,
+                new LanguageProfileDelegate() {
+                    @Override
+                    public List<String> getLanguagePreferences(
+                            String accountName, int timeoutInSeconds) throws TimeoutException {
+                        throw new TimeoutException("error!");
+                    }
+                });
 
-                            @Override
-                            public List<String> getLanguagePreferences(
-                                    String accountName, int timeoutInSeconds)
-                                    throws TimeoutException {
-                                throw new TimeoutException("error!");
-                            }
-                        });
-
-        mController.getLanguagePreferences("myaccount");
+        LanguageProfileController.getLanguagePreferences("myaccount");
 
         Assert.assertEquals(
                 1,
@@ -173,23 +155,17 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testFailure() {
-        mController =
-                new LanguageProfileController(
-                        new LanguageProfileDelegate() {
-                            @Override
-                            public boolean isULPSupported() {
-                                return true;
-                            }
+        ServiceLoaderUtil.setInstanceForTesting(
+                LanguageProfileDelegate.class,
+                new LanguageProfileDelegate() {
+                    @Override
+                    public List<String> getLanguagePreferences(
+                            String accountName, int timeoutInSeconds) throws InterruptedException {
+                        throw new InterruptedException("error!");
+                    }
+                });
 
-                            @Override
-                            public List<String> getLanguagePreferences(
-                                    String accountName, int timeoutInSeconds)
-                                    throws InterruptedException {
-                                throw new InterruptedException("error!");
-                            }
-                        });
-
-        mController.getLanguagePreferences("myaccount");
+        LanguageProfileController.getLanguagePreferences("myaccount");
 
         Assert.assertEquals(
                 1,

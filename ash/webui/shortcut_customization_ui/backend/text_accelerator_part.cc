@@ -22,7 +22,6 @@ std::u16string GetTextForModifier(ui::EventFlags modifier) {
       return u"meta";
   }
   NOTREACHED();
-  return std::u16string();
 }
 
 std::u16string GetTextForDelimiter(TextAcceleratorDelimiter delimiter) {

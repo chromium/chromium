@@ -29,7 +29,6 @@ class GLShareGroup;
 }
 
 namespace gpu {
-class MailboxManager;
 class SyncPointManager;
 class SingleTaskSequence;
 
@@ -40,14 +39,13 @@ class ProgramCache;
 
 // Provides accessors for GPU service objects and the serializer interface to
 // the GPU thread used by InProcessCommandBuffer.
-// TODO(crbug.com/1247756): This class should be revisited as lots of
+// TODO(crbug.com/40196979): This class should be revisited as lots of
 // functionality isn't needed anymore with GLRenderer deleted.
 class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
  public:
   CommandBufferTaskExecutor(const GpuPreferences& gpu_preferences,
                             const GpuFeatureInfo& gpu_feature_info,
                             SyncPointManager* sync_point_manager,
-                            MailboxManager* mailbox_manager,
                             gl::GLSurfaceFormat share_group_surface_format,
                             SharedImageManager* shared_image_manager,
                             gles2::ProgramCache* program_cache);
@@ -88,7 +86,6 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
     return share_group_surface_format_;
   }
   SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
-  MailboxManager* mailbox_manager() const { return mailbox_manager_; }
 
   // Not const because these return inner pointers.
   ServiceDiscardableManager* discardable_manager() {
@@ -113,7 +110,6 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
   const GpuPreferences gpu_preferences_;
   const GpuFeatureInfo gpu_feature_info_;
   raw_ptr<SyncPointManager> sync_point_manager_;
-  raw_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<gles2::Outputter> outputter_;
   gl::GLSurfaceFormat share_group_surface_format_;
   std::unique_ptr<gles2::ProgramCache> owned_program_cache_;

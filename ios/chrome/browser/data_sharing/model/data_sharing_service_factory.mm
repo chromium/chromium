@@ -14,9 +14,14 @@
 #import "components/data_sharing/public/features.h"
 #import "components/keyed_service/core/keyed_service_export.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync/model/data_type_store_service.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_sdk_delegate_ios.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_ui_delegate_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -38,18 +43,32 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
       ChromeBrowserState::FromBrowserState(browser_state);
   DCHECK(chrome_browser_state);
 
+  std::unique_ptr<DataSharingUIDelegate> ui_delegate =
+      std::make_unique<DataSharingUIDelegateIOS>();
+  std::unique_ptr<DataSharingSDKDelegate> sdk_delegate =
+      std::make_unique<DataSharingSDKDelegateIOS>();
+
   return std::make_unique<DataSharingServiceImpl>(
       browser_state->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+          ->GetStoreFactory(),
+      ::GetChannel(), std::move(sdk_delegate), std::move(ui_delegate));
 }
 
 }  // namespace
 
 // static
 DataSharingService* DataSharingServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* context) {
+  return GetForProfile(context);
+}
+
+// static
+DataSharingService* DataSharingServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DataSharingService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 // static
@@ -62,6 +81,7 @@ DataSharingServiceFactory::DataSharingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DataSharingService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/files/file_path.h"
 
 #include <stddef.h>
 
 #include <sstream>
+#include <string_view>
 
 #include "base/files/safe_base_name.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -62,7 +68,7 @@ struct BinaryIntTestData {
 
 struct UTF8TestData {
   FilePath::StringPieceType native;
-  StringPiece utf8;
+  std::string_view utf8;
 };
 
 // file_util winds up using autoreleased objects on the Mac, so this needs

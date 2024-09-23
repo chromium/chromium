@@ -37,8 +37,9 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool show_touch_event_handler_rects = false;
   bool show_wheel_event_handler_rects = false;
   bool show_scroll_event_handler_rects = false;
-  bool show_non_fast_scrollable_rects = false;
-  bool show_main_thread_scrolling_reason_rects = false;
+  bool show_main_thread_scroll_hit_test_rects = false;
+  bool show_main_thread_scroll_repaint_rects = false;
+  bool show_raster_inducing_scroll_rects = false;
   bool show_layer_animation_bounds_rects = false;
 
   int slow_down_raster_scale_factor = 0;
@@ -47,8 +48,6 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
 
   // This is part of the feature to show performance metrics on HUD. This
   // particular flag is set only in Blink.
-  bool show_web_vital_metrics = false;
-  bool show_smoothness_metrics = false;
 
   void SetRecordRenderingStats(bool enabled);
   bool RecordRenderingStats() const;
@@ -62,7 +61,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool ShouldDrawHudInfo() const;
   void TurnOffHudInfoDisplay();
 
-  static bool Equal(const LayerTreeDebugState& a, const LayerTreeDebugState& b);
+  bool operator==(const LayerTreeDebugState&) const;
 
  private:
   bool record_rendering_stats_ = false;

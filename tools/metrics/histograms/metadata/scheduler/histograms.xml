@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Length">
+  <variant name="Any" summary="of arbitrary length"/>
+  <variant name="Medium" summary="lasting between 1 and 100ms"/>
+</variants>
+
+<variants name="NamedThread">
+  <variant name="BrowserIO" summary="the browser IO thread"/>
+  <variant name="BrowserUI" summary="the browser UI thread"/>
+  <variant name="Other"/>
+</variants>
+
+<histogram name="MessagePumpEpoll.WatchedFileDescriptors"
+    units="FileDescriptors" expires_after="2025-08-01">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    The number of file descriptors in the watch list for the epoll message pump.
+    Sampled periodically every minute for each thread with an epoll message
+    pump.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
     expires_after="M85">
   <owner>stanisc@chromium.org</owner>
@@ -37,8 +59,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetProcessState"
+    enum="PidReuseResult" expires_after="2025-02-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records whether or not a pid is reused between the time a SetProcessState
+    DBus request is dispatched and when the request's result is processed. Pid
+    reuse can race with the DBus request to result in the requested scheduler
+    settings being applied to the wrong process, although this metric cannot
+    differentiate between winning and losing that race. This is emitted every
+    time a new Chrome process is created or changes background state.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetThreadState"
+    enum="PidReuseResult" expires_after="2025-02-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records whether or not a pid is reused between the time a SetThreadState
+    DBus request is dispatched and when the request's result is processed. Pid
+    reuse can race with the DBus request to result in the requested scheduler
+    settings being applied to the wrong thread, although this metric cannot
+    differentiate between winning and losing that race. This is emitted every
+    time Chrome creates a thread or changes a thread type.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.DBusSchedQoS.SetProcessStateLatency"
+    units="microseconds" expires_after="2025-02-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records amount of time it takes to execute SetProcessState DBus request on
+    ChromeOS. This is emitted every time a new Chrome process is created or
+    changes background state. All ChromeOS clients have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.DBusSchedQoS.SetThreadStateLatency"
+    units="microseconds" expires_after="2025-02-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records amount of time it takes to execute SetThreadState DBus request on
+    ChromeOS. This is emitted every time Chrome creates a thread or changes a
+    thread type. All ChromeOS clients have high-resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
-    enum="MessagePumpPhases" expires_after="2024-08-04">
+    enum="MessagePumpPhases" expires_after="2025-02-09">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
@@ -47,21 +119,7 @@ chromium-metrics-reviews@google.com.
     {NamedThread}. Each enum value can be analyzed for its total time or as a
     percentage relative to other phases.
   </summary>
-  <token key="NamedThread">
-    <variant name="BrowserIO"/>
-    <variant name="BrowserUI"/>
-  </token>
-</histogram>
-
-<histogram name="Scheduling.Renderer.DeadlineMode"
-    enum="RendererSchedulerDeadlineMode" expires_after="2024-02-04">
-  <owner>weiliangc@chromium.org</owner>
-  <owner>chrome-gpu-metrics@chromium.org</owner>
-  <summary>
-    The type of deadline mode the Renderer's cc::Scheduler is in when the
-    scheduler enters the BeginImplFrame deadline. This emits immediately as the
-    scheduler enters the deadline.
-  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
 <histogram name="Scheduling.Renderer.DrawInterval2" units="microseconds"
@@ -88,19 +146,239 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
-    expires_after="M85">
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
+<histogram name="Scheduling.SchedQoS.SetProcessStateError" enum="QoSErrorType"
+    expires_after="2025-03-02">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
   <summary>
-    Number of tasks executed by a SchedulerWorker before it detached. Recorded
-    when a SchedulerWorker detaches.
+    The error types from schedqos feature in resourced. This is recorded each
+    time the SetProcessState DBus request fails. The request rarely fails.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.SchedQoS.SetThreadStateError" enum="QoSErrorType"
+    expires_after="2025-03-02">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    The error types from schedqos feature in resourced. This is recorded each
+    time the SetThreadState DBus request fails. The request rarely fails.
+  </summary>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an active period of less than 1 millisecond using
+    ThreadController on {NamedThread}. Recorded when an active period ends.
+    Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an active period {Length} using ThreadController
+    {NamedThread}. Recorded when an active period ends. Sub-sampled to 0.1% of
+    intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOffCpuDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent off-cpu during an active period of less than 1
+    millisecond using ThreadController on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOffCpuDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent off-cpu during an active period {Length} operiod
+    using ThreadController on {NamedThread}. Recorded when an active period
+    ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent on-cpu during an active period of less than 1
+    millisecond using ThreadController on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration spent on-cpu during an active period {Length} using
+    ThreadController on {NamedThread}. Recorded when an active period ends.
+    Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.Short.{NamedThread}"
+    units="%" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the percentage of time a thread stayed on-cpu during an active
+    ThreadController period of less than 1 millisecond on {NamedThread}.
+    Recorded when an active period ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.{Length}.{NamedThread}"
+    units="%" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the percentage of time a thread stayed on-cpu during an active
+    ThreadController period {Length} on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveOffCpuVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread stayed off-cpu during
+    active periods relative to the total time since the last metric was stored.
+    Recorded over a window of length one second and each sample is independent
+    of the previous one, hence knowing the value of x[i] does not provide any
+    information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second and 50 ms was off-cpu, as sample of 5% is stored. In
+    this example, the corresponding on-cpu sample would be 15%.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveOnCpuVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread stayed on-cpu during
+    active periods relative to the total time since the last metric was stored.
+    Recorded over a window of length one second and each sample is independent
+    of the previous one, hence knowing the value of x[i] does not provide any
+    information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second and 150 ms was on-cpu, as sample of 15% is stored. In
+    this example, the corresponding off-cpu sample would be 5%.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread is active relative to the
+    total time since the last metric was stored. Recorded over a window of
+    length one second and each sample is independent of the previous one, hence
+    knowing the value of x[i] does not provide any information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second, a sample of 20% will be stored.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.ThreadController.IdleDuration.Short.{NamedThread}"
+    units="microseconds" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an idle period of less than 1 millisecond using
+    ThreadController on {NamedThread}. Recorded when an active period begins.
+    Sub-sampled to 0.1% of intervals.
+
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for additional details.
+  </summary>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.IdleDuration.{Length}.{NamedThread}"
+    units="ms" expires_after="2025-01-26">
+  <owner>olivierli@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Records the duration of an idle period {Length} using ThreadController on
+    {NamedThread}. Recorded when an active period begins. Sub-sampled to 0.1% of
+    intervals.
+  </summary>
+  <token key="Length" variants="Length"/>
+  <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>spvw@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

@@ -334,7 +334,7 @@ interface CrosBluetoothConfig {
   SetBluetoothEnabledState(bool enabled);
 
   // Turns Bluetooth on without persisting the enabled state to prefs.
-  SetBluetoothHidDetectionActive();
+  SetBluetoothEnabledWithoutPersistence();
 
   // If |is_using_bluetooth| is false, restores the Bluetooth enabled
   // state that was last persisted to local state. If |is_using_bluetooth|

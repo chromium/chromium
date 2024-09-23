@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">क्लाइंट के डिवाइस पर <ph name="URL" /> नहीं खोला जा सका.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  पिछली बार <ph name="RELATIVE_TIMESTAMP" /> ऑनलाइन दिखाई दिया.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> को 'सुलभता' अनुमति दें</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> से कनेक्‍ट है</translation>
 <translation id="2540992418118313681">क्या आप इस कंप्यूटर को किसी दूसरे उपयोगकर्ता से शेयर करना चाहते हैं ताकि वह इसे देख और नियंत्रित कर सके?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">सुरक्षा कुंजी दूरस्थ प्रक्रिया</translation>
 <translation id="3581045510967524389">नेटवर्क से कनेक्ट नहीं किया जा सका. कृपया जांचें कि आपका डिवाइस ऑन-लाइन है.</translation>
 <translation id="3596628256176442606">यह सेवा Chromoting क्लाइंट के इनकमिंग कनेक्शन सक्षम करती है.</translation>
-<translation id="369442766917958684">ऑफ़लाइन.</translation>
 <translation id="3695446226812920698">तरीका जानें</translation>
 <translation id="3776024066357219166">आपका Chrome दूरस्थ डेस्कटॉप सत्र खत्म हो चुका है.</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">आपका डेस्कटॉप वर्तमान में <ph name="USER" /> के साथ शेयर किया गया है.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> के रूप में साइन इन किया है.</translation>
 <translation id="579702532610384533">फिर से कनेक्‍ट करें</translation>
 <translation id="5810269635982033450">स्क्रीन किसी ट्रैकपैड की तरह काम करती है</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने आपकी कंप्यूटर स्क्रीन के साथ-साथ कीबोर्ड और माउस का ऐक्सेस मांगा है. अगर आप ऐक्सेस नहीं देना चाहते हैं, तो ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' को दबाएं. अगर आप ऐक्सेस देना चाहते हैं, तो कनेक्ट करने के लिए ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' को दबाएं.</translation>

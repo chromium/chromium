@@ -10,7 +10,9 @@
 
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "cc/cc_export.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -43,6 +45,7 @@ class CC_EXPORT Proxy {
   virtual void ReleaseLayerTreeFrameSink() = 0;
 
   virtual void SetVisible(bool visible) = 0;
+  virtual void SetShouldWarmUp() = 0;
 
   virtual void SetNeedsAnimate() = 0;
   virtual void SetNeedsUpdateLayers() = 0;
@@ -89,14 +92,18 @@ class CC_EXPORT Proxy {
   // Must be called before deleting the proxy.
   virtual void Stop() = 0;
 
+  virtual void QueueImageDecode(int request_id, const PaintImage& image) = 0;
   virtual void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
   virtual void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) = 0;
 
-  virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                          BrowserControlsState current,
-                                          bool animate) = 0;
+  virtual void UpdateBrowserControlsState(
+      BrowserControlsState constraints,
+      BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const BrowserControlsOffsetTagsInfo>
+          offset_tags_info) = 0;
 
   virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
+#ifndef PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
+#define PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
 
 #include <array>
 #include <atomic>
@@ -11,14 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
 namespace base::internal {
 
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 // When the buildflag is disabled, use a minimal no-state implementation so
 // sizeof(raw_ptr<T>) == sizeof(T*).
@@ -86,7 +86,7 @@ class PA_TRIVIAL_ABI InstanceTracer {
     return ++counter_;
   }
 
-  static std::atomic<uint64_t> counter_;
+  PA_COMPONENT_EXPORT(RAW_PTR) static std::atomic<uint64_t> counter_;
 
   // 0 is treated as 'ownerless'. It is used as a sentinel for constexpr
   // raw_ptrs or other places where owner tracking doesn't make sense.
@@ -97,4 +97,4 @@ class PA_TRIVIAL_ABI InstanceTracer {
 
 }  // namespace base::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
+#endif  // PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_

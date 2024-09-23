@@ -3,81 +3,160 @@
 <style>
 fieldset
 {
-    inline-size:200px;
-    block-size:100px;
-    margin:1em;
+    inline-size:100px;
+    block-size:30px;
+    margin:0.5em;
     display:inline-block;
+    font-size: 10px;
 }
 
 div
 {
-    inline-size:100px;
-    block-size:25px;
+    inline-size:50px;
+    block-size:8px;
     background-color:orange;
 }
 
 </style>
 </head>
 
-LTR fieldset with left/center/right text-align: <br>
+Horizontal-rb fieldset with left/center/right text-align: <br>
 
 <fieldset>
-<legend style="text-align:left; margin-left:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:left; margin-left:10px"><div></div></legend>
+LTR</fieldset>
 
 <fieldset>
-<legend style="text-align:right; margin-right:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:right; margin-right:10px"><div></div></legend>
+LTR</fieldset>
 
 <fieldset>
 <legend style="text-align:center;"><div></div></legend>
-</fieldset>
+LTR</fieldset>
 
 <br>
 
-RTL fieldset with left/center/right text-align: <br>
+<fieldset dir=rtl>
+<legend style="text-align:left; margin-left:10px"><div></div></legend>
+RTL</fieldset>
 
 <fieldset dir=rtl>
-<legend style="text-align:left; margin-left:20px"><div></div></legend>
-</fieldset>
-
-<fieldset dir=rtl>
-<legend style="text-align:right; margin-right:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:right; margin-right:10px"><div></div></legend>
+RTL</fieldset>
 
 <fieldset dir=rtl>
 <legend style="text-align:center;"><div></div></legend>
-</fieldset>
+RTL</fieldset>
 
-<br>
+<span style="display:block; column-count:2">
 
-Vertical LTR fieldset with left/center/right text-align: <br>
-
-<fieldset style="-webkit-writing-mode:vertical-lr">
-<legend style="text-align:left; margin-top:20px"><div></div></legend>
-</fieldset>
+Vertical-lr fieldset with left/center/right text-align: <br>
 
 <fieldset style="-webkit-writing-mode:vertical-lr">
-<legend style="text-align:right; margin-bottom:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="-webkit-writing-mode:vertical-lr">
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+LTR</fieldset>
 
 <fieldset style="-webkit-writing-mode:vertical-lr">
 <legend style="text-align:center"><div></div></legend>
-</fieldset>
-
-
-<br>
-
-Vertical RTL fieldset with left/center/right text-align: <br>
+LTR</fieldset>
 
 <fieldset dir=rtl style="-webkit-writing-mode:vertical-lr">
-<legend style="text-align:left; margin-top:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+RTL</fieldset>
 
 <fieldset dir=rtl style="-webkit-writing-mode:vertical-lr">
-<legend style="text-align:right; margin-bottom:20px"><div></div></legend>
-</fieldset>
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+RTL</fieldset>
 
 <fieldset dir=rtl style="-webkit-writing-mode:vertical-lr">
 <legend style="text-align:center"><div></div></legend>
-</fieldset>
+RTL</fieldset>
+
+
+<br>
+Vertical-rl fieldset with left/center/right text-align: <br>
+<fieldset style="writing-mode:vertical-rl">
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:vertical-rl">
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:vertical-rl">
+<legend style="text-align:center"><div></div></legend>
+LTR</fieldset>
+
+<fieldset dir=rtl style="writing-mode:vertical-rl">
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:vertical-rl">
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:vertical-rl">
+<legend style="text-align:center"><div></div></legend>
+RTL</fieldset>
+
+<br>
+
+Sideways-lr fieldset with left/center/right text-align: <br>
+
+<fieldset style="writing-mode:sideways-lr">
+<legend style="text-align:left; margin-bottom:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:sideways-lr">
+<legend style="text-align:right; margin-top:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:sideways-lr">
+<legend style="text-align:center"><div></div></legend>
+LTR</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-lr">
+<legend style="text-align:left; margin-bottom:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-lr">
+<legend style="text-align:right; margin-top:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-lr">
+<legend style="text-align:center"><div></div></legend>
+RTL</fieldset>
+
+
+<br>
+Sideways-rl fieldset with left/center/right text-align: <br>
+<fieldset style="writing-mode:sideways-rl">
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:sideways-rl">
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+LTR</fieldset>
+
+<fieldset style="writing-mode:sideways-rl">
+<legend style="text-align:center"><div></div></legend>
+LTR</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-rl">
+<legend style="text-align:left; margin-top:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-rl">
+<legend style="text-align:right; margin-bottom:10px"><div></div></legend>
+RTL</fieldset>
+
+<fieldset dir=rtl style="writing-mode:sideways-rl">
+<legend style="text-align:center"><div></div></legend>
+RTL</fieldset>
+
+
+</span>

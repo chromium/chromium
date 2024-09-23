@@ -67,8 +67,8 @@ class IceTransportChannel : public sigslot::has_slots<> {
   typedef base::OnceCallback<void(std::unique_ptr<P2PDatagramSocket>)>
       ConnectedCallback;
 
-  explicit IceTransportChannel(
-      scoped_refptr<TransportContext> transport_context);
+  IceTransportChannel(scoped_refptr<TransportContext> transport_context,
+                      const NetworkSettings& network_settings);
 
   IceTransportChannel(const IceTransportChannel&) = delete;
   IceTransportChannel& operator=(const IceTransportChannel&) = delete;
@@ -131,6 +131,7 @@ class IceTransportChannel : public sigslot::has_slots<> {
   std::unique_ptr<cricket::P2PTransportChannel> channel_;
   int connect_attempts_left_;
   base::RepeatingTimer reconnect_timer_;
+  NetworkSettings network_settings_;
 
   THREAD_CHECKER(thread_checker_);
 

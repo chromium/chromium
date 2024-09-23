@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
 
+#include <map>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
@@ -43,7 +45,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
 
   // This error will be returned by default (i.e. when there are no errors
   // queued by set_install_errors().
-  void set_install_error(const std::string& err) { install_err_ = err; }
+  void set_install_error(std::string_view err) { install_err_ = err; }
 
   // Set a list of errors which will be returned (in queue order). When there
   // are no errors left the default error set by set_install_error() will be
@@ -52,23 +54,37 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
     extra_install_errs_ = std::move(errs);
   }
 
-  void set_install_root_path(const std::string& path) {
+  // When `true`, only record DLC `Install` calls that return `kErrorNone` in
+  // `dlcs_with_content_`. Otherwise, record all DLC `Install` calls as
+  // successful, even when it returns an error.
+  void set_skip_adding_dlc_info_on_error(bool skip) {
+    skip_adding_dlc_info_on_error_ = skip;
+  }
+
+  void set_install_root_path(std::string_view path) {
     install_root_path_ = path;
   }
-  void set_uninstall_error(const std::string& err) { uninstall_err_ = err; }
-  void set_purge_error(const std::string& err) { purge_err_ = err; }
-  void set_get_dlc_state_error(const std::string& err) {
-    get_dlc_state_err_ = err;
-  }
-  void set_get_existing_dlcs_error(const std::string& err) {
+
+  void set_uninstall_error(std::string_view err) { uninstall_err_ = err; }
+
+  void set_purge_error(std::string_view err) { purge_err_ = err; }
+
+  void set_get_existing_dlcs_error(std::string_view err) {
     get_existing_dlcs_err_ = err;
   }
+
   void set_dlcs_with_content(
       const dlcservice::DlcsWithContent& dlcs_with_content) {
     dlcs_with_content_ = dlcs_with_content;
   }
-  void set_dlc_state(const dlcservice::DlcState& dlc_state) {
-    dlc_state_ = dlc_state;
+
+  void set_get_dlc_state_error(std::string_view id, std::string_view err) {
+    get_dlc_state_errors_[std::string(id)] = err;
+  }
+
+  void set_dlc_state(std::string_view id,
+                     const dlcservice::DlcState& dlc_state) {
+    dlc_states_[std::string(id)] = dlc_state;
   }
 
  private:
@@ -76,14 +92,14 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
 
   std::string install_err_ = dlcservice::kErrorNone;
   base::circular_deque<std::string> extra_install_errs_;
+  bool skip_adding_dlc_info_on_error_ = false;
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
-  std::string get_dlc_state_err_ = dlcservice::kErrorNone;
-  std::string get_installed_err_ = dlcservice::kErrorNone;
   std::string get_existing_dlcs_err_ = dlcservice::kErrorNone;
   std::string install_root_path_;
   dlcservice::DlcsWithContent dlcs_with_content_;
-  dlcservice::DlcState dlc_state_;
+  std::map<std::string, std::string, std::less<>> get_dlc_state_errors_;
+  std::map<std::string, dlcservice::DlcState, std::less<>> dlc_states_;
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;

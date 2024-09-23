@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ANDROID_SELECTION_MAGNIFIER_SURFACE_CONTROL_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

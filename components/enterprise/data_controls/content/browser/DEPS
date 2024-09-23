@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/keyed_service",
+  "+content/public/browser",
+  "+ui/base/clipboard",
+]

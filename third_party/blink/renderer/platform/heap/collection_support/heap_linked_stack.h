@@ -48,7 +48,7 @@ namespace blink {
 template <typename T>
 class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
  public:
-  HeapLinkedStack() { CheckType(); }
+  HeapLinkedStack() = default;
 
   inline wtf_size_t size() const;
   inline bool IsEmpty() const;
@@ -75,13 +75,18 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
     Member<Node> next_;
   };
 
-  static void CheckType() {
-    static_assert(WTF::IsMemberType<T>::value,
-                  "HeapLinkedStack supports only Member.");
-  }
-
   Member<Node> head_;
   wtf_size_t size_ = 0;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(std::is_trivially_destructible_v<HeapLinkedStack<T>>,
+                    "HeapLinkedStack must be trivially destructible.");
+      static_assert(WTF::IsMemberType<T>::value,
+                    "HeapLinkedStack supports only Member.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename T>

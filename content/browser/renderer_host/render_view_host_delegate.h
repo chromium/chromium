@@ -123,6 +123,10 @@ class RenderViewHostDelegate {
 
   virtual const base::Location& GetCreatorLocation() = 0;
 
+  // Returns whether attribution reporting is supported
+  // for the WebContents associated with this RenderViewHost.
+  // This method takes into account global support as well as
+  // WebContents specific support.
   virtual network::mojom::AttributionSupport GetAttributionSupport() = 0;
 
  protected:

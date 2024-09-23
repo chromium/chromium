@@ -24,7 +24,7 @@ namespace policy {
 DeviceLocalAccountPolicyProvider::DeviceLocalAccountPolicyProvider(
     const std::string& user_id,
     DeviceLocalAccountPolicyService* service,
-    DeviceLocalAccount::Type type)
+    DeviceLocalAccountType type)
     : user_id_(user_id),
       service_(service),
       type_(type),
@@ -44,15 +44,13 @@ DeviceLocalAccountPolicyProvider::Create(
     const std::string& user_id,
     DeviceLocalAccountPolicyService* device_local_account_policy_service,
     bool force_immediate_load) {
-  DeviceLocalAccount::Type type;
-  if (!device_local_account_policy_service ||
-      !IsDeviceLocalAccountUser(user_id, &type)) {
+  auto type = GetDeviceLocalAccountType(user_id);
+  if (!device_local_account_policy_service || !type.has_value()) {
     return nullptr;
   }
 
-  std::unique_ptr<DeviceLocalAccountPolicyProvider> provider(
-      new DeviceLocalAccountPolicyProvider(
-          user_id, device_local_account_policy_service, type));
+  auto provider = std::make_unique<DeviceLocalAccountPolicyProvider>(
+      user_id, device_local_account_policy_service, type.value());
   // In case of restore-after-restart broker should already be initialized.
   if (force_immediate_load && provider->GetBroker())
     provider->GetBroker()->LoadImmediately();
@@ -139,31 +137,42 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
   // administrator given that this is an enterprise user.
   SetEnterpriseUsersDefaults(&chrome_policy);
 
-  // Apply managed guest session specific default values if no value is fetched
-  // from the cloud.
-  if (type_ == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
-    if (!chrome_policy.IsPolicySet(key::kShelfAutoHideBehavior)) {
-      // Force the |ShelfAutoHideBehavior| policy to |Never|, ensuring that the
-      // ash shelf does not auto-hide.
-      chrome_policy.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
-                        POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                        base::Value("Never"), nullptr);
+  switch (type_) {
+    case DeviceLocalAccountType::kPublicSession: {
+      // Apply managed guest session specific default values if no value is
+      // fetched from the cloud.
+
+      if (!chrome_policy.IsPolicySet(key::kShelfAutoHideBehavior)) {
+        // Force the |ShelfAutoHideBehavior| policy to |Never|, ensuring that
+        // the ash shelf does not auto-hide.
+        chrome_policy.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                          base::Value("Never"), nullptr);
+      }
+
+      if (!chrome_policy.IsPolicySet(key::kShowLogoutButtonInTray)) {
+        // Force the |ShowLogoutButtonInTray| policy to |true|, ensuring that a
+        // big, red logout button is shown in the ash system tray.
+        chrome_policy.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true),
+                          nullptr);
+      }
+      break;
     }
 
-    if (!chrome_policy.IsPolicySet(key::kShowLogoutButtonInTray)) {
-      // Force the |ShowLogoutButtonInTray| policy to |true|, ensuring that a
-      // big, red logout button is shown in the ash system tray.
-      chrome_policy.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
-                        POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                        base::Value(true), nullptr);
-    }
-  }
-
-  // Disable translation functionality in Web Kiosk Mode.
-  if (type_ == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    chrome_policy.Set(key::kTranslateEnabled, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                      base::Value(false), nullptr);
+    case DeviceLocalAccountType::kWebKioskApp:
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      // Disable translation functionality in Web Kiosk Mode.
+      chrome_policy.Set(key::kTranslateEnabled, POLICY_LEVEL_MANDATORY,
+                        POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                        base::Value(false), nullptr);
+      break;
+    case DeviceLocalAccountType::kSamlPublicSession:
+    case DeviceLocalAccountType::kKioskApp:
+      // Do nothing.
+      break;
   }
 
   UpdatePolicy(std::move(bundle));

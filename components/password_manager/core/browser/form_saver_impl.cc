@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "url/gurl.h"
@@ -27,17 +27,19 @@ namespace {
 // Remove all information from |form| that is not required for signature
 // calculation.
 void SanitizeFormData(FormData* form) {
-  form->main_frame_origin = url::Origin();
-  for (FormFieldData& field : form->fields) {
-    field.label.clear();
-    field.value.clear();
-    field.autocomplete_attribute.clear();
-    field.options.clear();
-    field.placeholder.clear();
-    field.css_classes.clear();
-    field.id_attribute.clear();
-    field.name_attribute.clear();
+  form->set_main_frame_origin(url::Origin());
+  std::vector<FormFieldData> fields = form->ExtractFields();
+  for (FormFieldData& field : fields) {
+    field.set_label({});
+    field.set_value({});
+    field.set_autocomplete_attribute({});
+    field.set_options({});
+    field.set_placeholder({});
+    field.set_css_classes({});
+    field.set_id_attribute({});
+    field.set_name_attribute({});
   }
+  form->set_fields(std::move(fields));
 }
 
 // Do the clean up of |matches| after |pending| was just pushed to the store.
@@ -51,8 +53,9 @@ void PostProcessMatches(
   // Update existing matches in the password store.
   for (const password_manager::PasswordForm* match : matches) {
     if (match->IsFederatedCredential() ||
-        ArePasswordFormUniqueKeysEqual(pending, *match))
+        ArePasswordFormUniqueKeysEqual(pending, *match)) {
       continue;
+    }
     // Delete obsolete empty username credentials.
     const bool same_password = match->password_value == pending.password_value;
     const bool username_was_added =
@@ -61,13 +64,13 @@ void PostProcessMatches(
         password_manager_util::GetMatchType(*match);
     const bool is_affiliated_android_match =
         match_type == password_manager_util::GetLoginMatchType::kAffiliated &&
-        password_manager::IsValidAndroidFacetURI(match->signon_realm);
-    // TODO(crbug.com/1428539): include affiliated website matches when Android
-    // supports them.
+        affiliations::IsValidAndroidFacetURI(match->signon_realm);
+    // TODO(crbug.com/40262259): include affiliated, grouped website matches
+    // when Android supports them.
     if (same_password && username_was_added &&
         (match_type == password_manager_util::GetLoginMatchType::kExact ||
          is_affiliated_android_match)) {
-      store->RemoveLogin(*match);
+      store->RemoveLogin(FROM_HERE, *match);
       continue;
     }
     const bool same_username = match->username_value == pending.username_value;
@@ -87,8 +90,7 @@ void PostProcessMatches(
 
 }  // namespace
 
-FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {
-}
+FormSaverImpl::FormSaverImpl(PasswordStoreInterface* store) : store_(store) {}
 
 FormSaverImpl::~FormSaverImpl() = default;
 
@@ -120,8 +122,9 @@ void FormSaverImpl::Update(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
-  if (old_password != pending.password_value)
+  if (old_password != pending.password_value) {
     pending.date_password_modified = base::Time::Now();
+  }
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
@@ -140,7 +143,7 @@ void FormSaverImpl::UpdateReplace(
 }
 
 void FormSaverImpl::Remove(const PasswordForm& form) {
-  store_->RemoveLogin(form);
+  store_->RemoveLogin(FROM_HERE, form);
 }
 
 std::unique_ptr<FormSaver> FormSaverImpl::Clone() {

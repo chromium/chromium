@@ -8,19 +8,21 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {EncryptionMigrationPage_UIState, EncryptionMigrationPageCallbackRouter, EncryptionMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './encryption_migration.html.js';
 
@@ -28,8 +30,7 @@ import {getTemplate} from './encryption_migration.html.js';
 /**
  * Enum for the UI states corresponding to sub steps inside migration screen.
  * These values must be kept in sync with
- * EncryptionMigrationScreenView::UIState in C++ code and the order of the
- * enum must be the same.
+ * EncryptionMigrationPage::UIState in mojo
  */
 enum EncryptionMigrationUiState {
   INITIAL = 'initial',
@@ -39,13 +40,8 @@ enum EncryptionMigrationUiState {
   NOT_ENOUGH_SPACE = 'not-enough-space',
 }
 
-const EncryptionMigrationBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    PolymerElement) as { new (): PolymerElement
-      & OobeI18nBehaviorInterface
-      & LoginScreenBehaviorInterface
-      & MultiStepBehaviorInterface,
-  };
+const EncryptionMigrationBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 export class EncryptionMigration extends EncryptionMigrationBase {
   static get is() {
@@ -142,9 +138,32 @@ export class EncryptionMigration extends EncryptionMigrationBase {
   private isSkipped: boolean;
   private availableSpaceInString: string;
   private necessarySpaceInString: string;
+  private callbackRouter: EncryptionMigrationPageCallbackRouter;
+  private handler: EncryptionMigrationPageHandlerRemote;
 
   constructor() {
     super();
+    this.callbackRouter = new EncryptionMigrationPageCallbackRouter();
+    this.handler = new EncryptionMigrationPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory
+        .establishEncryptionMigrationScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
+
+    this.callbackRouter.setUIState.addListener(this.setUIState.bind(this));
+    this.callbackRouter.setMigrationProgress.addListener(
+        this.setMigrationProgress.bind(this));
+    this.callbackRouter.setIsResuming.addListener(
+        this.setIsResuming.bind(this));
+    this.callbackRouter.setBatteryState.addListener(
+        this.setBatteryState.bind(this));
+    this.callbackRouter.setNecessaryBatteryPercent.addListener(
+        this.setNecessaryBatteryPercent.bind(this));
+    this.callbackRouter.setSpaceInfoInString.addListener(
+        this.setSpaceInfoInString.bind(this));
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -159,19 +178,8 @@ export class EncryptionMigration extends EncryptionMigrationBase {
 
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState() {
-    return OOBE_UI_STATE.MIGRATION;
-  }
-
-  override get EXTERNAL_API(): string[] {
-    return [
-      'setUIState',
-      'setMigrationProgress',
-      'setIsResuming',
-      'setBatteryState',
-      'setNecessaryBatteryPercent',
-      'setSpaceInfoInString',
-    ];
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.MIGRATION;
   }
 
   override ready() {
@@ -185,8 +193,24 @@ export class EncryptionMigration extends EncryptionMigrationBase {
    * @param state The UI state to identify a sub step in migration.
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  setUIState(state: number): void {
-    this.setUIStep(Object.values(EncryptionMigrationUiState)[state]);
+  setUIState(value: EncryptionMigrationPage_UIState): void {
+    switch (value) {
+      case EncryptionMigrationPage_UIState.kInitial:
+        this.setUIStep(EncryptionMigrationUiState.INITIAL);
+        break;
+      case EncryptionMigrationPage_UIState.kReady:
+        this.setUIStep(EncryptionMigrationUiState.READY);
+        break;
+      case EncryptionMigrationPage_UIState.kMigrating:
+        this.setUIStep(EncryptionMigrationUiState.MIGRATING);
+        break;
+      case EncryptionMigrationPage_UIState.kMigratingFailed:
+        this.setUIStep(EncryptionMigrationUiState.MIGRATION_FAILED);
+        break;
+      case EncryptionMigrationPage_UIState.kNotEnoughStorage:
+        this.setUIStep(EncryptionMigrationUiState.NOT_ENOUGH_SPACE);
+        break;
+    }
   }
 
   /**
@@ -230,10 +254,12 @@ export class EncryptionMigration extends EncryptionMigrationBase {
    * Updates the string representation of available space size and necessary
    * space size.
    */
-  setSpaceInfoInString(availableSpaceSize: string,
-      necessarySpaceSize: string): void {
-    this.availableSpaceInString = availableSpaceSize;
-    this.necessarySpaceInString = necessarySpaceSize;
+  setSpaceInfoInString(
+      availableSpaceSize: String16, necessarySpaceSize: String16): void {
+    this.availableSpaceInString =
+        String.fromCharCode(...availableSpaceSize.data);
+    this.necessarySpaceInString =
+        String.fromCharCode(...necessarySpaceSize.data);
   }
 
   /**
@@ -312,7 +338,7 @@ export class EncryptionMigration extends EncryptionMigrationBase {
    * Handles click on UPGRADE button.
    */
   private onUpgradeClicked(): void {
-    this.userActed('startMigration');
+    this.handler.onStartMigration();
   }
 
   /**
@@ -320,28 +346,28 @@ export class EncryptionMigration extends EncryptionMigrationBase {
    */
   private onSkipClicked(): void {
     this.isSkipped = true;
-    this.userActed('skipMigration');
+    this.handler.onSkipMigration();
   }
 
   /**
    * Handles click on RESTART button.
    */
   private onRestartOnLowStorageClicked(): void {
-    this.userActed('requestRestartOnLowStorage');
+    this.handler.onRequestRestartOnLowStorage();
   }
 
   /**
    * Handles click on RESTART button on the migration failure screen.
    */
   private onRestartOnFailureClicked(): void {
-    this.userActed('requestRestartOnFailure');
+    this.handler.onRequestRestartOnFailure();
   }
 
   /**
    * Handles click on REPORT AN ISSUE button.
    */
   private onReportAnIssueClicked(): void {
-    this.userActed('openFeedbackDialog');
+    this.handler.onOpenFeedbackDialog();
   }
 }
 

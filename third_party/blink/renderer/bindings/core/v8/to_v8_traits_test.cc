@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
 #include "base/time/time.h"
@@ -277,8 +282,7 @@ TEST(ToV8TraitsTest, Object) {
 TEST(ToV8TraitsTest, Promise) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
-  ScriptPromise::InternalResolver resolver(scope.GetScriptState());
-  ScriptPromise promise = resolver.Promise();
+  auto promise = ToResolvedUndefinedPromise(scope.GetScriptState());
   TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
 }
 

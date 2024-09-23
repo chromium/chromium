@@ -35,7 +35,7 @@ const searchHandlerRemote = SearchHandler.getRemote();
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const MAX_STRING_LEN = 9999;
 const guestFrame = document.createElement('iframe');
-guestFrame.src = `${GUEST_ORIGIN}${location.pathname}`;
+guestFrame.src = `${GUEST_ORIGIN}${location.pathname}${location.search}`;
 document.body.appendChild(guestFrame);
 
 // Cached result whether Local Search Service is enabled.
@@ -80,6 +80,10 @@ const guestMessagePipe = new MessagePipe(
 guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
   return helpApp.handler.openFeedbackDialog();
 });
+
+guestMessagePipe.registerHandler(
+    Message.SHOW_ON_DEVICE_APP_CONTROLS,
+    () => void helpApp.handler.showOnDeviceAppControls());
 
 guestMessagePipe.registerHandler(Message.SHOW_PARENTAL_CONTROLS, () => void
   helpApp.handler.showParentalControls());
@@ -271,10 +275,6 @@ guestMessagePipe.registerHandler(
 
 guestMessagePipe.registerHandler(Message.LAUNCH_MICROSOFT_365_SETUP, () => void
   helpApp.handler.launchMicrosoft365Setup());
-
-guestMessagePipe.registerHandler(
-    Message.MAYBE_SHOW_DISCOVER_NOTIFICATION, () => void
-      helpApp.handler.maybeShowDiscoverNotification());
 
 guestMessagePipe.registerHandler(
     Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION, () => void

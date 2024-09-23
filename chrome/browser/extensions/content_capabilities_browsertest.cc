@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -10,11 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -66,7 +67,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
         "{\n"
         "  \"name\": \"content_capabilities test extensions\",\n"
         "  \"version\": \"1\",\n"
-        "  \"manifest_version\": 2,\n"
+        "  \"manifest_version\": 3,\n"
         "  \"content_capabilities\": {\n"
         "    \"matches\": %s,\n"
         "    \"permissions\": %s\n"
@@ -81,7 +82,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   std::string MakeJSONList(const std::string& s0 = "",
                            const std::string& s1 = "",
                            const std::string& s2 = "") {
-    std::vector<base::StringPiece> v;
+    std::vector<std::string_view> v;
     if (!s0.empty())
       v.push_back(s0);
     if (!s1.empty())

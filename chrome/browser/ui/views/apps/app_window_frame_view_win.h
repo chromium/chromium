@@ -38,7 +38,8 @@ class AppWindowFrameViewWin : public views::NonClientFrameView {
   int NonClientHitTest(const gfx::Point& point) override;
 
   // views::View implementation.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 

@@ -20,15 +20,18 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class GrowableIOBuffer;
+class IPEndPoint;
 class HttpStreamParser;
 struct HttpRequestInfo;
+struct LoadTimingInfo;
 class NetLogWithSource;
+class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpBasicState {
  public:
-  HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
+  HttpBasicState(std::unique_ptr<StreamSocketHandle> connection,
                  bool is_for_get_to_http_proxy);
 
   HttpBasicState(const HttpBasicState&) = delete;
@@ -41,17 +44,17 @@ class NET_EXPORT_PRIVATE HttpBasicState {
                   RequestPriority priority,
                   const NetLogWithSource& net_log);
 
+  // Called when the owner of `this` is closed.
+  void Close(bool not_reusable);
+
   HttpStreamParser* parser() const { return parser_.get(); }
 
   // Returns true if this request is a non-tunneled HTTP request via a proxy.
   bool is_for_get_to_http_proxy() const { return is_for_get_to_http_proxy_; }
 
-  // Deletes |parser_| and sets it to NULL.
-  void DeleteParser();
+  StreamSocketHandle* connection() const { return connection_.get(); }
 
-  ClientSocketHandle* connection() const { return connection_.get(); }
-
-  std::unique_ptr<ClientSocketHandle> ReleaseConnection();
+  std::unique_ptr<StreamSocketHandle> ReleaseConnection();
 
   scoped_refptr<GrowableIOBuffer> read_buf() const;
 
@@ -70,6 +73,20 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // TODO(mmenke): Consider renaming this concept, to avoid confusion with
   // ClientSocketHandle::is_reused().
   bool IsConnectionReused() const;
+  void SetConnectionReused();
+
+  // Returns true if the connection can be "reused" as defined by
+  // HttpStreamParser.
+  //
+  // TODO(crbug.com/346835898): Consider renaming this concept, to avoid
+  // confusion with above IsConnectionReused() and ClientSocketHandle.
+  bool CanReuseConnection() const;
+
+  bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
+
+  void GetSSLInfo(SSLInfo* ssl_info);
+
+  int GetRemoteEndpoint(IPEndPoint* endpoint);
 
   // Retrieves any DNS aliases for the remote endpoint. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
@@ -79,14 +96,11 @@ class NET_EXPORT_PRIVATE HttpBasicState {
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;
 
-  std::unique_ptr<ClientSocketHandle> connection_;
+  std::unique_ptr<StreamSocketHandle> connection_;
 
   std::unique_ptr<HttpStreamParser> parser_;
 
   const bool is_for_get_to_http_proxy_;
-
-  GURL url_;
-  std::string request_method_;
 
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 };

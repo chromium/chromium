@@ -9,10 +9,12 @@
 #include <tuple>
 #include <vector>
 
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
@@ -24,7 +26,9 @@ ExternalInstallOptions::ExternalInstallOptions(
     ExternalInstallSource install_source)
     : install_url(install_url),
       user_display_mode(user_display_mode),
-      install_source(install_source) {}
+      install_source(install_source) {
+  CHECK(install_url.is_valid(), base::NotFatalUntil::M130);
+}
 
 ExternalInstallOptions::~ExternalInstallOptions() = default;
 
@@ -65,6 +69,7 @@ bool ExternalInstallOptions::operator==(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         options.require_manifest,
         options.install_as_shortcut,
+        options.is_preferred_app_for_supported_links,
         options.force_reinstall,
         options.force_reinstall_for_milestone,
         options.placeholder_resolution_behavior,
@@ -82,7 +87,8 @@ bool ExternalInstallOptions::operator==(
         options.oem_installed,
         options.disable_if_touchscreen_with_stylus_not_supported,
         options.handles_file_open_intents,
-        options.expected_app_id
+        options.expected_app_id,
+        options.install_without_os_integration
         // clang-format on
     );
   };
@@ -131,6 +137,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("install_placeholder", install_placeholder);
   root.Set("install_source", static_cast<int>(install_source));
   root.Set("is_disabled", is_disabled);
+  root.Set("is_preferred_app_for_supported_links",
+           is_preferred_app_for_supported_links);
   root.Set("launch_query_params", ConvertOptional(launch_query_params));
   root.Set("load_and_await_service_worker_registration",
            load_and_await_service_worker_registration);
@@ -160,6 +168,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("user_type_allowlist", ConvertStringList(user_type_allowlist));
   root.Set("placeholder_resolution_behavior",
            base::Value(static_cast<int>(placeholder_resolution_behavior)));
+  root.Set("install_without_os_integration", install_without_os_integration);
 
   return base::Value(std::move(root));
 }
@@ -201,6 +210,15 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.oem_installed = install_options.oem_installed;
 
   params.install_url = install_options.install_url;
+
+  if (install_options.install_without_os_integration) {
+    params.install_state =
+        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    params.add_to_search = false;
+  }
 
   return params;
 }

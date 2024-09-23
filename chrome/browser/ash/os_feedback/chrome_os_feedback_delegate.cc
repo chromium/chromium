@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 
 #include <optional>
@@ -36,8 +41,8 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
-#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -297,9 +302,8 @@ void ChromeOsFeedbackDelegate::SendReport(
   }
 
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();
-  if (report->include_screenshot && png_data && png_data.get()) {
-    feedback_data->set_image(
-        std::string(png_data->front_as<char>(), png_data->size()));
+  if (report->include_screenshot && png_data) {
+    feedback_data->set_image(std::string(base::as_string_view(*png_data)));
   }
 
   // Append consent value to report. For cross platform implementations see:
@@ -433,10 +437,8 @@ void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
 }
 
 void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
-  // TODO(http://b/239701119): Make the sys_info.html page a separate WebUI.
-  // For now, use the old Feedback tool's sys_info.html.
-  GURL systemInfoUrl =
-      GURL(base::StrCat({chrome::kChromeUIFeedbackURL, "html/sys_info.html"}));
+  GURL systemInfoUrl = GURL(
+      base::StrCat({chrome::kChromeUIFeedbackURL, "html/system_info.html"}));
   OpenWebDialog(systemInfoUrl, /*args=*/"");
 }
 

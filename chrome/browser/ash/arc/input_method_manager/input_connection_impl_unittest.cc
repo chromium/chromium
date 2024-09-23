@@ -244,7 +244,7 @@ TEST_F(InputConnectionImplTest, CommitText) {
   EXPECT_EQ(2u, sent_key_events.size());
   const ui::KeyEvent& last_sent_key_event = sent_key_events.back();
   EXPECT_EQ(ui::VKEY_RETURN, last_sent_key_event.key_code());
-  EXPECT_EQ(ui::ET_KEY_RELEASED, last_sent_key_event.type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, last_sent_key_event.type());
 
   engine()->Blur();
 }
@@ -348,7 +348,7 @@ TEST_F(InputConnectionImplTest, SendKeyEvent) {
   context_handler()->Reset();
 
   {
-    auto sent = std::make_unique<ui::KeyEvent>(ui::ET_KEY_PRESSED,
+    auto sent = std::make_unique<ui::KeyEvent>(ui::EventType::kKeyPressed,
                                                ui::VKEY_RETURN, ui::EF_NONE);
     connection->SendKeyEvent(std::move(sent));
     const std::vector<ui::KeyEvent>& sent_key_events =
@@ -358,7 +358,7 @@ TEST_F(InputConnectionImplTest, SendKeyEvent) {
     EXPECT_EQ(ui::VKEY_RETURN, received.key_code());
     EXPECT_EQ(ui::DomCode::ENTER, received.code());
     EXPECT_EQ("Enter", received.GetCodeString());
-    EXPECT_EQ(ui::ET_KEY_PRESSED, received.type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, received.type());
     EXPECT_EQ(0, ui::EF_SHIFT_DOWN & received.flags());
     EXPECT_EQ(0, ui::EF_CONTROL_DOWN & received.flags());
     EXPECT_EQ(0, ui::EF_ALT_DOWN & received.flags());
@@ -367,7 +367,7 @@ TEST_F(InputConnectionImplTest, SendKeyEvent) {
 
   {
     auto sent = std::make_unique<ui::KeyEvent>(
-        ui::ET_KEY_RELEASED, ui::VKEY_A,
+        ui::EventType::kKeyReleased, ui::VKEY_A,
         ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
             ui::EF_CAPS_LOCK_ON);
 
@@ -379,7 +379,7 @@ TEST_F(InputConnectionImplTest, SendKeyEvent) {
     EXPECT_EQ(ui::VKEY_A, received.key_code());
     EXPECT_EQ(ui::DomCode::US_A, received.code());
     EXPECT_EQ("KeyA", received.GetCodeString());
-    EXPECT_EQ(ui::ET_KEY_RELEASED, received.type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, received.type());
     EXPECT_NE(0, ui::EF_SHIFT_DOWN & received.flags());
     EXPECT_NE(0, ui::EF_CONTROL_DOWN & received.flags());
     EXPECT_NE(0, ui::EF_ALT_DOWN & received.flags());

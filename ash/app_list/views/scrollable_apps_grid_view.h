@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_SCROLLABLE_APPS_GRID_VIEW_H_
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -71,6 +72,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   std::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   bool ShouldContainerHandleDragEvents() override;
+  bool IsAboveTheFold(AppListItemView* item_view) override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {

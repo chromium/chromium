@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
@@ -34,12 +36,14 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -63,10 +67,13 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/settings/public/constants/routes_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
@@ -80,8 +87,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif
 
@@ -117,7 +123,12 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 void LaunchReleaseNotesImpl(Profile* profile, apps::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   ash::SystemAppLaunchParams params;
-  params.url = GURL("chrome://help-app/updates");
+  params.url =
+      base::FeatureList::IsEnabled(
+          ash::features::kHelpAppOpensInsteadOfReleaseNotesNotification) &&
+              source == apps::LaunchSource::kFromReleaseNotesNotification
+          ? GURL("chrome://help-app/updates?launchSource=version-update")
+          : GURL("chrome://help-app/updates");
   params.launch_source = source;
   LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
@@ -143,7 +154,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       app_launch_source = apps::LaunchSource::kFromOtherApp;
       break;
     default:
-      NOTREACHED() << "Unhandled help source" << source;
+      NOTREACHED_IN_MIGRATION() << "Unhandled help source" << source;
   }
 
   ash::SystemAppLaunchParams params;
@@ -181,7 +192,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       url = GURL(kChooserUsbOverviewURL);
       break;
     default:
-      NOTREACHED() << "Unhandled help source " << source;
+      NOTREACHED_IN_MIGRATION() << "Unhandled help source " << source;
   }
 #endif  // BUILDFLAG_IS_CHROMEOS_LACROS)
   if (browser) {
@@ -198,7 +209,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // purposes of URL generation for MD Settings only. We need this because some
   // of the old group names are no longer appropriate.
   //
-  // TODO(crbug.com/728353): Update the group names defined in
+  // TODO(crbug.com/40523530): Update the group names defined in
   // site_settings_helper once Options is removed from Chrome. Then this list
   // will no longer be needed.
 
@@ -226,7 +237,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
 
 bool SiteGURLIsValid(const GURL& url) {
   url::Origin site_origin = url::Origin::Create(url);
-  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
+  // TODO(crbug.com/40399136): Site Details should work with file:// urls
   // when this bug is fixed, so add it to the allowlist when that happens.
   return !site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
                                    url.SchemeIs(extensions::kExtensionScheme) ||
@@ -250,9 +261,7 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   Navigate(&params);
 }
 
-// TODO(crbug.com/1011533): Remove `kFileSystemAccessPersistentPermissions`
-// flag after FSA Persistent Permissions feature launch.
-// TODO(crbug.com/1011533): Add a browsertest that parallels the existing site
+// TODO(crbug.com/40101962): Add a browsertest that parallels the existing site
 // settings browsertests that open the page info button, and click through to
 // the file system site settings page for a given origin.
 void ShowSiteSettingsFileSystemImpl(Browser* browser,
@@ -267,7 +276,7 @@ void ShowSiteSettingsFileSystemImpl(Browser* browser,
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions) &&
       SiteGURLIsValid(url)) {
-    // TODO(crbug.com/1505843): Update `origin_string` to remove the encoded
+    // TODO(crbug.com/40946480): Update `origin_string` to remove the encoded
     // trailing slash, once it's no longer required to correctly navigate to
     // file system site settings page for the given origin.
     const std::string origin_string =
@@ -371,9 +380,11 @@ void ShowChromeTips(Browser* browser) {
   ShowSingletonTab(browser, GURL(kChromeTipsURL));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ShowChromeWhatsNew(Browser* browser) {
   ShowSingletonTab(browser, GURL(kChromeUIWhatsNewURL));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source) {
@@ -508,6 +519,15 @@ void ShowPasswordManager(Browser* browser) {
                                          GURL(kChromeUIPasswordManagerURL));
 }
 
+void ShowPasswordDetailsPage(Browser* browser,
+                             const std::string& password_domain_name) {
+  base::RecordAction(
+      UserMetricsAction("Options_ShowPasswordDetailsInPasswordManager"));
+  std::string url = base::StrCat(
+      {GetGooglePasswordManagerSubPageURLStr(), "/", password_domain_name});
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(url));
+}
+
 void ShowPasswordCheck(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordCheck"));
   ShowSingletonTabIgnorePathOverwriteNTP(
@@ -554,9 +574,9 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
+void ShowWebStore(Browser* browser, std::string_view utm_source_value) {
   GURL webstore_url = extension_urls::GetWebstoreLaunchURL();
-  // TODO(crbug.com/1488136): Refactor this check into
+  // TODO(crbug.com/40073814): Refactor this check into
   // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
   if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
     webstore_url = extension_urls::GetNewWebstoreLaunchURL();
@@ -585,15 +605,15 @@ void ShowPaymentMethods(Browser* browser) {
   ShowSettingsSubPage(browser, kPaymentsSubPage);
 }
 
-void ShowAllSitesSettingsFilteredByFpsOwner(
+void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
-    const std::string& fps_owner_host_name) {
+    const std::string& rws_owner_host_name) {
   GURL url = GetSettingsUrl(kAllSitesSettingsSubpage);
-  if (!fps_owner_host_name.empty()) {
+  if (!rws_owner_host_name.empty()) {
     GURL::Replacements replacements;
     std::string query("searchSubpage=");
     query += base::EscapeQueryParamValue(
-        base::StrCat({"related:", fps_owner_host_name}),
+        base::StrCat({"related:", rws_owner_host_name}),
         /*use_plus=*/false);
     replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);
@@ -602,13 +622,13 @@ void ShowAllSitesSettingsFilteredByFpsOwner(
   ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
   // user to the Chrome browser about page, which is part of browser settings.
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIManagementURL));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point) {
@@ -624,14 +644,15 @@ void ShowAppManagementPage(Profile* profile,
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
                                                                sub_page);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
 GURL GetOSSettingsUrl(const std::string& sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
-  std::string url = kChromeUIOSSettingsURL;
-  return GURL(url + sub_page);
+  return GURL(std::string(kChromeUIOSSettingsURL) + sub_page);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ShowPrintManagementApp(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -701,8 +722,7 @@ void ShowShortcutCustomizationApp(Profile* profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ShowWebAppSettingsImpl(Browser* browser,
                             Profile* profile,
                             const std::string& app_id,

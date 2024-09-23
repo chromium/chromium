@@ -16,6 +16,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
+#include "chrome/browser/speech/fake_speech_recognizer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -113,7 +115,8 @@ struct ProjectorClientTestScenario {
 }  // namespace
 
 class ProjectorClientImplUnitTest
-    : public testing::TestWithParam<ProjectorClientTestScenario> {
+    : public testing::TestWithParam<ProjectorClientTestScenario>,
+      public speech::FakeSpeechRecognitionService::Observer {
  public:
   ProjectorClientImplUnitTest() = default;
 
@@ -138,13 +141,6 @@ class ProjectorClientImplUnitTest
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
     ASSERT_TRUE(testing_profile_);
-
-    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating(&ProjectorClientImplUnitTest::
-                                    CreateTestSpeechRecognitionService,
-                                base::Unretained(this)));
     SetLocale(kEnglishUS);
     soda_installer_ = std::make_unique<MockSodaInstaller>();
     ON_CALL(*soda_installer_, GetAvailableLanguages)
@@ -155,6 +151,11 @@ class ProjectorClientImplUnitTest
     mock_locale_controller_ = std::make_unique<MockLocaleUpdateController>();
     projector_client_ =
         std::make_unique<ProjectorClientImpl>(&projector_controller_);
+    CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
+        ->SetTestingFactoryAndUse(
+            profile(), base::BindOnce(&ProjectorClientImplUnitTest::
+                                          CreateTestSpeechRecognitionService,
+                                      base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -170,22 +171,31 @@ class ProjectorClientImplUnitTest
     std::unique_ptr<speech::FakeSpeechRecognitionService> fake_service =
         std::make_unique<speech::FakeSpeechRecognitionService>();
     fake_service_ = fake_service.get();
-    return std::move(fake_service);
+    fake_service_->AddObserver(this);
+    return fake_service;
   }
 
   void SendSpeechResult(const char* result, bool is_final) {
-    EXPECT_TRUE(fake_service_->is_capturing_audio());
+    EXPECT_TRUE(fake_recognizer_->is_capturing_audio());
     base::RunLoop loop;
-    fake_service_->SendSpeechRecognitionResult(
+    fake_recognizer_->SendSpeechRecognitionResult(
         media::SpeechRecognitionResult(result, is_final));
     loop.RunUntilIdle();
   }
 
   void SendTranscriptionError() {
-    EXPECT_TRUE(fake_service_->is_capturing_audio());
+    EXPECT_TRUE(fake_recognizer_->is_capturing_audio());
     base::RunLoop loop;
-    fake_service_->SendSpeechRecognitionError();
+    fake_recognizer_->SendSpeechRecognitionError();
     loop.RunUntilIdle();
+  }
+
+  void OnRecognizerBound(
+      speech::FakeSpeechRecognizer* bound_recognizer) override {
+    if (bound_recognizer->recognition_options()->recognizer_client_type ==
+        media::mojom::RecognizerClientType::kProjector) {
+      fake_recognizer_ = bound_recognizer->GetWeakPtr();
+    }
   }
 
  protected:
@@ -224,13 +234,17 @@ class ProjectorClientImplUnitTest
   std::unique_ptr<MockAppClient> mock_app_client_;
   std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
   raw_ptr<speech::FakeSpeechRecognitionService> fake_service_;
+  base::WeakPtr<speech::FakeSpeechRecognizer> fake_recognizer_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionResults) {
-  client()->StartSpeechRecognition();
-  fake_service_->WaitForRecognitionStarted();
+  ProjectorClient* got_client = client();
+  ASSERT_TRUE(got_client);
+
+  got_client->StartSpeechRecognition();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(projector_controller(),
               OnTranscription(

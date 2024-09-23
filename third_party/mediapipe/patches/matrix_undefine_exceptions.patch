@@ -1,0 +1,26 @@
+Eigen looks for __EXCEPTIONS to determine if exceptions are enabled. On macOS
+matrix is compiled with -ObjC++, which sets __EXCEPTIONS, causing the build to
+fail. The right solution is likely to change Eigen to look for a different
+define, or perhaps an override to ignore __EXCEPTIONS.
+
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
+index 13a6576157186..0eed6fed87841 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
++++ b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
+@@ -21,6 +21,15 @@
+ #ifndef MEDIAPIPE_FRAMEWORK_FORMATS_MATRIX_H_
+ #define MEDIAPIPE_FRAMEWORK_FORMATS_MATRIX_H_
+ 
++// TODO: Eigen looks for __EXCEPTIONS to determine if exceptions are enabled.
++// This file may be compiled with -ObjC++ on macOS, which sets __EXCEPTIONS,
++// causing the build to fail. The right solution is likely to change Eigen
++// to look for a different define, or perhaps an override to ignore
++// __EXCEPTIONS.
++#if defined(__EXCEPTIONS)
++#undef __EXCEPTIONS
++#endif
++
+ #include <string>
+ 
+ #include "Eigen/Core"

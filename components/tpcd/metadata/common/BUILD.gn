@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("common") {
+  sources = [
+    "manager_base.cc",
+    "manager_base.h",
+  ]
+
+  public_deps = [
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/common:features",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "manager_base_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gmock",
+  ]
+}

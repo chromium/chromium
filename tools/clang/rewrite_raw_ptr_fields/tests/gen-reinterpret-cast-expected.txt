@@ -7,7 +7,7 @@ r:::gen-reinterpret-cast-actual.cc:::2545:::5:::raw_ptr<int>
 r:::gen-reinterpret-cast-actual.cc:::978:::5:::raw_ptr<int> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
-ReinterpretedClass1::ptr2_  # reinterpret-cast-trivial-type
-ReinterpretedClass1::ptr_  # reinterpret-cast-trivial-type
-ReinterpretedClass2::ptr_  # reinterpret-cast-trivial-type
+ReinterpretedClass1::ptr2_ @ gen-reinterpret-cast-actual.cc:25:3  # reinterpret-cast-trivial-type
+ReinterpretedClass1::ptr_ @ gen-reinterpret-cast-actual.cc:22:3  # reinterpret-cast-trivial-type
+ReinterpretedClass2::ptr_ @ gen-reinterpret-cast-actual.cc:35:3  # reinterpret-cast-trivial-type
 ==== END FIELD FILTERS ====

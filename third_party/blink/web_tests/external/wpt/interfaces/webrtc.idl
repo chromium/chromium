@@ -148,7 +148,7 @@ interface RTCSessionDescription {
   constructor(RTCSessionDescriptionInit descriptionInitDict);
   readonly attribute RTCSdpType type;
   readonly attribute DOMString sdp;
-  [Default] object toJSON();
+  [Default] RTCSessionDescriptionInit toJSON();
 };
 
 dictionary RTCSessionDescriptionInit {
@@ -317,6 +317,7 @@ dictionary RTCRtpCodingParameters {
 
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
   boolean active = true;
+  RTCRtpCodec codec;
   unsigned long maxBitrate;
   double maxFramerate;
   double scaleResolutionDownBy;
@@ -345,11 +346,8 @@ dictionary RTCRtpCodecParameters : RTCRtpCodec {
 };
 
 dictionary RTCRtpCapabilities {
-  required sequence<RTCRtpCodecCapability> codecs;
+  required sequence<RTCRtpCodec> codecs;
   required sequence<RTCRtpHeaderExtensionCapability> headerExtensions;
-};
-
-dictionary RTCRtpCodecCapability : RTCRtpCodec {
 };
 
 dictionary RTCRtpHeaderExtensionCapability {
@@ -368,6 +366,7 @@ interface RTCRtpReceiver {
   sequence<RTCRtpContributingSource> getContributingSources();
   sequence<RTCRtpSynchronizationSource> getSynchronizationSources();
   Promise<RTCStatsReport> getStats();
+  attribute DOMHighResTimeStamp? jitterBufferTarget;
 };
 
 dictionary RTCRtpContributingSource {
@@ -387,7 +386,7 @@ interface RTCRtpTransceiver {
   attribute RTCRtpTransceiverDirection direction;
   readonly attribute RTCRtpTransceiverDirection? currentDirection;
   undefined stop();
-  undefined setCodecPreferences(sequence<RTCRtpCodecCapability> codecs);
+  undefined setCodecPreferences(sequence<RTCRtpCodec> codecs);
 };
 
 [Exposed=Window]
@@ -433,9 +432,10 @@ dictionary RTCIceParameters {
   DOMString password;
 };
 
-dictionary RTCIceCandidatePair {
-  RTCIceCandidate local;
-  RTCIceCandidate remote;
+[Exposed=Window]
+interface RTCIceCandidatePair {
+  [SameObject] readonly attribute RTCIceCandidate local;
+  [SameObject] readonly attribute RTCIceCandidate remote;
 };
 
 enum RTCIceGathererState {

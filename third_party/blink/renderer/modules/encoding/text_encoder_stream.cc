@@ -29,7 +29,7 @@ namespace blink {
 class TextEncoderStream::Transformer final : public TransformStreamTransformer {
  public:
   explicit Transformer(ScriptState* script_state)
-      : encoder_(NewTextCodec(WTF::TextEncoding("utf-8"))),
+      : encoder_(NewTextCodec(WTF::UTF8Encoding())),
         script_state_(script_state) {}
 
   Transformer(const Transformer&) = delete;
@@ -37,16 +37,17 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
 
   // Implements the "encode and enqueue a chunk" algorithm. For efficiency, only
   // the characters at the end of chunks are special-cased.
-  ScriptPromise Transform(v8::Local<v8::Value> chunk,
-                          TransformStreamDefaultController* controller,
-                          ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Transform(
+      v8::Local<v8::Value> chunk,
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     V8StringResource<> input_resource{script_state_->GetIsolate(), chunk};
     if (!input_resource.Prepare(exception_state)) {
-      return ScriptPromise();
+      return EmptyPromise();
     }
     const String input = input_resource;
     if (input.empty())
-      return ScriptPromise::CastUndefined(script_state_.Get());
+      return ToResolvedUndefinedPromise(script_state_.Get());
 
     const std::optional<UChar> high_surrogate = pending_high_surrogate_;
     pending_high_surrogate_ = std::nullopt;
@@ -58,13 +59,12 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         // check is needed.
         prefix = ReplacementCharacterInUtf8();
       }
-      result = encoder_->Encode(input.Characters8(), input.length(),
-                                WTF::kNoUnencodables);
+      result = encoder_->Encode(input.Span8(), WTF::kNoUnencodables);
     } else {
       bool have_output =
           Encode16BitString(input, high_surrogate, &prefix, &result);
       if (!have_output)
-        return ScriptPromise::CastUndefined(script_state_.Get());
+        return ToResolvedUndefinedPromise(script_state_.Get());
     }
 
     DOMUint8Array* array =
@@ -72,27 +72,25 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     controller->enqueue(script_state_, ScriptValue::From(script_state_, array),
                         exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   // Implements the "encode and flush" algorithm.
-  ScriptPromise Flush(TransformStreamDefaultController* controller,
-                      ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Flush(
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     if (!pending_high_surrogate_.has_value())
-      return ScriptPromise::CastUndefined(script_state_.Get());
+      return ToResolvedUndefinedPromise(script_state_.Get());
 
     const std::string replacement_character = ReplacementCharacterInUtf8();
-    const uint8_t* u8buffer =
-        reinterpret_cast<const uint8_t*>(replacement_character.c_str());
     controller->enqueue(
         script_state_,
-        ScriptValue::From(script_state_,
-                          DOMUint8Array::Create(
-                              u8buffer, static_cast<unsigned int>(
-                                            replacement_character.length()))),
+        ScriptValue::From(
+            script_state_,
+            DOMUint8Array::Create(base::as_byte_span(replacement_character))),
         exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
@@ -111,10 +109,9 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     const wtf_size_t length1 = static_cast<wtf_size_t>(string1.length());
     const wtf_size_t length2 = static_cast<wtf_size_t>(string2.length());
     DOMUint8Array* const array = DOMUint8Array::Create(length1 + length2);
-    if (length1 > 0)
-      memcpy(array->Data(), string1.c_str(), length1);
-    if (length2 > 0)
-      memcpy(array->Data() + length1, string2.c_str(), length2);
+    auto [string1_span, string2_span] = array->ByteSpan().split_at(length1);
+    string1_span.copy_from(base::as_byte_span(string1));
+    string2_span.copy_from(base::as_byte_span(string2));
     return array;
   }
 
@@ -124,35 +121,35 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
                          std::optional<UChar> high_surrogate,
                          std::string* prefix,
                          std::string* result) {
-    const UChar* begin = input.Characters16();
-    const UChar* end = input.Characters16() + input.length();
-    DCHECK_GT(end, begin);
+    base::span<const UChar> input_span = input.Span16();
+    DCHECK(!input_span.empty());
     if (high_surrogate.has_value()) {
-      if (*begin >= 0xDC00 && *begin <= 0xDFFF) {
-        const UChar astral_character[2] = {high_surrogate.value(), *begin};
+      const UChar code_unit = input_span.front();
+      if (code_unit >= 0xDC00 && code_unit <= 0xDFFF) {
+        const UChar astral_character[2] = {high_surrogate.value(), code_unit};
         // Third argument is ignored, as above.
-        *prefix =
-            encoder_->Encode(astral_character, std::size(astral_character),
-                             WTF::kNoUnencodables);
-        ++begin;
-        if (begin == end)
+        *prefix = encoder_->Encode(base::span(astral_character),
+                                   WTF::kNoUnencodables);
+        input_span = input_span.subspan<1u>();
+        if (input_span.empty()) {
           return true;
+        }
       } else {
         *prefix = ReplacementCharacterInUtf8();
       }
     }
 
-    const UChar final_token = *(end - 1);
+    const UChar final_token = input_span.back();
     if (final_token >= 0xD800 && final_token <= 0xDBFF) {
       pending_high_surrogate_ = final_token;
-      --end;
-      if (begin == end)
+      input_span = input_span.first(input_span.size() - 1u);
+      if (input_span.empty()) {
         return prefix->length() != 0;
+      }
     }
 
     // Third argument is ignored, as above.
-    *result = encoder_->Encode(begin, static_cast<wtf_size_t>(end - begin),
-                               WTF::kEntitiesForUnencodables);
+    *result = encoder_->Encode(input_span, WTF::kEntitiesForUnencodables);
     DCHECK_NE(result->length(), 0u);
     return true;
   }

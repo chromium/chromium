@@ -52,7 +52,8 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
     // details.
     virtual void OnCommitDeferringConditionChecksComplete(
         CommitDeferringCondition::NavigationType navigation_type,
-        std::optional<int> candidate_prerender_frame_tree_node_id) = 0;
+        std::optional<FrameTreeNodeId>
+            candidate_prerender_frame_tree_node_id) = 0;
   };
 
   // Creates the runner and adds all the conditions in
@@ -63,7 +64,7 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   static std::unique_ptr<CommitDeferringConditionRunner> Create(
       NavigationRequest& navigation_request,
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
 
   CommitDeferringConditionRunner(const CommitDeferringConditionRunner&) =
       delete;
@@ -120,7 +121,7 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   CommitDeferringConditionRunner(
       Delegate& delegate,
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
 
   // Called asynchronously to resume iterating through
   // CommitDeferringConditions after one has been deferred. A callback for this
@@ -148,7 +149,7 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // This is needed as PrerenderHost hasn't been reserved and
   // prerender_frame_tree_node_id() on NavigationRequest is not available yet
   // while CommitDeferringCondition is running.
-  const std::optional<int> candidate_prerender_frame_tree_node_id_;
+  const std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id_;
 
   // True when we're blocked waiting on a call to ResumeProcessing.
   bool is_deferred_ = false;

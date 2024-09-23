@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/clipboard_host_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,7 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "content/browser/renderer_host/clipboard_host_impl.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -47,55 +49,9 @@ class DataTransferEndpoint;
 }
 namespace content {
 
-namespace {
-
-// A ClipboardHostImpl that mocks out the dependency on RenderFrameHost.
-class FakeClipboardHostImpl : public ClipboardHostImpl {
- public:
-  FakeClipboardHostImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-      : ClipboardHostImpl(render_frame_host, std::move(receiver)) {}
-
-  void StartIsPasteAllowedRequest(
-      const ui::ClipboardSequenceNumberToken& seqno,
-      const ui::ClipboardFormatType& data_type,
-      ui::ClipboardBuffer clipboard_buffer,
-      ClipboardPasteData clipboard_paste_data) override {
-    ++start_count_;
-    data_type_ = data_type;
-    clipboard_buffer_ = clipboard_buffer;
-  }
-
-  void CompleteRequest(const ui::ClipboardSequenceNumberToken& seqno,
-                       ClipboardPasteData clipboard_paste_data) {
-    ClipboardHostImpl::StartIsPasteAllowedRequest(
-        seqno, data_type_, clipboard_buffer_, std::move(clipboard_paste_data));
-  }
-
-  size_t start_count() const { return start_count_; }
-
-  using ClipboardHostImpl::CleanupObsoleteRequests;
-  using ClipboardHostImpl::ClipboardPasteData;
-  using ClipboardHostImpl::is_paste_allowed_requests_for_testing;
-  using ClipboardHostImpl::kIsPasteAllowedRequestTooOld;
-  using ClipboardHostImpl::PasteIfPolicyAllowed;
-
- private:
-  // number of times StartIsPasteAllowedRequest() is called.
-  size_t start_count_ = 0;
-
-  ui::ClipboardFormatType data_type_;
-  ui::ClipboardBuffer clipboard_buffer_ = ui::ClipboardBuffer::kCopyPaste;
-};
-
-}  // namespace
-
 class ClipboardHostImplTest : public RenderViewHostTestHarness {
  protected:
-  ClipboardHostImplTest()
-      : clipboard_(ui::TestClipboard::CreateForCurrentThread()) {
-  }
+  ClipboardHostImplTest() { ui::TestClipboard::CreateForCurrentThread(); }
 
   ~ClipboardHostImplTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
@@ -104,6 +60,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL("https://google.com/"));
     ClipboardHostImpl::Create(web_contents()->GetPrimaryMainFrame(),
                               remote_.BindNewPipeAndPassReceiver());
   }
@@ -118,17 +75,17 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
     return remote_;
   }
 
-  // Re-creates the system clipboard and returns the previous clipboard.
-  std::unique_ptr<ui::Clipboard> DeleteAndRecreateClipboard() {
-    auto original_clipboard = ui::Clipboard::TakeForCurrentThread();
-    clipboard_ = ui::TestClipboard::CreateForCurrentThread();
-    return original_clipboard;
+  // Re-creates the system clipboard.
+  void DeleteAndRecreateClipboard() {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    ui::TestClipboard::CreateForCurrentThread();
   }
 
-  ui::Clipboard* system_clipboard() { return clipboard_; }
+  static ui::Clipboard* system_clipboard() {
+    return ui::Clipboard::GetForCurrentThread();
+  }
 
  private:
-  raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -171,73 +128,6 @@ TEST_F(ClipboardHostImplTest, DoesNotCacheClipboard) {
                                       &unused_sequence_number);
 }
 
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_AddCallback) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
-  int count = 0;
-
-  // First call to AddCallback should return true, the next false.
-  EXPECT_TRUE(request.AddCallback(base::BindLambdaForTesting(
-      [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
-                   clipboard_paste_data) { ++count; })));
-  EXPECT_FALSE(request.AddCallback(base::BindLambdaForTesting(
-      [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
-                   clipboard_paste_data) { ++count; })));
-
-  // In both cases, the callbacks should not be called since the request is
-  // not complete.
-  EXPECT_EQ(0, count);
-}
-
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_Complete) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
-  ClipboardHostImpl::ClipboardPasteData final_clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("text", "image", {});
-
-  int count = 0;
-
-  // Add a callback.  It should not fire right away.
-  request.AddCallback(base::BindLambdaForTesting(
-      [&count, final_clipboard_paste_data](
-          std::optional<ClipboardHostImpl::ClipboardPasteData>
-              clipboard_paste_data) {
-        ++count;
-        ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
-        ASSERT_EQ(clipboard_paste_data->image,
-                  final_clipboard_paste_data.image);
-      }));
-  EXPECT_EQ(0, count);
-
-  // Complete the request.  Callback should fire.  Whether paste is allowed
-  // or not is not important.
-  request.Complete(final_clipboard_paste_data);
-  EXPECT_EQ(1, count);
-
-  // Adding a new callback after completion invokes it immediately.
-  request.AddCallback(base::BindLambdaForTesting(
-      [&count, final_clipboard_paste_data](
-          std::optional<ClipboardHostImpl::ClipboardPasteData>
-              clipboard_paste_data) {
-        ++count;
-        ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
-        ASSERT_EQ(clipboard_paste_data->image,
-                  final_clipboard_paste_data.image);
-      }));
-  EXPECT_EQ(2, count);
-}
-
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_IsObsolete) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("data", std::string(), {});
-
-  // A request is obsolete once it is too old and completed.
-  // Whether paste is allowed or not is not important.
-  request.Complete(clipboard_paste_data);
-  EXPECT_TRUE(request.IsObsolete(
-      request.completed_time() +
-      ClipboardHostImpl::kIsPasteAllowedRequestTooOld + base::Microseconds(1)));
-}
-
 TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
   std::vector<std::u16string> types;
 
@@ -266,36 +156,48 @@ TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(custom_data, &pickle);
     writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::WebCustomDataType());
+                            ui::ClipboardFormatType::DataTransferCustomType());
   }
   EXPECT_FALSE(IsFormatAvailable(ui::ClipboardFormatType::FilenamesType()));
-  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::WebCustomDataType()));
+  EXPECT_TRUE(
+      IsFormatAvailable(ui::ClipboardFormatType::DataTransferCustomType()));
   EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::PlainTextType()));
   mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
   EXPECT_TRUE(base::Contains(types, u"text/plain"));
   EXPECT_TRUE(base::Contains(types, u"text/uri-list"));
 }
 
-class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
+class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
  protected:
-  ClipboardHostImplScanTest()
+  ClipboardHostImplWriteTest()
       : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        clipboard_(ui::TestClipboard::CreateForCurrentThread()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ui::TestClipboard::CreateForCurrentThread();
+  }
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    fake_clipboard_host_impl_ =
-        new FakeClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
-                                  remote_.BindNewPipeAndPassReceiver());
+    NavigateAndCommit(GURL("https://foobar.com/"));
   }
 
-  ~ClipboardHostImplScanTest() override {
+  void TearDown() override {
+    fake_clipboard_host_impl_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  ~ClipboardHostImplWriteTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  FakeClipboardHostImpl* clipboard_host_impl() {
+  // Creates a fake clipboard host if it doesn't exist, or returns the already
+  // created pointer.
+  ClipboardHostImpl* clipboard_host_impl() {
+    if (!fake_clipboard_host_impl_) {
+      fake_clipboard_host_impl_ =
+          new ClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
+                                remote_.BindNewPipeAndPassReceiver());
+    }
     return fake_clipboard_host_impl_;
   }
 
@@ -303,147 +205,20 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
     return remote_;
   }
 
-  ui::Clipboard* system_clipboard() { return clipboard_; }
+  static ui::Clipboard* system_clipboard() {
+    return ui::Clipboard::GetForCurrentThread();
+  }
 
-  RenderFrameHost& rfh() { return clipboard_host_impl()->render_frame_host(); }
+  RenderFrameHost& rfh() { return *web_contents()->GetPrimaryMainFrame(); }
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  const raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
-  // `FakeClipboardHostImpl` is a `DocumentService` and manages its own
+  // `ClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
-  raw_ptr<FakeClipboardHostImpl, DanglingUntriaged> fake_clipboard_host_impl_;
+  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_;
 };
 
-TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed_SameHost_NotStarted) {
-  const std::u16string kText = u"text";
-  clipboard_host_impl()->WriteText(kText);
-  clipboard_host_impl()->CommitWrite();
-
-  std::u16string read_text;
-  clipboard_host_impl()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste,
-      base::BindLambdaForTesting(
-          [&read_text](const std::u16string& value) { read_text = value; }));
-
-  // When the same document writes and then reads from the clipboard, content
-  // checks should be skipped.
-  EXPECT_EQ(0u, clipboard_host_impl()->start_count());
-  EXPECT_EQ(kText, read_text);
-}
-
-TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed_External_Started) {
-  const std::u16string kText = u"text";
-
-  // Write directly to clipboard.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(kText);
-  }
-
-  std::u16string read_text;
-  clipboard_host_impl()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste,
-      base::BindLambdaForTesting(
-          [&read_text](const std::u16string& value) { read_text = value; }));
-
-  // Completing the request invokes the callback.  The request will
-  // remain pending until it is cleaned up.
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData(base::UTF16ToUTF8(kText),
-                                            std::string(), {});
-  clipboard_host_impl()->CompleteRequest(
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste),
-      clipboard_paste_data);
-  EXPECT_EQ(
-      1u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-
-  // When a document reads from the clipboard, but the clipboard was written
-  // from an unknown source, content checks should not be skipped.
-  EXPECT_EQ(1u, clipboard_host_impl()->start_count());
-  EXPECT_EQ(kText, read_text);
-}
-
-TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
-  int count = 0;
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData(std::string(), std::string(), {});
-
-  // When data is empty, the callback is invoked right away.
-  clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
-      clipboard_paste_data,
-      base::BindLambdaForTesting(
-          [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
-                       clipboard_paste_data) { ++count; }));
-
-  EXPECT_EQ(
-      0u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-  EXPECT_EQ(1, count);
-}
-
-TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed) {
-  int count = 0;
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("data", std::string(), {});
-
-  clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
-      clipboard_paste_data,
-      base::BindLambdaForTesting(
-          [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
-                       clipboard_paste_data) {
-            ++count;
-            ASSERT_TRUE(clipboard_paste_data);
-            ASSERT_EQ(clipboard_paste_data->text, "data");
-          }));
-
-  EXPECT_EQ(
-      1u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-  EXPECT_EQ(0, count);
-
-  // Completing the request invokes the callback.  The request will
-  // remain pending until it is cleaned up.
-  clipboard_host_impl()->CompleteRequest(
-      system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste),
-      clipboard_paste_data);
-
-  EXPECT_EQ(
-      1u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-  EXPECT_EQ(1, count);
-}
-
-TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
-  ui::ClipboardSequenceNumberToken sequence_number;
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("data", std::string(), {});
-
-  // Perform a request and complete it.
-  clipboard_host_impl()->PasteIfPolicyAllowed(
-      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
-      clipboard_paste_data, base::DoNothing());
-  clipboard_host_impl()->CompleteRequest(sequence_number, clipboard_paste_data);
-  EXPECT_EQ(
-      1u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-
-  // Make sure an appropriate amount of time passes to make the request old.
-  // It should be cleaned up.
-  task_environment()->FastForwardBy(
-      FakeClipboardHostImpl::kIsPasteAllowedRequestTooOld +
-      base::Microseconds(1));
-  clipboard_host_impl()->CleanupObsoleteRequests();
-  EXPECT_EQ(
-      0u,
-      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
-}
-
-TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
+TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
   GURL gurl1("https://example.com");
   GURL gurl2("http://test.org");
   GURL gurl3("http://google.com");
@@ -459,15 +234,15 @@ TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
                      "grandchild"));
 
   mojo::Remote<blink::mojom::ClipboardHost> remote_grandchild;
-  // `FakeClipboardHostImpl` is a `DocumentService` and manages its own
+  // `ClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
-  raw_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_grandchild =
-      new FakeClipboardHostImpl(*grandchild_rfh,
-                                remote_grandchild.BindNewPipeAndPassReceiver());
+  raw_ptr<ClipboardHostImpl> fake_clipboard_host_impl_grandchild =
+      new ClipboardHostImpl(*grandchild_rfh,
+                            remote_grandchild.BindNewPipeAndPassReceiver());
 
   bool is_policy_callback_called = false;
-  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("data", std::string(), {});
+  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = u"data";
   fake_clipboard_host_impl_grandchild->PasteIfPolicyAllowed(
       ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
       clipboard_paste_data,
@@ -477,25 +252,14 @@ TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
                   clipboard_paste_data) {
             is_policy_callback_called = true;
             ASSERT_TRUE(clipboard_paste_data);
-            ASSERT_EQ(clipboard_paste_data->text, "data");
+            ASSERT_EQ(clipboard_paste_data->text, u"data");
           }));
   base::RunLoop().RunUntilIdle();
-
-  // A new request is created.
-  EXPECT_EQ(1u, fake_clipboard_host_impl_grandchild
-                    ->is_paste_allowed_requests_for_testing()
-                    .size());
-  // Count didn't change.
-  EXPECT_FALSE(is_policy_callback_called);
-
-  fake_clipboard_host_impl_grandchild->CompleteRequest(
-      system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste),
-      clipboard_paste_data);
 
   EXPECT_TRUE(is_policy_callback_called);
 }
 
-TEST_F(ClipboardHostImplScanTest, GetSourceEndpoint) {
+TEST_F(ClipboardHostImplWriteTest, GetSourceEndpoint) {
   const std::u16string kText = u"text";
   clipboard_host_impl()->WriteText(kText);
   clipboard_host_impl()->CommitWrite();
@@ -521,6 +285,467 @@ TEST_F(ClipboardHostImplScanTest, GetSourceEndpoint) {
   EXPECT_TRUE(source_endpoint.data_transfer_endpoint()->IsUrlType());
   EXPECT_FALSE(empty_endpoint.web_contents());
   EXPECT_FALSE(empty_endpoint.browser_context());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteText) {
+  const std::u16string kText = u"text";
+  clipboard_host_impl()->WriteText(kText);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+  EXPECT_EQ(kText, future.Take());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteText_Empty) {
+  clipboard_host_impl()->WriteText(u"");
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+  EXPECT_TRUE(future.Take().empty());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteHtml) {
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      future;
+  clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+
+  EXPECT_EQ(kHtml, future.Get<std::u16string>());
+  EXPECT_EQ(kUrl, future.Get<GURL>());
+  EXPECT_EQ(0u, future.Get<2>());
+  EXPECT_EQ(kHtml.size(), future.Get<3>());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteHtml_Empty) {
+  clipboard_host_impl()->WriteHtml(u"", GURL());
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      future;
+  clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                  future.GetCallback());
+
+  EXPECT_TRUE(future.Get<std::u16string>().empty());
+  EXPECT_TRUE(future.Get<GURL>().is_empty());
+  EXPECT_EQ(0u, future.Get<2>());
+  EXPECT_EQ(0u, future.Get<3>());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteSvg) {
+  const std::u16string kSvg = u"svg data";
+  clipboard_host_impl()->WriteSvg(kSvg);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                 future.GetCallback());
+
+  EXPECT_EQ(kSvg, future.Take());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteSvg_Empty) {
+  clipboard_host_impl()->WriteSvg(u"");
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future;
+  clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                 future.GetCallback());
+
+  EXPECT_TRUE(future.Take().empty());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteBitmap) {
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(3, 2);
+  clipboard_host_impl()->WriteImage(kBitmap);
+  clipboard_host_impl()->CommitWrite();
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteBitmap_Empty) {
+  const SkBitmap kBitmap;
+  clipboard_host_impl()->WriteImage(SkBitmap());
+  clipboard_host_impl()->CommitWrite();
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
+  EXPECT_TRUE(png.empty());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteDataTransferCustomData) {
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/type1"] = u"data1";
+  custom_data[u"text/type2"] = u"data2";
+  custom_data[u"text/type3"] = u"data3";
+
+  clipboard_host_impl()->WriteDataTransferCustomData(custom_data);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future_1;
+  base::test::TestFuture<const std::u16string&> future_2;
+  base::test::TestFuture<const std::u16string&> future_3;
+
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type2", future_2.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type3", future_3.GetCallback());
+
+  EXPECT_EQ(custom_data[u"text/type1"], future_1.Take());
+  EXPECT_EQ(custom_data[u"text/type2"], future_2.Take());
+  EXPECT_EQ(custom_data[u"text/type3"], future_3.Take());
+}
+
+TEST_F(ClipboardHostImplWriteTest, WriteDataTransferCustomData_Empty) {
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/type1"] = u"";
+
+  clipboard_host_impl()->WriteDataTransferCustomData(custom_data);
+  clipboard_host_impl()->CommitWrite();
+
+  base::test::TestFuture<const std::u16string&> future_1;
+  base::test::TestFuture<const std::u16string&> future_2;
+
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type2", future_2.GetCallback());
+
+  EXPECT_TRUE(future_1.Take().empty());
+  EXPECT_TRUE(future_2.Take().empty());
+}
+
+class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
+ protected:
+  class AsyncWriteClipboardHostImpl : public ClipboardHostImpl {
+   public:
+    AsyncWriteClipboardHostImpl(
+        RenderFrameHost& render_frame_host,
+        mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
+        : ClipboardHostImpl(render_frame_host, std::move(receiver)) {}
+
+    void OnCopyAllowedResult(
+        const ui::ClipboardFormatType& data_type,
+        const ClipboardPasteData& data,
+        std::optional<std::u16string> replacement_data) override {
+      if (delay_) {
+        delayed_on_copy_allowed_results_.push(base::BindOnce(
+            &ClipboardHostImpl::OnCopyAllowedResult, base::Unretained(this),
+            data_type, data, std::move(replacement_data)));
+      } else {
+        ClipboardHostImpl::OnCopyAllowedResult(data_type, data,
+                                               std::move(replacement_data));
+      }
+    }
+
+    void OnCopyHtmlAllowedResult(
+        const GURL& source_url,
+        const ui::ClipboardFormatType& data_type,
+        const ClipboardPasteData& data,
+        std::optional<std::u16string> replacement_data) override {
+      if (delay_) {
+        delayed_on_copy_allowed_results_.push(base::BindOnce(
+            &ClipboardHostImpl::OnCopyHtmlAllowedResult, base::Unretained(this),
+            source_url, data_type, data, std::move(replacement_data)));
+      } else {
+        ClipboardHostImpl::OnCopyHtmlAllowedResult(source_url, data_type, data,
+                                                   std::move(replacement_data));
+      }
+    }
+
+    void CallOneDelayedResult() {
+      delay_ = false;
+      auto& front = delayed_on_copy_allowed_results_.front();
+      std::move(front).Run();
+      delayed_on_copy_allowed_results_.pop();
+    }
+
+    void DelayWrites() { delay_ = true; }
+
+   private:
+    bool delay_ = true;
+    std::queue<base::OnceClosure> delayed_on_copy_allowed_results_;
+  };
+
+  ClipboardHostImplAsyncWriteTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ui::TestClipboard::CreateForCurrentThread();
+  }
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL("https://google.com/"));
+    fake_clipboard_host_impl_ =
+        new AsyncWriteClipboardHostImpl(*web_contents()->GetPrimaryMainFrame(),
+                                        remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    fake_clipboard_host_impl_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  ~ClipboardHostImplAsyncWriteTest() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
+
+  AsyncWriteClipboardHostImpl* async_write_clipboard_host_impl() {
+    return fake_clipboard_host_impl_;
+  }
+
+ private:
+  mojo::Remote<blink::mojom::ClipboardHost> remote_;
+  // `ClipboardHostImpl` is a `DocumentService` and manages its own
+  // lifetime.
+  raw_ptr<AsyncWriteClipboardHostImpl> fake_clipboard_host_impl_;
+};
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteText) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kText = u"text";
+  async_write_clipboard_host_impl()->WriteText(kText);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return `kText` as we don't know yet if it's allowed or not.
+  base::test::TestFuture<const std::u16string&> first_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_future.GetCallback());
+  EXPECT_TRUE(first_future.Take().empty());
+
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_future.GetCallback());
+  EXPECT_EQ(second_future.Take(), kText);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteHtml) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  async_write_clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return `kHtml` as we don't know yet if it's allowed or not.
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_future.GetCallback());
+  EXPECT_TRUE(first_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_future.Get<2>(), 0u);
+  EXPECT_EQ(first_future.Get<3>(), 0u);
+
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_future.GetCallback());
+  EXPECT_EQ(second_future.Get<std::u16string>(), kHtml);
+  EXPECT_EQ(second_future.Get<GURL>(), kUrl);
+  EXPECT_EQ(second_future.Get<2>(), 0u);
+  EXPECT_EQ(second_future.Get<3>(), 16u);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, WriteTextAndHtml) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kText = u"text";
+  const GURL kUrl("https://example.com");
+  const std::u16string kHtml = u"<html>foo</html>";
+  async_write_clipboard_host_impl()->WriteText(kText);
+  async_write_clipboard_host_impl()->WriteHtml(kHtml, kUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return anything as we don't know yet if the data is allowed or not.
+  base::test::TestFuture<const std::u16string&> first_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_text_future.GetCallback());
+  EXPECT_TRUE(first_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_html_future.GetCallback());
+  EXPECT_TRUE(first_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_html_future.Get<2>(), 0u);
+  EXPECT_EQ(first_html_future.Get<3>(), 0u);
+
+  // After only one delayed result has been propagated, the clipboard still
+  // shouldn't have data as it isn't committed until the last result is
+  // resolved.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_text_future.GetCallback());
+  EXPECT_TRUE(second_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_html_future.GetCallback());
+  EXPECT_TRUE(second_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(second_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(second_html_future.Get<2>(), 0u);
+  EXPECT_EQ(second_html_future.Get<3>(), 0u);
+
+  // After calling the last delayed callback, the data should be in the
+  // clipboard.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> third_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              third_text_future.GetCallback());
+  EXPECT_EQ(third_text_future.Take(), kText);
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      third_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              third_html_future.GetCallback());
+  EXPECT_EQ(third_html_future.Get<std::u16string>(), kHtml);
+  EXPECT_EQ(third_html_future.Get<GURL>(), kUrl);
+  EXPECT_EQ(third_html_future.Get<2>(), 0u);
+  EXPECT_EQ(third_html_future.Get<3>(), 16u);
+}
+
+TEST_F(ClipboardHostImplAsyncWriteTest, ConcurrentWrites) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+
+  const std::u16string kFirstText = u"first text";
+  const GURL kFirstUrl("https://first.example.com");
+  const std::u16string kFirstHtml = u"<html>first foo</html>";
+
+  async_write_clipboard_host_impl()->WriteText(kFirstText);
+  async_write_clipboard_host_impl()->WriteHtml(kFirstHtml, kFirstUrl);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // Even after calling `CommitWrite()`, reading from the clipboard shouldn't
+  // return anything as we don't know yet if the data is allowed or not.
+  base::test::TestFuture<const std::u16string&> first_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              first_text_future.GetCallback());
+  EXPECT_TRUE(first_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      first_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              first_html_future.GetCallback());
+  EXPECT_TRUE(first_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(first_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(first_html_future.Get<2>(), 0u);
+  EXPECT_EQ(first_html_future.Get<3>(), 0u);
+
+  // After only one delayed result has been propagated, the clipboard still
+  // shouldn't have data as it isn't committed until the last result is
+  // resolved.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> second_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              second_text_future.GetCallback());
+  EXPECT_TRUE(second_text_future.Take().empty());
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      second_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              second_html_future.GetCallback());
+  EXPECT_TRUE(second_html_future.Get<std::u16string>().empty());
+  EXPECT_TRUE(second_html_future.Get<GURL>().is_empty());
+  EXPECT_EQ(second_html_future.Get<2>(), 0u);
+  EXPECT_EQ(second_html_future.Get<3>(), 0u);
+
+  // Making more `Write*` calls the first set hasn't completed should simply
+  // queue the new values while still only committing when the last result has
+  // been processed.
+  const std::u16string kSecondText = u"second text";
+  const GURL kSecondUrl("https://second.example.com");
+  const std::u16string kSecondHtml = u"<html>second foo</html>";
+  const std::u16string kSvg = u"svg";
+
+  async_write_clipboard_host_impl()->DelayWrites();
+  async_write_clipboard_host_impl()->WriteText(kSecondText);
+  async_write_clipboard_host_impl()->WriteHtml(kSecondHtml, kSecondUrl);
+  async_write_clipboard_host_impl()->WriteSvg(kSvg);
+  async_write_clipboard_host_impl()->CommitWrite();
+
+  // At this point we still have the first HTML write, second text write, second
+  // HTML write and SVG write queued, so we should be able to make three more
+  // `CallOneDelayedResult()` calls without getting all the data committed.
+  for (int i = 0; i < 3; ++i) {
+    async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+    base::test::TestFuture<const std::u16string&> empty_text_future;
+    async_write_clipboard_host_impl()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, empty_text_future.GetCallback());
+    EXPECT_TRUE(empty_text_future.Take().empty());
+
+    base::test::TestFuture<const std::u16string&, const GURL&, uint32_t,
+                           uint32_t>
+        empty_html_future;
+    async_write_clipboard_host_impl()->ReadHtml(
+        ui::ClipboardBuffer::kCopyPaste, empty_html_future.GetCallback());
+
+    EXPECT_TRUE(empty_html_future.Get<std::u16string>().empty());
+    EXPECT_TRUE(empty_html_future.Get<GURL>().is_empty());
+    EXPECT_EQ(empty_html_future.Get<2>(), 0u);
+    EXPECT_EQ(empty_html_future.Get<3>(), 0u);
+
+    base::test::TestFuture<const std::u16string&> empty_svg_future;
+    async_write_clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                               empty_svg_future.GetCallback());
+    EXPECT_TRUE(empty_svg_future.Take().empty());
+  }
+
+  // After calling the last delayed callback, the data should be in the
+  // clipboard.
+  async_write_clipboard_host_impl()->CallOneDelayedResult();
+
+  base::test::TestFuture<const std::u16string&> last_text_future;
+  async_write_clipboard_host_impl()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                              last_text_future.GetCallback());
+  EXPECT_EQ(last_text_future.Take(), kSecondText);
+
+  base::test::TestFuture<const std::u16string&, const GURL&, uint32_t, uint32_t>
+      last_html_future;
+  async_write_clipboard_host_impl()->ReadHtml(ui::ClipboardBuffer::kCopyPaste,
+                                              last_html_future.GetCallback());
+  EXPECT_EQ(last_html_future.Get<std::u16string>(), kSecondHtml);
+  EXPECT_EQ(last_html_future.Get<GURL>(), kSecondUrl);
+  EXPECT_EQ(last_html_future.Get<2>(), 0u);
+  EXPECT_EQ(last_html_future.Get<3>(), 23u);
+
+  base::test::TestFuture<const std::u16string&> last_svg_future;
+  async_write_clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
+                                             last_svg_future.GetCallback());
+  EXPECT_EQ(last_svg_future.Take(), kSvg);
 }
 
 }  // namespace content

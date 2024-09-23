@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_TEST_WIN_SCOPED_EXECUTABLE_FILES_H_
 #define COMPONENTS_DEVICE_SIGNALS_TEST_WIN_SCOPED_EXECUTABLE_FILES_H_
 
+#include <string_view>
+
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base {
@@ -43,11 +44,11 @@ class ScopedExecutableFiles {
   std::string GetMetadataProductVersion();
 
  private:
-  base::FilePath LazilyCreateFile(const base::StringPiece& file_name,
-                                  const base::StringPiece& file_data);
+  base::FilePath LazilyCreateFile(std::string_view file_name,
+                                  std::string_view file_data);
 
   bool CreateTempFile(const base::FilePath& file_path,
-                      const base::StringPiece& file_data);
+                      std::string_view file_data);
 
   // TODO(https://github.com/llvm/llvm-project/issues/61334): Explicit
   // [[maybe_unused]] attribute shouuld not be necessary here.

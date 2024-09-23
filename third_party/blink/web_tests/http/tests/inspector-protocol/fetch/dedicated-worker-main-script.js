@@ -8,6 +8,7 @@
   await dp.Fetch.enable({patterns: [{}]});
   dp.Fetch.onRequestPaused(event => {
     if (event.params.request.url.endsWith('/worker.js')) {
+      testRunner.log('Extra-Header:' + event.params.request.headers['Extra-Header']);
       dp.Fetch.fulfillRequest({
         requestId: event.params.requestId,
         responseCode: 200,
@@ -16,6 +17,8 @@
       })
     }
   });
+  await dp.Network.enable();
+  await dp.Network.setExtraHTTPHeaders({ headers: { 'Extra-Header': 'Extra-Value' } });
   const consoleMessagePromise = new Promise(resolve => {
     dp.Target.onAttachedToTarget(async event => {
       const wdp = session.createChild(event.params.sessionId).protocol;

@@ -18,26 +18,79 @@
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/hkdf.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/key_storage_linux.h"
+#endif
 
 namespace os_crypt_async {
 
+namespace {
+
+// Helper function to verify that decryption using OSCrypt failed. This is
+// platform dependent, as Windows will fail, but other platforms will return the
+// ciphertext back.
+[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
+    const std::optional<std::string>& decrypted,
+    base::span<const uint8_t> ciphertext) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, decryption fails, and decrypted will have no valid value.
+  return !decrypted;
+#else
+  // On other platforms, OSCrypt does not recognise the data and it returns
+  // the data without decrypting.
+  if (!decrypted) {
+    return false;
+  }
+  return decrypted == std::string(ciphertext.begin(), ciphertext.end());
+#endif
+}
+
+}  // namespace
 class OSCryptAsyncTest : public ::testing::Test {
  protected:
   using ProviderList =
       std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>>;
 
-  Encryptor GetInstanceSync(OSCryptAsync& factory) {
+  Encryptor GetInstanceSync(
+      OSCryptAsync& factory,
+      Encryptor::Option option = Encryptor::Option::kNone) {
     base::RunLoop run_loop;
     std::optional<Encryptor> encryptor;
-    auto sub = factory.GetInstance(base::BindLambdaForTesting(
-        [&](Encryptor encryptor_param, bool success) {
-          EXPECT_TRUE(success);
-          encryptor.emplace(std::move(encryptor_param));
-          run_loop.Quit();
-        }));
+    auto sub =
+        factory.GetInstance(base::BindLambdaForTesting(
+                                [&](Encryptor encryptor_param, bool success) {
+                                  EXPECT_TRUE(success);
+                                  encryptor.emplace(std::move(encryptor_param));
+                                  run_loop.Quit();
+                                }),
+                            option);
     run_loop.Run();
     return std::move(*encryptor);
+  }
+
+  // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
+  // OSCrypt::IsEncryptionAvailable return false, without hitting a CHECK on
+  // Linux. Note this is different from using the full OSCryptMocker, because in
+  // this state, no key is available for encryption. Returns a
+  // ScopedClosureRunner that will reset the behavior back to default when it
+  // goes out of scope.
+  [[nodiscard]] static std::optional<base::ScopedClosureRunner>
+  MaybeSimulateLockedKeyChain() {
+#if BUILDFLAG(IS_LINUX)
+    OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
+        []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
+    return std::nullopt;
+#elif BUILDFLAG(IS_APPLE)
+    OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
+    }));
+#else
+    return std::nullopt;
+#endif
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -45,11 +98,19 @@ class OSCryptAsyncTest : public ::testing::Test {
 
 class TestKeyProvider : public KeyProvider {
  public:
-  explicit TestKeyProvider(const std::string& name = "TEST",
-                           bool use_for_encryption = true)
-      : name_(name), use_for_encryption_(use_for_encryption) {}
+  TestKeyProvider(const std::string& name,
+                  bool use_for_encryption,
+                  bool compatible_with_os_crypt_sync = false)
+      : name_(name),
+        use_for_encryption_(use_for_encryption),
+        compatible_with_os_crypt_sync_(compatible_with_os_crypt_sync) {}
 
  protected:
+  TestKeyProvider()
+      : name_("TEST"),
+        use_for_encryption_(true),
+        compatible_with_os_crypt_sync_(false) {}
+
   Encryptor::Key GenerateKey() {
     // Make the key derive from the name to ensure different providers have
     // different keys.
@@ -67,15 +128,20 @@ class TestKeyProvider : public KeyProvider {
   }
 
   bool UseForEncryption() override { return use_for_encryption_; }
+  bool IsCompatibleWithOsCryptSync() override {
+    return compatible_with_os_crypt_sync_;
+  }
 
   const bool use_for_encryption_;
+  const bool compatible_with_os_crypt_sync_;
 };
 
 TEST_F(OSCryptAsyncTest, EncryptHeader) {
   const std::string kTestProviderName("TEST");
   ProviderList providers;
-  providers.emplace_back(std::make_pair(
-      10u, std::make_unique<TestKeyProvider>(kTestProviderName)));
+  providers.emplace_back(
+      std::make_pair(10u, std::make_unique<TestKeyProvider>(
+                              kTestProviderName, /*use_for_encryption=*/true)));
   OSCryptAsync factory(std::move(providers));
   Encryptor encryptor = GetInstanceSync(factory);
 
@@ -124,6 +190,27 @@ TEST_F(OSCryptAsyncTest, TwoProvidersBothEnabled) {
     ASSERT_TRUE(plaintext);
     EXPECT_EQ("secrets", *plaintext);
   }
+  // Check that order of providers does not affect which one is chosen for
+  // encrypt operations.
+  {
+    const std::string kFooProviderName("FOO");
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("BAR", /*use_for_encryption=*/true));
+    providers.emplace_back(
+        /*precedence=*/10u, std::make_unique<TestKeyProvider>(
+                                kFooProviderName, /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+
+    ciphertext = encryptor.EncryptString("secrets");
+    ASSERT_TRUE(ciphertext);
+    // The higher of the two providers should have been picked for data
+    // encryption.
+    EXPECT_TRUE(std::equal(kFooProviderName.cbegin(), kFooProviderName.cend(),
+                           ciphertext->cbegin()));
+  }
 }
 
 TEST_F(OSCryptAsyncTest, TwoProvidersOneEnabled) {
@@ -169,10 +256,73 @@ TEST_F(OSCryptAsyncTest, TwoProvidersOneEnabled) {
   }
 }
 
+TEST_F(OSCryptAsyncTest, EncryptorOption) {
+  const std::string kTESTProviderName("TEST");
+  const std::string kBLAHProviderName("BLAH");
+
+  std::optional<std::vector<uint8_t>> blah_ciphertext, test_ciphertext;
+  {
+    ProviderList providers;
+    providers.emplace_back(/*precedence=*/10u,
+                           std::make_unique<TestKeyProvider>(
+                               kTESTProviderName, /*use_for_encryption=*/true));
+    providers.emplace_back(/*precedence=*/5u,
+                           std::make_unique<TestKeyProvider>(
+                               kBLAHProviderName, /*use_for_encryption=*/true,
+                               /*compatible_with_os_crypt_sync=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+
+    test_ciphertext = encryptor.EncryptString("secrets");
+    ASSERT_TRUE(test_ciphertext);
+    // TEST should be picked, because it has a higher precedence than BLAH.
+    EXPECT_TRUE(std::equal(kTESTProviderName.cbegin(), kTESTProviderName.cend(),
+                           test_ciphertext->cbegin()));
+
+    // Now obtain an encryptor with a compatibility option.
+    Encryptor encryptor_compat =
+        GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
+    blah_ciphertext = encryptor_compat.EncryptString("secrets");
+    ASSERT_TRUE(blah_ciphertext);
+    // Should be encrypted with BLAH now.
+    EXPECT_TRUE(std::equal(kBLAHProviderName.cbegin(), kBLAHProviderName.cend(),
+                           blah_ciphertext->cbegin()));
+  }
+  // Check that with just BLAH provider, data can still be decrypted.
+  {
+    auto cleanup = MaybeSimulateLockedKeyChain();
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>(kBLAHProviderName,
+                                          /*use_for_encryption=*/false));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+
+    // The only provider has indicated that it is not to be used for encryption,
+    // so encryption should not be available, as OSCrypt fallback is not
+    // available.
+    ASSERT_FALSE(encryptor.IsEncryptionAvailable());
+    // Decryption is possible, as long as the data is encrypted with the BLAH
+    // key.
+    ASSERT_TRUE(encryptor.IsDecryptionAvailable());
+
+    auto plaintext = encryptor.DecryptData(*blah_ciphertext);
+    // The correct provider based on the encrypted data header should have been
+    // picked for data decryption.
+    ASSERT_TRUE(plaintext);
+    EXPECT_EQ("secrets", *plaintext);
+
+    // The first data that was encrypted with v20 cannot be decrypted.
+    auto failing_plaintext = encryptor.DecryptData(*test_ciphertext);
+    EXPECT_TRUE(
+        MaybeVerifyFailedDecryptOperation(failing_plaintext, *test_ciphertext));
+  }
+}
+
 class SlowTestKeyProvider : public TestKeyProvider {
  public:
-  explicit SlowTestKeyProvider(base::TimeDelta sleep_time)
-      : sleep_time_(sleep_time) {}
+  explicit SlowTestKeyProvider(base::TimeDelta sleep_time) {}
 
  private:
   void GetKey(KeyCallback callback) override {
@@ -229,7 +379,7 @@ TEST_F(OSCryptAsyncTest, SubscriptionCancelled) {
     auto sub = factory.GetInstance(
         base::BindOnce([](Encryptor encryptor, bool success) {
           // This should not be called, as the subscription went out of scope.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }));
   }
 
@@ -258,6 +408,43 @@ TEST_F(OSCryptAsyncTest, TestOSCryptAsyncInterface) {
     // the same keys.
     auto second_encryptor = GetInstanceSync(*os_crypt);
     auto decrypted = second_encryptor.DecryptData(*ciphertext);
+    ASSERT_TRUE(decrypted);
+    EXPECT_EQ(*decrypted, "testsecrets");
+  }
+  {
+    // Verify that the key used by the encryptor returned from the testing
+    // instance indicates compatibility with OSCrypt Sync. This avoids all tests
+    // having to install the OSCrypt mocker in every fixture.
+    const auto os_crypt_compat_encryptor =
+        GetInstanceSync(*os_crypt, Encryptor::Option::kEncryptSyncCompat);
+    {
+      Encryptor::DecryptFlags flags;
+      const auto decrypted =
+          os_crypt_compat_encryptor.DecryptData(*ciphertext, &flags);
+      ASSERT_TRUE(decrypted);
+      // Switching from kNone to kEncryptSyncCompat should result in the data
+      // needing to be re-encrypted.
+      EXPECT_TRUE(flags.should_reencrypt);
+      EXPECT_EQ(*decrypted, "testsecrets");
+    }
+    {
+      // Encrypt with the OSCrypt Sync compat one, then decrypt with the new
+      // one, which should signal again that the data needs to be re-encrypted.
+      const auto os_crypt_compat_ciphertext =
+          os_crypt_compat_encryptor.EncryptString("moresecret");
+      ASSERT_TRUE(os_crypt_compat_ciphertext);
+      Encryptor::DecryptFlags flags;
+      const auto decrypted =
+          encryptor.DecryptData(*os_crypt_compat_ciphertext, &flags);
+      ASSERT_TRUE(decrypted);
+      EXPECT_TRUE(flags.should_reencrypt);
+      EXPECT_EQ(*decrypted, "moresecret");
+    }
+  }
+  {
+    auto another_encryptor =
+        GetInstanceSync(*os_crypt, Encryptor::Option::kEncryptSyncCompat);
+    auto decrypted = another_encryptor.DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ(*decrypted, "testsecrets");
   }
@@ -300,11 +487,21 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, Empty) {
   ProviderList providers;
   OSCryptAsync factory(std::move(providers));
   Encryptor encryptor = GetInstanceSync(factory);
-  std::string ciphertext;
-  EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-  std::string plaintext;
-  EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
-  EXPECT_EQ("secrets", plaintext);
+  {
+    std::string ciphertext;
+    EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
+    std::string plaintext;
+    EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
+    EXPECT_EQ("secrets", plaintext);
+  }
+  {
+    const auto ciphertext = encryptor.EncryptString("moresecrets");
+    ASSERT_TRUE(ciphertext.has_value());
+    std::string plaintext;
+    EXPECT_TRUE(OSCrypt::DecryptString(
+        std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
+    EXPECT_EQ("moresecrets", plaintext);
+  }
 }
 
 TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
@@ -334,6 +531,111 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
     EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
     EXPECT_EQ("secrets", plaintext);
   }
+}
+
+TEST_F(OSCryptAsyncTest, ShouldReencrypt) {
+  std::string ciphertext;
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("BAR", /*use_for_encryption=*/true));
+    providers.emplace_back(
+        /*precedence=*/8u,
+        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+    // FOO should be used, as it's the higher precedence.
+    EXPECT_THAT(base::make_span(ciphertext).first(3u),
+                ::testing::ElementsAreArray(base::span_from_cstring("FOO")));
+    std::string plaintext;
+    Encryptor::DecryptFlags flags;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_EQ(plaintext, "secrets");
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/true));
+    providers.emplace_back(
+        /*precedence=*/8u,
+        std::make_unique<TestKeyProvider>("BAR", /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_EQ(plaintext, "secrets");
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+}
+
+TEST_F(OSCryptAsyncTestWithOSCrypt, OSCryptShouldReencrypt) {
+  std::string ciphertext;
+  ASSERT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
+
+  {
+    ProviderList providers;
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    std::string plaintext;
+    Encryptor::DecryptFlags flags;
+    // This encryptor has no providers, so falls back to OSCrypt Sync.
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_EQ(plaintext, "secrets");
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_EQ(plaintext, "secrets");
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+  {
+    ProviderList providers;
+    // Specify not to encrypt data with this provider.
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/false));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_EQ(plaintext, "secrets");
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+}
+
+// Test also that if no key providers have OSCrypt sync compatibility then
+// encryption simply falls back to OSCrypt, and that OSCrypt can decrypt it
+// fine.
+TEST_F(OSCryptAsyncTestWithOSCrypt, EncryptorOption) {
+  ProviderList providers;
+  providers.emplace_back(/*precedence=*/5u,
+                         std::make_unique<TestKeyProvider>(
+                             "BAR", /*use_for_encryption=*/true,
+                             /*compatible_with_os_crypt_sync=*/false));
+  OSCryptAsync factory(std::move(providers));
+  Encryptor encryptor =
+      GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
+  const auto ciphertext = encryptor.EncryptString("os_crypt_secrets");
+  ASSERT_TRUE(ciphertext);
+  std::string plaintext;
+  ASSERT_TRUE(OSCrypt::DecryptString(
+      std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
+  EXPECT_EQ("os_crypt_secrets", plaintext);
 }
 
 using OSCryptAsyncDeathTest = OSCryptAsyncTest;
@@ -402,6 +704,41 @@ TEST_F(OSCryptAsyncDeathTest, OverlappingNamesBackwards) {
         std::ignore = GetInstanceSync(factory);
       },
       "Tags must not overlap.");
+}
+
+TEST_F(OSCryptAsyncDeathTest, TwoOsCryptCompatibleKeyProviders) {
+  ProviderList providers;
+  providers.emplace_back(
+      /*precedence=*/10u, std::make_unique<TestKeyProvider>(
+                              "ABC", /*use_for_encryption=*/true,
+                              /*compatible_with_os_crypt_sync=*/true));
+  providers.emplace_back(
+      /*precedence=*/15u, std::make_unique<TestKeyProvider>(
+                              "DEF", /*use_for_encryption=*/true,
+                              /*compatible_with_os_crypt_sync=*/true));
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        OSCryptAsync factory(std::move(providers));
+        std::ignore = GetInstanceSync(factory);
+      },
+      "Cannot have more than one key marked OSCrypt sync compatible.");
+}
+
+TEST_F(OSCryptAsyncTest, NoCrashWithLongNames) {
+  ProviderList providers;
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<TestKeyProvider>("ABC", /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/5u,
+      std::make_unique<TestKeyProvider>(
+          "TEST_REALLY_LOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG_NAME",
+          /*use_for_encryption=*/true));
+  providers.emplace_back(
+      /*precedence=*/15u,
+      std::make_unique<TestKeyProvider>("XYZ", /*use_for_encryption=*/true));
+  OSCryptAsync factory(std::move(providers));
+  GetInstanceSync(factory);
 }
 
 }  // namespace os_crypt_async

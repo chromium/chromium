@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActivityIndicatorState">
+  <int value="0" label="In use"/>
+  <int value="1" label="Blocked on the site level"/>
+  <int value="2" label="Blocked on the system level"/>
+</enum>
+
 <enum name="AutoDSEPermissionRevertTransition">
   <int value="0" label="NO_DECISION_ASK"/>
   <int value="1" label="PRESERVE_ALLOW"/>
@@ -60,6 +66,23 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unsolicited notification prompts"/>
 </enum>
 
+<enum name="DismissedReason">
+  <int value="0" label="DISMISSED_X_BUTTON"/>
+  <int value="1" label="DISMISSED_SCRIM"/>
+</enum>
+
+<!-- LINT.IfChange(ExternalProtocolScheme) -->
+
+<enum name="ExternalProtocolScheme">
+  <int value="0" label="Other"/>
+  <int value="1" label="search-ms"/>
+  <int value="2" label="search"/>
+  <int value="3" label="mailto"/>
+  <int value="4" label="microsoft-edge"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/external_protocol/external_protocol_handler.cc:LoggedScheme) -->
+
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>
@@ -75,6 +98,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Expired in the background due to non-usage"/>
   <int value="4" label="Expired after maximum lifetime"/>
   <int value="5" label="Expired because the device was suspended"/>
+</enum>
+
+<enum name="OsScreenAction">
+  <int value="0" label="SystemSettings"/>
+  <int value="1" label="DismissXButton"/>
+  <int value="2" label="DismissScrim"/>
 </enum>
 
 <enum name="PageInfoDialogAccessType">
@@ -132,6 +161,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HARDCODED_FALLBACK"/>
 </enum>
 
+<enum name="PermissionPromptDismissMethod">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Back navigation"/>
+  <int value="2" label="Touching outside the scrim"/>
+  <int value="3"
+      label="Autodismissed due to dequeuing a prompt after the user
+             backgrounds the browser and cleanup has happened."/>
+  <int value="4"
+      label="Autodismissed after prompt was accepted but OS permission was
+             denied"/>
+</enum>
+
 <enum name="PermissionRequestIgnoredReason">
   <summary>
     Breaks down reasons for permission requests being categorized as ignored.
@@ -143,41 +184,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Tab closed"/>
   <int value="2" label="Navigation"/>
   <int value="3" label="Other"/>
-</enum>
-
-<enum name="PermissionRequestType">
-  <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
-  <int value="1" label="PERMISSION_BUBBLE_MULTIPLE"/>
-  <int value="2" label="PERMISSION_BUBBLE_UNUSED_PERMISSION"/>
-  <int value="3" label="PERMISSION_BUBBLE_QUOTA"/>
-  <int value="4" label="PERMISSION_BUBBLE_DOWNLOAD"/>
-  <int value="5" label="PERMISSION_BUBBLE_MEDIA_STREAM"/>
-  <int value="6" label="PERMISSION_BUBBLE_REGISTER_PROTOCOL_HANDLER"/>
-  <int value="7" label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION"/>
-  <int value="8" label="PERMISSION_BUBBLE_PERMISSION_MIDI_SYSEX"/>
-  <int value="9" label="PERMISSION_BUBBLE_PERMISSION_NOTIFICATIONS"/>
-  <int value="10"
-      label="PERMISSION_BUBBLE_PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
-  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING"/>
-  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH"/>
-  <int value="13" label="PERMISSION_MEDIASTREAM_MIC"/>
-  <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
-  <int value="15" label="PERMISSION_ACCESSIBILITY_EVENTS"/>
-  <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
-  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION__REMOVED_IN_M117"/>
-  <int value="18" label="PERMISSION_PAYMENT_HANDLER"/>
-  <int value="19" label="PERMISSION_NFC"/>
-  <int value="20" label="PERMISSION_CLIPBOARD_READ_WRITE"/>
-  <int value="21" label="PERMISSION_VR"/>
-  <int value="22" label="PERMISSION_AR"/>
-  <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
-  <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
-  <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
-  <int value="31" label="PERMISSION_MIDI"/>
-  <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
-  <int value="33" label="CAPTURED_SURFACE_CONTROL"/>
-  <int value="34" label="PERMISSION_SMART_CARD"/>
-  <int value="35" label="PERMISSION_WEB_PRINTING"/>
 </enum>
 
 <enum name="PermissionSourceUI">
@@ -222,13 +228,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Permission granted"/>
   <int value="3" label="Ephemeral permission granted"/>
   <int value="4" label="Dismissed due to loss of focus"/>
-</enum>
-
-<enum name="WebSiteSettingsAllSitesAction">
-  <int value="0" label="All Sites Loaded"/>
-  <int value="1" label="Reset Permissions"/>
-  <int value="2" label="Clear Data"/>
-  <int value="3" label="Enter Site Details"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction2">

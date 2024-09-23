@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "url/url_util.h"
@@ -80,9 +82,8 @@ GURL GetAshUrlFromLacrosUrl(GURL url) {
 bool IsAshUrlInList(const GURL& url, const std::vector<GURL>& list) {
   return std::any_of(list.begin(), list.end(), [&](const GURL& elem) {
     DCHECK(elem.is_valid());
-    DCHECK_EQ(elem, NormalizeAshUrl(elem, /*keep_path*/ true));
-    return elem == NormalizeAshUrl(url, /*keep_path*/ false) ||
-           elem == NormalizeAshUrl(url, /*keep_path*/ true);
+    DCHECK_EQ(elem, NormalizeAshUrl(elem));
+    return elem == NormalizeAshUrl(url);
   });
 }
 
@@ -96,7 +97,7 @@ bool HasOsScheme(const GURL& url) {
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
-bool IsOsScheme(const base::StringPiece& scheme) {
+bool IsOsScheme(std::string_view scheme) {
   return base::EqualsCaseInsensitiveASCII(scheme, kOsScheme);
 }
 

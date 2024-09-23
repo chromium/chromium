@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -27,7 +28,7 @@ class WebUIIOS {
   // Returns JavaScript code that, when executed, calls the function specified
   // by `function_name` with the arguments specified in `arg_list`.
   static std::u16string GetJavascriptCall(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> arg_list);
 
   virtual ~WebUIIOS() {}
@@ -46,14 +47,14 @@ class WebUIIOS {
   // the call has no effect.
   using MessageCallback =
       base::RepeatingCallback<void(const base::Value::List&)>;
-  virtual void RegisterMessageCallback(base::StringPiece message,
+  virtual void RegisterMessageCallback(std::string_view message,
                                        MessageCallback callback) = 0;
 
   // This is only needed if an embedder overrides handling of a WebUIIOSMessage
   // and then later wants to undo that, or to route it to a different WebUIIOS
   // object.
   virtual void ProcessWebUIIOSMessage(const GURL& source_url,
-                                      base::StringPiece message,
+                                      std::string_view message,
                                       const base::Value::List& args) = 0;
 
   // Call a Javascript function.  This is asynchronous; there's no way to get
@@ -61,7 +62,7 @@ class WebUIIOS {
   // message to the page.  All function names in WebUI must consist of only
   // ASCII characters.
   virtual void CallJavascriptFunction(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> args) = 0;
 
   // Helper method for responding to Javascript requests initiated with
@@ -84,7 +85,7 @@ class WebUIIOS {
   // Helper method for notifying Javascript listeners added with
   // cr.addWebUIListener() (defined in cr.js).
   template <typename... Arg>
-  void FireWebUIListener(base::StringPiece event_name, const Arg&... arg) {
+  void FireWebUIListener(std::string_view event_name, const Arg&... arg) {
     base::Value callback_arg(event_name);
     base::ValueView args[] = {callback_arg, arg...};
     FireWebUIListenerSpan(args);

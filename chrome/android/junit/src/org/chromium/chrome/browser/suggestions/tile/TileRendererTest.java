@@ -30,6 +30,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +44,6 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -114,7 +114,6 @@ public class TileRendererTest {
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
         mSharedParent = new LinearLayout(mActivity);
@@ -127,17 +126,17 @@ public class TileRendererTest {
         doReturn(mTileSetupCallback).when(mTileSetupDelegate).createIconLoadCallback(any());
         doReturn(mTileInteractionDelegate)
                 .when(mTileSetupDelegate)
-                .createInteractionDelegate(any());
+                .createInteractionDelegate(any(), any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TileRenderer tileRenderer =
                             new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);
                     tileRenderer.setIconGeneratorForTesting(mIconGenerator);
-                    tileRenderer.onNativeInitializationReady();
+                    tileRenderer.onNativeInitializationReady(mProfile);
                     SuggestionsTileView tileView =
                             tileRenderer.buildTileView(mTile, mSharedParent, mTileSetupDelegate);
                     Assert.assertNotNull(tileView);

@@ -32,9 +32,9 @@ bool AreProgressMarkersEquivalent(const std::string& serialized1,
   DCHECK(!marker1.has_gc_directive());
   DCHECK(!marker2.has_gc_directive());
 
-  if (syncer::GetModelTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
+  if (syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
           syncer::AUTOFILL_WALLET_DATA ||
-      syncer::GetModelTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
+      syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
           syncer::AUTOFILL_WALLET_OFFER) {
     return fake_server::AreFullUpdateTypeDataProgressMarkersEquivalent(marker1,
                                                                        marker2);
@@ -56,7 +56,7 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
     return false;
   }
 
-  const syncer::ModelTypeSet common_types = Intersection(
+  const syncer::DataTypeSet common_types = Intersection(
       service1->GetActiveDataTypes(), service2->GetActiveDataTypes());
 
   const syncer::SyncCycleSnapshot& snap1 =
@@ -64,7 +64,7 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
   const syncer::SyncCycleSnapshot& snap2 =
       service2->GetLastCycleSnapshotForDebugging();
 
-  for (syncer::ModelType type : common_types) {
+  for (syncer::DataType type : common_types) {
     if (!syncer::ProtocolTypes().Has(type)) {
       continue;
     }
@@ -73,21 +73,21 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
     auto pm_it1 = snap1.download_progress_markers().find(type);
     if (pm_it1 == snap1.download_progress_markers().end()) {
       *os << "Progress marker missing in client 1 for "
-          << syncer::ModelTypeToDebugString(type);
+          << syncer::DataTypeToDebugString(type);
       return false;
     }
 
     auto pm_it2 = snap2.download_progress_markers().find(type);
     if (pm_it2 == snap2.download_progress_markers().end()) {
       *os << "Progress marker missing in client 2 for "
-          << syncer::ModelTypeToDebugString(type);
+          << syncer::DataTypeToDebugString(type);
       return false;
     }
 
     // Fail if any of them don't match.
     if (!AreProgressMarkersEquivalent(pm_it1->second, pm_it2->second)) {
       *os << "Progress markers don't match for "
-          << syncer::ModelTypeToDebugString(type);
+          << syncer::DataTypeToDebugString(type);
       return false;
     }
   }

@@ -128,7 +128,7 @@ base::TimeDelta GetAnimationDuration(InkDropHost* ink_drop_host,
 
   // Duration constants for InkDropStateSubAnimations. See the
   // InkDropStateSubAnimations enum documentation for more info.
-  constexpr base::TimeDelta kAnimationDuration[] = {
+  constexpr auto kAnimationDuration = std::to_array<base::TimeDelta>({
       base::Milliseconds(150),  // HIDDEN_FADE_OUT
       base::Milliseconds(200),  // HIDDEN_TRANSFORM
       base::TimeDelta(),        // ACTION_PENDING_FADE_IN
@@ -142,7 +142,7 @@ base::TimeDelta GetAnimationDuration(InkDropHost* ink_drop_host,
       base::Milliseconds(160),  // ACTIVATED_RECT_TRANSFORM
       base::Milliseconds(150),  // DEACTIVATED_FADE_OUT
       base::Milliseconds(200),  // DEACTIVATED_TRANSFORM
-  };
+  });
   return kAnimationDuration[state];
 }
 
@@ -171,8 +171,9 @@ SquareInkDropRipple::SquareInkDropRipple(InkDropHost* ink_drop_host,
       root_layer_(ui::LAYER_NOT_DRAWN) {
   root_layer_.SetName("SquareInkDropRipple:ROOT_LAYER");
 
-  for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i)
+  for (size_t i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
     AddPaintLayer(static_cast<PaintedShape>(i));
+  }
 
   root_layer_.SetMasksToBounds(false);
   root_layer_.SetBounds(gfx::Rect(large_size_));
@@ -214,8 +215,7 @@ std::string SquareInkDropRipple::ToLayerName(PaintedShape painted_shape) {
     case VERTICAL_RECT:
       return "VERTICAL_RECT";
     case PAINTED_SHAPE_COUNT:
-      NOTREACHED_NORETURN()
-          << "The PAINTED_SHAPE_COUNT value should never be used.";
+      NOTREACHED() << "The PAINTED_SHAPE_COUNT value should never be used.";
   }
   return "UNKNOWN";
 }
@@ -234,8 +234,9 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       [this](AnimationSequenceBlock& sequence,
              const InkDropTransforms& transforms,
              gfx::Tween::Type tween) -> AnimationSequenceBlock& {
-    for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i)
+    for (size_t i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
       sequence.SetTransform(painted_layers_[i].get(), transforms[i], tween);
+    }
     return sequence;
   };
 
@@ -415,8 +416,9 @@ void SquareInkDropRipple::AbortAllAnimations() {
 }
 
 void SquareInkDropRipple::SetTransforms(const InkDropTransforms transforms) {
-  for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i)
+  for (size_t i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
     painted_layers_[i]->SetTransform(transforms[i]);
+  }
 }
 
 void SquareInkDropRipple::SetOpacity(float opacity) {
@@ -519,8 +521,9 @@ gfx::Transform SquareInkDropRipple::CalculateRectTransform(
 
 void SquareInkDropRipple::GetCurrentTransforms(
     InkDropTransforms* transforms_out) const {
-  for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i)
+  for (size_t i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
     (*transforms_out)[i] = painted_layers_[i]->transform();
+  }
 }
 
 void SquareInkDropRipple::GetActivatedTargetTransforms(
@@ -563,8 +566,7 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
       delegate = rect_layer_delegate_.get();
       break;
     case PAINTED_SHAPE_COUNT:
-      NOTREACHED_NORETURN()
-          << "PAINTED_SHAPE_COUNT is not an actual shape type.";
+      NOTREACHED() << "PAINTED_SHAPE_COUNT is not an actual shape type.";
   }
 
   ui::Layer* layer = new ui::Layer();

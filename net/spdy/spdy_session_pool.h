@@ -17,6 +17,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
@@ -36,7 +37,7 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class HostResolver;
 class HttpServerProperties;
 class NetLogWithSource;
@@ -166,24 +167,25 @@ class NET_EXPORT SpdySessionPool
   // Returns a net error code on failure, in which case the value of |*session|
   // is undefined.
   //
-  // Note that the SpdySession begins reading from |client_socket_handle| on a
+  // Note that the SpdySession begins reading from |stream_socket_handle| on a
   // subsequent event loop iteration, so it may be closed immediately afterwards
-  // if the first read of |client_socket_handle| fails.
+  // if the first read of |stream_socket_handle| fails.
   int CreateAvailableSessionFromSocketHandle(
       const SpdySessionKey& key,
-      std::unique_ptr<ClientSocketHandle> client_socket_handle,
+      std::unique_ptr<StreamSocketHandle> stream_socket_handle,
       const NetLogWithSource& net_log,
       base::WeakPtr<SpdySession>* session);
 
   // Just like the above method, except it takes a SocketStream instead of a
-  // ClientSocketHandle, and separate connect timing information. When this
+  // StreamSocketHandle, and separate connect timing information. When this
   // constructor is used, there is no socket pool beneath the SpdySession.
   // Instead, the session takes exclusive ownership of the underting socket, and
   // destroying the session will directly destroy the socket, as opposed to
   // disconnected it and then returning it to the socket pool. This is intended
   // for use with H2 proxies, which are layered beneath the socket pools and
   // can have sockets above them for tunnels, which are put in a socket pool.
-  base::WeakPtr<SpdySession> CreateAvailableSessionFromSocket(
+  base::expected<base::WeakPtr<SpdySession>, int>
+  CreateAvailableSessionFromSocket(
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocket> socket_stream,
       const LoadTimingInfo::ConnectTiming& connect_timing,
@@ -201,6 +203,14 @@ class NET_EXPORT SpdySessionPool
       bool enable_ip_based_pooling,
       bool is_websocket,
       const NetLogWithSource& net_log);
+
+  // Returns an available session if there is active session for `key` and the
+  // session can be used for IP addresses in `service_endpoint`. Should be
+  // called only when IP-based pooling is enabled.
+  base::WeakPtr<SpdySession> FindMatchingIpSessionForServiceEndpoint(
+      const SpdySessionKey& key,
+      const ServiceEndpoint& service_endpoint,
+      const std::set<std::string>& dns_aliases);
 
   // Returns true if there is an available session for |key|.
   bool HasAvailableSession(const SpdySessionKey& key, bool is_websocket) const;
@@ -320,14 +330,14 @@ class NET_EXPORT SpdySessionPool
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
-  using SessionSet = std::set<raw_ptr<SpdySession, SetExperimental>>;
+  using SessionSet = std::set<raw_ptr<SpdySession>>;
   using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
   using AvailableSessionMap =
       std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
   using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
   using DnsAliasesBySessionKeyMap =
       std::map<SpdySessionKey, std::set<std::string>>;
-  using RequestSet = std::set<raw_ptr<SpdySessionRequest, SetExperimental>>;
+  using RequestSet = std::set<raw_ptr<SpdySessionRequest>>;
 
   struct RequestInfoForKey {
     RequestInfoForKey();
@@ -389,11 +399,12 @@ class NET_EXPORT SpdySessionPool
                                              NetLog* net_log);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
-  base::WeakPtr<SpdySession> InsertSession(
+  base::expected<base::WeakPtr<SpdySession>, int> InsertSession(
       const SpdySessionKey& key,
       std::unique_ptr<SpdySession> new_session,
       const NetLogWithSource& source_net_log,
-      std::set<std::string> dns_aliases);
+      std::set<std::string> dns_aliases,
+      bool perform_post_insertion_checks);
 
   // If a session with the specified |key| exists, invokes
   // OnSpdySessionAvailable on all matching members of
@@ -409,6 +420,15 @@ class NET_EXPORT SpdySessionPool
   void RemoveRequestInternal(
       SpdySessionRequestMap::iterator request_map_iterator,
       RequestSet::iterator request_set_iterator);
+
+  // Helper method of `FindMatchingIpSessionForServiceEndpoint()`. This is
+  // basically a subset of OnHostResolutionComplete(), i.e.,:
+  // * Doesn't support SocketTag.
+  // * Assumes there is only one host resolution for `key` at the same time.
+  base::WeakPtr<SpdySession> FindMatchingIpSession(
+      const SpdySessionKey& key,
+      const std::vector<IPEndPoint> ip_endpoints,
+      const std::set<std::string>& dns_aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;
 

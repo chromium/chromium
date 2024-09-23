@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
+#include "build/build_config.h"
+#include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
 #if defined(CPU_ARM_NEON)

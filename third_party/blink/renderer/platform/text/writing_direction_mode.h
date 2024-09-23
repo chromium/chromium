@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -46,6 +47,10 @@ class PLATFORM_EXPORT WritingDirectionMode {
     return IsFlippedBlocksWritingMode(writing_mode_);
   }
 
+  bool IsFlippedInlines() const {
+    return IsRtl() ^ (writing_mode_ == WritingMode::kSidewaysLr);
+  }
+
   // Bottom of the line occurs earlier in the block; modes vertical-lr.
   bool IsFlippedLines() const {
     return IsFlippedLinesWritingMode(writing_mode_);
@@ -59,6 +64,14 @@ class PLATFORM_EXPORT WritingDirectionMode {
   // Functions for both inline and block directions.
   //
   bool IsHorizontalLtr() const { return IsHorizontal() && IsLtr(); }
+
+  // Returns a physical direction corresponding to a logical direction.
+  PhysicalDirection InlineStart() const;
+  PhysicalDirection InlineEnd() const;
+  PhysicalDirection BlockStart() const;
+  PhysicalDirection BlockEnd() const;
+  PhysicalDirection LineOver() const;
+  PhysicalDirection LineUnder() const;
 
   bool operator==(const WritingDirectionMode& other) const {
     return writing_mode_ == other.writing_mode_ &&
@@ -84,7 +97,7 @@ inline bool WritingDirectionMode::IsFlippedY() const {
     DCHECK(!IsFlippedBlocks());
     return false;
   }
-  return IsRtl();
+  return IsFlippedInlines();
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

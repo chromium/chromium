@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -48,9 +49,22 @@ webapps::AppId InstallDummyWebApp(
     const webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-// Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
-// used in unit tests and browser tests.
+// Synchronous version of
+// WebAppCommandScheduler::InstallFromInfoWithParams. Will automatically choose
+// the proto::InstallState based on if the test is is handling os integration
+// using an OsIntegrationTestOverrideBlockingRegistration. May be used in unit
+// tests and browser tests.
 webapps::AppId InstallWebApp(
+    Profile* profile,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    bool overwrite_existing_manifest_fields = false,
+    webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+// Synchronous version of
+// WebAppCommandScheduler::InstallFromInfoNoIntegrationForTesting. May be used
+// in unit tests and browser tests.
+webapps::AppId InstallWebAppWithoutOsIntegration(
     Profile* profile,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     bool overwrite_existing_manifest_fields = false,
@@ -65,8 +79,12 @@ webapps::AppId InstallShortcut(Profile* profile,
                                bool is_policy_install = false);
 
 // Synchronously uninstall a web app. May be used in unit tests and browser
-// tests.
-void UninstallWebApp(Profile* profile, const webapps::AppId& app_id);
+// tests. Emulates a user uninstall - if the web app cannot be uninstalled by
+// the user, then this will fail.
+void UninstallWebApp(Profile* profile,
+                     const webapps::AppId& app_id,
+                     webapps::WebappUninstallSource uninstall_source =
+                         webapps::WebappUninstallSource::kAppMenu);
 
 // Synchronously uninstall all web apps for the given profile. May be used in
 // unit tests and browser tests. Returns `false` if there was a failure.

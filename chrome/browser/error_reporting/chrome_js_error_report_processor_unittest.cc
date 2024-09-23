@@ -29,6 +29,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/text/bytes_formatting.h"
 
 using ::testing::AllOf;
 using ::testing::EndsWith;
@@ -164,7 +165,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   EXPECT_THAT(actual_report->query, HasSubstr("os_version=7.20.1"));
 #endif
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
-  // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
+  // is only defined for non-MAC POSIX systems. TODO(crbug.com/40146362):
   // Get this info for non-POSIX platforms.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   EXPECT_THAT(actual_report->query, HasSubstr("prod=Chrome_ChromeOS"));
@@ -186,7 +187,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   report.debug_id = "ABC:123";
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
-  report.window_type = WindowType::kSystemWebApp;
+  report.window_type = JavaScriptErrorReport::WindowType::kSystemWebApp;
   report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
 
   SendErrorReport(std::move(report));
@@ -232,7 +233,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   EXPECT_THAT(actual_report->query, HasSubstr("os_version=7.20.1"));
 #endif
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
-  // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
+  // is only defined for non-MAC POSIX systems. TODO(crbug.com/40146362):
   // Get this info for non-POSIX platforms.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   EXPECT_THAT(actual_report->query, HasSubstr("browser_version=1.2.3.4"));
@@ -598,14 +599,17 @@ static std::string UploadInfoVectorToString(
     } else {
       result += ", ";
     }
-    base::StrAppend(&result,
-                    {"{state ", UploadInfoStateToString(upload->state),
-                     ", upload_id ", upload->upload_id, ", upload_time ",
-                     base::NumberToString(upload->upload_time.ToTimeT()),
-                     ", local_id ", upload->local_id, ", capture_time ",
-                     base::NumberToString(upload->capture_time.ToTimeT()),
-                     ", source ", upload->source, ", file size ",
-                     base::UTF16ToUTF8(upload->file_size), "}"});
+    auto file_size =
+        upload->file_size.has_value()
+            ? base::UTF16ToUTF8(ui::FormatBytes(*upload->file_size))
+            : "";
+    base::StrAppend(
+        &result, {"{state ", UploadInfoStateToString(upload->state),
+                  ", upload_id ", upload->upload_id, ", upload_time ",
+                  base::NumberToString(upload->upload_time.ToTimeT()),
+                  ", local_id ", upload->local_id, ", capture_time ",
+                  base::NumberToString(upload->capture_time.ToTimeT()),
+                  ", source ", upload->source, ", file size ", file_size, "}"});
   }
   result += "]";
   return result;

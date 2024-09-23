@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/lottie/animation.h"
 
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +38,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/lottie/animation_observer.h"
@@ -190,7 +197,7 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
   ~TestSkottieFrameDataProvider() override = default;
 
   scoped_refptr<ImageAsset> LoadImageAsset(
-      base::StringPiece resource_id,
+      std::string_view resource_id,
       const base::FilePath& resource_path,
       const std::optional<gfx::Size>& size) override {
     auto new_asset = base::MakeRefCounted<ImageAssetImpl>();
@@ -219,7 +226,7 @@ class AnimationTest : public testing::Test {
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(
         gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
-    skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+    skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
         base::as_bytes(base::make_span(kData, std::strlen(kData))));
     animation_ = std::make_unique<Animation>(skottie_);
   }
@@ -338,7 +345,7 @@ class AnimationWithImageAssetsTest : public AnimationTest {
 };
 
 TEST_F(AnimationTest, InitializationAndLoadingData) {
-  skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+  skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
@@ -346,7 +353,7 @@ TEST_F(AnimationTest, InitializationAndLoadingData) {
   EXPECT_EQ(animation_->GetAnimationDuration(), kAnimationDuration);
   EXPECT_TRUE(IsStopped());
 
-  skottie_ = cc::SkottieWrapper::CreateNonSerializable(
+  skottie_ = cc::SkottieWrapper::UnsafeCreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
   animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
@@ -401,6 +408,34 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
   EXPECT_TRUE(HasAnimationEnded());
   EXPECT_TRUE(observer.animation_cycle_ended());
   IsAllSameColor(SK_ColorBLUE, canvas()->GetBitmap());
+}
+
+TEST_F(AnimationTest, ReducedAnimations) {
+  // This test ensures that reduced animations only affects the rendering of the
+  // animation, and has no side effects on the events or reporting of progress.
+  TestAnimationObserver observer(animation_.get());
+  gfx::Animation::SetPrefersReducedMotionForTesting(true);
+
+  AdvanceClock(base::Milliseconds(300));
+
+  EXPECT_TRUE(IsStopped());
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  IsAllSameColor(SK_ColorGREEN, canvas()->GetBitmap());
+  constexpr auto kAdvance = base::Milliseconds(50);
+  AdvanceClock(kAdvance);
+
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  IsAllSameColor(SK_ColorGREEN, canvas()->GetBitmap());
+
+  // Advance the clock to the end of the animation.
+  constexpr auto kAdvanceToEnd =
+      kAnimationDuration - kAdvance + base::Milliseconds(1);
+  AdvanceClock(kAdvanceToEnd);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  // The frame should not change.
+  IsAllSameColor(SK_ColorGREEN, canvas()->GetBitmap());
 }
 
 TEST_F(AnimationTest, StopLinearAnimation) {

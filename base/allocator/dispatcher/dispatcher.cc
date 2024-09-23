@@ -5,18 +5,18 @@
 #include "base/allocator/dispatcher/dispatcher.h"
 
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #if DCHECK_IS_ON()
 #include <atomic>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_hooks.h"
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_hooks.h"
 #endif
 
 namespace base::allocator::dispatcher {
@@ -51,13 +51,13 @@ struct Dispatcher::Impl {
   // connected. This way we prevent notifications although no observers are
   // present.
   static void ConnectToEmitters(const internal::DispatchData& dispatch_data) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
       allocator_shim::InsertAllocatorDispatch(allocator_dispatch);
     }
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
     {
       auto* const allocation_hook = dispatch_data.GetAllocationObserverHook();
       auto* const free_hook = dispatch_data.GetFreeObserverHook();
@@ -70,14 +70,14 @@ struct Dispatcher::Impl {
   }
 
   static void DisconnectFromEmitters(internal::DispatchData& dispatch_data) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
       allocator_shim::RemoveAllocatorDispatchForTesting(
           allocator_dispatch);  // IN-TEST
     }
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
     partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
 #endif
   }

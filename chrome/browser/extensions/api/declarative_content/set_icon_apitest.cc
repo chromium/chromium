@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -11,6 +13,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -70,8 +73,9 @@ class SetIconAPITest : public ExtensionApiTest {
 )");
     ExtensionTestMessageListener ready("ready");
     const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
-    if (!extension)
+    if (!extension) {
       return nullptr;
+    }
 
     // Wait for declarative rules to be set up.
     profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
@@ -153,7 +157,9 @@ class SetIconAPIPrerenderingTest : public SetIconAPITest {
   ~SetIconAPIPrerenderingTest() override = default;
 
  protected:
-  int Prerender(const GURL& url) { return prerender_helper_.AddPrerender(url); }
+  content::FrameTreeNodeId Prerender(const GURL& url) {
+    return prerender_helper_.AddPrerender(url);
+  }
   void Activate(const GURL& url) { prerender_helper_.NavigatePrimaryPage(url); }
 
  private:
@@ -186,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(SetIconAPIPrerenderingTest, Overview) {
   // Prerendering an unmatched page should not reset the icon.
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?hide");
-  int host_id = Prerender(kPrerenderingUrl);
-  ASSERT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, host_id);
+  content::FrameTreeNodeId host_id = Prerender(kPrerenderingUrl);
+  ASSERT_TRUE(host_id);
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // Activating the unmatched page should reset the icon.

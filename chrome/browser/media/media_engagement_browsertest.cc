@@ -266,7 +266,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   void EraseHistory() {
     history::URLRows urls;
     urls.push_back(history::URLRow(http_server_.GetURL("/")));
-    GetService()->OnURLsDeleted(
+    GetService()->OnHistoryDeletions(
         nullptr, history::DeletionInfo::ForUrls(urls, std::set<GURL>()));
   }
 
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// TODO(crbug.com/1177113) Re-enable test
+// TODO(crbug.com/40748282) Re-enable test
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DISABLED_DoNotRecordEngagement_PlaybackStopped) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, SessionNewTabCrossOrigin) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1498676) Flaky on Mac.
+// TODO(crbug.com/40939686) Flaky on Mac.
 #define MAYBE_SessionMultipleTabsClosingParent \
   DISABLED_SessionMultipleTabsClosingParent
 #else
@@ -825,8 +825,9 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreThirdPartyCookieDeprecationBrowserTest,
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager->StartPrefetchingFromOmnibox(
-          url, storage_namespace, gfx::Size(640, 480), nullptr);
+      no_state_prefetch_manager->AddSameOriginSpeculation(
+          url, storage_namespace, gfx::Size(640, 480),
+          url::Origin::Create(url));
 
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
@@ -1002,8 +1003,17 @@ class MediaEngagementContentsObserverPrerenderBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
-                       DoNotSendEngagementLevelToRenderFrameInPrerendering) {
+// Flaky on Linux: http://crbug.com/325530046
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering \
+  DISABLED_DoNotSendEngagementLevelToRenderFrameInPrerendering
+#else
+#define MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering \
+  DoNotSendEngagementLevelToRenderFrameInPrerendering
+#endif
+IN_PROC_BROWSER_TEST_F(
+    MediaEngagementContentsObserverPrerenderBrowserTest,
+    MAYBE_DoNotSendEngagementLevelToRenderFrameInPrerendering) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL& initial_url = embedded_test_server()->GetURL("/empty.html");
@@ -1032,7 +1042,8 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
 
   // Loads a page in a prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  const int host_id = prerender_helper().AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   MockAutoplayConfigurationClient prerendered_client;
@@ -1081,8 +1092,16 @@ class MediaEngagementContentsObserverFencedFrameBrowserTest
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
+// TODO(crbug.com/349253812): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  DISABLED_SendEngagementLevelToRenderFrameOnFencedFrame
+#else
+#define MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame \
+  SendEngagementLevelToRenderFrameOnFencedFrame
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
-                       SendEngagementLevelToRenderFrameOnFencedFrame) {
+                       MAYBE_SendEngagementLevelToRenderFrameOnFencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL& initial_url =

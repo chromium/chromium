@@ -23,17 +23,17 @@ This Package is Auto-Rolled:
    trigger it if you need it sooner:
    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
  * New packages are rolled automatically by:
-   https://autoroll.skia.org/r/jdk-chromium
+   https://skia-autoroll.corp.goog/r/jdk-chromium
 
 To roll to a new JDK major version:
  * Test locally that builds (with Errorprone enabled) work.
- * Get confiramtion from chops-source-team@google.com that Kythe supports the new version.
+ * Get confirmation from chops-source-team@google.com that Kythe supports the new version.
+ * Pause the auto-roller (via the web UI)
  * Change the package in 3pp/fetch.py
- * Pause the auto-roller
  * Wait for the 3pp packager to create a new package
- * Land a manual roll:
-   * Update Instance ID in //DEPS
-   * Update Version: at the top of this file.
+ * Land a manual roll by:
+   * Updating Instance ID in //DEPS
+   * Updating Version: at the top of this file.
 
 Local Modifications:
 None

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.language.settings;
 import android.content.Context;
 
 import org.chromium.chrome.browser.language.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 
 import java.util.Collection;
@@ -19,7 +20,7 @@ import java.util.Collection;
 public class NeverTranslateListFragment extends LanguageItemListFragment {
     @Override
     protected LanguageItemListFragment.ListDelegate makeFragmentListDelegate() {
-        return new ListDelegate();
+        return new ListDelegate(getProfile());
     }
 
     @Override
@@ -58,12 +59,12 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected void onLanguageAdded(String code) {
-        TranslateBridge.setLanguageBlockedState(code, true);
+        TranslateBridge.setLanguageBlockedState(getProfile(), code, true);
     }
 
     @Override
     protected void onLanguageRemoved(String code) {
-        TranslateBridge.setLanguageBlockedState(code, false);
+        TranslateBridge.setLanguageBlockedState(getProfile(), code, false);
     }
 
     /**
@@ -71,14 +72,20 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
      * to make the summary text and launch an Intent to this Fragment.
      */
     public static class ListDelegate implements LanguageItemListFragment.ListDelegate {
-        @Override
-        public Collection<LanguageItem> getLanguageItems() {
-            return LanguagesManager.getInstance().getNeverTranslateLanguageItems();
+        private final Profile mProfile;
+
+        public ListDelegate(Profile profile) {
+            mProfile = profile;
         }
 
         @Override
-        public String getFragmentClassName() {
-            return NeverTranslateListFragment.class.getName();
+        public Collection<LanguageItem> getLanguageItems() {
+            return LanguagesManager.getForProfile(mProfile).getNeverTranslateLanguageItems();
+        }
+
+        @Override
+        public Class<NeverTranslateListFragment> getFragmentClass() {
+            return NeverTranslateListFragment.class;
         }
     }
 }

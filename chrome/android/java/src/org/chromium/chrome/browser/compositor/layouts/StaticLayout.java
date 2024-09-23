@@ -13,9 +13,10 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -27,14 +28,15 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -44,9 +46,9 @@ import java.util.Collections;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
- * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the
- * {@link #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab}
- * until that {@link Tab} is ready to be shown.
+ * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the {@link
+ * #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab} until that
+ * {@link Tab} is ready to be shown.
  */
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
@@ -55,6 +57,7 @@ public class StaticLayout extends Layout {
     private static final int HIDE_DURATION_MS = 500;
 
     private boolean mHandlesTabLifecycles;
+    private boolean mNeedsOffsetTag;
 
     private class UnstallRunnable implements Runnable {
         @Override
@@ -167,9 +170,15 @@ public class StaticLayout extends Layout {
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             StaticTabSceneLayer testSceneLayer) {
         super(context, updateHost, renderHost);
+
         mContext = context;
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         // Only handle tab lifecycle on tablets.
-        mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        mHandlesTabLifecycles = isTablet;
+        // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
+        // and the tag would have been set on the TabStripSceneLayer already.
+        mNeedsOffsetTag = !isTablet;
+
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
 
@@ -205,15 +214,50 @@ public class StaticLayout extends Layout {
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
+                    public void onControlsConstraintsChanged(
+                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+                            @BrowserControlsState int constraints) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
+                            // and the tag would have been set on the TabStripSceneLayer already.
+                            if (mNeedsOffsetTag) {
+                                mModel.set(
+                                        LayoutTab.CONTENT_OFFSET_TAG,
+                                        offsetTagsInfo.getTopControlsOffsetTag());
+                            }
+
+                            // With BCIV enabled, scrolling will not update the content offset of
+                            // the browser's compositor frame. If we transition to a HIDDEN state
+                            // while the controls are already scrolled offscreen, then there is no
+                            // need to move the top controls, which means the renderer will not
+                            // notify the browser to move them. We set the content offset here so
+                            // the browser will submit a compositor frame with the correct offset.
+                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
+                            if (constraints == BrowserControlsState.HIDDEN
+                                    && contentOffset
+                                            == mBrowserControlsStateProvider
+                                                    .getTopControlsMinHeight()) {
+                                mModel.set(LayoutTab.CONTENT_OFFSET, contentOffset);
+                            }
+                        }
+                    }
+
+                    @Override
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
-                        mModel.set(
-                                LayoutTab.CONTENT_OFFSET,
-                                mBrowserControlsStateProvider.getContentOffset());
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                                || needsAnimate
+                                || isVisibilityForced) {
+                            mModel.set(
+                                    LayoutTab.CONTENT_OFFSET,
+                                    mBrowserControlsStateProvider.getContentOffset());
+                        }
                     }
                 };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsStateProviderObserver);
@@ -236,7 +280,7 @@ public class StaticLayout extends Layout {
         assert mTabModelSelector == null : "The TabModelSelector should set at most once";
         super.setTabModelSelector(tabModelSelector);
 
-        // TODO(crbug.com/1070281): Investigating to use ActivityTabProvider instead.
+        // TODO(crbug.com/40126259): Investigating to use ActivityTabProvider instead.
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
@@ -291,6 +335,13 @@ public class StaticLayout extends Layout {
                     @Override
                     public void onDidChangeThemeColor(Tab tab, int color) {
                         updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                    }
+
+                    @Override
+                    public void didBackForwardTransitionAnimationChange() {
+                        updateStaticTab(
+                                tabModelSelector.getCurrentTab(),
+                                /* skipUpdateVisibleIds= */ false);
                     }
                 };
     }
@@ -355,7 +406,8 @@ public class StaticLayout extends Layout {
     }
 
     private void requestFocus(Tab tab) {
-        // TODO(crbug/1395495): Investigating guarded removal of this behavior (requesting focus on
+        // TODO(crbug.com/40249125): Investigating guarded removal of this behavior (requesting
+        // focus on
         // a tab) since it may no longer be relevant.
         // We will restrict avoidance of tab focus request only on tablet devices, since this is
         // known to cause regressions on phones - see crbug.com/1471887 for details.
@@ -452,15 +504,22 @@ public class StaticLayout extends Layout {
 
     // Whether the tab is ready to display or it should be faded in as it loads.
     private boolean shouldStall(Tab tab) {
-        return (tab.isFrozen() || tab.needsReload())
-                && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
+        return (tab.isFrozen() || tab.needsReload()) && !tab.isNativePage();
     }
 
     private boolean canUseLiveTexture(Tab tab) {
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return false;
+
         final GURL url = tab.getUrl();
         final boolean isNativePage =
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-        return tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
+        final boolean isBFScreenshotDrawing =
+                isNativePage && tab.isDisplayingBackForwardAnimation();
+        assert !isBFScreenshotDrawing
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                : "Must not draw bf screenshot if back forward transition is disabled";
+        return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
     }
 
     @Override

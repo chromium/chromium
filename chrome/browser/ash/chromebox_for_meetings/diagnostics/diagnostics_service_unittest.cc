@@ -17,13 +17,13 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,7 +46,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
   void SetUp() override {
     cros_healthd::FakeCrosHealthd::Initialize();
     CfmHotlineClient::InitializeFake();
-    ServiceConnection::UseFakeServiceConnectionForTesting(
+    chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     DiagnosticsService::Initialize();
   }
@@ -104,11 +104,11 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
   }
 
  protected:
-  FakeCfmServiceContext context_;
+  chromeos::cfm::FakeCfmServiceContext context_;
   mojo::Remote<mojom::MeetDevicesDiagnostics> diagnostics_remote_;
   mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
   mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
-  FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::cfm::FakeServiceConnectionImpl fake_service_connection_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };

@@ -5,40 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_OBJECT_H_
 
-#include <dawn/dawn_proc_table.h>
-#include <dawn/webgpu.h>
-
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#define DAWN_OBJECTS                          \
-  X(BindGroup, bindGroup)                     \
-  X(BindGroupLayout, bindGroupLayout)         \
-  X(Buffer, buffer)                           \
-  X(CommandBuffer, commandBuffer)             \
-  X(CommandEncoder, commandEncoder)           \
-  X(ComputePassEncoder, computePassEncoder)   \
-  X(ComputePipeline, computePipeline)         \
-  X(Device, device)                           \
-  X(ExternalTexture, externalTexture)         \
-  X(Instance, instance)                       \
-  X(PipelineLayout, pipelineLayout)           \
-  X(QuerySet, querySet)                       \
-  X(Queue, queue)                             \
-  X(RenderBundle, renderBundle)               \
-  X(RenderBundleEncoder, renderBundleEncoder) \
-  X(RenderPassEncoder, renderPassEncoder)     \
-  X(RenderPipeline, renderPipeline)           \
-  X(Sampler, sampler)                         \
-  X(ShaderModule, shaderModule)               \
-  X(Surface, surface)                         \
-  X(Texture, texture)                         \
-  X(TextureView, textureView)
 
 namespace gpu {
 namespace webgpu {
@@ -54,44 +28,7 @@ namespace scheduler {
 class EventLoop;
 }  // namespace scheduler
 
-template <typename T>
-struct WGPUReleaseFn;
-
-#define X(Name, name)                                         \
-  template <>                                                 \
-  struct WGPUReleaseFn<WGPU##Name> {                          \
-    static constexpr void (*DawnProcTable::*fn)(WGPU##Name) = \
-        &DawnProcTable::name##Release;                        \
-  };
-DAWN_OBJECTS
-#undef X
-
 class GPUDevice;
-
-// RAII tracker for known memory allocations outside of V8, informing V8 using
-// AdjustAmountOfExternalAllocatedMemory. This causes V8 to collect garbage
-// more often when it knows the footprint of V8-managed objects is large.
-//
-// - It is OK for the tracked size to be an estimate.
-// - It is OK to update the tracked size dynamically/asynchronously.
-// - It is OK to use this for CPU memory allocated in another process.
-// - It is NOT OK to use this for VRAM allocations. This may cause GC to
-//   trigger too often: GC is trying to manage CPU memory pressure, but freeing
-//   VRAM allocations may or may not reduce CPU memory pressure.
-class ExternalMemoryTracker final {
- public:
-  // Non-copyable/non-movable
-  ExternalMemoryTracker(const ExternalMemoryTracker&) = delete;
-  ExternalMemoryTracker& operator=(const ExternalMemoryTracker&) = delete;
-
-  ExternalMemoryTracker() = default;
-  ~ExternalMemoryTracker();
-
-  void SetCurrentSize(size_t newSize);
-
- private:
-  int64_t size_ = 0;
-};
 
 // This class allows objects to hold onto a DawnControlClientHolder.
 // The DawnControlClientHolder is used to hold the WebGPUInterface and keep
@@ -100,15 +37,13 @@ class ExternalMemoryTracker final {
 class DawnObjectBase {
  public:
   explicit DawnObjectBase(
-      scoped_refptr<DawnControlClientHolder> dawn_control_client);
+      scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      const String& label);
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const {
     return dawn_control_client_->GetContextProviderWeakPtr();
-  }
-  const DawnProcTable& GetProcs() const {
-    return dawn_control_client_->GetProcs();
   }
 
   // Ensure commands up until now on this object's parent device are flushed by
@@ -131,10 +66,10 @@ class DawnObjectBase {
 
 class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
  public:
-  explicit DawnObjectImpl(GPUDevice* device);
+  explicit DawnObjectImpl(GPUDevice* device, const String& label);
   ~DawnObjectImpl() override;
 
-  WGPUDevice GetDeviceHandle();
+  const wgpu::Device& GetDeviceHandle() const;
   GPUDevice* device() { return device_.Get(); }
 
   void Trace(Visitor* visitor) const override;
@@ -143,68 +78,57 @@ class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
   Member<GPUDevice> device_;
 };
 
-template <typename Handle>
+template <typename Obj>
 class DawnObject : public DawnObjectImpl {
  public:
-  DawnObject(GPUDevice* device, Handle handle)
-      : DawnObjectImpl(device),
-        handle_(handle),
-        device_handle_(GetDeviceHandle()) {
-    // All WebGPU Blink objects created directly or by the Device hold a
-    // Member<GPUDevice> which keeps the device alive. However, this does not
-    // enforce that the GPUDevice is finalized after all objects referencing it.
-    // Add an extra ref in this constructor, and a release in the destructor to
-    // ensure that the Dawn device is destroyed last.
-    // TODO(enga): Investigate removing Member<GPUDevice>.
-    GetProcs().deviceReference(device_handle_);
-  }
+  DawnObject(GPUDevice* device, Obj handle, const String& label)
+      : DawnObjectImpl(device, label),
+        device_handle_(GetDeviceHandle()),
+        handle_(std::move(handle)) {}
 
-  ~DawnObject() override {
-    DCHECK(handle_);
-
-    // Note: The device is released last because all child objects must be
-    // destroyed first.
-    (GetProcs().*WGPUReleaseFn<Handle>::fn)(handle_);
-    GetProcs().deviceRelease(device_handle_);
-  }
-
-  Handle GetHandle() const { return handle_; }
+  const Obj& GetHandle() const { return handle_; }
 
  private:
-  Handle const handle_;
-  WGPUDevice device_handle_;
+  // All WebGPU Blink objects created directly or by the Device hold a
+  // Member<GPUDevice> which keeps the device alive. However, this does not
+  // enforce that the GPUDevice is finalized after all objects referencing it.
+  // Declare the device as a member first before the object to ensure that the
+  // Dawn device is destroyed last.
+  // TODO(enga): Investigate removing Member<GPUDevice>.
+  const wgpu::Device device_handle_;
+  const Obj handle_;
 };
 
 template <>
-class DawnObject<WGPUDevice> : public DawnObjectBase {
+class DawnObject<wgpu::Device> : public DawnObjectBase {
  public:
   DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             WGPUDevice handle)
-      : DawnObjectBase(dawn_control_client), handle_(handle) {}
-  ~DawnObject() { GetProcs().deviceRelease(handle_); }
+             wgpu::Device handle,
+             const String& label)
+      : DawnObjectBase(dawn_control_client, label),
+        handle_(std::move(handle)) {}
 
-  WGPUDevice GetHandle() const { return handle_; }
+  const wgpu::Device& GetHandle() const { return handle_; }
 
  private:
-  WGPUDevice const handle_;
+  const wgpu::Device handle_;
 };
 
 template <>
-class DawnObject<WGPUAdapter> : public DawnObjectBase {
+class DawnObject<wgpu::Adapter> : public DawnObjectBase {
  public:
   DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             WGPUAdapter handle)
-      : DawnObjectBase(dawn_control_client), handle_(handle) {}
-  ~DawnObject() { GetProcs().adapterRelease(handle_); }
+             wgpu::Adapter handle,
+             const String& label)
+      : DawnObjectBase(dawn_control_client, label),
+        handle_(std::move(handle)) {}
 
-  WGPUAdapter GetHandle() const { return handle_; }
+  const wgpu::Adapter& GetHandle() const { return handle_; }
 
  private:
-  WGPUAdapter const handle_;
+  const wgpu::Adapter handle_;
 };
 
 }  // namespace blink
-
-#undef DAWN_OBJECTS
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_OBJECT_H_

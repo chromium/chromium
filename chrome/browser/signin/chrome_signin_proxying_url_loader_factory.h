@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -39,6 +40,7 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // Constructor public for testing purposes. New instances should be created
   // by calling MaybeProxyRequest().
   ProxyingURLLoaderFactory(std::unique_ptr<HeaderModificationDelegate> delegate,
+                           const net::IsolationInfo& factory_isolation_info,
                            content::WebContents::Getter web_contents_getter,
                            network::URLLoaderFactoryBuilder& factory_builder,
                            DisconnectCallback on_disconnect);
@@ -55,6 +57,7 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       content::RenderFrameHost* render_frame_host,
       bool is_navigation,
       const url::Origin& request_initiator,
+      const net::IsolationInfo& factory_isolation_info,
       network::URLLoaderFactoryBuilder& factory_builder);
 
   // network::mojom::URLLoaderFactory:
@@ -84,6 +87,10 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   std::unique_ptr<HeaderModificationDelegate> delegate_;
   content::WebContents::Getter web_contents_getter_;
+  // Top frame origin associated with this factory, if any. If set, takes
+  // precedence over origin provided in
+  // ResourceRequest::TrustedParams::IsolationInfo field of individual requests.
+  std::optional<url::Origin> top_frame_origin_;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   std::set<std::unique_ptr<InProgressRequest>, base::UniquePtrComparator>

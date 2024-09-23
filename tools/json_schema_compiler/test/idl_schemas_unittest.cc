@@ -6,7 +6,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/idl_basics.h"
 #include "tools/json_schema_compiler/test/idl_object_types.h"
@@ -28,6 +31,68 @@ namespace Function9 = test::api::idl_basics::Function9;
 namespace Function10 = test::api::idl_basics::Function10;
 namespace Function11 = test::api::idl_basics::Function11;
 namespace ObjectFunction1 = test::api::idl_object_types::ObjectFunction1;
+
+namespace {
+
+// Parses `idl_basics::ManifestKeys` from the provided `key_values`, using
+// stub values for any omitted top-level keys.
+bool ParseManifestKeys(const std::string& key_values,
+                       test::api::idl_basics::ManifestKeys& manifest_keys,
+                       std::u16string& error) {
+  // ManifestKeys specify a number of different required keys. In order to allow
+  // tests to focus on testing one particular value, rather than all of them,
+  // we provide a default "stub" with valid values. Any values passed into
+  // `key_values` will overwrite the values in this stub.
+  static constexpr char kStubValuesStr[] =
+      R"({
+           "key_str": "my key",
+           "key_ref": {"x": "my ref"},
+           "inline_choice": 3,
+           "choice_with_arrays": {"entries": "choice"},
+           "choice_with_optional": {"entries": "choice"}
+         })";
+  base::Value::Dict dict_value = base::test::ParseJsonDict(kStubValuesStr);
+  base::Value::Dict provided_values = base::test::ParseJsonDict(key_values);
+
+  // Annoying: `base::Value::Dict` values are recursively merged in
+  // `base::Value::Dict::Merge()`, rather than overwritten. Remove them from
+  // the `dict_value` if a new value was provided for them.
+  if (provided_values.contains("choice_with_arrays")) {
+    dict_value.Remove("choice_with_arrays");
+  }
+  if (provided_values.contains("choice_with_optional")) {
+    dict_value.Remove("choice_with_optional");
+  }
+  dict_value.Merge(std::move(provided_values));
+
+  return test::api::idl_basics::ManifestKeys::ParseFromDictionary(
+      dict_value, manifest_keys, error);
+}
+
+// Parses `idl_basics::ManifestKeys` from the provided `key_values`, expecting
+// success and returning the parsed value.
+test::api::idl_basics::ManifestKeys ParseManifestKeysAndReturnValue(
+    const std::string& key_values) {
+  test::api::idl_basics::ManifestKeys manifest_keys;
+  std::u16string error;
+  bool result = ParseManifestKeys(key_values, manifest_keys, error);
+  EXPECT_TRUE(result) << "Parsing failed.\nValue:\n"
+                      << key_values << "\nError: " << base::UTF16ToUTF8(error);
+
+  return manifest_keys;
+}
+
+// Attempts to parse `idl_basics::ManifestKeys` from the provided `key_values`,
+// expecting failure and returning the encountered parse error.
+std::string ParseManifestKeysAndReturnError(const std::string& key_values) {
+  test::api::idl_basics::ManifestKeys manifest_keys;
+  std::u16string error;
+  bool result = ParseManifestKeys(key_values, manifest_keys, error);
+  EXPECT_FALSE(result) << "Parsing unexpected succeeded";
+  return result ? "<no error>" : base::UTF16ToUTF8(error);
+}
+
+}  // namespace
 
 TEST(IdlCompiler, Basics) {
   // Test MyType1.
@@ -203,6 +268,125 @@ TEST(IdlCompiler, ObjectTypes) {
       params->icon.additional_properties.FindString("hello");
   ASSERT_TRUE(tmp);
   EXPECT_EQ("world", *tmp);
+}
+
+// Tests using IDL "choices" in manifest key-specified types.
+TEST(IdlCompiler, ManifestKeys_Choices) {
+  {
+    // String entry for an inline choice.
+    static constexpr char kManifestKeys[] =
+        R"({"inline_choice": "string value"})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ("string value", manifest_keys.inline_choice.as_string);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_integer);
+  }
+
+  {
+    // Single entry for non-optional choices.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_arrays": {"entries": "single entry"}})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ("single entry",
+              manifest_keys.choice_with_arrays.entries.as_string);
+    EXPECT_EQ(std::nullopt,
+              manifest_keys.choice_with_arrays.entries.as_strings);
+  }
+
+  {
+    // Single entry for optional choices.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_optional": {"entries": "single entry"}})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    ASSERT_TRUE(manifest_keys.choice_with_optional.entries);
+    EXPECT_EQ("single entry",
+              manifest_keys.choice_with_optional.entries->as_string);
+    EXPECT_EQ(std::nullopt,
+              manifest_keys.choice_with_optional.entries->as_strings);
+  }
+
+  {
+    // Integer entry for an inline choice.
+    static constexpr char kManifestKeys[] = R"({"inline_choice": 42})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_string);
+    EXPECT_EQ(42, manifest_keys.inline_choice.as_integer);
+  }
+
+  {
+    // List entry for non-optional choices.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_arrays": {"entries": ["entry1", "entry2"]}})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ(std::nullopt, manifest_keys.choice_with_arrays.entries.as_string);
+    EXPECT_THAT(*manifest_keys.choice_with_arrays.entries.as_strings,
+                testing::ElementsAre("entry1", "entry2"));
+  }
+
+  {
+    // List entry for optional choices.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_optional": {"entries": ["entry1", "entry2"]}})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    ASSERT_TRUE(manifest_keys.choice_with_optional.entries);
+    EXPECT_EQ(std::nullopt,
+              manifest_keys.choice_with_optional.entries->as_string);
+    EXPECT_THAT(*manifest_keys.choice_with_optional.entries->as_strings,
+                testing::ElementsAre("entry1", "entry2"));
+  }
+
+  {
+    // Omitted optional choice.
+    static constexpr char kManifestKeys[] = R"({"choice_with_optional": { }})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ(std::nullopt, manifest_keys.choice_with_optional.entries);
+  }
+
+  {
+    // Invalid entry for an inline choice.
+    static constexpr char kManifestKeys[] = R"({"inline_choice": ["a", "b"]})";
+    EXPECT_EQ(
+        "Error at key 'inline_choice'. "
+        "Provided value matches none of the allowed options.",
+        ParseManifestKeysAndReturnError(kManifestKeys));
+  }
+
+  {
+    // Error: Invalid entry for `choice_with_arrays`.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_arrays": {"entries": 3}})";
+
+    EXPECT_EQ(
+        "Error at key 'choice_with_arrays.entries'. "
+        "Provided value matches none of the allowed options.",
+        ParseManifestKeysAndReturnError(kManifestKeys));
+  }
+
+  {
+    // Error: Invalid entry for `choice_with_optional`.
+    static constexpr char kManifestKeys[] =
+        R"({"choice_with_optional": {"entries": 3}})";
+
+    EXPECT_EQ(
+        "Error at key 'choice_with_optional.entries'. "
+        "Provided value matches none of the allowed options.",
+        ParseManifestKeysAndReturnError(kManifestKeys));
+  }
+
+  {
+    // Error: Omitted non-optional choices value.
+    static constexpr char kManifestKeys[] = R"({"choice_with_arrays": { }})";
+
+    EXPECT_EQ(
+        "Error at key 'choice_with_arrays.entries'. Manifest key is required.",
+        ParseManifestKeysAndReturnError(kManifestKeys));
+  }
 }
 
 TEST(IdlCompiler, PropertyValues) {

@@ -8,14 +8,20 @@
 #include <map>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
+#include "ash/wm/desks/desks_test_api.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
@@ -26,7 +32,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -59,6 +64,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
@@ -83,11 +89,13 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash::full_restore {
@@ -173,7 +181,7 @@ void CreateAndSaveWindowInfo(
     const base::Uuid& desk_uuid,
     const gfx::Rect& current_bounds,
     chromeos::WindowStateType window_state_type,
-    std::optional<ui::WindowShowState> pre_minimized_show_state,
+    std::optional<ui::mojom::WindowShowState> pre_minimized_show_state,
     std::optional<uint32_t> snap_percentage) {
   ::app_restore::WindowInfo window_info;
   window_info.window = window;
@@ -202,7 +210,7 @@ void CreateAndSaveWindowInfo(
     const base::Uuid& desk_uuid,
     const gfx::Rect& current_bounds,
     chromeos::WindowStateType window_state_type,
-    std::optional<ui::WindowShowState> pre_minimized_show_state,
+    std::optional<ui::mojom::WindowShowState> pre_minimized_show_state,
     std::optional<uint32_t> snap_percentage) {
   // A window is needed for `SaveWindowInfo()`, but all it needs is a layer and
   // `kWindowIdKey` to be set. `window` needs to be alive when save is called
@@ -241,66 +249,59 @@ Browser* GetBrowserForWindowId(int32_t window_id) {
   return nullptr;
 }
 
-void ClickButton(const views::Button* button) {
-  ASSERT_TRUE(button);
-  ASSERT_TRUE(button->GetVisible());
+void ClickView(const views::View* view) {
+  ASSERT_TRUE(view);
+  ASSERT_TRUE(view->GetVisible());
   aura::Window* root_window =
-      button->GetWidget()->GetNativeWindow()->GetRootWindow();
+      view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
-  event_generator.MoveMouseToInHost(button->GetBoundsInScreen().CenterPoint());
+  event_generator.MoveMouseToInHost(view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
 }
 
 void ClickSaveDeskAsTemplateButton() {
-  ClickButton(GetSaveDeskAsTemplateButton());
+  ClickView(GetSaveDeskAsTemplateButton());
   // Wait for the template to be stored in the model.
   WaitForSavedDeskUI();
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
-  SendKey(ui::VKEY_RETURN);
+  ui::test::EventGenerator event_generator(Shell::GetPrimaryRootWindow());
+  SendKey(ui::VKEY_RETURN, &event_generator);
+}
+
+void SelectSaveDeskAsTemplateMenuItem(int index) {
+  views::MenuItemView* menu_item =
+      ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+          ash::Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+          index, ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
+  ASSERT_TRUE(menu_item);
+  ClickView(menu_item);
+
+  // Wait for the template to be stored in the model.
+  WaitForSavedDeskUI();
+
+  // Clicking the save template button selects the newly created template's name
+  // field. We can press enter or escape or click to select out of it.
+  ui::test::EventGenerator event_generator(Shell::GetPrimaryRootWindow());
+  SendKey(ui::VKEY_RETURN, &event_generator);
 }
 
 void ClickTemplateItem(int index) {
-  ClickButton(GetSavedDeskItemButton(/*index=*/0));
+  ClickView(GetSavedDeskItemButton(/*index=*/0));
 }
 
 }  // namespace
 
-class AppLaunchInfoSaveWaiter {
- public:
-  static void Wait(bool allow_save = true) {
-    ::full_restore::FullRestoreSaveHandler* save_handler =
-        ::full_restore::FullRestoreSaveHandler::GetInstance();
-
-    if (allow_save) {
-      save_handler->AllowSave();
-    }
-
-    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
-    if (timer->IsRunning()) {
-      // Simulate timeout, and the launch info is saved.
-      timer->FireNow();
-    }
-    content::RunAllTasksUntilIdle();
-
-    ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->profile_path_to_restore_data_.clear();
-  }
-};
-
-class FullRestoreAppLaunchHandlerBrowserTest
+class FullRestoreAppLaunchHandlerTestBase
     : public extensions::PlatformAppBrowserTest {
  public:
-  FullRestoreAppLaunchHandlerBrowserTest()
+  FullRestoreAppLaunchHandlerTestBase()
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesksTemplates},
-        /*disabled_features=*/{features::kDeskTemplateSync});
   }
-  ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
+  ~FullRestoreAppLaunchHandlerTestBase() override = default;
 
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
@@ -318,8 +319,9 @@ class FullRestoreAppLaunchHandlerBrowserTest
   }
 
   void CreateWebApp() {
-    auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_install_info->start_url = GURL("https://example.org");
+    auto web_app_install_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://example.org"));
     web_app::test::InstallWebApp(profile(), std::move(web_app_install_info));
   }
 
@@ -399,11 +401,24 @@ class FullRestoreAppLaunchHandlerBrowserTest
 
   void ResetRestoreForTesting() { scoped_restore_for_testing_.reset(); }
 
- private:
+ protected:
   ui::ScopedAnimationDurationScaleMode faster_animations_;
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FullRestoreAppLaunchHandlerBrowserTest
+    : public FullRestoreAppLaunchHandlerTestBase {
+ public:
+  FullRestoreAppLaunchHandlerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDesksTemplates,
+                              chromeos::features::
+                                  kOverviewSessionInitOptimizations},
+        /*disabled_features=*/{features::kDeskTemplateSync});
+  }
+  ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
@@ -459,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   SaveDefaultAppLaunchInfo();
   CreateAndSaveWindowInfo(kWindowId2, kDeskId, kDeskUuid, kCurrentBounds,
                           chromeos::WindowStateType::kMinimized,
-                          ui::SHOW_STATE_MAXIMIZED,
+                          ui::mojom::WindowShowState::kMaximized,
                           /*snap_percentage=*/std::nullopt);
 
   AppLaunchInfoSaveWaiter::Wait();
@@ -519,25 +534,6 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Verify there is a new browser launched.
   EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
-}
-
-IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
-                       FullRestoreMetrics) {
-  base::HistogramTester histogram_tester;
-
-  // Add app launch infos.
-  SaveBrowserAppLaunchInfo(kWindowId1);
-  SaveBrowserAppLaunchInfo(kWindowId2);
-  AppLaunchInfoSaveWaiter::Wait();
-
-  // Create FullRestoreAppLaunchHandler and launch the browser.
-  auto app_launch_handler =
-      std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
-  SetShouldRestore(app_launch_handler.get());
-  content::RunAllTasksUntilIdle();
-
-  histogram_tester.ExpectBucketCount("Apps.FullRestoreWindowCount", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
@@ -661,6 +657,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 // restore finishes.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndLaunchBrowserWithClickRestore) {
+  // TODO(http://b/328779923): This test tests clicking a notification that will
+  // not be shown if this feature is enabled. Remove this test once this feature
+  // can no longer be disabled.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   base::HistogramTester histogram_tester;
   size_t count = BrowserList::GetInstance()->size();
 
@@ -715,6 +718,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 // when |kShowPostRebootNotification| pref is set.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreWithPostRebootTitle) {
+  // TODO(http://b/328779923): This test tests checking a notification that will
+  // not be shown if forest feature is enabled. Remove this test once forest
+  // feature can no longer be disabled.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   base::HistogramTester histogram_tester;
   // Add the chrome browser launch info.
   SaveBrowserAppLaunchInfo(kWindowId1);
@@ -947,8 +957,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_EQ(kCurrentBounds, browser_bounds);
 }
 
-// TODO(crbug/1512721): Re-enable this test when the flakiness issue is fixed.
-// Test Lacros window properties and bounds are restored correctly.
+// TODO(crbug.com/41485298): Re-enable this test when the flakiness issue is
+// fixed. Test Lacros window properties and bounds are restored correctly.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        DISABLED_RestoreLacrosWindowProperties) {
   gfx::Size size(32, 32);
@@ -1037,7 +1047,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    SelectSaveDeskAsTemplateMenuItem(/*index=*/1);
+  } else {
+    ClickSaveDeskAsTemplateButton();
+  }
 
   ToggleOverview();
   WaitForOverviewExitAnimation();
@@ -1057,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   WaitForOverviewEnterAnimation();
 
   // Enter the saved desk library.
-  ClickButton(GetLibraryButton());
+  ClickView(GetLibraryButton());
   // Launch the first entry.
   ClickTemplateItem(/*index=*/0);
 
@@ -1087,6 +1101,43 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_LT(browser_from_template->window()->GetNativeWindow()->GetProperty(
                 ::app_restore::kRestoreWindowIdKey),
             -1);
+}
+
+class FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest
+    : public FullRestoreAppLaunchHandlerTestBase {
+ public:
+  FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFloatingWorkspaceV2,
+                              features::kDeskTemplateSync},
+        /*disabled_features=*/{});
+  }
+  ~FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest() override =
+      default;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest,
+    AddAppAndNotRestoreWithFloatingWorkspaceEnabled) {
+  // Add app launch infos.
+  SaveBrowserAppLaunchInfo(kWindowId1);
+  SaveDefaultAppLaunchInfo();
+  AppLaunchInfoSaveWaiter::Wait();
+
+  size_t count = BrowserList::GetInstance()->size();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
+
+  CreateWebApp();
+
+  content::RunAllTasksUntilIdle();
+
+  // Verify there is no new browser launched.
+  EXPECT_EQ(count, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(FindWebAppWindow());
 }
 
 class FullRestoreAppLaunchHandlerChromeAppBrowserTest
@@ -2199,7 +2250,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Capture the active desk as a template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    SelectSaveDeskAsTemplateMenuItem(/*index=*/2);
+  } else {
+    ClickSaveDeskAsTemplateButton();
+  }
   ToggleOverview();
   WaitForOverviewExitAnimation();
 
@@ -2210,7 +2265,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Launch the template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  ClickButton(GetLibraryButton());
+  ClickView(GetLibraryButton());
   ClickTemplateItem(/*index=*/0);
   ToggleOverview();
   WaitForOverviewExitAnimation();

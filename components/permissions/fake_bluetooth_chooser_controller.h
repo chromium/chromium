@@ -69,6 +69,12 @@ class FakeBluetoothChooserController : public ChooserController {
   std::u16string GetOption(size_t index) const override;
   bool IsConnected(size_t index) const override;
   bool IsPaired(size_t index) const override;
+  bool ShouldShowAdapterOffView() const override;
+  int GetAdapterOffMessageId() const override;
+  int GetTurnAdapterOnLinkTextMessageId() const override;
+  bool ShouldShowAdapterUnauthorizedView() const override;
+  int GetBluetoothUnauthorizedMessageId() const override;
+  int GetAuthorizeBluetoothLinkTextMessageId() const override;
   MOCK_METHOD0(RefreshOptions, void());
   MOCK_METHOD1(Select, void(const std::vector<size_t>& indices));
   MOCK_METHOD0(Cancel, void());

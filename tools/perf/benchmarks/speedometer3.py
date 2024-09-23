@@ -20,6 +20,8 @@ from page_sets import speedometer3_pages
 
 _PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
                               'speedometer')
+_ARCHIVE_DATA_FILE = 'data/crossbench_android_speedometer_3.0.json'
+_CLOUD_STORAGE_BUCKET = story.PARTNER_BUCKET
 
 
 class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
@@ -34,7 +36,16 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
   enable_systrace = False
   extra_chrome_categories = False
   enable_rcs = False
+  enable_details = False
   iteration_count = None
+  take_memory_measurement = False
+
+  def __init__(self,
+               archive_data_file=_ARCHIVE_DATA_FILE,
+               cloud_storage_bucket=_CLOUD_STORAGE_BUCKET):
+    super(_Speedometer3, self).__init__()
+    self.archive_data_file = archive_data_file
+    self.cloud_storage_bucket = cloud_storage_bucket
 
   @classmethod
   def GetStoryClass(cls):
@@ -55,7 +66,8 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
     story_set.AddStory(
         story_cls(story_set, should_filter_suites, filtered_suite_names,
-                  iteration_count))
+                  iteration_count, self.enable_details,
+                  self.take_memory_measurement))
     return story_set
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
@@ -63,6 +75,9 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
       return timeline_based_measurement.Options()
 
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter()
+
+    if self.take_memory_measurement:
+      cat_filter.AddDisabledByDefault('disabled-by-default-memory-infra')
 
     # "blink.console" is used for marking ranges in
     # cache_temperature.MarkTelemetryInternal.
@@ -95,15 +110,21 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--suite',
-                      type="string",
-                      help="Only runs suites that match regex provided")
-    parser.add_option('--enable-rcs',
-                      action="store_true",
-                      help="Enables runtime call stats")
-    parser.add_option('--iteration-count',
-                      type="int",
-                      help="Override the default number of iterations")
+    parser.add_argument('--suite',
+                        help='Only runs suites that match regex provided')
+    parser.add_argument('--enable-rcs',
+                        '--rcs',
+                        action='store_true',
+                        help='Enables runtime call stats')
+    parser.add_argument('--enable-details',
+                        '--details',
+                        action='store_true',
+                        help=('Enables detailed benchmark metrics '
+                              '(per line-item, iteration,...)'))
+    parser.add_argument('--iteration-count',
+                        '--iterations',
+                        type=int,
+                        help='Override the default number of iterations')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -119,6 +140,8 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
       cls.extra_chrome_categories = args.extra_chrome_categories
     if args.enable_rcs:
       cls.enable_rcs = True
+    if args.enable_details:
+      cls.enable_details = True
     if args.iteration_count:
       cls.iteration_count = args.iteration_count
 
@@ -174,14 +197,31 @@ class V8Speedometer3Future(Speedometer3):
 @benchmark.Info(emails=['omerkatz@chromium.org'],
                 component='Blink>JavaScript>GarbageCollection',
                 documentation_url='https://github.com/WebKit/Speedometer')
-class Speedometer3NoMinorMS(Speedometer3):
+class Speedometer3MinorMS(Speedometer3):
   """The latest Speedometer3 benchmark without the MinorMS flag.
 
   Shows the performance of Scavenger young generation GC in V8.
   """
   @classmethod
   def Name(cls):
-    return 'speedometer3-nominorms'
+    return 'speedometer3-minorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+
+
+@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer3.0')
+class Speedometer3Predictable(Speedometer3):
+  """The latest Speedometer3 benchmark with V8's `predictable` mode.
+
+  This should (hopefully) help reduce variance in the score.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer3-predictable'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags=--predictable')

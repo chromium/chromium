@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -60,8 +59,6 @@ public class PermissionPromptRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_MESSAGES)
                     .build();
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     public PermissionPromptRenderTest(boolean nightModeEnabled) {
         mNightModeEnabled = nightModeEnabled;
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -80,15 +77,14 @@ public class PermissionPromptRenderTest {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
-    private void testPrompt(boolean isOneTime) throws TimeoutException, IOException {
+    private void testPrompt(String goldenViewId) throws TimeoutException, IOException {
         mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
 
         mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
-                isOneTime ? "oneTimePrompt" : "regularPrompt");
+                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
     }
 
     @Test
@@ -101,18 +97,8 @@ public class PermissionPromptRenderTest {
 
         mPermissionRule.loadUrl(mPermissionRule.getURL(TEST_FILE));
 
-        testPrompt(/* isOneTime= */ false);
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
-                "initiate_getCurrentPosition()");
-
-        mPermissionRule.waitForDialogShownState(true);
-
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
-                "regularPrompt");
+        testPrompt(/* goldenViewId= */ "regularPrompt");
     }
-
-
 
     @Test
     @MediumTest
@@ -122,7 +108,38 @@ public class PermissionPromptRenderTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
-        testPrompt(/* isOneTime= */ true);
+        testPrompt(/* goldenViewId= */ "oneTimePrompt");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Prompt", "RenderTest"})
+    @CommandLineFlags.Add({
+        "enable-features=" + PermissionsAndroidFeatureList.ONE_TIME_PERMISSION + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:show_allow_always_as_first_button/true"
+    })
+    public void testGeolocationOneTimePromptWithAllowAlwaysFirst() throws Exception {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        mPermissionRule.setUpUrl(TEST_FILE);
+        testPrompt(/* goldenViewId= */ "oneTimePromptAllowAlwaysAsFirstButton");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Prompt", "RenderTest"})
+    @CommandLineFlags.Add({
+        "enable-features=" + PermissionsAndroidFeatureList.ONE_TIME_PERMISSION + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:show_allow_always_as_first_button/true/"
+                + "use_stronger_prompt_language/true/use_while_visiting_language/true"
+    })
+    public void testGeolocationOneTimePromptWithAllowWhileVisitingFirst() throws Exception {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        mPermissionRule.setUpUrl(TEST_FILE);
+        testPrompt(/* goldenViewId= */ "oneTimePromptAllowWhileVisitingAsFirstButton");
     }
 
     @Test
@@ -137,6 +154,6 @@ public class PermissionPromptRenderTest {
         mPermissionRule.setupUrlWithHostName(
                 "unelided.long.wrapping.hostname.with.subdomains.com", TEST_FILE);
 
-        testPrompt(/* isOneTime= */ true);
+        testPrompt(/* goldenViewId= */ "oneTimePromptLongOrigin");
     }
 }

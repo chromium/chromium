@@ -10,6 +10,10 @@ import("//third_party/tflite/tflite_target.gni")
 
 declare_args() {
   mediapipe_build_with_gpu_support = false
+  if (is_win || is_linux || is_mac) {
+    # To be set to true after integration with VideoEffectsService.
+    mediapipe_build_with_gpu_support = false
+  }
 }
 
 # Generate a buildflag header for compile-time checking of MediaPipe GPU support.
@@ -71,10 +75,18 @@ config("mediapipe_flags") {
 
   if (!mediapipe_build_with_gpu_support) {
     defines += [ "MEDIAPIPE_DISABLE_GPU=1" ]
-  } else if (is_win) {
-    # When building with GPU support on Windows, we don't want MediaPipe to try
-    # and use pthreads, since they will be unavailable.
-    defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
+  } else if (is_win || is_linux || is_mac) {
+    defines += [
+      "MEDIAPIPE_DISABLE_GPU=0",
+      "MEDIAPIPE_DISABLE_OPENCV=1",
+      "MEDIAPIPE_USE_WEBGPU=1",
+    ]
+
+    if (is_win) {
+      # When building with GPU support on Windows, we don't want MediaPipe to try
+      # and use pthreads, since they will be unavailable.
+      defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
+    }
   }
 
   if (is_android) {
@@ -82,15 +94,11 @@ config("mediapipe_flags") {
   }
 }
 
-source_set("any_lite_proto_impl") {
-  visibility = [ ":*" ]
-  sources = [
-    "shims/protobuf/google/protobuf/any_lite.pb.cc",
-    "shims/protobuf/google/protobuf/any_lite.pb.h",
-  ]
-  include_dirs = [ "shims/protobuf" ]
-  public_configs = [ ":mediapipe_config" ]
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+proto_library("any_lite_proto_impl") {
+  proto_in_dir = "shims/protobuf"
+  cc_generator_options = "lite=true:"
+  sources = [ "shims/protobuf/google/protobuf/any_lite.proto" ]
+  import_dirs = [ "shims/protobuf" ]
 }
 
 proto_library("mediapipe_proto") {
@@ -102,6 +110,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
     "src/mediapipe/calculators/internal/callback_packet_calculator.proto",
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.proto",
+    "src/mediapipe/calculators/tensor/image_to_tensor_calculator.proto",
     "src/mediapipe/calculators/tensor/inference_calculator.proto",
     "src/mediapipe/calculators/tensor/regex_preprocessor_calculator.proto",
     "src/mediapipe/calculators/tensor/tensors_to_classification_calculator.proto",
@@ -117,7 +126,9 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/formats/detection.proto",
     "src/mediapipe/framework/formats/image_format.proto",
     "src/mediapipe/framework/formats/location_data.proto",
+    "src/mediapipe/framework/formats/matrix_data.proto",
     "src/mediapipe/framework/formats/object_detection/anchor.proto",
+    "src/mediapipe/framework/formats/rect.proto",
     "src/mediapipe/framework/mediapipe_options.proto",
     "src/mediapipe/framework/packet_factory.proto",
     "src/mediapipe/framework/packet_generator.proto",
@@ -178,20 +189,47 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/calculators/tensor/inference_calculator_cpu.cc",
     "src/mediapipe/calculators/tensor/inference_calculator_utils.cc",
     "src/mediapipe/calculators/tensor/inference_calculator_utils.h",
+    "src/mediapipe/calculators/tensor/inference_feedback_manager.cc",
+    "src/mediapipe/calculators/tensor/inference_feedback_manager.h",
     "src/mediapipe/calculators/tensor/inference_interpreter_delegate_runner.cc",
+    "src/mediapipe/calculators/tensor/inference_io_mapper.cc",
+    "src/mediapipe/calculators/tensor/inference_io_mapper.h",
+    "src/mediapipe/calculators/tensor/tensor_converter_metal.cc",
+    "src/mediapipe/calculators/tensor/tensor_converter_metal.h",
+    "src/mediapipe/calculators/tensor/tensor_span.cc",
+    "src/mediapipe/calculators/tensor/tensor_span.h",
     "src/mediapipe/calculators/tensor/tensors_to_classification_calculator.cc",
+    "src/mediapipe/calculators/tensor/tensors_to_segmentation_converter_metal.cc",
+    "src/mediapipe/calculators/tensor/tensors_to_segmentation_converter_metal.h",
     "src/mediapipe/framework/stream_handler/immediate_input_stream_handler.cc",
     "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.cc",
     "src/mediapipe/tasks/cc/core/model_resources_calculator.cc",
     "src/mediapipe/tasks/cc/text/text_classifier/text_classifier_graph.cc",
     "src/mediapipe/util/tflite/tflite_model_loader.cc",
     "src/mediapipe/util/tflite/tflite_model_loader.h",
+    "src/mediapipe/util/tflite/tflite_signature_reader.cc",
+    "src/mediapipe/util/tflite/tflite_signature_reader.h",
+    "src/mediapipe/util/tflite/utils.cc",
+    "src/mediapipe/util/tflite/utils.h",
   ]
 
   # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
   if (build_tflite_with_xnnpack && !is_win) {
     sources +=
         [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]
+  }
+
+  if (mediapipe_build_with_gpu_support) {
+    sources += [
+      "src/mediapipe/calculators/tensor/image_to_tensor_calculator.cc",
+      "src/mediapipe/calculators/tensor/image_to_tensor_converter.h",
+      "src/mediapipe/calculators/tensor/image_to_tensor_utils.cc",
+      "src/mediapipe/calculators/tensor/image_to_tensor_utils.h",
+      "src/mediapipe/calculators/tensor/tensors_to_segmentation_utils.cc",
+      "src/mediapipe/calculators/tensor/tensors_to_segmentation_utils.h",
+      "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.cc",
+      "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.h",
+    ]
   }
 
   deps = [
@@ -228,6 +266,8 @@ tflite_source_set("mediapipe_tasks_always_link") {
 # See src/docs/getting_started/troubleshooting.md
 tflite_source_set("mediapipe_core_always_link") {
   sources = [
+    "src/mediapipe/calculators/core/begin_item_loop_calculator.cc",
+    "src/mediapipe/calculators/core/end_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/pass_through_calculator.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
     "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
@@ -252,17 +292,12 @@ tflite_source_set("mediapipe_core_always_link") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
-
-  if (mediapipe_build_with_gpu_support) {
-    sources += [
-      "src/mediapipe/gpu/gpu_buffer_to_image_frame_calculator.cc",
-      "src/mediapipe/gpu/image_frame_to_gpu_buffer_calculator.cc",
-    ]
-  }
 
   conditional_deps = [
     ":mediapipe_core",
+    ":mediapipe_core_api2",
     "//third_party/tflite:tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
@@ -327,9 +362,13 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/topologicalsorter.h",
     "src/mediapipe/framework/executor.cc",
     "src/mediapipe/framework/executor.h",
+    "src/mediapipe/framework/formats/matrix.cc",
+    "src/mediapipe/framework/formats/matrix.h",
     "src/mediapipe/framework/formats/tensor.cc",
     "src/mediapipe/framework/formats/tensor.h",
     "src/mediapipe/framework/formats/tensor_ahwb.cc",
+    "src/mediapipe/framework/formats/tensor_ahwb_usage.cc",
+    "src/mediapipe/framework/formats/tensor_ahwb_usage.h",
     "src/mediapipe/framework/graph_output_stream.cc",
     "src/mediapipe/framework/graph_output_stream.h",
     "src/mediapipe/framework/graph_service.h",
@@ -382,6 +421,9 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/port/status_macros.h",
     "src/mediapipe/framework/port/statusor.h",
     "src/mediapipe/framework/profiler/graph_profiler_stub.h",
+    "src/mediapipe/framework/resources.cc",
+    "src/mediapipe/framework/resources.h",
+    "src/mediapipe/framework/resources_service.h",
     "src/mediapipe/framework/scheduler.cc",
     "src/mediapipe/framework/scheduler.h",
     "src/mediapipe/framework/scheduler_queue.cc",
@@ -400,6 +442,7 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/tool/name_util.h",
     "src/mediapipe/framework/tool/options_field_util.cc",
     "src/mediapipe/framework/tool/options_field_util.h",
+    "src/mediapipe/framework/tool/options_map.cc",
     "src/mediapipe/framework/tool/options_map.h",
     "src/mediapipe/framework/tool/options_registry.cc",
     "src/mediapipe/framework/tool/options_syntax_util.cc",
@@ -428,12 +471,16 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/type_map.h",
     "src/mediapipe/framework/validated_graph_config.cc",
     "src/mediapipe/framework/validated_graph_config.h",
+    "src/mediapipe/gpu/webgpu/webgpu_check.cc",
+    "src/mediapipe/gpu/webgpu/webgpu_check.h",
     "src/mediapipe/util/cpu_util.cc",
     "src/mediapipe/util/cpu_util.h",
     "src/mediapipe/util/label_map_util.cc",
     "src/mediapipe/util/label_map_util.h",
     "src/mediapipe/util/resource_util.cc",
     "src/mediapipe/util/resource_util.h",
+    "src/mediapipe/util/str_util.cc",
+    "src/mediapipe/util/str_util.h",
     "src/mediapipe/util/tflite/error_reporter.cc",
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
@@ -442,7 +489,13 @@ tflite_static_library("mediapipe_core") {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
   } else if (is_apple) {
     sources += [ "src/mediapipe/util/resource_util_apple.cc" ]
-    cflags = [ "-ObjC++" ]
+
+    # TODO: the right solution is for files that use objective-c to use the
+    # extension .mm.
+    cflags = [
+      "-ObjC++",
+      "-fobjc-arc",
+    ]
   } else if (is_android) {
     # This is by design - our Windows no-op implementation works for Android
     # too, and in general we don't need this functionality.
@@ -471,16 +524,20 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/framework/formats/image.h",
       "src/mediapipe/framework/formats/image_frame.cc",
       "src/mediapipe/framework/formats/image_frame.h",
+      "src/mediapipe/gpu/attachments.h",
+      "src/mediapipe/gpu/gl_base.h",
       "src/mediapipe/gpu/gl_calculator_helper.cc",
       "src/mediapipe/gpu/gl_calculator_helper.h",
       "src/mediapipe/gpu/gl_context.cc",
       "src/mediapipe/gpu/gl_context.h",
       "src/mediapipe/gpu/gl_context_egl.cc",
       "src/mediapipe/gpu/gl_context_internal.h",
+      "src/mediapipe/gpu/gl_context_nsgl.cc",
       "src/mediapipe/gpu/gl_texture_buffer.cc",
       "src/mediapipe/gpu/gl_texture_buffer.h",
       "src/mediapipe/gpu/gl_texture_view.cc",
       "src/mediapipe/gpu/gl_texture_view.h",
+      "src/mediapipe/gpu/gl_thread_collector.h",
       "src/mediapipe/gpu/gpu_buffer.cc",
       "src/mediapipe/gpu/gpu_buffer.h",
       "src/mediapipe/gpu/gpu_buffer_format.cc",
@@ -493,12 +550,34 @@ tflite_static_library("mediapipe_core") {
       "src/mediapipe/gpu/gpu_service.h",
       "src/mediapipe/gpu/gpu_shared_data_internal.cc",
       "src/mediapipe/gpu/gpu_shared_data_internal.h",
+
+      # WebGpu files
+      "src/mediapipe/gpu/webgpu/tensor_webgpu_texture_view.cc",
+      "src/mediapipe/gpu/webgpu/webgpu_device_registration.cc",
+      "src/mediapipe/gpu/webgpu/webgpu_device_registration.h",
+      "src/mediapipe/gpu/webgpu/webgpu_service.cc",
+      "src/mediapipe/gpu/webgpu/webgpu_service.h",
+      "src/mediapipe/gpu/webgpu/webgpu_texture_buffer.cc",
+      "src/mediapipe/gpu/webgpu/webgpu_texture_buffer.h",
+      "src/mediapipe/gpu/webgpu/webgpu_texture_view.h",
+      "src/mediapipe/gpu/webgpu/webgpu_utils.cc",
+      "src/mediapipe/gpu/webgpu/webgpu_utils.h",
+      "src/mediapipe/web/jspi_check.h",
     ]
+
+    if (is_mac) {
+      sources += [
+        "src/mediapipe/objc/CFHolder.h",
+        "src/mediapipe/objc/util.cc",
+        "src/mediapipe/objc/util.h",
+      ]
+    }
 
     public_deps = [
       "//third_party/angle:includes",
       "//third_party/angle:libEGL_static",
       "//third_party/angle:libGLESv2_static",
+      "//third_party/dawn/src/dawn:cpp",
     ]
   }
 
@@ -509,6 +588,7 @@ tflite_static_library("mediapipe_core") {
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
     "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
     ":mediapipe_flags",
     ":mediapipe_config",
     ":mediapipe_internal_config",
@@ -606,6 +686,7 @@ tflite_static_library("mediapipe_tasks") {
     "src/mediapipe/tasks/cc/text/tokenizers/bert_tokenizer.h",
     "src/mediapipe/tasks/cc/text/tokenizers/regex_tokenizer.cc",
     "src/mediapipe/tasks/cc/text/tokenizers/regex_tokenizer.h",
+    "src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h",
     "src/mediapipe/tasks/cc/text/tokenizers/tokenizer_utils.cc",
     "src/mediapipe/tasks/cc/text/tokenizers/tokenizer_utils.h",
     "src/mediapipe/tasks/cc/text/utils/text_model_utils.cc",
@@ -634,6 +715,7 @@ tflite_static_library("mediapipe_tasks") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [

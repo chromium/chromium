@@ -8,7 +8,14 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/feature_engagement/public/configuration_provider.h"
+#endif
 
 namespace feature_engagement {
 
@@ -27,17 +34,22 @@ void EditableConfiguration::SetConfiguration(const base::Feature* group,
   group_configs_[group->name] = group_config;
 }
 
+void EditableConfiguration::AddAllowedEventPrefix(const std::string& prefix) {
+  CHECK(!prefix.empty());
+  event_prefixes_.insert(prefix);
+}
+
 const FeatureConfig& EditableConfiguration::GetFeatureConfig(
     const base::Feature& feature) const {
   auto it = configs_.find(feature.name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const FeatureConfig& EditableConfiguration::GetFeatureConfigByName(
     const std::string& feature_name) const {
   auto it = configs_.find(feature_name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -57,14 +69,14 @@ const std::vector<std::string> EditableConfiguration::GetRegisteredFeatures()
 const GroupConfig& EditableConfiguration::GetGroupConfig(
     const base::Feature& group) const {
   auto it = group_configs_.find(group.name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const GroupConfig& EditableConfiguration::GetGroupConfigByName(
     const std::string& group_name) const {
   auto it = group_configs_.find(group_name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -80,5 +92,22 @@ const std::vector<std::string> EditableConfiguration::GetRegisteredGroups()
     groups.push_back(element.first);
   return groups;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void EditableConfiguration::UpdateConfig(
+    const base::Feature& feature,
+    const ConfigurationProvider* provider) {
+  FeatureConfig& config = configs_[feature.name];
+
+  // Clear existing configs.
+  config = FeatureConfig();
+  provider->MaybeProvideFeatureConfiguration(feature, config, {}, {});
+}
+
+const Configuration::EventPrefixSet&
+EditableConfiguration::GetRegisteredAllowedEventPrefixes() const {
+  return event_prefixes_;
+}
+#endif
 
 }  // namespace feature_engagement

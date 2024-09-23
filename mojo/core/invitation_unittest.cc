@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "mojo/public/c/system/invitation.h"
+
 #include <cstdint>
 #include <cstring>
 #include <optional>
@@ -31,18 +38,20 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
-#include "mojo/core/core.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
-#include "mojo/core/node_controller.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_switches.h"
-#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
+#include "mojo/core/core.h"
+#include "mojo/core/node_controller.h"
+#endif
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/mac/mach_port_rendezvous.h"
@@ -54,7 +63,7 @@ namespace {
 
 const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 
-// TODO(https://crbug.com/1428561): Flaky on Tsan.
+// TODO(crbug.com/40900578): Flaky on Tsan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_InvitationTest DISABLED_InvitationTest
 #else
@@ -105,20 +114,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
                                  base::LaunchOptions* options,
                                  base::CommandLine* command_line,
                                  std::string_view switch_name = {}) {
-  std::string value;
-#if BUILDFLAG(IS_FUCHSIA)
-  channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
-#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
-                                       &value);
-#elif BUILDFLAG(IS_POSIX)
-  channel->PrepareToPassRemoteEndpoint(&options->fds_to_remap, &value);
-#elif BUILDFLAG(IS_WIN)
-  channel->PrepareToPassRemoteEndpoint(&options->handles_to_inherit, &value);
-#else
-#error "Platform not yet supported."
-#endif
-
+  const std::string value = channel->PrepareToPassRemoteEndpoint(*options);
   if (switch_name.empty()) {
     switch_name = PlatformChannel::kHandleSwitch;
   }
@@ -663,6 +659,7 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
 }
 
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 // Temporary removed support for reinvitation for non-isolated connections.
 TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
   // The gist of this test is that a process should be able to accept an
@@ -712,6 +709,7 @@ TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
 
   WaitForProcessToTerminate(child_process);
 }
+#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
 DEFINE_TEST_CLIENT(ReinvitationClient) {
   MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);

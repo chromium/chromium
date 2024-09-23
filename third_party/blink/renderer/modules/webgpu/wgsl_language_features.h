@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_WGSL_LANGUAGE_FEATURES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_WGSL_LANGUAGE_FEATURES_H_
 
-#include <dawn/webgpu.h>
 #include <bitset>
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_wgsl_language_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wgsl_feature_name.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
 
  public:
   explicit WGSLLanguageFeatures(
-      const std::vector<WGPUWGSLFeatureName>& features);
+      const std::vector<wgpu::WGSLFeatureName>& features);
 
   bool has(const String& feature) const;
   bool hasForBinding(ScriptState* script_state,

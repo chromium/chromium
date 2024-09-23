@@ -102,7 +102,7 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
   }
 
   private getEtldOrSiteSubText_(): string {
-    // TODO(crbug.com/1253673): Revisit what to show for this eTLD+1 group's
+    // TODO(crbug.com/40199251): Revisit what to show for this eTLD+1 group's
     // subtext. For now, default to showing no text if there is any mix of sites
     // under the group (i.e. user permitted/restricted/specified by extensions).
     const siteSet = this.data.sites[0].siteSet;
@@ -146,7 +146,7 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
             'restrictedSites');
   }
 
-  // TODO(crbug.com/1402795): Use PluralStringProxyImpl to retrieve the
+  // TODO(crbug.com/40251278): Use PluralStringProxyImpl to retrieve the
   // extension count text. However, this is non-trivial in this component as
   // some of the strings are nestled inside dom-repeats and plural strings are
   // currently retrieved asynchronously, and would need to be set directly on a

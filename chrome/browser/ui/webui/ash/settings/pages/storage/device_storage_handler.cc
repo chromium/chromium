@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -22,7 +29,11 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -58,7 +69,7 @@ const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
     case SizeCalculator::CalculationType::kSystem:
       return "storage-system-size-changed";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -98,16 +109,16 @@ void StorageHandler::RegisterMessages() {
       "openMyFiles", base::BindRepeating(&StorageHandler::HandleOpenMyFiles,
                                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openArcStorage",
-      base::BindRepeating(&StorageHandler::HandleOpenArcStorage,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "updateExternalStorages",
       base::BindRepeating(&StorageHandler::HandleUpdateExternalStorages,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openBrowsingDataSettings",
       base::BindRepeating(&StorageHandler::HandleOpenBrowsingDataSettings,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getStorageEncryptionInfo",
+      base::BindRepeating(&StorageHandler::HandleGetStorageEncryption,
                           base::Unretained(this)));
 }
 
@@ -160,20 +171,51 @@ void StorageHandler::HandleUpdateStorageInfo(const base::Value::List& args) {
   other_users_size_calculator_.StartCalculation();
 }
 
+void StorageHandler::HandleGetStorageEncryption(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  std::string callback_id = args[0].GetString();
+  ::user_data_auth::GetVaultPropertiesRequest request;
+  request.set_username(
+      user_manager::CanonicalizeUserID(profile_->GetProfileUserName()));
+  UserDataAuthClient::Get()->GetVaultProperties(
+      request,
+      base::BindOnce(&StorageHandler::OnGetVaultProperties,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+}
+
+void StorageHandler::OnGetVaultProperties(
+    const std::string& callback_id,
+    std::optional<user_data_auth::GetVaultPropertiesReply> reply) {
+  // Default is Unknown.
+  std::u16string encryption_type =
+      l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
+  if (reply.has_value()) {
+    switch (reply.value().encryption_type()) {
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT:
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT:
+        encryption_type = l10n_util::GetStringUTF16(
+            IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_256);
+        break;
+      case user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS:
+        encryption_type = l10n_util::GetStringUTF16(
+            IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_AES_128);
+        break;
+      default:
+        // This is unexpected state and we should continue to default.
+        break;
+    }
+  }
+
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            base::Value(encryption_type.c_str()));
+}
+
 void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   platform_util::OpenItem(profile_, my_files_path, platform_util::OPEN_FOLDER,
                           platform_util::OpenOperationCallback());
-}
-
-void StorageHandler::HandleOpenArcStorage(
-    const base::Value::List& unused_args) {
-  auto* arc_storage_manager =
-      arc::ArcStorageManager::GetForBrowserContext(profile_);
-  if (arc_storage_manager) {
-    arc_storage_manager->OpenPrivateVolumeSettings();
-  }
 }
 
 void StorageHandler::HandleOpenBrowsingDataSettings(
@@ -271,7 +313,8 @@ void StorageHandler::OnSizeCalculated(
       UpdateStorageItem(calculation_type);
       break;
     default:
-      NOTREACHED() << "Unexpected calculation type: " << item_index;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected calculation type: " << item_index;
   }
   UpdateSystemSizeItem();
 }
@@ -333,12 +376,13 @@ void StorageHandler::UpdateOverallStatistics() {
   if (total_bytes <= 0 || available_bytes < 0) {
     // We can't get useful information from the storage page if total_bytes <= 0
     // or available_bytes is less than 0. This is not expected to happen.
-    NOTREACHED() << "Unable to retrieve total or available disk space";
+    DUMP_WILL_BE_NOTREACHED()
+        << "Unable to retrieve total or available disk space";
     return;
   }
 
   if (in_use_bytes < 0) {
-    // TODO(crbug.com/1409774): This shouldn't happen, but we still need to
+    // TODO(crbug.com/40889316): This shouldn't happen, but we still need to
     // clarify when and how often it does. To be replaced with
     // CHECK_GE(in_use_bytes, 0).
     LOG(WARNING) << "Calculated total space (" << total_bytes

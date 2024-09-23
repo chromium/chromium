@@ -4,17 +4,19 @@
 
 #include "content/browser/renderer_host/input/motion_event_web.h"
 
+#include <numbers>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/numerics/math_constants.h"
-#include "content/common/input/web_touch_event_traits.h"
+#include "base/numerics/angle_conversions.h"
+#include "components/input/web_touch_event_traits.h"
 #include "ui/events/blink/blink_event_util.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 using blink::WebInputEvent;
 using blink::WebPointerProperties;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
+using input::WebTouchEventTraits;
 
 namespace content {
 namespace {
@@ -43,7 +45,7 @@ ui::MotionEvent::Action GetActionFrom(const WebTouchEvent& event) {
     default:
       break;
   };
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Unable to derive a valid MotionEvent::Action from the WebTouchEvent.";
   return ui::MotionEvent::Action::CANCEL;
 }
@@ -131,8 +133,9 @@ float MotionEventWeb::GetOrientation(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
 
   float orientation_rad =
-      gfx::DegToRad(event_.touches[pointer_index].rotation_angle);
-  DCHECK(0 <= orientation_rad && orientation_rad <= base::kPiFloat / 2)
+      base::DegToRad(event_.touches[pointer_index].rotation_angle);
+  DCHECK(0 <= orientation_rad &&
+         orientation_rad <= std::numbers::pi_v<float> / 2)
       << "Unexpected touch rotation angle";
 
   if (GetToolType(pointer_index) == ToolType::STYLUS) {
@@ -141,22 +144,22 @@ float MotionEventWeb::GetOrientation(size_t pointer_index) const {
     if (pointer.tilt_y <= 0 && pointer.tilt_x < 0) {
       // Stylus is tilted to the left away from the user or straight
       // to the left thus the orientation should be within [pi/2,pi).
-      orientation_rad += base::kPiFloat / 2;
+      orientation_rad += std::numbers::pi_v<float> / 2;
     } else if (pointer.tilt_y < 0 && pointer.tilt_x >= 0) {
       // Stylus is tilted to the right away from the user or straight away
       // from the user thus the orientation should be within [-pi,-pi/2).
-      orientation_rad -= base::kPiFloat;
+      orientation_rad -= std::numbers::pi_v<float>;
     } else if (pointer.tilt_y >= 0 && pointer.tilt_x > 0) {
       // Stylus is tilted to the right towards the user or straight
       // to the right thus the orientation should be within [-pi/2,0).
-      orientation_rad -= base::kPiFloat / 2;
+      orientation_rad -= std::numbers::pi_v<float> / 2;
     }
   } else if (event_.touches[pointer_index].radius_x >
              event_.touches[pointer_index].radius_y) {
     // The case radiusX == radiusY is omitted from here on purpose: for circles,
     // we want to pass the angle (which could be any value in such cases but
     // always seems to be set to zero) unchanged.
-    orientation_rad -= base::kPiFloat / 2;
+    orientation_rad -= std::numbers::pi_v<float> / 2;
   }
 
   return orientation_rad;
@@ -212,7 +215,7 @@ ui::MotionEvent::ToolType MotionEventWeb::GetToolType(
     case WebPointerProperties::PointerType::kTouch:
       return ToolType::FINGER;
   }
-  NOTREACHED() << "Unexpected pointerType";
+  NOTREACHED_IN_MIGRATION() << "Unexpected pointerType";
   return ToolType::UNKNOWN;
 }
 

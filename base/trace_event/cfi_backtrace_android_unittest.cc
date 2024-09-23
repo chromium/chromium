@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and use spans.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/trace_event/cfi_backtrace_android.h"
 
 #include "base/files/file_util.h"
@@ -83,9 +88,7 @@ TEST(CFIBacktraceAndroidTest, DISABLED_TestFindCFIRow) {
                       0xdc, 0x40, 0x1, 0x4, 0x2e};
   FilePath temp_path;
   CreateTemporaryFile(&temp_path);
-  EXPECT_EQ(
-      static_cast<int>(sizeof(input)),
-      WriteFile(temp_path, reinterpret_cast<char*>(input), sizeof(input)));
+  EXPECT_TRUE(WriteFile(temp_path, base::as_bytes(base::make_span(input))));
 
   unwinder->cfi_mmap_.reset(new MemoryMappedFile());
   ASSERT_TRUE(unwinder->cfi_mmap_->Initialize(temp_path));

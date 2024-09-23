@@ -6,6 +6,8 @@
 #include <fidl/fuchsia.ui.input3/cpp/fidl.h>
 #include <lib/fit/function.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/scoped_service_binding.h"
@@ -114,7 +116,7 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
     command_line->AppendSwitch("allow-pre-commit-input");
   }
 
-  gfx::Point GetCoordinatesOfInputField(base::StringPiece id) {
+  gfx::Point GetCoordinatesOfInputField(std::string_view id) {
     // Distance to click from the top/left extents of an input field.
     constexpr int kInputFieldClickInset = 8;
 
@@ -218,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
   // Note that the service will elide type updates if there is no change,
   // so the array is ordered to produce an update on each entry.
-  const std::vector<std::pair<base::StringPiece, virtualkeyboard::TextType>>
+  const std::vector<std::pair<std::string_view, virtualkeyboard::TextType>>
       kInputTypeMappings = {
           {kInputFieldModeTel, virtualkeyboard::TextType::kPhone},
           {kInputFieldModeSearch, virtualkeyboard::TextType::kAlphanumeric},

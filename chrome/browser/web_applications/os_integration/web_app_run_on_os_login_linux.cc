@@ -16,14 +16,18 @@ namespace web_app {
 
 namespace internals {
 
-bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
+void RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info,
+                          ResultCallback callback) {
   base::FilePath shortcut_data_dir = GetShortcutDataDir(shortcut_info);
 
   ShortcutLocations locations;
   locations.in_startup = true;
 
-  return CreatePlatformShortcuts(shortcut_data_dir, locations,
-                                 SHORTCUT_CREATION_BY_USER, shortcut_info);
+  CreatePlatformShortcuts(
+      shortcut_data_dir, locations, SHORTCUT_CREATION_BY_USER, shortcut_info,
+      base::BindOnce([](bool shortcut_created) {
+        return shortcut_created ? Result::kOk : Result::kError;
+      }).Then(std::move(callback)));
 }
 
 Result UnregisterRunOnOsLogin(const std::string& app_id,

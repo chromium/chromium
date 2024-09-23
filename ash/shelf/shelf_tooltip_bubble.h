@@ -36,7 +36,8 @@ class ASH_EXPORT ShelfTooltipBubble : public ShelfBubble {
   void OnThemeChanged() override;
 
   // BubbleDialogDelegateView overrides:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 };
 
 }  // namespace ash

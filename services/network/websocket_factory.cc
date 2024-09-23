@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
 #include "net/base/url_util.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -31,7 +32,7 @@ void WebSocketFactory::CreateWebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     int32_t process_id,
@@ -66,15 +67,24 @@ void WebSocketFactory::CreateWebSocket(
     handshake_client_remote.reset();
     return;
   }
+  if (isolation_info.nonce().has_value() &&
+      !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info.nonce(), url)) {
+    mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
+        std::move(handshake_client));
+    handshake_client_remote->OnFailure("Network access revoked",
+                                       net::ERR_NETWORK_ACCESS_REVOKED, -1);
+    handshake_client_remote.reset();
+    return;
+  }
   WebSocket::HasRawHeadersAccess has_raw_headers_access(
       context_->network_service()->HasRawHeadersAccess(
           process_id, net::ChangeWebSocketSchemeToHttpScheme(url)));
   connections_.insert(std::make_unique<WebSocket>(
-      this, url, requested_protocols, site_for_cookies, has_storage_access,
-      isolation_info, std::move(additional_headers), origin, options,
-      traffic_annotation, has_raw_headers_access, std::move(handshake_client),
-      std::move(url_loader_network_observer), std::move(auth_handler),
-      std::move(header_client),
+      this, url, requested_protocols, site_for_cookies,
+      storage_access_api_status, isolation_info, std::move(additional_headers),
+      origin, options, traffic_annotation, has_raw_headers_access,
+      std::move(handshake_client), std::move(url_loader_network_observer),
+      std::move(auth_handler), std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
       throttler_.CalculateDelay(process_id), throttling_profile_id));
 }
@@ -91,6 +101,13 @@ void WebSocketFactory::Remove(WebSocket* impl) {
     return;
   }
   connections_.erase(it);
+}
+
+void WebSocketFactory::RemoveIfNonceMatches(
+    const base::UnguessableToken& nonce) {
+  std::erase_if(connections_, [&nonce](const auto& connection) {
+    return connection->RevokeIfNonceMatches(nonce);
+  });
 }
 
 }  // namespace network

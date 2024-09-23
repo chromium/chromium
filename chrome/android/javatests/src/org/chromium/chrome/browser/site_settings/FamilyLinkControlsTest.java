@@ -29,10 +29,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -46,7 +47,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests family link controls are reflected in UI */
 @DoNotBatch(
@@ -72,15 +72,15 @@ public class FamilyLinkControlsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mSettingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> SigninCheckerProvider.get(Profile.getLastUsedRegularProfile()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mAccountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
 
         // Wait for SigninChecker to be initialized
         CriteriaHelper.pollUiThread(
                 () ->
                         IdentityServicesProvider.get()
-                                .getSigninManager(Profile.getLastUsedRegularProfile())
+                                .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                 .getIdentityManager()
                                 .hasPrimaryAccount(ConsentLevel.SIGNIN));
     }

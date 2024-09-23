@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -58,7 +59,6 @@ public class AuxiliarySearchBridge {
 
     /**
      * This method will return non sensitive url tabs, and the scheme is http or https.
-     * This method is called when the AndroidAppIntegrationSafeSearch not enabled.
      *
      * @param tabs A list of {@link Tab}s to check if they are sensitive.
      * @param callback {@link Callback} to pass back the list of non sensitive {@link Tab}s.
@@ -98,7 +98,7 @@ public class AuxiliarySearchBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long getForProfile(Profile profile);
+        long getForProfile(@JniType("Profile*") Profile profile);
 
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
 

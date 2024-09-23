@@ -27,6 +27,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "mojo/buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
@@ -476,18 +477,12 @@ TEST_F(MinimumWindowsSupportTest, ChromeDll) {
 
 TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {
   std::vector<std::wstring> extra_dlls = {
-    L"d3dcompiler_47.dll",
+      L"d3dcompiler_47.dll",
 #if !defined(ARCH_CPU_ARM64)
-    // These are not yet supported for Arm64.
-    L"dxcompiler.dll",
-    L"dxil.dll",
+      // These are not yet supported for Arm64.
+      L"dxcompiler.dll", L"dxil.dll",
 #endif  // !defined(ARCH_CPU_ARM64
-    L"libEGL.dll",
-    L"libGLESv2.dll",
-    L"mojo_core.dll",
-    L"vk_swiftshader.dll",
-    L"vulkan-1.dll"
-  };
+      L"libEGL.dll", L"libGLESv2.dll", L"vk_swiftshader.dll", L"vulkan-1.dll"};
   for (const auto& dll : extra_dlls) {
     Validate(dll);
   }

@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -18,6 +19,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "url/gurl.h"
 
+namespace ukm {
 namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -71,6 +73,12 @@ class UkmUrlRecorderTest : public web::WebTestWithWebState {
         base::test::ios::kWaitForPageLoadTimeout, ^{
           return !web_state()->IsLoading();
         });
+  }
+
+  void MaybeRecordUrl(web::NavigationContext* context, const GURL& url) {
+    internal::SourceUrlRecorderWebStateObserver* observer =
+        GetSourceUrlRecorderForWebStateForWebState(web_state());
+    observer->MaybeRecordUrl(context, url);
   }
 
   testing::AssertionResult RecordedUrl(
@@ -146,3 +154,37 @@ TEST_F(UkmUrlRecorderTest, InitialUrl) {
   ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state());
   EXPECT_TRUE(RecordedUrl(source_id, target_url, redirect_url));
 }
+
+// Checks that if a NavigationContext is erroneously reused, its reuse is
+// handled gracefully by the UKM recorder. See crbug.com/346017703.
+TEST_F(UkmUrlRecorderTest, ReusedNavigationContext) {
+  EXPECT_EQ(0u, test_ukm_recorder_.sources_count());
+
+  web::FakeNavigationContext context_1;
+  const int64_t navigation_id_1 = context_1.GetNavigationId();
+  const GURL url_1("https://example.com#foo");
+  context_1.SetIsSameDocument(false);
+  context_1.SetUrl(url_1);
+
+  MaybeRecordUrl(&context_1, url_1);
+  EXPECT_EQ(1u, test_ukm_recorder_.sources_count());
+
+  web::FakeNavigationContext context_2;
+  const int64_t navigation_id_2 = context_2.GetNavigationId();
+  const GURL url_2("https://example.com#bar");
+  context_2.SetIsSameDocument(false);
+  context_2.SetUrl(url_2);
+
+  EXPECT_NE(navigation_id_1, navigation_id_2);
+
+  MaybeRecordUrl(&context_2, url_2);
+  EXPECT_EQ(2u, test_ukm_recorder_.sources_count());
+
+  // If a NavigationContext is reused, UKM recorder should not crash on
+  // receiving the same navigation id, hence also the UKM source id, again.
+  // Instead no new source should be added to the UKM recorder.
+  MaybeRecordUrl(&context_1, url_1);
+  EXPECT_EQ(2u, test_ukm_recorder_.sources_count());
+}
+
+}  // namespace ukm

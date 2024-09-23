@@ -9,12 +9,12 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -48,7 +48,7 @@ struct PublicKeyset;
 // Instances may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence.
 
-// TODO(crbug.com/1232608): Support public key protocol versioning.
+// TODO(crbug.com/40191198): Support public key protocol versioning.
 class CONTENT_EXPORT AggregationServiceStorageSql
     : public AggregationServiceStorage {
  public:
@@ -83,9 +83,8 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   std::optional<base::Time> NextReportTimeAfter(
       base::Time strictly_after_time) override;
   std::vector<AggregationServiceStorage::RequestAndId>
-  GetRequestsReportingOnOrBefore(
-      base::Time not_after_time,
-      std::optional<int> limit = std::nullopt) override;
+  GetRequestsReportingOnOrBefore(base::Time not_after_time,
+                                 std::optional<int> limit) override;
   std::vector<AggregationServiceStorage::RequestAndId> GetRequests(
       const std::vector<AggregationServiceStorage::RequestId>& ids) override;
   std::optional<base::Time> AdjustOfflineReportTimes(
@@ -123,8 +122,11 @@ class CONTENT_EXPORT AggregationServiceStorageSql
     // The database exists but is not open yet.
     kDeferringOpen,
     // The database initialization failed, or the db suffered from an
-    // unrecoverable error.
+    // unrecoverable, but potentially transient, error.
     kClosed,
+    // The database initialization failed, or the db suffered from a
+    // catastrophic failure.
+    kClosedDueToCatastrophicError,
   };
 
   enum class DbCreationPolicy {
@@ -178,7 +180,7 @@ class CONTENT_EXPORT AggregationServiceStorageSql
 
   // Whether the reporting origin has space for an extra report to be stored,
   // i.e. has not reached the `max_stored_requests_per_reporting_origin_` limit.
-  bool ReportingOriginHasCapacity(base::StringPiece serialized_reporting_origin)
+  bool ReportingOriginHasCapacity(std::string_view serialized_reporting_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
@@ -212,11 +214,10 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // silently be dropped until there is more capacity.
   int max_stored_requests_per_reporting_origin_;
 
-  // Current status of the database initialization. Tracks what stage `this` is
-  // at for lazy initialization, and used as a signal for if the database is
-  // closed. This is initialized in the first call to EnsureDatabaseOpen() to
-  // avoid doing additional work in the constructor.
-  std::optional<DbStatus> db_init_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The current state of `db_`. Lazy-initialized by `EnsureDatabaseOpen()` to
+  // avoid touching the filesystem in the constructor. Watch out: any time we
+  // use the database, its value may be updated by `DatabaseErrorCallback()`.
+  std::optional<DbStatus> db_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 

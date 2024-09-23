@@ -49,7 +49,7 @@ public class MerchantTrustMessageScheduler {
         clearScheduledMessage(clearReason);
     }
 
-    // TODO(crbug.com/1298610): Clean up this api in tests.
+    // TODO(crbug.com/40215605): Clean up this api in tests.
     @Deprecated
     void schedule(
             PropertyModel model,
@@ -80,7 +80,7 @@ public class MerchantTrustMessageScheduler {
                                 messageContext.getHostName(), starRating);
                         if (MerchantViewerConfig.isTrustSignalsMessageDisabledForImpactStudy()) {
                             messageEnqueuedCallback.onResult(messageContext);
-                            // TODO(crbug.com/1298610): Use a new message clear reason.
+                            // TODO(crbug.com/40215605): Use a new message clear reason.
                             clearScheduledMessage(MessageClearReason.UNKNOWN);
                         } else {
                             mMessageDispatcher.enqueueMessage(

@@ -13,7 +13,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
@@ -35,7 +35,8 @@ VideoFrameResourceProvider::~VideoFrameResourceProvider() {
 
 void VideoFrameResourceProvider::Initialize(
     viz::RasterContextProvider* media_context_provider,
-    viz::SharedBitmapReporter* shared_bitmap_reporter) {
+    viz::SharedBitmapReporter* shared_bitmap_reporter,
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
   context_provider_ = media_context_provider;
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
@@ -49,7 +50,7 @@ void VideoFrameResourceProvider::Initialize(
 
   resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       media_context_provider, shared_bitmap_reporter, resource_provider_.get(),
-      settings_.use_stream_video_draw_quad,
+      std::move(shared_image_interface), settings_.use_stream_video_draw_quad,
       settings_.use_gpu_memory_buffer_resources, max_texture_size);
 }
 
@@ -80,9 +81,9 @@ void VideoFrameResourceProvider::AppendQuads(
   // are.  So, we use ScopedAllow only if we're told that we should do so.
   if (use_sync_primitives_) {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    resource_updater_->ObtainFrameResources(frame);
+    resource_updater_->ObtainFrameResource(frame);
   } else {
-    resource_updater_->ObtainFrameResources(frame);
+    resource_updater_->ObtainFrameResource(frame);
   }
 
   auto transform = gfx::Transform();
@@ -118,14 +119,14 @@ void VideoFrameResourceProvider::AppendQuads(
   float draw_opacity = 1.0f;
   int sorting_context_id = 0;
 
-  resource_updater_->AppendQuads(render_pass, std::move(frame), transform,
-                                 quad_rect, visible_quad_rect, mask_filter_info,
-                                 /*clip_rect=*/std::nullopt, is_opaque,
-                                 draw_opacity, sorting_context_id);
+  resource_updater_->AppendQuad(render_pass, std::move(frame), transform,
+                                quad_rect, visible_quad_rect, mask_filter_info,
+                                /*clip_rect=*/std::nullopt, is_opaque,
+                                draw_opacity, sorting_context_id);
 }
 
 void VideoFrameResourceProvider::ReleaseFrameResources() {
-  resource_updater_->ReleaseFrameResources();
+  resource_updater_->ReleaseFrameResource();
 }
 
 void VideoFrameResourceProvider::PrepareSendToParent(

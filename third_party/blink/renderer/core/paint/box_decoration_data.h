@@ -108,7 +108,18 @@ class BoxDecorationData {
   }
 
   bool ComputeShouldPaintBackground() const {
-    return style_.HasBackground() && !layout_box_.BackgroundTransfersToView() &&
+    // The page border box fragment paints the document background, so we cannot
+    // trust its computed style when it comes to background properties.
+    //
+    // See https://drafts.csswg.org/css-page-3/#painting
+    //
+    // TODO(crbug.com/40286153): This is a false positive. We should be able to
+    // remove this once we have a better way to determine whether there is a
+    // background.
+    bool has_background =
+        style_.HasBackground() ||
+        GetBoxFragmentType() == PhysicalFragment::kPageBorderBox;
+    return has_background && !layout_box_.BackgroundTransfersToView() &&
            !paint_info_.ShouldSkipBackground();
   }
 
@@ -126,6 +137,13 @@ class BoxDecorationData {
 
   bool BorderObscuresBackgroundEdge() const;
   BackgroundBleedAvoidance ComputeBleedAvoidance() const;
+
+  PhysicalFragment::BoxType GetBoxFragmentType() const {
+    if (!layout_box_.PhysicalFragmentCount()) {
+      return PhysicalFragment::kNormalBox;
+    }
+    return layout_box_.GetPhysicalFragment(0)->GetBoxType();
+  }
 
   // Inputs.
   const PaintInfo& paint_info_;

@@ -20,7 +20,7 @@
 // needed.
 // The class forwards some of the methods onto the UIScrollView. For more
 // information look at the UIScrollView documentation.
-// TODO(crbug.com/546152): rename class to CRWContentViewScrollViewProxy.
+// TODO(crbug.com/41211285): rename class to CRWContentViewScrollViewProxy.
 @interface CRWWebViewScrollViewProxy : NSObject
 
 @property(nonatomic, readonly, copy) NSArray<__kindof UIView*>* subviews;

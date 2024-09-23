@@ -12,14 +12,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
 
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
-
 namespace ash::tether {
 
 // Operation which sends a disconnect message to a tether host.
@@ -28,18 +20,16 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   class Factory {
    public:
     static std::unique_ptr<DisconnectTetheringOperation> Create(
-        multidevice::RemoteDeviceRef device_to_connect,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client);
+        const TetherHost& tether_host,
+        raw_ptr<HostConnection::Factory> host_connection_factory);
 
     static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
-        multidevice::RemoteDeviceRef device_to_connect,
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client) = 0;
+        const TetherHost& tether_host,
+        raw_ptr<HostConnection::Factory> host_connection_factory) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -65,18 +55,17 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
 
  protected:
   DisconnectTetheringOperation(
-      multidevice::RemoteDeviceRef device_to_connect,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+      const TetherHost& tether_host,
+      raw_ptr<HostConnection::Factory> host_connection_factory);
 
   void NotifyObserversOperationFinished(bool success);
 
   // MessageTransferOperation:
-  void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) override;
+  void OnDeviceAuthenticated() override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
-  void OnMessageSent(int sequence_number) override;
+
+  void OnMessageSent();
 
  private:
   friend class DisconnectTetheringOperationTest;
@@ -88,12 +77,11 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-  multidevice::RemoteDeviceRef remote_device_;
-  int disconnect_message_sequence_number_ = -1;
   bool has_sent_message_;
 
   raw_ptr<base::Clock> clock_;
   base::Time disconnect_start_time_;
+  base::WeakPtrFactory<DisconnectTetheringOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::tether

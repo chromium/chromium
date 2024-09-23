@@ -24,6 +24,7 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
@@ -37,6 +38,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
+#include "url/gurl.h"
 
 using extensions::ExtensionsBrowserClient;
 
@@ -49,8 +51,7 @@ void DetermineCharset(const std::string& mime_type,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     // All of our HTML files should be UTF-8 and for other resource types
     // (like images), charset doesn't matter.
-    DCHECK(base::IsStringUTF8(base::StringPiece(
-        reinterpret_cast<const char*>(data->front()), data->size())));
+    DCHECK(base::IsStringUTF8(base::as_string_view(*data)));
     *out_charset = "utf-8";
   }
 }
@@ -69,9 +70,8 @@ scoped_refptr<base::RefCountedMemory> GetResource(
           : nullptr;
 
   if (replacements) {
-    base::StringPiece input(reinterpret_cast<const char*>(bytes->front()),
-                            bytes->size());
-    std::string temp_str = ui::ReplaceTemplateExpressions(input, *replacements);
+    std::string temp_str = ui::ReplaceTemplateExpressions(
+        base::as_string_view(*bytes), *replacements);
     DCHECK(!temp_str.empty());
     return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   } else {
@@ -107,7 +107,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED() << "No redirects for local file loads.";
+    NOTREACHED_IN_MIGRATION() << "No redirects for local file loads.";
   }
   // Current implementation reads all resource data at start of resource
   // load, so priority, and pausing is not currently implemented.
@@ -182,9 +182,16 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
                                std::nullopt);
 
-    uint32_t write_size = data->size();
-    MojoResult result = producer_handle->WriteData(data->front(), &write_size,
-                                                   MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult result = producer_handle->WriteData(
+        *data, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+
+    if (result == MOJO_RESULT_OK) {
+      // All bytes should fit into the buffer size used in `CreateDataPipe`
+      // above.
+      CHECK_EQ(actually_written_bytes, data->size());
+    }
+
     OnFileWritten(result);
   }
 
@@ -234,10 +241,11 @@ bool AllowCrossRendererResourceLoad(
     const Extension* extension,
     const ExtensionSet& extensions,
     const ProcessMap& process_map,
+    const GURL& upstream_url,
     bool* allowed) {
   if (url_request_util::AllowCrossRendererResourceLoad(
           request, destination, page_transition, child_id, is_incognito,
-          extension, extensions, process_map, allowed)) {
+          extension, extensions, process_map, upstream_url, allowed)) {
     return true;
   }
 

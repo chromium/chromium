@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.QueryResult;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -220,13 +219,10 @@ public class CreatorCoordinator
      * Query for webfeedId if we don't have it, and then create the FeedStream.
      *
      * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
      */
     public void queryFeedStream(
-            FeedActionDelegate feedActionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {
         if (mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY) == null) {
             Callback<QueryResult> queryWebFeedIdCallback =
                     result -> {
@@ -241,8 +237,7 @@ public class CreatorCoordinator
                                             .formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
                                                     new GURL(result.url)));
                         }
-                        initFeedStream(
-                                feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
+                        initFeedStream(feedActionDelegate, shareDelegateSupplier);
                     };
             WebFeedBridge.queryWebFeed(
                     mCreatorModel.get(CreatorProperties.URL_KEY), queryWebFeedIdCallback);
@@ -260,7 +255,7 @@ public class CreatorCoordinator
             WebFeedBridge.queryWebFeedId(
                     new String(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY)),
                     queryWebFeedIdCallback);
-            initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
+            initFeedStream(feedActionDelegate, shareDelegateSupplier);
         }
     }
 
@@ -268,24 +263,20 @@ public class CreatorCoordinator
      * Create the FeedStream and bind it to the RecyclerView.
      *
      * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
      */
     private void initFeedStream(
-            FeedActionDelegate feedActionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {
         mStream =
                 new FeedStream(
                         mActivity,
+                        mProfile,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShownInitially= */ false,
                         mWindowAndroid,
                         /* shareSupplier= */ shareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         feedActionDelegate,
-                        helpAndFeedbackLauncher,
                         /* feedContentFirstLoadWatcher= */ this,
                         /* streamsMediator= */ new StreamsMediatorImpl(),
                         new SingleWebFeedParameters(
@@ -332,7 +323,7 @@ public class CreatorCoordinator
     }
 
     private RecyclerView setUpView() {
-        // TODO(crbug.com/1374744): Refactor NTP naming out of the general Feed code.
+        // TODO(crbug.com/40872531): Refactor NTP naming out of the general Feed code.
         mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
@@ -600,11 +591,9 @@ public class CreatorCoordinator
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
         mWebContents = mCreatorWebContents.createWebContents();
 
-        mContentView =
-                ContentView.createContentView(
-                        mActivity, /* eventOffsetHandler= */ null, mWebContents);
+        mContentView = ContentView.createContentView(mActivity, mWebContents);
 
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(mContentView),
                 mContentView,

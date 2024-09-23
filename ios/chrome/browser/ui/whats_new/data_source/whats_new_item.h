@@ -28,7 +28,13 @@ enum class WhatsNewType {
   kLensSearch = 12,
   kBottomOmnibox = 13,
   kESB = 14,
-  kMaxValue = kESB
+  kPWMWidget = 15,
+  kPinnedTabs = 16,
+  kInactiveTabs = 17,
+  kPackageTracking = 18,
+  kPasswordSharing = 19,
+  kCustomizableOverflowMenu = 20,
+  kMaxValue = kCustomizableOverflowMenu
 };
 
 // An enum representing the different primary button actions for features in
@@ -42,7 +48,9 @@ enum class WhatsNewPrimaryAction {
   kChromeSettings = 3,
   kIOSSettingsPasswords = 4,
   kLens = 5,
-  kMaxValue = kLens,
+  kSafeBrowsingSettings = 6,
+  kChromePasswordManager = 7,
+  kMaxValue = kChromePasswordManager,
 };
 
 class GURL;

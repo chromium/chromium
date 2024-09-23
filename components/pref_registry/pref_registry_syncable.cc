@@ -4,6 +4,8 @@
 
 #include "components/pref_registry/pref_registry_syncable.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -32,7 +34,7 @@ void PrefRegistrySyncable::SetSyncableRegistrationCallback(
   callback_ = std::move(cb);
 }
 
-void PrefRegistrySyncable::OnPrefRegistered(const std::string& path,
+void PrefRegistrySyncable::OnPrefRegistered(std::string_view path,
                                             uint32_t flags) {
   // Tests that |flags| does not contain both SYNCABLE_PREF and
   // SYNCABLE_PRIORITY_PREF flags at the same time.
@@ -57,7 +59,6 @@ scoped_refptr<PrefRegistrySyncable> PrefRegistrySyncable::ForkForIncognito() {
   scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable());
   registry->defaults_ = defaults_;
   registry->registration_flags_ = registration_flags_;
-  registry->foreign_pref_keys_ = foreign_pref_keys_;
   return registry;
 }
 

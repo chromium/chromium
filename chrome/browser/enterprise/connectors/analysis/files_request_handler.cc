@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -44,7 +45,7 @@ AnalysisConnector AccessPointToEnterpriseConnector(
       return enterprise_connectors::FILE_ATTACHED;
     case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
     case safe_browsing::DeepScanAccessPoint::PRINT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return enterprise_connectors::FILE_ATTACHED;
 }
@@ -62,7 +63,7 @@ std::string AccessPointToTriggerString(
       return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload;
     case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
     case safe_browsing::DeepScanAccessPoint::PRINT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "";
 }
@@ -168,7 +169,7 @@ void FilesRequestHandler::FileRequestCallbackForTesting(
     safe_browsing::BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   auto it = base::ranges::find(paths_, path);
-  DCHECK(it != paths_.end());
+  CHECK(it != paths_.end(), base::NotFatalUntil::M130);
   size_t index = std::distance(paths_.begin(), it);
   FileRequestCallback(index, result, response);
 }
@@ -232,9 +233,15 @@ void FilesRequestHandler::OnGotFileInfo(
   file_info_[index].size = data.size;
   file_info_[index].mime_type = data.mime_type;
 
-  bool failed = analysis_settings_->cloud_or_local_settings.is_cloud_analysis()
-                    ? CloudResultIsFailure(result)
-                    : LocalResultIsFailure(result);
+  bool is_cloud =
+      analysis_settings_->cloud_or_local_settings.is_cloud_analysis();
+  bool is_resumable = IsResumableUpload(*request);
+  bool failed = is_resumable
+                    ? CloudResumableResultIsFailure(
+                          result, analysis_settings_->block_large_files,
+                          analysis_settings_->block_password_protected_files)
+                    : (is_cloud ? CloudMultipartResultIsFailure(result)
+                                : LocalResultIsFailure(result));
   if (failed) {
     FinishRequestEarly(std::move(request), result);
     return;
@@ -265,8 +272,8 @@ void FilesRequestHandler::FinishRequestEarly(
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "",
-      request->content_analysis_request());
+      request->per_profile_request(), /*access_token*/ "", /*upload_info*/ "",
+      /*upload_url=*/"", request->content_analysis_request());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
       enterprise_connectors::ContentAnalysisResponse());

@@ -27,6 +27,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
+                  "chromium_with_telemetry_dependencies",
                   "reclient_test"
                 ],
                 "config": "chromium"
@@ -61,6 +62,15 @@
       "RBE_num_remote_reruns": "1"
     },
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted-test"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

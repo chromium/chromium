@@ -26,12 +26,11 @@ XRProviderList XrIntegrationClient::GetAdditionalProviders() {
   return {};
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<VrUiHost> XrIntegrationClient::CreateVrUiHost(
-    device::mojom::XRDeviceId device_id,
-    mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) {
+    WebContents& contents,
+    const std::vector<device::mojom::XRViewPtr>& views,
+    mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay) {
   return nullptr;
 }
-#endif
 
 }  // namespace content

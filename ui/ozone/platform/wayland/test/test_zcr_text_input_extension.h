@@ -25,6 +25,7 @@ class TestZcrTextInputExtensionV1 : public GlobalObject {
     kV8 = 8,
     kV10 = 10,
     kV12 = 12,
+    kV14 = 14,
   };
   explicit TestZcrTextInputExtensionV1(Version version);
   TestZcrTextInputExtensionV1(const TestZcrTextInputExtensionV1&) = delete;

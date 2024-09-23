@@ -36,18 +36,18 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
   base::Value::Dict serialized_data;
   // Stored FormData is used only for signature calculations, therefore only
   // members that are used for signature calculation are stored.
-  serialized_data.Set(kNameKey, form_data.name);
-  serialized_data.Set(kUrlKey, form_data.url.spec());
-  serialized_data.Set(kActionKey, form_data.action.spec());
+  serialized_data.Set(kNameKey, form_data.name());
+  serialized_data.Set(kUrlKey, form_data.url().spec());
+  serialized_data.Set(kActionKey, form_data.action().spec());
 
   base::Value::List serialized_fields;
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     base::Value::Dict serialized_field;
     // Stored FormFieldData is used only for signature calculations, therefore
     // only members that are used for signature calculation are stored.
-    serialized_field.Set(kNameKey, field.name);
+    serialized_field.Set(kNameKey, field.name());
     serialized_field.Set(kFormControlTypeKey, autofill::FormControlTypeToString(
-                                                  field.form_control_type));
+                                                  field.form_control_type()));
     serialized_fields.Append(std::move(serialized_field));
   }
   serialized_data.Set(kFieldsKey, std::move(serialized_fields));
@@ -77,11 +77,9 @@ std::optional<FormData> DeserializeFormData(
   if (!form_name || !form_url || !form_action || !fields) {
     return std::nullopt;
   }
-  FormData form_data;
-  form_data.name = base::UTF8ToUTF16(*form_name);
-  form_data.url = GURL(*form_url);
-  form_data.action = GURL(*form_action);
 
+  std::vector<FormFieldData> form_fields;
+  form_fields.reserve(fields->size());
   for (auto& serialized_field : *fields) {
     base::Value::Dict* serialized_field_dictionary =
         serialized_field.GetIfDict();
@@ -95,14 +93,20 @@ std::optional<FormData> DeserializeFormData(
     if (!field_name || !field_type) {
       return std::nullopt;
     }
-    field.name = base::UTF8ToUTF16(*field_name);
+    field.set_name(base::UTF8ToUTF16(*field_name));
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
     // values.
-    field.form_control_type = autofill::StringToFormControlTypeDiscouraged(
-        *field_type, /*fallback=*/autofill::FormControlType::kInputText);
-    form_data.fields.push_back(field);
+    field.set_form_control_type(autofill::StringToFormControlTypeDiscouraged(
+        *field_type, /*fallback=*/autofill::FormControlType::kInputText));
+    form_fields.push_back(field);
   }
+
+  FormData form_data;
+  form_data.set_name(base::UTF8ToUTF16(*form_name));
+  form_data.set_url(GURL(*form_url));
+  form_data.set_action(GURL(*form_action));
+  form_data.set_fields(std::move(form_fields));
   return form_data;
 }
 

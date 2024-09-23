@@ -45,6 +45,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   ~MojoAudioDecoderService() final;
 
   // mojom::AudioDecoder implementation
+  void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
   void Construct(
       mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
       mojo::PendingRemote<mojom::MediaLog> media_log) final;
@@ -63,7 +64,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   void OnInitialized(InitializeCallback callback, DecoderStatus status);
 
   // Called by |mojo_decoder_buffer_reader_| when read is finished.
-  void OnReadDone(DecodeCallback callback, scoped_refptr<DecoderBuffer> buffer);
+  void OnReadDone(mojo::ReportBadMessageCallback bad_message_callback,
+                  DecodeCallback callback,
+                  scoped_refptr<DecoderBuffer> buffer);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
   void OnReaderFlushDone(ResetCallback callback);

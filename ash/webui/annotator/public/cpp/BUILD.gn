@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Annotator is Chrome OS only")
+
+source_set("cpp") {
+  sources = [
+    "annotator_client.cc",
+    "annotator_client.h",
+  ]
+  deps = [ "//base:base" ]
+}

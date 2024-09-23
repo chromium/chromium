@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/power_metrics/resource_coalition_mac.h"
 
 #include <libproc.h>
@@ -17,13 +22,13 @@ extern "C" int coalition_info_resource_usage(
 
 namespace power_metrics {
 
-absl::optional<uint64_t> GetProcessCoalitionId(base::ProcessId pid) {
+std::optional<uint64_t> GetProcessCoalitionId(base::ProcessId pid) {
   proc_pidcoalitioninfo coalition_info = {};
   int res = proc_pidinfo(pid, PROC_PIDCOALITIONINFO, 0, &coalition_info,
                          sizeof(coalition_info));
 
   if (res != sizeof(coalition_info))
-    return absl::nullopt;
+    return std::nullopt;
 
   return coalition_info.coalition_id[COALITION_TYPE_RESOURCE];
 }
@@ -140,12 +145,12 @@ coalition_resource_usage GetCoalitionResourceUsageDifference(
   return ret;
 }
 
-absl::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
+std::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
     const coalition_resource_usage& begin,
     const coalition_resource_usage& end,
     base::TimeDelta interval_duration,
     mach_timebase_info_data_t timebase,
-    absl::optional<EnergyImpactCoefficients> energy_impact_coefficients) {
+    std::optional<EnergyImpactCoefficients> energy_impact_coefficients) {
   // Validate that |end| >= |begin|.
   bool end_greater_or_equal_begin =
       std::tie(end.cpu_time, end.interrupt_wakeups, end.platform_idle_wakeups,
@@ -158,7 +163,7 @@ absl::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
       end_greater_or_equal_begin = false;
   }
   if (!end_greater_or_equal_begin)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto get_rate_per_second = [&interval_duration](uint64_t begin,
                                                   uint64_t end) -> double {

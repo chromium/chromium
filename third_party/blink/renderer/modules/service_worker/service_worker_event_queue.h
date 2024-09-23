@@ -262,7 +262,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // For idle timeouts. The time when there's no inflight event. Set to null if
   // there are inflight events.
-  base::TimeTicks last_no_inflight_event_;
+  base::TimeTicks last_no_inflight_event_time_;
 
   // For idle timeouts. The delay until the worker is identified as idle after
   // all inflight events are completed.
@@ -304,7 +304,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   bool is_ready_for_processing_events_ = false;
 
   // |tick_clock_| outlives |this|.
-  const raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Monotonically increasing number. Event id should not start from zero since
   // HashMap in Blink requires non-zero keys.

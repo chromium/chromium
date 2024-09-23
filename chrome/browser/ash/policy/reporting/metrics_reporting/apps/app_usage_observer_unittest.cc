@@ -60,8 +60,7 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
 
     // Disable sync so we disable UKM reporting and eliminate noise for testing
     // purposes.
-    sync_service()->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+    sync_service()->SetAllowedByEnterprisePolicy(false);
 
     // Pre-install app so it can be used by tests to simulate usage.
     InstallOneApp(kTestAppId, ::apps::AppType::kArc, kTestAppPublisherId,

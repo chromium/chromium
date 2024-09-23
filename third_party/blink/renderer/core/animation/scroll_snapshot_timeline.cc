@@ -153,7 +153,7 @@ bool ScrollSnapshotTimeline::ShouldScheduleNextService() {
 
 void ScrollSnapshotTimeline::ScheduleNextService() {
   // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ScrollSnapshotTimeline::UpdateSnapshot() {

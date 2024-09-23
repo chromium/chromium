@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -46,10 +45,11 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
+
+constexpr char kUSMExperimentRoutingId[] = "screencast_usm_rnnt";
 
 inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
@@ -97,16 +97,11 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
     case ash::OnDeviceRecognitionAvailability::kAvailable:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::OnDeviceToServerSpeechRecognitionFallbackReason::kMaxValue;
 }
 
 }  // namespace
-
-// static
-void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
-  web_view->LoadInitialURL(GURL(ash::kChromeUIUntrustedAnnotatorUrl));
-}
 
 // Using base::Unretained for callback is safe since the ProjectorClientImpl
 // owns `drive_helper_`.
@@ -169,6 +164,9 @@ void ProjectorClientImpl::StartSpeechRecognition() {
       availability.use_on_device
           ? GetLocale()
           : GetLocaleOrLanguageForServerSideRecognition();
+  const std::string experiment_recognizer_routing_key =
+      ash::features::IsProjectorUseUSMForS3Enabled() ? kUSMExperimentRoutingId
+                                                     : "";
 
   speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
@@ -177,7 +175,9 @@ void ProjectorClientImpl::StartSpeechRecognition() {
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/true, locale,
           /*is_server_based=*/!availability.use_on_device,
-          media::mojom::RecognizerClientType::kProjector));
+          media::mojom::RecognizerClientType::kProjector,
+          /*skip_continuously_empty_audio=*/false,
+          experiment_recognizer_routing_key));
   if (!availability.use_on_device) {
     RecordOnDeviceToServerSpeechRecognitionFallbackReason(
         GetFallbackReason(availability.on_device_availability));
@@ -302,18 +302,9 @@ void ProjectorClientImpl::OnSpeechRecognitionStopped() {
   SpeechRecognitionEnded(/*forced=*/false);
 }
 
-void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  ash::ProjectorAppClient::Get()->SetTool(tool);
-}
-
-// TODO(b/220202359): Implement undo.
-void ProjectorClientImpl::Undo() {}
-
-// TODO(b/220202359): Implement redo.
-void ProjectorClientImpl::Redo() {}
-
-void ProjectorClientImpl::Clear() {
-  ash::ProjectorAppClient::Get()->Clear();
+void ProjectorClientImpl::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  // For now, this is ignored by projector.
 }
 
 void ProjectorClientImpl::OnFileSystemMounted() {

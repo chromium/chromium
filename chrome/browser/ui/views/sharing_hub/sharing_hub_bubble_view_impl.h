@@ -56,10 +56,6 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   void PopulateScrollView(
       const std::vector<SharingHubAction>& first_party_actions);
 
-  // Resizes and potentially moves the bubble to fit the content's preferred
-  // size.
-  void MaybeSizeToContents();
-
   // Callback when the window is about to close, either from external causes
   // (parent window closed) or because the web contents requested it.
   void OnWindowClosing();

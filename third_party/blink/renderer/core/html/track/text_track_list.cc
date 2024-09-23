@@ -49,7 +49,7 @@ int TextTrackList::GetTrackIndex(TextTrack* text_track) {
   if (text_track->TrackType() == TextTrack::kAddTrack)
     return element_tracks_.size() + add_track_tracks_.Find(text_track);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return -1;
 }
@@ -79,7 +79,7 @@ int TextTrackList::GetTrackIndexRelativeToRenderedTracks(
     ++track_index;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return -1;
 }
@@ -130,7 +130,7 @@ void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   wtf_size_t index = tracks->Find(track);
@@ -149,7 +149,7 @@ void TextTrackList::Append(TextTrack* track) {
     wtf_size_t index = loadable_text_track->TrackElementIndex();
     element_tracks_.insert(index, track);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   InvalidateTrackIndexesAfterTrack(track);
@@ -168,7 +168,7 @@ void TextTrackList::Remove(TextTrack* track) {
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   wtf_size_t index = tracks->Find(track);
@@ -193,7 +193,7 @@ bool TextTrackList::Contains(TextTrack* track) const {
   else if (track->TrackType() == TextTrack::kAddTrack)
     tracks = &add_track_tracks_;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return tracks->Find(track) != kNotFound;
 }

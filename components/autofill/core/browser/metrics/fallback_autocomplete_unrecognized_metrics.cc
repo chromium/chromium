@@ -13,9 +13,9 @@ namespace autofill::autofill_metrics {
 AutocompleteUnrecognizedFallbackEventLogger::
     ~AutocompleteUnrecognizedFallbackEventLogger() {
   // Emit the explicit triggering metric for recognized and unrecognized fields.
-  EmitExplicitlyTriggeredMetric(ac_unrecognized_context_menu_state,
+  EmitExplicitlyTriggeredMetric(ac_unrecognized_context_menu_state_,
                                 "ClassifiedFieldAutocompleteUnrecognized");
-  EmitExplicitlyTriggeredMetric(ac_recognized_context_menu_state,
+  EmitExplicitlyTriggeredMetric(ac_recognized_context_menu_state_,
                                 "ClassifiedFieldAutocompleteRecognized");
   EmitFillAfterSuggestionMetric();
 }
@@ -26,11 +26,12 @@ void AutocompleteUnrecognizedFallbackEventLogger::OnDidShowSuggestions() {
   }
 }
 
-void AutocompleteUnrecognizedFallbackEventLogger::OnDidFillSuggestion() {
+void AutocompleteUnrecognizedFallbackEventLogger::
+    OnDidFillFormFillingSuggestion() {
   // Since the `AutocompleteUnrecognizedFallbackEventLogger` is only notified
   // about autocomplete=unrecognized fields, it is possible that to reach
-  // `OnDidFillSuggestion()` with `suggestion_state_` kNotShown. This happens
-  // when the website dynamically changes the autocomplete attribute to
+  // `OnDidFillFormFillingSuggestion()` with `suggestion_state_` kNotShown. This
+  // happens when the website dynamically changes the autocomplete attribute to
   // unrecognized after triggering (regular) suggestions.
   if (suggestion_state_ == SuggestionState::kShown) {
     suggestion_state_ = SuggestionState::kFilled;
@@ -40,8 +41,8 @@ void AutocompleteUnrecognizedFallbackEventLogger::OnDidFillSuggestion() {
 void AutocompleteUnrecognizedFallbackEventLogger::ContextMenuEntryShown(
     bool address_field_has_ac_unrecognized) {
   ContextMenuEntryState& state = address_field_has_ac_unrecognized
-                                     ? ac_unrecognized_context_menu_state
-                                     : ac_recognized_context_menu_state;
+                                     ? ac_unrecognized_context_menu_state_
+                                     : ac_recognized_context_menu_state_;
   if (state != ContextMenuEntryState::kAccepted) {
     state = ContextMenuEntryState::kShown;
   }
@@ -50,8 +51,8 @@ void AutocompleteUnrecognizedFallbackEventLogger::ContextMenuEntryShown(
 void AutocompleteUnrecognizedFallbackEventLogger::ContextMenuEntryAccepted(
     bool address_field_has_ac_unrecognized) {
   ContextMenuEntryState& state = address_field_has_ac_unrecognized
-                                     ? ac_unrecognized_context_menu_state
-                                     : ac_recognized_context_menu_state;
+                                     ? ac_unrecognized_context_menu_state_
+                                     : ac_recognized_context_menu_state_;
   CHECK_NE(state, ContextMenuEntryState::kNotShown);
   state = ContextMenuEntryState::kAccepted;
 }

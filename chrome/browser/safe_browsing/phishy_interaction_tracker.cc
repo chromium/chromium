@@ -68,6 +68,12 @@ PhishyInteractionTracker::PhishyInteractionTracker(
 }
 
 PhishyInteractionTracker::~PhishyInteractionTracker() {
+  // If there was any data to log, `WebContentsDestroyed()` should have already
+  // handled it.
+  DCHECK(!is_phishy_ || is_data_logged_);
+}
+
+void PhishyInteractionTracker::WebContentsDestroyed() {
   if (is_phishy_ && !is_data_logged_) {
     LogPageData();
     inactivity_timer_.Stop();
@@ -149,15 +155,14 @@ bool PhishyInteractionTracker::IsSitePhishy() {
   safe_browsing::SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
           current_url_,
-          /*is_subresource=*/false,
           web_contents_->GetController().GetLastCommittedEntry(), web_contents_,
           /*allowlist_only=*/true, &current_threat_type)) {
     return false;
   }
-  return current_threat_type == safe_browsing::SB_THREAT_TYPE_URL_PHISHING ||
+  return current_threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
          current_threat_type ==
-             safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         current_threat_type == safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE;
+             SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
+         current_threat_type == SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
 }
 
 void PhishyInteractionTracker::HandlePhishyInteraction(

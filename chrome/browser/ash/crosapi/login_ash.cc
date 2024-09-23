@@ -9,13 +9,13 @@
 #include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
@@ -209,7 +209,7 @@ void LoginAsh::UnlockSharedSession(const std::string& password,
   const user_manager::User* active_user = user_manager->GetActiveUser();
   if (!active_user ||
       active_user->GetType() != user_manager::UserType::kPublicAccount ||
-      !user_manager->CanCurrentUserLock()) {
+      !active_user->CanLock()) {
     std::move(callback).Run(extensions::login_api_errors::kNoUnlockableSession);
     return;
   }
@@ -353,7 +353,7 @@ std::optional<std::string> LoginAsh::LockSession(
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user || !user_manager->CanCurrentUserLock() ||
+  if (!active_user || !active_user->CanLock() ||
       (user_type && active_user->GetType() != user_type)) {
     return extensions::login_api_errors::kNoLockableSession;
   }
@@ -372,7 +372,7 @@ std::optional<std::string> LoginAsh::CanUnlockSession(
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user || !user_manager->CanCurrentUserLock() ||
+  if (!active_user || !active_user->CanLock() ||
       (user_type && active_user->GetType() != user_type)) {
     return extensions::login_api_errors::kNoUnlockableSession;
   }

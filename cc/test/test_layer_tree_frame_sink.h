@@ -20,10 +20,17 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
+#include "components/viz/test/test_shared_image_interface_provider.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace gpu {
+class Scheduler;
+}  // namespace gpu
 
 namespace viz {
 class CompositorFrameSinkSupport;
@@ -132,8 +139,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       const viz::FrameSinkId& id,
       viz::mojom::CompositorFrameSinkType* type) override;
 
-  const std::set<viz::SharedBitmapId>& owned_bitmaps() const {
-    return owned_bitmaps_;
+  gpu::SharedImageInterface* GetSharedImageInterface() {
+    return shared_image_interface_provider_.GetSharedImageInterface();
   }
 
  private:
@@ -154,7 +161,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;
@@ -184,6 +191,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   // interface. On closing this interface, the display compositor should drop
   // ownership of the bitmaps with these ids to avoid leaking them.
   std::set<viz::SharedBitmapId> owned_bitmaps_;
+
+  viz::TestSharedImageInterfaceProvider shared_image_interface_provider_;
 
   base::WeakPtrFactory<TestLayerTreeFrameSink> weak_ptr_factory_{this};
 };

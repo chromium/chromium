@@ -1,4 +1,5 @@
 # Accessibility
+per-file web_ax_context.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 per-file web_ax_object.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 per-file web_ax_enums.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 

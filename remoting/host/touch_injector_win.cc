@@ -214,7 +214,6 @@ void TouchInjectorWin::InjectTouchEvent(const TouchEvent& event) {
       break;
     default:
       NOTREACHED();
-      return;
   }
 }
 

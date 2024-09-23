@@ -231,16 +231,8 @@ public class MenuButtonCoordinator {
     }
 
     /**
-     * Suppress or un-suppress display of the "update available" badge.
-     * @param isSuppressed
-     */
-    public void setAppMenuUpdateBadgeSuppressed(boolean isSuppressed) {
-        if (mMediator == null) return;
-        mMediator.setAppMenuUpdateBadgeSuppressed(isSuppressed);
-    }
-
-    /**
      * Set the visibility of the MenuButton controlled by this coordinator.
+     *
      * @param visible Visibility state, true for visible and false for hidden.
      */
     public void setVisibility(boolean visible) {

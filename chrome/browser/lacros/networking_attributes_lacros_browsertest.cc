@@ -18,7 +18,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingAttributesLacrosBrowserTest,
       ->GetRemote<crosapi::mojom::NetworkingAttributes>()
       ->GetNetworkDetails(future.GetCallback());
 
-  // TODO(https://crbug.com/1207872): Write more robust tests. This API call
+  // TODO(crbug.com/40765778): Write more robust tests. This API call
   // fails because the ash user is not affiliated with the device.
   ASSERT_TRUE(future.Take()->is_error_message());
 }

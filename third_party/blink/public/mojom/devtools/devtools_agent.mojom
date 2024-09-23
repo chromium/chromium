@@ -148,6 +148,9 @@ interface DevToolsAgentHost {
   // TODO(https://crbug.com/1449114): Remove this method once we collect enough
   // data.
   MainThreadDebuggerResumed();
+
+  // Bring the associated frame to the foreground if possible.
+  BringToForeground();
 };
 
 // Represents an attached session which exposes remote debugging protocol.

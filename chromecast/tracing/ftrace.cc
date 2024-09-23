@@ -134,10 +134,10 @@ const char* FindTracingDir() {
 }  // namespace
 
 bool IsValidCategory(std::string_view str) {
-  for (size_t i = 0; i < kCategoryCount; ++i) {
-    std::string_view category(kCategories[i]);
-    if (category == str)
+  for (std::string_view category : kCategories) {
+    if (category == str) {
       return true;
+    }
   }
 
   return false;

@@ -126,7 +126,7 @@ void AvailableOfflineContentHelper::LaunchItem(const std::string& id,
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AvailableOfflineContentHelper::LaunchDownloadsPage() {

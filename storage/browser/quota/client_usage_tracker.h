@@ -32,15 +32,6 @@ namespace storage {
 
 class UsageTracker;
 
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "InvalidOriginReason" in src/tools/metrics/histograms/enums.xml.
-enum class InvalidOriginReason {
-  kIsOpaque = 0,
-  kIsEmpty = 1,
-  kMaxValue = kIsEmpty
-};
-
 // Holds per-client usage tracking information and caches bucket usage data.
 //
 // A UsageTracker object will own one ClientUsageTracker instance per client.
@@ -123,7 +114,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
                          int64_t usage);
 
   // SpecialStoragePolicy::Observer overrides.
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when the StoragePolicy
+  // TODO(crbug.com/40184305): Migrate to use StorageKey when the StoragePolicy
   // is migrated to use StorageKey instead of Origin.
   void OnGranted(const url::Origin& origin_url, int change_flags) override;
   void OnRevoked(const url::Origin& origin_url, int change_flags) override;

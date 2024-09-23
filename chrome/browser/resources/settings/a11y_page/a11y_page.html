@@ -36,7 +36,6 @@
         </template>
         <settings-toggle-button
             class="hr"
-            hidden$="[[!showFocusHighlightOption_]]"
             pref="{{prefs.settings.a11y.focus_highlight}}"
             on-setting-boolean-control-change="onFocusHighlightChange_"
             label="$i18n{focusHighlightLabel}">
@@ -58,9 +57,11 @@
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
 <if expr="is_win or is_linux or is_macosx">
-        <template is="dom-if" if="[[showPdfOcrToggle_]]">
-          <settings-pdf-ocr-toggle id="pdfOcrToggle" prefs="{{prefs}}">
-          </settings-pdf-ocr-toggle>
+        <template is="dom-if" if="[[showAxAnnotationsSection_]]">
+          <settings-ax-annotations-section
+              id="AxAnnotationsSection"
+              prefs="{{prefs}}">
+          </settings-ax-annotations-section>
         </template>
 </if>
 <if expr="is_win or is_linux">

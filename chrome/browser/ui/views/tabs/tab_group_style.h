@@ -16,6 +16,8 @@ class TabGroupViews;
 // Default styling of tab groups.
 class TabGroupStyle {
  public:
+  static int GetTabGroupOverlapAdjustment();
+
   explicit TabGroupStyle(const TabGroupViews& tab_group_views);
   TabGroupStyle(const TabGroupStyle&) = delete;
   TabGroupStyle& operator=(const TabGroupStyle&) = delete;
@@ -66,38 +68,6 @@ class TabGroupStyle {
 
  protected:
   const raw_ref<const TabGroupViews> tab_group_views_;
-};
-
-// Styling of tab groups when the #chrome-refresh-2023 flag is on.
-class ChromeRefresh2023TabGroupStyle : public TabGroupStyle {
- public:
-  static int GetTabGroupOverlapAdjustment();
-  explicit ChromeRefresh2023TabGroupStyle(const TabGroupViews& tab_group_views);
-  ChromeRefresh2023TabGroupStyle(const ChromeRefresh2023TabGroupStyle&) =
-      delete;
-  ChromeRefresh2023TabGroupStyle& operator=(
-      const ChromeRefresh2023TabGroupStyle&) = delete;
-  ~ChromeRefresh2023TabGroupStyle() override;
-
-  bool TabGroupUnderlineShouldBeHidden() const override;
-  bool TabGroupUnderlineShouldBeHidden(
-      const views::View* leading_view,
-      const views::View* trailing_view) const override;
-  SkPath GetUnderlinePath(gfx::Rect local_bounds) const override;
-  gfx::Rect GetEmptyTitleChipBounds(
-      const TabGroupHeader* header) const override;
-  std::unique_ptr<views::Background> GetEmptyTitleChipBackground(
-      SkColor color) const override;
-  int GetHighlightPathGeneratorCornerRadius(
-      const views::View* title) const override;
-  gfx::Insets GetInsetsForHeaderChip(bool should_show_sync_icon) const override;
-  int GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
-      std::u16string title) const override;
-  float GetEmptyChipSize() const override;
-  gfx::Point GetTitleChipOffset(std::optional<int> text_height) const override;
-  float GetSyncIconWidth() const override;
-  int GetChipCornerRadius() const override;
-  int GetTabGroupViewOverlap() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_

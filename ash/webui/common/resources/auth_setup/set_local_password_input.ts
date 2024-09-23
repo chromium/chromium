@@ -82,7 +82,7 @@ export class SetLocalPasswordInputElement extends
       /**
        * This is here to make this element usable in OOBE, where the locale
        * can change dynamically. This attribute replicates the functionality of
-       * OobeI18nBehavior.
+       * OobeI18nMixin.
        */
       locale: {
         type: String,

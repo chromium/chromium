@@ -49,7 +49,7 @@ const char kResponseWithNoCache[] =
 
 }  // namespace
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class BackForwardCacheBrowserTestNoTestingConfig
     : public BackForwardCacheBrowserTest {
  public:
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
 
 // When CCNS is present and WebSocket is used, both features should be recorded
 // and the test should not hit CHECK.
-// TODO(crbug.com/1372291): WebSocket server is flaky Android.
+// TODO(crbug.com/40241677): WebSocket server is flaky Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CCNSAndWebSocketBothRecorded DISABLED_CCNSAndWebSocketBothRecorded
 #else
@@ -419,18 +419,18 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
     PagesWithCacheControlNoStoreRecordOtherReasonsUponEntrance) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL(
-      "a.com", "/set-header?Cache-Control: no-store"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(
+      https_server()->GetURL("a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Load the document and specify no-store for the main resource.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
   // Use blocklisted feature.
-  EXPECT_TRUE(ExecJs(rfh_a.get(), "window.foo = new BroadcastChannel('foo');"));
+  EXPECT_TRUE(ExecJs(rfh_a.get(), kBlockingScript));
 
   // 2) Navigate away. |rfh_a| should not enter bfcache.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -439,18 +439,14 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  ExpectNotRestored(
-      {NotRestoredReason::kBlocklistedFeatures,
-       NotRestoredReason::kCacheControlNoStore},
-      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      {}, FROM_HERE);
-  EXPECT_THAT(
-      GetTreeResult()->GetDocumentResult(),
-      MatchesDocumentResult(
-          NotRestoredReasons({NotRestoredReason::kBlocklistedFeatures,
-                              NotRestoredReason::kCacheControlNoStore}),
-          BlockListedFeatures({blink::scheduler::WebSchedulerTrackedFeature::
-                                   kBroadcastChannel})));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures,
+                     NotRestoredReason::kCacheControlNoStore},
+                    {kBlockingReasonEnum}, {}, {}, {}, FROM_HERE);
+  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
+              MatchesDocumentResult(
+                  NotRestoredReasons({NotRestoredReason::kBlocklistedFeatures,
+                                      NotRestoredReason::kCacheControlNoStore}),
+                  BlockListedFeatures({kBlockingReasonEnum})));
 }
 
 // Test that a page with cache-control:no-store records eviction reasons along
@@ -785,7 +781,7 @@ class BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest
     }
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -957,25 +953,22 @@ IN_PROC_BROWSER_TEST_P(
                     {}, {}, {}, FROM_HERE);
 
   auto subframe_result = MatchesNotRestoredReasons(
-      /*id=*/"", /*name=*/"", /*src=*/url_a_no_store.spec(),
+      /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/url_a_no_store.spec(),
       /*reasons=*/
-      {MatchesDetailedReason(
-           "JsNetworkRequestReceivedCacheControlNoStoreResource",
-           /*source=*/std::nullopt),
-       MatchesDetailedReason("MainResourceHasCacheControlNoStore",
+      {MatchesDetailedReason("response-cache-control-no-store",
                              /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
-          /*url=*/url_a_no_store.spec(),
+          /*url=*/url_a_no_store,
           /*children=*/{}));
   EXPECT_THAT(
       current_frame_host()->NotRestoredReasonsForTesting(),
       MatchesNotRestoredReasons(
           /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/std::nullopt,
           /*reasons=*/
-          {MatchesDetailedReason("MainResourceHasCacheControlNoStore",
+          {MatchesDetailedReason("response-cache-control-no-store",
                                  /*source=*/std::nullopt)},
           MatchesSameOriginDetails(
-              /*url=*/url_a_no_store.spec(),
+              /*url=*/url_a_no_store,
               /*children=*/
               {subframe_result})));
 }

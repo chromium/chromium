@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] orphaned button with gridcell role outside the context of row
+  assert_equals: <button role="gridcell" data-testname="orphaned button with gridcell role outside the context of row" data-expectedrole="button" class="ex">x</button> expected "button" but got "gridcell"
+[FAIL] orphaned row outside the context of table
+  assert_false: Computed Role: "row" does not match any of the acceptable role strings in ["generic", "", "none"]: <span role="row" data-testname="orphaned row outside the context of table" class="ex-generic">x</span> expected false got true
+[FAIL] orphaned rowgroup outside the context of row
+  assert_false: Computed Role: "rowgroup" does not match any of the acceptable role strings in ["generic", "", "none"]: <span role="rowgroup" data-testname="orphaned rowgroup outside the context of row" class="ex-generic">x</span> expected false got true
+[FAIL] orphaned div with gridcell role outside the context of row
+  assert_false: Computed Role: "gridcell" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="gridcell" data-testname="orphaned div with gridcell role outside the context of row" class="ex-generic">x</div> expected false got true
+[FAIL] orphaned rowheader outside the context of row
+  assert_false: Computed Role: "rowheader" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="rowheader" data-testname="orphaned rowheader outside the context of row" class="ex-generic">x</div> expected false got true
+[FAIL] orphaned columnheader outside the context of row
+  assert_false: Computed Role: "columnheader" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="columnheader" data-testname="orphaned columnheader outside the context of row" class="ex-generic">x</div> expected false got true
+Harness: the test ran to completion.
+

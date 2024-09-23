@@ -1,0 +1,27 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./app_management_shared_style.css.js
+ * #include=app-management-shared-style
+ * #css_wrapper_metadata_end */
+
+:host(:not([available_])) {
+  display: none;
+}
+
+#file-handling-item {
+  margin: var(--row-item-vertical-padding) 0;
+  width: 100%;
+}
+
+#toggle-row:not([disabled_]) {
+  cursor: pointer;
+}
+
+#dialog-body {
+  user-select: text;
+}

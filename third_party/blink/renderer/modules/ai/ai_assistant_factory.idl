@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+enum AIAssistantInitialPromptRole { "system", "user", "assistant" };
+enum AIAssistantPromptRole { "user", "assistant" };
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIPromptAPI
+]
+interface AIAssistantCapabilities {
+  [Measure]
+  readonly attribute AICapabilityAvailability available;
+
+  // Always null if available === "no"
+  [Measure]
+  readonly attribute unsigned long? defaultTopK;
+  [Measure]
+  readonly attribute unsigned long? maxTopK;
+  [Measure]
+  readonly attribute float? defaultTemperature;
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIPromptAPI
+]
+interface AIAssistantFactory {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAssistantCapabilities> capabilities();
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAssistant> create(
+    optional AIAssistantCreateOptions options = {}
+  );
+};

@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
+
+#include <cstdint>
 
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -60,9 +67,9 @@ bool MediaEngagementPreloadedList::LoadFromFile(const base::FilePath& path) {
   }
 
   // Copy data from the protobuf message.
-  dafsa_ = std::vector<unsigned char>(
-      message.dafsa().c_str(),
-      message.dafsa().c_str() + message.dafsa().length());
+  dafsa_ =
+      std::vector<uint8_t>(message.dafsa().c_str(),
+                           message.dafsa().c_str() + message.dafsa().length());
 
   is_loaded_ = true;
   return true;
@@ -86,8 +93,7 @@ bool MediaEngagementPreloadedList::CheckOriginIsPresent(
   std::string location(origin.host());
 
   // Add :<port> if we use a non-default port.
-  if (origin.port() != url::DefaultPortForScheme(origin.scheme().data(),
-                                                 origin.scheme().length())) {
+  if (origin.port() != url::DefaultPortForScheme(origin.scheme())) {
     location.push_back(':');
     std::string port(base::NumberToString(origin.port()));
     location.append(std::move(port));
@@ -121,6 +127,5 @@ MediaEngagementPreloadedList::DafsaResult
 MediaEngagementPreloadedList::CheckStringIsPresent(
     const std::string& input) const {
   return static_cast<MediaEngagementPreloadedList::DafsaResult>(
-      net::LookupStringInFixedSet(dafsa_.data(), dafsa_.size(), input.c_str(),
-                                  input.size()));
+      net::LookupStringInFixedSet(dafsa_, input.c_str(), input.size()));
 }

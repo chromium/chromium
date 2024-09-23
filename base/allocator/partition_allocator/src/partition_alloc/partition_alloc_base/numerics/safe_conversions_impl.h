@@ -2,20 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
 
 #include <cstdint>
 #include <limits>
 #include <type_traits>
-
-#if defined(__GNUC__) || defined(__clang__)
-#define PA_BASE_NUMERICS_LIKELY(x) __builtin_expect(!!(x), 1)
-#define PA_BASE_NUMERICS_UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define PA_BASE_NUMERICS_LIKELY(x) (x)
-#define PA_BASE_NUMERICS_UNLIKELY(x) (x)
-#endif
 
 namespace partition_alloc::internal::base::internal {
 
@@ -838,4 +830,4 @@ constexpr Dst CommonMaxOrMin(bool is_min) {
 
 }  // namespace partition_alloc::internal::base::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_

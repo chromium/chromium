@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -15,6 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -24,8 +27,10 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_status_code.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
 
@@ -41,8 +46,20 @@ class ClientSideDetectionService;
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
 // class which sends a ping to a server to validate the verdict.
-class ClientSideDetectionHost : public content::WebContentsObserver {
+class ClientSideDetectionHost
+    : public content::WebContentsObserver,
+      public permissions::PermissionRequestManager::Observer,
+      public AsyncCheckTracker::Observer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AsyncCheckTriggerForceRequestResult {
+    kTriggered = 0,
+    kSkippedTriggerModelsPingNotSkipped = 1,
+    kSkippedNotForced = 2,
+    kMaxValue = kSkippedNotForced,
+  };
+
   // A callback via which the client of this component indicates whether the
   // primary account is signed in.
   using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;
@@ -91,8 +108,24 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // From content::WebContentsObserver.  If we navigate away we cancel all
   // pending callbacks that could show an interstitial, and check to see whether
-  // we should classify the new URL.
+  // we should classify the new URL. If a request to lock the keyboard or
+  // pointer or vibrate the page has arrived, we will re-trigger classification.
   void PrimaryPageChanged(content::Page& page) override;
+  void KeyboardLockRequested() override;
+  void PointerLockRequested() override;
+  void VibrationRequested() override;
+
+  // permissions::PermissionRequestManager::Observer methods:
+  void OnPromptAdded() override;
+  void OnPermissionRequestManagerDestructed() override;
+
+  void RegisterPermissionRequestManager();
+
+  // AsyncCheckTracker::Observer methods:
+  void OnAsyncSafeBrowsingCheckCompleted() override;
+  void OnAsyncSafeBrowsingCheckTrackerDestructed() override;
+
+  void RegisterAsyncCheckTracker();
 
  protected:
   explicit ClientSideDetectionHost(
@@ -109,43 +142,91 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
  private:
   friend class ClientSideDetectionHostTestBase;
+  friend class ClientSideDetectionHostNotificationTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            PrerenderShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      KeyboardLockTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      PointerLockTriggersPreClassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      PointerLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      KeyboardLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
+                           VibrationApiTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
+                           VibrationApiClassificationTriggersCSPPPing);
+
+  // Helper function to create preclassification check once requirements are
+  // met.
+  void MaybeStartPreClassification(ClientSideDetectionType request_type);
 
   // Called when pre-classification checks are done for the phishing
-  // classifiers.
-  void OnPhishingPreClassificationDone(bool should_classify);
+  // classifiers. |request_type| is passed in to specify the process that
+  // requests the classification.
+  void OnPhishingPreClassificationDone(
+      ClientSideDetectionType request_type,
+      bool should_classify,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist);
 
-  // |verdict| is an encoded ClientPhishingRequest protocol message, |result|
-  // is the outcome of the renderer classification.
-  void PhishingDetectionDone(mojom::PhishingDetectorResult result,
-                             const std::string& verdict);
+  // `verdict` is a wrapped ClientPhishingRequest protocol message, `result`
+  // is the outcome of the renderer classification. `request_type` is passed in
+  // to specify the process that requests the classification, which is passed
+  // along from OnPhishingPreClassificationDone().
+  void PhishingDetectionDone(
+      ClientSideDetectionType request_type,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      mojom::PhishingDetectorResult result,
+      std::optional<mojo_base::ProtoWrapper> verdict);
 
-  // |verdict| is an object parsed from the serialized string passed into
-  // |PhishingDetectionDone|.
+  // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
-      std::unique_ptr<ClientPhishingRequest> verdict);
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
   // this function after the renderer classification is finished.
   void PhishingImageEmbeddingDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
       mojom::PhishingImageEmbeddingResult result,
-      const std::string& image_feature_embedding_string);
+      std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
   // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
   // whether the warning is being shown due to a cached verdict or from an
-  // actual server ping.
-  void MaybeShowPhishingWarning(bool is_from_cache,
-                                GURL phishing_url,
-                                bool is_phishing);
+  // actual server ping. |response_code| is cached so it can be included as
+  // debugging metadata in PhishGuard pings.
+  void MaybeShowPhishingWarning(
+      bool is_from_cache,
+      ClientSideDetectionType request_type,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      GURL phishing_url,
+      bool is_phishing,
+      std::optional<net::HttpStatusCode> response_code);
+
+  // Whether request is forced for |current_url_|. This function also checks
+  // whether enhanced protection is enabled.
+  bool HasForceRequestFromRtUrlLookup();
 
   // Used for testing.  This function does not take ownership of the service
   // class.
@@ -180,11 +261,16 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // Send the client report to CSD server.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
-                   const std::string& access_token);
+                   const std::string& access_token,
+                   std::optional<bool> did_match_high_confidence_allowlist);
 
   // Called when token_fetcher_ has fetched the token.
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
+                        std::optional<bool> did_match_high_confidence_allowlist,
                         const std::string& access_token);
+
+  // Check if sample ping can be sent to Safe Browsing.
+  bool CanSendSamplePing();
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
@@ -196,8 +282,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   scoped_refptr<BaseUIManager> ui_manager_;
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
-  // TODO(drubery): Make this a std::unique_ptr, for clearer lifetimes.
-  scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
+  std::unique_ptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
   // The current outermost main frame's id.
@@ -229,6 +314,17 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // The remote for the currently active phishing image embedder.
   mojo::AssociatedRemote<mojom::PhishingImageEmbedderDetector>
       phishing_image_embedder_;
+
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      permission_request_observation_{this};
+
+  // A boolean indicates whether TRIGGER_MODELS request is skipped. This is
+  // used to decide whether async check is allowed to trigger FORCE_REQUEST.
+  bool trigger_models_request_skipped_ = false;
+
+  base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
+      async_check_observation_{this};
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

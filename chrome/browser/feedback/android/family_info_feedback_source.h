@@ -12,8 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 
 class Profile;
@@ -44,18 +45,15 @@ class FamilyInfoFeedbackSource {
 
   void OnResponse(
       const supervised_user::ProtoFetcherStatus& status,
-      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
-          response);
-  void OnSuccess(
-      const kids_chrome_management::ListFamilyMembersResponse& response);
+      std::unique_ptr<kidsmanagement::ListMembersResponse> response);
+  void OnSuccess(const kidsmanagement::ListMembersResponse& response);
   void OnFailure(const supervised_user::ProtoFetcherStatus& status);
 
   // Cleans up following the call to ListFamilyMembers
   void OnComplete();
 
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
-  std::unique_ptr<supervised_user::ProtoFetcher<
-      kids_chrome_management::ListFamilyMembersResponse>>
+  std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       list_family_members_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

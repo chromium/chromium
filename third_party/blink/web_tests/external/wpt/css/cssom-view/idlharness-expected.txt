@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Screen interface: existence and properties of interface object
   assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 [FAIL] Screen interface: existence and properties of interface prototype object
   assert_equals: prototype of Screen.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
-[FAIL] VisualViewport interface: attribute onscrollend
-  assert_true: The prototype object must have a property "onscrollend" expected true got false
-[FAIL] VisualViewport interface: self.visualViewport must inherit property "onscrollend" with the proper type
-  assert_inherits: property "onscrollend" not found in prototype chain
 [FAIL] CSSPseudoElement interface: operation getBoxQuads(optional BoxQuadOptions)
   assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 [FAIL] CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions)

@@ -6,7 +6,6 @@
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -47,14 +46,8 @@ void HttpErrorTabHelper::ResourceLoadComplete(
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
           render_frame_host);
-  bool cookies_blocked;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    cookies_blocked = pscs && pscs->blocked_browsing_data_model()->size() > 0;
-  } else {
-    cookies_blocked =
-        pscs && pscs->blocked_local_shared_objects().GetObjectCount() > 0;
-  }
+  bool cookies_blocked =
+      pscs && pscs->blocked_browsing_data_model()->size() > 0;
 
   ukm::builders::ThirdPartyCookies_BreakageIndicator_HTTPError(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())

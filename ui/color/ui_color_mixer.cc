@@ -167,32 +167,12 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       SetAlpha(kColorNotificationInputForeground, gfx::kGoogleGreyAlpha700);
   mixer[kColorOverlayScrollbarFill] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha700);
-  mixer[kColorOverlayScrollbarFillDark] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha700);
-  mixer[kColorOverlayScrollbarFillLight] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha700);
   mixer[kColorOverlayScrollbarFillHovered] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha800);
-  mixer[kColorOverlayScrollbarFillHoveredDark] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha800);
-  mixer[kColorOverlayScrollbarFillHoveredLight] = SetAlpha(
-      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha800);
   mixer[kColorOverlayScrollbarStroke] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
-  mixer[kColorOverlayScrollbarStrokeDark] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillDark),
-               gfx::kGoogleGreyAlpha400);
-  mixer[kColorOverlayScrollbarStrokeLight] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillLight),
-               gfx::kGoogleGreyAlpha400);
   mixer[kColorOverlayScrollbarStrokeHovered] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
-  mixer[kColorOverlayScrollbarStrokeHoveredDark] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredDark),
-               gfx::kGoogleGreyAlpha500);
-  mixer[kColorOverlayScrollbarStrokeHoveredLight] =
-      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
-               gfx::kGoogleGreyAlpha500);
   mixer[kColorProgressBar] = PickGoogleColorTwoBackgrounds(
       kColorAccent, kColorDialogBackground, kColorProgressBarBackground,
       color_utils::kMinimumVisibleContrastRatio);
@@ -244,23 +224,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
     mixer[kColorTabBackgroundHighlightedFocused] =
         SetAlpha(std::move(tab_background_base), 0x53);
   }
-  mixer[kColorTabBorderSelected] =
-      PickGoogleColor(kColorAccent, kColorDialogBackground,
-                      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorTabContentSeparator] = {kColorMidground};
-  mixer[kColorTabForeground] = {kColorSecondaryForeground};
-  mixer[kColorTabForegroundSelected] =
-      PickGoogleColor(kColorAccent, kColorDialogBackground,
-                      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorTableBackground] = {kColorPrimaryBackground};
-  mixer[kColorTableBackgroundAlternate] = {kColorTableBackground};
-  mixer[kColorTableBackgroundSelectedFocused] = {kColorItemSelectionBackground};
-  mixer[kColorTableBackgroundSelectedUnfocused] = {
-      kColorTableBackgroundSelectedFocused};
-  mixer[kColorTableForeground] = {kColorPrimaryForeground};
-  mixer[kColorTableForegroundSelectedFocused] = {kColorTableForeground};
-  mixer[kColorTableForegroundSelectedUnfocused] = {
-      kColorTableForegroundSelectedFocused};
   mixer[kColorTableGroupingIndicator] = {kColorItemHighlight};
   mixer[kColorTableHeaderBackground] = {kColorTableBackground};
   mixer[kColorTableHeaderForeground] = {kColorTableForeground};

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -121,7 +120,7 @@ class MODULES_EXPORT IDBValueWrapper {
   //
   // This method must be called at most once, and must be called after
   // WrapIfBiggerThan().
-  scoped_refptr<SharedBuffer> TakeWireBytes();
+  Vector<char> TakeWireBytes();
 
   // Obtains the BlobDataHandles from the serialized value's Blob array.
   //
@@ -173,7 +172,14 @@ class MODULES_EXPORT IDBValueWrapper {
     wrapping_threshold_override_ = threshold;
   }
 
+  void set_compression_threshold_for_test(size_t threshold) {
+    compression_threshold_override_ = threshold;
+  }
+
  private:
+  // Evaluates if the specified uncompressed length merits a compression
+  // attempt.
+  bool ShouldCompress(size_t uncompressed_length) const;
   // Tries to compress `wire_bytes_` via Snappy, storing the output in
   // `wire_data_buffer_`. If the compression effect is small, the compression
   // will be discarded and an uncompressed value will be stored in
@@ -200,6 +206,7 @@ class MODULES_EXPORT IDBValueWrapper {
   size_t original_data_length_ = 0;
 
   std::optional<unsigned> wrapping_threshold_override_;
+  std::optional<size_t> compression_threshold_override_;
 
 #if DCHECK_IS_ON()
   // Accounting for lifecycle stages.
@@ -232,16 +239,14 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // True if at least one of the IDBValues' data was wrapped in a Blob.
   static bool IsWrapped(const Vector<std::unique_ptr<IDBValue>>&);
 
-  // Unwraps an IDBValue that has wrapped Blob data.
-  //
-  // The caller should own the IDBValue (have a std::unique_ptr for it).
-  static void Unwrap(scoped_refptr<SharedBuffer>&& wrapper_blob_content,
-                     IDBValue* wrapped_value);
+  // Unwraps an IDBValue that has wrapped Blob data, placing the result in
+  // `wrapped_value`.
+  static void Unwrap(Vector<char>&& wrapper_blob_content,
+                     IDBValue& wrapped_value);
 
   // Decompresses the value in `buffer` and stores in `out_buffer`. Returns true
   // on success.
-  static bool Decompress(SharedBuffer& buffer,
-                         scoped_refptr<SharedBuffer>* out_buffer);
+  static bool Decompress(const Vector<char>& buffer, Vector<char>* out_buffer);
 
   // Parses the wrapper Blob information from a wrapped IDBValue.
   //
@@ -273,7 +278,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Resets the parsing state.
   bool Reset();
 
-  // Deserialization cursor in the SharedBuffer of the IDBValue being unwrapped.
+  // Deserialization cursor in the `data_` of the IDBValue being unwrapped.
   const uint8_t* current_;
 
   // Smallest invalid position_ value.

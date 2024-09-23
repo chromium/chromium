@@ -464,16 +464,10 @@ Standard: [SecureContext](https://webidl.spec.whatwg.org/#SecureContext)
 
 Summary: Interfaces and interface members with a `SecureContext` attribute are exposed only inside ["Secure Contexts"](https://w3c.github.io/webappsec-secure-contexts/).
 
-**Non-standard:** Blink supports adding a value to the `SecureContext` attribute, which specifies a runtime-enabled flag used to control whether or not the restriction applies. This is intended for use when deprecating legacy APIs, and should not be used for new APIs.
-
-For example: we intend to lock `window.applicationCache` to secure contexts, but need to do so in a way that allows some subset of users (enterprises) to opt out. We can do so by defining a `RestrictAppCacheToSecureContexts` runtime flag, and specifying it in IDL as follows:
-
 ```webidl
-interface Window {
-  ...
-  [SecureContext=RestrictAppCacheToSecureContexts] readonly attribute ApplicationCache applicationCache;
-  ...
-}
+interface PointerEvent : MouseEvent {
+    [SecureContext] sequence<PointerEvent> getCoalescedEvents();
+};
 ```
 
 ### [Serializable]
@@ -802,6 +796,22 @@ Usage: `[NotEnumerable]` can be specified on methods and attributes
 ```
 
 `[NotEnumerable]` indicates that the method or attribute is not enumerable.
+
+### [PassAsSpan]
+
+Summary: Denotes that an argument should be passed as `base::span<const
+uint8_t>`
+
+Usage: `[PassAsSpan]` can only be used on `ArrayBuffer`-like operation arguments
+(including `ArrayBufferView`s and typed arrays) that are read-only
+and not retained by the implementation.
+
+This extended attribute denotes that the implementation accepts this argument as
+a span of bytes (`base::span<const uint8_t>`).  The memory referred by the span
+is only valid for the duration of the bindings call. Passing array buffers as
+spans is much faster compared to passing a union of several array-like types
+(such as `BufferSource` union) both on the generated bindings side and on the
+implementation side.
 
 ### [RaisesException]
 
@@ -1140,6 +1150,24 @@ This is important because cross-origin access is not transitive. For example, if
 `window` and `window.parent` are cross-origin, access to `window.parent` is
 allowed, but access to `window.parent.document` is not.
 
+### [ConvertibleToObject]
+
+Summary:
+
+Forces generation of code to convert native to script value for dictionaries and unions.
+This is assumed for all types that appear as return values for methods (or arguments to
+callback methods), but may need to be specified explicitly for cases where the conversion
+happens internally in C++ code and is not specified in IDL.
+
+Usage:
+```webidl
+[ConvertiableToObject] dictionary Foo {
+    DOMString bar;
+}
+
+void frob([ConvertiableToObject] (Foo or USVString) param);
+```
+
 ### [CrossOrigin]
 
 Summary: Allows cross-origin access to an attribute or method. Used for
@@ -1175,15 +1203,13 @@ reads would leak cross-origin information.
 With both `Getter` and `Setter`, allows both cross-origin reads and cross-origin
 writes. This is used for the `Window.location` attribute.
 
-### [FlexibleArrayBufferView]
+### [HasAsyncIteratorReturnAlgorithm]
 
-Summary: `[FlexibleArrayBufferView]` wraps a parameter that is known to be an ArrayBufferView (or a subtype of, e.g. typed arrays) with a FlexibleArrayBufferView.
+Summary: `[HasAsyncIteratorReturnAlgorithm]` indicates whether an [asynchronously iterable declaration](https://webidl.spec.whatwg.org/#dfn-async-iterable-declaration) has an [asynchronous iterator return algorithm](https://webidl.spec.whatwg.org/#asynchronous-iterator-return).
 
-The FlexibleArrayBufferView itself can then either refer to an actual ArrayBufferView or a temporary copy (for small payloads) that may even live on the stack. The idea is that copying the payload on the stack and referring to the temporary copy saves creating global handles (resulting in weak roots) in V8. Note that `[FlexibleArrayBufferView]`  will actually result in a TypedFlexibleArrayBufferView wrapper for typed arrays.
+This tells the code generator to add a `return()` method to the async iterator. The Blink implementation must then provide the return algorithm by overriding `AsyncIterationSourceBase::AsyncIteratorReturn()`.
 
-The FlexibleArrayBufferView extended attribute always requires the AllowShared extended attribute.
-
-Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextBase.idl for an example.
+Usage: Applies only to `async iterable` declarations. See core/streams/readable_stream.idl for an example.
 
 ### [IsolatedContext]
 
@@ -1231,11 +1257,13 @@ Usage: The method must adhere to the following requirements:
 2. Doesn't trigger JavaScript execution;
 3. Has no side effect.
 
-Those requirements lead to the specific inability to throw JS exceptions and to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If any such error reporting needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
+Those requirements lead to the specific inability to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If logging needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
 
-Note: if `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
+If `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
 
-Note: the [NoAllocDirectCall] extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
+Calling `ThrowDOMException` would seemingly cause `MakeGarbageCollected<DOMException>` to occur, violating the requirement about potentially triggering garbage collection. However, `ThrowDOMException` from a `[NoAllocDirectCall]` method is actually safe in practice. When generating the bindings for a method which is marked as both `[NoAllocDirectCall]` and `[RaisesException]`, V8 will automatically use [`NoAllocDirectCallExceptionState`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h) instead of `ExceptionState`. This class will defer the allocation of the `DOMException` object via `PostDeferrableAction` until it is safe to allocate GC memory. The `WTF::String` inside of the `DOMException` is not a V8 object and does not participate in garbage collection, so its allocation is safe and doesn't violate the requirements of `[NoAllocDirectCall]`.
+
+Note: the `[NoAllocDirectCall]` extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
 
 ### [PerWorldBindings]
 
@@ -1265,6 +1293,12 @@ Only used in some HTML*ELement.idl files and one other place.
 
 These extended attributes are _temporary_ and are only in use while some change is in progress. Unless you are involved with the change, you can generally ignore them, and should not use them.
 
+### [InjectionMitigated]
+
+Summary: Interfaces and interface members with an `[InjectionMitigated]` attribute are exposed only in contexts that enforce a [strict Content Security Policy](https://csp.withgoogle.com/docs/strict-csp.html) and [Trusted Types](https://w3c.github.io/trusted-types/dist/spec/).
+
+This attribute implements the core idea behind the [Securer Contexts explainer](https://github.com/mikewest/securer-contexts), and may be renamed as it works its way through the standards process.
+
 ### [IsCodeLike]
 
 This implements the TC39 "Dynamic Code Brand Checks" proposal. By attaching
@@ -1282,6 +1316,20 @@ These extended attributes are _discouraged_ - they are not deprecated, but they 
 Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
 
 Consult with the bindings team before you use this extended attribute.
+
+### [IDLTypeImplementedAsV8Promise]
+
+Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromiseUntyped` type.
+
+This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
+
+### [NodeWrapInOwnContext]
+
+Summary: Forces a Node to be wrapped in its own context, rather than the receiver's context.
+
+In most cases, return values are wrapped in the receiver context (i.e., the context of the interface whose operation/attribute/etc. is being called). The bindings assert that `[NodeWrapInOwnContext]` is only used for `Node`s. When used, we find the correct `ScriptState` with the `Node`'s `ExecutionContext` and the current `DOMWrapperWorld`, and if it exists, wrap the `Node` using that `ScriptState`. If that `ScriptState` is not available (usually because the `Node` is detached), we fall back to the receiver `ScriptState`.
+
+`[NodeWrapInOwnContext]` is only necessary where a `Node` may be returned by an interface from a different context, *and* that interface does not use `[CheckSecurity=ReturnValue]` to enable cross-context security checks. The only interfaces that this applies to are ones that unnecessarily mix contexts (`NodeFilter`, `NodeIterator`, and `TreeWalker`), and new usage should not be introduced.
 
 ### [TargetOfExposed]
 

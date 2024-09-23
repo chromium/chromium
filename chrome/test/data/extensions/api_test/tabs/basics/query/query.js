@@ -193,7 +193,7 @@ chrome.test.runTests([
   },
 
   function queryTitle() {
-    let title_url = chrome.extension.getURL("query.html");
+    let title_url = chrome.runtime.getURL("query.html");
     chrome.tabs.create({url: title_url}, pass(function() {
       waitForAllTabs(pass(function() {
         chrome.tabs.query({title: "*query.html"}, pass(function(tabs) {

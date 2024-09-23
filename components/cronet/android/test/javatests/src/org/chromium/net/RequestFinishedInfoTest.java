@@ -38,12 +38,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-        reason = "Fallback and AOSP implementations do not support RequestFinishedListeners")
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "Fallback implementation does not support RequestFinishedListener.")
 public class RequestFinishedInfoTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private String mUrl;
+    private CronetImplementation mImplementationUnderTest;
 
     // A subclass of TestRequestFinishedListener to additionally assert that UrlRequest.Callback's
     // terminal callbacks have been invoked at the time of onRequestFinished().
@@ -64,12 +65,12 @@ public class RequestFinishedInfoTest {
             super.onRequestFinished(requestInfo);
         }
     }
-    ;
 
     @Before
     public void setUp() throws Exception {
         NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
         mUrl = NativeTestServer.getFileURL("/echo?status=200");
+        mImplementationUnderTest = mTestRule.implementationUnderTest();
     }
 
     @After
@@ -135,9 +136,11 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
         assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
@@ -172,9 +175,11 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
         assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
@@ -207,15 +212,21 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo firstRequestInfo = firstListener.getRequestInfo();
         RequestFinishedInfo secondRequestInfo = secondListener.getRequestInfo();
 
-        MetricsTestUtil.checkRequestFinishedInfo(firstRequestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, firstRequestInfo, mUrl, startTime, endTime);
         assertThat(firstRequestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(
-                firstRequestInfo.getMetrics(), startTime, endTime, false);
+                mImplementationUnderTest, firstRequestInfo.getMetrics(), startTime, endTime, false);
 
-        MetricsTestUtil.checkRequestFinishedInfo(secondRequestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, secondRequestInfo, mUrl, startTime, endTime);
         assertThat(secondRequestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(
-                secondRequestInfo.getMetrics(), startTime, endTime, false);
+                mImplementationUnderTest,
+                secondRequestInfo.getMetrics(),
+                startTime,
+                endTime,
+                false);
 
         assertThat(firstRequestInfo.getAnnotations()).containsExactly("request annotation", this);
         assertThat(secondRequestInfo.getAnnotations()).containsExactly("request annotation", this);
@@ -259,22 +270,28 @@ public class RequestFinishedInfoTest {
         assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
                 .that(metrics)
                 .isNotNull();
-        // The failure is occasionally fast enough that time reported is 0, so just check for null
-        assertThat(metrics.getTotalTimeMs()).isNotNull();
-        assertThat(metrics.getTtfbMs()).isNull();
 
-        // Check the timing metrics
-        assertThat(metrics.getRequestStart()).isNotNull();
-        MetricsTestUtil.assertAfter(metrics.getRequestStart(), startTime);
-        MetricsTestUtil.checkNoConnectTiming(metrics);
-        assertThat(metrics.getSendingStart()).isNull();
-        assertThat(metrics.getSendingEnd()).isNull();
-        assertThat(metrics.getResponseStart()).isNull();
-        assertThat(metrics.getRequestEnd()).isNotNull();
-        MetricsTestUtil.assertAfter(endTime, metrics.getRequestEnd());
-        MetricsTestUtil.assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
-        assertThat(metrics.getSentByteCount()).isEqualTo(0);
-        assertThat(metrics.getReceivedByteCount()).isEqualTo(0);
+        // RequestFinishedInfoListener HttpEngineWrapper implementation has placeholder ie null
+        // metrics. Don't bother checking timing metrics for AOSP whether it passes or not.
+        if (mImplementationUnderTest != CronetImplementation.AOSP_PLATFORM) {
+            // The failure is occasionally fast enough that time reported is 0, so just check for
+            // null
+            assertThat(metrics.getTotalTimeMs()).isNotNull();
+            assertThat(metrics.getTtfbMs()).isNull();
+
+            // Check the timing metrics
+            assertThat(metrics.getRequestStart()).isNotNull();
+            MetricsTestUtil.assertAfter(metrics.getRequestStart(), startTime);
+            MetricsTestUtil.checkNoConnectTiming(mImplementationUnderTest, metrics);
+            assertThat(metrics.getSendingStart()).isNull();
+            assertThat(metrics.getSendingEnd()).isNull();
+            assertThat(metrics.getResponseStart()).isNull();
+            assertThat(metrics.getRequestEnd()).isNotNull();
+            MetricsTestUtil.assertAfter(endTime, metrics.getRequestEnd());
+            MetricsTestUtil.assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
+            assertThat(metrics.getSentByteCount()).isEqualTo(0);
+            assertThat(metrics.getReceivedByteCount()).isEqualTo(0);
+        }
     }
 
     @Test
@@ -401,9 +418,11 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.CANCELED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
 
         assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
@@ -437,7 +456,13 @@ public class RequestFinishedInfoTest {
         // Empty headers are invalid and will cause start() to throw an exception.
         UrlRequest request = urlRequestBuilder.addHeader("", "").build();
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, request::start);
-        assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: ");
+        if (mImplementationUnderTest == CronetImplementation.AOSP_PLATFORM
+                && !mTestRule.isRunningInAOSP()) {
+            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
+        } else {
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: ");
+        }
     }
 
     @Test
@@ -491,8 +516,8 @@ public class RequestFinishedInfoTest {
         assertThat(metrics.getResponseStart()).isEqualTo(new Date(responseStart));
         assertThat(metrics.getRequestEnd()).isEqualTo(new Date(requestEnd));
         assertThat(metrics.getSocketReused()).isEqualTo(socketReused);
-        assertThat((long) metrics.getSentByteCount()).isEqualTo(sentByteCount);
-        assertThat((long) metrics.getReceivedByteCount()).isEqualTo(receivedByteCount);
+        assertThat(metrics.getSentByteCount()).isEqualTo(sentByteCount);
+        assertThat(metrics.getReceivedByteCount()).isEqualTo(receivedByteCount);
     }
 
     @Test
@@ -523,9 +548,11 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
         assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
@@ -562,9 +589,11 @@ public class RequestFinishedInfoTest {
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
         // Check that annotation got updated in onSucceeded() callback.
         assertThat(requestInfo.getAnnotations()).containsExactly(requestAnnotation);
         assertThat(requestAnnotation.get()).isTrue();
@@ -684,9 +713,11 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                mImplementationUnderTest, requestInfo, mUrl, startTime, endTime);
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.CANCELED);
-        MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
+        MetricsTestUtil.checkHasConnectTiming(
+                mImplementationUnderTest, requestInfo.getMetrics(), startTime, endTime, false);
 
         assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }

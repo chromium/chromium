@@ -46,6 +46,7 @@ cast_source_set("base") {
     "cast_constants.h",
     "cast_features.cc",
     "cast_features.h",
+    "cast_features_internal.cc",
     "cast_paths.cc",
     "cast_paths.h",
     "cast_resource.cc",
@@ -58,6 +59,7 @@ cast_source_set("base") {
     "hash_util.cc",
     "hash_util.h",
     "legacy_app_id_mapper.h",
+    "legacy_app_id_mapper_dummy.cc",
     "observer.h",
     "path_utils.cc",
     "path_utils.h",
@@ -91,16 +93,6 @@ cast_source_set("base") {
     "//chromecast:chromecast_buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]
-
-  if (chromecast_branding == "public") {
-    sources += [
-      "cast_features_internal.cc",
-      "legacy_app_id_mapper_dummy.cc",
-    ]
-  } else {
-    sources += [ "//chromecast/internal/base/legacy_app_id_mapper_impl.cc" ]
-    deps += [ "//chromecast/internal/base:cast_internal_features" ]
-  }
 
   if (is_android) {
     sources += [
@@ -255,11 +247,15 @@ if (is_android) {
 group("default_create_sys_info") {
   if (is_android) {
     public_deps = [ ":android_create_sys_info" ]
-  } else if (chromecast_branding == "public") {
-    public_deps = [ ":dummy_create_sys_info" ]
   } else {
-    public_deps = [ ":shlib_create_sys_info" ]
+    public_deps = [ ":dummy_create_sys_info" ]
   }
+
+#  The shlib might be needed for Linux, but was never picked up for 'public' builds.
+#  } else {
+#    public_deps = [ ":shlib_create_sys_info" ]
+#  }
+
 }
 
 cast_source_set("thread_health_checker") {

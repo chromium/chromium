@@ -165,7 +165,7 @@ pre-release channels of WebView are not available.
 ## Reporting problems with pre-release WebView
 
 Any WebView-related bugs can be filed
-[here](https://bugs.chromium.org/p/chromium/issues/entry?template=Webview+Bugs).
+[here](https://issues.chromium.org/issues/new?component=1456456&template=1923373).
 
 To best enable us to resolve the issue, please ensure you provide all of the
 information requested in the bug report template.

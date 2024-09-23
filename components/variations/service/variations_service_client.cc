@@ -36,7 +36,7 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
 
   auto channel = GetChannel();
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1493502): Remove this if block after automotive beta ends.
+  // TODO(crbug.com/40936710): Remove this if block after automotive beta ends.
   if (channel == version_info::Channel::BETA &&
       base::android::BuildInfo::GetInstance()->is_automotive()) {
     return version_info::Channel::STABLE;
@@ -75,7 +75,7 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
     case ui::DEVICE_FORM_FACTOR_FOLDABLE:
       return Study::FOLDABLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Study::DESKTOP;
 #endif  // BUILDFLAG(PLATFORM_CFM)
 }
@@ -83,13 +83,6 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
 std::unique_ptr<SeedResponse>
 VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return nullptr;
-}
-
-void VariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
-    std::string_view group_name) {
-  // This trial should only be registered on platforms that support the limited
-  // entropy mode.
-  NOTREACHED();
 }
 
 }  // namespace variations

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/nacl/renderer/ppb_nacl_private.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,6 +14,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -24,6 +24,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,7 @@
 #include "components/nacl/renderer/nexe_load_manager.h"
 #include "components/nacl/renderer/platform_info.h"
 #include "components/nacl/renderer/pnacl_translation_resource_host.h"
+#include "components/nacl/renderer/ppb_nacl_private.h"
 #include "components/nacl/renderer/progress_event.h"
 #include "components/nacl/renderer/trusted_plugin_channel.h"
 #include "content/public/common/content_client.h"
@@ -1040,7 +1042,7 @@ void DownloadManifestToBufferCompletion(PP_Instance instance,
                                     "access to manifest url was denied.");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       pp_error = PP_ERROR_FAILED;
       load_manager->ReportLoadError(PP_NACL_ERROR_MANIFEST_LOAD_URL,
                                     "could not load manifest url.");
@@ -1191,20 +1193,20 @@ PP_Bool PPBNaClPrivate::GetPnaclResourceInfo(PP_Instance instance,
                               kFilename);
     }
 
-    std::unique_ptr<char[]> buffer(new char[file_size + 1]);
-    int rc = file.Read(0, buffer.get(), file_size);
+    auto buffer = base::HeapArray<char>::Uninit(file_size + 1);
+    int rc = UNSAFE_TODO(file.Read(0, buffer.data(), file_size));
     if (rc < 0 || rc != file_size) {
       return base::unexpected("GetPnaclResourceInfo, reading failed for: " +
                               kFilename);
     }
 
     // Null-terminate the bytes we we read from the file.
-    buffer.get()[rc] = 0;
+    buffer[rc] = 0;
 
     // Expect the JSON file to contain a top-level object (dictionary).
     ASSIGN_OR_RETURN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(buffer.get()),
+        base::JSONReader::ReadAndReturnValueWithError(buffer.data()),
         [](base::JSONReader::Error error) {
           return "Parsing resource info failed: JSON parse error: " +
                  std::move(error).message;
@@ -1631,12 +1633,11 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
     url_loader_->SetDefersLoading(false);
   }
 
-  void DidReceiveData(const char* data, int data_length) override {
+  void DidReceiveData(base::span<const char> data) override {
     if (content::PepperPluginInstance::Get(instance_)) {
       // Stream the data we received to the stream callback.
-      stream_handler_->DidStreamData(stream_handler_user_data_,
-                                     data,
-                                     data_length);
+      stream_handler_->DidStreamData(stream_handler_user_data_, data.data(),
+                                     base::checked_cast<int32_t>(data.size()));
     }
   }
 
@@ -1660,8 +1661,8 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
   std::string pexe_url_;
   int32_t pexe_opt_level_;
   bool use_subzero_;
-  const PPP_PexeStreamHandler* stream_handler_;
-  void* stream_handler_user_data_;
+  raw_ptr<const PPP_PexeStreamHandler> stream_handler_;
+  raw_ptr<void> stream_handler_user_data_;
   bool success_;
   int64_t expected_content_length_;
   base::WeakPtrFactory<PexeDownloader> weak_factory_{this};

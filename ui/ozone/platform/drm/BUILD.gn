@@ -21,8 +21,11 @@ source_set("gbm") {
     "common/drm_util.h",
     "common/drm_wrapper.cc",
     "common/drm_wrapper.h",
+    "common/hardware_display_controller_info.cc",
+    "common/hardware_display_controller_info.h",
     "common/scoped_drm_types.cc",
     "common/scoped_drm_types.h",
+    "common/tile_property.h",
     "gpu/crtc_commit_request.cc",
     "gpu/crtc_commit_request.h",
     "gpu/crtc_controller.cc",
@@ -126,6 +129,7 @@ source_set("gbm") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
+    "//third_party/angle:includes",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
@@ -171,8 +175,6 @@ source_set("gbm") {
     deps += [ "//gpu/vulkan" ]
   }
 
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
-
   defines = [
     "OZONE_IMPLEMENTATION",
 
@@ -185,11 +187,16 @@ source_set("gbm_unittests") {
   testonly = true
   sources = [
     "common/drm_util_unittest.cc",
+    "common/hardware_display_controller_info_unittest.cc",
+    "gpu/drm_display_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
+    "gpu/drm_gpu_util_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
     "gpu/drm_thread_unittest.cc",
     "gpu/drm_window_unittest.cc",
+    "gpu/fake_drm_device.cc",
+    "gpu/fake_drm_device.h",
     "gpu/fake_drm_device_generator.cc",
     "gpu/fake_drm_device_generator.h",
     "gpu/hardware_display_controller_unittest.cc",

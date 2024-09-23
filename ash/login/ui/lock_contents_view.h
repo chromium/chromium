@@ -25,6 +25,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -57,7 +58,6 @@ class BoxLayout;
 namespace ash {
 
 class KioskAppDefaultMessage;
-class LockScreenMediaControlsView;
 class LockScreenMediaView;
 class LoginAuthUserView;
 class LoginBigUserView;
@@ -144,7 +144,14 @@ class ASH_EXPORT LockContentsView
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
   void OnUserAvatarChanged(const AccountId& account_id,
                            const UserAvatar& avatar) override;
-  void OnPinEnabledForUserChanged(const AccountId& user, bool enabled) override;
+  void OnUserAuthFactorsChanged(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) override;
+  void OnPinEnabledForUserChanged(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) override;
   void OnChallengeResponseAuthEnabledForUserChanged(const AccountId& user,
                                                     bool enabled) override;
   void OnFingerprintStateChanged(const AccountId& account_id,
@@ -208,17 +215,20 @@ class ASH_EXPORT LockContentsView
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
-  // ash::EnterpriseDomainObserver
+  // ash::EnterpriseDomainObserver:
   void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
-  // Called by LockScreenMediaControlsView.
-  void CreateMediaControlsLayout();
-  void HideMediaControlsLayout();
+  // Called by LockScreenMediaView:
+  void CreateMediaView();
+  void HideMediaView();
   bool AreMediaControlsEnabled() const;
 
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+
+  // Called by LockScreen.
+  void SetManagementDisclosureClient(ManagementDisclosureClient* client);
 
  private:
   using DisplayLayoutAction = base::RepeatingCallback<void(bool landscape)>;
@@ -234,8 +244,8 @@ class ASH_EXPORT LockContentsView
                             int portrait_dist,
                             bool landscape);
 
-  // Set |spacing_middle| for media controls.
-  void SetMediaControlsSpacing(bool landscape);
+  // Set |spacing_middle| for |media_view_|.
+  void SetMediaViewSpacing(bool landscape);
 
   // 1-2 users.
   void CreateLowDensityLayout(
@@ -316,7 +326,7 @@ class ASH_EXPORT LockContentsView
   LoginBigUserView* CurrentBigUserView();
 
   // Opens an error bubble to indicate authentication failure.
-  void ShowAuthErrorMessage();
+  void ShowAuthErrorMessage(bool authenticated_by_pin);
 
   // Hides the error bubble indicating authentication failure if open.
   void HideAuthErrorMessage();
@@ -401,6 +411,10 @@ class ASH_EXPORT LockContentsView
   // Updates the layout with the new users list.
   void ApplyUserChanges(const std::vector<LoginUserInfo>& users);
 
+  // Shows the pin auth and hides the pin delay message on the user pod when pin
+  // becomes available after being soft-locked.
+  void OnPinUnlock(bool is_primary);
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;
@@ -414,9 +428,6 @@ class ASH_EXPORT LockContentsView
   raw_ptr<ScrollableUsersListView> users_list_ = nullptr;
 
   // View for media controls that appear on the lock screen if it is enabled.
-  // |media_view_| is used if the flag media::kGlobalMediaControlsCrOSUpdatedUI
-  // is enabled, otherwise |media_controls_view_| is used.
-  raw_ptr<LockScreenMediaControlsView> media_controls_view_ = nullptr;
   raw_ptr<LockScreenMediaView> media_view_ = nullptr;
   raw_ptr<views::View> middle_spacing_view_ = nullptr;
 
@@ -524,6 +535,9 @@ class ASH_EXPORT LockContentsView
   // When OnUsersChanged called during authentication this object stores
   // the users info till the authentication finished.
   std::optional<std::vector<LoginUserInfo>> pending_users_change_;
+
+  // Client to communicate with chrome for displaying the management disclosure.
+  raw_ptr<ManagementDisclosureClient> management_disclosure_client_ = nullptr;
 
   // The widget this view is attached to. This field is here so that we can
   // remove `this` as FocusChangeListener in `RemovedFromWidget`.

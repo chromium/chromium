@@ -144,8 +144,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.initialize_at_minimum_page_scale();
   out->smart_insert_delete_enabled = data.smart_insert_delete_enabled();
   out->spatial_navigation_enabled = data.spatial_navigation_enabled();
-  out->fake_no_alloc_direct_call_for_testing_enabled =
-      data.fake_no_alloc_direct_call_for_testing_enabled();
   out->v8_cache_options = data.v8_cache_options();
   out->record_whole_document = data.record_whole_document();
   out->stylus_handwriting_enabled = data.stylus_handwriting_enabled();
@@ -195,6 +193,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->scroll_top_left_interop_enabled = data.scroll_top_left_interop_enabled();
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
+  out->long_press_link_select_text = data.long_press_link_select_text();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
@@ -216,8 +215,10 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.require_transient_activation_for_get_display_media();
   out->require_transient_activation_for_show_file_or_directory_picker =
       data.require_transient_activation_for_show_file_or_directory_picker();
-  out->require_transient_activation_for_html_fullscreen =
-      data.require_transient_activation_for_html_fullscreen();
+  out->in_forced_colors = data.in_forced_colors();
+  out->is_forced_colors_disabled = data.is_forced_colors_disabled();
+  out->preferred_root_scrollbar_color_scheme =
+      data.preferred_root_scrollbar_color_scheme();
   out->preferred_color_scheme = data.preferred_color_scheme();
   out->preferred_contrast = data.preferred_contrast();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();
@@ -230,6 +231,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->renderer_wide_named_frame_lookup =
       data.renderer_wide_named_frame_lookup();
   out->modal_context_menu = data.modal_context_menu();
+  out->subapps_apis_require_user_gesture_and_authorization =
+      data.require_transient_activation_and_user_confirmation_for_subapps_api();
   return true;
 }
 

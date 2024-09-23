@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   IgnoreNetworkServiceCrashes();
 }
 
-// TODO(crbug.com/1459570): Flaky on at least Mac11.
+// TODO(crbug.com/40919503): Flaky on at least Mac11.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CreateSimpleCacheWithParentDirectoryTraversal \
   DISABLED_CreateSimpleCacheWithParentDirectoryTraversal
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntryWithoutOpening) {
   ASSERT_TRUE(network_service_test().is_connected());
 }
 
-// TODO(crbug.com/1394543): Re-enable this test
+// TODO(crbug.com/40881636): Re-enable this test
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                        DISABLED_EnumerateEntries) {
   const std::string kKey1 = "abc";

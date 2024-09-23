@@ -14,11 +14,11 @@
 
 namespace content {
 
-class AgentSchedulingGroupHost;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class DedicatedWorkerHost;
 class SharedWorkerHost;
+class SharedStorageWorkletHost;
 class ServiceWorkerHost;
 struct ServiceWorkerVersionInfo;
 struct ServiceWorkerVersionBaseInfo;
@@ -55,19 +55,19 @@ void PopulateBinderMapWithContext(
     mojo::BinderMapWithContext<const url::Origin&>* map);
 url::Origin GetContextForHost(SharedWorkerHost* host);
 
+// Registers the handlers for interfaces requested by shared storage worklets.
+void PopulateBinderMap(SharedStorageWorkletHost* host, mojo::BinderMap* map);
+void PopulateBinderMapWithContext(
+    SharedStorageWorkletHost* host,
+    mojo::BinderMapWithContext<SharedStorageWorkletHost*>* map);
+SharedStorageWorkletHost* GetContextForHost(SharedStorageWorkletHost* host);
+
 // Registers the handlers for interfaces requested by service workers.
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map);
 void PopulateBinderMapWithContext(
     ServiceWorkerHost* host,
     mojo::BinderMapWithContext<const ServiceWorkerVersionBaseInfo&>* map);
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host);
-
-// Registers the handlers for interfaces requested by `AgentSchedulingGroup`s.
-void PopulateBinderMap(AgentSchedulingGroupHost* host, mojo::BinderMap* map);
-void PopulateBinderMapWithContext(
-    AgentSchedulingGroupHost* host,
-    mojo::BinderMapWithContext<AgentSchedulingGroupHost*>* map);
-AgentSchedulingGroupHost* GetContextForHost(AgentSchedulingGroupHost* host);
 
 }  // namespace internal
 
@@ -79,7 +79,8 @@ CONTENT_EXPORT void OverrideBatteryMonitorBinderForTesting(
 
 // Allows tests to override how frame hosts bind VibrationManager receivers.
 using VibrationManagerBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::VibrationManager>)>;
+    mojo::PendingReceiver<device::mojom::VibrationManager>,
+    mojo::PendingRemote<device::mojom::VibrationManagerListener>)>;
 CONTENT_EXPORT void OverrideVibrationManagerBinderForTesting(
     VibrationManagerBinder binder);
 

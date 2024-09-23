@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -47,18 +48,22 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     kSmall,
     kMedium,
     kLarge,
+    kXLarge,
     kXSmallProminent,
     kSmallProminent,
     kMediumProminent,
     kLargeProminent,
+    kXLargeProminent,
     kXSmallFloating,
     kSmallFloating,
     kMediumFloating,
     kLargeFloating,
+    kXLargeFloating,
     kXSmallProminentFloating,
     kSmallProminentFloating,
     kMediumProminentFloating,
     kLargeProminentFloating,
+    kXLargeProminentFloating,
   };
 
   // Used to determine how the button will behave when disabled.
@@ -87,12 +92,17 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     // a crash.
     Builder& SetVectorIcon(const gfx::VectorIcon* icon);
 
+    // Set a symbol for display. This is only used if icon is not set.
+    // `character` must contain exactly one unicode character or this will fail.
+    Builder& SetSymbol(base_icu::UChar32 character);
+
     Builder& SetAccessibleNameId(int accessible_name_id);
     Builder& SetAccessibleName(const std::u16string& accessible_name);
     Builder& SetTogglable(bool is_togglable);
     Builder& SetBorder(bool has_border);
     Builder& SetViewId(int view_id);
     Builder& SetEnabled(bool enabled);
+    Builder& SetVisible(bool visible);
     Builder& SetBackgroundImage(const gfx::ImageSkia& background_image);
     Builder& SetBackgroundColor(ui::ColorId color_id);
 
@@ -100,11 +110,13 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     PressedCallback callback_;
     Type type_;
     raw_ptr<const gfx::VectorIcon> icon_;
+    std::optional<base_icu::UChar32> character_;
     absl::variant<int, std::u16string> accessible_name_;
     bool is_togglable_;
     bool has_border_;
     std::optional<int> view_id_;
     std::optional<bool> enabled_;
+    std::optional<bool> visible_;
     std::optional<gfx::ImageSkia> background_image_;
     std::optional<ui::ColorId> background_color_;
   };
@@ -142,6 +154,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Sets the vector icon of the button, it might change on different `toggled_`
   // states.
   void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  void SetSymbol(base_icu::UChar32 character);
 
   // Sets the vector icon used when the button is toggled. If the button does
   // not specify a toggled vector icon, it will use the same vector icon for
@@ -182,7 +196,6 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   void OnFocus() override;
   void OnBlur() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void NotifyClick(const ui::Event& event) override;
 
  protected:
@@ -203,12 +216,23 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // disabled.
   bool IsToggledOn() const;
 
+  // Updates the accessibility properties directly in the cache, like the role
+  // and the toggle state.
+  void UpdateAccessibilityProperties();
+
+  std::pair<ui::ImageModel, ui::ImageModel> VectorImages(
+      const bool is_toggled,
+      ColorVariant color_variant,
+      const int size);
+
   const Type type_;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   raw_ptr<const gfx::VectorIcon> toggled_icon_ = nullptr;
 
+  std::optional<base_icu::UChar32> character_;
+
   // True if this button is togglable.
-  bool is_togglable_ = false;
+  const bool is_togglable_ = false;
 
   // True if the button is currently toggled.
   bool toggled_ = false;

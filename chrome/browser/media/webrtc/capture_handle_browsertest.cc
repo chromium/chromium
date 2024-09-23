@@ -204,11 +204,12 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // MSan and GL do not get along so avoid using the GPU with MSan.
+    // TODO(crbug.com/40260482): Remove the CrOS exception after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-      command_line->AppendSwitch(switches::kUseGpuInTests);
-    }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
   }
 
   void TearDownOnMainThread() override {
@@ -359,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
+// TODO(crbug.com/40185394): Test disabled on Mac due to multiple failing bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
   DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
@@ -398,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(
                                       {top_level_capturer_origin.Serialize()});
 }
 
-// TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
+// TODO(crbug.com/40185394): Test disabled on Mac due to multiple failing bots.
 // TODO(crbug.com/1287616, crbug.com/1362946): Flaky on Chrome OS and Windows.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
@@ -685,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(crbug/1219998): Disabled because of flakiness.
+// TODO(crbug.com/40772597): Disabled because of flakiness.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
   DISABLED_RegularTabCannotReadIncognitoTabCaptureHandle
@@ -710,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(crbug/1248619): Disabled because of flakiness.
+// TODO(crbug.com/40790671): Disabled because of flakiness.
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
                        DISABLED_IncognitoTabCannotReadRegularTabCaptureHandle) {
   TabInfo captured_tab =
@@ -745,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(crbug/1219998): Disabled because of flakiness.
+// TODO(crbug.com/40772597): Disabled because of flakiness.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
   DISABLED_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture

@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/keyword_table.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -94,21 +96,19 @@ class KeywordTableTest : public testing::Test {
     EXPECT_EQ(kInvalidTemplateURLID, table_->GetDefaultSearchProviderID());
     EXPECT_EQ(0, table_->GetBuiltinKeywordDataVersion());
     EXPECT_EQ(0, table_->GetBuiltinKeywordCountry());
-    EXPECT_EQ(0, table_->GetBuiltinKeywordMilestone());
 
     EXPECT_TRUE(table_->SetDefaultSearchProviderID(10));
     EXPECT_TRUE(table_->SetBuiltinKeywordDataVersion(11));
     EXPECT_TRUE(table_->SetBuiltinKeywordCountry(12));
-    EXPECT_TRUE(table_->SetBuiltinKeywordMilestone(13));
 
     EXPECT_EQ(10, table_->GetDefaultSearchProviderID());
     EXPECT_EQ(11, table_->GetBuiltinKeywordDataVersion());
     EXPECT_EQ(12, table_->GetBuiltinKeywordCountry());
-    EXPECT_EQ(13, table_->GetBuiltinKeywordMilestone());
   }
 
-  void GetStatement(const char* sql, sql::Statement* statement) const {
-    statement->Assign(table_->db_->GetUniqueStatement(sql));
+  void GetStatement(const base::cstring_view sql,
+                    sql::Statement* statement) const {
+    statement->Assign(table_->db()->GetUniqueStatement(sql));
   }
 
  private:

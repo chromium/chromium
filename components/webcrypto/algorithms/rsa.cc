@@ -289,13 +289,17 @@ Status RsaHashedAlgorithm::GenerateKey(
     return Status::ErrorGenerateRsaUnsupportedModulus();
   }
 
-  unsigned int public_exponent = 0;
-  if (!params->ConvertPublicExponentToUnsigned(public_exponent))
+  std::optional<uint32_t> public_exponent = params->PublicExponentAsU32();
+  if (!public_exponent) {
     return Status::ErrorGenerateKeyPublicExponent();
+  }
 
-  // OpenSSL hangs when given bad public exponents. Use a whitelist.
-  if (public_exponent != 3 && public_exponent != 65537)
+  // The canonical RSA exponent is 65537, but 3 is also common. Use an allowlist
+  // because RSA key generation is a probabilistic process and may hang on
+  // invalid exponents.
+  if (*public_exponent != 3 && *public_exponent != 65537) {
     return Status::ErrorGenerateKeyPublicExponent();
+  }
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -303,7 +307,7 @@ Status RsaHashedAlgorithm::GenerateKey(
   bssl::UniquePtr<RSA> rsa_private_key(RSA_new());
   bssl::UniquePtr<BIGNUM> bn(BN_new());
   if (!rsa_private_key.get() || !bn.get() ||
-      !BN_set_word(bn.get(), public_exponent)) {
+      !BN_set_word(bn.get(), *public_exponent)) {
     return Status::OperationError();
   }
 

@@ -68,7 +68,7 @@ std::optional<NSAXTreeProblemDetails> ValidateNSAXTree(id<NSAccessibility> node,
   // invariants; its actual accessibility parent chain is [NSWindow,
   // _NSThemeZoomWidgetCell] but when asked for its parent it returns the
   // NSWindow, which doesn't have it as a child. This is an invariant that
-  // should hold (FB13557859). TODO(https://crbug.com/1490347): When FB13557859
+  // should hold (FB13557859). TODO(crbug.com/40935248): When FB13557859
   // is fixed, remove this workaround.
   bool skip_due_to_fb13557859 =
       node.class == NSClassFromString(@"NSThemeWidgetZoomMenuRemoteView");

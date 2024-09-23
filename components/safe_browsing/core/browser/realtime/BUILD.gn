@@ -11,6 +11,7 @@ static_library("policy_engine") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base:base",
+    "//components/enterprise/connectors/core",
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -35,6 +36,7 @@ static_library("url_lookup_service") {
     ":policy_engine",
     ":url_lookup_service_base",
     "//base:base",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -63,6 +65,7 @@ static_library("url_lookup_service_base") {
   deps = [
     "//base:base",
     "//build:chromeos_buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
@@ -74,8 +77,28 @@ static_library("url_lookup_service_base") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sessions:session_id",
     "//services/network/public/cpp:cpp",
     "//url:url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_url_lookup_service.cc",
+    "fake_url_lookup_service.h",
+  ]
+
+  public_deps = [
+    ":url_lookup_service_base",
+    "//base",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/cpp:cpp",
   ]
 }
 
@@ -90,6 +113,7 @@ source_set("unit_tests") {
     ":url_lookup_service",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
+    "//components/enterprise/connectors/core",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",

@@ -40,7 +40,6 @@ std::string StatusToString(AccountMapping::MappingStatus status) {
       return kStatusRemoving;
   }
   NOTREACHED();
-  return std::string();
 }
 
 bool StringToStatus(const std::string& status_str,

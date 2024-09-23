@@ -17,6 +17,13 @@
 namespace content {
 namespace protocol {
 
+namespace {
+constexpr char kAnotherLeakDetectionInProgress[] =
+    "Another leak detection in progress";
+constexpr char kNoProcessToDetectLeaksIn[] = "No process to detect leaks in";
+constexpr char kFailedToRunLeakDetection[] = "Failed to run leak detection";
+}  // namespace
+
 MemoryHandler::MemoryHandler()
     : DevToolsDomainHandler(Memory::Metainfo::domainName),
       process_host_id_(ChildProcessHost::kInvalidUniqueID) {}
@@ -98,38 +105,115 @@ Response MemoryHandler::SimulatePressureNotification(
 
 void MemoryHandler::PrepareForLeakDetection(
     std::unique_ptr<PrepareForLeakDetectionCallback> callback) {
-  if (leak_detection_callback_) {
+  if (prepare_for_leak_detection_callback_ ||
+      get_dom_counters_for_leak_detection_callback_) {
     callback->sendFailure(
-        Response::ServerError("Another leak detection in progress"));
-    return;
-  }
-  RenderProcessHost* process = RenderProcessHost::FromID(process_host_id_);
-  if (!process) {
-    callback->sendFailure(
-        Response::ServerError("No process to detect leaks in"));
+        Response::ServerError(kAnotherLeakDetectionInProgress));
     return;
   }
 
-  leak_detection_callback_ = std::move(callback);
+  RenderProcessHost* process = RenderProcessHost::FromID(process_host_id_);
+  if (!process) {
+    callback->sendFailure(Response::ServerError(kNoProcessToDetectLeaksIn));
+    return;
+  }
+
+  prepare_for_leak_detection_callback_ = std::move(callback);
+
+  RequestLeakDetection(process);
+}
+
+void MemoryHandler::GetDOMCountersForLeakDetection(
+    std::unique_ptr<GetDOMCountersForLeakDetectionCallback> callback) {
+  if (prepare_for_leak_detection_callback_ ||
+      get_dom_counters_for_leak_detection_callback_) {
+    callback->sendFailure(
+        Response::ServerError(kAnotherLeakDetectionInProgress));
+    return;
+  }
+
+  RenderProcessHost* process = RenderProcessHost::FromID(process_host_id_);
+  if (!process) {
+    callback->sendFailure(Response::ServerError(kNoProcessToDetectLeaksIn));
+    return;
+  }
+
+  get_dom_counters_for_leak_detection_callback_ = std::move(callback);
+
+  RequestLeakDetection(process);
+}
+
+void MemoryHandler::RequestLeakDetection(RenderProcessHost* process) {
   process->BindReceiver(leak_detector_.BindNewPipeAndPassReceiver());
+
+  // Using base::Unretained(this) in the code below is safe because the
+  // callbacks are passed to the mojo remote member, so they are guaranteed
+  // not to survive this.
   leak_detector_.set_disconnect_handler(base::BindOnce(
       &MemoryHandler::OnLeakDetectorIsGone, base::Unretained(this)));
+
   leak_detector_->PerformLeakDetection(base::BindOnce(
-      &MemoryHandler::OnLeakDetectionComplete, weak_factory_.GetWeakPtr()));
+      &MemoryHandler::OnLeakDetectionComplete, base::Unretained(this)));
 }
 
 void MemoryHandler::OnLeakDetectionComplete(
     blink::mojom::LeakDetectionResultPtr result) {
-  leak_detection_callback_->sendSuccess();
-  leak_detection_callback_.reset();
+  if (prepare_for_leak_detection_callback_) {
+    prepare_for_leak_detection_callback_->sendSuccess();
+    prepare_for_leak_detection_callback_.reset();
+  }
+  if (get_dom_counters_for_leak_detection_callback_) {
+    if (result) {
+      get_dom_counters_for_leak_detection_callback_->sendSuccess(
+          GetDOMCounters(*result.get()));
+    } else {
+      get_dom_counters_for_leak_detection_callback_->sendFailure(
+          Response::ServerError(kFailedToRunLeakDetection));
+    }
+    get_dom_counters_for_leak_detection_callback_.reset();
+  }
   leak_detector_.reset();
 }
 
 void MemoryHandler::OnLeakDetectorIsGone() {
-  leak_detection_callback_->sendFailure(
-      Response::ServerError("Failed to run leak detection"));
-  leak_detection_callback_.reset();
+  if (prepare_for_leak_detection_callback_) {
+    prepare_for_leak_detection_callback_->sendFailure(
+        Response::ServerError(kFailedToRunLeakDetection));
+    prepare_for_leak_detection_callback_.reset();
+  }
+  if (get_dom_counters_for_leak_detection_callback_) {
+    get_dom_counters_for_leak_detection_callback_->sendFailure(
+        Response::ServerError(kFailedToRunLeakDetection));
+    get_dom_counters_for_leak_detection_callback_.reset();
+  }
   leak_detector_.reset();
+}
+
+std::unique_ptr<protocol::Array<protocol::Memory::DOMCounter>>
+MemoryHandler::GetDOMCounters(const blink::mojom::LeakDetectionResult& result) {
+  auto counters =
+      std::make_unique<protocol::Array<protocol::Memory::DOMCounter>>();
+
+#define ADD_COUNTER(name)                                       \
+  counters->emplace_back(protocol::Memory::DOMCounter::Create() \
+                             .SetName(#name)                    \
+                             .SetCount(result.number_of_##name) \
+                             .Build());
+  ADD_COUNTER(live_audio_nodes)
+  ADD_COUNTER(live_documents)
+  ADD_COUNTER(live_nodes)
+  ADD_COUNTER(live_layout_objects)
+  ADD_COUNTER(live_resources)
+  ADD_COUNTER(live_context_lifecycle_state_observers)
+  ADD_COUNTER(live_frames)
+  ADD_COUNTER(live_v8_per_context_data)
+  ADD_COUNTER(worker_global_scopes)
+  ADD_COUNTER(live_ua_css_resources)
+  ADD_COUNTER(live_resource_fetchers)
+
+#undef ADD_COUNTER
+
+  return counters;
 }
 
 }  // namespace protocol

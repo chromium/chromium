@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
@@ -19,17 +20,17 @@ namespace {
 
 FormData CreateSigninFormData(const GURL& url, const char* username) {
   FormData form;
-  form.url = url;
+  form.set_url(url);
   FormFieldData field;
-  field.name = u"username_element";
-  field.form_control_type = autofill::FormControlType::kInputText;
-  field.value = ASCIIToUTF16(username);
-  form.fields.push_back(field);
+  field.set_name(u"username_element");
+  field.set_form_control_type(autofill::FormControlType::kInputText);
+  field.set_value(ASCIIToUTF16(username));
+  test_api(form).Append(field);
 
-  field.name = u"password_element";
-  field.form_control_type = autofill::FormControlType::kInputPassword;
-  field.value = u"strong_pw";
-  form.fields.push_back(field);
+  field.set_name(u"password_element");
+  field.set_form_control_type(autofill::FormControlType::kInputPassword);
+  field.set_value(u"strong_pw");
+  test_api(form).Append(field);
   return form;
 }
 
@@ -40,7 +41,7 @@ SyncUsernameTestBase::SyncUsernameTestBase() {
   // IdentityManager, until FakeSigninAs() is invoked.
   CHECK(!identity_test_env_.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
-  sync_service_.SetAccountInfo(CoreAccountInfo());
+  sync_service_.SetSignedOut();
 }
 
 SyncUsernameTestBase::~SyncUsernameTestBase() = default;
@@ -65,9 +66,7 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email,
   } else {
     CoreAccountInfo account =
         identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
-    sync_service_.SetAccountInfo(account);
-    sync_service_.SetHasSyncConsent(consent_level ==
-                                    signin::ConsentLevel::kSync);
+    sync_service_.SetSignedIn(consent_level, account);
   }
 }
 

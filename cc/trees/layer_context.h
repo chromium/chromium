@@ -9,7 +9,15 @@
 #include "cc/trees/commit_state.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 
+namespace viz {
+class ClientResourceProvider;
+class RasterContextProvider;
+}  // namespace viz
+
 namespace cc {
+
+class PictureLayerImpl;
+class Tile;
 
 // LayerContext provides an opaque interface through which a LayerTreeHost can
 // control a backing LayerTreeHostImpl, potentially on another thread or in
@@ -18,16 +26,21 @@ class CC_EXPORT LayerContext {
  public:
   virtual ~LayerContext() = default;
 
-  // Indicates that a new LocalSurfaceId has been set for the frame sink hosting
-  // this tree.
-  virtual void SetTargetLocalSurfaceId(const viz::LocalSurfaceId& id) = 0;
-
   // Globally controls the visibility of layers within the tree.
   virtual void SetVisible(bool visible) = 0;
 
-  // Flushes pending updates to the backing LayerTreeHostImpl. `state`
-  // represents the pending CommitState for the client-side LayerTreeHost.
-  virtual void Commit(const CommitState& state) = 0;
+  // Pushes updates from `tree` into the context's display tree.
+  virtual void UpdateDisplayTreeFrom(
+      LayerTreeImpl& tree,
+      viz::ClientResourceProvider& resource_provider,
+      viz::RasterContextProvider& context_provider) = 0;
+
+  // Pushes an update to a single tile in the context's display tree.
+  virtual void UpdateDisplayTile(
+      PictureLayerImpl& layer,
+      const Tile& tile,
+      viz::ClientResourceProvider& resource_provider,
+      viz::RasterContextProvider& context_provider) = 0;
 };
 
 }  // namespace cc

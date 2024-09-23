@@ -1,0 +1,105 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("ip_protection") {
+  visibility = [
+    ":*",
+    "//chrome/browser:*",
+  ]
+
+  sources = [
+    "ip_protection_core_host.cc",
+    "ip_protection_core_host.h",
+    "ip_protection_core_host_factory.cc",
+    "ip_protection_core_host_factory.h",
+    "ip_protection_switches.cc",
+    "ip_protection_switches.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//base/version_info:channel",
+    "//build:branding_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:channel_info",
+    "//components/ip_protection:browser",
+    "//components/ip_protection:get_proxy_config_proto",
+    "//components/ip_protection:ip_protection",
+    "//components/prefs:prefs",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//content/public/browser",
+    "//google_apis:google_apis",
+    "//google_apis/common:request_util",
+    "//mojo/public/cpp/bindings:bindings",
+    "//net:net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom",
+    "//services/network/public/mojom:url_loader_base",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "ip_protection_core_host_factory_unittest.cc",
+    "ip_protection_core_host_unittest.cc",
+  ]
+
+  deps = [
+    ":ip_protection",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/ip_protection:browser",
+    "//components/ip_protection:ip_protection",
+    "//components/ip_protection:unit_tests",
+    "//components/prefs:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gtest:gtest",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "ip_protection_core_host_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":ip_protection",
+    "//base/test:test_support",
+    "//chrome/browser/policy:test_support",
+    "//chrome/test:test_support",
+    "//components/ip_protection:ip_protection",
+    "//components/privacy_sandbox:features",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
+}

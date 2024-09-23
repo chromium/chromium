@@ -13,3 +13,194 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
+
+static_library("cloud_upload") {
+  sources = [
+    "automated_mount_error_notification.cc",
+    "automated_mount_error_notification.h",
+    "cloud_open_metrics.cc",
+    "cloud_open_metrics.h",
+    "cloud_upload_dialog.cc",
+    "cloud_upload_dialog.h",
+    "cloud_upload_notification_manager.cc",
+    "cloud_upload_notification_manager.h",
+    "cloud_upload_page_handler.cc",
+    "cloud_upload_page_handler.h",
+    "cloud_upload_ui.cc",
+    "cloud_upload_ui.h",
+    "cloud_upload_util.cc",
+    "cloud_upload_util.h",
+    "drive_upload_handler.cc",
+    "drive_upload_handler.h",
+    "hats_office_trigger.cc",
+    "hats_office_trigger.h",
+    "one_drive_upload_handler.cc",
+    "one_drive_upload_handler.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//components/drive",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/webapps/browser:constants",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base:i18n",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/extensions",
+    "//chrome/browser/resources/chromeos/cloud_upload:resources",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/constants",
+    "//components/services/app_service",
+    "//components/session_manager/core",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//extensions/browser/api/file_handlers",
+    "//extensions/common:common_constants",
+    "//google_apis/common",
+    "//net",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/webui",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "cloud_upload_dialog_browsertest.cc",
+    "cloud_upload_dialog_browsertest.h",
+    "drive_upload_handler_browsertest.cc",
+    "one_drive_upload_handler_browsertest.cc",
+  ]
+
+  deps = [
+    ":cloud_upload",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//components/drive",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//storage/browser",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cloud_open_metrics_unittest.cc",
+    "cloud_upload_notification_manager_unittest.cc",
+    "hats_office_trigger_unittest.cc",
+  ]
+
+  deps = [
+    ":cloud_upload",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/web_applications",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos/strings",
+  ]
+}

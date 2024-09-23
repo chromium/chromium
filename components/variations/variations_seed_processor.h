@@ -24,7 +24,18 @@ namespace variations {
 namespace internal {
 // The trial group selected when a study specifies a feature that is already
 // associated with another trial. Exposed in the header file for testing.
-COMPONENT_EXPORT(VARIATIONS) extern const char kFeatureConflictGroupName[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kFeatureConflictGroupName[];
+
+// The name of an auto-generated feature parameter for studies that have a
+// non-empty google_groups filter.
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kGoogleGroupFeatureParamName[];
+
+// The separator between multiple Google groups in when serialized into a string
+// for the feature parameter.
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kGoogleGroupFeatureParamSeparator[];
 }  // namespace internal
 
 class ProcessedStudy;
@@ -44,12 +55,17 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
 
   virtual ~VariationsSeedProcessor();
 
+  // Whether the experiment has a `google_web_experiment_id` or a
+  // `google_web_trigger_experiment_id`.
+  static bool HasGoogleWebExperimentId(const Study::Experiment& experiment);
+
   // Creates field trials from the specified variations |seed|, filtered
   // according to the client's |client_state|.
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             const ClientFilterableState& client_state,
                             const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
+                            const VariationsLayers& layers,
                             base::FeatureList* feature_list);
 
  private:

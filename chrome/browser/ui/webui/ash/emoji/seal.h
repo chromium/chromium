@@ -39,4 +39,4 @@ class SealService : public seal::mojom::SealService {
 
 }  // namespace ash
 
-#endif
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_SEAL_H_

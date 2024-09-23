@@ -2,7 +2,7 @@
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
 // META: script=/webhid/resources/common.js
-// META: script=/webhid/resources/automation.js
+// META: script=resources/automation.js
 'use strict';
 
 const kTestVendorId = 0x1234;

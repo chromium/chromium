@@ -14,6 +14,7 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -65,7 +66,7 @@ class HeaderView::HeaderContentView : public views::View {
       views::PaintInfo::ScaleType::kScaleWithEdgeSnapping;
 };
 
-BEGIN_METADATA(HeaderView, HeaderContentView, views::View)
+BEGIN_METADATA(HeaderView, HeaderContentView)
 END_METADATA
 
 HeaderView::HeaderView(views::Widget* target_widget,
@@ -91,12 +92,10 @@ void HeaderView::Init() {
 
   aura::Window* window = target_widget_->GetNativeWindow();
   window_observation_.Observe(window);
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
 }
 
-HeaderView::~HeaderView() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-}
+HeaderView::~HeaderView() = default;
 
 void HeaderView::SchedulePaintForTitle() {
   frame_header_->SchedulePaintForTitle();
@@ -224,14 +223,21 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
 void HeaderView::OnWindowDestroying(aura::Window* window) {
   DCHECK(window_observation_.IsObservingSource(window));
   window_observation_.Reset();
+  display_observer_.reset();
+
   // A HeaderView may outlive the target widget.
   target_widget_ = nullptr;
 }
 
 void HeaderView::OnDisplayMetricsChanged(const display::Display& display,
                                          uint32_t changed_metrics) {
+  // When the display is rotated, the frame header may have invalid snap icons.
+  // For example, rotating from landscape display to portrait display layout
+  // should update snap icons from left/right arrows to upward/downward arrows
+  // for top and bottom snaps.
   if ((changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) &&
       frame_header_) {
+    CHECK(target_widget_);
     frame_header_->LayoutHeader();
   }
 }

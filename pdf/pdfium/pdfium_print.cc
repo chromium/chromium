@@ -234,9 +234,11 @@ int GetBlockForJpeg(void* param,
                     unsigned char* buf,
                     unsigned long size) {
   std::vector<uint8_t>* data_vector = static_cast<std::vector<uint8_t>*>(param);
-  if (pos + size < pos || pos + size > data_vector->size())
+  if (pos + size < pos || pos + size > data_vector->size()) {
     return 0;
-  memcpy(buf, data_vector->data() + pos, size);
+  }
+  auto data_span = base::make_span(*data_vector).subspan(pos, size);
+  memcpy(buf, data_span.data(), data_span.size());
   return 1;
 }
 
@@ -330,9 +332,9 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
 }
 
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
-  ScopedFPDFDocument output_doc = CreatePrintPdf(page_numbers, print_params);
+  ScopedFPDFDocument output_doc = CreatePrintPdf(page_indices, print_params);
   if (print_params.rasterize_pdf) {
     output_doc =
         CreateRasterPdf(std::move(output_doc), print_params.printer_dpi);
@@ -343,14 +345,14 @@ std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
 }
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   ScopedFPDFDocument output_doc(FPDF_CreateNewDocument());
   DCHECK(output_doc);
   FPDF_CopyViewerPreferences(output_doc.get(), engine_->doc());
 
   if (!FPDF_ImportPagesByIndex(output_doc.get(), engine_->doc(),
-                               page_numbers.data(), page_numbers.size(),
+                               page_indices.data(), page_indices.size(),
                                /*index=*/0)) {
     return nullptr;
   }

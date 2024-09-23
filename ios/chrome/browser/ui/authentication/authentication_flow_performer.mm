@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
+
 #import <memory>
 
 #import "base/check_op.h"
@@ -17,9 +18,11 @@
 #import "base/timer/timer.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -28,12 +31,13 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -41,19 +45,14 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
-#import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
-
-using signin_ui::CompletionCallback;
 
 namespace {
 
@@ -88,7 +87,7 @@ NSString* const kAuthenticationSnackbarCategory =
                      subtitle:(NSString*)subtitle
                   acceptLabel:(NSString*)acceptLabel
                   cancelLabel:(NSString*)cancelLabel {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _title = title;
     _subtitle = subtitle;
     _acceptLabel = acceptLabel;
@@ -99,23 +98,16 @@ NSString* const kAuthenticationSnackbarCategory =
 
 @end
 
-@interface AuthenticationFlowPerformer () <ImportDataControllerDelegate,
-                                           SettingsNavigationControllerDelegate>
-@end
-
 @implementation AuthenticationFlowPerformer {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
   // This code uses three variables for alert coordinators in order to clarify
   // crash reports related to crbug.com/1482623
-  // TODO(crbug.com/1482623): The 3 alert coordinator variables can be merged
+  // TODO(crbug.com/40072272): The 2 alert coordinator variables can be merged
   // into one alert coordinator once the bug is fixed.
   // Dialog for the managed confirmation dialog.
   AlertCoordinator* _managedConfirmationAlertCoordinator;
   // Dialog to display an error.
   AlertCoordinator* _errorAlertCoordinator;
-  // Dialog to ask the user before switching users.
-  AlertCoordinator* _promptSwitchAlertCoordinator;
-  SettingsNavigationController* _navigationController;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
 }
 
@@ -137,42 +129,14 @@ NSString* const kAuthenticationSnackbarCategory =
   _managedConfirmationAlertCoordinator = nil;
   [_errorAlertCoordinator stop];
   _errorAlertCoordinator = nil;
-  [_promptSwitchAlertCoordinator stop];
-  _promptSwitchAlertCoordinator = nil;
-  if (_navigationController) {
-    [_navigationController cleanUpSettings];
-    _navigationController = nil;
-    switch (action) {
-      case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-        if (completion) {
-          completion();
-        }
-        break;
-      case SigninCoordinatorInterrupt::DismissWithAnimation:
-        if (_delegate) {
-          [_delegate dismissPresentingViewControllerAnimated:YES
-                                                  completion:completion];
-        } else if (completion) {
-          completion();
-        }
-        break;
-      case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-        if (_delegate) {
-          [_delegate dismissPresentingViewControllerAnimated:NO
-                                                  completion:completion];
-        } else if (completion) {
-          completion();
-        }
-        break;
-    }
-  } else if (completion) {
+  if (completion) {
     completion();
   }
   _delegate = nil;
   [self stopWatchdogTimer];
 }
 
-- (void)fetchManagedStatus:(ChromeBrowserState*)browserState
+- (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();
@@ -193,170 +157,36 @@ NSString* const kAuthenticationSnackbarCategory =
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState {
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignIn(identity, accessPoint);
+             toProfile:(ProfileIOS*)profile {
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignIn(
+      identity, accessPoint);
 }
 
-- (void)signOutBrowserState:(ChromeBrowserState*)browserState {
+- (void)signOutProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-                /*force_clear_browsing_data=*/false, ^{
-                  [weakDelegate didSignOut];
-                });
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      /*force_clear_browsing_data=*/false, ^{
+        [weakDelegate didSignOut];
+      });
 }
 
-- (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState {
-  AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                /*force_clear_browsing_data=*/false, nil);
-}
-
-- (void)promptMergeCaseForIdentity:(id<SystemIdentity>)identity
-                           browser:(Browser*)browser
-                    viewController:(UIViewController*)viewController {
-  DCHECK(browser);
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  // TODO(crbug.com/40066949): After phase 3 migration usage of
-  // `lastSyncingEmail` to avoid cross-sync incidents should become obsolete.
-  // Delete the usage of ConsentLevel::kSync in this method afterwards.
-  // See ConsentLevel::kSync documentation for more details.
-  NSString* lastSyncingEmail =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync)
-          .userEmail;
-  if (!lastSyncingEmail) {
-    // User is not opted in to sync, the current data comes may belong to the
-    // previously syncing account (if any).
-    lastSyncingEmail =
-        base::SysUTF8ToNSString(browserState->GetPrefs()->GetString(
-            prefs::kGoogleServicesLastSyncingUsername));
-  }
-
-  if (authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSync)) {
-    // If the current user is a managed account and sync is enabled, the sign-in
-    // needs to wipe the current data. We need to ask confirm from the user.
-    AccountInfo primaryAccountInfo = identityManager->FindExtendedAccountInfo(
-        identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-    DCHECK(!primaryAccountInfo.IsEmpty());
-    NSString* hostedDomain =
-        base::SysUTF8ToNSString(primaryAccountInfo.hosted_domain);
-    [self promptSwitchFromManagedEmail:lastSyncingEmail
-                      withHostedDomain:hostedDomain
-                               toEmail:identity.userEmail
-                        viewController:viewController
-                               browser:browser];
-    return;
-  }
-  _navigationController = [SettingsNavigationController
-      importDataControllerForBrowser:browser
-                            delegate:self
-                  importDataDelegate:self
-                           fromEmail:lastSyncingEmail
-                             toEmail:identity.userEmail];
-  [_delegate presentViewController:_navigationController
-                          animated:YES
-                        completion:nil];
-}
-
-- (void)clearDataFromBrowser:(Browser*)browser
-              commandHandler:(id<BrowsingDataCommands>)handler {
-  DCHECK(browser);
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  // The user needs to be signed out when clearing the data to avoid deleting
-  // data on server side too.
-  CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
-             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-
-  // Workaround for crbug.com/1003578
-  //
-  // During the Chrome sign-in flow, if the user chooses to clear the cookies
-  // when switching their primary account, then the following actions take
-  // place (in the following order):
-  //   1. All cookies are cleared.
-  //   2. The user is signed in to Chrome (aka the primary account set)
-  //   2.a. All requests to Gaia page will include Mirror header.
-  //   2.b. Account reconcilor will rebuild the Gaia cookies having the Chrome
-  //      primary account as the Gaia default web account.
-  //
-  // The Gaia sign-in webpage monitors changes to its cookies and reloads the
-  // page whenever they change. Reloading the webpage while the cookies are
-  // cleared and just before they are rebuilt seems to confuse WKWebView that
-  // ends up with a nil URL, which in turns translates in about:blank URL shown
-  // in the Omnibox.
-  //
-  // This CL works around this issue by waiting for 1 second between steps 1
-  // and 2 above to allow the WKWebView to initiate the reload after the
-  // cookies are cleared.
-  WebStateList* webStateList = browser->GetWebStateList();
-  web::WebState* activeWebState = webStateList->GetActiveWebState();
-  bool activeWebStateHasGaiaOrigin =
-      activeWebState &&
-      (activeWebState->GetVisibleURL().DeprecatedGetOriginAsURL() ==
-       GaiaUrls::GetInstance()->gaia_url());
-  int64_t dispatchDelaySecs = activeWebStateHasGaiaOrigin ? 1 : 0;
-  __weak __typeof(_delegate) weakDelegate = _delegate;
-  [handler removeBrowsingDataForBrowserState:browserState
-                                  timePeriod:browsing_data::TimePeriod::ALL_TIME
-                                  removeMask:BrowsingDataRemoveMask::REMOVE_ALL
-                             completionBlock:^{
-                               dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                            dispatchDelaySecs *
-                                                                NSEC_PER_SEC),
-                                              dispatch_get_main_queue(), ^{
-                                                [weakDelegate didClearData];
-                                              });
-                             }];
-}
-
-- (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
-                       browserStatePrefs:(PrefService*)prefs {
-  const std::string lastSignedInGaiaId =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-  if (!lastSignedInGaiaId.empty()) {
-    // Merge case exists if the id of the previously signed in account is
-    // different from the one of the account being signed in.
-    return lastSignedInGaiaId != base::SysNSStringToUTF8(identity.gaiaID);
-  }
-
-  // kGoogleServicesLastSyncingGaiaId pref might not have been populated yet,
-  // check the old kGoogleServicesLastSyncingUsername pref.
-  const std::string currentSignedInEmail =
-      base::SysNSStringToUTF8(identity.userEmail);
-  const std::string lastSignedInEmail =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
-  return !lastSignedInEmail.empty() &&
-         !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
+- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
+  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
 }
 
 // Retuns the ManagedConfirmationDialogContent that corresponds to the
-// provided `hostedDomain`, `syncConsent`, and the activation state of User
-// Policy.
+// provided `hostedDomain`, and the activation state of User Policy.
 - (ManagedConfirmationDialogContent*)
-    managedConfirmationDialogContentForHostedDomain:(NSString*)hostedDomain
-                                        syncConsent:(BOOL)syncConsent {
+    managedConfirmationDialogContentForHostedDomain:(NSString*)hostedDomain {
   if (!policy::IsAnyUserPolicyFeatureEnabled()) {
     // Show the legacy managed confirmation dialog if User Policy is disabled.
     return [[ManagedConfirmationDialogContent alloc]
         initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
              subtitle:l10n_util::GetNSStringF(
                           IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
-                          base::SysNSStringToUTF16(hostedDomain))
-          acceptLabel:l10n_util::GetNSString(
-                          IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
-          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
-  } else if (syncConsent) {
-    // Show the first version of the managed confirmation dialog for User Policy
-    // if User Policy is enabled and there is Sync consent.
-    return [[ManagedConfirmationDialogContent alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SYNC_TITLE)
-             subtitle:l10n_util::GetNSStringF(
-                          IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE,
                           base::SysNSStringToUTF16(hostedDomain))
           acceptLabel:l10n_util::GetNSString(
                           IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
@@ -378,15 +208,12 @@ NSString* const kAuthenticationSnackbarCategory =
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser
-                                   syncConsent:(BOOL)syncConsent {
+                                       browser:(Browser*)browser {
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
-  DCHECK(!_promptSwitchAlertCoordinator);
 
   ManagedConfirmationDialogContent* content =
-      [self managedConfirmationDialogContentForHostedDomain:hostedDomain
-                                                syncConsent:syncConsent];
+      [self managedConfirmationDialogContentForHostedDomain:hostedDomain];
 
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
@@ -409,7 +236,7 @@ NSString* const kAuthenticationSnackbarCategory =
     if (!strongSelf)
       return;
 
-    // TODO(crbug.com/1326767): Nullify the browser object in the
+    // TODO(crbug.com/40225944): Nullify the browser object in the
     // AlertCoordinator when the coordinator is stopped to avoid using the
     // browser object at that moment, in which case the browser object may have
     // been deleted before the callback block is called. This is to avoid
@@ -417,7 +244,7 @@ NSString* const kAuthenticationSnackbarCategory =
     Browser* alertedBrowser = weakAlert.browser;
     if (alertedBrowser) {
       PrefService* prefService = alertedBrowser->GetBrowserState()->GetPrefs();
-      // TODO(crbug.com/1325115): Remove this line once we determined that the
+      // TODO(crbug.com/40225352): Remove this line once we determined that the
       // notification isn't needed anymore.
       [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
     }
@@ -448,10 +275,39 @@ NSString* const kAuthenticationSnackbarCategory =
   [_managedConfirmationAlertCoordinator start];
 }
 
-- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
-                               browser:(Browser*)browser {
+- (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
+                     withIdentity:(id<SystemIdentity>)identity
+                          browser:(Browser*)browser {
   DCHECK(browser);
   base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalChromeBrowserState();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(profile);
+
+  // Signing in from bookmarks and reading list enables the corresponding
+  // type.
+  BOOL bookmarksToggleEnabledWithSigninFlow = NO;
+  BOOL readingListToggleEnabledWithSigninFlow = NO;
+  if (postSignInActions.Has(
+          PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
+      !syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kBookmarks)) {
+    syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, true);
+    bookmarksToggleEnabledWithSigninFlow = YES;
+  } else if (postSignInActions.Has(
+                 PostSignInAction::kEnableUserSelectableTypeReadingList) &&
+             !syncService->GetUserSettings()->GetSelectedTypes().Has(
+                 syncer::UserSelectableType::kReadingList)) {
+    syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kReadingList, true);
+    readingListToggleEnabledWithSigninFlow = YES;
+  }
+
+  if (!postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
+    return;
+  }
+
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = ^{
     if (!weakBrowser.get()) {
@@ -459,11 +315,18 @@ NSString* const kAuthenticationSnackbarCategory =
     }
     base::RecordAction(
         base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
-    ChromeBrowserState* browserState =
-        weakBrowser->GetBrowserState()->GetOriginalChromeBrowserState();
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForBrowserState(profile);
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      // Signing in from bookmarks and reading list enables the corresponding
+      // type. The undo button should handle that before signing out.
+      if (bookmarksToggleEnabledWithSigninFlow) {
+        syncService->GetUserSettings()->SetSelectedType(
+            syncer::UserSelectableType::kBookmarks, false);
+      } else if (readingListToggleEnabledWithSigninFlow) {
+        syncService->GetUserSettings()->SetSelectedType(
+            syncer::UserSelectableType::kReadingList, false);
+      }
       authService->SignOut(
           signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
           /*force_clear_browsing_data=*/false, nil);
@@ -474,8 +337,7 @@ NSString* const kAuthenticationSnackbarCategory =
   NSString* messageText =
       l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
                               base::SysNSStringToUTF16(identity.userEmail));
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:messageText];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
   message.action = action;
   message.category = kAuthenticationSnackbarCategory;
 
@@ -492,7 +354,6 @@ NSString* const kAuthenticationSnackbarCategory =
                         browser:(Browser*)browser {
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
-  DCHECK(!_promptSwitchAlertCoordinator);
 
   base::RecordAction(base::UserMetricsAction(
       "Signin_AuthenticationFlowPerformer_ErrorDialog_Presented"));
@@ -518,19 +379,18 @@ NSString* const kAuthenticationSnackbarCategory =
   [_errorAlertCoordinator start];
 }
 
-- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+- (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
   DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
 
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
-      IdentityManagerFactory::GetForBrowserState(browserState)
-          ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
-                                    userEmail);
+      IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
+          base::SysNSStringToUTF8(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
 
   __weak __typeof(self) weakSelf = self;
 
@@ -557,7 +417,7 @@ NSString* const kAuthenticationSnackbarCategory =
       }));
 }
 
-- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+- (void)fetchUserPolicy:(ProfileIOS*)profile
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
@@ -570,7 +430,7 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK([clientID length] > 0);
 
   policy::UserPolicySigninService* policyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
+      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
   AccountId accountID =
@@ -589,63 +449,13 @@ NSString* const kAuthenticationSnackbarCategory =
   policyService->FetchPolicyForSignedInUser(
       accountID, base::SysNSStringToUTF8(dmToken),
       base::SysNSStringToUTF8(clientID), userAffiliationIDsVector,
-      browserState->GetSharedURLLoaderFactory(),
-      base::BindOnce(^(bool success) {
+      profile->GetSharedURLLoaderFactory(), base::BindOnce(^(bool success) {
         if (![self stopWatchdogTimer]) {
           // Watchdog timer has already fired, don't notify the delegate.
           return;
         }
         [weakSelf.delegate didFetchUserPolicyWithSuccess:success];
       }));
-}
-
-#pragma mark - ImportDataControllerDelegate
-
-- (void)didChooseClearDataPolicy:(ImportDataTableViewController*)controller
-                 shouldClearData:(ShouldClearData)shouldClearData {
-  DCHECK_NE(SHOULD_CLEAR_DATA_USER_CHOICE, shouldClearData);
-  if (shouldClearData == SHOULD_CLEAR_DATA_CLEAR_DATA) {
-    base::RecordAction(
-        base::UserMetricsAction("Signin_ImportDataPrompt_DontImport"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("Signin_ImportDataPrompt_ImportData"));
-  }
-
-  __weak AuthenticationFlowPerformer* weakSelf = self;
-  ProceduralBlock block = ^{
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    strongSelf->_navigationController = nil;
-    [[strongSelf delegate] didChooseClearDataPolicy:shouldClearData];
-  };
-  [_navigationController cleanUpSettings];
-  [_delegate dismissPresentingViewControllerAnimated:YES completion:block];
-}
-
-#pragma mark - SettingsNavigationControllerDelegate
-
-- (void)closeSettings {
-  base::RecordAction(base::UserMetricsAction("Signin_ImportDataPrompt_Cancel"));
-
-  __weak AuthenticationFlowPerformer* weakSelf = self;
-  ProceduralBlock block = ^{
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    strongSelf->_navigationController = nil;
-    [[strongSelf delegate] didChooseCancel];
-  };
-  [_navigationController cleanUpSettings];
-  [_delegate dismissPresentingViewControllerAnimated:YES completion:block];
-}
-
-- (void)settingsWasDismissed {
-  base::RecordAction(base::UserMetricsAction("Signin_ImportDataPrompt_Cancel"));
-  [self.delegate didChooseCancel];
-  [_navigationController cleanUpSettings];
-  _navigationController = nil;
 }
 
 #pragma mark - Private
@@ -740,73 +550,14 @@ NSString* const kAuthenticationSnackbarCategory =
   return NO;
 }
 
-- (void)promptSwitchFromManagedEmail:(NSString*)managedEmail
-                    withHostedDomain:(NSString*)hostedDomain
-                             toEmail:(NSString*)toEmail
-                      viewController:(UIViewController*)viewController
-                             browser:(Browser*)browser {
-  DCHECK(!_managedConfirmationAlertCoordinator);
-  DCHECK(!_errorAlertCoordinator);
-  DCHECK(!_promptSwitchAlertCoordinator);
-  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SWITCH_TITLE);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_IOS_MANAGED_SWITCH_SUBTITLE, base::SysNSStringToUTF16(managedEmail),
-      base::SysNSStringToUTF16(toEmail),
-      base::SysNSStringToUTF16(hostedDomain));
-  NSString* acceptLabel =
-      l10n_util::GetNSString(IDS_IOS_MANAGED_SWITCH_ACCEPT_BUTTON);
-  NSString* cancelLabel = l10n_util::GetNSString(IDS_CANCEL);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Signin_AuthenticationFlowPerformer_SwitchDialog_Presented"));
-  _promptSwitchAlertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:viewController
-                                                   browser:browser
-                                                     title:title
-                                                   message:subtitle];
-
-  __weak AuthenticationFlowPerformer* weakSelf = self;
-  __weak AlertCoordinator* weakAlert = _promptSwitchAlertCoordinator;
-  ProceduralBlock acceptBlock = ^{
-    base::RecordAction(base::UserMetricsAction(
-        "Signin_AuthenticationFlowPerformer_SwitchDialog_Confirmed"));
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf alertControllerDidDisappear:weakAlert];
-    [[strongSelf delegate]
-        didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
-  };
-  ProceduralBlock cancelBlock = ^{
-    base::RecordAction(base::UserMetricsAction(
-        "Signin_AuthenticationFlowPerformer_SwitchDialog_Canceled"));
-    AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf alertControllerDidDisappear:weakAlert];
-    [[strongSelf delegate] didChooseCancel];
-  };
-
-  [_promptSwitchAlertCoordinator addItemWithTitle:cancelLabel
-                                           action:cancelBlock
-                                            style:UIAlertActionStyleCancel];
-  [_promptSwitchAlertCoordinator addItemWithTitle:acceptLabel
-                                           action:acceptBlock
-                                            style:UIAlertActionStyleDefault];
-  _promptSwitchAlertCoordinator.noInteractionAction = cancelBlock;
-  [_promptSwitchAlertCoordinator start];
-}
-
 // Callback for when the alert is dismissed.
 - (void)alertControllerDidDisappear:(AlertCoordinator*)alertCoordinator {
   if (_managedConfirmationAlertCoordinator == alertCoordinator) {
     _managedConfirmationAlertCoordinator = nil;
   } else if (_errorAlertCoordinator == alertCoordinator) {
     _errorAlertCoordinator = nil;
-  } else if (_promptSwitchAlertCoordinator == alertCoordinator) {
-    _promptSwitchAlertCoordinator = nil;
   }
-  // TODO(crbug.com/1482623): This code needs to be simpler and clearer.
+  // TODO(crbug.com/40072272): This code needs to be simpler and clearer.
   // At least NOTREACHED should be added here.
 }
 

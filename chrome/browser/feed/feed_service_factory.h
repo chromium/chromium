@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_FEED_FEED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FEED_FEED_SERVICE_FACTORY_H_
 
+#include <string_view>
+
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
@@ -15,7 +16,7 @@ class BrowserContext;
 
 namespace feed {
 namespace internal {
-const base::StringPiece GetFollowingFeedFollowCountGroupName(
+const std::string_view GetFollowingFeedFollowCountGroupName(
     size_t follow_count);
 }
 
@@ -30,6 +31,7 @@ class FeedServiceFactory : public ProfileKeyedServiceFactory {
 
   static FeedService* GetForBrowserContext(content::BrowserContext* context);
   static FeedServiceFactory* GetInstance();
+  static std::string GetCountry();
 
  private:
   friend base::NoDestructor<FeedServiceFactory>;

@@ -67,8 +67,7 @@ if known_args.classpath:
   classpath += [known_args.classpath]
 
 {extra_flags}
-java_cmd.extend(
-    ['-classpath', ':'.join(classpath), '-enableassertions', \"{main_class}\"])
+java_cmd += ['-classpath', ':'.join(classpath), \"{main_class}\"]
 java_cmd.extend(extra_program_args)
 java_cmd.extend(jar_arguments)
 os.execvp(java_cmd[0], java_cmd)
@@ -91,6 +90,9 @@ def main(argv):
                       action='append',
                       default=[],
                       help='Classpath for running the jar.')
+  parser.add_argument('--enable-asserts',
+                      action='store_true',
+                      help='Enable Java assert statements')
   parser.add_argument('--tiered-stop-at-level-one',
                       action='store_true',
                       help='JVM flag: -XX:TieredStopAtLevel=1.')
@@ -102,6 +104,8 @@ def main(argv):
   args = parser.parse_args(argv)
 
   extra_flags = [f'java_cmd.append("-Xmx{args.max_heap_size}")']
+  if args.enable_asserts:
+    extra_flags.append('java_cmd.append("-enableassertions")')
   if args.tiered_stop_at_level_one:
     extra_flags.append('java_cmd.append("-XX:TieredStopAtLevel=1")')
 

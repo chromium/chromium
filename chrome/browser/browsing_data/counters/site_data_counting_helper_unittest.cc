@@ -58,7 +58,7 @@ class SiteDataCountingHelperTest : public testing::Test {
               url, "name", "A=1", url.host(), url.path(), creation_time,
               base::Time(), creation_time, url.SchemeIsCryptographic(), false,
               net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-              std::nullopt);
+              std::nullopt, /*status=*/nullptr);
       net::CookieOptions options;
       options.set_include_httponly();
       cookie_manager->SetCanonicalCookie(
@@ -96,12 +96,6 @@ class SiteDataCountingHelperTest : public testing::Test {
                 }));
       put_run_loop.Run();
       ASSERT_TRUE(success);
-
-      // Flushing causes metadata to be written, so that the last-modified time
-      // is recorded now.
-      base::RunLoop flush_run_loop;
-      local_storage_control->Flush(flush_run_loop.QuitClosure());
-      flush_run_loop.Run();
     }
   }
 
@@ -156,6 +150,11 @@ TEST_F(SiteDataCountingHelperTest, CountCookies) {
 TEST_F(SiteDataCountingHelperTest, LocalStorage) {
   // Set data "one day ago".
   CreateLocalStorage({"https://example.com"});
+
+  // Advance time and spin the task queue so that local storage commits data.
+  // Until the data is committed to disk, it will count as "now".
+  task_environment_.AdvanceClock(base::Days(1));
+  base::RunLoop().RunUntilIdle();
 
   // Advance time and set more data "now".
   task_environment_.AdvanceClock(base::Days(1));

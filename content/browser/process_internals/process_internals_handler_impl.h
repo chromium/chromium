@@ -31,6 +31,7 @@ class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
   // mojom::ProcessInternalsHandler overrides:
   void GetProcessCountInfo(GetProcessCountInfoCallback callback) override;
   void GetIsolationMode(GetIsolationModeCallback callback) override;
+  void GetProcessPerSiteMode(GetProcessPerSiteModeCallback callback) override;
   void GetUserTriggeredIsolatedOrigins(
       GetUserTriggeredIsolatedOriginsCallback callback) override;
   void GetWebTriggeredIsolatedOrigins(

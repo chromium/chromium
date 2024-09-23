@@ -42,7 +42,7 @@ std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
 TEST(BMPImageDecoderTest, isSizeAvailable) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -55,7 +55,7 @@ TEST(BMPImageDecoderTest, isSizeAvailable) {
 TEST(BMPImageDecoderTest, parseAndDecode) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -72,7 +72,7 @@ TEST(BMPImageDecoderTest, parseAndDecode) {
 // Test if a BMP decoder returns a proper error while decoding an empty image.
 TEST(BMPImageDecoderTest, emptyImage) {
   static constexpr char kBmpFile[] = "/images/resources/0x0.bmp";  // 0x0
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -87,7 +87,7 @@ TEST(BMPImageDecoderTest, emptyImage) {
 TEST(BMPImageDecoderTest, int32MinHeight) {
   static constexpr char kBmpFile[] =
       "/images/resources/1xint32_min.bmp";  // 0xINT32_MIN
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
   // Test when not all data is received.
   decoder->SetData(data.get(), false);
@@ -95,19 +95,10 @@ TEST(BMPImageDecoderTest, int32MinHeight) {
   EXPECT_TRUE(decoder->Failed());
 }
 
-// This test verifies that calling SharedBuffer::MergeSegmentsIntoBuffer() does
-// not break BMP decoding at a critical point: in between a call to decode the
-// size (when BMPImageDecoder stops while it may still have input data to
-// read) and a call to do a full decode.
-TEST(BMPImageDecoderTest, mergeBuffer) {
-  static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
-  TestMergeBuffer(&CreateBMPDecoder, kBmpFile);
-}
-
 // Verify that decoding this image does not crash.
 TEST(BMPImageDecoderTest, crbug752898) {
   static constexpr char kBmpFile[] = "/images/resources/crbug752898.bmp";
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -119,7 +110,7 @@ TEST(BMPImageDecoderTest, crbug752898) {
 TEST(BMPImageDecoderTest, invalidBitmapOffset) {
   static constexpr char kBmpFile[] =
       "/images/resources/invalid-bitmap-offset.bmp";
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -131,7 +122,7 @@ TEST(BMPImageDecoderTest, invalidBitmapOffset) {
 // Verify that decoding an image with an unnecessary EOF marker does not crash.
 TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   static constexpr char kBmpFile[] = "/images/resources/unnecessary-eof.bmp";
-  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
@@ -149,7 +140,7 @@ TEST_P(BMPImageDecoderTest, VerifyBMPSuiteImage) {
   const auto& [entry_dir, entry_bmp] = GetParam();
   std::string bmp_path = base::StringPrintf(
       "/images/bmp-suite/%s/%s.bmp", entry_dir.c_str(), entry_bmp.c_str());
-  scoped_refptr<SharedBuffer> data = ReadFile(bmp_path.c_str());
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(bmp_path.c_str());
   ASSERT_NE(data.get(), nullptr) << "unable to load '" << bmp_path << "'";
   ASSERT_FALSE(data->empty());
 

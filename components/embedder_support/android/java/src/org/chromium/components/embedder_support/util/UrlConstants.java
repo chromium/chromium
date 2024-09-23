@@ -9,8 +9,8 @@ import org.chromium.url.GURL;
 /**
  * Java side version of chrome/common/url_constants.cc
  *
- * Do not add any more NTP related constants.
- * TODO(crbug.com/1481277) Move NTP related constants to ChromeUrlConstants.java
+ * <p>Do not add any more NTP related constants. TODO(crbug.com/40281619) Move NTP related constants
+ * to ChromeUrlConstants.java
  */
 public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";
@@ -53,8 +53,12 @@ public class UrlConstants {
     public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
     public static final String NTP_ABOUT_URL = "about:newtab";
 
+    // Don't use this URL. The constant is added for legacy reasons.
+    public static final String NEW_TAB_PAGE_URL_LEGACY = "chrome://new-tab-page/";
+
     public static final String BOOKMARKS_HOST = "bookmarks";
-    public static final String BOOKMARKS_URL = "chrome-native://bookmarks/";
+    public static final String BOOKMARKS_URL = "chrome://bookmarks/";
+    public static final String BOOKMARKS_NATIVE_URL = "chrome-native://bookmarks/";
     public static final String BOOKMARKS_FOLDER_URL = "chrome-native://bookmarks/folder/";
     public static final String BOOKMARKS_UNCATEGORIZED_URL =
             "chrome-native://bookmarks/uncategorized/";
@@ -85,6 +89,9 @@ public class UrlConstants {
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL =
             "https://myaccount.google.com/activitycontrols/search";
 
+    public static final String GOOGLE_ACCOUNT_LINKED_SERVICES_URL =
+            "https://myaccount.google.com/linked-services?utm_source=chrome_s";
+
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL =
             "https://myaccount.google.com/activitycontrols/search"
                     + "&utm_source=chrome&utm_medium=privacy-guide";
@@ -112,6 +119,9 @@ public class UrlConstants {
     public static final String MY_ACTIVITY_URL_IN_QD =
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY =
+            "https://policies.google.com/privacy/embedded";
+
     public static final String GOOGLE_URL = "https://www.google.com/";
 
     public static final String EXPLORE_HOST = "explore";
@@ -122,6 +132,12 @@ public class UrlConstants {
 
     public static final String MANAGEMENT_HOST = "management";
     public static final String MANAGEMENT_URL = "chrome://management/";
+
+    /* Host and url used for PDF native pages. */
+    public static final String PDF_HOST = "pdf";
+    public static final String PDF_URL = "chrome-native://pdf/";
+    public static final String PDF_URL_PARAM = "link?url=";
+    public static final String PDF_URL_QUERY_PARAM = "url";
 
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =

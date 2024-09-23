@@ -16,7 +16,8 @@ typedef NS_ENUM(NSInteger, ExternalAppLaunchPolicy) {
   // application or launch it.
   ExternalAppLaunchPolicyPrompt,
   // Block launching the application for this session.
-  // TODO(crbug.com/989316): Remove this policy once non-modal dialogs are used
+  // TODO(crbug.com/41473755): Remove this policy once non-modal dialogs are
+  // used
   // by default.
   ExternalAppLaunchPolicyBlock,
 };

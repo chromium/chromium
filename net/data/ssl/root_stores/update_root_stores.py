@@ -50,10 +50,6 @@ const struct RootCertData {
 
   // A value suitable for histograms using the NetTrustAnchors enum.
   int16_t histogram_id : 15;
-
-  // If true, indicates the CA is considered a "Legacy" CA, formerly trusted
-  // or not yet trusted.
-  bool legacy_ca : 1;
 } kRootCerts[] = {
 """
 
@@ -92,10 +88,8 @@ def main():
     for spki, data in sorted(root_stores['spkis'].items()):
       cpp_str = ''.join('0x{:02X}, '.format(x) for x in bytearray.fromhex(spki))
       log_id = int(data['id'])
-      legacy = 'legacy' in data and data['legacy']
       header_file.write(
-          ('{ { %s },\n%d, %s }, ' %
-           (cpp_str, log_id, "true" if legacy else "false")).encode('utf-8'))
+          ('{ { %s },\n%d }, ' % (cpp_str, log_id)).encode('utf-8'))
 
     header_file.write(FOOTER)
 

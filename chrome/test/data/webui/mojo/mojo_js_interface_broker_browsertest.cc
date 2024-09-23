@@ -195,7 +195,7 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
 // 4. WebUIs that doesn't have a registered interface broker don't
 //    automatically get MojoJS bindings enabled.
 //
-// TODO(https://crbug.com/1157718): This test fixture and test suites should
+// TODO(crbug.com/40160974): This test fixture and test suites should
 // migrate to EvalJs / ExecJs after they work with WebUI CSP.
 class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
  public:
@@ -270,7 +270,7 @@ class MojoJSInterfaceBrokerBrowserTest : public InProcessBrowserTest {
   TestContentBrowserClient test_content_browser_client_;
 };
 
-// TODO(crbug.com/1446914): Move tests to //content.
+// TODO(crbug.com/40268810): Move tests to //content.
 
 // Try to get Foo Mojo interface on a top-level frame.
 IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
       web_contents->GetWebUI()->GetController()->broker_for_testing();
   // Refresh to trigger a RenderFrame reuse.
   content::TestNavigationObserver observer(web_contents, 1);
-  // TODO(https://crbug.com/1157718): migrate to ExecJs.
+  // TODO(crbug.com/40160974): migrate to ExecJs.
   EXPECT_TRUE(content::ExecJs(web_contents, "location.reload()"));
   observer.Wait();
 

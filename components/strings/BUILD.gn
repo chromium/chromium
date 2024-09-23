@@ -4,12 +4,11 @@
 
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
-import("//components/feed/features.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//tools/grit/grit_rule.gni")
 
 if (is_android) {
@@ -26,6 +25,7 @@ group("strings") {
     ":components_branded_strings",
     ":components_locale_settings",
     ":components_strings",
+    ":privacy_sandbox_strings",
     ":search_engine_descriptions_strings",
   ]
 }
@@ -36,6 +36,7 @@ grit("components_strings") {
     "enable_arcore=$enable_arcore",
     "enable_cardboard=$enable_cardboard",
     "enable_pdf=$enable_pdf",
+    "enable_pdf_ink2=$enable_pdf_ink2",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
     "enable_screen_ai_service=$enable_screen_ai_service",
@@ -106,5 +107,36 @@ if (is_android) {
                     "java/res",
                     ".")
     deps = [ ":components_locale_settings" ]
+  }
+}
+
+if (is_android) {
+  android_privacy_sandbox_strings_java_resources =
+      [ "java/res/values/privacy_sandbox_strings.xml" ]
+  android_privacy_sandbox_strings_java_resources += process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/privacy_sandbox_strings.xml" ])
+}
+
+grit("privacy_sandbox_strings") {
+  source = "../privacy_sandbox_strings.grd"
+  outputs = [ "grit/privacy_sandbox_strings.h" ]
+  foreach(locale, all_chrome_locales) {
+    outputs += [ "privacy_sandbox_strings_$locale.pak" ]
+  }
+
+  if (is_android) {
+    outputs += android_privacy_sandbox_strings_java_resources
+  }
+}
+
+if (is_android) {
+  java_strings_grd_prebuilt("privacy_sandbox_strings_grd") {
+    grit_output_dir = "$root_gen_dir/components/strings/java/res"
+    generated_files =
+        rebase_path(android_privacy_sandbox_strings_java_resources,
+                    "java/res",
+                    ".")
+    deps = [ ":privacy_sandbox_strings" ]
   }
 }

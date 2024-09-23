@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -291,6 +292,20 @@ class ChromeOSTokenManager {
     std::string db_name = base::StringPrintf("%s %s", kUserNSSDatabaseName,
                                              username_hash.c_str());
     ScopedPK11Slot public_slot(OpenPersistentNSSDBForPath(db_name, path));
+
+    return InitializeNSSForChromeOSUserWithSlot(username_hash,
+                                                std::move(public_slot));
+  }
+
+  bool InitializeNSSForChromeOSUserWithSlot(const std::string& username_hash,
+                                            ScopedPK11Slot public_slot) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    if (base::Contains(chromeos_user_map_, username_hash)) {
+      // This user already exists in our mapping.
+      DVLOG(2) << username_hash << " already initialized.";
+      return false;
+    }
+
     chromeos_user_map_[username_hash] =
         std::make_unique<ChromeOSUserData>(std::move(public_slot));
     return true;
@@ -405,7 +420,7 @@ class ChromeOSTokenManager {
   void CloseChromeOSUserForTesting(const std::string& username_hash) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     auto i = chromeos_user_map_.find(username_hash);
-    DCHECK(i != chromeos_user_map_.end());
+    CHECK(i != chromeos_user_map_.end(), base::NotFatalUntil::M130);
     chromeos_user_map_.erase(i);
   }
 
@@ -553,6 +568,12 @@ bool InitializeNSSForChromeOSUser(const std::string& username_hash,
                                                             path);
 }
 
+bool InitializeNSSForChromeOSUserWithSlot(const std::string& username_hash,
+                                          ScopedPK11Slot public_slot) {
+  return g_token_manager.Get().InitializeNSSForChromeOSUserWithSlot(
+      username_hash, std::move(public_slot));
+}
+
 bool ShouldInitializeTPMForChromeOSUser(const std::string& username_hash) {
   return g_token_manager.Get().ShouldInitializeTPMForChromeOSUser(
       username_hash);
@@ -597,7 +618,7 @@ namespace {
 void PrintDirectoryInfo(const base::FilePath& path) {
   base::stat_wrapper_t file_stat;
 
-  if (base::File::Stat(path.value().c_str(), &file_stat) == -1) {
+  if (base::File::Stat(path, &file_stat) == -1) {
     base::File::Error error_code = base::File::OSErrorToFileError(errno);
     LOG(ERROR) << "Failed to collect directory info, error: " << error_code;
   }

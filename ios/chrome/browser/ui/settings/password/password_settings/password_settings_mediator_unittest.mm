@@ -4,21 +4,19 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -46,11 +44,9 @@ void SetSyncStatus(SyncServiceForPasswordTests* sync_service,
                               ? syncer::SyncService::TransportState::ACTIVE
                               : syncer::SyncService::TransportState::DISABLED));
   ON_CALL(*sync_service, GetActiveDataTypes())
-      .WillByDefault(
-          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
-  ON_CALL(*(sync_service->GetMockUserSettings()), GetEncryptedDataTypes())
-      .WillByDefault(
-          testing::Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
+      .WillByDefault(testing::Return(syncer::DataTypeSet({syncer::PASSWORDS})));
+  ON_CALL(*(sync_service->GetMockUserSettings()), GetAllEncryptedDataTypes())
+      .WillByDefault(testing::Return(syncer::DataTypeSet({syncer::PASSWORDS})));
   ON_CALL(*(sync_service->GetMockUserSettings()), GetPassphraseType())
       .WillByDefault(testing::Return(passphrase_type));
 }
@@ -64,7 +60,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
@@ -81,9 +77,8 @@ class PasswordSettingsMediatorTest : public PlatformTest {
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
                               prefService:browser_state_->GetPrefs()
-                          identityManager:IdentityManagerFactory::
-                                              GetForBrowserState(
-                                                  browser_state_.get())
+                          identityManager:IdentityManagerFactory::GetForProfile(
+                                              browser_state_.get())
                               syncService:&sync_service_];
     mediator_.consumer = consumer_;
   }
@@ -92,7 +87,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_env_;
   SyncServiceForPasswordTests sync_service_;
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -157,12 +152,6 @@ TEST_F(PasswordSettingsMediatorTest,
 // passwords to account module.
 TEST_F(PasswordSettingsMediatorTest,
        SyncChangeTriggersBulkMovePasswordsToAccountChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::
-           kIOSPasswordSettingsBulkUploadLocalPasswords},
-      /*disabled_features=*/{});
-
   ASSERT_TRUE(
       [mediator_ conformsToProtocol:@protocol(SyncObserverModelBridge)]);
 

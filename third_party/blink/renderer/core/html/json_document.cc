@@ -74,7 +74,6 @@ class JSONDocumentParser : public HTMLDocumentParser {
 
  private:
   void Append(const String& input) override {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     if (!document_initialized_) {
       CreateDocumentStructure();
     }
@@ -82,13 +81,12 @@ class JSONDocumentParser : public HTMLDocumentParser {
   }
 
   void CreateDocumentStructure() {
-    CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
     GetDocument()->ParserAppendChild(html);
     auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
     auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument(),
                                                        CreateElementFlags());
-    meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+    meta->setAttribute(html_names::kNameAttr, keywords::kColorScheme);
     meta->setAttribute(html_names::kContentAttr, AtomicString("light dark"));
     auto* meta_charset = MakeGarbageCollected<HTMLMetaElement>(
         *GetDocument(), CreateElementFlags());

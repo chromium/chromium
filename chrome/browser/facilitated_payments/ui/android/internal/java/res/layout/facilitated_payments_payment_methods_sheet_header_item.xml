@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:layout_marginBottom="@dimen/facilitated_payments_header_bottom_margin"
+    android:orientation="vertical">
+
+  <ImageView
+      android:id="@+id/branding_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/facilitated_payments_product_icon_height"
+      android:layout_marginVertical="@dimen/facilitated_payments_product_icon_margin_vertical"
+      android:importantForAccessibility="no"
+      android:layout_gravity="center_horizontal"/>
+
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+    <TextView
+          android:id="@+id/description_text"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+</LinearLayout>

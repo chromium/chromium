@@ -30,7 +30,7 @@ MemoryEncryptionState TranslateMemoryEncryptionState(
       return MEMORY_ENCRYPTION_STATE_MKTME;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
@@ -44,7 +44,7 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
       return MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_256;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

@@ -6,14 +6,52 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/download/model/document_download_tab_helper_metrics.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "net/http/http_response_headers.h"
+
+namespace {
+// Whether `state` indicates a final state.
+bool TaskStateIsDone(web::DownloadTask::State state) {
+  switch (state) {
+    case web::DownloadTask::State::kNotStarted:
+    case web::DownloadTask::State::kInProgress:
+      return false;
+    case web::DownloadTask::State::kCancelled:
+    case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
+      return true;
+  }
+}
+
+// Transitions `old_state` based on a new observed state.
+// In some cases, it is possible that `Cancel()` will be called on a task which
+// is already "done" i.e. Cancelled, Complete, Failed or FailedNotResumable. In
+// that case the relevant state for metrics is the state before `Cancel()` is
+// called. The `Cancelled` bucket only makes sense if the task went from
+// `NotStarted`/`InProgress` to `Cancelled`.
+web::DownloadTask::State NewObservedTaskState(
+    web::DownloadTask::State old_state,
+    web::DownloadTask::State new_state) {
+  if (new_state != web::DownloadTask::State::kCancelled) {
+    return new_state;
+  }
+  if (TaskStateIsDone(old_state)) {
+    return old_state;
+  }
+  return new_state;
+}
+
+}  // namespace
 
 DocumentDownloadTabHelper::DocumentDownloadTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -23,6 +61,16 @@ DocumentDownloadTabHelper::DocumentDownloadTabHelper(web::WebState* web_state)
 
 DocumentDownloadTabHelper::~DocumentDownloadTabHelper() {
   if (observed_task_) {
+    if (current_task_is_document_download_) {
+      base::UmaHistogramEnumeration(
+          kIOSDocumentDownloadFinalState,
+          TaskStateToWebStateContentDownloadState(observed_task_state_));
+      if (task_uuid_) {
+        base::UmaHistogramEnumeration(
+            kIOSDocumentDownloadStateAtNavigation,
+            TaskStateToWebStateContentDownloadState(observed_task_state_));
+      }
+    }
     observed_task_->RemoveObserver(this);
     observed_task_ = nullptr;
   }
@@ -32,14 +80,29 @@ DocumentDownloadTabHelper::~DocumentDownloadTabHelper() {
   }
 }
 
+bool DocumentDownloadTabHelper::IsDownloadTaskCreatedByCurrentTabHelper() {
+  return current_task_is_document_download_;
+}
+
 #pragma mark - web::WebStateObserver
 
 void DocumentDownloadTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DetachFullscreen();
   if (observed_task_) {
+    if (current_task_is_document_download_) {
+      base::UmaHistogramEnumeration(
+          kIOSDocumentDownloadFinalState,
+          TaskStateToWebStateContentDownloadState(observed_task_state_));
+      if (task_uuid_) {
+        base::UmaHistogramEnumeration(
+            kIOSDocumentDownloadStateAtNavigation,
+            TaskStateToWebStateContentDownloadState(observed_task_state_));
+      }
+    }
     observed_task_->RemoveObserver(this);
     observed_task_ = nullptr;
   }
+
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }
@@ -48,11 +111,12 @@ void DocumentDownloadTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   DetachFullscreen();
-  waiting_for_previous_task_ = false;
-  if (observed_task_) {
-    observed_task_->RemoveObserver(this);
-    observed_task_ = nullptr;
+  if (waiting_for_previous_task_) {
+    base::UmaHistogramEnumeration(
+        kIOSDocumentDownloadConflictResolution,
+        DocumentDownloadConflictResolution::kPreviousDownloadDidNotFinish);
   }
+  waiting_for_previous_task_ = false;
   if (task_uuid_) {
     // If a task was created on the previous navigation but was never started
     // by the user, cancel it.
@@ -61,9 +125,22 @@ void DocumentDownloadTabHelper::DidStartNavigation(
     CHECK(tab_helper);
     web::DownloadTask* active_task = tab_helper->GetActiveDownloadTask();
     if (active_task &&
-        [active_task->GetIdentifier() isEqualToString:task_uuid_] &&
-        active_task->GetState() == web::DownloadTask::State::kNotStarted) {
-      active_task->Cancel();
+        [active_task->GetIdentifier() isEqualToString:task_uuid_]) {
+      base::UmaHistogramEnumeration(
+          kIOSDocumentDownloadStateAtNavigation,
+          TaskStateToWebStateContentDownloadState(observed_task_state_));
+      if (active_task->GetState() == web::DownloadTask::State::kNotStarted) {
+        base::UmaHistogramEnumeration(
+            kIOSDocumentDownloadFinalState,
+            TaskStateToWebStateContentDownloadState(
+                web::DownloadTask::State::kNotStarted));
+        if (observed_task_) {
+          observed_task_->RemoveObserver(this);
+          current_task_is_document_download_ = false;
+          observed_task_ = nullptr;
+        }
+        active_task->Cancel();
+      }
     }
     task_uuid_ = nil;
   }
@@ -106,30 +183,49 @@ void DocumentDownloadTabHelper::PageLoaded(
       (!web_state->ContentIsHTML() &&
        !base::StartsWith(web_state->GetContentsMimeType(), "video/"));
 
-  // Only triggers on http(s) or external file.
+  // Only triggers on http(s).
   GURL url = web_state->GetLastCommittedURL();
-  should_trigger = should_trigger && (url.SchemeIsHTTPOrHTTPS() ||
-                                      url.host() == kChromeUIExternalFileHost);
+  should_trigger = should_trigger && url.SchemeIsHTTPOrHTTPS();
 
   if (should_trigger) {
+    base::UmaHistogramEnumeration(kIOSDocumentDownloadMimeType,
+                                  GetDownloadMimeTypeResultFromMimeType(
+                                      web_state->GetContentsMimeType()));
+    // -1 will be reported in the underflow bucket, the same as the 0 bucket.
+    base::UmaHistogramMemoryMB(
+        kIOSDocumentDownloadSizeInMB,
+        file_size_ == -1 ? file_size_ : file_size_ / 1024 / 1024);
+
     web::DownloadTask* active_task = tab_helper->GetActiveDownloadTask();
     if (active_task) {
+      if (observed_task_) {
+        observed_task_->RemoveObserver(this);
+      }
       // There is already an active download task. We don't want to prompt the
       // user on page load, so just observe this task. If it ever finishes while
       // the document is still displayed, we will trigger the new download.
       waiting_for_previous_task_ = true;
       active_task->AddObserver(this);
-      if (observed_task_) {
-        observed_task_->RemoveObserver(this);
-      }
+      current_task_is_document_download_ = false;
       observed_task_ = active_task;
+      observed_task_state_ = observed_task_->GetState();
     } else {
       // There is no download running at the moment.
       // Create a new one to download the document on the current page.
       task_uuid_ = [NSUUID UUID].UUIDString;
       web::DownloadController::FromBrowserState(web_state_->GetBrowserState())
           ->CreateWebStateDownloadTask(web_state_, task_uuid_, file_size_);
+      web::DownloadTask* new_task = tab_helper->GetActiveDownloadTask();
+      if (new_task) {
+        new_task->AddObserver(this);
+        observed_task_ = new_task;
+        observed_task_state_ = observed_task_->GetState();
+        current_task_is_document_download_ = true;
+      }
       AttachFullscreen();
+      base::UmaHistogramEnumeration(
+          kIOSDocumentDownloadConflictResolution,
+          DocumentDownloadConflictResolution::kNoConflict);
       return;
     }
   }
@@ -147,6 +243,9 @@ void DocumentDownloadTabHelper::WasHidden(web::WebState* web_state) {
 #pragma mark - web::DownloadTaskObserver
 
 void DocumentDownloadTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
+  observed_task_state_ =
+      NewObservedTaskState(observed_task_state_, task->GetState());
+
   if (waiting_for_previous_task_) {
     return;
   }
@@ -163,12 +262,36 @@ void DocumentDownloadTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
 }
 
 void DocumentDownloadTabHelper::OnDownloadDestroyed(web::DownloadTask* task) {
+  // Depending on the order in which observers are called,
+  // OnDownloadUpdated(kCancelled) may or may not have been called.
+  // To uniformize the reporting, update the state here.
+  observed_task_state_ = NewObservedTaskState(
+      observed_task_state_, web::DownloadTask::State::kCancelled);
+
   task->RemoveObserver(this);
   observed_task_ = nullptr;
+
+  if (current_task_is_document_download_) {
+    base::UmaHistogramEnumeration(
+        kIOSDocumentDownloadFinalState,
+        TaskStateToWebStateContentDownloadState(observed_task_state_));
+    if (task_uuid_) {
+      base::UmaHistogramEnumeration(
+          kIOSDocumentDownloadStateAtNavigation,
+          TaskStateToWebStateContentDownloadState(observed_task_state_));
+    }
+  }
+
   if (!waiting_for_previous_task_) {
     DetachFullscreen();
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      kIOSDocumentDownloadConflictResolution,
+      observed_task_state_ == web::DownloadTask::State::kCancelled
+          ? DocumentDownloadConflictResolution::kPreviousDownloadWasCancelled
+          : DocumentDownloadConflictResolution::kPreviousDownloadCompleted);
 
   // Post this task to let the other observer trigger (in particular,
   // DownloadManagerTabHelper will set a new active task).
@@ -210,7 +333,9 @@ void DocumentDownloadTabHelper::OnPreviousTaskDeleted() {
   if (active_task) {
     // There is still an active task. Still wait.
     active_task->AddObserver(this);
+    current_task_is_document_download_ = false;
     observed_task_ = active_task;
+    observed_task_state_ = observed_task_->GetState();
     waiting_for_previous_task_ = true;
     return;
   }
@@ -225,6 +350,8 @@ void DocumentDownloadTabHelper::OnPreviousTaskDeleted() {
   if (new_task) {
     new_task->AddObserver(this);
     observed_task_ = new_task;
+    observed_task_state_ = observed_task_->GetState();
+    current_task_is_document_download_ = true;
   }
   AttachFullscreen();
 }

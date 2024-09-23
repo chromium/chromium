@@ -9,9 +9,10 @@
 
 #include <array>
 #include <set>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
+
 
 namespace base {
 
@@ -137,14 +138,6 @@ void ConstVectorDeducesAsConstSpan() {
   span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
-// make_span<N>() should CHECK whether N matches the actual size.
-void MakeSpanChecksSize() {
-  constexpr StringPiece str = "Foo";
-  constexpr auto made_span1 = make_span<2>(str.begin(), 3u);         // expected-error {{constexpr variable 'made_span1' must be initialized by a constant expression}}
-  constexpr auto made_span2 = make_span<2>(str.begin(), str.end());  // expected-error {{constexpr variable 'made_span2' must be initialized by a constant expression}}
-  constexpr auto made_span3 = make_span<2>(str);                     // expected-error {{constexpr variable 'made_span3' must be initialized by a constant expression}}
-}
-
 // EXTENT should not result in |dynamic_extent|, it should be a compile-time
 // error.
 void ExtentNoDynamicExtent() {
@@ -187,9 +180,17 @@ void FromVolatileArrayDisallowed() {
 void FixedSizeCopyTooSmall() {
   const int src[] = {1, 2, 3};
   int dst[2];
-  base::span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{no viable conversion}}
+  base::span(dst).copy_from(base::span(src));  // expected-error@*:* {{no matching member function}}
 
-  base::span(dst).copy_from(src);  // expected-error@*:* {{no viable conversion}}
+  base::span(dst).copy_from(src);  // expected-error@*:* {{no matching member function}}
+
+  base::span(dst).copy_prefix_from(src);  // expected-error@*:* {{no matching member function}}
+}
+
+void FixedSizeCopyFromNonSpan() {
+  int dst[2];
+  // The copy_from() template overload is not selected.
+  base::span(dst).copy_from(5);  // expected-error@*:* {{no matching member function for call to 'copy_from'}}
 }
 
 void FixedSizeSplitAtOutOfBounds() {
@@ -207,15 +208,86 @@ void FromRefNoSuchFunctionForIntLiteral() {
 }
 
 void FromRefLifetimeBoundErrorForIntLiteral() {
-  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
       span_from_ref<const int>(123);  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
 }
 
 void FromRefLifetimeBoundErrorForTemporaryStringObject() {
-  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
       span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+}
+
+void RvalueArrayLifetime() {
+  [[maybe_unused]] auto wont_work =
+      as_byte_span({1, 2});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+}
+
+void FromCStringThatIsntStaticLifetime() {
+  [[maybe_unused]] auto wont_work =
+      span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+
+  [[maybe_unused]] auto wont_work2 =
+      byte_span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work2' will be destroyed at the end of the full-expression}}
+}
+
+void CompareFixedSizeMismatch() {
+  const int arr[] = {1, 2, 3};
+  const int arr2[] = {1, 2, 3, 4};
+  (void)(span(arr) == arr2);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(arr) == span(arr2));  // expected-error@*:* {{invalid operands to binary expression}}
+}
+
+void CompareNotComparable() {
+  struct NoEq { int i; };
+  static_assert(!std::equality_comparable<NoEq>);
+
+  const NoEq arr[] = {{1}, {2}, {3}};
+  (void)(span(arr) == arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(arr) == span(arr));  // expected-error@*:* {{invalid operands to binary expression}}
+
+  struct SelfEq {
+    constexpr bool operator==(SelfEq s) const { return i == s.i; }
+    int i;
+  };
+  static_assert(std::equality_comparable<SelfEq>);
+  static_assert(!std::equality_comparable_with<SelfEq, int>);
+
+  const SelfEq self_arr[] = {{1}, {2}, {3}};
+  const int int_arr[] = {1, 2, 3};
+
+  (void)(span(self_arr) == int_arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(self_arr) == span(int_arr));  // expected-error@*:* {{invalid operands to binary expression}}
+
+  // Span's operator== works on `const T` and thus won't be able to use the
+  // non-const operator here. We get this from equality_comparable which also
+  // requires it.
+  struct NonConstEq {
+    constexpr bool operator==(NonConstEq s) { return i == s.i; }
+    int i;
+  };
+  const NonConstEq non_arr[] = {{1}, {2}, {3}};
+  (void)(span(non_arr) == non_arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(non_arr) == span(non_arr));  // expected-error@*:* {{invalid operands to binary expression}}
+}
+
+void AsStringViewNotBytes() {
+  const int arr[] = {1, 2, 3};
+  as_string_view(base::span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
+}
+
+void SpanFromCstrings() {
+  static const char with_null[] = { 'a', 'b', '\0' };
+  base::span_from_cstring(with_null);
+
+  // Can't call span_from_cstring and friends with a non-null-terminated char
+  // array.
+  static const char no_null[] = { 'a', 'b' };
+  base::span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_from_cstring'}}
+  base::span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_with_nul_from_cstring'}}
+  base::byte_span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_from_cstring'}}
+  base::byte_span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_with_nul_from_cstring'}}
 }
 
 }  // namespace base

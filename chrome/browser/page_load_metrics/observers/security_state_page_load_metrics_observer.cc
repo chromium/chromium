@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -228,6 +228,13 @@ void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
   // resolved.
   security_state_tab_helper_ =
       SecurityStateTabHelper::FromWebContents(web_contents);
+  // TODO(https://crbug.com/355894536): There are some features that currently
+  // instantiate a SecurityStatePageLoadMetricsObserver without a
+  // ChromeSecurityStateTabHelper. This does not make sense conceptually. For
+  // now add an early return.
+  if (!security_state_tab_helper_) {
+    return;
+  }
 
   DCHECK_EQ(initial_security_level_, security_state::NONE);
   DCHECK_EQ(current_security_level_, security_state::NONE);

@@ -199,7 +199,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
     std::optional<u2f::MakeCredentialResponse> response) {
   if (!response) {
     FIDO_LOG(ERROR) << "MakeCredential dbus call failed";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+    std::move(callback).Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
                             std::nullopt);
     return;
   }
@@ -207,7 +207,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
   FIDO_LOG(DEBUG) << "Make credential status: " << response->status();
   if (response->status() !=
       u2f::MakeCredentialResponse_MakeCredentialStatus_SUCCESS) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
+    std::move(callback).Run(MakeCredentialStatus::kUserConsentDenied,
                             std::nullopt);
     return;
   }
@@ -217,7 +217,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
           base::as_bytes(base::make_span(response->authenticator_data())));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+    std::move(callback).Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
                             std::nullopt);
     return;
   }
@@ -227,7 +227,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
   if (!statement_map ||
       statement_map.value().type() != cbor::Value::Type::MAP) {
     FIDO_LOG(ERROR) << "Attestation statement is not a CBOR map.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+    std::move(callback).Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
                             std::nullopt);
     return;
   }
@@ -240,7 +240,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
   fido_response.transports.emplace();
   fido_response.transports->insert(FidoTransportProtocol::kInternal);
 
-  std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
+  std::move(callback).Run(MakeCredentialStatus::kSuccess,
                           std::move(fido_response));
 }
 
@@ -320,7 +320,8 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
     std::optional<u2f::GetAssertionResponse> response) {
   if (!response) {
     FIDO_LOG(ERROR) << "GetAssertion dbus call failed";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
+    std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
+                            {});
     return;
   }
 
@@ -328,8 +329,7 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
   if (response->status() !=
           u2f::GetAssertionResponse_GetAssertionStatus_SUCCESS ||
       response->assertion_size() < 1) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-                            {});
+    std::move(callback).Run(GetAssertionStatus::kUserConsentDenied, {});
     return;
   }
 
@@ -340,7 +340,8 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
           base::as_bytes(base::make_span(assertion.authenticator_data())));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
+    std::move(callback).Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
+                            {});
     return;
   }
 
@@ -354,7 +355,7 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
   authenticator_response.at(0).credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(credential_id.begin(), credential_id.end()));
-  std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
+  std::move(callback).Run(GetAssertionStatus::kSuccess,
                           std::move(authenticator_response));
 }
 

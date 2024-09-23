@@ -13,8 +13,8 @@ namespace media {
 
 OffloadingAudioEncoder::OffloadingAudioEncoder(
     std::unique_ptr<AudioEncoder> wrapped_encoder,
-    const scoped_refptr<base::SequencedTaskRunner> work_runner,
-    const scoped_refptr<base::SequencedTaskRunner> callback_runner)
+    scoped_refptr<base::SequencedTaskRunner> work_runner,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner)
     : wrapped_encoder_(std::move(wrapped_encoder)),
       work_runner_(std::move(work_runner)),
       callback_runner_(std::move(callback_runner)) {

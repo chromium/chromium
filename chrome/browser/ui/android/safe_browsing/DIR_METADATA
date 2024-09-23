@@ -1,7 +1,7 @@
 mixins: "//chrome/browser/safe_browsing/COMMON_METADATA"
 monorail: {
-  component: "UI>Browser>SafeBrowsing"
+  component: "Services>SafeBrowsing"
 }
 buganizer_public: {
-  component_id: 1456599
+  component_id: 1456950
 }

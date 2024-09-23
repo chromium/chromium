@@ -8,11 +8,11 @@
  */
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
@@ -22,7 +22,7 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -122,7 +122,9 @@ export class SettingsSignoutDialogElement extends
    * Polymer observer for syncStatus.
    */
   private syncStatusChanged_() {
-    if (!this.syncStatus!.signedIn && this.$.dialog.open) {
+    if (!!this.syncStatus &&
+        this.syncStatus.signedInState !== SignedInState.SYNCING &&
+        this.$.dialog.open) {
       this.$.dialog.close();
     }
   }

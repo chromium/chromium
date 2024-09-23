@@ -105,11 +105,6 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     layer()->SetOpacity(show ? kPowerButtonMenuOpacity : 0.f);
   }
 
-  // views::View:
-  const char* GetClassName() const override {
-    return "PowerButtonMenuBackgroundView";
-  }
-
  private:
   // views::View:
   void OnThemeChanged() override {
@@ -122,9 +117,7 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   base::RepeatingClosure show_animation_done_;
 };
 
-BEGIN_METADATA(PowerButtonMenuScreenView,
-               PowerButtonMenuBackgroundView,
-               views::View)
+BEGIN_METADATA(PowerButtonMenuScreenView, PowerButtonMenuBackgroundView)
 END_METADATA
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(
@@ -198,10 +191,6 @@ PowerButtonMenuScreenView::GetOrCreateCurtainView() {
   return power_button_menu_curtain_view_;
 }
 
-const char* PowerButtonMenuScreenView::GetClassName() const {
-  return "PowerButtonMenuScreenView";
-}
-
 void PowerButtonMenuScreenView::Layout(PassKey) {
   power_button_screen_background_shield_->SetBoundsRect(GetContentsBounds());
   if (IsCurtainModeEnabled()) {
@@ -248,7 +237,7 @@ bool PowerButtonMenuScreenView::AcceleratorPressed(
 }
 
 void PowerButtonMenuScreenView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() != ui::EventType::kGestureTapDown) {
     return;
   }
 
@@ -316,7 +305,6 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
       break;
     default:
       NOTREACHED();
-      return;
   }
 
   switch (power_button_position_) {
@@ -347,7 +335,6 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
       break;
     default:
       NOTREACHED();
-      return;
   }
 
   menu_bounds_origins_.clear();

@@ -9,6 +9,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -16,6 +18,7 @@
 
 namespace gfx {
 struct VectorIcon;
+class Insets;
 }  // namespace gfx
 
 namespace views {
@@ -103,6 +106,22 @@ class ASH_EXPORT FeatureTile : public views::Button {
   FeatureTile& operator=(const FeatureTile&) = delete;
   ~FeatureTile() override;
 
+  // Implement this class to get notified of certain state changes to this tile.
+  // Currently this only exists for testing purposes.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when this tile's download state changes. `download_state` is the
+    // new download state, and `progress` is the new download progress
+    // (currently only meaningful when the download state is
+    // `DownloadState::kDownloading`).
+    virtual void OnDownloadStateChanged(DownloadState download_state,
+                                        int progress) = 0;
+  };
+
+  // Adds/removes an observer of this tile.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Sets whether the icon on the left is clickable, separate from clicking on
   // the tile itself. Use SetIconClickCallback() to set the callback. This
   // function is separate from SetIconClickCallback() because it's likely that
@@ -113,6 +132,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
   // Sets the `callback` for clicks on `icon_button_`.
   void SetIconClickCallback(base::RepeatingCallback<void()> callback);
+
+  // Sets the `on_title_container_bounds_changed_` callback.
+  void SetOnTitleBoundsChangedCallback(
+      base::RepeatingCallback<void()> callback);
 
   // Creates a decorative `drill_in_arrow_` on the right side of the tile. This
   // indicates to the user that the tile shows a detailed view when pressed.
@@ -129,18 +152,27 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the vector icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
-  // Sets the button's background color or toggled color with color ID when the
-  // button wants to have a different background color from the default one.
+  // Sets margins for 'title_container_' in the tile.
+  void SetTitleContainerMargins(const gfx::Insets& insets);
+
+  // Setters to apply custom background colors.
   void SetBackgroundColorId(ui::ColorId background_color_id);
   void SetBackgroundToggledColorId(ui::ColorId background_toggled_color_id);
+  void SetBackgroundDisabledColorId(ui::ColorId background_disabled_color_id);
 
   // Sets the radius determining the tile's curved edges.
   void SetButtonCornerRadius(const int radius);
 
-  // Sets the button's foreground color or toggled color with color ID when the
-  // button wants to have a different foreground color from the default one.
+  // Setters to apply custom foreground colors.
   void SetForegroundColorId(ui::ColorId foreground_color_id);
   void SetForegroundToggledColorId(ui::ColorId foreground_toggled_color_id);
+  void SetForegroundDisabledColorId(ui::ColorId foreground_disabled_color_id);
+  void SetForegroundOptionalColorId(ui::ColorId foreground_optional_color_id);
+  void SetForegroundOptionalToggledColorId(
+      ui::ColorId foreground_optional_toggled_color_id);
+
+  // Sets a custom color for the tile's ink drop, when its toggled.
+  void SetInkDropToggledBaseColorId(ui::ColorId ink_drop_toggled_base_color_id);
 
   // Sets the tile icon from an ImageSkia.
   void SetImage(gfx::ImageSkia image);
@@ -172,9 +204,11 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void SetDownloadState(DownloadState state, int progress);
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   base::WeakPtr<FeatureTile> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -187,6 +221,11 @@ class ASH_EXPORT FeatureTile : public views::Button {
   views::Label* sub_label() { return sub_label_; }
   views::ImageView* drill_in_arrow() { return drill_in_arrow_; }
   int corner_radius() const { return corner_radius_; }
+
+  DownloadState download_state_for_testing() const { return download_state_; }
+  int download_progress_for_testing() const {
+    return download_progress_percent_;
+  }
 
  private:
   friend class BluetoothFeaturePodControllerTest;
@@ -213,6 +252,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
     const ui::ColorId background_color_id_;
   };
 
+  // views::Button:
+  void OnSetTooltipText(const std::u16string& tooltip_text) override;
+
   // Creates child views of Feature Tile. The constructed view will vary
   // depending on the button's `type_`.
   void CreateChildViews();
@@ -230,6 +272,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Updates the color of `drill_in_arrow_` for better visibility.
   void UpdateDrillInArrowColor();
 
+  // Updates the accessibility properties directly in the cache, like the role
+  // and the toggle state.
+  void UpdateAccessibilityProperties();
+
   // Updates `label_` attributes depending on whether a sub-label will be
   // visible.
   void SetCompactTileLabelPreferences(bool has_sub_label);
@@ -239,14 +285,23 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // `SetLabel()` is intended to be used externally for setting the tile's
   // non-download-related label (i.e. the "client-specified" label), whereas
   // this method is only used internally by this class to temporarily switch to
-  // a different label during download.
-  void SetDownloadLabel(const std::u16string& download_label);
+  // a different label during download. An optional tooltip can be included if
+  // the tooltip should differ from the `download_label`.
+  void SetDownloadLabel(const std::u16string& download_label,
+                        std::optional<std::u16string> tooltip = std::nullopt);
 
   // Updates the tile's label according to the current download state. Note that
   // this method assumes the download-related state (e.g. `download_state_` and
   // `download_progress_percent_`) is current, so it is up to the client to
   // perform any download-related state changes prior to calling this.
   void UpdateLabelForDownloadState();
+
+  // Notifies all observers of this tile's current download state. Should only
+  // be called when the download state actually changes.
+  void NotifyDownloadStateChanged();
+
+  // A list of this tile's observers.
+  base::ObserverList<Observer> observers_;
 
   // Ensures the ink drop is painted above the button's background.
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
@@ -257,8 +312,15 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Customized value for the tile's background color and foreground color.
   std::optional<ui::ColorId> background_color_;
   std::optional<ui::ColorId> background_toggled_color_;
+  std::optional<ui::ColorId> background_disabled_color_;
   std::optional<ui::ColorId> foreground_color_;
   std::optional<ui::ColorId> foreground_toggled_color_;
+  std::optional<ui::ColorId> foreground_optional_color_;
+  std::optional<ui::ColorId> foreground_optional_toggled_color_;
+  std::optional<ui::ColorId> foreground_disabled_color_;
+
+  // Customized value for the tile's ink drop color.
+  std::optional<ui::ColorId> ink_drop_toggled_base_color_;
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageButton> icon_button_ = nullptr;
@@ -274,17 +336,18 @@ class ASH_EXPORT FeatureTile : public views::Button {
   bool is_icon_clickable_ = false;
 
   // Whether this button is togglable.
-  bool is_togglable_ = false;
+  const bool is_togglable_ = false;
 
   // Whether the button is currently toggled.
   bool toggled_ = false;
 
   // The non-download-related (a.k.a. "client-specified") text of this tile's
-  // label. The tile's label may change when its downloading state changes, so
-  // this is used to store the original, client-specified label for later
-  // reference (e.g. when a download finishes and the tile needs to show the
-  // original label again).
+  // label/tooltip. The tile's label/tooltip may change when its downloading
+  // state changes, so this is used to store the original, client-specified
+  // label/tooltip for later reference (e.g. when a download finishes and the
+  // tile needs to show the original label again).
   std::u16string client_specified_label_text_;
+  std::u16string client_specified_tooltip_text_;
 
   // The type of the feature tile that determines how it lays out its view.
   TileType type_;
@@ -297,9 +360,15 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // download by default.
   DownloadState download_state_ = DownloadState::kNone;
 
+  // True when `UpdateLabelForDownloadState()` is happening.
+  bool updating_download_state_labels_ = false;
+
   // The download progress, as an integer percentage in the range [0, 100]. Only
   // has meaning when the tile is in an active download state.
   int download_progress_percent_ = 0;
+
+  // Runs when `title_container_`'s bounds is changed.
+  base::RepeatingClosure on_title_container_bounds_changed_;
 
   base::WeakPtrFactory<FeatureTile> weak_ptr_factory_{this};
 };

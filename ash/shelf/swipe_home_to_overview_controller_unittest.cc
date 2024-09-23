@@ -184,8 +184,9 @@ TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
         base::BindRepeating(
             [](int* update_count, ui::EventType event_type,
                const gfx::Vector2dF& delta) {
-              if (event_type != ui::ET_GESTURE_SCROLL_UPDATE)
+              if (event_type != ui::EventType::kGestureScrollUpdate) {
                 return;
+              }
 
               *update_count = *update_count + 1;
               if (*update_count == steps) {

@@ -5,6 +5,7 @@
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -25,7 +26,7 @@ void NamedMessagePortConnector::RegisterPortHandler(
 // Receives the MessagePort and forwards ports to their corresponding binding
 // handlers.
 bool NamedMessagePortConnector::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   if (ports.size() != 1) {
     DLOG(FATAL) << "Only one control port should be provided";

@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kerberos") {
+  sources = [
+    "data_pipe_utils.cc",
+    "data_pipe_utils.h",
+    "kerberos_credentials_manager.cc",
+    "kerberos_credentials_manager.h",
+    "kerberos_credentials_manager_factory.cc",
+    "kerberos_credentials_manager_factory.h",
+    "kerberos_files_handler.cc",
+    "kerberos_files_handler.h",
+    "kerberos_ticket_expiry_notification.cc",
+    "kerberos_ticket_expiry_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
+    "//chromeos/components/onc",
+    "//chromeos/strings:strings_grit",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/user_manager",
+    "//dbus",
+    "//net",
+    "//ui/base",
+    "//ui/message_center",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "kerberos_credentials_manager_unittest.cc",
+    "kerberos_ticket_expiry_notification_test.cc",
+  ]
+
+  deps = [
+    ":kerberos",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
+    "//components/user_manager",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kerberos_credentials_manager_factory_browsertest.cc" ]
+
+  deps = [
+    ":kerberos",
+    "//ash/constants",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

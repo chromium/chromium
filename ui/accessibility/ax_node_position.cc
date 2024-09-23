@@ -39,7 +39,7 @@ std::string ToString(const AXPositionKind kind) {
            {AXPositionKind::TREE_POSITION, "TreePosition"},
            {AXPositionKind::TEXT_POSITION, "TextPosition"}});
 
-  const auto* iter = kKindToString.find(kind);
+  const auto iter = kKindToString.find(kind);
   if (iter == std::end(kKindToString))
     return std::string();
   return iter->second;
@@ -117,8 +117,7 @@ AXNodePosition::AXNodePosition() = default;
 
 AXNodePosition::~AXNodePosition() = default;
 
-AXNodePosition::AXNodePosition(const AXNodePosition& other)
-    : AXPosition<AXNodePosition, AXNode>(other) {}
+AXNodePosition::AXNodePosition(const AXNodePosition& other) = default;
 
 AXNodePosition::AXPositionInstance AXNodePosition::Clone() const {
   return AXPositionInstance(new AXNodePosition(*this));

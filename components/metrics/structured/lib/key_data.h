@@ -88,6 +88,8 @@ class KeyData {
   //  - |project_name_hash| is the uint64 name hash of a project.
   //  - |metric_name_hash| is the uint64 name hash of a metric.
   //  - |value| is the string value to hash.
+  //  - |key_rotation_period| is the frequency in which the key is rotated. It
+  //    is used to retrieve the correct key.
   //
   // The result is the HMAC digest of the |value| salted with |metric|, using
   // the key for |project_name_hash|. That is:
@@ -96,12 +98,10 @@ class KeyData {
   //   hex(metric)))
   //
   // Returns 0u in case of an error.
-  //
-  // TODO(b/316419439): Change |key_rotation_period| to base::TimeDelta.
   uint64_t HmacMetric(uint64_t project_name_hash,
                       uint64_t metric_name_hash,
                       const std::string& value,
-                      int key_rotation_period);
+                      base::TimeDelta key_rotation_period);
 
   // Returns an ID for this (user, |project_name_hash|) pair.
   // |project_name_hash| is the name of a project, represented by the first 8
@@ -111,22 +111,16 @@ class KeyData {
   // Returns 0u in case of an error.
   //
   // This ID is intended as the only ID for the events of a particular
-  // structured metrics project. However, events are uploaded from the device
-  // alongside the UMA client ID, which is only removed after the event reaches
-  // the server. This means events are associated with the client ID when
-  // uploaded from the device. See the class comment of
+  // structured metrics project. See the class comment of
   // StructuredMetricsProvider for more details.
   //
   // Default |key_rotation_period| is 90 days.
-  //
-  // TODO(b/316419439): Change |key_rotation_period| to base::TimeDelta.
-  uint64_t Id(uint64_t project_name_hash, int key_rotation_period);
+  uint64_t Id(uint64_t project_name_hash, base::TimeDelta key_rotation_period);
 
-  // Returns when the key for |project_name_hash| was last rotated, in days
-  // since epoch. Returns nullopt if the key doesn't exist.
-  //
-  // TODO(b/316419439): Change |key_rotation_period| to base::TimeDelta.
-  std::optional<int> LastKeyRotation(uint64_t project_name_hash) const;
+  // Returns when the key for |project_name_hash| was last rotated. Returns
+  // nullopt if the key doesn't exist.
+  std::optional<base::TimeDelta> LastKeyRotation(
+      uint64_t project_name_hash) const;
 
   // Return the age of the key for |project_name_hash| since the last rotation,
   // in weeks.

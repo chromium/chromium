@@ -5,6 +5,7 @@
 #include "ash/wm/ash_focus_rules.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -168,6 +169,11 @@ bool AshFocusRules::CanFocusWindow(const aura::Window* window,
 aura::Window* AshFocusRules::GetNextActivatableWindow(
     aura::Window* ignore) const {
   DCHECK(ignore);
+  // If the window that lost activation should be ignored, no need to change
+  // window activation.
+  if (ignore->GetProperty(kIgnoreWindowActivationKey)) {
+    return nullptr;
+  }
 
   // If the window that just lost focus |ignore| has a transient parent, then
   // start from the container of that parent, otherwise start from the container
@@ -217,6 +223,9 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
     for (int i = starting_container_index - 1; !window && i >= 0; i--)
       window = GetTopmostWindowToActivateForContainerIndex(i, ignore, root);
   }
+  if (window) {
+    DCHECK(!window->GetProperty(kIgnoreWindowActivationKey));
+  }
   return window;
 }
 
@@ -255,7 +264,8 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateInContainer(
     // desk.
     if (child != ignore && window_state->CanActivate() &&
         !window_state->IsMinimized() &&
-        !(window_state->IsFloated() && !child->IsVisible())) {
+        !(window_state->IsFloated() && !child->IsVisible()) &&
+        !child->GetProperty(kIgnoreWindowActivationKey)) {
       return child;
     }
   }

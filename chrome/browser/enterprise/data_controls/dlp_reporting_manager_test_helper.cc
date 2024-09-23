@@ -5,10 +5,11 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -100,7 +101,7 @@ void SetReportQueueForReportingManager(
           base::OnTaskRunnerDeleter(std::move(task_runner)));
   EXPECT_CALL(*report_queue, AddRecord)
       .WillRepeatedly(
-          [&events](base::StringPiece record, reporting::Priority priority,
+          [&events](std::string_view record, reporting::Priority priority,
                     reporting::ReportQueue::EnqueueCallback callback) {
             DlpPolicyEvent event;
             event.ParseFromString(std::string(record));

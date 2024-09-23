@@ -2,9 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
+#include "base/debug/crash_logging.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 
 namespace content {
+
+const size_t kSharedStorageSerializedDataLengthLimitForEventParams = 1024;
+
+std::string MaybeTruncateSerializedData(
+    const blink::CloneableMessage& serialized_data) {
+  SCOPED_CRASH_KEY_NUMBER("SharedStorageEventParams", "data_size",
+                          serialized_data.owned_encoded_message.size());
+  size_t length =
+      std::min(serialized_data.owned_encoded_message.size(),
+               kSharedStorageSerializedDataLengthLimitForEventParams);
+  return std::string(serialized_data.owned_encoded_message.begin(),
+                     serialized_data.owned_encoded_message.begin() + length);
+}
 
 SharedStorageEventParams::SharedStorageUrlSpecWithMetadata::
     SharedStorageUrlSpecWithMetadata() = default;
@@ -70,11 +86,10 @@ SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
 SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
     const blink::CloneableMessage& serialized_data) {
-  return SharedStorageEventParams(
-      std::nullopt, operation_name,
-      std::string(serialized_data.owned_encoded_message.begin(),
-                  serialized_data.owned_encoded_message.end()),
-      std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+  return SharedStorageEventParams(std::nullopt, operation_name,
+                                  MaybeTruncateSerializedData(serialized_data),
+                                  std::nullopt, std::nullopt, std::nullopt,
+                                  std::nullopt);
 }
 
 // static
@@ -82,11 +97,10 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const std::string& operation_name,
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata) {
-  return SharedStorageEventParams(
-      std::nullopt, operation_name,
-      std::string(serialized_data.owned_encoded_message.begin(),
-                  serialized_data.owned_encoded_message.end()),
-      std::move(urls_with_metadata), std::nullopt, std::nullopt, std::nullopt);
+  return SharedStorageEventParams(std::nullopt, operation_name,
+                                  MaybeTruncateSerializedData(serialized_data),
+                                  std::move(urls_with_metadata), std::nullopt,
+                                  std::nullopt, std::nullopt);
 }
 
 // static

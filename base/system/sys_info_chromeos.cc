@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/system/sys_info.h"
 
 #include <stddef.h>
@@ -15,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -204,7 +208,6 @@ std::string SysInfo::KernelVersion() {
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    return std::string();
   }
   return std::string(info.release);
 }

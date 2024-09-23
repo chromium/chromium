@@ -13,9 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
-#include "chrome/browser/touch_to_fill/password_manager/android/internal/jni/TouchToFillBridge_jni.h"
-#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/Credential_jni.h"
-#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebauthnCredential_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -27,6 +25,11 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/touch_to_fill/password_manager/android/internal/jni/TouchToFillBridge_jni.h"
+#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/Credential_jni.h"
+#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebauthnCredential_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
@@ -198,6 +201,7 @@ bool TouchToFillViewImpl::RecreateJavaObject() {
   }
   java_object_internal_ = Java_TouchToFillBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      controller_->GetProfile()->GetJavaObject(),
       controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
   return !!java_object_internal_;
 }

@@ -73,7 +73,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
 
   void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_result,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
   void UpdateNearbyConnectionState(
       mojom::NearbyConnectionStep nearby_connection_step,
       mojom::NearbyConnectionStepResult result) override;
@@ -96,7 +96,7 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   std::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
 
   mojom::DiscoveryResult ble_discovery_result_;
-  absl::optional<mojom::DiscoveryErrorCode> potential_ble_discovery_error_code_;
+  std::optional<mojom::DiscoveryErrorCode> potential_ble_discovery_error_code_;
   mojom::NearbyConnectionStep nearby_connection_step_;
   mojom::NearbyConnectionStepResult nearby_connection_step_result_;
   mojom::SecureChannelState secure_channel_state_;

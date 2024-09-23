@@ -21,7 +21,7 @@ class CaptivePortalMetricsRecorder;
 
 // This class adds metrics specific to the usage of CaptivePortalService to the
 // security_interstitials::MetricsHelper.
-// TODO(crbug.com/812808): Refactor out the use of this class if possible.
+// TODO(crbug.com/41370917): Refactor out the use of this class if possible.
 
 // This class is meant to be used on the UI thread for captive portal metrics.
 class ContentMetricsHelper : public security_interstitials::MetricsHelper {

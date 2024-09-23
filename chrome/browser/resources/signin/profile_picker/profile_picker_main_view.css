@@ -1,0 +1,154 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./profile_picker_shared.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=profile-picker-shared cr-hidden-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --profile-item-border-width: 1px;
+  --profile-item-margin: 4px;
+}
+
+.flex-container {
+  display: flex;
+  flex-flow: column;
+  height: calc(100% - var(--cr-button-height) - 2 * var(--footer-spacing));
+  justify-content: space-evenly;
+}
+
+.title-container {
+  /* TODO(crbug.com/40909663): dedupe with |--tangible-sync-style-banner-width|
+    * from |tangible_sync_style_shared.css| */
+  --banner-width: 17vw;
+
+  flex: 0 1 auto;
+  margin: 30px auto 0 auto;
+  max-width: 490px;
+  padding-inline-end: var(--banner-width);
+  padding-inline-start: var(--banner-width);
+  text-align: center;
+}
+
+#product-logo {
+  height: 32px;
+}
+
+.title {
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  margin-top: 8px;
+}
+
+#wrapper {
+  display: flex;
+  flex: 0 1 auto;
+  margin-bottom: 4px;
+  margin-inline-end: 140px;
+  margin-inline-start: 140px;
+  min-height: calc(var(--profile-item-height) + 2*var(--profile-item-margin)
+    + 2*var(--profile-item-border-width));
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#profilesContainer {
+  --grid-gutter: 8px;
+  align-items: center;
+  display: grid;
+  /* Actual gap: --grid-gutter + 2 * --profile-item-margin = 16px */
+  grid-column-gap: var(--grid-gutter);
+  grid-row-gap: var(--grid-gutter);
+  grid-template-columns: repeat(auto-fit, calc(var(--profile-item-width) +
+    2 * var(--profile-item-margin)));
+  justify-content: center;
+  margin: auto;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-inline-end: var(--scrollbar-width);
+  padding-inline-start: var(--scrollbar-width);
+  width: 100%;
+}
+
+.profile-item {
+  align-items: center;
+  border: 1px solid var(--google-grey-300);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: var(--profile-item-height);
+  justify-content: center;
+  margin: var(--profile-item-margin);
+  width: var(--profile-item-width);
+}
+
+.profile-item:focus-within,
+.profile-item:hover {
+  background-color: var(--profile-card-hover-color);
+}
+
+#addProfile.profile-item {
+  --cr-hover-background-color: none;
+  border: var(--profile-item-border-width) dashed var(--google-grey-300);
+  box-shadow: none;
+  position: relative;
+}
+
+#addProfileButtonLabel {
+  top: 0;
+  left: 0;
+}
+
+cr-icon[icon='profiles:add'] {
+  --iron-icon-height: var(--profile-card-avatar-icon-size);
+  --iron-icon-width: var(--profile-card-avatar-icon-size);
+  --iron-icon-fill-color: var(--google-grey-100);
+  --iron-icon-stroke-color: var(--google-grey-700);
+}
+
+#browseAsGuestButton {
+  margin-inline-start: var(--footer-spacing);
+  padding: 8px 16px;
+}
+
+#browseAsGuestButton > cr-icon {
+  margin-inline-end: 0;
+  --iron-icon-height: 24px;
+  --iron-icon-width: 24px;
+}
+
+cr-checkbox {
+  --cr-checkbox-label-color:  var(--cr-secondary-text-color);
+  --cr-checkbox-label-padding-start: 8px;
+  justify-content: flex-end;
+  margin-inline-end: var(--footer-spacing);
+  margin-inline-start: auto;
+  padding-inline-end: 5px;
+  padding-inline-start: 5px;
+}
+
+#button-sign-in {
+  margin-left: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .profile-item,
+  #addProfile.profile-item {
+    border-color: var(--google-grey-700);
+  }
+
+  cr-icon[icon='profiles:add'] {
+    --iron-icon-fill-color: var(--google-grey-500);
+    --iron-icon-stroke-color: rgb(48, 48, 50);
+  }
+}

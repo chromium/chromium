@@ -1,0 +1,40 @@
+caption: Enable Sounds in Focus Mode for ChromeOS
+default_for_enterprise_users: disabled
+desc: |-
+  Focus Mode is a feature that controls Do Not Disturb on a timer and is intended to reduce user distraction. A feature of Focus Mode allows users to listen to a limited set of music to help them focus. This policy controls access to this feature.
+
+  If the policy is unset, all sounds are disabled for managed users.
+
+  Setting the policy to Enabled will allow access to all sounds in Focus Mode.
+
+  Setting the policy to EnabledFocusSoundsOnly will enable the sound feature with just Focus Sounds.
+
+  Setting the policy to Disabled will disable sounds in Focus Mode.
+example_value: focus-sounds
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable all sounds in Focus Mode.
+  name: Enabled
+  value: enabled
+- caption: Enable Focus Mode with only Focus Sounds.
+  name: EnabledFocusSoundsOnly
+  value: focus-sounds
+- caption: Disable sounds in Focus Mode.
+  name: Disabled
+  value: disabled
+owners:
+- richui@chromium.org
+- nupurjain@google.com
+- skau@chromium.org
+schema:
+  enum:
+  - enabled
+  - focus-sounds
+  - disabled
+  type: string
+supported_on:
+- chrome_os:129-
+tags: []
+type: string-enum

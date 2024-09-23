@@ -5,19 +5,16 @@
 package org.chromium.base;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 
 /** Unit tests for {@link FeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FeatureListUnitTest {
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private static final String FEATURE_A = "FeatureA";
     private static final String FEATURE_A_PARAM_1 = "Param1InFeatureA";
@@ -33,8 +30,7 @@ public class FeatureListUnitTest {
 
     @Test
     public void test_getTestValueForFeature_canUseDefaults_noException() {
-        FeatureList.setTestCanUseDefaultsForTesting();
-
+        FeatureList.setDisableNativeForTesting(false);
         Assert.assertNull(FeatureList.getTestValueForFeature(FEATURE_A));
     }
 
@@ -144,7 +140,7 @@ public class FeatureListUnitTest {
     @Test
     @EnableFeatures({FEATURE_A, FEATURE_B})
     public void test_setTestValues_replacesAnnotation() {
-        FeatureList.setTestCanUseDefaultsForTesting();
+        FeatureList.setDisableNativeForTesting(false);
 
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(FEATURE_A, false);

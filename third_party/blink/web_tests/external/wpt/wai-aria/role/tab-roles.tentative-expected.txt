@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] orphan button with tab role
+  assert_equals: <button role="tab" data-testname="orphan button with tab role" data-expectedrole="button" class="ex">x</button> expected "button" but got "tab"
+[FAIL] orphan span with tab role
+  assert_false: Computed Role: "tab" does not match any of the acceptable role strings in ["generic", "", "none"]: <span role="tab" data-testname="orphan span with tab role" class="ex-generic">x</span> expected false got true
+Harness: the test ran to completion.
+

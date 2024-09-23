@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  enable_discovery = false
+
+  # TODO(crbug.com/41481724): Remove this flag and corresponding build
+  # conditions.
+  # Disable Click to Call on Fuchsia.
+  enable_click_to_call = !is_fuchsia
+}

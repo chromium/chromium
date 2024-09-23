@@ -6,11 +6,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+
 namespace ash {
 namespace {
 
@@ -20,10 +19,12 @@ constexpr char kUserActionRetry[] = "retry";
 
 // static
 std::string UserAllowlistCheckScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::RETRY:
       return "Retry";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UserAllowlistCheckScreen::UserAllowlistCheckScreen(
@@ -41,9 +42,8 @@ void UserAllowlistCheckScreen::ShowImpl() {
     return;
   }
 
-  const bool enterprise_managed = g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->IsDeviceEnterpriseManaged();
+  const bool enterprise_managed =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   bool family_link_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,

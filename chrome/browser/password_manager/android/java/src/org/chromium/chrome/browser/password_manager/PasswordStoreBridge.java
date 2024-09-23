@@ -7,14 +7,16 @@ package org.chromium.chrome.browser.password_manager;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
 /**
- * Class handling communication with C++ password store from Java. It forwards
- * messages to and from its C++ counterpart.
+ * Class handling communication with C++ password store from Java. It forwards messages to and from
+ * its C++ counterpart.
  */
 public class PasswordStoreBridge {
     @CalledByNative
@@ -45,8 +47,8 @@ public class PasswordStoreBridge {
     }
 
     /** Initializes its native counterpart. */
-    public PasswordStoreBridge() {
-        mNativePasswordStoreBridge = PasswordStoreBridgeJni.get().init(this);
+    public PasswordStoreBridge(Profile profile) {
+        mNativePasswordStoreBridge = PasswordStoreBridgeJni.get().init(this, profile);
         mObserverList = new ObserverList<>();
     }
 
@@ -150,6 +152,11 @@ public class PasswordStoreBridge {
         PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
     }
 
+    /** Empties the profile store. */
+    public void clearAllPasswordsFromProfileStore() {
+        PasswordStoreBridgeJni.get().clearAllPasswordsFromProfileStore(mNativePasswordStoreBridge);
+    }
+
     /** Destroys its C++ counterpart. */
     public void destroy() {
         if (mNativePasswordStoreBridge != 0) {
@@ -182,7 +189,7 @@ public class PasswordStoreBridge {
     /** C++ method signatures. */
     @NativeMethods
     public interface Natives {
-        long init(PasswordStoreBridge passwordStoreBridge);
+        long init(PasswordStoreBridge passwordStoreBridge, @JniType("Profile*") Profile profile);
 
         void insertPasswordCredentialInProfileStoreForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
@@ -207,6 +214,8 @@ public class PasswordStoreBridge {
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);
 
         void clearAllPasswords(long nativePasswordStoreBridge);
+
+        void clearAllPasswordsFromProfileStore(long nativePasswordStoreBridge);
 
         void destroy(long nativePasswordStoreBridge);
     }

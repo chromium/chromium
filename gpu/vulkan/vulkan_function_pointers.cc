@@ -548,6 +548,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     return false;
   }
 
+  constexpr char kvkCmdCopyImage[] = "vkCmdCopyImage";
+  vkCmdCopyImage = reinterpret_cast<PFN_vkCmdCopyImage>(
+      vkGetDeviceProcAddr(vk_device, kvkCmdCopyImage));
+  if (!vkCmdCopyImage) {
+    LogGetProcError(kvkCmdCopyImage);
+    return false;
+  }
+
   constexpr char kvkCmdCopyImageToBuffer[] = "vkCmdCopyImageToBuffer";
   vkCmdCopyImageToBuffer = reinterpret_cast<PFN_vkCmdCopyImageToBuffer>(
       vkGetDeviceProcAddr(vk_device, kvkCmdCopyImageToBuffer));
@@ -1381,6 +1389,7 @@ void VulkanFunctionPointers::ResetForTesting() {
   vkCmdBindVertexBuffers = nullptr;
   vkCmdCopyBuffer = nullptr;
   vkCmdCopyBufferToImage = nullptr;
+  vkCmdCopyImage = nullptr;
   vkCmdCopyImageToBuffer = nullptr;
   vkCmdDraw = nullptr;
   vkCmdEndRenderPass = nullptr;

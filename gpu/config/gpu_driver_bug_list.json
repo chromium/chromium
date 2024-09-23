@@ -112,6 +112,9 @@
       "id": 31,
       "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528],
       "description": "The Mali-3xx/4xx/Txxx driver does not guarantee flush ordering",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali-[T34].*",
       "features": [
@@ -133,6 +136,9 @@
     {
       "id": 33,
       "description": "Share group-related crashes and poor context switching perf on Imagination drivers",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Imagination.*",
       "features": [
         "use_virtualized_gl_contexts"
@@ -508,19 +514,6 @@
       "gl_renderer": ".*Mali-4.*",
       "features": [
         "disable_gl_rgb_format"
-      ]
-    },
-    {
-      "id": 109,
-      "cr_bugs": [449150, 514510],
-      "description": "MakeCurrent is slow on Linux with NVIDIA drivers",
-      "vendor_id": "0x10de",
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
@@ -1016,18 +1009,6 @@
       ]
     },
     {
-      "id": 186,
-      "description": "Rewrite condition in for and while loops for Intel Mac",
-      "cr_bugs": [644669],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "add_and_true_to_loop_condition"
-      ]
-    },
-    {
       "id": 190,
       "description": "Disable partial swaps on Mesa drivers (detected with GL_VERSION)",
       "cr_bugs": [339493],
@@ -1065,6 +1046,9 @@
       "id": 213,
       "description": "The Mali-Gxx driver does not guarantee flush ordering",
       "cr_bugs": [678508],
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali-G.*",
       "features": [
@@ -1399,7 +1383,7 @@
     },
     {
       "id": 249,
-      "description": "Direct composition causes slow presents on old Nvidia GPUs",
+      "description": "Full screen video overlays causes slow presents on old Nvidia GPUs",
       "cr_bugs": [775898],
       "os": {
         "type": "win"
@@ -1407,7 +1391,7 @@
       "vendor_id": "0x10de",
       "device_id": ["0x10d8"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1471,19 +1455,6 @@
       "test_group": 2,
       "disabled_webgl_extensions": [
         "WEBGL_lose_context"
-      ]
-    },
-    {
-      "id": 258,
-      "description": "Shader variable initialization in a loop caused perf regression on Mac Intel.",
-      "cr_bugs": [809422],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "features": [
-        "dont_use_loops_to_initialize_variables"
       ]
     },
     {
@@ -1596,18 +1567,6 @@
       ]
     },
     {
-      "id": 270,
-      "cr_bugs": [859998],
-      "description": "AMD Linux driver crashes when copyTexImage2D is called with PIXEL_UNPACK_BUFFER set to an uninitialized buffer",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "clear_pixel_unpack_buffer_before_copyteximage"
-      ]
-    },
-    {
       "id": 272,
       "cr_bugs": [858879],
       "description": "A deleted query id for GL_TIMESTAMP cannot be reused for other query targets",
@@ -1621,7 +1580,7 @@
     },
     {
       "id": 277,
-      "description": "Direct composition path is buggy on certain AMD devices/drivers",
+      "description": "Video overlay path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
       "os": {
         "type": "win"
@@ -1632,12 +1591,12 @@
         "value": "8.17.10.1129"
       },
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
       "id": 278,
-      "description": "Direct composition path is buggy on certain AMD devices/drivers",
+      "description": "Video overlay path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
       "os": {
         "type": "win"
@@ -1645,7 +1604,7 @@
       "vendor_id": "0x1002",
       "device_id": ["0x6900"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1676,38 +1635,6 @@
       ]
     },
     {
-      "id": 284,
-      "cr_bugs": [913301],
-      "description": "Clamp texture's BASE_LEVEL/MAX_LEVEL for GenerateMipmap",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "clamp_texture_base_level_and_max_level"
-      ]
-    },
-    {
-      "id": 285,
-      "cr_bugs": [914976, 1000113],
-      "description": "Context flush ordering doesn't seem to work on AMD",
-      "vendor_id": "0x1002",
-      "os": {
-        "type": "linux"
-      },
-      "features": [
-        "use_virtualized_gl_contexts"
-      ],
-      "exceptions": [
-        {
-          "driver_vendor": "Mesa",
-          "driver_version": {
-            "op": ">=",
-            "value": "19.0"
-          }
-        }
-      ]
-    },
-    {
       "id": 286,
       "cr_bugs": [908069],
       "description": "Video corruption on Intel HD 530 without hardware overlay support",
@@ -1723,16 +1650,7 @@
       },
       "hardware_overlay": "unsupported",
       "features": [
-        "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 289,
-      "description": "Fake entry for testing command buffer init failures on ES 2.0",
-      "cr_bugs": [923134],
-      "test_group": 3,
-      "features": [
-        "disable_es3_gl_context_for_testing"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1798,10 +1716,15 @@
     },
     {
       "id": 300,
-      "cr_bugs": [775898, 785648, 9245627],
-      "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs",
+      "cr_bugs": [775898, 785648],
+      "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs on early versions of RS3",
       "os": {
-        "type" : "win"
+        "type" : "win",
+        "version": {
+          "op": "between",
+          "value": "10.0.16299.0",
+          "value2": "10.0.16299.214"
+        }
       },
       "intel_gpu_series": [
         "sandybridge",
@@ -1996,14 +1919,14 @@
     {
       "id": 318,
       "cr_bugs": [995396],
-      "description": "Direct composition caused performance issues on AMD GPUs",
+      "description": "Full screen video overlays caused performance issues on AMD GPUs",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x1002",
       "device_id": ["0x694c"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -2137,18 +2060,6 @@
       "disabled_extensions": [
         "GL_EXT_memory_object_fd",
         "GL_EXT_semaphore_fd"
-      ]
-    },
-    {
-      "id": 332,
-      "cr_bugs": [1045586],
-      "description": "Send empty video hdr metadata due to crashes on AMD",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "use_empty_video_hdr_metadata"
       ]
     },
     {
@@ -2303,7 +2214,10 @@
         "alderlake",
         "alchemist",
         "raptorlake",
-        "meteorlake"
+        "meteorlake",
+        "arrowlake",
+        "lunarlake",
+        "battlemage"
       ],
       "features": [
         "force_rgb10a2_overlay_support"
@@ -2464,7 +2378,10 @@
         "alderlake",
         "alchemist",
         "raptorlake",
-        "meteorlake"
+        "meteorlake",
+        "arrowlake",
+        "lunarlake",
+        "battlemage"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"
@@ -2820,17 +2737,6 @@
       ]
     },
     {
-      "id": 393,
-      "description": "GL Contexts heavy / exhaust resources",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-        "use_virtualized_gl_contexts"
-      ]
-    },
-    {
       "id": 394,
       "cr_bugs": [1318380],
       "description": "Only enable video processor super resolution on Intel Gen10+ GPUs and NVIDIA GPUs with 530+ drivers",
@@ -2944,18 +2850,6 @@
       ]
     },
     {
-      "id": 400,
-      "description": "Freedreno driver crashes when importing same dma-buf to two different gl textures",
-      "cr_bugs": [1343521],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-        "cache_texture_in_ozone_backing"
-      ]
-    },
-    {
       "id": 401,
       "description": "Disable DrDc on multiple gpus.",
       "cr_bugs": [1354201, 1356906, 1362720],
@@ -2968,19 +2862,6 @@
       ]
     },
     {
-      "id": 402,
-      "description": "Mali driver disregards fences when importing same dma-buf to two different gl textures",
-      "cr_bugs": [1350094],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali.*",
-      "features": [
-        "cache_texture_in_ozone_backing"
-      ]
-    },
-    {
       "id": 403,
       "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs except Intel alchemist GPUs",
       "cr_bugs": [1367038],
@@ -2989,7 +2870,7 @@
       },
       "gpu_count": {
         "op": ">",
-        "value": "2"
+        "value": "1"
       },
       "exceptions": [
         {
@@ -3287,12 +3168,15 @@
     },
     {
       "id": 423,
-      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437, b/300686930]",
+      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437, b/300686930, b/330342819]",
       "os": {
         "type": "chromeos"
       },
       "vendor_id": "0x1002",
-      "device_id": ["0x9802", "0x9834"],
+      "device_id": [
+          "0x9802", "0x9834", "0x9806", "0x9874", "0x1636", "0x9996",
+          "0x9715", "0x9809", "0x98e4", "0x68c0", "0x9807", "0x9808"
+      ],
       "features": [
         "disable_webgpu_shared_images"
       ]
@@ -3380,6 +3264,163 @@
       ],
       "features": [
         "disable_media_foundation_hardware_security"
+      ]
+    },
+    {
+      "id": 429,
+      "cr_bugs": [
+        344109884
+      ],
+      "description": "Updating multiplanar textures crashes in UpdateSubresourc1() with old Intel driver",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<=",
+        "value": "21.20.16.4551"
+      },
+      "features": [
+        "disable_d3d11_update_subresource1"
+      ]
+    },
+    {
+      "id": 430,
+      "cr_bugs": [
+        341327464
+      ],
+      "description": "Block all NPU drivers until newer versions work with WebNN",
+      "os": {
+        "type": "win"
+      },
+      "multi_gpu_category": "npu",
+      "features": [
+        "disable_webnn_for_npu"
+      ]
+    },
+    {
+      "id": 431,
+      "cr_bugs": [
+        1501767
+      ],
+      "description": "Disable VP9 temporal layer encoding acceleration on Intel GPUs preceding Rocket Lake",
+      "comment":[
+        "In MFVEA, the Intel MFT driver issue affects the reference structure of",
+        "VP9 L1T2/L1T3 encoding. Currently, the issue is fixed in latest driver",
+        "version 31.0.101.5590 and released on rocketlake+ GPUs, the hw",
+        "acceleration can be enabled on these devices with specified drivers."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "intel_gpu_series": [
+            "icelake",
+            "elkhartlake",
+            "jasperlake",
+            "tigerlake",
+            "dg1"
+      ],
+      "features": [
+        "disable_vp9_hmft_temporal_encoding"
+      ]
+    },
+    {
+      "id": 432,
+      "cr_bugs": [
+        1501767
+      ],
+      "description": "Disable VP9 temporal layer encoding acceleration on Intel GPUs with older drivers",
+      "comment":[
+        "In MFVEA, the Intel MFT driver issue affects the reference structure of",
+        "VP9 L1T2/L1T3 encoding. Currently, the issue is fixed in latest driver",
+        "version 31.0.101.5590 and released on rocketlake+ GPUs, the hw",
+        "acceleration can be enabled on these devices with specified drivers."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.101.5590"
+      },
+      "features": [
+        "disable_vp9_hmft_temporal_encoding"
+      ]
+    },
+    {
+      "id": 433,
+      "cr_bugs": [
+        325123735
+      ],
+      "description": "Qualcomm GPUs have driver bugs preventing WebNN from working correctly",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "features": [
+        "disable_webnn_for_gpu"
+      ]
+    },
+    {
+      "id": 434,
+      "cr_bugs": [41480904],
+      "description": "Disable CBR encoding of HEVC on Intel GPUs with older drivers",
+      "comment":[
+        "Intel HEVC HMFT will stop accepting inputs if you configure it to encode",
+        "at CBR mode and later change the target bitrate during encoding. This issue",
+        "has been fixed on driver version 32.0.101.5762."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+            "op": "<",
+            "value": "32.0.101.5762"
+      },
+      "features": [
+        "disable_hevc_hmft_cbr_encoding"
+      ]
+    },
+    {
+      "id": 435,
+      "cr_bugs": [356448335],
+      "description": "Disable video accelerated encoding on certain AMD GPUs using r600",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x6821", "0x9900", "0x9992", "0x9997"],
+      "features": [
+        "disable_accelerated_h264_encode"
+      ]
+    },
+    {
+      "id": 436,
+      "cr_bugs": [40677119],
+      "description": "Disable overlay promotion for clear video quads when their MPO quads would move",
+      "os": {
+        "type" : "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "os": {
+            "type" : "win"
+          },
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.101.4471"
+          }
+        }
+      ],
+      "features": [
+        "disable_video_overlay_if_moving"
       ]
     }
   ]

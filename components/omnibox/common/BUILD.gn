@@ -7,9 +7,65 @@ source_set("common") {
     "omnibox_features.cc",
     "omnibox_features.h",
     "omnibox_focus_state.h",
+    "zero_suggest_cache_service_interface.cc",
+    "zero_suggest_cache_service_interface.h",
   ]
   deps = [
     "//base",
     "//ui/base:features",
   ]
+
+  if (is_android) {
+    deps += [ ":jni_headers" ]
+  }
+}
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  generate_jni("jni_headers") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/OmniboxFeatureMap.java",
+    ]
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "//components/omnibox/common/omnibox_features.cc" ]
+    template = "//components/omnibox/common/java_templates/OmniboxFeatureList.java.tmpl"
+  }
+
+  android_library("features_java") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/OmniboxFeatureMap.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java",
+    ]
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":jni_headers",
+    ]
+    deps = [
+      "//base:base_cached_flags_java",
+      "//base:base_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/omnibox_proto:omnibox_proto_java",
+      "//ui/android:ui_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/omnibox/OmniboxFeaturesTest.java" ]
+    deps = [
+      "//base:base_cached_flags_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//components/omnibox/common:features_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit",
+      "//ui/android:ui_java",
+    ]
+  }
 }

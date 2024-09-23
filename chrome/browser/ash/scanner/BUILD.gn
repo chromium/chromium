@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("scanner") {
+  sources = [
+    "chrome_scanner_delegate.cc",
+    "chrome_scanner_delegate.h",
+    "scanner_action_provider.cc",
+    "scanner_action_provider.h",
+    "scanner_keyed_service.cc",
+    "scanner_keyed_service.h",
+    "scanner_keyed_service_factory.cc",
+    "scanner_keyed_service_factory.h",
+    "scanner_system_state_provider.cc",
+    "scanner_system_state_provider.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}

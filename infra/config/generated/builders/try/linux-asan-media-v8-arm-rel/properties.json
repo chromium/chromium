@@ -16,9 +16,9 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "asan-v8-arm",
-                "archive_subdir": "v8-arm",
+                "archive_subdir": "v8-arm-media",
                 "gs_acl": "public-read",
-                "gs_bucket": "chrome-test-builds/media"
+                "gs_bucket": "chromium-browser-asan"
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -44,14 +44,24 @@
           "builder": "ASan Release Media (32-bit x86 with V8-ARM)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-media-v8-arm-rel/targets"
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

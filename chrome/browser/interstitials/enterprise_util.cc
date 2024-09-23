@@ -4,12 +4,15 @@
 
 #include "chrome/browser/interstitials/enterprise_util.h"
 
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -21,8 +24,13 @@ extensions::SafeBrowsingPrivateEventRouter* GetEventRouter(
     return nullptr;
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  if (browser_context->IsOffTheRecord())
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // In guest profile, IsOffTheRecord also returns true. So we need an
+  // additional check on IsGuestSession to ensure the event is sent in guest
+  // mode.
+  if (profile->IsOffTheRecord() && !profile->IsGuestSession()) {
     return nullptr;
+  }
 
   return extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
       browser_context);

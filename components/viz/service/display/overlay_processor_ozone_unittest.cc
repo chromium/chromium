@@ -78,7 +78,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
       std::vector<gfx::GpuFence> release_fences) override {
     return false;
   }
-  gfx::NativePixmapHandle ExportHandle() override {
+  gfx::NativePixmapHandle ExportHandle() const override {
     return gfx::NativePixmapHandle();
   }
 
@@ -88,7 +88,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   gfx::BufferFormat format_;
 };
 
-class MockSharedImageInterface : public TestSharedImageInterface {
+class MockSharedImageInterface : public gpu::TestSharedImageInterface {
  public:
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
@@ -99,7 +99,7 @@ class MockSharedImageInterface : public TestSharedImageInterface {
 
 }  // namespace
 
-// TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
+// TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
 // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
@@ -107,14 +107,14 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   gfx::Size size(128, 128);
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
-  primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.format = SinglePlaneFormat::kBGRA_8888;
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
@@ -147,14 +147,14 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   gfx::Size size(128, 128);
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
-  primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.format = SinglePlaneFormat::kBGRA_8888;
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
@@ -181,14 +181,14 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   gfx::Size size(128, 128);
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   primary_plane.resource_size = size;
-  primary_plane.format = gfx::BufferFormat::BGRA_8888;
-  primary_plane.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  primary_plane.format = SinglePlaneFormat::kBGRA_8888;
+  primary_plane.mailbox = gpu::Mailbox::Generate();
 
   // Set up a dummy OverlayCandidate.
   OverlayCandidate candidate;
   candidate.resource_size_in_pixels = size;
-  candidate.format = gfx::BufferFormat::BGRA_8888;
-  candidate.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  candidate.format = SinglePlaneFormat::kBGRA_8888;
+  candidate.mailbox = gpu::Mailbox::Generate();
   candidate.overlay_handled = false;
   OverlayCandidateList candidates;
   candidates.push_back(candidate);

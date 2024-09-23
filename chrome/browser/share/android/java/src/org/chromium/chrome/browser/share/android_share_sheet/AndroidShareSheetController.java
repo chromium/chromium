@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -51,6 +50,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Callback<Tab> mPrintCallback;
+    private long mShareStartTime;
 
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -122,6 +122,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @Override
     public void showThirdPartyShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
+        mShareStartTime = shareStartTime;
         // When using Android share sheet, always have the custom actions available for the share
         // sheet. This is a workaround of share sheet triggered by share custom actions e.g. long
         // screenshot.
@@ -131,6 +132,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @Override
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
+        mShareStartTime = shareStartTime;
         showShareSheetWithCustomAction(params, chromeShareExtras, true);
     }
 
@@ -152,7 +154,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         if (showCustomActions) {
-            boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
+            boolean isInMultiWindow = activity.isInMultiWindowMode();
             var actionProvider =
                     new AndroidCustomActionProvider(
                             params.getWindow().getActivity().get(),
@@ -169,13 +171,14 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             chromeShareExtras,
                             isInMultiWindow,
                             mLinkToTextCoordinator,
-                            mDeviceLockActivityLauncher);
+                            mDeviceLockActivityLauncher,
+                            mShareStartTime);
             if (actionProvider.getCustomActions().size() > 0) {
                 provider = actionProvider;
             }
         }
 
-        // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
+        // TODO(crbug.com/40063413): Maybe fallback to Chrome's share sheet properly.
         if (provider == null) {
             Log.i(TAG, "No custom actions provided.");
         }

@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_system.h"
@@ -55,8 +58,10 @@ ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
 scoped_refptr<const extensions::Extension>
 ExtensionsToolbarUITest::ForceInstallExtension(const std::string& name) {
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("extension")
+      extensions::ExtensionBuilder(name)
+          .SetManifestVersion(3)
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
+          .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extensions::ExtensionSystem::Get(browser()->profile())
       ->extension_service()
@@ -173,7 +178,7 @@ ExtensionsToolbarUITest::GetToolbarActionViewsForBrowser(
 std::vector<ToolbarActionView*>
 ExtensionsToolbarUITest::GetVisibleToolbarActionViews() const {
   auto views = GetToolbarActionViews();
-  base::EraseIf(views, [](views::View* view) { return !view->GetVisible(); });
+  std::erase_if(views, [](views::View* view) { return !view->GetVisible(); });
   return views;
 }
 
@@ -200,11 +205,20 @@ void ExtensionsToolbarUITest::NavigateTo(const GURL& url) {
   EXPECT_TRUE(observer.last_navigation_succeeded());
 }
 
+void ExtensionsToolbarUITest::AddSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  extensions::PermissionsManager::Get(profile())->AddSiteAccessRequest(
+      web_contents, tab_id, extension);
+}
+
 void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                gfx::Point(), base::TimeTicks(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);

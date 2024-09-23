@@ -47,7 +47,7 @@ class PasswordsPrivateDelegateProxy : public KeyedService {
 };
 
 // Factory for creating PasswordPrivateDelegates.
-// TODO(crbug.com/1412348): Replace with KeyedServiceFactory.
+// TODO(crbug.com/40255236): Replace with KeyedServiceFactory.
 class PasswordsPrivateDelegateFactory : public ProfileKeyedServiceFactory {
  public:
   static scoped_refptr<PasswordsPrivateDelegate> GetForBrowserContext(

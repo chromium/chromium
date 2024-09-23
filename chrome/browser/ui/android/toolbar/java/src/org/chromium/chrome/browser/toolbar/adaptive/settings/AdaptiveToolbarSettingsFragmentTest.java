@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.filters.SmallTest;
 
@@ -22,14 +25,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -38,10 +39,10 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -51,17 +52,17 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
+import java.util.List;
+
 /** Tests for {@link AdaptiveToolbarSettingsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 @DisableFeatures({
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE,
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS,
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
     ChromeFeatureList.READALOUD
 })
 public class AdaptiveToolbarSettingsFragmentTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Profile mProfile;
@@ -83,8 +84,11 @@ public class AdaptiveToolbarSettingsFragmentTest {
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
-                new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
-        AdaptiveToolbarFeatures.setProfile(mProfile);
+                new Pair<>(
+                        false,
+                        List.of(
+                                AdaptiveToolbarButtonVariant.NEW_TAB,
+                                AdaptiveToolbarButtonVariant.SHARE)));
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -102,11 +106,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSelectShortcuts() {
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
         scenario.onFragment(
                 fragment -> {
                     mSwitchPreference =
@@ -205,164 +205,9 @@ public class AdaptiveToolbarSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
-    public void testTranslateOption_Enabled() {
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
-        scenario.onFragment(
-                fragment -> {
-                    mRadioPreference =
-                            (RadioButtonGroupAdaptiveToolbarPreference)
-                                    fragment.findPreference(
-                                            AdaptiveToolbarSettingsFragment
-                                                    .PREF_ADAPTIVE_RADIO_GROUP);
-
-                    // Select Translate.
-                    Assert.assertEquals(
-                            R.id.adaptive_option_translate,
-                            getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getId());
-                    selectButton(AdaptiveToolbarButtonVariant.TRANSLATE);
-                    assertButtonCheckedCorrectly(
-                            "Translate", AdaptiveToolbarButtonVariant.TRANSLATE);
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.TRANSLATE,
-                            mRadioPreference.getSelection());
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.TRANSLATE,
-                            ChromeSharedPreferences.getInstance()
-                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
-    public void testTranslateOption_Disabled() {
-        // Set initial preference to translate.
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
-                        AdaptiveToolbarButtonVariant.TRANSLATE);
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
-        scenario.onFragment(
-                fragment -> {
-                    mRadioPreference =
-                            (RadioButtonGroupAdaptiveToolbarPreference)
-                                    fragment.findPreference(
-                                            AdaptiveToolbarSettingsFragment
-                                                    .PREF_ADAPTIVE_RADIO_GROUP);
-
-                    // Translate option should be hidden, and we should have reverted back to
-                    // "Auto".
-                    Assert.assertEquals(
-                            R.id.adaptive_option_translate,
-                            getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getId());
-                    Assert.assertEquals(
-                            View.GONE,
-                            getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getVisibility());
-                    assertButtonCheckedCorrectly(
-                            "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.AUTO,
-                            ChromeSharedPreferences.getInstance()
-                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
-    public void testAddToBookmarksOption_Enabled() {
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
-        scenario.onFragment(
-                fragment -> {
-                    mRadioPreference =
-                            (RadioButtonGroupAdaptiveToolbarPreference)
-                                    fragment.findPreference(
-                                            AdaptiveToolbarSettingsFragment
-                                                    .PREF_ADAPTIVE_RADIO_GROUP);
-
-                    // Select Add to bookmarks.
-                    Assert.assertEquals(
-                            R.id.adaptive_option_add_to_bookmarks,
-                            getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getId());
-                    selectButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
-                    assertButtonCheckedCorrectly(
-                            "Add to bookmarks", AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                            mRadioPreference.getSelection());
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                            ChromeSharedPreferences.getInstance()
-                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
-    public void testAddToBookmarksOption_Disabled() {
-        // Set initial preference to add to bookmarks.
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
-                        AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
-        scenario.onFragment(
-                fragment -> {
-                    mRadioPreference =
-                            (RadioButtonGroupAdaptiveToolbarPreference)
-                                    fragment.findPreference(
-                                            AdaptiveToolbarSettingsFragment
-                                                    .PREF_ADAPTIVE_RADIO_GROUP);
-
-                    // Add to bookmarks option should be hidden, and we should have reverted back to
-                    // "Auto".
-                    Assert.assertEquals(
-                            R.id.adaptive_option_add_to_bookmarks,
-                            getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getId());
-                    Assert.assertEquals(
-                            View.GONE,
-                            getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS)
-                                    .getVisibility());
-                    assertButtonCheckedCorrectly(
-                            "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
-                    Assert.assertEquals(
-                            AdaptiveToolbarButtonVariant.AUTO,
-                            ChromeSharedPreferences.getInstance()
-                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
-                });
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.READALOUD)
     public void testReadAloudOption_Enabled() {
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
         scenario.onFragment(
                 fragment -> {
                     mRadioPreference =
@@ -397,11 +242,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
                 .writeInt(
                         ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                         AdaptiveToolbarButtonVariant.READ_ALOUD);
-        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario =
-                FragmentScenario.launchInContainer(
-                        AdaptiveToolbarSettingsFragment.class,
-                        Bundle.EMPTY,
-                        R.style.Theme_Chromium_Settings);
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
         scenario.onFragment(
                 fragment -> {
                     mRadioPreference =
@@ -419,6 +260,75 @@ public class AdaptiveToolbarSettingsFragmentTest {
                     Assert.assertEquals(
                             View.GONE,
                             getButton(AdaptiveToolbarButtonVariant.READ_ALOUD).getVisibility());
+
+                    assertButtonCheckedCorrectly(
+                            "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.AUTO,
+                            ChromeSharedPreferences.getInstance()
+                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testPageSummaryOption_Enabled() {
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Select Read Aloud.
+                    Assert.assertEquals(
+                            R.id.adaptive_option_page_summary,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getId());
+                    selectButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+                    assertButtonCheckedCorrectly(
+                            "Page Summary", AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
+                            mRadioPreference.getSelection());
+                    Assert.assertEquals(
+                            AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
+                            ChromeSharedPreferences.getInstance()
+                                    .readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testPageSummaryOption_Disabled() {
+        // Set initial preference to page summary.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Read Aloud option should be hidden, and we should have reverted back to
+                    // "Auto".
+                    Assert.assertEquals(
+                            R.id.adaptive_option_page_summary,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getId());
+
+                    Assert.assertEquals(
+                            View.GONE,
+                            getButton(AdaptiveToolbarButtonVariant.PAGE_SUMMARY).getVisibility());
 
                     assertButtonCheckedCorrectly(
                             "Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
@@ -454,5 +364,23 @@ public class AdaptiveToolbarSettingsFragmentTest {
         Assert.assertTrue(buttonTitle + " button should be checked.", getButton(type).isChecked());
         Assert.assertTrue(
                 "Buttons except " + buttonTitle + " should be unchecked.", isRestUnchecked(type));
+    }
+
+    private FragmentScenario<AdaptiveToolbarSettingsFragment> buildFragmentScenario() {
+        return FragmentScenario.launchInContainer(
+                AdaptiveToolbarSettingsFragment.class,
+                Bundle.EMPTY,
+                R.style.Theme_Chromium_Settings,
+                new FragmentFactory() {
+                    @Override
+                    public Fragment instantiate(
+                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                        Fragment fragment = super.instantiate(classLoader, className);
+                        if (fragment instanceof ProfileDependentSetting) {
+                            ((ProfileDependentSetting) fragment).setProfile(mProfile);
+                        }
+                        return fragment;
+                    }
+                });
     }
 }

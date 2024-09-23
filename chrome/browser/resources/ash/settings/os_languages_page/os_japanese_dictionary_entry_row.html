@@ -1,0 +1,65 @@
+<style include="settings-shared md-select">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+  }
+
+  .entry-input {
+    margin-inline-end: 5px;
+  }
+
+  .category-div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .category-label {
+    /* TODO(b/340393256): Use a var(..) from cros */
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .delete-icon {
+    /* TODO(b/340393256): Make this a calculated value */ 
+    margin-top: 26px;
+  }
+</style>
+
+<!-- TODO(b/340393256): Localize all strings -->
+<div class="cr-row continuation entry-row">
+  <cr-input value="[[entry.key]]"
+     label="Reading"
+     type="text"
+     class="entry-input"
+     on-change="saveReading_"></cr-input>
+  <cr-input value="[[entry.value]]"
+     label="Word"
+     type="text" class="entry-input"
+     on-change="saveWord_"></cr-input>
+  <div class="category-div" >
+    <div class="cr-form-field-label category-label">Category</div>
+    <!-- TODO(b/340393256): Make these options match actual POS values -->
+    <select class="md-select" class="entry-input">
+      <option>ENTRY ROW ELEM POS Type 1</option>
+      <option>POS Type 2</option>
+      <option>POS Type 3</option>
+      <option selected>POS Type 4</option>
+    </select>
+  </div>
+  <cr-input value="[[entry.comment]]"
+     label="Comment"
+     type="text" class="entry-input"
+     on-change="saveComment_"></cr-input>
+  <cr-icon-button class="delete-icon"
+     iron-icon="cr:close"
+     on-click="deleteEntry_"
+     title="DeleteEntry"></cr-icon-button>
+</div>
+

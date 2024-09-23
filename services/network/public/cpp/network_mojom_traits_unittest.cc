@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/network_traits_test_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -50,17 +51,16 @@ TEST_F(NetworkStructTraitsTest, HttpRequestHeaders_Basic) {
   headers.SetHeader("Foo", "bar");
   mojo::Remote<mojom::TraitsTestService> remote(GetTraitsTestRemote());
   remote->EchoHttpRequestHeaders(headers, &output);
-  std::string value;
-  EXPECT_TRUE(output.GetHeader("Foo", &value));
-  EXPECT_EQ("bar", value);
+  EXPECT_THAT(output.GetHeader("Foo"), testing::Optional(std::string("bar")));
   EXPECT_FALSE(output.HasHeader("Fo"));
 }
 
 TEST_F(NetworkStructTraitsTest, HttpRequestHeaders_InvalidHeaderName) {
-  // Check that non-token chars are disallowed.
-  const unsigned char invalid_name_chars[] = {
-      0x80, 0x19, '(', ')', '<', '>', '@', ',', ';', ':',
-      '\\', '"',  '/', '[', ']', '?', '=', '{', '}'};
+  // Check that non-token chars are disallowed. Note that the header name still
+  // has to be valid UTF-8 to even be possible to serialize into a Mojo message.
+  const unsigned char invalid_name_chars[] = {0x19, '(', ')', '<',  '>', '@',
+                                              ',',  ';', ':', '\\', '"', '/',
+                                              '[',  ']', '?', '=',  '{', '}'};
   for (char c : invalid_name_chars) {
     std::string invalid_name("foo");
     invalid_name.push_back(c);

@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.Origin;
@@ -41,11 +40,9 @@ public class InstalledWebappDataRegister {
 
     /** Creates a InstalledWebappDataRegister. */
     public InstalledWebappDataRegister() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mPreferences =
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        }
+        mPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
 
         // Trigger a Preferences read in a background thread to try to load the Preferences file
         // before we need it.
@@ -86,9 +83,7 @@ public class InstalledWebappDataRegister {
     private Set<String> getUids() {
         // We try to ensure that this is loaded on a background thread before it is needed (see
         // constructor), but if the load hasn't completed, disable StrictMode so we don't crash.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return new HashSet<>(mPreferences.getStringSet(UIDS_KEY, Collections.emptySet()));
-        }
+        return new HashSet<>(mPreferences.getStringSet(UIDS_KEY, Collections.emptySet()));
     }
 
     public void removePackage(int uid) {

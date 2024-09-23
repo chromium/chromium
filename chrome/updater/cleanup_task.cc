@@ -6,11 +6,13 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
@@ -18,28 +20,76 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/app_uninstall.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <string>
+#include <vector>
+
+#include "base/strings/sys_string_conversions.h"
+#include "base/win/registry.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace updater {
-
 namespace {
 
-// Versions up to this version will be uninstalled.
-constexpr char kCleanupVersionMax[] = "117.0.5859.0";
+constexpr int kMilestoneDeletionThreshold = 8;
 
-// TODO(crbug/5002644): we should remove this once we believe the cache has
-// been deleted by the majority of clients.
-void TempCleanupCache(UpdaterScope scope) {
-  std::optional<base::FilePath> cache_dir = GetCrxDiffCacheDirectory(scope);
-  if (cache_dir.has_value()) {
-    base::DeletePathRecursively(cache_dir.value());
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/335673799) - remove the code in M129, after the brand codes
+// have been repaired.
+void RepairAppBrandCode(UpdaterScope scope,
+                        scoped_refptr<PersistedData> persisted_data) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+
+  struct AppBrand {
+    std::string app_id;
+    std::string brand;
+  };
+
+  // Contains the pairs of {`app_id`, `brand`}, if the `brand` is present.
+  const std::vector<AppBrand> app_brands = [persisted_data] {
+    std::vector<AppBrand> app_brands;
+    for (const std::string& app_id : persisted_data->GetAppIds()) {
+      const std::string brand = persisted_data->GetBrandCode(app_id);
+      if (brand.empty()) {
+        continue;
+      }
+      app_brands.emplace_back(app_id, brand);
+    }
+    return app_brands;
+  }();
+
+  // Updates the brand in registry, if a `brand` is present in prefs and the
+  // the client state for the `app_id` does not contain a `brand`.
+  for (const auto& [app_id, brand] : app_brands) {
+    const std::wstring brand_prefs = base::SysUTF8ToWide(brand);
+    if (brand_prefs.empty()) {
+      continue;
+    }
+    base::win::RegKey key;
+    if (key.Open(root, GetAppClientStateKey(app_id).c_str(),
+                 Wow6432(KEY_READ | KEY_WRITE)) != ERROR_SUCCESS) {
+      continue;
+    }
+    std::wstring brand_registry;
+    key.ReadValue(kRegValueBrandCode, &brand_registry);
+    if (!brand_registry.empty()) {
+      continue;
+    }
+    VLOG(1) << __func__ << ": missing " << brand_prefs << " for " << app_id;
+    const LONG res = key.WriteValue(kRegValueBrandCode, brand_prefs.c_str());
+    VLOG(1) << __func__ << [&res] {
+      return res != ERROR_SUCCESS ? ": not repaired " : ": repaired ";
+    }() << res;
   }
 }
+#endif  // IS_WIN
 
 void CleanupGoogleUpdate(UpdaterScope scope) {
 #if BUILDFLAG(IS_WIN)
@@ -51,29 +101,29 @@ void CleanupGoogleUpdate(UpdaterScope scope) {
 }
 
 void CleanupOldUpdaterVersions(UpdaterScope scope) {
-  CHECK(base::Version(kCleanupVersionMax).IsValid());
-  CHECK(base::Version(kUpdaterVersion)
-            .CompareTo(base::Version(kCleanupVersionMax)) > 0);
+  base::Version cleanup_max =
+      base::Version({base::Version(kUpdaterVersion).components()[0] -
+                     kMilestoneDeletionThreshold});
+  CHECK_GT(base::Version(kUpdaterVersion), cleanup_max);
   std::optional<base::FilePath> dir = GetInstallDirectory(scope);
   if (!dir) {
     return;
   }
   base::FileEnumerator(*dir, false, base::FileEnumerator::DIRECTORIES)
-      .ForEach([&scope](const base::FilePath& item) {
+      .ForEach([&scope, &cleanup_max](const base::FilePath& item) {
         base::Version version(item.BaseName().MaybeAsASCII());
-        if (!version.IsValid() ||
-            version.CompareTo(base::Version(kCleanupVersionMax)) > 0) {
+        if (!version.IsValid() || version.CompareTo(cleanup_max) > 0) {
           return;
         }
         VLOG(1) << __func__ << " cleaning up " << item;
 
         // Attempt a normal uninstall.
-        const base::FilePath version_executable_path =
-            item.Append(GetExecutableRelativePath());
-        if (base::PathExists(version_executable_path)) {
-          base::LaunchProcess(
-              GetUninstallSelfCommandLine(scope, version_executable_path), {})
-              .WaitForExitWithTimeout(base::Minutes(5), nullptr);
+        const base::Process process = base::LaunchProcess(
+            GetUninstallSelfCommandLine(
+                scope, item.Append(GetExecutableRelativePath())),
+            {});
+        if (process.IsValid()) {
+          process.WaitForExitWithTimeout(base::Minutes(5), nullptr);
         }
 
         // Recursively delete the directory in case uninstall fails.
@@ -83,12 +133,19 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
 
 }  // namespace
 
-CleanupTask::CleanupTask(UpdaterScope scope) : scope_(scope) {}
+CleanupTask::CleanupTask(UpdaterScope scope, scoped_refptr<Configurator> config)
+    : scope_(scope), config_(config) {}
 
 CleanupTask::~CleanupTask() = default;
 
 void CleanupTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  if (config_) {
+    RepairAppBrandCode(scope_, config_->GetUpdaterPersistedData());
+  }
+#endif  // IS_WIN
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
@@ -96,7 +153,6 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
-            TempCleanupCache(scope);
           },
           scope_),
       std::move(callback));

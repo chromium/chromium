@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 
 #include <ostream>
 #include <queue>
+#include <string_view>
 
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
@@ -85,7 +90,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //   - {U+0138 (ĸ), U+03BA (κ), U+043A (к), U+049B (қ), U+049D (ҝ),
   //      U+049F (ҟ), U+04A1(ҡ), U+04C4 (ӄ), U+051F (ԟ)} => k
   //   - {U+014B (ŋ), U+043F (п), U+0525 (ԥ), U+0E01 (ก), U+05D7 (ח)} => n
-  // TODO(crbug/843352): Handle multiple skeletons for U+0525 and U+0153.
+  // TODO(crbug.com/40091387): Handle multiple skeletons for U+0525 and U+0153.
   //   - {U+0167 (ŧ), U+0442 (т), U+04AD (ҭ), U+050F (ԏ), U+4E03 (七),
   //     U+4E05 (丅), U+4E06 (丆), U+4E01 (丁)} => t
   //   - {U+0185 (ƅ), U+044C (ь), U+048D (ҍ), U+0432 (в)} => b
@@ -171,7 +176,7 @@ void SkeletonGenerator::MaybeRemoveDiacritics(icu::UnicodeString& hostname) {
 }
 
 std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
-    base::StringPiece16 hostname) {
+    std::u16string_view hostname) {
   size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
   icu::UnicodeString host(false, hostname.data(), hostname_length);
   MaybeRemoveDiacritics(host);
@@ -179,16 +184,16 @@ std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
 }
 
 bool SkeletonGenerator::ShouldComputeSupplementalHostnamesWithDiacritics(
-    base::StringPiece16 input_hostname) const {
+    std::u16string_view input_hostname) const {
   for (const char16_t c : characters_with_multiple_skeletons_with_diacritics_) {
-    if (input_hostname.find(c) != base::StringPiece16::npos) {
+    if (input_hostname.find(c) != std::u16string_view::npos) {
       return true;
     }
   }
   return false;
 }
 
-Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 input_hostname) {
+Skeletons SkeletonGenerator::GetSkeletons(std::u16string_view input_hostname) {
   // Generate supplemental hostnames for the input hostname with and without
   // diacritics. We do this to cover characters whose diacritic versions can
   // look like completely other characters, such as LATIN SMALL LETTER L WITH
@@ -272,7 +277,7 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
 
 // static
 base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
-    base::StringPiece16 input,
+    std::u16string_view input,
     size_t max_alternatives,
     const SkeletonMap& mapping) {
   base::flat_set<std::u16string> output;

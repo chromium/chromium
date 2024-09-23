@@ -19,8 +19,8 @@ async function main(arg) {
       bitrate: 300_000,
     },
     {
-      width: 480,
-      height: 360,
+      width: FRAME_WIDTH,
+      height: FRAME_HEIGHT,
       bitrate: 800_000,
     }
   ];

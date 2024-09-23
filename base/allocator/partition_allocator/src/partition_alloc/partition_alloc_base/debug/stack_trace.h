@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
 
 #include <cstddef>
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 namespace partition_alloc::internal::base::debug {
 
 // Returns end of the stack, or 0 if we couldn't get it.
-#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if PA_BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 uintptr_t GetStackEnd();
 #endif
@@ -28,7 +28,7 @@ size_t CollectStackTrace(const void** trace, size_t count);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void PrintStackTrace(const void** trace, size_t count);
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void OutputStackTrace(unsigned index,
                       uintptr_t address,
@@ -37,7 +37,7 @@ void OutputStackTrace(unsigned index,
                       uintptr_t offset);
 #endif
 
-#if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#if PA_BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 // For stack scanning to be efficient it's very important for the thread to
 // be started by Chrome. In that case we naturally terminate unwinding once
@@ -46,7 +46,7 @@ void OutputStackTrace(unsigned index,
 // scanning area at the origin of the stack, wasting time and not finding any
 // frames (since Android libraries don't have frame pointers). Scanning is not
 // enabled on other posix platforms due to legacy reasons.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 constexpr bool kEnableScanningByDefault = true;
 #else
 constexpr bool kEnableScanningByDefault = false;
@@ -67,8 +67,8 @@ size_t TraceStackFramePointers(const void** out_trace,
                                size_t skip_initial,
                                bool enable_scanning = kEnableScanningByDefault);
 
-#endif  // BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
+#endif  // PA_BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 }  // namespace partition_alloc::internal::base::debug
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_

@@ -15,12 +15,6 @@ namespace {
 using perfetto::protos::pbzero::ChromeTrackEvent;
 }
 
-bool RenderViewHostImplSafeRefComparator::operator()(
-    const base::SafeRef<RenderViewHostImpl>& a,
-    const base::SafeRef<RenderViewHostImpl>& b) const {
-  return &*a < &*b;
-}
-
 StoredPage::StoredPage(std::unique_ptr<RenderFrameHostImpl> rfh,
                        RenderFrameProxyHostMap proxy_hosts,
                        RenderViewHostImplSafeRefSet render_view_hosts)

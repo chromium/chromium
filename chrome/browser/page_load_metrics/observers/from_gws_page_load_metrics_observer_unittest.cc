@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -379,6 +380,101 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl4) {
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
+  }
+}
+
+TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrlToMaps1) {
+  const GURL kMapsUrl("https://www.google.com/maps");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->first_image_paint = base::Milliseconds(1);
+  PopulateRequiredTimingFields(&timing);
+  NavigateAndCommit(GURL("https://www.google.com/#q=test"));
+  NavigateAndCommit(kMapsUrl);
+
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force logging.
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFromGWSFirstImagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFromGWSFirstImagePaint,
+      timing.paint_timing->first_image_paint.value().InMilliseconds(), 1);
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
+                                                          GURL(kMapsUrl));
+  }
+}
+
+TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrlToMaps2) {
+  const GURL kMapsUrl(
+      "https://www.google.com/maps/@35.6511182,139.7030912,14z?entry=ttu");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->first_image_paint = base::Milliseconds(1);
+  PopulateRequiredTimingFields(&timing);
+  NavigateAndCommit(GURL("https://www.google.com/#q=test"));
+  NavigateAndCommit(kMapsUrl);
+
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force logging.
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFromGWSFirstImagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFromGWSFirstImagePaint,
+      timing.paint_timing->first_image_paint.value().InMilliseconds(), 1);
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
+                                                          GURL(kMapsUrl));
+  }
+}
+
+TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrlToMaps3) {
+  const GURL kMapsUrl(
+      "https://www.google.co.jp/maps/@35.6511182,139.7030912,14z?entry=ttu");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->first_image_paint = base::Milliseconds(1);
+  PopulateRequiredTimingFields(&timing);
+  NavigateAndCommit(GURL("https://www.google.co.jp/#q=test"));
+  NavigateAndCommit(kMapsUrl);
+
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force logging.
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFromGWSFirstImagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFromGWSFirstImagePaint,
+      timing.paint_timing->first_image_paint.value().InMilliseconds(), 1);
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
+                                                          GURL(kMapsUrl));
   }
 }
 

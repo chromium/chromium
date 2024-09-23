@@ -35,16 +35,20 @@ class EditAddressProfileDialogControllerImpl
   ~EditAddressProfileDialogControllerImpl() override;
 
   // Sets up the controller and offers to edit the `profile` before saving it.
-  // If `original_profile` is not nullptr, this indicates that this dialog is
-  // opened from an update prompt. The `on_user_decision_callback` will be
-  // called when user closes the dialog. `is_migration_to_account` is used to
-  // determine if a subset of editor fields should be made required.
+  // The dialog title will be set to `title_override` if it's not an empty
+  // string. Otherwise, it will default to "Edit address". The footer will only
+  // be displayed if the `footer_message` is not an empty string.
+  // The `on_user_decision_callback` will be called when user closes the dialog.
+  // `is_editing_existing_address` is used for adapting the UI, e.g. "Save" or
+  // "Update" for the action button. `is_migration_to_account` is used
+  // to determine if a subset of editor fields should be made required.
   void OfferEdit(const AutofillProfile& profile,
-                 const AutofillProfile* original_profile,
+                 const std::u16string& title_override,
                  const std::u16string& footer_message,
+                 bool is_editing_existing_address,
+                 bool is_migration_to_account,
                  AutofillClient::AddressProfileSavePromptCallback
-                     on_user_decision_callback,
-                 bool is_migration_to_account);
+                     on_user_decision_callback);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;
@@ -53,7 +57,7 @@ class EditAddressProfileDialogControllerImpl
   const AutofillProfile& GetProfileToEdit() const override;
   bool GetIsValidatable() const override;
   void OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile_with_edits) override;
 
   // content::WebContentsObserver:
@@ -73,6 +77,9 @@ class EditAddressProfileDialogControllerImpl
   // nullptr if no dialog is currently shown.
   raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
 
+  // Editor's overridden title, if empty, the default "Edit address" is used.
+  std::u16string title_override_;
+
   // Editor's footnote message.
   std::u16string footer_message_;
 
@@ -84,10 +91,9 @@ class EditAddressProfileDialogControllerImpl
   // before saving.
   std::optional<AutofillProfile> address_profile_to_edit_;
 
-  // If not nullptr, this dialog was opened from an update prompt. Contains the
-  // details of the address profile that will be updated if the user accepts
-  // that update prompt from which this edit dialog was opened.
-  std::optional<AutofillProfile> original_profile_;
+  // Whether the address to edit existed and being updated in the editor or
+  // the editor is used for creating a new one.
+  bool is_editing_existing_address_;
 
   // Whether the editor is used in the profile migration case. It is required
   // to restore the original prompt state (save or update) if it is reopened.

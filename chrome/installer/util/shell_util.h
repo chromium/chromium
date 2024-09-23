@@ -9,9 +9,10 @@
 #ifndef CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 #define CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <map>
 #include <memory>
@@ -532,16 +533,14 @@ class ShellUtil {
   // This function DCHECKS that it is only called on Windows 10 or higher.
   static bool LaunchUninstallAppsSettings();
 
-  // Windows 8: Shows and waits for the "How do you want to open webpages?"
-  // dialog if Chrome is not already the default HTTP/HTTPS handler. Also does
-  // XP-era registrations if Chrome is chosen or was already the default. Do
-  // not use on pre-Win8 OSes.
+  // Windows 10: Launches the settings dialog focused on default apps.
   //
-  // Windows 10: The associations dialog cannot be launched so the settings
-  // dialog focused on default apps is launched. The function does not wait
-  // in this case.
+  // Windows 11: Launches the default apps settings dialog and navigates to the
+  // Chrome settings page. Falls back to Win10 behavior if the launch fails.
   //
-  // |chrome_exe| The chrome.exe path to register as default browser.
+  // Returns true if the dialog was launched, false otherwise.
+  //
+  // `chrome_exe` The chrome.exe path to register as default browser.
   static bool ShowMakeChromeDefaultSystemUI(const base::FilePath& chrome_exe);
 
   // Make Chrome the default application for a protocol.

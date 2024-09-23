@@ -22,6 +22,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,7 +56,9 @@ class NET_EXPORT ReportingCache {
  public:
   class PersistentReportingStore;
 
-  static std::unique_ptr<ReportingCache> Create(ReportingContext* context);
+  static std::unique_ptr<ReportingCache> Create(
+      ReportingContext* context,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 
   virtual ~ReportingCache();
 
@@ -77,7 +80,8 @@ class NET_EXPORT ReportingCache {
       base::Value::Dict body,
       int depth,
       base::TimeTicks queued,
-      int attempts) = 0;
+      int attempts,
+      ReportingTargetType target_type) = 0;
 
   // Gets all reports in the cache. The returned pointers are valid as long as
   // either no calls to |RemoveReports| have happened or the reports' |pending|
@@ -191,6 +195,11 @@ class NET_EXPORT ReportingCache {
       const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> parsed_header) = 0;
 
+  // Sets reporting endpoints configured by the ReportingEndpoints enterprise
+  // policy in the cache.
+  virtual void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) = 0;
+
   // Gets all the origins of clients in the cache.
   virtual std::set<url::Origin> GetAllOrigins() const = 0;
 
@@ -284,6 +293,10 @@ class NET_EXPORT ReportingCache {
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const = 0;
 
+  // Returns all enterprise endpoints in the cache.
+  virtual std::vector<ReportingEndpoint> GetEnterpriseEndpointsForTesting()
+      const = 0;
+
   // Returns whether an endpoint group with exactly the given properties exists
   // in the cache. If |expires| is base::Time(), it will not be checked.
   virtual bool EndpointGroupExistsForTesting(
@@ -327,6 +340,11 @@ class NET_EXPORT ReportingCache {
       const ReportingEndpointGroupKey& group_key,
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
+      const GURL& url) = 0;
+
+  // Sets an enterprise endpoint.
+  virtual void SetEnterpriseEndpointForTesting(
+      const ReportingEndpointGroupKey& group_key,
       const GURL& url) = 0;
 
   // Gets the isolation info associated with `reporting_source`, used when

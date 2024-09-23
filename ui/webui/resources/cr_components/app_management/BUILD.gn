@@ -87,11 +87,11 @@ build_webui("build") {
   # Do not add a dependency on //ui/webui/resources/cr_elements:build_ts here,
   # since this target is also used by OS Settings.
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

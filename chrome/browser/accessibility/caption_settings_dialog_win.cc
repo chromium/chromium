@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 
 #include "base/functional/bind.h"

@@ -31,7 +31,7 @@ public interface PasswordStoreAndroidBackend {
      *
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     * TODO(crbug.com/1278767): Remove default keyword after downstream implementation.
+     *     TODO(crbug.com/40208314): Remove default keyword after downstream implementation.
      */
     default void subscribe(Runnable successCallback, Callback<Exception> failureCallback) {}
 
@@ -40,7 +40,7 @@ public interface PasswordStoreAndroidBackend {
      *
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     * TODO(crbug.com/1278767): Remove default keyword after downstream implementation.
+     *     TODO(crbug.com/40208314): Remove default keyword after downstream implementation.
      */
     default void unsubscribe(Runnable successCallback, Callback<Exception> failureCallback) {}
 
@@ -86,7 +86,7 @@ public interface PasswordStoreAndroidBackend {
      *     org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult
      *     } data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     *     TODO(crbug.com/1428539): Remove default keyword after downstream implementation.
+     *     TODO(crbug.com/40262259): Remove default keyword after downstream implementation.
      */
     default void getAllLoginsWithBrandingInfo(
             Optional<Account> syncingAccount,

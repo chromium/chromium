@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/decoder_buffer.h"
 
 #include <stdint.h>
@@ -9,42 +14,68 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "media/base/test_data_util.h"
+#include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 
 TEST(DecoderBufferTest, Constructors) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
-  EXPECT_TRUE(buffer->data());
-  EXPECT_EQ(0u, buffer->data_size());
+  EXPECT_FALSE(buffer->data());
+  EXPECT_EQ(0u, buffer->size());
+  EXPECT_TRUE(buffer->empty());
+  EXPECT_EQ(base::span(*buffer), base::span<const uint8_t>());
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 
   const size_t kTestSize = 10;
   scoped_refptr<DecoderBuffer> buffer3(new DecoderBuffer(kTestSize));
   ASSERT_TRUE(buffer3.get());
-  EXPECT_EQ(kTestSize, buffer3->data_size());
+  EXPECT_EQ(kTestSize, buffer3->size());
+  EXPECT_FALSE(buffer3->empty());
 }
 
 TEST(DecoderBufferTest, CreateEOSBuffer) {
-  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CreateEOSBuffer());
+  auto buffer = DecoderBuffer::CreateEOSBuffer();
   EXPECT_TRUE(buffer->end_of_stream());
+  EXPECT_FALSE(buffer->next_config());
+
+  buffer = DecoderBuffer::CreateEOSBuffer(TestAudioConfig::Normal());
+  EXPECT_TRUE(buffer->end_of_stream());
+  ASSERT_TRUE(buffer->next_config());
+  {
+    auto config = buffer->next_config().value();
+    auto* ac = absl::get_if<AudioDecoderConfig>(&config);
+    ASSERT_TRUE(ac);
+    EXPECT_TRUE(ac->Matches(TestAudioConfig::Normal()));
+  }
+
+  buffer = DecoderBuffer::CreateEOSBuffer(TestVideoConfig::Normal());
+  EXPECT_TRUE(buffer->end_of_stream());
+  ASSERT_TRUE(buffer->next_config());
+  {
+    auto config = buffer->next_config().value();
+    auto* vc = absl::get_if<VideoDecoderConfig>(&config);
+    ASSERT_TRUE(vc);
+    EXPECT_TRUE(vc->Matches(TestVideoConfig::Normal()));
+  }
 }
 
 TEST(DecoderBufferTest, CopyFrom) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
-  scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(kData));
   ASSERT_TRUE(buffer2.get());
   EXPECT_NE(kData, buffer2->data());
-  EXPECT_EQ(buffer2->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer2->data(), kData, kDataSize));
+  EXPECT_EQ(buffer2->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer2), base::span(kData));
   EXPECT_FALSE(buffer2->end_of_stream());
   EXPECT_FALSE(buffer2->is_key_frame());
 }
@@ -52,14 +83,11 @@ TEST(DecoderBufferTest, CopyFrom) {
 TEST(DecoderBufferTest, FromArray) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
-  auto ptr = std::make_unique<uint8_t[]>(kDataSize);
-  memcpy(ptr.get(), kData, kDataSize);
-
-  scoped_refptr<DecoderBuffer> buffer(
-      DecoderBuffer::FromArray(std::move(ptr), kDataSize));
+  auto ptr = base::HeapArray<uint8_t>::CopiedFrom(kData);
+  auto buffer = DecoderBuffer::FromArray(std::move(ptr));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -76,8 +104,8 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   scoped_refptr<DecoderBuffer> buffer(
       DecoderBuffer::FromSharedMemoryRegion(std::move(region), 0, kDataSize));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -95,9 +123,8 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(region), kDataOffset, kDataSize - kDataOffset));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize - kDataOffset);
-  EXPECT_EQ(
-      0, memcmp(buffer->data(), kData + kDataOffset, kDataSize - kDataOffset));
+  EXPECT_EQ(buffer->size(), kDataSize - kDataOffset);
+  EXPECT_EQ(base::span(*buffer), base::span(kData).subspan(kDataOffset));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -127,8 +154,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::FromSharedMemoryRegion(
       std::move(mapping_region.region), 0, kDataSize));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -146,9 +173,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
       std::move(mapping_region.region), kDataOffset, kDataSize - kDataOffset));
 
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize - kDataOffset);
-  EXPECT_EQ(
-      0, memcmp(buffer->data(), kData + kDataOffset, kDataSize - kDataOffset));
+  EXPECT_EQ(buffer->size(), kDataSize - kDataOffset);
+  EXPECT_EQ(base::span(*buffer), base::span(kData).subspan(kDataOffset));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
@@ -169,18 +195,19 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
 TEST(DecoderBufferTest, FromExternalMemory) {
   constexpr uint8_t kData[] = "hello";
   constexpr size_t kDataSize = std::size(kData);
-  auto external_memory = std::make_unique<DecoderBuffer::ExternalMemory>(
+
+  auto external_memory = std::make_unique<ExternalMemoryAdapterForTesting>(
       base::make_span(kData, kDataSize));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());
-  EXPECT_EQ(buffer->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_EQ(buffer->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 }
 
 TEST(DecoderBufferTest, ReadingWriting) {
-  const char kData[] = "hello";
+  const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(kDataSize));
@@ -188,11 +215,11 @@ TEST(DecoderBufferTest, ReadingWriting) {
 
   uint8_t* data = buffer->writable_data();
   ASSERT_TRUE(data);
-  ASSERT_EQ(kDataSize, buffer->data_size());
-  memcpy(data, kData, kDataSize);
+  ASSERT_EQ(kDataSize, buffer->size());
+  base::span(data, buffer->size()).copy_from(kData);
   const uint8_t* read_only_data = buffer->data();
   ASSERT_EQ(data, read_only_data);
-  ASSERT_EQ(0, memcmp(read_only_data, kData, kDataSize));
+  EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());
 }
 

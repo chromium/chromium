@@ -6,6 +6,7 @@ include_rules = [
   "+components/viz/service/display",
   "+components/viz/service/display_embedder",
   "+components/viz/service/hit_test",
+  "+components/viz/service/input",
   "+components/viz/service/layers",
   "+components/viz/service/performance_hint",
   "+components/viz/service/surfaces",
@@ -13,8 +14,10 @@ include_rules = [
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/ipc/common",
+  "+gpu/ipc/service/gpu_memory_buffer_factory.h",
   "+gpu/command_buffer/service/scheduler_sequence.h",
   "+gpu/command_buffer/service/shared_image_interface_in_process.h",
+  "+gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h",
   "+mojo/public",
   "+media/video",
   "+media/filters",
@@ -34,5 +37,8 @@ specific_include_rules = {
   ],
   "external_begin_frame_source_win.h": [
     "+ui/gl/vsync_thread_win.h",
+  ],
+  "video_detector_unittest.cc": [
+    "+gpu/command_buffer/service/scheduler.h",
   ],
 }

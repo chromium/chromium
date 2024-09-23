@@ -625,7 +625,7 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   *nav_id = (*context)->GetNavigationId();
   EXPECT_NE(0, *nav_id);
   EXPECT_EQ(url, (*context)->GetUrl());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated and should have user gesture.
   EXPECT_FALSE((*context)->HasUserGesture());
   ui::PageTransition actual_transition = (*context)->GetPageTransition();
@@ -637,7 +637,7 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   EXPECT_FALSE((*context)->IsDownload());
   EXPECT_FALSE((*context)->IsPost());
   EXPECT_FALSE((*context)->GetError());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated.
   EXPECT_TRUE((*context)->IsRendererInitiated());
   ASSERT_FALSE((*context)->GetResponseHeaders());
@@ -663,7 +663,7 @@ ACTION_P5(VerifyRestorationFinishedContext,
   EXPECT_EQ(web_state, (*context)->GetWebState());
   EXPECT_EQ(*nav_id, (*context)->GetNavigationId());
   EXPECT_EQ(url, (*context)->GetUrl());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated and should have user gesture.
   EXPECT_FALSE((*context)->HasUserGesture());
   ui::PageTransition actual_transition = (*context)->GetPageTransition();
@@ -675,7 +675,7 @@ ACTION_P5(VerifyRestorationFinishedContext,
   EXPECT_FALSE((*context)->IsDownload());
   EXPECT_FALSE((*context)->IsPost());
   EXPECT_FALSE((*context)->GetError());
-  // TODO(crbug.com/877671): restoration navigation should be
+  // TODO(crbug.com/41410021): restoration navigation should be
   // browser-initiated.
   EXPECT_TRUE((*context)->IsRendererInitiated());
   ASSERT_TRUE((*context)->GetResponseHeaders());
@@ -724,7 +724,9 @@ class WebStateObserverMock : public WebStateObserver {
   MOCK_METHOD1(DidStopLoading, void(WebState*));
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 // Mocks WebStateObserver navigation callbacks, including TitleWasSet.
@@ -744,7 +746,9 @@ class WebStateObserverWithTitleMock : public WebStateObserver {
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
   MOCK_METHOD1(TitleWasSet, void(WebState*));
-  void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 };
 
 // Mocks WebStatePolicyDecider decision callbacks.
@@ -964,12 +968,24 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   const WebStatePolicyDecider::ResponseInfo expected_response_info(
       /*for_main_frame=*/true);
+  if (@available(iOS 18, *)) {
+    // The timing of the navigation policy decision has changed in iOS 18, with
+    // additional asynchrony in WebKit, so the `DidStopLoading` call arrives
+    // before the navigation policy callback.
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
+
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
 
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (@available(iOS 18, *)) {
+    // On iOS 18, the `DidStopLoading` call already happened above.
+  } else {
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
+
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
@@ -979,8 +995,8 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
 
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
       .WillOnce(VerifyNewPageFinishedContext(
-          web_state(), first_url, /*mime_type=*/std::string(),
-          /*content_is_html=*/false, &context, &nav_id));
+          web_state(), first_url, kExpectedMimeType,
+          /*content_is_html=*/true, &context, &nav_id));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
@@ -1427,7 +1443,7 @@ TEST_F(WebStateObserverTest, ReloadWithUserAgentType) {
                              _, ResponseInfoMatch(expected_response_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  // TODO(crbug.com/798836): verify the correct User-Agent header is sent.
+  // TODO(crbug.com/41363052): verify the correct User-Agent header is sent.
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
@@ -1874,10 +1890,10 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
-  // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
-  // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once `check_for_repost` is supported).
+  // TODO(crbug.com/41307037): ios/web ignores `check_for_repost` flag and
+  // current delegate does not run callback for ShowRepostFormWarningDialog.
+  // Clearing the delegate will allow form resubmission. Remove this workaround
+  // (clearing the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->Reload(ReloadType::NORMAL,
@@ -1997,10 +2013,10 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
-  // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
-  // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once `check_for_repost` is supported).
+  // TODO(crbug.com/41307037): ios/web ignores `check_for_repost` flag and
+  // current delegate does not run callback for ShowRepostFormWarningDialog.
+  // Clearing the delegate will allow form resubmission. Remove this workaround
+  // (clearing the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->GoForward();
@@ -2090,6 +2106,11 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
 
 // Tests download navigation.
 TEST_F(WebStateObserverTest, DownloadNavigation) {
+  // TODO(crbug.com/330370835): Re-enable on iOS 17.4 when fixed.
+  if (@available(iOS 17.4, *)) {
+    return;
+  }
+
   GURL url = test_server_->GetURL("/download");
 
   // Perform download navigation.
@@ -2251,6 +2272,13 @@ TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
       .WillOnce(RunOnceCallback<2>(
           WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(error)));
 
+  if (@available(iOS 18, *)) {
+    // On iOS 18, loading stops when the navigation is canceled and then
+    // starts again for the error page navigation, rather than appearing as
+    // one continuous load.
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  }
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));

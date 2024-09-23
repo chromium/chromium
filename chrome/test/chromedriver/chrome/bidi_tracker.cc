@@ -48,6 +48,9 @@ Status BidiTracker::OnEvent(DevToolsClient* client,
   if (!base::EndsWith(*channel, channel_suffix_)) {
     return Status{kOk};
   }
+  if (send_bidi_response_.is_null()) {
+    return Status{kUnknownError, "no callback is set in BidiTracker"};
+  }
 
   return send_bidi_response_.Run(payload->Clone());
 }

@@ -82,7 +82,6 @@ FilesystemProxy::FilesystemProxy(
     mojo::PendingRemote<mojom::Directory> directory,
     scoped_refptr<base::SequencedTaskRunner> ipc_task_runner)
     : root_(root),
-      num_root_components_(root_.GetComponents().size()),
       remote_directory_(std::move(directory), ipc_task_runner) {
   DCHECK(root_.IsAbsolute());
 }
@@ -160,7 +159,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       mode = mojom::FileOpenMode::kOpenIfExistsAndTruncate;
       break;
     default:
-      NOTREACHED() << "Invalid open mode flags: " << mode_flags;
+      NOTREACHED_IN_MIGRATION() << "Invalid open mode flags: " << mode_flags;
       return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
@@ -182,7 +181,8 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       write_access = mojom::FileWriteAccess::kAppendOnly;
       break;
     default:
-      NOTREACHED() << "Invalid write access flags: " << write_flags;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid write access flags: " << write_flags;
       return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
@@ -263,11 +263,12 @@ base::File::Error FilesystemProxy::RenameFile(const base::FilePath& old_path,
 }
 
 base::FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>>
-FilesystemProxy::LockFile(const base::FilePath& path) {
+FilesystemProxy::LockFile(const base::FilePath& path,
+                          bool* same_process_failure) {
   if (!remote_directory_) {
     base::FilePath full_path = MaybeMakeAbsolute(path);
-    ASSIGN_OR_RETURN(base::File result,
-                     FilesystemImpl::LockFileLocal(full_path));
+    ASSIGN_OR_RETURN(base::File result, FilesystemImpl::LockFileLocal(
+                                            full_path, same_process_failure));
     return std::make_unique<LocalFileLockImpl>(std::move(full_path),
                                                std::move(result));
   }
@@ -282,16 +283,6 @@ FilesystemProxy::LockFile(const base::FilePath& path) {
   return std::make_unique<RemoteFileLockImpl>(std::move(remote_lock));
 }
 
-bool FilesystemProxy::SetOpenedFileLength(base::File* file, uint64_t length) {
-  if (!remote_directory_)
-    return file->SetLength(length);
-
-  bool success = false;
-  remote_directory_->SetOpenedFileLength(std::move(*file), length, &success,
-                                         file);
-  return success;
-}
-
 base::FilePath FilesystemProxy::MakeRelative(const base::FilePath& path) const {
   DCHECK(remote_directory_);
   DCHECK(!path.ReferencesParent());
@@ -303,11 +294,9 @@ base::FilePath FilesystemProxy::MakeRelative(const base::FilePath& path) const {
   if (path == root_)
     return base::FilePath();
 
-  // Absolute paths need to be rebased onto |root_|.
-  std::vector<base::FilePath::StringType> components = path.GetComponents();
   base::FilePath relative_path;
-  for (size_t i = num_root_components_; i < components.size(); ++i)
-    relative_path = relative_path.Append(components[i]);
+  CHECK(root_.AppendRelativePath(path, &relative_path))
+      << " Failed making " << path << " relative to " << root_;
   return relative_path;
 }
 

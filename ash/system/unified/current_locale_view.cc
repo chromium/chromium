@@ -55,20 +55,12 @@ void CurrentLocaleView::OnLocaleListSet() {
   DeprecatedLayoutImmediately();
 }
 
-const char* CurrentLocaleView::GetClassName() const {
-  return "CurrentLocaleView";
-}
-
 void CurrentLocaleView::HandleLocaleChange() {
   // Nothing to do here, when this view is used, the locale will be updated
   // using locale_model.
 }
 
 void CurrentLocaleView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    label()->SetEnabledColorId(kColorAshIconColorPrimary);
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   label()->SetEnabledColorId(active

@@ -15,6 +15,7 @@ import {ComponentTypeToId} from './data.js';
 import {CLICK_REPAIR_COMPONENT_BUTTON, ClickRepairComponentButtonEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_select_components_page.html.js';
+import {RepairComponentChip} from './repair_component_chip.js';
 import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
@@ -85,6 +86,8 @@ export class OnboardingSelectComponentsPageElement extends
   protected componentCheckboxes: ComponentCheckbox[];
   private reworkFlowLinkText: TrustedHTML;
   private focusedComponentIndex: number;
+  private onComponentClickedListener: EventListenerOrEventListenerObject|null =
+      null;
 
   static get observers() {
     return ['updateIsFirstClickableComponent(componentCheckboxes.*)'];
@@ -94,9 +97,10 @@ export class OnboardingSelectComponentsPageElement extends
     super.connectedCallback();
     this.focusOnCurrentComponent();
     window.addEventListener('keydown', this.handleKeyDownEvent);
+    this.onComponentClickedListener = (e) =>
+        this.componentClicked((e as ClickRepairComponentButtonEvent));
     window.addEventListener(
-        CLICK_REPAIR_COMPONENT_BUTTON,
-        (e) => this.componentClicked((e as ClickRepairComponentButtonEvent)));
+        CLICK_REPAIR_COMPONENT_BUTTON, this.onComponentClickedListener);
   }
 
   /**
@@ -183,11 +187,11 @@ export class OnboardingSelectComponentsPageElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('keydown', this.handleKeyDownEvent);
-    window.removeEventListener(
-        CLICK_REPAIR_COMPONENT_BUTTON,
-        (e) => this.componentClicked((e as ClickRepairComponentButtonEvent)));
+    if (this.onComponentClickedListener) {
+      window.removeEventListener(
+          CLICK_REPAIR_COMPONENT_BUTTON, this.onComponentClickedListener);
+    }
   }
-
 
   override ready() {
     super.ready();
@@ -245,7 +249,7 @@ export class OnboardingSelectComponentsPageElement extends
    */
   private focusOnCurrentComponent(): void {
     if (this.focusedComponentIndex !== -1) {
-      const componentChip: CrButtonElement|null =
+      const componentChip: RepairComponentChip|null =
           this.shadowRoot!.querySelector(`[unique-id="${
               this.componentCheckboxes[this.focusedComponentIndex]
                   .uniqueId}"]`);
@@ -311,6 +315,10 @@ export class OnboardingSelectComponentsPageElement extends
       component.isFirstClickableComponent =
           component === firstClickableComponent;
     });
+  }
+
+  getComponentRepairStateListForTesting(): Component[] {
+    return this.getComponentRepairStateList();
   }
 }
 

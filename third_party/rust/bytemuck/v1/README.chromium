@@ -1,0 +1,9 @@
+Name: bytemuck
+URL: https://crates.io/crates/bytemuck
+Description: A crate for mucking around with piles of bytes.
+Version: 1.18.0
+Security Critical: yes
+Shipped: yes
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/LICENSE-APACHE
+Revision: 860c391345a2ec61fecf3cd46bcdde1add01caf9

@@ -42,3 +42,15 @@ struct StructuredHeadersParameterizedMember {
   bool member_is_inner_list;
   array<StructuredHeadersParameter> parameters;
 };
+
+// Corresponds to net::structured_headers::DictionaryMember.
+struct StructuredHeadersDictionaryMember {
+  string key;
+  StructuredHeadersParameterizedMember value;
+};
+
+// Corresponds to net::structured_headers::Dictionary.
+struct StructuredHeadersDictionary {
+  // Member order is significant, so a map is not sufficient.
+  array<StructuredHeadersDictionaryMember> members;
+};

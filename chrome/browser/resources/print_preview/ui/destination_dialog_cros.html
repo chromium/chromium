@@ -39,12 +39,12 @@
     <div class="form-row">
       <div class="server-search-box-container">
         <!-- TODO(crbug.com/1013408): Uses deprecated iron-dropdown. -->
-        <cr-searchable-drop-down class="server-search-box-input"
+        <searchable-drop-down-cros class="server-search-box-input"
             hidden$="[[!isSingleServerFetchingMode_]]"
             placeholder="$i18n{serverSearchBoxPlaceholder}"
             value="{{printServerSelected_}}"
             items="[[printServerNames_]]">
-        </cr-searchable-drop-down>
+        </searchable-drop-down-cros>
       </div>
     </div>
     <div class="throbber-container" hidden$="[[!showThrobber_]]">
@@ -58,15 +58,14 @@
     <print-preview-destination-list id="printList"
         destinations="[[destinations_]]"
         hidden$="[[!isShowingDestinationList]]"
-        loading-destinations="[[showDestinationListThrobber(
-            loadingAnyDestinations_)]]"
+        loading-destinations="false"
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">
     </print-preview-destination-list>
     <print-preview-printer-setup-info-cros
         hidden$="[[!isShowingPrinterSetupAssistance]]"
         message-type="[[noPrinters_]]"
-        metrics-source="[[destinationDialogCrosSource_]]">
+        initiator="[[destinationDialogCrosInitiator_]]">
     </print-preview-printer-setup-info-cros>
     <print-preview-provisional-destination-resolver id="provisionalResolver"
         destination-store="[[destinationStore]]">
@@ -76,7 +75,7 @@
     <cr-button on-click="onManageButtonClick_" id="managePrinters"
         hidden$="[[!showManagePrintersButton]]">
       $i18n{manage}
-      <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
+      <cr-icon icon="cr:open-in-new" id="manageIcon"></cr-icon>
     </cr-button>
     <cr-button class="cancel-button" on-click="onCancelButtonClick_">
       $i18n{cancel}

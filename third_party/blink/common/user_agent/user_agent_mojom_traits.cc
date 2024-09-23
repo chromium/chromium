@@ -63,7 +63,7 @@ bool StructTraits<blink::mojom::UserAgentMetadataDataView,
   out->bitness = string;
   out->wow64 = data.wow64();
 
-  if (!data.ReadFormFactor(&out->form_factor)) {
+  if (!data.ReadFormFactors(&out->form_factors)) {
     return false;
   }
 

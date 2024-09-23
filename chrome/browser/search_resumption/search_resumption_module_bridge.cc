@@ -7,23 +7,25 @@
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "components/search/start_suggest_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "url/android/gurl_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
+
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
+using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace search_resumption_module {
-SearchResumptionModuleBridge::SearchResumptionModuleBridge(JNIEnv* env,
-                                                           jobject jobj,
-                                                           Profile* profile)
-    : java_object_(env, env->NewWeakGlobalRef(jobj)) {
+SearchResumptionModuleBridge::SearchResumptionModuleBridge(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj,
+    Profile* profile)
+    : java_object_(env, jobj) {
   CHECK(!profile->IsOffTheRecord());
   start_suggest_service_ =
       StartSuggestServiceFactory::GetInstance()->GetForBrowserContext(profile);
@@ -56,28 +58,25 @@ SearchResumptionModuleBridge::~SearchResumptionModuleBridge() = default;
 
 void SearchResumptionModuleBridge::OnSuggestionsReceived(
     std::vector<QuerySuggestion> suggestions) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::vector<std::u16string> titles;
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  std::vector<const std::u16string*> titles;
   titles.reserve(suggestions.size());
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
+  std::vector<const GURL*> urls;
   urls.reserve(suggestions.size());
   for (const auto& suggestion : suggestions) {
-    titles.push_back(suggestion.query);
-    urls.push_back(
-        url::GURLAndroid::FromNativeGURL(env, suggestion.destination_url));
+    titles.push_back(&suggestion.query);
+    urls.push_back(&suggestion.destination_url);
   }
-  Java_SearchResumptionModuleBridge_onSuggestionsReceived(
-      env, java_object_, base::android::ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls));
+  Java_SearchResumptionModuleBridge_onSuggestionsReceived(env, java_object_,
+                                                          titles, urls);
 }
 
 static jlong JNI_SearchResumptionModuleBridge_Create(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
+    Profile* profile) {
   SearchResumptionModuleBridge* native_bridge =
-      new SearchResumptionModuleBridge(
-          env, obj, ProfileAndroid::FromProfileAndroid(jprofile));
+      new SearchResumptionModuleBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(native_bridge);
 }
 

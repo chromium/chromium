@@ -18,7 +18,6 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
@@ -41,7 +40,9 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"
 
 class PrefRegistrySimple;
@@ -61,6 +62,7 @@ class AppListModel;
 class AppListModelProvider;
 class AppListPresenterImpl;
 enum class AppListSortOrder;
+class AppsCollectionsController;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
@@ -76,7 +78,7 @@ class ASH_EXPORT AppListControllerImpl
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
       public AssistantStateObserver,
-      public WindowTreeHostManager::Observer,
+      public display::DisplayManagerObserver,
       public aura::WindowObserver,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
@@ -178,7 +180,8 @@ class ASH_EXPORT AppListControllerImpl
   void ViewClosing() override;
   void ActivateItem(const std::string& id,
                     int event_flags,
-                    AppListLaunchedFrom launched_from) override;
+                    AppListLaunchedFrom launched_from,
+                    bool is_app_above_the_fold) override;
   void GetContextMenuModel(const std::string& id,
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;
@@ -212,6 +215,10 @@ class ASH_EXPORT AppListControllerImpl
   int GetShelfSize() override;
   int GetSystemShelfInsetsInTabletMode() override;
   bool IsInTabletMode() const override;
+  void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) override;
 
   // Notifies observers of AppList visibility changes.
   void OnVisibilityChanged(bool visible, int64_t display_id);
@@ -249,8 +256,8 @@ class ASH_EXPORT AppListControllerImpl
   void OnAssistantFeatureAllowedChanged(
       assistant::AssistantAllowedState state) override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
@@ -442,9 +449,17 @@ class ASH_EXPORT AppListControllerImpl
   // `AppListModelController::Get()`.
   std::unique_ptr<AppListModelProvider> model_provider_;
 
-  // Manages the tablet mode home launcher.
-  // |fullscreen_presenter_| should be put below |client_| and |model_| to
-  // prevent a crash in destruction.
+  // A callback that can be registered by a test to wait for the app list state
+  // transition animation to finish.
+  StateTransitionAnimationCallback state_transition_animation_callback_;
+
+  // Used for closing the Assistant ui in the asynchronous way.
+  base::ScopedClosureRunner close_assistant_ui_runner_;
+
+  // Manages the tablet mode home launcher. Destroying `AppListPresenterImpl`
+  // can reentrantly call back into `this` and use `model_provider_`,
+  // `state_transition_animation_callback_`, and `close_assistant_ui_runner_`,
+  // so `fullscreen_presenter_` must be ordered after all those fields.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
   // Manages the clamshell launcher bubble.
@@ -490,10 +505,6 @@ class ASH_EXPORT AppListControllerImpl
   // home launcher visibility should be recalculated.
   raw_ptr<aura::Window> tracked_app_window_ = nullptr;
 
-  // A callback that can be registered by a test to wait for the app list state
-  // transition animation to finish.
-  StateTransitionAnimationCallback state_transition_animation_callback_;
-
   // A callback that can be registered by a test to wait for the home launcher
   // visibility animation to finish. Should only be used in tablet mode.
   HomeLauncherAnimationCallback home_launcher_animation_callback_;
@@ -537,8 +548,8 @@ class ASH_EXPORT AppListControllerImpl
   // animations.
   std::optional<ui::ThroughputTracker> smoothness_tracker_;
 
-  // Used for closing the Assistant ui in the asynchronous way.
-  base::ScopedClosureRunner close_assistant_ui_runner_;
+  // Sub-controller to handle app collections page.
+  std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

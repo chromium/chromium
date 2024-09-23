@@ -60,7 +60,7 @@
 #define METADATA_ACCESSORS_INTERNAL_BASE(class_name)   \
   using kMetadataTag = class_name;                     \
   [[maybe_unused]] static const char kViewClassName[]; \
-  virtual const char* GetClassName() const;            \
+  const char* GetClassName() const;                    \
   static ui::metadata::ClassMetaData* MetaData();      \
   class_name* ReinterpretToBaseClass(void* obj);       \
   /* Don't hide non-const base class version. */       \
@@ -105,7 +105,6 @@
    private:                                                          \
     friend class class_name;                                         \
     void BuildMetaData();                                            \
-    std::string GetClassName() const;                                \
     [[maybe_unused]] static ui::metadata::ClassMetaData* meta_data_; \
   }
 
@@ -152,7 +151,7 @@
   const char qualified_class_name::kViewClassName[] = #qualified_class_name;  \
                                                                               \
   void qualified_class_name::metadata_class_name::BuildMetaData() {           \
-    SetTypeName(std::string(#qualified_class_name));
+    SetTypeName(#qualified_class_name);
 
 #define BEGIN_TEMPLATE_METADATA_INTERNAL(qualified_class_name,               \
                                          metadata_class_name)                \
@@ -164,20 +163,14 @@
   const char qualified_class_name::kViewClassName[] = #qualified_class_name; \
                                                                              \
   template <>                                                                \
-  std::string qualified_class_name::metadata_class_name::GetClassName()      \
-      const {                                                                \
-    return qualified_class_name::kViewClassName;                             \
-  }                                                                          \
-                                                                             \
-  template <>                                                                \
   void qualified_class_name::metadata_class_name::BuildMetaData() {          \
-    SetTypeName(GetClassName());                                             \
+    SetTypeName(#qualified_class_name);                                      \
     SetParentClassMetaData(kAncestorClass::MetaData());
 
 #define BEGIN_METADATA_INTERNAL_BASE(qualified_class_name,                   \
                                      metadata_class_name, parent_class_name) \
   const char* qualified_class_name::GetClassName() const {                   \
-    return GetClassMetaData()->type_name().c_str();                          \
+    return GetClassMetaData()->type_name();                                  \
   }                                                                          \
                                                                              \
   BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,         \

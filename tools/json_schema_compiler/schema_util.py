@@ -4,6 +4,7 @@
 """Utilies for the processing of schema python structures.
 """
 
+
 def CapitalizeFirstLetter(value):
   return value[0].capitalize() + value[1:]
 

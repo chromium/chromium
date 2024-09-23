@@ -39,6 +39,7 @@ class MockPairerBroker : public PairerBroker {
   void NotifyPairComplete(scoped_refptr<Device> device);
   void NotifyAccountKeyWrite(scoped_refptr<Device> device,
                              std::optional<AccountKeyFailure> error);
+  void NotifyDisplayPasskey(std::u16string device_name, uint32_t passkey);
 
  private:
   base::ObserverList<Observer> observers_;

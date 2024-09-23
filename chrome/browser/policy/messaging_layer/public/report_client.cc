@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -21,10 +22,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -75,9 +78,48 @@ ReportingClient::ReportingClient(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
               }),
           sequenced_task_runner) {
+  // Register itself as observer to connector.
+  ReportingServerConnector::GetInstance()->AddObserver(this);
 }
 
-ReportingClient::~ReportingClient() = default;
+ReportingClient::~ReportingClient() {
+  // Unregister itself as observer to connector.
+  ReportingServerConnector::GetInstance()->RemoveObserver(this);
+}
+
+void ReportingClient::OnConnected() {
+  // Immediately perform dummy upload that will retrieve encryption key, if
+  // `Storage` does not have it yet. This is done to provide the key for later
+  // events posting even in case the device goes offline very soon after
+  // enrollment - `Flush` tries to request encryption key from the server. It
+  // is expected to succeed, but even if it fails, later enqueue operations
+  // have a good chance to succeed if the server is available. Note that we
+  // cannot use Speculative Report Queue - as opposed to `Enqueue`, `Flush`
+  // does wait for the underlying actual queue to be created.
+  ReportQueueProvider::CreateQueue(
+      ReportQueueConfiguration::Create(
+          {
+              .destination = Destination::HEARTBEAT_EVENTS  // Unused
+          })
+          .Build()
+          .value(),
+      base::BindOnce([](StatusOr<std::unique_ptr<ReportQueue>> queue_result) {
+        if (!queue_result.has_value()) {
+          LOG(WARNING) << "Failed to create queue for initial flush";
+          return;
+        }
+        // Flush SECURITY queue since it is usually empty (events are uploaded
+        // immediately after they are posted).
+        queue_result.value()->Flush(
+            Priority::SECURITY, base::BindOnce([](Status status) {
+              LOG_IF(WARNING, !status.ok()) << "Initial flush error=" << status;
+            }));
+      }));
+}
+
+void ReportingClient::OnDisconnected() {
+  // No action required upon disconnect.
+}
 
 // static
 ReportQueueProvider::SmartPtr<ReportingClient> ReportingClient::Create(
@@ -293,7 +335,9 @@ ReportingClient::CreateLocalUploadProvider(
           StorageSelector::GetLocalReportSuccessfulUploadCb(storage_module)),
       base::BindPostTask(
           ReportQueueProvider::GetInstance()->sequenced_task_runner(),
-          StorageSelector::GetLocalEncryptionKeyAttachedCb(storage_module)));
+          StorageSelector::GetLocalEncryptionKeyAttachedCb(storage_module)),
+      // The configuration file feature is only available in CrOS.
+      /*update_config_in_missive_cb=*/base::DoNothing());
 }
 
 // static
@@ -305,6 +349,10 @@ void ReportingClient::AsyncStartUploader(
     std::move(start_uploader_cb)
         .Run(base::unexpected(
             Status(error::UNAVAILABLE, "Client not available")));
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::REPORTING_CLIENT_IS_NULL,
+        UnavailableErrorReason::MAX_VALUE);
     return;
   }
   auto* const client = static_cast<ReportingClient*>(instance.get());
@@ -325,6 +373,10 @@ void ReportingClient::DeliverAsyncStartUploader(
       std::move(start_uploader_cb)
           .Run(base::unexpected(
               Status(error::UNAVAILABLE, "Uploader not available")));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::UPLOAD_PROVIDER_IS_NULL,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     upload_provider_ = CreateLocalUploadProvider(storage());
@@ -337,6 +389,10 @@ void ReportingClient::DeliverAsyncStartUploader(
              bool need_encryption_key, std::vector<EncryptedRecord> records,
              ScopedReservation scoped_reservation) {
             if (!upload_provider) {
+              base::UmaHistogramEnumeration(
+                  reporting::kUmaUnavailableErrorReason,
+                  UnavailableErrorReason::UPLOAD_PROVIDER_IS_NULL,
+                  UnavailableErrorReason::MAX_VALUE);
               return Status{error::UNAVAILABLE, "Uploader not available"};
             }
             upload_provider->RequestUploadEncryptedRecords(

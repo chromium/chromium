@@ -11,6 +11,7 @@
 #import <vector>
 
 #import "base/json/values_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "base/values.h"
@@ -111,7 +112,7 @@ Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
   promos_manager_ = std::make_unique<PromosManagerImpl>(
-      local_state_.get(), &test_clock_, &mock_tracker_, nullptr);
+      local_state_.get(), &test_clock_, &mock_tracker_);
   promos_manager_->Init();
 }
 
@@ -119,8 +120,6 @@ void PromosManagerImplTest::CreatePromosManager() {
 void PromosManagerImplTest::CreatePrefs() {
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
 
-  local_state_->registry()->RegisterListPref(
-      prefs::kIosPromosManagerImpressions);
   local_state_->registry()->RegisterListPref(
       prefs::kIosPromosManagerActivePromos);
   local_state_->registry()->RegisterListPref(
@@ -134,14 +133,11 @@ void PromosManagerImplTest::CreatePrefs() {
 TEST_F(PromosManagerImplTest, InitWithPrefService) {
   CreatePromosManager();
 
-  EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerImpressions),
-            nullptr);
   EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerActivePromos),
             nullptr);
   EXPECT_NE(local_state_->FindPreference(
                 prefs::kIosPromosManagerSingleDisplayActivePromos),
             nullptr);
-  EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerImpressions));
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerActivePromos));
   EXPECT_FALSE(local_state_->HasPrefPath(
       prefs::kIosPromosManagerSingleDisplayActivePromos));
@@ -1080,10 +1076,8 @@ TEST_F(PromosManagerImplTest, DeregistersNonExistentPromo) {
       (size_t)0);
 }
 
-// Tests a given single-display promo is automatically deregistered after its
-// impression is recorded.
-TEST_F(PromosManagerImplTest,
-       DeregistersSingleDisplayPromoAfterRecordedImpression) {
+// Tests a given single-display promo is automatically deregistered correctly.
+TEST_F(PromosManagerImplTest, DeregistersSingleDisplayPromoAfterDisplay) {
   CreatePromosManager();
 
   EXPECT_TRUE(
@@ -1099,7 +1093,7 @@ TEST_F(PromosManagerImplTest,
           .size(),
       (size_t)1);
 
-  promos_manager_->RecordImpression(
+  promos_manager_->DeregisterAfterDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
   EXPECT_TRUE(
@@ -1108,7 +1102,7 @@ TEST_F(PromosManagerImplTest,
 }
 
 // Tests a given single-display pending promo is automatically deregistered
-// after its impression is recorded.
+// correctly.
 TEST_F(PromosManagerImplTest,
        DeregistersSingleDisplayPendingPromoAfterRecordedImpression) {
   CreatePromosManager();
@@ -1126,7 +1120,7 @@ TEST_F(PromosManagerImplTest,
           .size(),
       (size_t)1);
 
-  promos_manager_->RecordImpression(
+  promos_manager_->DeregisterAfterDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
   EXPECT_TRUE(
@@ -1138,6 +1132,7 @@ TEST_F(PromosManagerImplTest,
 // and takes precedence over other active promos.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histogram_tester;
 
   CreatePromosManager();
 
@@ -1162,6 +1157,8 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   // Mock the FET tracker to allow all promos.
   EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, WouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
 
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
@@ -1170,6 +1167,8 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
       promos_manager_->NextPromoForDisplay();
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 2, 1);
 }
 
 // Tests `NextPromoForDisplay` returns an active promo whose type has the
@@ -1178,6 +1177,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
 TEST_F(PromosManagerImplTest,
        NextPromoForDisplayReturnsActivePromoOfPrioritizedType) {
   base::test::ScopedFeatureList feature_list;
+  base::HistogramTester histogram_tester;
 
   CreatePromosManager();
 
@@ -1199,6 +1199,8 @@ TEST_F(PromosManagerImplTest,
   // Mock the FET tracker to allow all promos.
   EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, WouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
 
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
@@ -1208,11 +1210,14 @@ TEST_F(PromosManagerImplTest,
 
   ASSERT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::PostRestoreSignInFullscreen);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 2, 1);
 }
 
 // Tests `NextPromoForDisplay` returns empty when non of the pending promos can
 // become active.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
+  base::HistogramTester histogram_tester;
   CreatePromosManager();
 
   promos_manager_->single_display_active_promos_ = {};
@@ -1229,4 +1234,6 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());
+  histogram_tester.ExpectTotalCount(
+      "IOS.PromosManager.EligiblePromosInQueueCount", 0);
 }

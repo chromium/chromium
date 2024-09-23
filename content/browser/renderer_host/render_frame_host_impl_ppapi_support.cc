@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/not_fatal_until.h"
 #include "base/process/process_handle.h"
 #include "content/browser/plugin_service_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
@@ -87,7 +88,7 @@ void RenderFrameHostImplPpapiSupport::Bind(
 void RenderFrameHostImplPpapiSupport::SetVolume(int32_t instance_id,
                                                 double volume) {
   auto it = pepper_plugin_instances_.find(instance_id);
-  DCHECK(it != pepper_plugin_instances_.end());
+  CHECK(it != pepper_plugin_instances_.end(), base::NotFatalUntil::M130);
   it->second->SetVolume(volume);
 }
 

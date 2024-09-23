@@ -122,12 +122,6 @@ void PerfettoTaskRunner::ResetTaskRunnerForTesting(
   task_runner_ = std::move(task_runner);
 }
 
-void PerfettoTaskRunner::SetTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  DCHECK(!task_runner_);
-  task_runner_ = std::move(task_runner);
-}
-
 scoped_refptr<base::SequencedTaskRunner>
 PerfettoTaskRunner::GetOrCreateTaskRunner() {
   // TODO(eseckler): This is not really thread-safe. We should probably add a
@@ -139,7 +133,6 @@ PerfettoTaskRunner::GetOrCreateTaskRunner() {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
   }
-
   return task_runner_;
 }
 

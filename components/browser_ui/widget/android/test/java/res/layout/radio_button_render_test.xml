@@ -35,7 +35,7 @@ found in the LICENSE file.
             android:id="@+id/base_primary_bg_override"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/modern_grey_100"
+            android:background="@color/baseline_neutral_90"
             app:primaryText="@string/test_string"
             app:descriptionText="@string/test_string" />
 
@@ -107,7 +107,7 @@ found in the LICENSE file.
             android:id="@+id/aux_bg_override"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/modern_grey_100"
+            android:background="@color/baseline_neutral_90"
             app:primaryText="@string/test_string"
             app:descriptionText="@string/test_string" />
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>

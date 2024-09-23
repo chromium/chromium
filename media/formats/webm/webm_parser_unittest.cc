@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/webm/webm_parser.h"
 
 #include <stddef.h>
@@ -227,7 +232,8 @@ TEST_F(WebMParserTest, ParseListElementWithSingleCall) {
   CreateClusterExpectations(kBlockCount, true, &client_);
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(cluster->size(), parser.Parse(cluster->data(), cluster->size()));
+  EXPECT_EQ(cluster->bytes_used(),
+            parser.Parse(cluster->data(), cluster->bytes_used()));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -236,7 +242,7 @@ TEST_F(WebMParserTest, ParseListElementWithMultipleCalls) {
   CreateClusterExpectations(kBlockCount, true, &client_);
 
   const uint8_t* data = cluster->data();
-  int size = cluster->size();
+  int size = cluster->bytes_used();
   int default_parse_size = 3;
   WebMListParser parser(kWebMIdCluster, &client_);
   int parse_size = std::min(default_parse_size, size);
@@ -278,15 +284,16 @@ TEST_F(WebMParserTest, Reset) {
 
   // Send slightly less than the full cluster so all but the last block is
   // parsed.
-  int result = parser.Parse(cluster->data(), cluster->size() - 1);
+  int result = parser.Parse(cluster->data(), cluster->bytes_used() - 1);
   EXPECT_GT(result, 0);
-  EXPECT_LT(result, cluster->size());
+  EXPECT_LT(result, cluster->bytes_used());
   EXPECT_FALSE(parser.IsParsingComplete());
 
   parser.Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  EXPECT_EQ(cluster->size(), parser.Parse(cluster->data(), cluster->size()));
+  EXPECT_EQ(cluster->bytes_used(),
+            parser.Parse(cluster->data(), cluster->bytes_used()));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 

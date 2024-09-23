@@ -4,11 +4,13 @@
 
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 
+#include "url/gurl.h"
+
 namespace content {
 
 LegacyTechCookieIssueDetails::LegacyTechCookieIssueDetails() = default;
 LegacyTechCookieIssueDetails::LegacyTechCookieIssueDetails(
-    const std::string& transfer_or_script_url,
+    const GURL& transfer_or_script_url,
     const std::string& name,
     const std::string& domain,
     const std::string& path,

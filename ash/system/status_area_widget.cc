@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/drag_handle.h"
@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
+#include "ash/system/accessibility/mouse_keys/mouse_keys_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
@@ -31,6 +32,7 @@
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
+#include "ash/system/pods_overflow_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_animation_controller.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -68,11 +70,11 @@ StatusAreaWidget::StatusAreaWidget(aura::Window* status_container, Shelf* shelf)
   DCHECK(status_container);
   DCHECK(shelf);
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = status_area_widget_delegate_.get();
   params.name = "StatusAreaWidget";
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = status_container;
   Init(std::move(params));
   set_focus_on_creation(false);
@@ -98,6 +100,8 @@ void StatusAreaWidget::Initialize() {
       AddTrayButton(std::make_unique<LogoutButtonTray>(shelf_));
   dictation_button_tray_ = AddTrayButton(std::make_unique<DictationButtonTray>(
       shelf_, TrayBackgroundViewCatalogName::kDictationStatusArea));
+  mouse_keys_tray_ = AddTrayButton(std::make_unique<MouseKeysTray>(
+      shelf_, TrayBackgroundViewCatalogName::kMouseKeysStatusArea));
   select_to_speak_tray_ = AddTrayButton(std::make_unique<SelectToSpeakTray>(
       shelf_, TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea));
   ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
@@ -107,8 +111,7 @@ void StatusAreaWidget::Initialize() {
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
-  projector_annotation_tray_ =
-      AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
+  annotation_tray_ = AddTrayButton(std::make_unique<AnnotationTray>(shelf_));
 
   palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 
@@ -127,11 +130,16 @@ void StatusAreaWidget::Initialize() {
         AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
   }
 
-    notification_center_tray_ =
-        AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
-    notification_center_tray_->AddObserver(this);
-    animation_controller_ = std::make_unique<StatusAreaAnimationController>(
-        notification_center_tray());
+  if (features::IsScalableShelfPodsEnabled()) {
+    pods_overflow_tray_ =
+        AddTrayButton(std::make_unique<PodsOverflowTray>(shelf_));
+  }
+
+  notification_center_tray_ =
+      AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
+  notification_center_tray_->AddObserver(this);
+  animation_controller_ = std::make_unique<StatusAreaAnimationController>(
+      notification_center_tray());
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
   date_tray_ =
@@ -177,6 +185,11 @@ StatusAreaWidget::~StatusAreaWidget() {
   // `TrayBubbleView` might be deleted after `StatusAreaWidget`, so we reset the
   // pointer here to avoid dangling pointer.
   open_shelf_pod_bubble_ = nullptr;
+
+  // All tray pods are deleted upon shutdown of `status_area_widget_delegate_`,
+  // so their pointers are reset here to prevent them from dangling.
+  // TODO(b/338090322): Handle all dangling tray pointers here.
+  pods_overflow_tray_ = nullptr;
 
   status_area_widget_delegate_->Shutdown();
 }
@@ -282,11 +295,13 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kMediaPlayer:
       case TrayBackgroundViewCatalogName::kPalette:
       case TrayBackgroundViewCatalogName::kPhoneHub:
+      case TrayBackgroundViewCatalogName::kPodsOverflow:
       case TrayBackgroundViewCatalogName::kLogoutButton:
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
       case TrayBackgroundViewCatalogName::kWmMode:
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
       case TrayBackgroundViewCatalogName::kFocusMode:
+      case TrayBackgroundViewCatalogName::kMouseKeysStatusArea:
         if (!tray_button->GetVisible()) {
           continue;
         }
@@ -468,12 +483,11 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 }
 
 void StatusAreaWidget::EnsureTrayOrder() {
-  if (projector_annotation_tray_) {
-    status_area_widget_delegate_->ReorderChildView(projector_annotation_tray_,
-                                                   1);
+  if (annotation_tray_) {
+    status_area_widget_delegate_->ReorderChildView(annotation_tray_, 1);
   }
-  status_area_widget_delegate_->ReorderChildView(
-      stop_recording_button_tray_, projector_annotation_tray_ ? 2 : 1);
+  status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
+                                                 annotation_tray_ ? 2 : 1);
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
@@ -663,7 +677,7 @@ void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
   // virtual keyboard.
   gfx::Point location = event->location();
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
-  if (event->type() == ui::ET_MOUSE_PRESSED &&
+  if (event->type() == ui::EventType::kMousePressed &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }
@@ -675,7 +689,7 @@ void StatusAreaWidget::OnGestureEvent(ui::GestureEvent* event) {
   // virtual keyboard.
   gfx::Point location = event->location();
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_, &location);
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
+  if (event->type() == ui::EventType::kGestureTapDown &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
     keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }

@@ -37,9 +37,8 @@ typedef MTPDeviceAsyncDelegate::ReadDirectorySuccessCallback
 // its delegate on the task runner with which it is created. All
 // interactions with it are done on the UI thread, but it may be
 // created/destroyed on another thread.
-class MTPDeviceDelegateImplMac::DeviceListener
-    : public storage_monitor::ImageCaptureDeviceListener,
-      public base::SupportsWeakPtr<DeviceListener> {
+class MTPDeviceDelegateImplMac::DeviceListener final
+    : public storage_monitor::ImageCaptureDeviceListener {
  public:
   DeviceListener(MTPDeviceDelegateImplMac* delegate)
       : delegate_(delegate) {}
@@ -66,11 +65,17 @@ class MTPDeviceDelegateImplMac::DeviceListener
   // to the delegate by the listener.
   virtual void ResetDelegate();
 
+  base::WeakPtr<storage_monitor::ImageCaptureDeviceListener> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   ImageCaptureDevice* __strong camera_device_;
 
   // Weak pointer
   raw_ptr<MTPDeviceDelegateImplMac> delegate_;
+  base::WeakPtrFactory<storage_monitor::ImageCaptureDeviceListener>
+      weak_ptr_factory_{this};
 };
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(
@@ -182,7 +187,7 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
     const bool recursive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
@@ -218,7 +223,7 @@ void MTPDeviceDelegateImplMac::ReadBytes(
     int buf_len,
     ReadBytesSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool MTPDeviceDelegateImplMac::IsReadOnly() const {
@@ -232,7 +237,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
     CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::MoveFileLocal(
@@ -241,7 +246,7 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
     CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::CopyFileFromLocal(
@@ -249,21 +254,21 @@ void MTPDeviceDelegateImplMac::CopyFileFromLocal(
     const base::FilePath& device_file_path,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::DeleteFile(
     const base::FilePath& file_path,
     DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::DeleteDirectory(
     const base::FilePath& file_path,
     DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MTPDeviceDelegateImplMac::AddWatcher(
@@ -459,7 +464,7 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
       read_path.AppendRelativePath(file_paths_[i], &relative_path);
       base::File::Info info = file_info_[file_paths_[i].value()];
       entry_list.emplace_back(
-          std::move(relative_path),
+          std::move(relative_path), base::FilePath(),
           info.is_directory ? filesystem::mojom::FsFileType::DIRECTORY
                             : filesystem::mojom::FsFileType::REGULAR_FILE);
     }

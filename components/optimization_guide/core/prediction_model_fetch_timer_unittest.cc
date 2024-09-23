@@ -144,6 +144,11 @@ TEST_F(PredictionModelFetchTimerTest, FirstModelFetchFailure) {
 }
 
 TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationTargetPrediction,
+      {{"new_registration_fetch_min_delay", "5s"},
+       {"new_registration_fetch_max_delay", "10s"}});
   prediction_model_fetch_timer_->MaybeScheduleFirstModelFetch();
   RunUntilIdle();
 
@@ -173,14 +178,9 @@ TEST_F(PredictionModelFetchTimerTest, NewRegistrationFetchEnabled) {
             GetPredictionModelFetchTimerState());
   auto delay = prediction_model_fetch_timer_->GetFetchTimerForTesting()
                    ->GetCurrentDelay();
-  EXPECT_LE(features::PredictionModelNewRegistrationFetchDelay() +
-                features::PredictionModelFetchRandomMinDelay(),
-            delay);
-  EXPECT_GE(features::PredictionModelNewRegistrationFetchDelay() +
-                features::PredictionModelFetchRandomMaxDelay(),
-            delay);
-  MoveClockForwardBy(features::PredictionModelNewRegistrationFetchDelay() +
-                     features::PredictionModelFetchRandomMaxDelay());
+  EXPECT_LE(base::Seconds(5), delay);
+  EXPECT_GE(base::Seconds(10), delay);
+  MoveClockForwardBy(base::Seconds(10));
   EXPECT_TRUE(last_model_fetch_time_);
   last_model_fetch_time_ = std::nullopt;
 

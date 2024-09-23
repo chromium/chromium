@@ -7,7 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -16,27 +19,6 @@
 #include "components/strings/grit/components_strings.h"
 
 namespace policy {
-
-namespace {
-
-const char kGoogleDriveNamePolicyVariableName[] = "${google_drive}";
-const char kOneDriveNamePolicyVariableName[] = "${onedrive}";
-
-bool IsValidLocationString(const std::string& str) {
-  const size_t google_drive_position =
-      str.find(kGoogleDriveNamePolicyVariableName);
-  if (google_drive_position != std::string::npos &&
-      google_drive_position != 0) {
-    return false;
-  }
-  const size_t onedrive_position = str.find(kOneDriveNamePolicyVariableName);
-  if (onedrive_position != std::string::npos && onedrive_position != 0) {
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
 
 ScreenCaptureLocationPolicyHandler::ScreenCaptureLocationPolicyHandler()
     : TypeCheckingPolicyHandler(policy::key::kScreenCaptureLocation,
@@ -53,9 +35,9 @@ bool ScreenCaptureLocationPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  if (value && !IsValidLocationString(value->GetString())) {
-    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
-                     value->GetString());
+  if (value &&
+      !policy::local_user_files::IsValidLocationString(value->GetString())) {
+    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
     return false;
   }
 
@@ -70,13 +52,17 @@ void ScreenCaptureLocationPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  if (!value || !value->is_string()) {
+  if (!value || !value->is_string() ||
+      !policy::local_user_files::IsValidLocationString(value->GetString())) {
     return;
   }
 
-  // TODO(b/323146997): Set Screen Capture custom path expanding the policy.
-  //  prefs->SetString(ash::kCustomCapturePathPrefName,
-  //                  value->GetString());
+  if (base::FeatureList::IsEnabled(features::kSkyVault)) {
+    const std::string str = value->GetString();
+    prefs->SetString(ash::prefs::kCaptureModePolicySavePath, str);
+  } else {
+    VLOG(1) << "SkyVault not enabled, ignoring ScreenCaptureLocation policy";
+  }
 }
 
 }  // namespace policy

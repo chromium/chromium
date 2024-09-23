@@ -40,13 +40,14 @@
 
 namespace {
 
-const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+const char kCookiesInUseDialogOpenedActionName[] = "CookiesInUseDialog.Opened";
+
 const char kDeleteBrowsingDataActionName[] =
     "Privacy.DeleteBrowsingData.Action";
 
 void ClickButton(views::Button* button) {
   views::test::ButtonTestApi test_api(button);
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   test_api.NotifyClick(e);
 }
@@ -120,19 +121,19 @@ class PageSpecificSiteDataDialogBrowserTest
   }
 
   void ClickBlockMenuItem(SiteDataRowView* row_view) {
-    // TODO(crbug.com/1344787): Get the menu item from the the menu runner and
+    // TODO(crbug.com/40231917): Get the menu item from the the menu runner and
     // click on it.
     row_view->OnBlockMenuItemClicked(/*event_flags*/ 0);
   }
 
   void ClickAllowMenuItem(SiteDataRowView* row_view) {
-    // TODO(crbug.com/1344787): Get the menu item from the the menu runner and
+    // TODO(crbug.com/40231917): Get the menu item from the the menu runner and
     // click on it.
     row_view->OnAllowMenuItemClicked(/*event_flags*/ 0);
   }
 
   void ClickClearOnExitMenuItem(SiteDataRowView* row_view) {
-    // TODO(crbug.com/1344787): Get the menu item from the the menu runner and
+    // TODO(crbug.com/40231917): Get the menu item from the the menu runner and
     // click on it.
     row_view->OnClearOnExitMenuItemClicked(/*event_flags*/ 0);
   }
@@ -157,14 +158,11 @@ class PageSpecificSiteDataDialogBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
   // Test opening and closing dialog.
-
-  base::HistogramTester histograms;
   base::UserActionTester user_actions;
-  const std::string open_action = "CookiesInUseDialog.Opened";
 
-  // The histogram should start empty and no actions recorded.
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
-  EXPECT_EQ(0, user_actions.GetActionCount(open_action));
+  // No actions recorded at start.
+  EXPECT_EQ(0,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
 
   auto* dialog = OpenDialog();
   EXPECT_FALSE(dialog->IsClosed());
@@ -173,12 +171,9 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
   EXPECT_TRUE(dialog->IsClosed());
 
   EXPECT_EQ(0u, infobar_count());
-
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 1);
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
-  EXPECT_EQ(1, user_actions.GetActionCount(open_action));
+  // Expect recorded open dialog action.
+  EXPECT_EQ(1,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
@@ -191,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
   EXPECT_FALSE(dialog->IsClosed());
 }
 
-// TODO(crbug.com/1344787): Figure out why the dialog isn't closed when
+// TODO(crbug.com/40231917): Figure out why the dialog isn't closed when
 // nnavigating away on Linux and overall flaky on other platforms.
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        DISABLED_NavigateAway) {
@@ -244,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
   // If the test didn't crash, it has passed.
 }
 
-// TODO(crbug.com/1344787): Add testing dialog functionality such as showing
+// TODO(crbug.com/40231917): Add testing dialog functionality such as showing
 // infobar after changes, changing content settings, deleting data.
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
@@ -253,16 +248,18 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   const std::string remove_action = "CookiesInUseDialog.RemoveButtonClicked";
 
   // The histogram should start empty and no actions recorded.
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  histograms.ExpectTotalCount(kDeleteBrowsingDataActionName, 0);
+  // No actions recorded at start.
+  EXPECT_EQ(0,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
   EXPECT_EQ(0, user_actions.GetActionCount(remove_action));
 
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
-
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
+  // Expect recorded open dialog action.
+  EXPECT_EQ(1,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
 
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
@@ -276,10 +273,6 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
 
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteDeleted), 1);
   histograms.ExpectBucketCount(
       kDeleteBrowsingDataActionName,
       browsing_data::DeleteBrowsingDataAction::kCookiesInUseDialog, 1);
@@ -288,31 +281,28 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
-  base::HistogramTester histograms;
-  // The histogram should start empty and no actions recorded.
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  base::UserActionTester user_actions;
+  // No actions recorded at start.
+  EXPECT_EQ(0,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
 
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
 
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
-
+  // Expect recorded open dialog action.
+  EXPECT_EQ(1,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // The delete button is available for not blocked sites.
   EXPECT_TRUE(row_view->delete_button_for_testing()->GetVisible());
-  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
-  // returns true. It's not actually visible because it has size 0.
+  // TODO(crbug.com/40231917): The label shouldn't be visible here but
+  // GetVisible returns true. It's not actually visible because it has size 0.
   ClickButton(row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(row_view);
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
@@ -322,46 +312,36 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
-
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
-  base::HistogramTester histograms;
-  // The histogram should start empty and no actions recorded.
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  base::UserActionTester user_actions;
+  // No actions recorded at start.
+  EXPECT_EQ(0,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
 
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
 
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
-
+  // Expect recorded open dialog action.
+  EXPECT_EQ(1,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
-  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
-  // returns true. It's not actually visible because it has size 0.
-  // TODO(crbug.com/1344787): Setup a site with blocked cookies to start with
+  // TODO(crbug.com/40231917): The label shouldn't be visible here but
+  // GetVisible returns true. It's not actually visible because it has size 0.
+  // TODO(crbug.com/40231917): Setup a site with blocked cookies to start with
   // blocked state here.
   ClickButton(row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(row_view);
-
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
 
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
   ClickAllowMenuItem(row_view);
-
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteAllowed), 1);
 
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
@@ -370,36 +350,29 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
-
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        ClearOnExitMenuItem) {
-  base::HistogramTester histograms;
-  // The histogram should start empty and no actions recorded.
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
-
+  base::UserActionTester user_actions;
+  // No actions recorded at start.
+  EXPECT_EQ(0,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
   auto* dialog = OpenDialog();
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
 
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
-
+  // Expect recorded open dialog action.
+  EXPECT_EQ(1,
+            user_actions.GetActionCount(kCookiesInUseDialogOpenedActionName));
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
-  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
-  // returns true. It's not actually visible because it has size 0.
+  // TODO(crbug.com/40231917): The label shouldn't be visible here but
+  // GetVisible returns true. It's not actually visible because it has size 0.
   ClickButton(row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickClearOnExitMenuItem(row_view);
-  histograms.ExpectBucketCount(
-      kCookiesDialogHistogramName,
-      static_cast<int>(PageSpecificSiteDataDialogAction::kSiteClearedOnExit),
-      1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(
       row_view->state_label_for_testing()->GetText(),
@@ -408,8 +381,6 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
-
-  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
 class PageSpecificSiteDataDialogPre3pcdBrowserTest
@@ -455,34 +426,34 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogPre3pcdBrowserTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
   ClickButton(partitioned_row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(partitioned_row_view);
   EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
-  // TODO(crbug.com/1344787): Check the histograms value.
+  // TODO(crbug.com/40231917): Check the histograms value.
 
   // Get the second row: "c.test" with both partitioned and regular cookies set.
   auto* mixed_row_view =
       static_cast<SiteDataRowView*>(GetViewByIdentifierAtIndex(
           context, kPageSpecificSiteDataDialogRow, /*index=*/2));
   // Both third-party and partitioned cookies are allowed access.
-  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
-  // returns true. It's not actually visible because it has size 0.
+  // TODO(crbug.com/40231917): The label shouldn't be visible here but
+  // GetVisible returns true. It's not actually visible because it has size 0.
   EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
   ClickButton(mixed_row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(mixed_row_view);
   EXPECT_TRUE(mixed_row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
-  // TODO(crbug.com/1344787): Check the histograms value.
+  // TODO(crbug.com/40231917): Check the histograms value.
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
@@ -518,14 +489,14 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE));
   ClickButton(partitioned_row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(partitioned_row_view);
   EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
-  // TODO(crbug.com/1344787): Check the histograms value.
+  // TODO(crbug.com/40231917): Check the histograms value.
 
   // Get the second row: "c.test" with both partitioned and regular cookies set.
   auto* mixed_row_view =
@@ -540,14 +511,14 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE));
   ClickButton(mixed_row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // TODO(crbug.com/40231917): Use the actual menu to perform action. Check if
   // correct menu item are displayed.
   ClickBlockMenuItem(mixed_row_view);
   EXPECT_TRUE(mixed_row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
-  // TODO(crbug.com/1344787): Check the histograms value.
+  // TODO(crbug.com/40231917): Check the histograms value.
 }
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,

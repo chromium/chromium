@@ -50,6 +50,7 @@ source_set("spotlight") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -76,6 +77,7 @@ source_set("spotlight") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "base_spotlight_manager_unittest.mm",
     "bookmark_spotlight_manager_unittest.mm",
     "open_tabs_spotlight_manager_unittest.mm",
     "reading_list_spotlight_manager_unittest.mm",
@@ -97,7 +99,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/reading_list/model:test_support",
     "//ios/chrome/browser/shared/model/browser:browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/web/public/test/fakes:fakes",
     "//net",

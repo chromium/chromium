@@ -11,11 +11,16 @@
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "components/system_media_controls/mac/remote_cocoa/system_media_controls.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace system_media_controls {
+class SystemMediaControlsBridge;
+}  // namespace system_media_controls
 
 namespace remote_cocoa {
 
@@ -32,7 +37,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
 
   // Set callbacks to create content types (content types cannot be created
   // in remote_cocoa).
-  // TODO(https://crbug.com/888290): Move these types from content to
+  // TODO(crbug.com/40595042): Move these types from content to
   // remote_cocoa.
   using RenderWidgetHostNSViewCreateCallback = base::RepeatingCallback<void(
       uint64_t view_id,
@@ -49,8 +54,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
   // mojom::Application:
   void CreateAlert(
       mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver) override;
-  void ShowColorPanel(mojo::PendingReceiver<mojom::ColorPanel> receiver,
-                      mojo::PendingRemote<mojom::ColorPanelHost> host) override;
   void CreateNativeWidgetNSWindow(
       uint64_t bridge_id,
       mojo::PendingAssociatedReceiver<mojom::NativeWidgetNSWindow>
@@ -63,12 +66,19 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
       mojo::PendingAssociatedRemote<mojom::StubInterface> host,
       mojo::PendingAssociatedReceiver<mojom::StubInterface> view_receiver)
       override;
+  void CreateSystemMediaControlsBridge(
+      mojo::PendingReceiver<system_media_controls::mojom::SystemMediaControls>
+          receiver,
+      mojo::PendingRemote<
+          system_media_controls::mojom::SystemMediaControlsObserver> host)
+      override;
   void CreateWebContentsNSView(
       uint64_t view_id,
       mojo::PendingAssociatedRemote<mojom::StubInterface> host,
       mojo::PendingAssociatedReceiver<mojom::StubInterface> view_receiver)
       override;
   void ForwardCutCopyPaste(mojom::CutCopyPasteCommand command) override;
+
   static void ForwardCutCopyPasteToNSApp(mojom::CutCopyPasteCommand command);
 
  private:
@@ -78,6 +88,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
 
   RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback_;
   WebContentsNSViewCreateCallback web_contents_create_callback_;
+
+  std::unique_ptr<system_media_controls::SystemMediaControlsBridge>
+      system_media_controls_bridge_;
 
   mojo::AssociatedReceiver<mojom::Application> receiver_{this};
 };

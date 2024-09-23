@@ -228,7 +228,7 @@ suite('RuntimeHostPermissions', function() {
         1);
   });
 
-  test('on select sites accept', function() {
+  test('on select sites accept', async () => {
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: true,
@@ -261,62 +261,62 @@ suite('RuntimeHostPermissions', function() {
     input.value = 'https://example.com';
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
 
     // Closing the dialog (as opposed to canceling) should keep the
     // selectHostAccess value at ON_SPECIFIC_SITES.
     assertTrue(dialog.isOpen());
     const whenClosed = eventToPromise('close', dialog);
     dialog.$.submit.click();
-    return whenClosed.then(() => {
-      flush();
-      assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
-      assertEquals(
-          metricsPrivateMock.getUserActionCount(
-              'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
-          1);
+    await whenClosed;
+    flush();
+    assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
+        1);
 
-      // Simulate the new host being added.
-      const updatedPermissions = {
-        hostAccess: HostAccess.ON_SPECIFIC_SITES,
-        hasAllHosts: true,
-        hosts: [
-          {host: 'https://example.com/*', granted: true},
-          {host: 'https://*/*', granted: false},
-        ],
-      };
-      element.permissions = updatedPermissions;
-      flush();
+    // Simulate the new host being added.
+    const updatedPermissions = {
+      hostAccess: HostAccess.ON_SPECIFIC_SITES,
+      hasAllHosts: true,
+      hosts: [
+        {host: 'https://example.com/*', granted: true},
+        {host: 'https://*/*', granted: false},
+      ],
+    };
+    element.permissions = updatedPermissions;
+    flush();
 
-      // Open the dialog by clicking to edit the host permission.
-      const editHost =
-          element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
-      assertTrue(!!editHost);
-      editHost.click();
-      assertEquals(
-          metricsPrivateMock.getUserActionCount(
-              'Extensions.Settings.Hosts.ActionMenuOpened'),
-          1);
-      const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
-      assertTrue(!!actionMenu);
-      const actionMenuEdit =
-          actionMenu.querySelector<HTMLElement>('#action-menu-edit');
-      assertTrue(!!actionMenuEdit);
-      actionMenuEdit.click();
-      flush();
-      assertEquals(
-          metricsPrivateMock.getUserActionCount(
-              'Extensions.Settings.Hosts.ActionMenuEditActivated'),
-          1);
+    // Open the dialog by clicking to edit the host permission.
+    const editHost =
+        element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
+    assertTrue(!!editHost);
+    editHost.click();
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.ActionMenuOpened'),
+        1);
+    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
+    const actionMenuEdit =
+        actionMenu.querySelector<HTMLElement>('#action-menu-edit');
+    assertTrue(!!actionMenuEdit);
+    actionMenuEdit.click();
+    flush();
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.ActionMenuEditActivated'),
+        1);
 
-      // Verify that the dialog does not want to update the old host access.
-      // Regression test for https://crbug.com/903082.
-      const dialog =
-          element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
-      assertTrue(!!dialog);
-      assertTrue(dialog.$.dialog.open);
-      assertFalse(dialog.updateHostAccess);
-      assertEquals('https://example.com/*', dialog.currentSite);
-    });
+    // Verify that the dialog does not want to update the old host access.
+    // Regression test for https://crbug.com/903082.
+    const newDialog =
+        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
+    assertTrue(!!newDialog);
+    assertTrue(newDialog.$.dialog.open);
+    assertFalse(newDialog.updateHostAccess);
+    assertEquals('https://example.com/*', newDialog.currentSite);
   });
 
   test('clicking add host triggers dialog', function() {

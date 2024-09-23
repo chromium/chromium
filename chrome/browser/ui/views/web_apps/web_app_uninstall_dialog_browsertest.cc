@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -45,8 +45,8 @@ namespace {
 webapps::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = example_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
   web_app_info->scope = example_url;
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -56,14 +56,11 @@ webapps::AppId InstallTestWebApp(Profile* profile) {
 }  // namespace
 
 class WebAppUninstallDialogViewBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+    : public web_app::WebAppBrowserTestBase {
  public:
   web_app::WebAppProvider* provider() {
     return web_app::WebAppProvider::GetForTest(browser()->profile());
   }
-
- private:
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -99,6 +96,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   webapps::AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  ASSERT_TRUE(app_browser);
+  EXPECT_NE(app_browser, browser());
   chrome::CloseWindow(browser());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
@@ -108,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
-            webapps::UninstallResultCode::kSuccess);
+            webapps::UninstallResultCode::kAppRemoved);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -140,5 +139,5 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
-            webapps::UninstallResultCode::kSuccess);
+            webapps::UninstallResultCode::kAppRemoved);
 }

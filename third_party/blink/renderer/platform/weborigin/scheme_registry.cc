@@ -26,13 +26,14 @@
 
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
+#include <algorithm>
+
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -227,9 +228,15 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled(const String& scheme) {
 }
 
 String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
+  Vector<String> sorted_schemes(GetURLSchemesRegistry().cors_enabled_schemes);
+  std::sort(sorted_schemes.begin(), sorted_schemes.end(),
+            [](const String& a, const String& b) {
+              return CodeUnitCompareLessThan(a, b);
+            });
+
   StringBuilder builder;
   bool add_separator = false;
-  for (const auto& scheme : GetURLSchemesRegistry().cors_enabled_schemes) {
+  for (const auto& scheme : sorted_schemes) {
     if (add_separator)
       builder.Append(", ");
     else

@@ -30,7 +30,7 @@ SkBitmap FakeAXMediaApp::RequestBitmap(const std::string& page_id) {
   return fake_bitmap;
 }
 
-void FakeAXMediaApp::SetViewport(const gfx::Insets& viewport_box) {
+void FakeAXMediaApp::SetViewport(const gfx::RectF& viewport_box) {
   viewport_box_ = viewport_box;
 }
 

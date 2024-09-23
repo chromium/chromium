@@ -13,11 +13,12 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
@@ -47,7 +48,7 @@ export interface SiteDetailsElement {
   $: {
     confirmClearStorage: CrDialogElement,
     confirmResetSettings: CrDialogElement,
-    fpsMembership: HTMLElement,
+    rwsMembership: HTMLElement,
     noStorage: HTMLElement,
     storage: HTMLElement,
     usage: HTMLElement,
@@ -104,17 +105,19 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       },
 
       /**
-       * The first party set info for a site including owner and members count.
+       * The related website set info for a site including owner and members
+       * count.
        */
-      fpsMembership_: {
+      rwsMembership_: {
         type: String,
         value: '',
       },
 
       /**
-       * Mock preference used to power managed policy icon for first party sets.
+       * Mock preference used to power managed policy icon for related website
+       * sets.
        */
-      fpsEnterprisePref_: Object,
+      rwsEnterprisePref_: Object,
 
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
@@ -135,6 +138,23 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
       },
 
+      enableAutomaticFullscreenContentSetting_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+      },
+
+      enableHandTrackingContentSetting_: {
+        type: Boolean,
+        value: () =>
+              loadTimeData.getBoolean('enableHandTrackingContentSetting'),
+      },
+
+      capturedSurfaceControlEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+      },
+
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
@@ -144,6 +164,17 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         type: Object,
         value: ChooserType,
       },
+
+      enableKeyboardAndPointerLockPrompt_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      },
+
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
     };
   }
 
@@ -152,22 +183,27 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private origin_: string;
   private storedData_: string;
   private numCookies_: string;
-  private fpsMembership_: string;
-  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  private rwsMembership_: string;
+  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private autoPictureInPictureEnabled_: boolean;
+  private enableAutomaticFullscreenContentSetting_: boolean;
+  private enableHandTrackingContentSetting_: boolean;
+  private capturedSurfaceControlEnabled_: boolean;
+  private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
+  private enableKeyboardAndPointerLockPrompt_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUiListener(
         'usage-total-changed',
-        (host: string, data: string, cookies: string, fps: string,
-         fpsPolicy: boolean) => {
-          this.onUsageTotalChanged_(host, data, cookies, fps, fpsPolicy);
+        (host: string, data: string, cookies: string, rws: string,
+         rwsPolicy: boolean) => {
+          this.onUsageTotalChanged_(host, data, cookies, rws, rwsPolicy);
         });
 
     this.addWebUiListener(
@@ -186,10 +222,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {
       return;
     }
-    const site = Router.getInstance().getQueryParameters().get('site');
-    if (!site) {
-      return;
-    }
+
+    const site = Router.getInstance().getQueryParameters().get('site') ?? '';
     this.origin_ = site;
     this.browserProxy.isOriginValid(this.origin_).then((valid) => {
       if (!valid) {
@@ -227,17 +261,18 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    * @param origin The origin that the usage was fetched for.
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
-   * @param fpsMembership The string showing first party set membership details.
-   * @param fpsPolicy Whether a policy is applied to this FPS member.
+   * @param rwsMembership The string showing related website set membership
+   *     details.
+   * @param rwsPolicy Whether a policy is applied to this RWS member.
    */
   private onUsageTotalChanged_(
-      origin: string, usage: string, cookies: string, fpsMembership: string,
-      fpsPolicy: boolean) {
+      origin: string, usage: string, cookies: string, rwsMembership: string,
+      rwsPolicy: boolean) {
     if (this.origin_ === origin) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
-      this.fpsMembership_ = fpsMembership;
-      this.fpsEnterprisePref_ = fpsPolicy ? Object.assign({
+      this.rwsMembership_ = rwsMembership;
+      this.rwsEnterprisePref_ = rwsPolicy ? Object.assign({
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
         controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
       }) :
@@ -330,6 +365,10 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     }
 
     this.onCloseDialog_(e);
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#resetSettingsButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   /**

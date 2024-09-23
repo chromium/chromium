@@ -32,9 +32,11 @@
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -132,7 +134,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     std::unique_ptr<UserContext> user_context)
     : local_authentication_callback_(std::move(local_authentication_callback)),
       delegate_(delegate),
@@ -140,12 +142,11 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       default_description_(description),
       auth_performer_(UserDataAuthClient::Get()),
       user_context_(std::move(user_context)) {
-  //  MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  const bool is_jelly = chromeos::features::IsJellyEnabled();
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   // Main view contains all other views aligned vertically and centered.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -161,9 +162,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   // Set Backgground color and shape.
   SetPaintToLayer();
   layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  ui::ColorId background_color_id =
-      is_jelly ? cros_tokens::kCrosSysSystemBaseElevated
-               : static_cast<ui::ColorId>(kColorAshShieldAndBase80);
+  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id,
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp));
@@ -229,16 +228,14 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       &LocalAuthenticationRequestView::OnClose, base::Unretained(this)));
   close_button_->SetPreferredSize(
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
-  const ui::ColorId icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshIconColorPrimary;
+  const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, icon_color_id,
                                      kCrossSizeDp));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  close_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+  close_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON));
   close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   close_button_view->AddChildView(close_button_.get());
@@ -255,11 +252,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    const ui::ColorId text_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshTextColorPrimary;
-    label->SetEnabledColorId(text_color_id);
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -298,7 +291,6 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   login_password_view_->SetPaintToLayer();
   login_password_view_->layer()->SetFillsBoundsOpaquely(false);
   login_password_view_->SetDisplayPasswordButtonVisible(true);
-  login_password_view_->SetEnabledOnEmptyPassword(false);
   login_password_view_->SetFocusEnabledForTextfield(true);
 
   login_password_view_->SetPlaceholderText(
@@ -313,16 +305,16 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   add_spacer(kSubmitButtonBottomMarginDp);
 
   SetPreferredSize(GetLocalAuthenticationRequestViewSize());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  description_label_changed_subscription_ =
+      description_label_->AddTextChangedCallback(base::BindRepeating(
+          &LocalAuthenticationRequestView::OnDescriptionLabelTextChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
-
-void LocalAuthenticationRequestView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::DialogDelegateView::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetNameChecked(description_label_->GetText());
-}
 
 void LocalAuthenticationRequestView::RequestFocus() {
   login_password_view_->RequestFocus();
@@ -349,7 +341,8 @@ void LocalAuthenticationRequestView::UpdateState(
   description_label_->SetEnabledColorId(color_id);
 }
 
-gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize() const {
+gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetLocalAuthenticationRequestViewSize();
 }
 
@@ -372,7 +365,7 @@ void LocalAuthenticationRequestView::OnClose() {
 }
 
 void LocalAuthenticationRequestView::UpdatePreferredSize() {
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());
   }
@@ -411,7 +404,7 @@ void LocalAuthenticationRequestView::OnAuthComplete(
   if (authentication_error.has_value()) {
     LOG(ERROR) << "An error happened during the attempt to validate "
                   "the password: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     user_context_ = std::move(user_context);
     UpdateState(
         LocalAuthenticationRequestViewState::kError, default_title_,
@@ -423,6 +416,19 @@ void LocalAuthenticationRequestView::OnAuthComplete(
   } else {
     LocalAuthenticationRequestWidget::Get()->Close(true /* success */,
                                                    std::move(user_context));
+  }
+}
+
+void LocalAuthenticationRequestView::OnDescriptionLabelTextChanged() {
+  UpdateAccessibleName();
+}
+
+void LocalAuthenticationRequestView::UpdateAccessibleName() {
+  if (description_label_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(description_label_->GetText());
   }
 }
 

@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -72,6 +74,10 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferSharedMemoryRegion {
 // The |size()| of the data cannot be manipulated.
 class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
  public:
+  using value_type = uint8_t;
+  using iterator = base::span<uint8_t>::iterator;
+  using const_iterator = base::span<const uint8_t>::iterator;
+
   static constexpr size_t kMaxInlineBytes = 64 * 1024;
 
   enum class StorageType {
@@ -108,8 +114,14 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   BigBuffer& operator=(BigBuffer&& other);
 
+  // Returns a new BigBuffer containing a copy of this BigBuffer's contents.
+  // Note that the new BigBuffer may not necessarily have the same backing
+  // storage type as the original one, only the same contents.
+  BigBuffer Clone() const;
+
   // Returns a pointer to the data stored by this BigBuffer, regardless of
-  // backing storage type.
+  // backing storage type. Prefer to use `base::span(big_buffer)` instead, or
+  // the implicit conversion to `base::span`.
   uint8_t* data();
   const uint8_t* data() const;
 
@@ -119,22 +131,29 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   StorageType storage_type() const { return storage_type_; }
 
+  // WARNING: This method does not work for buffers backed by shared memory. To
+  // get a span independent of the storage type, write `base::span(big_buffer)`,
+  // or rely on the implicit conversion.
   base::span<const uint8_t> byte_span() const {
-    DCHECK_EQ(storage_type_, StorageType::kBytes);
-    return base::make_span(bytes_.get(), bytes_size_);
+    CHECK_EQ(storage_type_, StorageType::kBytes);
+    return bytes_.as_span();
   }
 
   internal::BigBufferSharedMemoryRegion& shared_memory() {
-    DCHECK_EQ(storage_type_, StorageType::kSharedMemory);
+    CHECK_EQ(storage_type_, StorageType::kSharedMemory);
     return shared_memory_.value();
   }
+
+  iterator begin() { return base::span(*this).begin(); }
+  iterator end() { return base::span(*this).end(); }
+  const_iterator begin() const { return base::span(*this).begin(); }
+  const_iterator end() const { return base::span(*this).end(); }
 
  private:
   friend class BigBufferView;
 
   StorageType storage_type_;
-  std::unique_ptr<uint8_t[]> bytes_;
-  size_t bytes_size_;
+  base::HeapArray<uint8_t> bytes_;
   std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 
@@ -176,6 +195,8 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
 
   BigBuffer::StorageType storage_type() const { return storage_type_; }
 
+  // WARNING: This method does not work for buffers backed by shared memory. To
+  // get a span independent of the storage type, use `data()`.
   base::span<const uint8_t> bytes() const {
     DCHECK_EQ(storage_type_, BigBuffer::StorageType::kBytes);
     return bytes_;
@@ -190,7 +211,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
 
  private:
   BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
-  base::span<const uint8_t> bytes_;
+  base::raw_span<const uint8_t> bytes_;
   std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 

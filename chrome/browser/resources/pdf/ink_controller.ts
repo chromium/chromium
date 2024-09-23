@@ -7,7 +7,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import type {AnnotationTool} from './annotation_tool.js';
 import type {SaveRequestType} from './constants.js';
 import type {ContentController, SaveAttachmentMessageData} from './controller.js';
-import type {ViewerInkHostElement} from './elements/viewer-ink-host.js';
+import type {ViewerInkHostElement} from './elements/viewer_ink_host.js';
 import type {Viewport} from './viewport.js';
 
 /** Event types dispatched by the ink controller. */

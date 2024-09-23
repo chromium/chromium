@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_YIELD_PROCESSOR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_YIELD_PROCESSOR_H_
+#ifndef PARTITION_ALLOC_YIELD_PROCESSOR_H_
+#define PARTITION_ALLOC_YIELD_PROCESSOR_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
 
 // The PA_YIELD_PROCESSOR macro wraps an architecture specific-instruction that
@@ -22,22 +22,23 @@
 
 #else
 
-#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64) || PA_BUILDFLAG(PA_ARCH_CPU_X86)
 #define PA_YIELD_PROCESSOR __asm__ __volatile__("pause")
-#elif (defined(ARCH_CPU_ARMEL) && __ARM_ARCH >= 6) || defined(ARCH_CPU_ARM64)
+#elif (PA_BUILDFLAG(PA_ARCH_CPU_ARMEL) && __ARM_ARCH >= 6) || \
+    PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 #define PA_YIELD_PROCESSOR __asm__ __volatile__("yield")
-#elif defined(ARCH_CPU_MIPSEL)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_MIPSEL)
 // The MIPS32 docs state that the PAUSE instruction is a no-op on older
 // architectures (first added in MIPS32r2). To avoid assembler errors when
 // targeting pre-r2, we must encode the instruction manually.
 #define PA_YIELD_PROCESSOR __asm__ __volatile__(".word 0x00000140")
-#elif defined(ARCH_CPU_MIPS64EL) && __mips_isa_rev >= 2
+#elif PA_BUILDFLAG(PA_ARCH_CPU_MIPS64EL) && __mips_isa_rev >= 2
 // Don't bother doing using .word here since r2 is the lowest supported mips64
 // that Chromium supports.
 #define PA_YIELD_PROCESSOR __asm__ __volatile__("pause")
-#elif defined(ARCH_CPU_PPC64_FAMILY)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_PPC64_FAMILY)
 #define PA_YIELD_PROCESSOR __asm__ __volatile__("or 31,31,31")
-#elif defined(ARCH_CPU_S390_FAMILY)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_S390_FAMILY)
 // just do nothing
 #define PA_YIELD_PROCESSOR ((void)0)
 #endif  // ARCH
@@ -48,4 +49,4 @@
 
 #endif  // PA_CONFIG(IS_NONCLANG_MSVC)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_YIELD_PROCESSOR_H_
+#endif  // PARTITION_ALLOC_YIELD_PROCESSOR_H_

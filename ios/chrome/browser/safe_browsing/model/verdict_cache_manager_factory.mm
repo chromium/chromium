@@ -13,15 +13,14 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
-safe_browsing::VerdictCacheManager*
-VerdictCacheManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+safe_browsing::VerdictCacheManager* VerdictCacheManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<safe_browsing::VerdictCacheManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -41,16 +40,14 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory()
 std::unique_ptr<KeyedService>
 VerdictCacheManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::VerdictCacheManager>(
-      ios::HistoryServiceFactory::GetForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state),
-      chrome_browser_state->GetPrefs(),
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingSyncObserverImpl>(
-          SyncServiceFactory::GetForBrowserState(chrome_browser_state)));
+          SyncServiceFactory::GetForProfile(profile)));
 }
 
 web::BrowserState* VerdictCacheManagerFactory::GetBrowserStateToUse(

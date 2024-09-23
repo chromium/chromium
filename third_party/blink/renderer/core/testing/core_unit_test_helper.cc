@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -31,7 +32,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   LocalFrame* child = MakeGarbageCollected<LocalFrame>(
       child_client, *parent_frame->GetPage(), owner_element, parent_frame,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      &parent_frame->window_agent_factory(), nullptr);
+      &parent_frame->window_agent_factory(), nullptr, mojo::NullRemote());
   child->CreateView(gfx::Size(500, 500), Color::kTransparent);
 
   // The initial empty document's policy container is inherited from its parent.

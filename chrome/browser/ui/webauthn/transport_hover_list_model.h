@@ -9,18 +9,21 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
 
-class TransportHoverListModel : public HoverListModel {
+class TransportHoverListModel
+    : public HoverListModel,
+      public AuthenticatorRequestDialogModel::Observer {
  public:
   explicit TransportHoverListModel(
-      base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms);
+      AuthenticatorRequestDialogModel* dialog_model);
 
-  TransportHoverListModel(
-      base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms,
-      std::vector<int> mechanism_indices_to_display);
+  TransportHoverListModel(AuthenticatorRequestDialogModel* dialog_model,
+                          std::vector<int> mechanism_indices_to_display);
 
   TransportHoverListModel(const TransportHoverListModel&) = delete;
   TransportHoverListModel& operator=(const TransportHoverListModel&) = delete;
@@ -32,12 +35,17 @@ class TransportHoverListModel : public HoverListModel {
   std::u16string GetItemText(int item_tag) const override;
   std::u16string GetDescriptionText(int item_tag) const override;
   ui::ImageModel GetItemIcon(int item_tag) const override;
+  bool IsButtonEnabled(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
 
+  // AuthenticatorRequestDialogModel:
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+
  private:
-  const base::span<const AuthenticatorRequestDialogModel::Mechanism>
-      mechanisms_;
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          AuthenticatorRequestDialogModel::Observer>
+      dialog_model_observation_{this};
   const std::vector<int> mechanism_indices_to_display_;
 };
 

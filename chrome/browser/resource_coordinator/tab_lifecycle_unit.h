@@ -19,7 +19,6 @@
 class TabStripModel;
 
 namespace content {
-class RenderProcessHost;
 class WebContents;
 }  // namespace content
 
@@ -52,7 +51,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // nullptr.
   TabLifecycleUnit(
       TabLifecycleUnitSource* source,
-      base::ObserverList<TabLifecycleObserver>::Unchecked* observers,
+      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged*
+          observers,
       UsageClock* usage_clock,
       content::WebContents* web_contents,
       TabStripModel* tab_strip_model);
@@ -89,7 +89,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;
-  base::TimeTicks GetLastFocusedTime() const override;
+  base::TimeTicks GetLastFocusedTimeTicks() const override;
+  base::Time GetLastFocusedTime() const override;
   base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
   content::Visibility GetVisibility() const override;
@@ -122,12 +123,27 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // Updates |decision_details| based on media usage by the tab.
   void CheckMediaUsage(DecisionDetails* decision_details) const;
 
+  // Creates or updates the existing PreDiscardResourceUsage tab helper for the
+  // tab's `web_contents` with `discard_reason` and
+  // `tab_resident_set_size_estimate`.
+  void UpdatePreDiscardResourceUsage(content::WebContents* web_contents,
+                                     LifecycleUnitDiscardReason discard_reason,
+                                     uint64_t tab_resident_set_size_estimate);
+
   // Finishes a tab discard, invoked by Discard().
   void FinishDiscard(LifecycleUnitDiscardReason discard_reason,
                      uint64_t tab_resident_set_size_estimate);
 
-  // Returns the RenderProcessHost associated with this tab.
-  content::RenderProcessHost* GetRenderProcessHost() const;
+  // Finishes a tab discard and preserves the associated web contents. Used only
+  // when kWebContentsDiscard is enabled.
+  void FinishDiscardAndPreserveWebContents(
+      LifecycleUnitDiscardReason discard_reason,
+      uint64_t tab_resident_set_size_estimate);
+
+  // Attempts to fast kill the process hosting the main frame of `web_contents`
+  // if only hosting the main frame.
+  void AttemptFastKillForDiscard(content::WebContents* web_contents,
+                                 LifecycleUnitDiscardReason discard_reason);
 
   // LifecycleUnitBase:
   void OnLifecycleUnitStateChanged(
@@ -144,20 +160,29 @@ class TabLifecycleUnitSource::TabLifecycleUnit
 
   // List of observers to notify when the discarded state or the auto-
   // discardable state of this tab changes.
-  raw_ptr<base::ObserverList<TabLifecycleObserver>::Unchecked> observers_;
+  raw_ptr<
+      base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged>
+      observers_;
 
   // TabStripModel to which this tab belongs.
   raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
 
-  // Last time at which this tab was focused, or TimeTicks::Max() if it is
+  // Last time ticks at which this tab was focused, or TimeTicks::Max() if it is
   // currently focused. For tabs that aren't currently focused this is
-  // initialized using WebContents::GetLastActiveTime, which causes use times
-  // from previous browsing sessions to persist across session restore
+  // initialized using WebContents::GetLastActiveTimeTicks, which causes use
+  // times from previous browsing sessions to persist across session restore
   // events.
   // TODO(chrisha): Migrate |last_active_time| to actually track focus time,
   // instead of the time that focus was lost. This is a more meaninful number
   // for all of the clients of |last_active_time|.
-  base::TimeTicks last_focused_time_;
+  base::TimeTicks last_focused_time_ticks_;
+
+  // Last time ticks at which this tab was focused, or Time::Max() if it is
+  // currently focused. For tabs that aren't currently focused this is
+  // initialized using WebContents::GetLastActiveTime, which causes use times
+  // from previous browsing sessions to persist across session restore
+  // events.
+  base::Time last_focused_time_;
 
   // When this is false, CanDiscard() always returns false.
   bool auto_discardable_ = true;

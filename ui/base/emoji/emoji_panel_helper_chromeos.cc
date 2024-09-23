@@ -5,14 +5,15 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 
 namespace ui {
 
 namespace {
 
-base::RepeatingClosure& GetShowEmojiKeyboardCallback() {
-  static base::NoDestructor<base::RepeatingClosure> callback;
+EmojiKeyboardCallback& GetShowEmojiKeyboardCallback() {
+  static base::NoDestructor<EmojiKeyboardCallback> callback;
   return *callback;
 }
 
@@ -24,14 +25,24 @@ base::RepeatingClosure& GetTabletModeShowEmojiKeyboardCallback() {
 }  // namespace
 
 bool IsEmojiPanelSupported() {
-  // TODO(https://crbug.com/887649): Emoji callback is null in Mojo apps because
+  // TODO(crbug.com/41416262): Emoji callback is null in Mojo apps because
   // they are in a different process. Fix it and remove the null check.
   return !GetShowEmojiKeyboardCallback().is_null();
 }
 
 void ShowEmojiPanel() {
   DCHECK(GetShowEmojiKeyboardCallback());
-  GetShowEmojiKeyboardCallback().Run();
+  GetShowEmojiKeyboardCallback().Run(
+      EmojiPickerCategory::kEmojis,
+      EmojiPickerFocusBehavior::kOnlyShowWhenFocused,
+      /*initial_query=*/std::string());
+}
+
+void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category,
+                                  EmojiPickerFocusBehavior focus_behavior,
+                                  const std::string& initial_query) {
+  DCHECK(GetShowEmojiKeyboardCallback());
+  GetShowEmojiKeyboardCallback().Run(category, focus_behavior, initial_query);
 }
 
 void ShowTabletModeEmojiPanel() {
@@ -39,7 +50,7 @@ void ShowTabletModeEmojiPanel() {
   GetTabletModeShowEmojiKeyboardCallback().Run();
 }
 
-void SetShowEmojiKeyboardCallback(base::RepeatingClosure callback) {
+void SetShowEmojiKeyboardCallback(EmojiKeyboardCallback callback) {
   GetShowEmojiKeyboardCallback() = callback;
 }
 

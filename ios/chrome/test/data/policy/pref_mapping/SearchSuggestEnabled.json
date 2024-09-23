@@ -10,7 +10,9 @@
           "SearchSuggestEnabled": false
         },
         "prefs": {
-          "search.suggest_enabled": {}
+          "search.suggest_enabled": {
+            "value": false
+          }
         }
       }
     ]

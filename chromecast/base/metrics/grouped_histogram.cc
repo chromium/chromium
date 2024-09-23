@@ -90,7 +90,7 @@ const HistogramArgs kHistogramsToGroup[] = {
 // of the form "<metric-name>.<app-name>".
 class GroupedHistogram : public base::Histogram {
  public:
-  // TODO(crbug.com/1300206): min/max parameters are redundant with "ranges"
+  // TODO(crbug.com/40824087): min/max parameters are redundant with "ranges"
   // and can probably be removed.
   GroupedHistogram(const char* metric_to_override,
                    Sample minimum,

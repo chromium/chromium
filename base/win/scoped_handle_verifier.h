@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 #define BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 
@@ -22,7 +27,7 @@ namespace internal {
 
 struct HandleHash {
   size_t operator()(const HANDLE& handle) const {
-    return base::FastHash(as_bytes(make_span(&handle, 1u)));
+    return base::FastHash(byte_span_from_ref(handle));
   }
 };
 

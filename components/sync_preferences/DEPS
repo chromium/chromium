@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+components/metrics/demographics",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/pref_registry",
@@ -27,8 +28,11 @@ specific_include_rules = {
     "+components/password_manager",
     "+components/payments",
     "+components/safe_browsing",
+    "+components/saved_tab_groups",
     "+components/search_engines",
+    "+components/sharing_message",
     "+components/translate",
     "+components/variations",
+    "+components/sharing_message",
   ]
 }

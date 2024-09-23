@@ -33,6 +33,7 @@ found in the LICENSE file.
          https://developer.android.com/training/data-storage/compatibility. -->
     <application android:label="NativeTests"
             android:requestLegacyExternalStorage="true"
+            android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
         <activity android:name=".NativeUnitTestActivity"
                 android:label="NativeTest"
@@ -57,7 +58,6 @@ found in the LICENSE file.
 
     <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
             android:targetPackage="org.chromium.native_test"
-            android:label="Instrumentation entry point for org.chromium.native_test"
-            chromium-junit3="true"/>
+            android:label="Instrumentation entry point for org.chromium.native_test" />
 
 </manifest>

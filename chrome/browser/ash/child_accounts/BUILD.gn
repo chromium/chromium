@@ -1,0 +1,267 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/chromeos/crosier_tests.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("child_accounts") {
+  sources = [
+    "child_policy_observer.cc",
+    "child_policy_observer.h",
+    "child_status_reporting_service.cc",
+    "child_status_reporting_service.h",
+    "child_status_reporting_service_factory.cc",
+    "child_status_reporting_service_factory.h",
+    "child_user_service.cc",
+    "child_user_service.h",
+    "child_user_service_factory.cc",
+    "child_user_service_factory.h",
+    "edu_coexistence_tos_store_utils.cc",
+    "edu_coexistence_tos_store_utils.h",
+    "event_based_status_reporting_service.cc",
+    "event_based_status_reporting_service.h",
+    "event_based_status_reporting_service_factory.cc",
+    "event_based_status_reporting_service_factory.h",
+    "family_features.cc",
+    "family_features.h",
+    "family_user_app_metrics.cc",
+    "family_user_app_metrics.h",
+    "family_user_chrome_activity_metrics.cc",
+    "family_user_chrome_activity_metrics.h",
+    "family_user_device_metrics.cc",
+    "family_user_device_metrics.h",
+    "family_user_metrics_service.cc",
+    "family_user_metrics_service.h",
+    "family_user_metrics_service_factory.cc",
+    "family_user_metrics_service_factory.h",
+    "family_user_parental_control_metrics.cc",
+    "family_user_parental_control_metrics.h",
+    "family_user_session_metrics.cc",
+    "family_user_session_metrics.h",
+    "screen_time_controller.cc",
+    "screen_time_controller.h",
+    "screen_time_controller_factory.cc",
+    "screen_time_controller_factory.h",
+    "time_limit_notifier.cc",
+    "time_limit_notifier.h",
+    "time_limit_override.cc",
+    "time_limit_override.h",
+    "usage_time_limit_processor.cc",
+    "usage_time_limit_processor.h",
+    "usage_time_state_notifier.cc",
+    "usage_time_state_notifier.h",
+    "website_approval_notifier.cc",
+    "website_approval_notifier.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/app_list/arc",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/session_manager/core",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings:strings_grit",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/child_accounts/parent_access_code",
+    "//chrome/browser/ash/child_accounts/time_limits",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/uploading",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profiles",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ui/vector_icons",
+    "//components/app_constants",
+    "//components/pref_registry",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/chromeos",
+    "//ui/message_center",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/child_accounts/time_limits" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "time_limit_test_utils.cc",
+    "time_limit_test_utils.h",
+  ]
+
+  deps = [
+    ":child_accounts",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "child_user_service_unittest.cc",
+    "event_based_status_reporting_service_unittest.cc",
+    "family_user_app_metrics_unittest.cc",
+    "family_user_chrome_activity_metrics_unittest.cc",
+    "family_user_metrics_service_unittest.cc",
+    "family_user_parental_control_metrics_unittest.cc",
+    "family_user_session_metrics_unittest.cc",
+    "time_limit_notifier_unittest.cc",
+    "usage_time_limit_processor_unittest.cc",
+    "usage_time_state_notifier_unittest.cc",
+    "website_approval_notifier_unittest.cc",
+  ]
+
+  deps = [
+    ":child_accounts",
+    ":test_support",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/child_accounts/apps",
+    "//chrome/browser/ash/child_accounts/time_limits",
+    "//chrome/browser/ash/child_accounts/time_limits:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//components/app_constants",
+    "//components/services/app_service/public/cpp:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
+    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
+    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "family_user_device_metrics_browsertest.cc",
+    "screen_time_controller_browsertest.cc",
+  ]
+
+  deps = [
+    ":child_accounts",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/child_accounts:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/account_id",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+
+    # Tests from subdirs:
+    "//chrome/browser/ash/child_accounts/parent_access_code:browser_tests",
+    "//chrome/browser/ash/child_accounts/time_limits:browser_tests",
+  ]
+}
+
+if (is_chromeos_device) {
+  crosier_tests("integration_tests") {
+    sources = [ "web_approvals_integration_test.cc" ]
+
+    sources_metadata = [ "web_approvals_integration_test.yaml" ]
+
+    deps = [
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//ui/aura",
+    ]
+  }
+} else {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "child_user_flags_page_interactive_uitest.cc",
+      "child_user_interactive_base_test.cc",
+      "child_user_interactive_base_test.h",
+      "child_user_shelf_interactive_uitest.cc",
+    ]
+
+    deps = [
+      "//ash",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
+      "//chrome/browser/ash/child_accounts/time_limits:test_support",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chrome/test/supervised_user:test_support",
+      "//ui/aura",
+      "//url",
+    ]
+  }
+}

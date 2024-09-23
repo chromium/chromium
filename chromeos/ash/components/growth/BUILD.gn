@@ -1,6 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -8,6 +9,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 component("growth") {
   sources = [
     "action_performer.h",
+    "campaigns_logger.cc",
+    "campaigns_logger.h",
     "campaigns_manager.cc",
     "campaigns_manager.h",
     "campaigns_manager_client.h",
@@ -20,14 +23,56 @@ component("growth") {
   ]
 
   deps = [
+    ":utils",
     "//ash/constants",
     "//base",
+    "//build:branding_buildflags",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/resources",
+    "//chromeos/ui/vector_icons",
+    "//components/account_id",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/user_manager",
     "//components/version_info",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
   ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
+}
+
+component("utils") {
+  sources = [
+    "campaigns_constants.h",
+    "campaigns_utils.cc",
+    "campaigns_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS_IMPL" ]
+}
+
+component("config_provider") {
+  sources = [
+    "campaigns_configuration_provider.cc",
+    "campaigns_configuration_provider.h",
+  ]
+
+  deps = [
+    ":utils",
+    "//ash/constants",
+    "//base",
+    "//components/feature_engagement/public",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_CONFIG_PROVIDER_IMPL" ]
 }
 
 source_set("test_support") {
@@ -36,6 +81,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager",
     "//testing/gmock",
   ]
   sources = [
@@ -47,15 +93,21 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":config_provider",
     ":growth",
     ":test_support",
     "//ash/constants",
     "//base/test:test_support",
+    "//components/account_id",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/user_manager:test_support",
     "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "campaigns_manager_unittest.cc" ]
+  sources = [
+    "campaigns_configuration_provider_unittest.cc",
+    "campaigns_manager_unittest.cc",
+  ]
 }

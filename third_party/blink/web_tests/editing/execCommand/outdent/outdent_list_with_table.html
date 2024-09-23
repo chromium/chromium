@@ -1,0 +1,43 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<div id="log"></div>
+<script>
+test(() => assert_selection(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>^a',
+            '<table style="border: 1px solid blue;"><tbody>',
+              '<tr>',
+                '<td>a</td>',
+                '<td><br></td>',
+              '</tr>',
+              '<tr>',
+                '<td><br></td>',
+                '<td>c|</td>',
+              '</tr>',
+            '</tbody></table>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ].join(''),
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '^a',
+          '<table style="border: 1px solid blue;"><tbody>',
+            '<tr>',
+              '<td>a</td>',
+              '<td><br></td>',
+            '</tr>',
+            '<tr>',
+              '<td><br></td>',
+              '<td>c|</td>',
+            '</tr>',
+          '</tbody></table>',
+      '</div>'
+    ].join('')),
+    'Outdent the list containing the table.');
+</script>

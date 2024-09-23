@@ -8,6 +8,8 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/policy/android/jni_headers/PolicyMap_jni.h"
 
 namespace policy {

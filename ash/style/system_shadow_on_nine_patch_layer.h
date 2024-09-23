@@ -5,13 +5,13 @@
 #ifndef ASH_STYLE_SYSTEM_SHADOW_ON_NINE_PATCH_LAYER_H_
 #define ASH_STYLE_SYSTEM_SHADOW_ON_NINE_PATCH_LAYER_H_
 
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/style/system_shadow.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_shadow.h"
 
 namespace ui {
 class ColorProvider;
@@ -49,21 +49,31 @@ class SystemShadowOnNinePatchLayer : public SystemShadow {
 
 // An implementation of `SystemShadowOnNinePatchLayer`. It is directly based on
 // the ui::Shadow.
-class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
+class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer,
+                                         public ui::LayerOwner::Observer {
  public:
-  explicit SystemShadowOnNinePatchLayerImpl(SystemShadow::Type type);
+  SystemShadowOnNinePatchLayerImpl(
+      SystemShadow::Type type,
+      const LayerRecreatedCallback& layer_recreated_callback);
   SystemShadowOnNinePatchLayerImpl(const SystemShadowOnNinePatchLayerImpl&) =
       delete;
   SystemShadowOnNinePatchLayerImpl& operator=(
       const SystemShadowOnNinePatchLayerImpl&) = delete;
   ~SystemShadowOnNinePatchLayerImpl() override;
 
+  // ui::LayerOwner::Observer:
+  void OnLayerRecreated(ui::Layer* old_layer) override;
+
  private:
   // SystemShadowOnNinePatchLayer:
   ui::Shadow* shadow() override;
   const ui::Shadow* shadow() const override;
 
+  LayerRecreatedCallback layer_recreated_callback_;
   ui::Shadow shadow_;
+
+  base::ScopedObservation<ui::LayerOwner, SystemShadowOnNinePatchLayerImpl>
+      shadow_observation_{this};
 };
 
 // An implementation of `SystemShadowOnNinePatchLayer`. It is based on
@@ -93,7 +103,7 @@ class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer,
   ui::Shadow* shadow() override;
   const ui::Shadow* shadow() const override;
 
-  ViewShadow view_shadow_;
+  views::ViewShadow view_shadow_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 };

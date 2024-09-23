@@ -6,64 +6,37 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<integer>12</integer>
+			<integer>18</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_LENSSEARCH_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_LENSSEARCH_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>LensSearch</string>
-			<key>IconImageName</key>
-			<string>magnifyingglass</string>
-			<key>IconBackgroundColor</key>
-			<string>yellow</string>
-			<key>IsSymbol</key>
-			<true/>
-			<key>IsSystemSymbol</key>
-			<true/>
-			<key>IsIphoneOnly</key>
-			<true/>
-			<key>InstructionSteps</key>
-			<array>
-				<string>IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_3</string>
-			</array>
-			<key>PrimaryAction</key>
-			<integer>5</integer>
-			<key>LearnMoreUrlString</key>
-			<string></string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<integer>13</integer>
-			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_TITLE</string>
-			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SUBTITLE</string>
-			<key>ImageName</key>
-			<string>BottomOmnibox</string>
+			<string>PackageTracking</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Move Address Bar</key>
-				<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SCREENSHOT_TEXT_1</string>
-				<key>Copy Link</key>
-				<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SCREENSHOT_TEXT_2</string>
+				<key>Track this Package?</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1</string>
+				<key>Track</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2</string>
+				<key>Your shipment</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3</string>
+				<key>Estimated delivery</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>globe.americas.fill</string>
+			<string>shippingbox</string>
 			<key>IconBackgroundColor</key>
-			<string>blue</string>
+			<string>green</string>
 			<key>IsSymbol</key>
 			<true/>
 			<key>IsSystemSymbol</key>
 			<true/>
-			<key>IsIphoneOnly</key>
-			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_3</string>
 			</array>
 			<key>PrimaryAction</key>
 			<integer>0</integer>
@@ -72,24 +45,59 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<integer>14</integer>
+			<integer>19</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_ESB_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_ESB_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>ESB</string>
+			<string>PasswordSharing</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Enhanced Protection</key>
-				<string>IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_1</string>
-				<key>Standard Protection</key>
-				<string>IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_2</string>
-				<key>No Protection</key>
-				<string>IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_3</string>
+				<key>Share Your Passwords</key>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1</string>
+				<key>Share</key>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2</string>
+			</dict>
+         <key>IconImageName</key>
+         <string>multicolor_password</string>
+         <key>IsSymbol</key>
+         <true/>
+         <key>IsSystemSymbol</key>
+         <false/>
+         <key>IsMulticolorSymbol</key>
+         <true/>
+         <key>InstructionSteps</key>
+         <array>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_4</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_5</string>
+			</array>
+			<key>PrimaryAction</key>
+			<integer>7</integer>
+			<key>LearnMoreUrlString</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<integer>20</integer>
+			<key>Title</key>
+			<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_TITLE</string>
+			<key>Subtitle</key>
+			<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SUBTITLE</string>
+			<key>ImageName</key>
+			<string>CustomizableOverflowMenu</string>
+			<key>ImageTexts</key>
+			<dict>
+				<key>Hide</key>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1</string>
+				<key>Customize</key>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>bell</string>
+			<string>filemenu.and.selection</string>
 			<key>IconBackgroundColor</key>
 			<string>pink</string>
 			<key>IsSymbol</key>
@@ -98,12 +106,13 @@
 			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_4</string>
 			</array>
 			<key>PrimaryAction</key>
-			<integer>2</integer>
+			<integer>0</integer>
 			<key>LearnMoreUrlString</key>
 			<string></string>
 		</dict>

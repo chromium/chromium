@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -139,7 +140,8 @@ TEST_F(AppListFeatureUsageMetricsTest, ShowAndHideLauncherInTablet) {
   const base::TimeDelta kUsetime = base::Seconds(2);
   FastForwardBy(kUsetime);
   // Creating a window hides the launcher.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   histograms_.ExpectTimeBucketCount(kTabletUsetimeMetric, kUsetime, 1);
 
   // Clamshell usage is not recorded.
@@ -151,7 +153,8 @@ TEST_F(AppListFeatureUsageMetricsTest,
   SimulateTabletModeSupport();
   ASSERT_TRUE(Shell::Get()->tablet_mode_controller()->CanEnterTabletMode());
   SimulateUserLogin("user@gmail.com");
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   Shell::Get()->app_list_controller()->ShowAppList(
       AppListShowSource::kSearchKey);
 

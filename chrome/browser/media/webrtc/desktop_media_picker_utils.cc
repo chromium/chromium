@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
 #include "media/base/video_util.h"
@@ -27,7 +32,7 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
       gfx::Rect(0, 0, size.width(), size.height()),
       gfx::Size(bitmap.info().width(), bitmap.info().height()));
 
-  // TODO(crbug.com/1246835): Consider changing to ResizeMethod::BEST after
+  // TODO(crbug.com/40789487): Consider changing to ResizeMethod::BEST after
   // verifying CPU impact isn't too high.
   const gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       gfx::ImageSkia::CreateFromBitmap(bitmap, 1.f),
@@ -36,7 +41,7 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   SkBitmap result(*resized.bitmap());
 
   // Set alpha channel values to 255 for all pixels.
-  // TODO(crbug.com/264424): Fix screen/window capturers to capture alpha
+  // TODO(crbug.com/41029106): Fix screen/window capturers to capture alpha
   // channel and remove this code. Currently screen/window capturers (at least
   // some implementations) only capture R, G and B channels and set Alpha to 0.
   uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());

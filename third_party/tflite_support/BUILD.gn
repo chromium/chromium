@@ -150,7 +150,6 @@ static_library("tflite_support") {
     "//third_party/flatbuffers",
     "//third_party/libyuv",
     "//third_party/libzip",
-    "//third_party/smhasher:murmurhash2",
     "//third_party/tensorflow-text",
     "//third_party/tflite",
     "//third_party/tflite:tflite_proto",

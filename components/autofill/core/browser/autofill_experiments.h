@@ -30,7 +30,6 @@ class PersonalDataManager;
 // be a member of a supported domain.
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
-    const std::string& user_email,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager);
@@ -66,7 +65,7 @@ bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator);
 
 // Returns true if the Touch To Fill feature is supported by platform.
-bool IsTouchToFillCreditCardSupported();
+bool IsTouchToFillPaymentMethodSupported();
 
 }  // namespace autofill
 

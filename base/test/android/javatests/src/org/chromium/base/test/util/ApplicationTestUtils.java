@@ -13,6 +13,7 @@ import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Methods used for testing Application-level behavior. */
 public class ApplicationTestUtils {
+    private static final String TAG = "ApplicationTestUtils";
     private static final ActivityLifecycleMonitor sMonitor =
             ActivityLifecycleMonitorRegistry.getInstance();
 
@@ -48,16 +50,19 @@ public class ApplicationTestUtils {
                 ACTIVITY_TIMEOUT,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         // De-flake by flushing the tasks that are already queued on the Looper's Handler.
-        // TODO(https://crbug.com/1424788): Remove this and properly fix flaky tests.
+        // TODO(crbug.com/40260566): Remove this and properly fix flaky tests.
         TestThreadUtils.flushNonDelayedLooperTasks();
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */
-    public static void finishActivity(final Activity activity) throws Exception {
+    public static void finishActivity(final Activity activity) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sMonitor.getLifecycleStageOf(activity) != Stage.DESTROYED) {
+                        Log.i(TAG, "Finishing %s", activity);
                         activity.finish();
+                    } else {
+                        Log.i(TAG, "Not finishing - already destroyed: %s", activity);
                     }
                 });
         final String error =
@@ -128,7 +133,7 @@ public class ApplicationTestUtils {
                 ThreadUtils.runOnUiThreadBlocking(() -> uiThreadTrigger.run());
             }
             if (backgroundThreadTrigger != null) backgroundThreadTrigger.run();
-            activityCallback.waitForFirst(
+            activityCallback.waitForOnly(
                     "No Activity reached target state.", ACTIVITY_TIMEOUT, TimeUnit.MILLISECONDS);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_HISTORY_FUZZY_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_HISTORY_FUZZY_PROVIDER_H_
 
+#include <array>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -58,7 +59,7 @@ struct Edit {
 // an input string that escapes the trie into a string that is contained by it.
 struct Correction {
   // Tolerance schedules must use a `limit` of no more than `kMaxEdits`.
-  const static int kMaxEdits = 3;
+  constexpr static int kMaxEdits = 3;
 
   // Creates a new correction including this one plus a given `Edit`.
   Correction WithEdit(Edit edit) const;
@@ -73,9 +74,9 @@ struct Correction {
   // This is a fixed-size in-struct array instead of a vector because
   // finding and building corrections is performance critical and keeping this
   // struct simple on the stack is much faster than pounding on the allocator.
-  Edit edits[kMaxEdits] = {{Edit::Kind::KEEP, 0, '_'},
-                           {Edit::Kind::KEEP, 0, '_'},
-                           {Edit::Kind::KEEP, 0, '_'}};
+  std::array<Edit, kMaxEdits> edits = {Edit{Edit::Kind::KEEP, 0, '_'},
+                                       Edit{Edit::Kind::KEEP, 0, '_'},
+                                       Edit{Edit::Kind::KEEP, 0, '_'}};
 };
 
 // This utility struct defines how tolerance changes across the length
@@ -225,8 +226,8 @@ class HistoryFuzzyProvider : public HistoryProvider,
                     const history::VisitRow& new_visit) override;
 
   // Removes deleted (or all) URLs from trie.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // Record UMA histogram data for measuring usefulness of sub-providers.
   void RecordMatchConversion(const char* name, int count);

@@ -51,12 +51,10 @@ class JniIdentityMutator {
   // Called by java to clear the primary account, and return whether the
   // operation succeeded or not. Depending on |action|, the other accounts known
   // to the IdentityManager may be deleted.
-  bool ClearPrimaryAccount(JNIEnv* env,
-                           jint source_metric,
-                           jint delete_metric);
+  bool ClearPrimaryAccount(JNIEnv* env, jint source_metric);
 
   // Called by java to revoke sync consent for the primary account.
-  void RevokeSyncConsent(JNIEnv* env, jint source_metric, jint delete_metric);
+  void RevokeSyncConsent(JNIEnv* env, jint source_metric);
 
   // Called by java to reload the accounts in the token service from the system
   // accounts.

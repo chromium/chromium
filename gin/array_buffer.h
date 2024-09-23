@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef GIN_ARRAY_BUFFER_H_
 #define GIN_ARRAY_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
+#include "partition_alloc/partition_alloc.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-forward.h"
 

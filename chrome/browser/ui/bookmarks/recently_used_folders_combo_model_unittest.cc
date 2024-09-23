@@ -90,14 +90,14 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NotifyObserver) {
 
   const size_t initial_count = model.GetItemCount();
   // Remove a folder, it should remove an item from the model too.
-  bookmark_model->Remove(sub_folder,
-                         bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model->Remove(
+      sub_folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   EXPECT_TRUE(observer.GetAndClearChanged());
   const size_t updated_count = model.GetItemCount();
   EXPECT_LT(updated_count, initial_count);
 
   // Remove all, which should remove a folder too.
-  bookmark_model->RemoveAllUserBookmarks();
+  bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(observer.GetAndClearChanged());
   EXPECT_LT(model.GetItemCount(), updated_count);
 

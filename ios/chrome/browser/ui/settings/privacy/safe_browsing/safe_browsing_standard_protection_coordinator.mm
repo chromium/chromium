@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -50,7 +50,7 @@
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
-              identityManager:IdentityManagerFactory::GetForBrowserState(
+              identityManager:IdentityManagerFactory::GetForProfile(
                                   self.browser->GetBrowserState())];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;

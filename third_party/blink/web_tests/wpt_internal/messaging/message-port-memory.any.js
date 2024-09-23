@@ -1,7 +1,3 @@
-// META: script=/wpt_internal/dom/abort/resources/run-async-gc.js
-
-// Use promise tests so tests are not interleaved (to prevent global state
-// from getting clobbered).
 promise_test(async t => {
   let wr1;
   let wr2;
@@ -13,9 +9,11 @@ promise_test(async t => {
     wr2 = new WeakRef(port2);
   })()
 
-  await runAsyncGC();
-
+  await gc({type: 'major', execution: 'async'});
   assert_equals(wr1.deref(), undefined, 'port1 should be GCed');
+
+  // `port2` won't be eligible for GC until the connection is closed, which
+  // happens asynchronously after `port1` is GCed.
+  await gc({type: 'major', execution: 'async'});
   assert_equals(wr2.deref(), undefined, 'port2 should be GCed');
 }, 'Message ports get GCed after they are no longer referenced.');
-

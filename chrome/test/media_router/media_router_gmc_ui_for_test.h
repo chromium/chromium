@@ -8,10 +8,8 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
@@ -51,9 +49,7 @@ class MediaRouterGmcUiForTest : public MediaRouterUiForTestBase {
 
  private:
   // MediaRouterUiForTestBase:
-  views::View* GetSinkButton(const std::string& sink_name) const override;
-
-  CastDeviceEntryView* GetDeviceView(const std::string& device_name) const;
+  views::Button* GetSinkButton(const std::string& sink_name) const override;
 
   void ObserveDialog(
       WatchType watch_type,

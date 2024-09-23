@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 
 namespace blink {
 
@@ -160,6 +160,14 @@ double MediaValuesDynamic::ContainerHeight() const {
   return SmallViewportHeight();
 }
 
+double MediaValuesDynamic::ContainerWidth(const ScopedCSSName&) const {
+  return SmallViewportWidth();
+}
+
+double MediaValuesDynamic::ContainerHeight(const ScopedCSSName&) const {
+  return SmallViewportHeight();
+}
+
 int MediaValuesDynamic::DeviceWidth() const {
   return CalculateDeviceWidth(frame_);
 }
@@ -221,7 +229,7 @@ blink::mojom::DisplayMode MediaValuesDynamic::DisplayMode() const {
   return CalculateDisplayMode(frame_);
 }
 
-ui::WindowShowState MediaValuesDynamic::WindowShowState() const {
+ui::mojom::blink::WindowShowState MediaValuesDynamic::WindowShowState() const {
   return CalculateWindowShowState(frame_);
 }
 

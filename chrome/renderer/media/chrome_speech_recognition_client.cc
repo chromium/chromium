@@ -18,7 +18,7 @@
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 // Preallocate 500ms worth of buffers when using a ReconfigurableAudioBusPool.
 constexpr base::TimeDelta kAudioBusPoolDuration = base::Milliseconds(500);
@@ -41,7 +41,7 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
       ->BindSpeechRecognitionBrowserObserver(
           speech_recognition_availability_observer_.BindNewPipeAndPassRemote());
 
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       std::move(speech_recognition_client_browser_interface_receiver));
 
   add_audio_on_main_sequence_callback_ =
@@ -165,7 +165,7 @@ void ChromeSpeechRecognitionClient::Initialize() {
   // render frame. The receiver is in the browser.
   mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_remote;
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       speech_recognition_client_remote.InitWithNewPipeAndPassReceiver());
 
   // Create a SpeechRecognitionContext and bind it to the render frame. The
@@ -189,7 +189,7 @@ void ChromeSpeechRecognitionClient::Initialize() {
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       std::move(speech_recognition_context_receiver));
 
   // Bind the call to Reset() to the Media thread.

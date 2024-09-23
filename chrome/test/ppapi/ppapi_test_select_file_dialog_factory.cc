@@ -34,7 +34,6 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override {
     switch (mode_) {
       case PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST:
@@ -61,8 +60,7 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &PPAPITestSelectFileDialog::RespondToFileSelectionRequest, this,
-            params));
+            &PPAPITestSelectFileDialog::RespondToFileSelectionRequest, this));
   }
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
@@ -73,13 +71,13 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
   void ListenerDestroyed() override { listener_ = nullptr; }
 
  private:
-  void RespondToFileSelectionRequest(void* params) {
+  void RespondToFileSelectionRequest() {
     if (selected_file_info_.size() == 0)
-      listener_->FileSelectionCanceled(params);
+      listener_->FileSelectionCanceled();
     else if (selected_file_info_.size() == 1)
-      listener_->FileSelected(selected_file_info_.front(), 0, params);
+      listener_->FileSelected(selected_file_info_.front(), 0);
     else
-      listener_->MultiFilesSelected(selected_file_info_, params);
+      listener_->MultiFilesSelected(selected_file_info_);
   }
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList selected_file_info_;

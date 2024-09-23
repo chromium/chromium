@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rosy Brown</translation>
 <translation id="249330843868392562">Buka setelan text-to-speech</translation>
 <translation id="2497706219848005458">Green Yellow</translation>
+<translation id="2512979179176933762">tampilkan jendela</translation>
 <translation id="2523609930580546572">Tutorial ChromeVox</translation>
 <translation id="2525706221823668172">Pintasan keyboard Chromebook</translation>
 <translation id="2553108862507765288">kesalahan tata bahasa</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Anda juga dapat menggeser dari kanan ke kiri dengan satu jari untuk berpindah ke item sebelumnya. Coba sekarang.</translation>
 <translation id="280499067616661124">ChromeVox ditemukan pada halaman</translation>
-<translation id="2811019999044652585">Untuk melompat ke bagian lain pada layar, seperti toolbar atau area notifikasi, tekan Control+Forward. Di Chromebook, tombol Forward berada tepat di atas tombol nomor 2.</translation>
 <translation id="2811204574343810641">Baris</translation>
 <translation id="2816868829355607410">Area praktik: Perintah lewati</translation>
 <translation id="2841013758207633010">Waktu</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Catatan</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4259220820964911921">Aktifkan kontrol wajah?</translation>
 <translation id="4271220233568730077">Matematika berikutnya</translation>
 <translation id="4275397969489577657">Aktifkan pencatatan streaming acara</translation>
 <translation id="4278486392851938658">Tidak ada link yang dikunjungi sebelumnya</translation>
@@ -512,7 +513,7 @@
 <translation id="4372705107434148843">Hentikan ucapan</translation>
 <translation id="4376316291247992553">Melihat Grafik Sebagai Braille</translation>
 <translation id="437809255587011096">Umumkan gaya teks</translation>
-<translation id="4378308539633073595">Scrolling maju</translation>
+<translation id="4378308539633073595">Scroll maju</translation>
 <translation id="4384583879834880242">Tanya Jawab</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Deep Sky Blue</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Konten yang ditandai</translation>
 <translation id="4437615272777527928">Ketik untuk menelusuri di menu. Gunakan panah atas dan bawah untuk menjelajahi hasil. Gunakan panah kiri dan kanan untuk menyesuaikan kursor teks, dan untuk berpindah antar-menu.</translation>
+<translation id="4453530046591759283">Untuk menuju ke bagian lain pada layar, seperti toolbar atau area notifikasi, tekan Control+F1. F1 adalah tombol pertama di sebelah kanan tombol escape.</translation>
 <translation id="4457472090507035117">Pilih suara saat ini:</translation>
 <translation id="4476183483923481720">baris baru</translation>
 <translation id="4479068155583208887">Fire Brick</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Lampiran</translation>
 <translation id="5761219715606611783">Bagus! Anda telah mempelajari dasar-dasar gestur sentuh ChromeVox. Anda dapat memulai kembali atau keluar dari tutorial ini menggunakan tombol di bawah.</translation>
 <translation id="5776001898637896684">Ekstensi text-to-speech Google Enhanced Network</translation>
+<translation id="5783252477644995371">Kontrol wajah memberikan Anda kontrol kursor dengan penunjuk wajah dan kemampuan untuk melakukan tindakan, seperti mengklik kiri dengan gestur wajah seperti tersenyum</translation>
 <translation id="5805940204952508776">Ketuk dengan dua jari</translation>
 <translation id="5819072574982403430">Item pohon</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -723,7 +726,7 @@
 <translation id="5866042630553435010">Dicentang sebagian</translation>
 <translation id="5866210856231860256">Tekan Penelusuran + Panah Kanan, atau Penelusuran + Panah Kiri guna menemukan pelajaran untuk topik ini</translation>
 <translation id="5867591286054666064">Selama tutorial ini, tekan tombol apa saja untuk mendengar namanya.</translation>
-<translation id="5869546221129391014">Kisi</translation>
+<translation id="5869546221129391014">Petak</translation>
 <translation id="5876817486144482042">Mengurangi volume ucapan</translation>
 <translation id="5878206664863390311">Tekan Penelusuran + Panah Kanan, atau Penelusuran + Panah Kiri untuk menemukan topik</translation>
 <translation id="5878908838135392163">Powder Blue</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Navajo White</translation>
 <translation id="7095834689119144465">Edit teks numerik saja</translation>
 <translation id="7096001299300236431">Media sebelumnya</translation>
+<translation id="7096668131290451939">Tekan escape lagi untuk keluar dari Mode Belajar</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">pengulangan kata</translation>
 <translation id="7137397390322864165">Salmon</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">Tidak ada kotak centang berikutnya</translation>
 <translation id="8473540203671727883">Ucapkan teks di bawah kursor</translation>
 <translation id="8476408756881832830">Jeda pemutaran saat ChromeVox sedang berbicara</translation>
-<translation id="8476508772960940536">ringkasan jendela</translation>
 <translation id="8480873377842220259">Anda sekarang akan mempelajari beberapa navigasi dasar. Anda dapat menahan tombol Penelusuran dan menekan tombol panah untuk berpindah-pindah di layar. Untuk melanjutkan, tekan Penelusuran + Panah kanan.</translation>
 <translation id="8503360654911991865">Menurunkan granularitas navigasi</translation>
 <translation id="8520472399088452386">Tombol putar</translation>

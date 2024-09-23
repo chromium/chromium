@@ -4,7 +4,7 @@
 
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ModuleDescriptor, ModuleRegistry, ModulesElement} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -14,7 +14,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
+import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
   let handler: TestMock<PageHandlerRemote>;
@@ -139,154 +139,6 @@ suite('NewTabPageModulesModulesTest', () => {
     assertEquals(1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', true));
     assertEquals(1, handler.getCallCount('updateDisabledModules'));
     assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
-  });
-
-  suite('modules first run experience', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesFirstRunExperienceEnabled: true,
-      });
-    });
-
-    [true, false].forEach(visible => {
-      test(`first run experience shows if modules ${visible}`, async () => {
-        // Arrange.
-        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-        const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
-        handler.setResultFor('getModulesIdNames', {
-          data: [
-            {id: fooDescriptor.id, name: fooDescriptor.id},
-            {id: barDescriptor.id, name: barDescriptor.id},
-            {id: bazDescriptor.id, name: bazDescriptor.id},
-          ],
-        });
-
-        // Act.
-        const modulesElement = await createModulesElement([
-          {
-            descriptor: fooDescriptor,
-            elements: [createElement()],
-          },
-          {
-            descriptor: barDescriptor,
-            elements: [createElement()],
-          },
-        ]);
-        callbackRouterRemote.setDisabledModules(
-            !visible, [barDescriptor.id, bazDescriptor.id]);
-        callbackRouterRemote.setModulesFreVisibility(visible);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Assert.
-        const moduleWrappers =
-            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-        const moduleWrapperContainers =
-            modulesElement.shadowRoot!.querySelectorAll('.module-container');
-        assertEquals(2, moduleWrappers.length);
-        assertEquals(2, moduleWrapperContainers.length);
-        assertNotStyle(moduleWrappers[0]!, 'display', 'none');
-        if (visible) {
-          assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
-        } else {
-          assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
-        }
-        assertNotStyle(moduleWrappers[1]!, 'display', 'none');
-        assertStyle(moduleWrapperContainers[1]!, 'display', 'none');
-        assertNotStyle(moduleWrappers[0]!, 'cursor', 'grab');
-        assertNotStyle(moduleWrappers[1]!, 'cursor', 'grab');
-        const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
-        assertEquals(1, metrics.count(`${histogram}.foo`, visible));
-        assertEquals(1, metrics.count(`${histogram}.bar`, false));
-        assertEquals(1, metrics.count(`${histogram}.baz`, false));
-        assertEquals(
-            1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
-        assertEquals(1, handler.getCallCount('updateDisabledModules'));
-        assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
-        assertEquals(1, handler.getCallCount('updateModulesFreVisibility'));
-      });
-    });
-
-    test(`clicking customize chrome link sends event`, async () => {
-      // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      handler.setResultFor(
-          'getModulesIdNames',
-          {data: [{id: fooDescriptor.id, name: fooDescriptor.id}]});
-      const modulesElement = await createModulesElement([
-        {
-          descriptor: fooDescriptor,
-          elements: [createElement()],
-        },
-      ]);
-      callbackRouterRemote.setModulesFreVisibility(true);
-      callbackRouterRemote.setDisabledModules(false, []);
-      await callbackRouterRemote.$.flushForTesting();
-      const customizeModule = capture(modulesElement, 'customize-module');
-      render(modulesElement);
-
-      // Act
-      $$<HTMLElement>(modulesElement, '#customizeChromeLink')!.click();
-
-      // Assert.
-      assertTrue(customizeModule.received);
-    });
-
-    test(`fre buttons work`, async () => {
-      // Arrange.
-      const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-      const barDescriptor = new ModuleDescriptor('bar', initNullModule);
-      handler.setResultFor('getModulesIdNames', {
-        data: [
-          {id: fooDescriptor.id, name: fooDescriptor.id},
-          {id: barDescriptor.id, name: barDescriptor.id},
-        ],
-      });
-      const modulesElement = await createModulesElement([
-        {
-          descriptor: fooDescriptor,
-          elements: [createElement()],
-        },
-        {
-          descriptor: barDescriptor,
-          elements: [createElement()],
-        },
-      ]);
-      callbackRouterRemote.setModulesFreVisibility(true);
-      callbackRouterRemote.setDisabledModules(false, []);
-      const moduleWrappers =
-          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
-      moduleWrappers[0]!.dispatchEvent(new Event('detect-impression'));
-      moduleWrappers[1]!.dispatchEvent(new Event('detect-impression'));
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Act
-      $$<HTMLElement>(modulesElement, '.cancel-button')!.click();
-
-      // Assert.
-      assertDeepEquals(false, handler.getArgs('setModulesFreVisible')[0]);
-      assertDeepEquals(false, handler.getArgs('setModulesVisible')[0]);
-      assertTrue(modulesElement.$.removeModuleFreToast.open);
-      assertFalse(modulesElement.$.removeModuleToast.open);
-      assertEquals(1, metrics.count('NewTabPage.Modules.FreLoaded', false));
-
-      // Act.
-      modulesElement.$.undoRemoveModuleFreButton.click();
-
-      // Assert.
-      assertFalse(modulesElement.$.removeModuleFreToast.open);
-      assertDeepEquals(true, handler.getArgs('setModulesFreVisible')[1]);
-      assertDeepEquals(true, handler.getArgs('setModulesVisible')[1]);
-      assertEquals(1, handler.getCallCount('logModulesFreOptInStatus'));
-      assertEquals(1, metrics.count('NewTabPage.Modules.FreLoaded', true));
-
-      // Act.
-      $$<HTMLElement>(modulesElement, '.action-button')!.click();
-
-      // Assert.
-      assertDeepEquals(false, handler.getArgs('setModulesFreVisible')[2]);
-      assertEquals(2, handler.getCallCount('logModulesFreOptInStatus'));
-    });
   });
 
   test('modules can be dismissed with no restore action', async () => {
@@ -559,7 +411,6 @@ suite('NewTabPageModulesModulesTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesDragAndDropEnabled: true,
-        modulesFirstRunExperienceEnabled: false,
       });
     });
 

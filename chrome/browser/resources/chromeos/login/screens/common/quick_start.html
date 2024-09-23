@@ -34,7 +34,8 @@ found in the LICENSE file.
   }
 
   #spinnerWifi,
-  #spinnerGaia {
+  #spinnerGaia,
+  #spinner {
     max-height: 286px;
     max-width: 286px;
   }
@@ -101,10 +102,6 @@ found in the LICENSE file.
     font-weight: 400;
   }
 
-  #spinner {
-    height: 95%;
-  }
-
   #qrCodeWrapper {
     position: relative;
     width: 100%;
@@ -125,6 +122,11 @@ found in the LICENSE file.
     /* border: dashed; */
   }
 
+  #qrPlaceholder {
+    width: 100%;
+    height: auto;
+  }
+
   #qrCodeCanvas {
     position: absolute;
     width: 100%;
@@ -138,11 +140,12 @@ found in the LICENSE file.
 <oobe-loading-dialog id="loadingDialog" for-step="connecting_to_phone"
     title-key="quickStartStartAfterResumeTitle"
     subtitle-key="quickStartStartAfterResumeSubtitle"
-    on-cancel-loading="onCancelClicked" can-cancel>
+    on-cancel-loading="onCancelClicked" aria-live="polite" can-cancel>
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device"></iron-icon>
 </oobe-loading-dialog>
 <!-- QR & PIN VERIFICATION | UNAUTHENTICATED CONNECTION -->
-<oobe-adaptive-dialog for-step="verification" id="verificationDialog">
+<oobe-adaptive-dialog for-step="verification" id="verificationDialog"
+    aria-live="polite">
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device">
   </iron-icon>
   <h1 slot="title">
@@ -154,7 +157,10 @@ found in the LICENSE file.
     </div>
   </h1>
   <div slot="subtitle">
-    <div inner-h-t-m-l="[[getVerificationSubtitle(locale, discoverableName, usePinInsteadOfQrForVerification)]]">
+    <div inner-h-t-m-l="[[getVerificationSubtitle(
+        locale,
+        usePinInsteadOfQrForVerification,
+        willRequestWiFi)]]">
     </div>
   </div>
   <div id="code" class="flex layout vertical start-justified center"
@@ -163,8 +169,12 @@ found in the LICENSE file.
       <iron-icon id="qrDeco" icon="oobe-illos:quickstart-qr">
       </iron-icon>
       <div id="qrHolder">
-        <canvas id="qrCodeCanvas">
+        <canvas id="qrCodeCanvas" aria-label="QR code"
+            hidden="[[!qrCodeAvailable]]">
         </canvas>
+        <iron-icon id="qrPlaceholder" alt="QR code" hidden="[[qrCodeAvailable]]"
+            icon="oobe-illos:quickstart-qr-placeholder">
+        </iron-icon>
       </div>
       </div>
       <quick-start-pin id="pinWrapper" pin="[[pin]]"
@@ -185,7 +195,8 @@ found in the LICENSE file.
               class="content-icon">
           </iron-icon>
           <div class="footer-content-text">
-            [[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructions')]]
+            <div hidden="[[!usePinInsteadOfQrForVerification]]">[[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructionsPin')]]</div>
+            <div hidden="[[usePinInsteadOfQrForVerification]]">[[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructionsQr')]]</div>
           </div>
         </div>
       </div>
@@ -200,13 +211,13 @@ found in the LICENSE file.
 <oobe-loading-dialog for-step="connecting_to_wifi"
     title-key="quickStartWifiTransferTitle"
     subtitle-key="quickStartWifiTransferSubtitle"
-    on-cancel-loading="onCancelClicked" can-cancel>
+    on-cancel-loading="onCancelClicked" aria-live="polite" can-cancel>
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
   </iron-icon>
 </oobe-loading-dialog>
 <!-- CONFIRM GOOGLE ACCOUNT -->
 <oobe-adaptive-dialog id="confirmAccountDialog"
-    for-step="confirm_google_account">
+    for-step="confirm_google_account" aria-live="polite">
   <iron-icon slot="icon" icon="oobe-32:googleg">
   </iron-icon>
   <h1 slot="title">
@@ -227,7 +238,8 @@ found in the LICENSE file.
   </div>
 </oobe-adaptive-dialog>
 <!-- SIGNING IN STEP -->
-<oobe-adaptive-dialog for-step="signing_in" id="gaiaTransferDialog">
+<oobe-adaptive-dialog for-step="signing_in" id="gaiaTransferDialog"
+    aria-live="polite">
   <iron-icon slot="icon" icon="oobe-32:googleg">
   </iron-icon>
   <h1 slot="title">
@@ -264,7 +276,8 @@ found in the LICENSE file.
   </div>
 </oobe-adaptive-dialog>
 <!-- SETUP COMPLETE STEP -->
-<oobe-adaptive-dialog for-step="setup_complete">
+<oobe-adaptive-dialog id="setupCompleteDialog"
+    for-step="setup_complete" aria-live="polite">
   <iron-icon slot="icon" icon="oobe-32:googleg">
   </iron-icon>
   <h1 slot="title">
@@ -272,7 +285,8 @@ found in the LICENSE file.
     </div>
   </h1>
   <div slot="subtitle">
-    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale, userEmail)]]">
+    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale,
+      userEmail, didTransferWiFi)]]">
     </div>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">

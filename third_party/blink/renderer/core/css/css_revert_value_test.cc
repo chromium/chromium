@@ -25,7 +25,7 @@ TEST(CSSRevertValueTest, Equals) {
 }
 
 TEST(CSSRevertValueTest, NotEquals) {
-  EXPECT_FALSE(*CSSRevertValue::Create() == *CSSInitialValue::Create());
+  EXPECT_NE(*CSSRevertValue::Create(), *CSSInitialValue::Create());
 }
 
 }  // namespace blink

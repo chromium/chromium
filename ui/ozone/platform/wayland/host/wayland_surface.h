@@ -140,7 +140,7 @@ class WaylandSurface {
   // whenever the region that the surface span changes or window state changes
   // when custom frame is used.  If |region_px| is nullptr, the input region is
   // reset to cover the entire wl_surface.
-  void set_input_region(std::optional<gfx::Rect> region_px);
+  void set_input_region(std::optional<std::vector<gfx::Rect>> region_px);
 
   // Set the crop uv of the attached wl_buffer.
   // Unlike wp_viewport.set_source, this crops the buffer prior to
@@ -252,6 +252,10 @@ class WaylandSurface {
   // surface for a window.
   void EnableTrustedDamageIfPossible();
 
+  std::optional<float> preferred_scale_factor() const {
+    return preferred_scale_factor_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
@@ -284,7 +288,7 @@ class WaylandSurface {
 
     std::vector<gfx::Rect> damage_px;
     std::vector<gfx::Rect> opaque_region_px;
-    std::optional<gfx::Rect> input_region_px = std::nullopt;
+    std::vector<gfx::Rect> input_region_px;
 
     // The current color space of the surface.
     scoped_refptr<WaylandZcrColorSpace> color_space = nullptr;
@@ -422,6 +426,10 @@ class WaylandSurface {
   // been hidden at least once.  To determine which output the popup belongs to,
   // we ask its parent.
   std::vector<uint32_t> entered_outputs_;
+
+  // Holds the preferred buffer factor for this surface, if any was received
+  // through wp-fractional-scale-v1 protocol, when available.
+  std::optional<float> preferred_scale_factor_;
 
   void ExplicitRelease(zwp_linux_buffer_release_v1* linux_buffer_release,
                        base::ScopedFD fence);

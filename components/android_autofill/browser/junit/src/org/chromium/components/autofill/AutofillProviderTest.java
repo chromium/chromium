@@ -32,7 +32,6 @@ import androidx.annotation.RequiresApi;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -69,7 +68,7 @@ public class AutofillProviderTest {
     private ViewGroup mContainerView;
     private AutofillProvider mAutofillProvider;
     private DisplayAndroid mDisplayAndroid;
-    private long mMockedNativeAutofillProviderAndroid = 1;
+    private long mMockedNativeAndroidAutofillProvider = 1;
 
     // Virtual Id of the field with focus.
     private int mFocusVirtualId;
@@ -79,7 +78,6 @@ public class AutofillProviderTest {
     private SparseArray<VirtualViewFillInfo> mPrefillRequestInfos;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
@@ -132,7 +130,7 @@ public class AutofillProviderTest {
                         mContext, mContainerView, mWebContents, "AutofillProviderTest") {
                     @Override
                     protected void initializeNativeAutofillProvider(WebContents webContents) {
-                        setNativeAutofillProvider(mMockedNativeAutofillProviderAndroid);
+                        setNativeAutofillProvider(mMockedNativeAndroidAutofillProvider);
                     }
                 };
 
@@ -250,9 +248,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testSendingPrefillRequestUsesCorrectHints() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mServerPredictions = new String[] {"NAME_FIRST", "NAME_LAST"};
@@ -273,9 +268,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -299,7 +291,7 @@ public class AutofillProviderTest {
 
         verify(mNativeMock)
                 .onShowBottomSheetResult(
-                        mMockedNativeAutofillProviderAndroid,
+                        mMockedNativeAndroidAutofillProvider,
                         /* isShown= */ true,
                         /* provided_structure= */ true);
     }
@@ -307,9 +299,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithPrefillRequestWithoutShowingBottomSheet() {
         int focus = 1;
         int sessionId = 123;
@@ -334,7 +323,7 @@ public class AutofillProviderTest {
 
         verify(mNativeMock)
                 .onShowBottomSheetResult(
-                        mMockedNativeAutofillProviderAndroid,
+                        mMockedNativeAndroidAutofillProvider,
                         /* isShown= */ false,
                         /* providedAutofillStructure= */ true);
     }
@@ -342,9 +331,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void
             testStartSessionWithPrefillRequestWithoutShowingBottomSheetAndNoAutofillStructure() {
         int focus = 1;
@@ -369,7 +355,7 @@ public class AutofillProviderTest {
 
         verify(mNativeMock)
                 .onShowBottomSheetResult(
-                        mMockedNativeAutofillProviderAndroid,
+                        mMockedNativeAndroidAutofillProvider,
                         /* isShown= */ false,
                         /* providedAutofillStructure= */ false);
     }
@@ -377,9 +363,6 @@ public class AutofillProviderTest {
     @Test
     @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @Features.EnableFeatures({
-        AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
-    })
     public void testStartSessionWithDifferentSessionIdThanPrefillRequest() {
         int focus = 1;
         int prefillSessionId = 123;

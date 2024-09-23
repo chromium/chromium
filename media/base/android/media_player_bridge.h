@@ -23,6 +23,7 @@
 #include "media/base/media_export.h"
 #include "media/base/simple_watch_timer.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -81,7 +82,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   MediaPlayerBridge(const GURL& url,
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
-                    bool has_storage_access,
+                    net::StorageAccessApiStatus storage_access_api_status,
                     const std::string& user_agent,
                     bool hide_url_log,
                     Client* client,
@@ -231,7 +232,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Used when determining if first-party cookies may be accessible in a
   // third-party context.
-  bool has_storage_access_;
+  net::StorageAccessApiStatus storage_access_api_status_;
 
   // Waiting to retrieve cookies for `url_`.
   bool pending_retrieve_cookies_;

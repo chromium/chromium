@@ -6,6 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -18,7 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class BookmarkBarPageLoadMetricsBrowserTest : public PlatformBrowserTest {
+class BookmarkBarPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   BookmarkBarPageLoadMetricsBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -27,7 +29,7 @@ class BookmarkBarPageLoadMetricsBrowserTest : public PlatformBrowserTest {
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    PlatformBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -63,13 +65,20 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarPageLoadMetricsBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
 
   // Start Omnibox triggered prerendering.
-  std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PreloadingTriggerType::kEmbedder,
-          prerender_utils::kDirectUrlInputMetricSuffix,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
+      GetActiveWebContents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerender_url);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
+          content::PreloadingType::kPrerender, same_url_matcher,
+          /*planned_max_preloading_type=*/std::nullopt,
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  PrerenderManager::CreateForWebContents(GetActiveWebContents());
+  base::WeakPtr<content::PrerenderHandle> prerender_handle =
+      PrerenderManager::FromWebContents(GetActiveWebContents())
+          ->StartPrerenderDirectUrlInput(prerender_url, *preloading_attempt);
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
@@ -78,11 +87,14 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarPageLoadMetricsBrowserTest,
   content::TestActivationManager activation_manager(GetActiveWebContents(),
                                                     prerender_url);
   // Simulate an Omnibox triggered navigation.
-  GetActiveWebContents()->OpenURL(content::OpenURLParams(
-      prerender_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
+  GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
+          prerender_url, content::Referrer(),
+          WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
   activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(activation_manager.was_activated());
   histogram_tester.ExpectUniqueSample(

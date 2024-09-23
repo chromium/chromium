@@ -126,7 +126,6 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   EXPECT_EQ(input.hdr_static_metadata(), output.hdr_static_metadata());
   EXPECT_EQ(input.variable_refresh_rate_state(),
             output.variable_refresh_rate_state());
-  EXPECT_EQ(input.vsync_rate_min(), output.vsync_rate_min());
 }
 
 // Test StructTrait serialization and deserialization for copyable type. |input|
@@ -141,13 +140,6 @@ void SerializeAndDeserialize(const Type& input, Type* output) {
 template <class MojomType, class Type>
 void SerializeAndDeserialize(Type&& input, Type* output) {
   MojomType::Deserialize(MojomType::Serialize(&input), output);
-}
-
-DisplayMode CreateDisplayModeForTest(const gfx::Size& size,
-                                     bool interlaced,
-                                     float refresh_rate) {
-  return DisplayMode(size, interlaced, refresh_rate, size.width(),
-                     size.height(), size.GetArea() * refresh_rate);
 }
 
 }  // namespace
@@ -186,7 +178,7 @@ TEST(DisplayStructTraitsTest, SetAllDisplayValues) {
 }
 
 TEST(DisplayStructTraitsTest, DefaultDisplayMode) {
-  DisplayMode input = CreateDisplayModeForTest({1024, 768}, true, 61.0);
+  DisplayMode input({1024, 768}, true, 61.0);
 
   std::unique_ptr<DisplayMode> output;
   SerializeAndDeserialize<mojom::DisplayMode>(input.Clone(), &output);
@@ -305,14 +297,14 @@ TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
   EXPECT_EQ(0, memcmp(&input.srgb_to_device_matrix,
                       &output.srgb_to_device_matrix, sizeof(skcms_Matrix3x3)));
 
-  // Valdiate `srgb_to_linear`.
+  // Validate `srgb_to_linear`.
   input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
   output.srgb_to_linear.Evaluate(0.5f, out_r, out_g, out_b);
   EXPECT_EQ(in_r, out_r);
   EXPECT_EQ(in_g, out_g);
   EXPECT_EQ(in_b, out_b);
 
-  // Valdiate `linear_to_device`.
+  // Validate `linear_to_device`.
   input.linear_to_device.Evaluate(0.5f, in_r, in_g, in_b);
   output.linear_to_device.Evaluate(0.5f, out_r, out_g, out_b);
   EXPECT_EQ(in_r, out_r);
@@ -378,11 +370,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 19;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
-  const uint16_t vsync_rate_min = 48;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
-  const DisplayMode display_mode =
-      CreateDisplayModeForTest({13, 11}, true, 40.0f);
+  const DisplayMode display_mode({13, 11}, true, 40.0f);
 
   DisplaySnapshot::DisplayModeList modes;
   modes.push_back(display_mode.Clone());
@@ -402,8 +393,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
       has_content_protection_key, color_info, display_name, sys_path,
       std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vsync_rate_min,
-      std::move(drm_formats_and_modifiers));
+      variable_refresh_rate_state, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -439,11 +429,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("z/b");
   const int64_t product_code = 9;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
-  const uint16_t vsync_rate_min = 48;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
-  const DisplayMode display_mode =
-      CreateDisplayModeForTest({13, 11}, true, 50.0f);
+  const DisplayMode display_mode({13, 11}, true, 50.0f);
 
   DisplaySnapshot::DisplayModeList modes;
   modes.push_back(display_mode.Clone());
@@ -463,8 +452,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
       has_content_protection_key, color_info, display_name, sys_path,
       std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vsync_rate_min,
-      std::move(drm_formats_and_modifiers));
+      variable_refresh_rate_state, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -500,15 +488,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrDisabled;
-  const uint16_t vsync_rate_min = 40;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrDisabled;
 
-  const DisplayMode display_mode =
-      CreateDisplayModeForTest({1024, 768}, false, 60.0f);
-  const DisplayMode display_current_mode =
-      CreateDisplayModeForTest({1440, 900}, false, 59.89f);
-  const DisplayMode display_native_mode =
-      CreateDisplayModeForTest({1920, 1200}, false, 59.89f);
+  const DisplayMode display_mode({1024, 768}, false, 60.0f);
+  const DisplayMode display_current_mode({1440, 900}, false, 59.89f);
+  const DisplayMode display_native_mode({1920, 1200}, false, 59.89f);
 
   DisplaySnapshot::DisplayModeList modes;
   modes.push_back(display_mode.Clone());
@@ -530,8 +515,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
       has_content_protection_key, color_info, display_name, sys_path,
       std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vsync_rate_min,
-      std::move(drm_formats_and_modifiers));
+      variable_refresh_rate_state, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -568,10 +552,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const base::FilePath sys_path;
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrNotCapable;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrNotCapable;
 
-  const DisplayMode display_mode =
-      CreateDisplayModeForTest({2560, 1700}, false, 95.96f);
+  const DisplayMode display_mode({2560, 1700}, false, 95.96f);
 
   DisplaySnapshot::DisplayModeList modes;
   modes.push_back(display_mode.Clone());
@@ -589,7 +573,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
       has_content_protection_key, color_info, display_name, sys_path,
       std::move(modes), PanelOrientation::kRightUp, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, std::nullopt, drm_formats_and_modifiers);
+      variable_refresh_rate_state, drm_formats_and_modifiers);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

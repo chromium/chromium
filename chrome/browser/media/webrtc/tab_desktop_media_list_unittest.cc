@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -20,9 +25,11 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -83,22 +90,6 @@ gfx::Image CreateGrayscaleImage(gfx::Size size, uint8_t greyscale_value) {
 
   return gfx::Image::CreateFrom1xBitmap(result);
 }
-
-class MockObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD1(OnSourceAdded, void(int index));
-  MOCK_METHOD1(OnSourceRemoved, void(int index));
-  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
-  MOCK_METHOD1(OnSourceNameChanged, void(int index));
-  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
-  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
-  MOCK_METHOD0(OnDelegatedSourceListSelection, void());
-  MOCK_METHOD0(OnDelegatedSourceListDismissed, void());
-
-  void VerifyAndClearExpectations() {
-    testing::Mock::VerifyAndClearExpectations(this);
-  }
-};
 
 ACTION_P2(CheckListSize, list, expected_list_size) {
   EXPECT_EQ(expected_list_size, list->GetSourceCount());
@@ -168,7 +159,7 @@ class TabDesktopMediaListTest : public testing::Test,
       return nullptr;
 
     WebContentsTester::For(contents.get())
-        ->SetLastActiveTime(base::TimeTicks::Now());
+        ->SetLastActiveTimeTicks(base::TimeTicks::Now());
 
     // Get or create a NavigationEntry and add a title and a favicon to it.
     content::NavigationEntry* entry =
@@ -334,7 +325,7 @@ class TabDesktopMediaListTest : public testing::Test,
   std::unique_ptr<Browser> browser_;
 
   // Must be listed before |list_|, so it's destroyed last.
-  MockObserver observer_;
+  DesktopMediaListMockObserver observer_;
   std::unique_ptr<TabDesktopMediaList> list_;
   std::vector<raw_ptr<WebContents, VectorExperimental>>
       manually_added_web_contents_;
@@ -388,9 +379,9 @@ TEST_P(TabDesktopMediaListTest, RemoveTab) {
   base::RunLoop loop;
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   ASSERT_TRUE(tab_strip_model);
-  std::unique_ptr<WebContents> released_web_contents =
-      tab_strip_model->DetachWebContentsAtForInsertion(kDefaultSourceCount - 1);
-  base::Erase(manually_added_web_contents_, released_web_contents.get());
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      tab_strip_model->DetachTabAtForInsertion(kDefaultSourceCount - 1);
+  std::erase(manually_added_web_contents_, detached_tab.get()->contents());
 
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(
@@ -409,13 +400,13 @@ TEST_P(TabDesktopMediaListTest, MoveTab) {
 
   WebContents* contents0 = tab_strip_model->GetWebContentsAt(0);
   ASSERT_TRUE(contents0);
-  base::TimeTicks t0 = contents0->GetLastActiveTime();
+  base::TimeTicks t0 = contents0->GetLastActiveTimeTicks();
   WebContents* contents1 = tab_strip_model->GetWebContentsAt(1);
   ASSERT_TRUE(contents1);
-  base::TimeTicks t1 = contents1->GetLastActiveTime();
+  base::TimeTicks t1 = contents1->GetLastActiveTimeTicks();
 
-  WebContentsTester::For(contents0)->SetLastActiveTime(t1);
-  WebContentsTester::For(contents1)->SetLastActiveTime(t0);
+  WebContentsTester::For(contents0)->SetLastActiveTimeTicks(t1);
+  WebContentsTester::For(contents1)->SetLastActiveTimeTicks(t0);
 
   EXPECT_CALL(observer_, OnSourceMoved(1, 0))
       .WillOnce(testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount),

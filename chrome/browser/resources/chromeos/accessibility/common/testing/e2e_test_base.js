@@ -23,19 +23,6 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical by file path.
-      importModule('AsyncUtil', '/common/async_util.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('constants', '/common/constants.js'),
-    ]);
-  }
-
-  /** @override */
   testGenCppIncludes() {
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
@@ -51,8 +38,9 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "chrome/common/extensions/extension_constants.h"
   #include "content/public/test/browser_test.h"
   #include "content/public/test/browser_test_utils.h"
-  #include "extensions/browser/extension_host.h"
+  #include "extensions/browser/test_extension_console_observer.h"
   #include "extensions/browser/process_manager.h"
+  #include "ui/accessibility/accessibility_switches.h"
       `);
   }
 
@@ -75,7 +63,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   testGenPostamble() {
     GEN(`
     if (fail_on_console_error) {
-      EXPECT_EQ(0u, console_observer.messages().size())
+      EXPECT_EQ(0u, console_observer.GetErrorCount())
           << "Found console.warn or console.error with message: "
           << console_observer.GetMessageAt(0);
     }
@@ -89,31 +77,18 @@ E2ETestBase = class extends AccessibilityTestBase {
     GEN(`
     WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
-    extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(GetProfile())
-            ->GetBackgroundHostForExtension(
-                extension_misc::${extensionIdName});
-
     bool fail_on_console_error = ${failOnConsoleError};
     // Convert |allowedMessages| into a C++ set.
     base::flat_set<std::u16string> allowed_messages({${messages}});
-    content::WebContentsConsoleObserver console_observer(host->host_contents());
+    extensions::TestExtensionConsoleObserver
+        console_observer(GetProfile(), extension_misc::${extensionIdName},
+        fail_on_console_error);
     // In most cases, A11y extensions should not log warnings or errors.
     // However, informational messages may be logged in some cases and should
     // be specified in |allowed_messages|. All other messages should cause test
     // failures.
-    auto filter =
-        [](const base::flat_set<std::u16string>& allowed,
-           const content::WebContentsConsoleObserver::Message& message) {
-          if (allowed.contains(message.message))
-            return false;
-
-          return message.log_level ==
-              blink::mojom::ConsoleMessageLevel::kWarning ||
-              message.log_level == blink::mojom::ConsoleMessageLevel::kError;
-        };
     if (fail_on_console_error) {
-      console_observer.SetFilter(base::BindRepeating(filter, allowed_messages));
+      console_observer.SetAllowedErrorMessages(allowed_messages);
     }
     `);
   }
@@ -278,9 +253,17 @@ E2ETestBase = class extends AccessibilityTestBase {
           // getting the default focus (the address bar), setting the value to
           // the url and then performing do default on the auto completion node.
           const focus = await AsyncUtil.getFocus();
-          // It's possible focus is elsewhere; wait until it lands on the
+          // It's possible focus is elsewhere; ensure it lands on the
           // address bar text field.
           if (!focus || focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+            // Focus the address bar.
+            const textField = this.desktop_.find({
+              role: 'textField',
+              attributes: {className: 'OmniboxViewViews'},
+            });
+            if (textField) {
+              textField.focus();
+            }
             return;
           }
 
@@ -318,9 +301,7 @@ E2ETestBase = class extends AccessibilityTestBase {
         const createParams = {active: true, url};
         chrome.tabs.create(createParams);
       } else {
-        chrome.automation.getFocus(f => {
-          listener({target: f});
-        });
+        chrome.automation.getFocus(f => listener({target: f}));
       }
     }));
   }
@@ -425,7 +406,11 @@ E2ETestBase = class extends AccessibilityTestBase {
         // Wait for changes to fully propagate.
         const result = await (this.getPref(name));
         assertEquals(result.key, name);
-        assertEquals(result.value, value);
+        if (typeof (value) === 'object') {
+          assertObjectEquals(value, result.value);
+        } else {
+          assertEquals(value, result.value);
+        }
         resolve();
       });
     });
@@ -434,3 +419,7 @@ E2ETestBase = class extends AccessibilityTestBase {
 
 /** @override */
 E2ETestBase.prototype.isAsync = true;
+
+/** @override */
+E2ETestBase.prototype.paramCommandLineSwitch =
+    `::switches::kEnableExperimentalAccessibilityManifestV3`;

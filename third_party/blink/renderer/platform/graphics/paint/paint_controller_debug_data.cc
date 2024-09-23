@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 #include <cinttypes>
@@ -18,14 +23,14 @@ class PaintController::PaintArtifactAsJSON {
  public:
   PaintArtifactAsJSON(const PaintArtifact& artifact,
                       const Vector<SubsequenceMarkers>& subsequences,
-                      DisplayItemList::JsonFlags flags)
+                      DisplayItemList::JsonOption option)
       : artifact_(artifact),
         subsequences_(subsequences),
         next_subsequence_(subsequences_.begin()),
-        flags_(flags) {}
+        option_(option) {}
 
   String ToString() {
-    return ChunksAsJSONArrayRecursive(0, artifact_.PaintChunks().size())
+    return ChunksAsJSONArrayRecursive(0, artifact_.GetPaintChunks().size())
         ->ToPrettyJSONString();
   }
 
@@ -36,7 +41,7 @@ class PaintController::PaintArtifactAsJSON {
   const PaintArtifact& artifact_;
   const Vector<SubsequenceMarkers>& subsequences_;
   Vector<SubsequenceMarkers>::const_iterator next_subsequence_;
-  DisplayItemList::JsonFlags flags_;
+  DisplayItemList::JsonOption option_;
 };
 
 std::unique_ptr<JSONObject>
@@ -77,43 +82,43 @@ PaintController::PaintArtifactAsJSON::ChunksAsJSONArrayRecursive(
 
     if (chunk_index < subsequence.start_chunk_index) {
       artifact_.AppendChunksAsJSON(chunk_index, subsequence.start_chunk_index,
-                                   *array, flags_);
+                                   *array, option_);
     }
     array->PushObject(SubsequenceAsJSONObjectRecursive());
     chunk_index = subsequence.end_chunk_index;
   }
 
   if (chunk_index < end_chunk_index)
-    artifact_.AppendChunksAsJSON(chunk_index, end_chunk_index, *array, flags_);
+    artifact_.AppendChunksAsJSON(chunk_index, end_chunk_index, *array, option_);
 
   return array;
 }
 
-void PaintController::ShowDebugDataInternal(
-    DisplayItemList::JsonFlags flags) const {
-  auto current_list_flags = flags;
-  // The clients in the current list are known to be alive before FinishCycle().
-  if (committed_)
-    current_list_flags |= DisplayItemList::kClientKnownToBeAlive;
-  LOG(INFO) << "current paint artifact: "
-            << (current_paint_artifact_
-                    ? PaintArtifactAsJSON(*current_paint_artifact_,
-                                          current_subsequences_.tree,
-                                          current_list_flags)
-                          .ToString()
-                          .Utf8()
-                    : "null");
+String PaintController::DebugDataAsString(
+    DisplayItemList::JsonOption option) const {
+  StringBuilder sb;
+  sb.Append("current paint artifact: ");
+  if (persistent_data_) {
+    sb.Append(PaintArtifactAsJSON(CurrentPaintArtifact(),
+                                  CurrentSubsequences().tree, option)
+                  .ToString());
+  } else {
+    sb.Append("null");
+  }
+  sb.Append("\nnew paint artifact: ");
+  if (new_paint_artifact_) {
+    sb.Append(PaintArtifactAsJSON(*new_paint_artifact_, new_subsequences_.tree,
+                                  option)
+                  .ToString());
+  } else {
+    sb.Append("null");
+  }
+  return sb.ToString();
+}
 
-  LOG(INFO)
-      << "new paint artifact: "
-      << (new_paint_artifact_
-              ? PaintArtifactAsJSON(
-                    *new_paint_artifact_, new_subsequences_.tree,
-                    // The clients in new_display_item_list_ are all alive.
-                    flags | DisplayItemList::kClientKnownToBeAlive)
-                    .ToString()
-                    .Utf8()
-              : "null");
+void PaintController::ShowDebugDataInternal(
+    DisplayItemList::JsonOption option) const {
+  LOG(INFO) << DebugDataAsString(option).Utf8();
 }
 
 void PaintController::ShowCompactDebugData() const {

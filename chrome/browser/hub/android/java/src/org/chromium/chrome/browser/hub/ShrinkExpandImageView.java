@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -19,7 +21,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.ui.display.DisplayUtil;
 
 /** {@link ImageView} for the Shrink, Expand, and New Tab animations. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout {
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
@@ -50,10 +52,13 @@ public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout 
      *     margins and position the view. The width and height will be used to set the dimensions of
      *     the view.
      */
+    @SuppressLint("RtlHardcoded")
     public void resetKeepingBitmap(@Nullable Rect layoutRect) {
         if (layoutRect != null) {
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
             if (layoutParams != null) {
+                // Don't use Gravity.START here as the animation logic is all top/left aligned.
+                layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
                 layoutParams.width = layoutRect.width();
                 layoutParams.height = layoutRect.height();
                 layoutParams.setMargins(layoutRect.left, layoutRect.top, 0, 0);
@@ -96,7 +101,8 @@ public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout 
     @Override
     public void setImageBitmap(Bitmap bitmap) {
         if (BuildInfo.getInstance().isAutomotive && bitmap != null) {
-            bitmap.setDensity(DisplayUtil.getUiDensityForAutomotive(bitmap.getDensity()));
+            bitmap.setDensity(
+                    DisplayUtil.getUiDensityForAutomotive(getContext(), bitmap.getDensity()));
         }
         super.setImageBitmap(bitmap);
     }

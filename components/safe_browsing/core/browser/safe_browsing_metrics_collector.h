@@ -79,8 +79,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // The user bypasses an interstitial that is triggered by the local Safe
     // Browsing database through Android Safe Browsing API.
     ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS = 15,
+    // The user started a download deep scan
+    DOWNLOAD_DEEP_SCAN = 16,
 
-    kMaxValue = ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS
+    kMaxValue = DOWNLOAD_DEEP_SCAN
   };
 
   using EventTypeFilter = base::RepeatingCallback<bool(const EventType&)>;
@@ -137,45 +139,8 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void Shutdown() override;
 
  private:
+  friend class SafeBrowsingMetricsCollectorTest;
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
-  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest,
-                           ProtegoRequestIsNotLoggedWhenEsbIsNotEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneIfNotRecordedBeforeFirstRunOfCollector);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingMoreRecentThanWithoutToken);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingMoreRecentThanWithToken);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneWhenNoPingWithTokenSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsNoneWhenNoPingWithoutTokenSincePreviousLogTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithTokenWhenPingBeforeCollectorHasEverRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      ProtegoRequestLogsWithoutTokenWhenPingBeforeCollectorHasEverRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithTokenWhenWithTokenWasSendWithinLast24HRS);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithoutTokenWhenWithoutTokenWasSendWithinLast24HRS);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingMetricsCollectorTest,
-      NewProtegoRequestLogsWithTokenWhenNoPingWasSendWithinLast24HRS);
 
   // The type of Protego ping that was sent by an enhanced protection
   // user. These values are persisted to logs. Entries should not be renumbered
@@ -194,7 +159,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // For daily metrics.
   void LogMetricsAndScheduleNextLogging();
-  void MaybeLogDailyEsbProtegoPingSentLast24Hours();
+  void MaybeLogDailyEsbProtegoPingSent();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
   void LogDailyOptInMetrics();
   void LogDailyEventMetrics();

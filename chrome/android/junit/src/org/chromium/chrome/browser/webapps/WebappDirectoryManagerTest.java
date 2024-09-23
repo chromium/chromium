@@ -18,6 +18,7 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
         shadows = {CustomShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebappDirectoryManagerTest {
-    @Rule public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
+    @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
     private static final String WEBAPK_PACKAGE_NAME_1 = "webapk_1";
     private static final String WEBAPK_PACKAGE_NAME_2 = "webapk_2";
@@ -123,7 +124,7 @@ public class WebappDirectoryManagerTest {
         registerWebapp(WEBAPK_ID_1);
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID_1);
         storage.updateTimeOfLastCheckForUpdatedWebManifest();
-        mClockRule.advance(TimeUnit.DAYS.toMillis(30));
+        mClockRule.advanceMillis(TimeUnit.DAYS.toMillis(30));
 
         runCleanup();
         Assert.assertEquals(
@@ -145,7 +146,7 @@ public class WebappDirectoryManagerTest {
         registerWebapp(WEBAPK_ID_1);
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID_1);
         storage.updateTimeOfLastCheckForUpdatedWebManifest();
-        mClockRule.advance(1);
+        mClockRule.advanceMillis(1);
 
         runCleanup();
         Assert.assertEquals(

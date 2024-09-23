@@ -18,6 +18,7 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -38,7 +39,8 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
           std::move(cert_net_fetcher), impl_params.crl_set,
           std::make_unique<net::DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-          base::OptionalToPtr(impl_params.root_store_data), instance_params);
+          base::OptionalToPtr(impl_params.root_store_data), instance_params,
+          impl_params.time_tracker);
     }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
@@ -46,12 +48,14 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
         std::move(cert_net_fetcher), impl_params.crl_set,
         std::make_unique<net::DoNothingCTVerifier>(),
         base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-        base::OptionalToPtr(impl_params.root_store_data), instance_params);
+        base::OptionalToPtr(impl_params.root_store_data), instance_params,
+        impl_params.time_tracker);
 #elif BUILDFLAG(IS_FUCHSIA)
     return CertVerifyProc::CreateBuiltinVerifyProc(
         std::move(cert_net_fetcher), impl_params.crl_set,
         std::make_unique<net::DoNothingCTVerifier>(),
-        base::MakeRefCounted<DefaultCTPolicyEnforcer>(), instance_params);
+        base::MakeRefCounted<DefaultCTPolicyEnforcer>(), instance_params,
+        impl_params.time_tracker);
 #else
     return CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher),
                                                   impl_params.crl_set);
@@ -61,10 +65,6 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
  private:
   ~DefaultCertVerifyProcFactory() override = default;
 };
-
-base::span<const uint8_t> CryptoBufferToSpan(const CRYPTO_BUFFER* b) {
-  return base::make_span(CRYPTO_BUFFER_data(b), CRYPTO_BUFFER_len(b));
-}
 
 void Sha256UpdateLengthPrefixed(SHA256_CTX* ctx, base::span<const uint8_t> s) {
   // Include a length prefix to ensure the hash is injective.
@@ -101,10 +101,10 @@ CertVerifier::RequestParams::RequestParams(
   // sake.
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
-  Sha256UpdateLengthPrefixed(&ctx,
-                             CryptoBufferToSpan(certificate_->cert_buffer()));
+  Sha256UpdateLengthPrefixed(&ctx, certificate_->cert_span());
   for (const auto& cert_handle : certificate_->intermediate_buffers()) {
-    Sha256UpdateLengthPrefixed(&ctx, CryptoBufferToSpan(cert_handle.get()));
+    Sha256UpdateLengthPrefixed(
+        &ctx, x509_util::CryptoBufferAsSpan(cert_handle.get()));
   }
   Sha256UpdateLengthPrefixed(&ctx, base::as_byte_span(hostname));
   SHA256_Update(&ctx, &flags, sizeof(flags));

@@ -61,6 +61,10 @@ source_set("icuuc") {
   ]
 }
 
+group("icuuc_public") {
+  public_deps = [ ":icuuc" ]
+}
+
 shim_headers("icui18n_shim") {
   root_path = "source/i18n"
   headers = [

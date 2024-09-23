@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/target.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/522667272.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "channel_type.proto";
+import "delivery_address.proto";
+
+// Delivery information for a specific target.
+message Target {
+  // Required.
+  optional ChannelType channel_type = 1;
+
+  // Required.
+  optional DeliveryAddress delivery_address = 2;
+
+  // Optional. The user-level target ID associated with this target/user pair.
+  optional string representative_target_id = 3;
+}

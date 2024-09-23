@@ -87,9 +87,6 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {
             voiceSearchButton.setOnClickListener(
                     model.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        } else if (SearchBoxProperties.SEARCH_BOX_HINT_COLOR == propertyKey) {
-            searchBoxTextView.setHintTextColor(
-                    model.get(SearchBoxProperties.SEARCH_BOX_HINT_COLOR));
         } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
             ViewGroup.LayoutParams lp = searchBoxContainer.getLayoutParams();
             lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);
@@ -111,41 +108,6 @@ class SearchBoxViewBinder
             searchBoxTextView.setTextSize(
                     TypedValue.COMPLEX_UNIT_SP,
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE));
-        } else if (SearchBoxProperties.BUTTONS_HEIGHT == propertyKey) {
-            int height = model.get(SearchBoxProperties.BUTTONS_HEIGHT);
-            ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();
-            if (layoutParams != null) {
-                layoutParams.height = height;
-                voiceSearchButton.setLayoutParams(layoutParams);
-            }
-
-            layoutParams = lensButton.getLayoutParams();
-            if (layoutParams != null) {
-                layoutParams.height = height;
-                lensButton.setLayoutParams(layoutParams);
-            }
-
-        } else if (SearchBoxProperties.BUTTONS_WIDTH == propertyKey) {
-            int width = model.get(SearchBoxProperties.BUTTONS_WIDTH);
-            ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();
-            if (layoutParams != null) {
-                layoutParams.width = width;
-                voiceSearchButton.setLayoutParams(layoutParams);
-            }
-
-            layoutParams = lensButton.getLayoutParams();
-            if (layoutParams != null) {
-                layoutParams.width = width;
-                lensButton.setLayoutParams(layoutParams);
-            }
-
-        } else if (SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN == propertyKey) {
-            MarginLayoutParams marginLayoutParams =
-                    (MarginLayoutParams) lensButton.getLayoutParams();
-            if (marginLayoutParams != null) {
-                marginLayoutParams.leftMargin =
-                        model.get(SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN);
-            }
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }

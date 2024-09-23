@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<head>
-<style>
-@font-face {
-  font-family: Ahem;
-  src: url('../../resources/Ahem.ttf');
-}
-</style>
-</head>
 <body>
 <p>On success, the red text "Hello World" should be tightly contained inside the two thin red lines.</p>
 <canvas id="canvas" width="300" height="50"></canvas>
@@ -14,7 +6,7 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var text = "Hello World";
-ctx.font = "50px Ahem";
+ctx.font = "50px serif";
 ctx.fillStyle = '#FF0000';
 ctx.textBaseline = "top";
 ctx.fillText(text, 1, 0);

@@ -83,13 +83,13 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
  protected:
   // PowerButtonTestBase:
   void PressKey(ui::KeyboardCode key_code) override {
-    last_key_event_ = std::make_unique<ui::KeyEvent>(ui::ET_KEY_PRESSED,
+    last_key_event_ = std::make_unique<ui::KeyEvent>(ui::EventType::kKeyPressed,
                                                      key_code, ui::EF_NONE);
     screenshot_controller_->OnKeyEvent(last_key_event_.get());
   }
   void ReleaseKey(ui::KeyboardCode key_code) override {
-    last_key_event_ = std::make_unique<ui::KeyEvent>(ui::ET_KEY_RELEASED,
-                                                     key_code, ui::EF_NONE);
+    last_key_event_ = std::make_unique<ui::KeyEvent>(
+        ui::EventType::kKeyReleased, key_code, ui::EF_NONE);
     screenshot_controller_->OnKeyEvent(last_key_event_.get());
   }
 

@@ -1,0 +1,7 @@
+simple-std-equal.cpp:13:36: error: [iterator-checker] Potentially iterator mismatch.
+  return std::equal(std::begin(v), std::begin(p), p.begin(), v.end());
+                                   ^
+simple-std-equal.cpp:13:62: error: [iterator-checker] Potentially iterator mismatch.
+  return std::equal(std::begin(v), std::begin(p), p.begin(), v.end());
+                                                             ^
+2 errors generated.

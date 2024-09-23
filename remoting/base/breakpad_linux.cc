@@ -4,22 +4,13 @@
 
 #include "remoting/base/breakpad.h"
 
-#include <unistd.h>
-
-#include <atomic>
 #include <memory>
-#include <string>
+#include <utility>
 
-#include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/json/json_writer.h"
-#include "base/logging.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/values.h"
-#include "remoting/base/breakpad_utils_linux.h"
-#include "remoting/base/version.h"
+#include "remoting/base/breakpad_utils.h"
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"
 
 namespace remoting {
@@ -37,87 +28,39 @@ class BreakpadLinux {
 
   static BreakpadLinux& GetInstance();
 
-  std::atomic<bool>& handling_exception() { return handling_exception_; }
-  base::Time process_start_time() const { return process_start_time_; }
-  int process_id() const { return pid_; }
-  const std::string& program_name() const { return program_name_; }
+  BreakpadHelper& helper() { return helper_; }
 
  private:
-  // Breakpad's exception handler.
+  // Breakpad exception handler.
   std::unique_ptr<google_breakpad::ExceptionHandler> breakpad_;
 
-  // Indicates whether an exception is already being handled.
-  std::atomic<bool> handling_exception_{false};
-
-  base::Time process_start_time_ = base::Time::NowFromSystemTime();
-  pid_t pid_ = getpid();
-  std::string program_name_;
+  // Shared logic for handling exceptions and minidump processing.
+  BreakpadHelper helper_;
 };
+
+bool FilterCallback(void* context) {
+  // If an exception is already being handled, this thread will be put to sleep.
+  BreakpadLinux::GetInstance().helper().OnException();
+  return true;
+}
 
 bool MinidumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
                       void* context,
                       bool succeeded) {
   BreakpadLinux& self = BreakpadLinux::GetInstance();
-  if (self.handling_exception().exchange(true)) {
-    LOG(WARNING) << "Already processing another crash";
-    return false;
-  }
-
-  auto process_uptime =
-      base::Time::NowFromSystemTime() - self.process_start_time();
-  auto metadata =
-      base::Value::Dict()
-          .Set(kBreakpadProcessIdKey, self.process_id())
-          .Set(kBreakpadProcessNameKey, self.program_name())
-          .Set(kBreakpadProcessStartTimeKey,
-               base::NumberToString(self.process_start_time().ToTimeT()))
-          .Set(kBreakpadProcessUptimeKey,
-               base::NumberToString(process_uptime.InMilliseconds()))
-          .Set(kBreakpadHostVersionKey, REMOTING_VERSION_STRING);
-
-  auto metadata_file_contents = base::WriteJson(metadata);
-  if (!metadata_file_contents.has_value()) {
-    LOG(ERROR) << "Failed to convert metadata to JSON.";
-    self.handling_exception().exchange(false);
-    return false;
-  }
-
-  ScopedAllowBlockingForCrashReporting scoped_allow_blocking;
-  auto temp_metadata_file_path =
-      base::FilePath(descriptor.path()).ReplaceExtension("temp");
-  if (!base::WriteFile(temp_metadata_file_path, *metadata_file_contents)) {
-    LOG(ERROR) << "Failed to write crash dump metadata to temp file.";
-    self.handling_exception().exchange(false);
-    return false;
-  }
-
-  auto metadata_file_path = temp_metadata_file_path.ReplaceExtension("json");
-  if (!base::Move(temp_metadata_file_path, metadata_file_path)) {
-    LOG(ERROR) << "Failed to rename temp metadata file.";
-    self.handling_exception().exchange(false);
-    return false;
-  }
-
-  self.handling_exception().exchange(false);
-  return succeeded;
+  return self.helper().OnMinidumpGenerated(base::FilePath(descriptor.path()));
 }
 
 BreakpadLinux::BreakpadLinux() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  // This includes both executable name and the path, e.g.
-  // /opt/google/chrome-remote-desktop/chrome-remote-desktop-host
-  program_name_ = cmd_line->GetProgram().value();
-
-  if (!base::CreateDirectory(base::FilePath(kMinidumpPath))) {
-    LOG(ERROR) << "Failed to create minidump directory: " << kMinidumpPath;
+  auto minidump_directory = GetMinidumpDirectoryPath();
+  if (helper().Initialize(minidump_directory)) {
+    google_breakpad::MinidumpDescriptor descriptor(minidump_directory.value());
+    breakpad_ = std::make_unique<google_breakpad::ExceptionHandler>(
+        descriptor, FilterCallback, MinidumpCallback,
+        /*callback_context=*/nullptr,
+        /*install_handler=*/true,
+        /*server_fd=*/-1);
   }
-
-  google_breakpad::MinidumpDescriptor descriptor(kMinidumpPath);
-  breakpad_ = std::make_unique<google_breakpad::ExceptionHandler>(
-      descriptor, /*filter_callback=*/nullptr, MinidumpCallback,
-      /*callback_context=*/nullptr,
-      /*install_handler=*/true,
-      /*server_fd=*/-1);
 }
 
 // static

@@ -218,11 +218,11 @@ export class SettingsKerberosAccountsSubpageElement extends
         .then(error => {
           if (error === KerberosErrorType.NONE) {
             this.showToast_('kerberosAccountsAccountRemovedTip');
+            recordSettingChange(Setting.kRemoveKerberosTicketV2);
           } else {
             console.error('Unexpected error removing account: ' + error);
           }
         });
-    recordSettingChange();
     this.closeActionMenu_();
   }
 
@@ -231,7 +231,7 @@ export class SettingsKerberosAccountsSubpageElement extends
    */
   private onSetAsActiveAccountClick_(): void {
     this.browserProxy_.setAsActiveAccount(castExists(this.selectedAccount_));
-    recordSettingChange();
+    recordSettingChange(Setting.kSetActiveKerberosTicketV2);
     this.closeActionMenu_();
   }
 

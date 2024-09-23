@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -209,6 +210,15 @@ class CORE_EXPORT PrePaintTreeWalk final {
   void WalkFragmentationContextRootChildren(const LayoutObject&,
                                             const PhysicalBoxFragment&,
                                             const PrePaintTreeWalkContext&);
+  void WalkPageContainer(const PhysicalFragmentLink& page_container_link,
+                         const LayoutObject& parent_object,
+                         const PrePaintTreeWalkContext& parent_context,
+                         wtf_size_t fragmentainer_idx);
+  void WalkFragmentainer(const LayoutObject& parent_object,
+                         const PhysicalFragmentLink& child_link,
+                         const PrePaintTreeWalkContext& parent_context,
+                         wtf_size_t fragmentainer_idx);
+
   void WalkLayoutObjectChildren(const LayoutObject&,
                                 const PhysicalBoxFragment*,
                                 const PrePaintTreeWalkContext&);

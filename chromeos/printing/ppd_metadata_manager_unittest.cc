@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/printing/ppd_metadata_manager.h"
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
-
-#include "chromeos/printing/ppd_metadata_manager.h"
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -37,7 +38,7 @@ using ::testing::UnorderedElementsAre;
 // Default browser locale used to construct PpdMetadataManager instances
 // in the test fixture. Arbitrarily chosen. Changeable by calling
 // PpdMetadataManagerTest::NewManagerWithLocale().
-constexpr base::StringPiece kBrowserLocaleForTesting = "en-US";
+constexpr std::string_view kBrowserLocaleForTesting = "en-US";
 
 // Arbitrarily chosen TimeDelta used in test cases that are not
 // time-senstive.
@@ -45,7 +46,7 @@ constexpr base::TimeDelta kArbitraryTimeDelta = base::Seconds(30LL);
 
 // Arbitrarily malformed JSON used to exercise code paths in which
 // parsing fails.
-constexpr base::StringPiece kInvalidJson = "blah blah invalid JSON";
+constexpr std::string_view kInvalidJson = "blah blah invalid JSON";
 
 // Caller may bind a default-constructed base::RepeatingClosure to
 // any Catch*() method, indicating that they don't want anything run.
@@ -187,7 +188,7 @@ class PpdMetadataManagerTest : public ::testing::Test {
   //
   // Useful for testing the manager's ability to parse and select a
   // proper metadata locale.
-  void NewManagerWithLocale(base::StringPiece browser_locale) {
+  void NewManagerWithLocale(std::string_view browser_locale) {
     manager_.reset();
     manager_ = PpdMetadataManager::Create(
         browser_locale, PpdIndexChannel::kProduction, &clock_,

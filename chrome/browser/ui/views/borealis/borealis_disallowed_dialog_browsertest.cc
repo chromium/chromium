@@ -21,7 +21,7 @@ class BorealisDisallowedDialogBrowserTest : public DialogBrowserTest {
       ShowInstallerDisallowedDialog(
           ::borealis::BorealisFeatures::AllowStatus::kInsufficientHardware);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 };

@@ -37,7 +37,7 @@ int IntValueForLength(const Length& length, int maximum_value) {
 
 float FloatValueForLength(const Length& length,
                           float maximum_value,
-                          const Length::EvaluationInput& input) {
+                          const EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kFixed:
       return length.GetFloatValue();
@@ -58,16 +58,16 @@ float FloatValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 LayoutUnit MinimumValueForLengthInternal(const Length& length,
                                          LayoutUnit maximum_value,
-                                         const Length::EvaluationInput& input) {
+                                         const EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kPercent:
       // Don't remove the extra cast to float. It is needed for rounding on
@@ -90,16 +90,16 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LayoutUnit();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 
 LayoutUnit ValueForLength(const Length& length,
                           LayoutUnit maximum_value,
-                          const Length::EvaluationInput& input) {
+                          const EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kFixed:
     case Length::kPercent:
@@ -118,10 +118,10 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LayoutUnit();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 

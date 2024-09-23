@@ -32,7 +32,7 @@
        itemsForAddingToDragSession:(id<UIDragSession>)session
                        atIndexPath:(NSIndexPath*)indexPath
                              point:(CGPoint)point {
-  // TODO(crbug.com/1100940): Enable multi-select dragging.
+  // TODO(crbug.com/40138131): Enable multi-select dragging.
   return nil;
 }
 
@@ -52,7 +52,7 @@
 - (BOOL)tableView:(UITableView*)tableView
     canHandleDropSession:(id<UIDropSession>)session {
   DCHECK(self.dropDelegate);
-  // TODO(crbug.com/1100940): Enable multi-item drops.
+  // TODO(crbug.com/40138131): Enable multi-item drops.
   return session.items.count == 1U &&
          [self.dropDelegate canHandleURLDropInTableView:tableView] &&
          [session
@@ -77,7 +77,7 @@
     [coordinator.session
         loadObjectsOfClass:[NSURL class]
                 completion:^(NSArray<NSURL*>* objects) {
-                  // TODO(crbug.com/1100940): Enable multi-item drops.
+                  // TODO(crbug.com/40138131): Enable multi-item drops.
                   DCHECK_EQ(1U, objects.count);
                   GURL URL = net::GURLWithNSURL(objects.firstObject);
                   if (URL.is_valid()) {

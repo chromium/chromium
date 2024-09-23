@@ -191,54 +191,6 @@
     <!-- Pseudolocales -->
     <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en_XA/messages.json" lang="en-XA" type="chrome_messages_json"/>
-
-    <if expr="is_android">
-      <output filename="remoting/android/res/values-am/remoting_strings.xml" lang="am" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ar/remoting_strings.xml" lang="ar" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-bg/remoting_strings.xml" lang="bg" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ca/remoting_strings.xml" lang="ca" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-cs/remoting_strings.xml" lang="cs" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-da/remoting_strings.xml" lang="da" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-de/remoting_strings.xml" lang="de" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-el/remoting_strings.xml" lang="el" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values/remoting_strings.xml" lang="en" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-en-rGB/remoting_strings.xml" lang="en-GB" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-es/remoting_strings.xml" lang="es" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-es-rUS/remoting_strings.xml" lang="es-419" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-fa/remoting_strings.xml" lang="fa" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-fi/remoting_strings.xml" lang="fi" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-tl/remoting_strings.xml" lang="fil" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-fr/remoting_strings.xml" lang="fr" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-hi/remoting_strings.xml" lang="hi" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-hr/remoting_strings.xml" lang="hr" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-hu/remoting_strings.xml" lang="hu" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-in/remoting_strings.xml" lang="id" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-it/remoting_strings.xml" lang="it" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-iw/remoting_strings.xml" lang="he" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ja/remoting_strings.xml" lang="ja" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ko/remoting_strings.xml" lang="ko" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-lt/remoting_strings.xml" lang="lt" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-lv/remoting_strings.xml" lang="lv" type="android" context="android_java"/>
-    <!-- The translation console uses 'no' for Norwegian (Bokmål), but Android uses 'nb'. -->
-      <output filename="remoting/android/res/values-nb/remoting_strings.xml" lang="no" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-nl/remoting_strings.xml" lang="nl" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-pl/remoting_strings.xml" lang="pl" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-pt-rBR/remoting_strings.xml" lang="pt-BR" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-pt-rPT/remoting_strings.xml" lang="pt-PT" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ro/remoting_strings.xml" lang="ro" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-ru/remoting_strings.xml" lang="ru" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-sk/remoting_strings.xml" lang="sk" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-sl/remoting_strings.xml" lang="sl" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-sr/remoting_strings.xml" lang="sr" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-sv/remoting_strings.xml" lang="sv" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-sw/remoting_strings.xml" lang="sw" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-th/remoting_strings.xml" lang="th" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-tr/remoting_strings.xml" lang="tr" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-uk/remoting_strings.xml" lang="uk" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-vi/remoting_strings.xml" lang="vi" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-zh-rCN/remoting_strings.xml" lang="zh-CN" type="android" context="android_java"/>
-      <output filename="remoting/android/res/values-zh-rTW/remoting_strings.xml" lang="zh-TW" type="android" context="android_java"/>
-    </if>
   </outputs>
   <translations>
     <file path="remoting_strings_af.xtb" lang="af"/>
@@ -676,20 +628,6 @@
       <message desc="Label for general-purpose OK buttons." name="IDS_OK">
         OK
       </message>
-      <if expr="is_android">
-        <!-- Android uses a different format for placeholder -->
-        <message desc="Message that is spoken (for accessibility) whenever the user selects an account from a list displayed in the application." name="IDS_LOG_IN_ACCOUNT_ACCESSIBILITY_DESCRIPTION" formatter_data="android_java" meaning="Spoken message">
-          Signed in as <ph name="EMAIL_ADDRESS">%1$s<ex>test@gmail.com</ex></ph>.
-        </message>
-        <message desc="This string represents a host status line, which is shown below the host name for offline hosts.  The status line consists of 1) a host offline status (i.e. a specific 'Host failed to read the policy.' or 'Invalid host owner.' or a generic 'Host if offline.') and 2) statement when the host was last seen online (i.e. 'Last seen online 20 minutes ago.')."
-                 name="IDS_HOST_STATUS_LINE" formatter_data="android_java">
-          <ph name="OPTIONAL_OFFLINE_REASON">%2$s<ex>Host failed to read the policy.</ex></ph>  Last seen online <ph name="RELATIVE_TIMESTAMP">%1$s<ex>yesterday</ex></ph>.
-        </message>
-        <message desc="Content description (used for accessibility) of a host icon representing an offline host."
-                 name="IDS_HOST_ICON_OFFLINE_DESCRIPTION" formatter_data="android_java">
-          Offline.
-        </message>
-      </if>
       <if expr="not is_android">
         <message desc="Short message being popped up whenever the user selects an account from a list displayed in the application." name="IDS_LOG_IN_ACCOUNT_DESCRIPTION" meaning="UI element">
           Signed in as <ph name="EMAIL_ADDRESS">$1<ex>test@gmail.com</ex></ph>.
@@ -753,12 +691,6 @@
                name="IDS_OFFLINE_REASON_HOST_RETRIES_EXCEEDED" formatter_data="android_java">
         Host crashed or failed to start.
       </message>
-      <if expr="is_android">
-        <message desc="Description of why host is offline, when client gets a host-offline-reason it doesn't recognize."
-                 name="IDS_OFFLINE_REASON_UNKNOWN" formatter_data="android_java">
-          Unrecognized host error: <ph name="HOST_OFFLINE_REASON">%1$s<ex>EXIT_CODE_FROM_HOST_NEWER_THAN_CLIENT</ex></ph>.
-        </message>
-      </if>
       <if expr="not is_android">
         <message desc="Description of why host is offline, when client gets a host-offline-reason it doesn't recognize."
                  name="IDS_OFFLINE_REASON_UNKNOWN">

@@ -5,9 +5,10 @@
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 
 #include "ash/components/arc/compat_mode/arc_window_property_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -47,7 +48,7 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
     if (is_needed)
       confirmation_needed_app_ids_.push_back(app_id);
     else
-      base::Erase(confirmation_needed_app_ids_, app_id);
+      std::erase(confirmation_needed_app_ids_, app_id);
   }
 
   int GetShowSplashScreenDialogCount() const override { return show_count_; }
@@ -84,7 +85,9 @@ void CompatModeTestBase::TearDown() {
 }
 
 std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_WINDOW);
   widget->widget_delegate()->SetCanResize(true);
   if (show)
     widget->Show();
@@ -97,8 +100,8 @@ std::unique_ptr<views::Widget> CompatModeTestBase::CreateArcWidget(
   auto widget = CreateWidget(/*show=*/false);
   if (app_id)
     widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, *app_id);
-  widget->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  widget->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
+                                         chromeos::AppType::ARC_APP);
   if (show)
     widget->Show();
   return widget;

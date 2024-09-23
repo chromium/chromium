@@ -111,14 +111,14 @@ public class WebViewAnimationTestActivity extends Activity {
                             @Override
                             public void onStopTrackingTouch(SeekBar seekBar) {}
                         });
-        CheckBox layerCheckBox = ((CheckBox) findViewById(R.id.use_layer));
+        CheckBox layerCheckBox = findViewById(R.id.use_layer);
         layerCheckBox.setOnCheckedChangeListener(
                 (CompoundButton arg0, boolean checked) -> {
                     setWebViewLayer(checked);
                 });
         setWebViewLayer(layerCheckBox.isChecked());
 
-        CheckBox stencilCheckBox = ((CheckBox) findViewById(R.id.use_stencil));
+        CheckBox stencilCheckBox = findViewById(R.id.use_stencil);
         stencilCheckBox.setOnCheckedChangeListener(
                 (CompoundButton arg0, boolean checked) -> {
                     setUseExternalStencil(checked);

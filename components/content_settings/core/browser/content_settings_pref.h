@@ -25,6 +25,10 @@
 class PrefService;
 class PrefChangeRegistrar;
 
+namespace base {
+class Clock;
+}
+
 namespace prefs {
 class DictionaryValueUpdate;
 }  // namespace prefs
@@ -82,6 +86,8 @@ class ContentSettingsPref {
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
   bool TryLockForTesting() const;
 
+  void SetClockForTesting(const base::Clock* clock);
+
  private:
   // Reads all content settings exceptions from the preference and loads them
   // into the |value_map_|. The |value_map_| is cleared first.
@@ -92,6 +98,9 @@ class ContentSettingsPref {
       const base::Value::Dict& partition,
       prefs::DictionaryValueUpdate* mutable_partition)
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
+  // Helper function to determine if the setting should be removed.
+  bool ShouldRemoveSetting(base::Time expiration,
+                           content_settings::mojom::SessionModel session_model);
 
   // Callback for changes in the pref with the same name.
   void OnPrefChanged();
@@ -153,6 +162,8 @@ class ContentSettingsPref {
   NotifyObserversCallback notify_callback_;
 
   base::ThreadChecker thread_checker_;
+
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace content_settings

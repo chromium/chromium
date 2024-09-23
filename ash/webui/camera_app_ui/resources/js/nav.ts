@@ -127,6 +127,10 @@ function findIndex(name: ViewName): number {
  * Opens a navigation session of the view; shows the view before entering it and
  * hides the view after leaving it for the ended session.
  *
+ * The Warning view can be opened multiple times with different warning types
+ * before being closed. `hide` might be called multiple times at the time the
+ * Warning view is closed (no remaining warning types).
+ *
  * @param name View name.
  * @param options Optional rest parameters for entering the view.
  * @return Promise for the operation or result.
@@ -137,7 +141,9 @@ export function open(
   const view = show(index);
   return {
     closed: view.enter(options).finally(() => {
-      hide(index);
+      if (isShown(index)) {
+        hide(index);
+      }
     }),
   };
 }

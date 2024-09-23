@@ -5,7 +5,7 @@
   use: [
     {
       protocol: [
-        // TODO(crbug.com/1348174): Rather than require the system to provide
+        // TODO(crbug.com/40855135): Rather than require the system to provide
         // capabilities straight from audio_core, we should run Chromium tests
         // against an audio stack with fake device(s).
         "fuchsia.media.Audio",

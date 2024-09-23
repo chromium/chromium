@@ -1,6 +1,12 @@
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/utils.js
 
+
+const detachedArrayBuffer = new ArrayBuffer(4);
+var b = detachedArrayBuffer.transferToFixedLength();
+
+const emptyArrayBuffer = new ArrayBuffer(0);
+
 const invalidConfigs = [
   {
     comment: 'Missing codec',
@@ -45,6 +51,23 @@ const invalidConfigs = [
       codec: 'opus',
       sampleRate: 8000,
       numberOfChannels: 0,
+    },
+  },
+  {
+    comment: 'Opus with >2 channels but no description',
+    config: {
+      codec: 'opus',
+      sampleRate: 48000,
+      numberOfChannels: 6,
+    }
+  },
+  {
+    comment: 'Valid configuration except detached description',
+    config: {
+      codec: 'opus',
+      sampleRate: 8000,
+      numberOfChannels: 1,
+      description: detachedArrayBuffer,
     },
   },
 ];
@@ -123,6 +146,27 @@ const validButUnsupportedConfigs = [
   },
 ];
 
+// Those configurations are supported, but attempting to configure an
+// AudioDecoder will fail, because `description` is invalid for this particular
+// codec
+var supportedButErrorOnConfiguration = [
+  {
+    comment: 'Opus with more than two channels and without description',
+    config: {
+      codec: 'opus',
+      sampleRate: '48000',
+      numberOfChannels: 3,
+    },
+  },
+  {
+    comment: 'Opus with more than two channels and with a description that is too short',
+    config: {
+      codec: 'opus',
+      sampleRate: '48000',
+      numberOfChannels: 3,
+      description: new Uint8Array(9), // at least 10 bytes are required for multichannel
+    },
+  },
 validButUnsupportedConfigs.forEach(entry => {
   promise_test(
       t => {
@@ -134,10 +178,14 @@ validButUnsupportedConfigs.forEach(entry => {
           entry.comment);
 });
 
-validButUnsupportedConfigs.forEach(entry => {
+var shouldError = validButUnsupportedConfigs.concat(supportedButErrorOnConfiguration);
+
+shouldError.forEach(entry => {
   promise_test(
       t => {
         let isErrorCallbackCalled = false;
+        let supported = AudioDecoder.isConfigSupported(entry.config);
+        assert_implements_optional(supported, entry.config.codec + ' unsupported');
         let codec = new AudioDecoder({
           output: t.unreached_func('unexpected output'),
           error: t.step_func_done(e => {

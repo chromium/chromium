@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -20,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,7 +71,7 @@ using CredentialList = std::vector<std::string>;
 // The type of the test. Either based on Prefs or Cryptohome
 enum class TestType { kPrefs, kCryptohome };
 
-const base::StringPiece TestTypeStr(TestType type) {
+const std::string TestTypeStr(TestType type) {
   switch (type) {
     case TestType::kPrefs:
       return "PrefBased";
@@ -135,13 +135,11 @@ enum ExpectedPinState {
 
 class QuickUnlockPrivateUnitTest
     : public ExtensionApiUnittest,
-      public ::testing::WithParamInterface<std::tuple<TestType, bool>> {
+      public ::testing::WithParamInterface<TestType> {
  public:
   static std::string ParamInfoToString(
       testing::TestParamInfo<QuickUnlockPrivateUnitTest::ParamType> info) {
-    return base::StrCat(
-        {TestTypeStr(std::get<0>(info.param)),
-         std::get<1>(info.param) ? "AutosubmitEnabled" : "AutosubmitDisabled"});
+    return TestTypeStr(info.param);
   }
 
   QuickUnlockPrivateUnitTest() = default;
@@ -156,25 +154,13 @@ class QuickUnlockPrivateUnitTest
   void SetUp() override {
     const auto param = GetParam();
 
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    // Enable/disable PIN auto submit
-    if (std::get<1>(param)) {
-      enabled_features.push_back(ash::features::kQuickUnlockPinAutosubmit);
-    } else {
-      disabled_features.push_back(ash::features::kQuickUnlockPinAutosubmit);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
     ash::CryptohomeMiscClient::InitializeFake();
     ash::UserDataAuthClient::InitializeFake();
     auto* fake_userdataauth_client_testapi =
         ash::FakeUserDataAuthClient::TestApi::Get();
     fake_userdataauth_client_testapi->set_enable_auth_check(true);
 
-    if (std::get<0>(param) == TestType::kCryptohome) {
+    if (param == TestType::kCryptohome) {
       fake_userdataauth_client_testapi->set_supports_low_entropy_credentials(
           true);
     }
@@ -188,12 +174,16 @@ class QuickUnlockPrivateUnitTest
                   ash::SystemSaltGetter::ConvertRawSaltToHexString(
                       ash::FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
-    cryptohome::Key cryptohome_key;
-    cryptohome_key.mutable_data()->set_label(ash::kCryptohomeGaiaKeyLabel);
-    cryptohome_key.set_secret(key.GetSecret());
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
 
+    auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+    auth_input.mutable_password_input()->set_secret(key.GetSecret());
     fake_userdataauth_client_testapi->AddExistingUser(account_id);
-    fake_userdataauth_client_testapi->AddKey(account_id, cryptohome_key);
+    fake_userdataauth_client_testapi->AddAuthFactor(account_id, auth_factor,
+                                                    auth_input);
 
     ash::SystemSaltGetter::Initialize();
 
@@ -245,7 +235,7 @@ class QuickUnlockPrivateUnitTest
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
     auth_token_user_context_.SetSessionLifetime(
         base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
-    if (std::get<0>(GetParam()) == TestType::kCryptohome) {
+    if (GetParam() == TestType::kCryptohome) {
       auto* fake_userdataauth_client_testapi =
           ash::FakeUserDataAuthClient::TestApi::Get();
 
@@ -281,8 +271,9 @@ class QuickUnlockPrivateUnitTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ash::SmartLockServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateSmartLockServiceForTest)}};
+    return {TestingProfile::TestingFactory{
+        ash::SmartLockServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateSmartLockServiceForTest)}};
   }
 
   // If a mode change event is raised, fail the test.
@@ -609,15 +600,12 @@ class QuickUnlockPrivateUnitTest
     return set_pin_future.Get();
   }
 
-  bool IsAutosubmitFeatureEnabled() { return std::get<1>(GetParam()); }
-
   void DisablePinByPolicy() {
     test_api_.reset();
     test_api_ = std::make_unique<ash::quick_unlock::TestApi>(
         /*override_quick_unlock=*/true);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
       test_pref_service_;
 
@@ -899,11 +887,10 @@ TEST_P(QuickUnlockPrivateUnitTest, GetCredentialRequirements) {
 // Enabling a PIN will by default enable auto submit, unless it is
 // recommended/forced by policy to be disabled.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitLongestPossiblePin) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
   SetPin("123456789012");
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 12 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 12);
 }
 
 // When recommended to be disabled, PIN auto submit will not be enabled when
@@ -947,32 +934,30 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitLongPinIsNotExposed) {
 // When auto submit is enabled, it remains enabled when the PIN is changed
 // and the exposed length is updated.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitOnSetAndUpdate) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
 
   SetPin("123456");
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 6);
 
   SetPin("12345678");
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 8 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 8);
 }
 
 // When auto submit is disabled, it remains disabled when the PIN is changed
 // and the exposed length remains zero.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBehaviorWhenDisabled) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
 
   SetPin("123456");
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 6);
 
   // Disable auto submit
-  EXPECT_EQ(SetPinAutosubmitEnabled("", false /*enabled*/), feature_enabled);
+  EXPECT_TRUE(SetPinAutosubmitEnabled("", false /*enabled*/));
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(HasUserValueForPinAutosubmitPref(), feature_enabled);
+  EXPECT_TRUE(HasUserValueForPinAutosubmitPref());
   EXPECT_FALSE(GetAutosubmitPrefVal());
   EXPECT_EQ(GetExposedPinLength(), 0);
 
@@ -980,18 +965,16 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBehaviorWhenDisabled) {
   SetPin("12345678");
   EXPECT_FALSE(GetAutosubmitPrefVal());
   EXPECT_EQ(GetExposedPinLength(), 0);
-  EXPECT_EQ(HasUserValueForPinAutosubmitPref(), feature_enabled);
+  EXPECT_TRUE(HasUserValueForPinAutosubmitPref());
 }
 
 // Disabling PIN removes the user set value for auto submit and clears
 // the exposed length.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitOnPinDisabled) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-
   SetPin("123456");
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 6);
 
   // Disable PIN
   ClearPin();
@@ -1003,8 +986,6 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitOnPinDisabled) {
 // If the user has no control over the preference, the pin length is collected
 // upon a successful authentication attempt.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitCollectLengthOnAuthSuccess) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-
   // Start with MANDATORY FALSE to prevent auto enabling when setting a PIN.
   test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
                                      std::make_unique<base::Value>(false));
@@ -1025,18 +1006,16 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitCollectLengthOnAuthSuccess) {
 
   // Authenticate with the correct pin. Length is exposed.
   EXPECT_TRUE(TryAuthenticate("123456"));
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
+  EXPECT_EQ(GetExposedPinLength(), 6);
 }
 
 // If the user had PIN auto submit enabled and it was forced disabled via
 // policy, the exposed length will be removed when the user pods are updated.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitClearLengthOnUiUpdate) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-
   SetPin("123456");
   EXPECT_TRUE(IsPinSetInBackend());
-  EXPECT_EQ(GetAutosubmitPrefVal(), feature_enabled);
-  EXPECT_EQ(GetExposedPinLength(), feature_enabled ? 6 : 0);
+  EXPECT_TRUE(GetAutosubmitPrefVal());
+  EXPECT_EQ(GetExposedPinLength(), 6);
 
   // Switch to MANDATORY FALSE.
   test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
@@ -1051,21 +1030,11 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitClearLengthOnUiUpdate) {
   EXPECT_EQ(GetExposedPinLength(), 0);
 }
 
-// Checks that the feature flag correctly prevents all actions.
-TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitFeatureGuard) {
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-  EXPECT_EQ(ash::features::IsPinAutosubmitFeatureEnabled(), feature_enabled);
-}
-
 // Tests that the backfill operation sets a user value for the auto submit pref
 // for users who have set a PIN in a version of Chrome OS that did not support
 // auto submit.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillDefaultPinLength) {
   base::HistogramTester histogram_tester;
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-  if (!feature_enabled)
-    return;
-
   SetPinForBackfillTests("123456");
 
   // A successful authentication attempt will backfill the user value.
@@ -1083,9 +1052,6 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillDefaultPinLength) {
 // No backfill operation if the PIN is longer than 6 digits.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillNonDefaultPinLength) {
   base::HistogramTester histogram_tester;
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-  if (!feature_enabled)
-    return;
 
   SetPinForBackfillTests("1234567");
 
@@ -1105,9 +1071,6 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillNonDefaultPinLength) {
 // to false for enterprise users even with a default length of 6.
 TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillEnterprise) {
   base::HistogramTester histogram_tester;
-  const bool feature_enabled = IsAutosubmitFeatureEnabled();
-  if (!feature_enabled)
-    return;
 
   // Enterprise users have auto submit disabled by default.
   test_pref_service_->SetManagedPref(::prefs::kPinUnlockAutosubmitEnabled,
@@ -1127,11 +1090,10 @@ TEST_P(QuickUnlockPrivateUnitTest, PinAutosubmitBackfillEnterprise) {
       ash::quick_unlock::PinBackend::BackfillEvent::kDisabledDueToPolicy, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    StorageProviders,
-    QuickUnlockPrivateUnitTest,
-    testing::Combine(testing::Values(TestType::kPrefs, TestType::kCryptohome),
-                     testing::Bool()), /*autosubmit*/
-    QuickUnlockPrivateUnitTest::ParamInfoToString);
+INSTANTIATE_TEST_SUITE_P(StorageProviders,
+                         QuickUnlockPrivateUnitTest,
+                         testing::Values(TestType::kPrefs,
+                                         TestType::kCryptohome),
+                         QuickUnlockPrivateUnitTest::ParamInfoToString);
 
 }  // namespace extensions

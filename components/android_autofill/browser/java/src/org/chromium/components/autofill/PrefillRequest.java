@@ -39,10 +39,6 @@ class PrefillRequest {
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public SparseArray<VirtualViewFillInfo> getPrefillHints() {
-        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS
-                .isEnabled()) {
-            return null;
-        }
         SparseArray<VirtualViewFillInfo> virtualViewsInfo;
 
         // Check the comment on SparseArrayWithWorkaround class.

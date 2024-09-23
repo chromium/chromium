@@ -68,18 +68,10 @@ std::unique_ptr<UserScript> CreateUserScript(
 
   // match_origin_as_fallback and match_about_blank.
   // Note: `match_about_blank` is ignored if `match_origin_as_fallback` was
-  // specified. `match_origin_as_fallback` can only be specified for extensions
-  // running manifest version 3 or higher. `match_about_blank` can be specified
-  // by any extensions (and is used by MV3+ extensions for compatibility).
+  // specified.
   if (content_script.match_origin_as_fallback) {
-    if (extension->manifest_version() >= 3) {
-      serialized_script.match_origin_as_fallback =
-          content_script.match_origin_as_fallback;
-    } else {
-      extension->AddInstallWarning(
-          InstallWarning(errors::kMatchOriginAsFallbackRestrictedToMV3,
-                         ContentScriptsKeys::kContentScripts));
-    }
+    serialized_script.match_origin_as_fallback =
+        content_script.match_origin_as_fallback;
   }
   // Manifest content scripts support `match_about_blank` (unlike
   // `SerializedUserScript`). If `match_about_blank` is specified, we'll

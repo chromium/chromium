@@ -51,15 +51,20 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
 
   static get properties() {
     return {
-      /** The GUID of the network to display details for. */
-      guid_: String,
-
       isNumCustomApnsLimitReached: {
         type: Boolean,
         notify: true,
         value: false,
         computed: 'computeIsNumCustomApnsLimitReached_(managedProperties_)',
       },
+
+      shouldDisallowApnModification: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** The GUID of the network to display details for. */
+      guid_: String,
 
       managedProperties_: {
         type: Object,
@@ -73,6 +78,7 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
   }
 
   isNumCustomApnsLimitReached: boolean;
+  shouldDisallowApnModification: boolean;
   private deviceState_: OncMojo.DeviceStateProperties|null;
   private guid_: string;
   private managedProperties_: ManagedProperties|undefined;
@@ -146,6 +152,15 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
   openApnDetailDialogInCreateMode(): void {
     assert(this.guid_);
     this.$.apnList.openApnDetailDialogInCreateMode();
+  }
+
+  /**
+   * Helper method that can be used by parent elements to open the APN
+   * selection dialog.
+   */
+  openApnSelectionDialog(): void {
+    assert(this.guid_);
+    this.$.apnList.openApnSelectionDialog();
   }
 
   private async getNetworkDetails_(): Promise<void> {

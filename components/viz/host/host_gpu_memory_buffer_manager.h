@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
@@ -57,7 +58,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // thread).
   HostGpuMemoryBufferManager(
       GpuServiceProvider gpu_service_provider,
-      int client_id,
+      int gpu_service_client_id,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -71,23 +72,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // pending requests to CreateGpuMemoryBuffer() and unblock any threads waiting
   // on requests. Must be called from UI thread.
   void Shutdown();
-
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
-
-  void DestroyAllGpuMemoryBufferForClient(int client_id);
-
-  void AllocateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
-      int client_id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle,
-      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
-      bool call_sync = false);
-
-  bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
-                                            gfx::BufferUsage usage) const;
 
   // Overridden from gpu::GpuMemoryBufferManager:
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
@@ -108,12 +92,23 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
- protected:
-  void SetNativeConfigurations(
-      gpu::GpuMemoryBufferConfigurationSet native_configurations);
-
  private:
   friend class HostGpuMemoryBufferManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
+                           AllocationRequestsForDestroyedClient);
+  FRIEND_TEST_ALL_PREFIXES(HostGpuMemoryBufferManagerTest,
+                           AllocationRequestFromDeadGpuService);
+
+  void AllocateGpuMemoryBuffer(
+      gfx::GpuMemoryBufferId id,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gpu::SurfaceHandle surface_handle,
+      base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
+      bool call_sync = false);
+
+  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id);
 
   struct PendingBufferInfo {
     PendingBufferInfo();
@@ -142,14 +137,9 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // allocation requests for pending memory buffers.
   void OnConnectionError();
 
-  uint64_t ClientIdToTracingId(int client_id) const;
   void OnGpuMemoryBufferAllocated(int gpu_service_version,
-                                  int client_id,
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
-
-  bool CreateBufferUsesGpuService(gfx::BufferFormat format,
-                                  gfx::BufferUsage usage);
 
   GpuServiceProvider gpu_service_provider_;
   raw_ptr<mojom::GpuService> gpu_service_ = nullptr;
@@ -158,21 +148,18 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // whether a buffer is allocated by the most current GPU service or not.
   int gpu_service_version_ = 0;
 
-  const int client_id_;
+  const int gpu_service_client_id_;
   int next_gpu_memory_id_ = 1;
 
   // Used to cancel pending requests on shutdown.
   base::WaitableEvent shutdown_event_;
 
-  std::unordered_map<int, PendingBuffers> pending_buffers_;
-  std::unordered_map<int, AllocatedBuffers> allocated_buffers_;
+  PendingBuffers pending_buffers_;
+  AllocatedBuffers allocated_buffers_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
-
-  gpu::GpuMemoryBufferConfigurationSet native_configurations_;
-  base::AtomicFlag native_configurations_initialized_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;

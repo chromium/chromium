@@ -93,7 +93,7 @@ void LayoutWorkletGlobalScope::registerLayout(
           current_context, GetFrame()->DomWindow(),
           layout_ctor->CallbackObject(), AtomicString("inputProperties"),
           &native_invalidation_properties, &custom_invalidation_properties,
-          &exception_state)) {
+          exception_state)) {
     return;
   }
 
@@ -104,7 +104,7 @@ void LayoutWorkletGlobalScope::registerLayout(
           current_context, GetFrame()->DomWindow(),
           layout_ctor->CallbackObject(), AtomicString("childInputProperties"),
           &child_native_invalidation_properties,
-          &child_custom_invalidation_properties, &exception_state)) {
+          &child_custom_invalidation_properties, exception_state)) {
     return;
   }
 

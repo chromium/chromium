@@ -133,14 +133,12 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void CreateUserWithType(user_manager::UserType user_type) {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
-    TestingProfile::TestingFactories factories;
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(),
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         base::UTF8ToUTF16(account_id.GetUserEmail()), 0 /* avatar_id */,
-        std::move(factories));
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories());
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile);

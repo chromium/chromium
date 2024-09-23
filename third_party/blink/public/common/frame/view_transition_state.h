@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
-#include "base/unguessable_token.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/frame/view_transition_state.mojom-shared.h"
@@ -45,11 +44,16 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
       captured_css_properties;
 
   std::vector<std::string> class_list;
+  std::string containing_group_name;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {
  public:
-  bool HasElements() const { return !elements.empty(); }
+  bool IsValid() const {
+    return next_element_resource_id !=
+           viz::ViewTransitionElementResourceId::kInvalidLocalId;
+  }
+  bool HasSubframeSnapshot() const { return subframe_snapshot_id.IsValid(); }
 
  private:
   // IMPORTANT:
@@ -64,9 +68,12 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
                                    ViewTransitionState>;
 
   std::vector<ViewTransitionElement> elements;
-  base::UnguessableToken navigation_id;
+  ViewTransitionToken transition_token;
   gfx::Size snapshot_root_size_at_capture;
   float device_pixel_ratio = 1.f;
+  uint32_t next_element_resource_id =
+      viz::ViewTransitionElementResourceId::kInvalidLocalId;
+  viz::ViewTransitionElementResourceId subframe_snapshot_id;
 };
 
 }  // namespace blink

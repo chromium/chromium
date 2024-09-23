@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/metrics/sparse_histogram.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
@@ -22,7 +28,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
@@ -266,7 +271,7 @@ TEST_P(SparseHistogramTest, MacroBasicTest) {
   const HistogramBase* const sparse_histogram = histograms[0];
 
   EXPECT_EQ(SPARSE_HISTOGRAM, sparse_histogram->GetHistogramType());
-  EXPECT_EQ("Sparse", StringPiece(sparse_histogram->histogram_name()));
+  EXPECT_STREQ("Sparse", sparse_histogram->histogram_name());
   EXPECT_EQ(
       HistogramBase::kUmaTargetedHistogramFlag |
           (use_persistent_histogram_allocator_ ? HistogramBase::kIsPersistent
@@ -487,16 +492,16 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   // Check the first bucket.
   const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
-  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(100));
-  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(101));
-  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(10));
+  EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(100));
+  EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(101));
+  EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(10));
 
   // Check the second bucket.
   const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
-  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(200));
-  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(201));
-  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(15));
+  EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(200));
+  EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(201));
+  EXPECT_EQ(bucket2->FindInt("count"), std::optional<int>(15));
 }
 
 TEST_P(SparseHistogramTest, WriteAscii) {

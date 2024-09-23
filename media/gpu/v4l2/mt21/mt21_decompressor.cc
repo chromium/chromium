@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
+
 #include <sched.h>
 #include <stdlib.h>
 
 #include "base/bits.h"
-#include "media/gpu/v4l2/mt21/mt21_decompressor.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/v4l2/mt21/mt21_util.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 

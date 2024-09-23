@@ -6,7 +6,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_i18n_api.h"
@@ -44,6 +43,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+    OverlayRequestQueue::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     std::unique_ptr<MockAutofillSaveUpdateAddressProfileDelegateIOS> delegate =
         delegate_factory_

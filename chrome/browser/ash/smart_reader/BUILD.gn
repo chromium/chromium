@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("smart_reader") {
+static_library("smart_reader") {
   sources = [
     "smart_reader_manager_ash.cc",
     "smart_reader_manager_ash.h",

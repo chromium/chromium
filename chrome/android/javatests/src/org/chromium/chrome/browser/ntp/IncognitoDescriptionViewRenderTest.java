@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -22,7 +23,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
@@ -52,7 +52,7 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
                     activity.setContentView(R.layout.incognito_description_layout);
@@ -64,7 +64,7 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Feature({"RenderTest"})
     public void testRender_IncognitoDescriptionView() throws IOException {
         View view = getActivity().findViewById(android.R.id.content);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.setBackgroundResource(R.color.ntp_bg_incognito);
                     ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
@@ -79,7 +79,7 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Feature({"RenderTest"})
     public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
         View view = getActivity().findViewById(android.R.id.content);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.setBackgroundResource(R.color.ntp_bg_incognito);
                     ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);

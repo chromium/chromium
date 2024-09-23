@@ -51,7 +51,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #endif
@@ -83,7 +83,7 @@ int g_shutdown_num_processes_slow;
 const char* ToShutdownTypeString(ShutdownType type) {
   switch (type) {
     case ShutdownType::kNotValid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ShutdownType::kWindowClose:
       return "close";
@@ -116,8 +116,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void OnShutdownStarting(ShutdownType type) {
   CheckAccessedOnCorrectThread();
-  if (g_shutdown_type != ShutdownType::kNotValid)
+  if (g_shutdown_type != ShutdownType::kNotValid) {
     return;
+  }
 
   static crash_reporter::CrashKeyString<11> shutdown_type_key("shutdown-type");
   shutdown_type_key.Set(ToShutdownTypeString(type));
@@ -130,7 +131,7 @@ void OnShutdownStarting(ShutdownType type) {
   DCHECK(!g_shutdown_started);
   g_shutdown_started = new base::Time(base::Time::Now());
 
-  // TODO(https://crbug.com/1071664): Check if this should also be enabled for
+  // TODO(crbug.com/40685224): Check if this should also be enabled for
   // coverage builds.
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
   // Wait for all the child processes to dump their profiling data without
@@ -150,8 +151,9 @@ void OnShutdownStarting(ShutdownType type) {
              content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       ++g_shutdown_num_processes;
-      if (!i.GetCurrentValue()->FastShutdownIfPossible())
+      if (!i.GetCurrentValue()->FastShutdownIfPossible()) {
         ++g_shutdown_num_processes_slow;
+      }
     }
   }
 }
@@ -184,7 +186,7 @@ bool ShutdownPreThreadsStop() {
   // consider putting it in BrowserProcessImpl::EndSession.
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
   if (metrics) {
-    // TODO(crbug/1338797): LogCleanShutdown() is called earlier on in
+    // TODO(crbug.com/40849295): LogCleanShutdown() is called earlier on in
     // shutdown. See whether this call can be removed.
     metrics->LogCleanShutdown();
   }
@@ -193,8 +195,6 @@ bool ShutdownPreThreadsStop() {
   g_browser_process->local_state()->CommitPendingWrite();
 
 #if BUILDFLAG(ENABLE_RLZ)
-  // Cleanup any statics created by RLZ. Must be done before NotificationService
-  // is destroyed.
   rlz::RLZTracker::CleanupRlz();
 #endif
 
@@ -267,7 +267,8 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   NukeDeletedProfilesFromDisk();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted", true);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted",
+                                                     /*send_to_uma=*/false);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -290,7 +291,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
     switch (restart_mode) {
       case RestartMode::kNoRestart:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case RestartMode::kRestartInBackground:
@@ -305,14 +306,16 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
       case RestartMode::kRestartThisSession:
         // Copy URLs and other arguments to the new command line.
-        for (const auto& arg : old_cl.GetArgs())
+        for (const auto& arg : old_cl.GetArgs()) {
           new_cl.AppendArgNative(arg);
+        }
         break;
     }
 
     // Append the old switches to the new command line.
-    for (const auto& it : switches)
+    for (const auto& it : switches) {
       new_cl.AppendSwitchNative(it.first, it.second);
+    }
 
     if (restart_mode == RestartMode::kRestartLastSession ||
         restart_mode == RestartMode::kRestartThisSession) {
@@ -332,8 +335,9 @@ void SetTryingToQuit(bool quitting) {
   CheckAccessedOnCorrectThread();
   g_trying_to_quit = quitting;
 
-  if (quitting)
+  if (quitting) {
     return;
+  }
 
   // Reset the restart-related preferences. They get set unconditionally through
   // calls such as chrome::AttemptRestart(), and need to be reset if the restart

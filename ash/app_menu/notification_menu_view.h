@@ -58,7 +58,8 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
   ~NotificationMenuView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // Whether |notifications_for_this_app_| is empty.
@@ -120,10 +121,10 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
 
   // A double separator used to distinguish notifications from context menu
   // options. Owned by views hierarchy.
-  raw_ptr<views::MenuSeparator> double_separator_;
+  raw_ptr<views::MenuSeparator, DanglingUntriaged> double_separator_;
 
   // Holds the header and counter texts. Owned by views hierarchy.
-  raw_ptr<NotificationMenuHeaderView> header_view_;
+  raw_ptr<NotificationMenuHeaderView, DanglingUntriaged> header_view_;
 
   // A view that shows icons of notifications for this app that are not being
   // shown.

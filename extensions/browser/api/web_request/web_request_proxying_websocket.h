@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,6 +87,9 @@ class WebRequestProxyingWebSocket
   void OnHeadersReceived(const std::string& headers,
                          const net::IPEndPoint& endpoint,
                          OnHeadersReceivedCallback callback) override;
+
+  // WebRequestAPI::Proxy:
+  void OnDNRExtensionUnloaded(const Extension* extension) override;
 
   static void StartProxying(
       WebSocketFactory factory,

@@ -5,9 +5,11 @@
 #include "chrome/browser/permissions/permission_update_requester_android.h"
 
 #include "base/android/jni_array.h"
-#include "chrome/android/chrome_jni_headers/PermissionUpdateRequester_jni.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PermissionUpdateRequester_jni.h"
 
 PermissionUpdateRequester::PermissionUpdateRequester(
     content::WebContents* web_contents,

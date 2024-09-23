@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/win/pin_base_win.h"
 
 #include "base/check.h"
@@ -185,7 +190,7 @@ HRESULT PinBase::QueryDirection(PIN_DIRECTION* pin_dir) {
 }
 
 HRESULT PinBase::QueryId(LPWSTR* id) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 HRESULT PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
@@ -217,7 +222,7 @@ HRESULT PinBase::EndFlush() {
 HRESULT PinBase::NewSegment(REFERENCE_TIME start,
                             REFERENCE_TIME stop,
                             double rate) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Inherited from IMemInputPin.

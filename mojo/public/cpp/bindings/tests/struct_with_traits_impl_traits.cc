@@ -33,7 +33,6 @@ EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::ToMojom(
   };
 
   NOTREACHED();
-  return test::EnumWithTraits::VALUE_0;
 }
 
 bool EnumTraits<test::EnumWithTraits, test::EnumWithTraitsImpl>::FromMojom(

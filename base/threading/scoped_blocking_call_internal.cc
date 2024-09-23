@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/threading/scoped_blocking_call_internal.h"
 
 #include <algorithm>
@@ -20,18 +25,17 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local BlockingObserver* blocking_observer = nullptr;
+constinit thread_local BlockingObserver* blocking_observer = nullptr;
 
 // Last ScopedBlockingCall instantiated on this thread.
-ABSL_CONST_INIT thread_local UncheckedScopedBlockingCall*
-    last_scoped_blocking_call = nullptr;
+constinit thread_local UncheckedScopedBlockingCall* last_scoped_blocking_call =
+    nullptr;
 
 // These functions can be removed, and the calls below replaced with direct
 // variable accesses, once the MSAN workaround is not necessary.

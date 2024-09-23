@@ -20,6 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 
 #include <limits>
@@ -166,42 +171,13 @@ bool ParseNumber(const UChar*& ptr,
   return GenericParseNumber(ptr, end, number, mode);
 }
 
-// only used to parse largeArcFlag and sweepFlag which must be a "0" or "1"
-// and might not have any whitespace/comma after it
-template <typename CharType>
-bool GenericParseArcFlag(const CharType*& ptr,
-                         const CharType* end,
-                         bool& flag) {
-  if (ptr >= end)
-    return false;
-  const CharType flag_char = *ptr;
-  if (flag_char == '0')
-    flag = false;
-  else if (flag_char == '1')
-    flag = true;
-  else
-    return false;
-
-  ptr++;
-  SkipOptionalSVGSpacesOrDelimiter(ptr, end);
-
-  return true;
-}
-
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
-}
-
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag) {
-  return GenericParseArcFlag(ptr, end, flag);
-}
-
 bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
   if (string.empty())
     return false;
 
-  return WTF::VisitCharacters(string, [&](const auto* ptr, unsigned length) {
-    const auto* end = ptr + length;
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* ptr = chars.data();
+    const auto* end = ptr + chars.size();
     if (!ParseNumber(ptr, end, x))
       return false;
 

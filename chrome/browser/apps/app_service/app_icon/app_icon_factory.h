@@ -23,8 +23,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gfx {
@@ -98,7 +98,7 @@ void ArcActivityIconsToImageSkias(
     base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)>
         callback);
 
-// TODO(crbug.com/1189994): Unify this function with AppIconLoader class.
+// TODO(crbug.com/40755741): Unify this function with AppIconLoader class.
 // It's the same as AppIconLoader::OnReadWebAppIcon().
 gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,

@@ -11,7 +11,6 @@
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
@@ -27,15 +26,14 @@ constexpr base::TimeDelta kMinimumElapsedWatchTime =
     base::Seconds(limits::kMinimumElapsedWatchTimeSecs);
 
 static void RecordWatchTimeInternal(
-    base::StringPiece key,
+    std::string_view key,
     base::TimeDelta value,
     base::TimeDelta minimum = kMinimumElapsedWatchTime) {
   DCHECK(!key.empty());
-  base::UmaHistogramCustomTimes(std::string(key), value, minimum,
-                                base::Hours(10), 50);
+  base::UmaHistogramCustomTimes(key, value, minimum, base::Hours(10), 50);
 }
 
-static void RecordMeanTimeBetweenRebuffers(base::StringPiece key,
+static void RecordMeanTimeBetweenRebuffers(std::string_view key,
                                            base::TimeDelta value) {
   DCHECK(!key.empty());
 
@@ -44,16 +42,16 @@ static void RecordMeanTimeBetweenRebuffers(base::StringPiece key,
   RecordWatchTimeInternal(key, value, base::Seconds(1.4));
 }
 
-static void RecordDiscardedWatchTime(base::StringPiece key,
+static void RecordDiscardedWatchTime(std::string_view key,
                                      base::TimeDelta value) {
   DCHECK(!key.empty());
-  base::UmaHistogramCustomTimes(std::string(key), value, base::TimeDelta(),
+  base::UmaHistogramCustomTimes(key, value, base::TimeDelta(),
                                 kMinimumElapsedWatchTime, 50);
 }
 
-static void RecordRebuffersCount(base::StringPiece key, int underflow_count) {
+static void RecordRebuffersCount(std::string_view key, int underflow_count) {
   DCHECK(!key.empty());
-  base::UmaHistogramCounts100(std::string(key), underflow_count);
+  base::UmaHistogramCounts100(key, underflow_count);
 }
 
 WatchTimeRecorder::WatchTimeUkmRecord::WatchTimeUkmRecord(
@@ -117,7 +115,7 @@ void WatchTimeRecorder::FinalizeWatchTime(
     // Report only certain keys to UMA and only if they have at met the minimum
     // watch time requirement. Otherwise, for SRC/MSE/EME keys, log them to the
     // discard metric.
-    base::StringPiece key_str = ConvertWatchTimeKeyToStringForUma(kv.first);
+    std::string_view key_str = ConvertWatchTimeKeyToStringForUma(kv.first);
     if (ShouldRecordUma() && !key_str.empty()) {
       if (kv.second >= kMinimumElapsedWatchTime) {
         RecordWatchTimeInternal(key_str, kv.second);
@@ -470,9 +468,9 @@ WatchTimeRecorder::ExtendedMetricsKeyMap::ExtendedMetricsKeyMap(
 
 WatchTimeRecorder::ExtendedMetricsKeyMap::ExtendedMetricsKeyMap(
     WatchTimeKey watch_time_key,
-    base::StringPiece mtbr_key,
-    base::StringPiece smooth_rate_key,
-    base::StringPiece discard_key)
+    std::string_view mtbr_key,
+    std::string_view smooth_rate_key,
+    std::string_view discard_key)
     : watch_time_key(watch_time_key),
       mtbr_key(mtbr_key),
       smooth_rate_key(smooth_rate_key),

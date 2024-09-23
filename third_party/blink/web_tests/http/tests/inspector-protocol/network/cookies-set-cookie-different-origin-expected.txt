@@ -1,0 +1,12 @@
+Tests that cookies for a different origin can be set
+Result of Network.setCookie: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Page cookies: Num of cookies 0
+All cookies: Num of cookies 1
+name: foo, value: bar1, domain: example.com, path: /, session
+

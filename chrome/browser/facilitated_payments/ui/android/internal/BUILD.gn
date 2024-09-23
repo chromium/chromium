@@ -1,0 +1,138 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
+  ]
+}
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.facilitated_payments"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/BankAccountViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsErrorScreen.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsFopSelectorScreen.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsMediator.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsProperties.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsView.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsProgressScreen.java",
+  ]
+
+  srcjar_deps = [ ":jni" ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/autofill/android:java",
+    "//chrome/browser/facilitated_payments/ui/android:public_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
+    "//components/autofill/android:payments_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/payments/content/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/bank_account_icon_background.xml",
+    "java/res/drawable/facilitated_payments_error_icon.xml",
+    "java/res/drawable/lock_icon.xml",
+    "java/res/layout/bank_account_item.xml",
+    "java/res/layout/facilitated_payments_continue_button.xml",
+    "java/res/layout/facilitated_payments_error_screen.xml",
+    "java/res/layout/facilitated_payments_fop_selector.xml",
+    "java/res/layout/facilitated_payments_payment_methods_additional_info.xml",
+    "java/res/layout/facilitated_payments_payment_methods_sheet_footer_item.xml",
+    "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
+    "java/res/layout/facilitated_payments_progress_screen.xml",
+    "java/res/layout/facilitated_payments_sequence_view.xml",
+    "java/res/values/dimens.xml",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.facilitated_payments"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerRobolectricTest.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridgeTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/autofill/android:autofill_java",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/payments/content/android:full_java",
+    "//components/payments/content/android:payments_java_test_support",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.facilitated_payments"
+  sources = [ "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:callback_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_public_base_module_java_for_test",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}

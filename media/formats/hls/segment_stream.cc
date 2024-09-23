@@ -6,6 +6,50 @@
 
 namespace media::hls {
 
+SegmentStream::SegmentIndex::SegmentIndex(const MediaSegment& segment)
+    : SegmentIndex(segment.GetMediaSequenceNumber(),
+                   segment.GetDiscontinuitySequenceNumber()) {}
+
+SegmentStream::SegmentIndex::SegmentIndex(types::DecimalInteger discontinuity,
+                                          types::DecimalInteger media)
+    : media_sequence_(media), discontinuity_sequence_(discontinuity) {}
+
+bool SegmentStream::SegmentIndex::operator<(
+    const SegmentStream::SegmentIndex& other) const {
+  return (discontinuity_sequence_ < other.discontinuity_sequence_) ||
+         (discontinuity_sequence_ == other.discontinuity_sequence_ &&
+          media_sequence_ < other.media_sequence_);
+}
+
+bool SegmentStream::SegmentIndex::operator<=(
+    const SegmentStream::SegmentIndex& other) const {
+  return *this < other || *this == other;
+}
+
+bool SegmentStream::SegmentIndex::operator==(
+    const SegmentStream::SegmentIndex& other) const {
+  return discontinuity_sequence_ == other.discontinuity_sequence_ &&
+         media_sequence_ == other.media_sequence_;
+}
+
+bool SegmentStream::SegmentIndex::operator>(
+    const SegmentStream::SegmentIndex& other) const {
+  return !(*this == other) && !(*this < other);
+}
+
+SegmentStream::SegmentIndex SegmentStream::SegmentIndex::MaxOf(
+    const MediaSegment& other) const {
+  SegmentIndex other_index(other);
+  if (other_index < *this) {
+    return *this;
+  }
+  return other_index;
+}
+
+SegmentStream::SegmentIndex SegmentStream::SegmentIndex::Next() const {
+  return {discontinuity_sequence_, media_sequence_ + 1};
+}
+
 SegmentStream::~SegmentStream() = default;
 SegmentStream::SegmentStream(scoped_refptr<MediaPlaylist> playlist,
                              bool seekable)
@@ -14,8 +58,7 @@ SegmentStream::SegmentStream(scoped_refptr<MediaPlaylist> playlist,
       active_playlist_(std::move(playlist)) {
   for (const auto& segment : active_playlist_->GetSegments()) {
     segments_.push(segment);
-    highest_sequence_number_ =
-        std::max(highest_sequence_number_, segment->GetMediaSequenceNumber());
+    highest_segment_index_ = highest_segment_index_.MaxOf(*segment);
   }
 }
 
@@ -60,41 +103,51 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
   const auto& segments = active_playlist_->GetSegments();
   if (segments.empty()) {
     // No new segments.
-    // TODO(crbug/1266991): Should this be an error? I do not know if this ever
-    // happens in the wild. I can imagine that it does, hence not raising an
-    // error here for now. The spec doesn't seem to clear it up.
+    // TODO(crbug.com/40057824): Should this be an error? I do not know if this
+    // ever happens in the wild. I can imagine that it does, hence not raising
+    // an error here for now. The spec doesn't seem to clear it up.
     return;
   }
 
-  // VOD playlists are very easy. because we know all the sequence numbers are
-  // the same, we can just use the seek functionality to reset the queue.
-  if (seekable_) {
-    Seek(next_segment_start_);
-    return;
+  bool must_keep_encrypted_ = false;
+  if (!Exhausted()) {
+    // If the head is a non-fresh encrypted segment, keep it.
+    must_keep_encrypted_ = !!segments_.front()->GetEncryptionData() &&
+                           !segments_.front()->HasNewEncryptionData();
   }
 
-  // We need to get the sequence number for what should be the first new thing
-  // in the queue. If it was exhausted, that thing is the highest seen so far.
-  // if there is still data, we should use the first instead.
-  types::DecimalInteger next_sequence_number = 0;
+  SegmentIndex starting_segment_index = {0, 0};
   if (Exhausted()) {
-    next_sequence_number = highest_sequence_number_;
+    if (seekable_) {
+      // If a VOD stream is exhausted, there is nothing to append. Seeking later
+      // will use the new active playlist's queue.
+      return;
+    }
+    starting_segment_index = highest_segment_index_.Next();
   } else {
-    next_sequence_number = segments_.front()->GetMediaSequenceNumber() - 1;
+    starting_segment_index = SegmentIndex(*segments_.front());
   }
 
-  // Then we clear the queue and add everything that came after the segment
-  // which was most recently served.
-  segments_ = {};
+  if (must_keep_encrypted_) {
+    starting_segment_index = starting_segment_index.Next();
+  }
+
+  base::queue<scoped_refptr<MediaSegment>> new_queue;
+  if (must_keep_encrypted_) {
+    new_queue.push(std::move(segments_.front()));
+  }
+
   for (const auto& segment : segments) {
-    auto seg_seq_num = segment->GetMediaSequenceNumber();
-    if (seg_seq_num > next_sequence_number) {
-      segments_.push(segment);
+    auto segment_sequence_index = SegmentIndex(*segment);
+    if (starting_segment_index <= segment_sequence_index) {
+      new_queue.push(segment);
     }
-    if (seg_seq_num > highest_sequence_number_) {
-      highest_sequence_number_ = seg_seq_num;
+    if (segment_sequence_index > highest_segment_index_) {
+      highest_segment_index_ = segment_sequence_index;
     }
   }
+
+  segments_ = std::move(new_queue);
 }
 
 base::TimeDelta SegmentStream::GetMaxDuration() const {

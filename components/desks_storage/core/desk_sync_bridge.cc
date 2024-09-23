@@ -36,12 +36,12 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -77,7 +77,7 @@ using TabGroupColor = tab_groups::TabGroupColorId;
 
 namespace {
 
-using syncer::ModelTypeStore;
+using syncer::DataTypeStore;
 
 // The maximum number of templates the chrome sync storage can hold.
 constexpr size_t kMaxTemplateCount = 6u;
@@ -104,12 +104,12 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 // parameters are first for binding purposes.
 std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
     base::flat_map<base::Uuid, std::unique_ptr<DeskTemplate>>* desk_templates,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(desk_templates);
   DCHECK(desk_templates->empty());
   DCHECK(record_list);
 
-  for (const syncer::ModelTypeStore::Record& r : *record_list) {
+  for (const syncer::DataTypeStore::Record& r : *record_list) {
     auto specifics = std::make_unique<sync_pb::WorkspaceDeskSpecifics>();
     if (specifics->ParseFromString(r.value)) {
       const base::Uuid uuid =
@@ -139,10 +139,10 @@ std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
 }  // namespace
 
 DeskSyncBridge::DeskSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     const AccountId& account_id)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       is_ready_(false),
       account_id_(account_id) {
   std::move(create_store_callback)
@@ -155,13 +155,13 @@ DeskSyncBridge::~DeskSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 DeskSyncBridge::CreateMetadataChangeList() {
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // MergeFullSyncData will be called when Desk Template model type is enabled
+  // MergeFullSyncData will be called when Desk Template data type is enabled
   // to start syncing. There could be local desk templates that user has created
   // before enabling sync or during the time when Desk Template sync is
   // disabled. We should merge local and server data. We will send all
@@ -183,8 +183,7 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> added_or_updated;
   std::vector<base::Uuid> removed;
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const base::Uuid uuid =
@@ -238,8 +237,8 @@ std::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void DeskSyncBridge::GetData(StorageKeyList storage_keys,
-                             DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& uuid : storage_keys) {
@@ -253,10 +252,10 @@ void DeskSyncBridge::GetData(StorageKeyList storage_keys,
                          entry, apps::AppRegistryCacheWrapper::Get()
                                     .GetAppRegistryCache(account_id_))));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> DeskSyncBridge::GetAllDataForDebugging() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& it : desk_template_entries_) {
     batch->Put(it.first.AsLowercaseString(),
@@ -265,7 +264,7 @@ void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
                    apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
                        account_id_))));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string DeskSyncBridge::GetClientTag(
@@ -363,8 +362,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   // Check the new entry size and ensure it is below the size limit.
   auto sync_proto = desk_template_conversion::ToSyncProto(
@@ -416,10 +414,10 @@ void DeskSyncBridge::DeleteEntry(const base::Uuid& uuid,
     return;
   }
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   change_processor()->Delete(uuid.AsLowercaseString(),
+                             syncer::DeletionOrigin::Unspecified(),
                              batch->GetMetadataChangeList());
 
   desk_template_entries_.erase(uuid);
@@ -444,13 +442,13 @@ DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntriesSync() {
     return DeleteEntryStatus::kFailure;
   }
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   std::set<base::Uuid> all_uuids = GetAllEntryUuids();
 
   for (const auto& uuid : all_uuids) {
     change_processor()->Delete(uuid.AsLowercaseString(),
+                               syncer::DeletionOrigin::Unspecified(),
                                batch->GetMetadataChangeList());
     batch->DeleteData(uuid.AsLowercaseString());
   }
@@ -560,7 +558,7 @@ void DeskSyncBridge::NotifyRemoteDeskTemplateDeleted(
 
 void DeskSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -612,7 +610,7 @@ void DeskSyncBridge::OnCommit(const std::optional<syncer::ModelError>& error) {
   }
 }
 
-void DeskSyncBridge::Commit(std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+void DeskSyncBridge::Commit(std::unique_ptr<DataTypeStore::WriteBatch> batch) {
   store_->CommitWriteBatch(std::move(batch),
                            base::BindOnce(&DeskSyncBridge::OnCommit,
                                           weak_ptr_factory_.GetWeakPtr()));

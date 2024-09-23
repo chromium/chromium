@@ -2,34 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/prediction/empty_filter.h"
+
 #include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/prediction/empty_filter.h"
-#include "ui/base/prediction/input_filter_unittest_helpers.h"
 #include "ui/base/prediction/prediction_unittest_helpers.h"
 
 namespace ui {
 namespace test {
 
-class EmptyFilterTest : public InputFilterTest {
+class EmptyFilterTest : public testing::Test {
  public:
-  explicit EmptyFilterTest() {}
+  explicit EmptyFilterTest() = default;
+  ~EmptyFilterTest() override = default;
 
   EmptyFilterTest(const EmptyFilterTest&) = delete;
   EmptyFilterTest& operator=(const EmptyFilterTest&) = delete;
 
   void SetUp() override { filter_ = std::make_unique<EmptyFilter>(); }
+
+ protected:
+  std::unique_ptr<InputFilter> filter_;
 };
-
-// Test the Clone function of the filter
-TEST_F(EmptyFilterTest, TestClone) {
-  TestCloneFilter();
-}
-
-// Test the Reset function of the filter
-TEST_F(EmptyFilterTest, TestReset) {
-  TestResetFilter();
-}
 
 // Test the empty filter gives the same values
 TEST_F(EmptyFilterTest, filteringValues) {

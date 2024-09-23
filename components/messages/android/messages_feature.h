@@ -13,18 +13,6 @@ namespace messages {
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
-// Feature that controls whether offer notifications use Messages or Infobars
-// infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidOfferNotification);
-
-// Feature that controls whether permission update prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidPermissionUpdate);
-
-// Feature that controls whether "popup blocked" prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidPopupBlocked);
-
 // Feature that controls whether "save card" prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
@@ -42,11 +30,7 @@ BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
 
 bool IsAdsBlockedMessagesUiEnabled();
 
-bool IsOfferNotificationMessagesUiEnabled();
-
 bool IsPermissionUpdateMessagesUiEnabled();
-
-bool IsPopupBlockedMessagesUiEnabled();
 
 bool IsSafetyTipMessagesUiEnabled();
 
@@ -57,8 +41,6 @@ bool UseFollowupButtonTextForSaveCardMessage();
 bool UseGPayIconForSaveCardMessage();
 
 bool UseDialogV2ForSaveCardMessage();
-
-bool IsStackingAnimationEnabled();
 
 }  // namespace messages
 

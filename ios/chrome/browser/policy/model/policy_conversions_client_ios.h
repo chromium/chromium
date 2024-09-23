@@ -5,11 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_POLICY_CONVERSIONS_CLIENT_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_POLICY_CONVERSIONS_CLIENT_IOS_H_
 
-#include "components/policy/core/browser/policy_conversions_client.h"
-
 #import "base/memory/raw_ptr.h"
-
-class ChromeBrowserState;
+#import "components/policy/core/browser/policy_conversions_client.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace web {
 class BrowserState;

@@ -33,12 +33,14 @@ class ActionEditView : public views::Button {
   ActionEditView& operator=(const ActionEditView&) = delete;
   ~ActionEditView() override;
 
-  void RemoveNewState();
-
   virtual void OnActionInputBindingUpdated();
+
+  void RemoveNewState();
 
   // Returns Action name, such as "Joystick WASD".
   std::u16string CalculateActionName();
+
+  void PerformPulseAnimation();
 
   Action* action() const { return action_; }
 

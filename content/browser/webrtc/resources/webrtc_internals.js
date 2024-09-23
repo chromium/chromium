@@ -224,6 +224,7 @@ function removePeerConnection(data) {
 
   const element = document.getElementById(getPeerConnectionId(data));
   if (element && !searchParameters.has('keepRemovedConnections')) {
+    removeStatsReportGraphs(element);
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
   }

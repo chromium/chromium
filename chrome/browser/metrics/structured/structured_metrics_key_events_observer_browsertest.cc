@@ -39,8 +39,10 @@ class StructuredMetricsKeyEventsObserverTest : public ash::LoginManagerTest {
 
  protected:
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_,
-                                                   /*setup_profile=*/false};
+  // Allowing the mixin to add a profile because Logging-in doesn't create one
+  // for us. Additionally, the profiles created by the browser are created
+  // before the mixin has completed its setup.
+  StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(StructuredMetricsKeyEventsObserverTest,

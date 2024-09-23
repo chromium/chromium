@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
@@ -18,12 +19,14 @@ namespace blink {
 
 TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, bcg_info);
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, bcg_info,
+                           /*color_provider_colors=*/nullptr,
+                           /*partitioned_popin_params=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(),
             bcg_info.browsing_context_group_token);
@@ -32,10 +35,11 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
-  Page* page = Page::CreateNonOrdinary(client, *scheduler);
+  Page* page = Page::CreateNonOrdinary(*client, *scheduler,
+                                       /*color_provider_colors=*/nullptr);
 
   EXPECT_FALSE(page->BrowsingContextGroupToken().is_empty());
   EXPECT_FALSE(page->CoopRelatedGroupToken().is_empty());
@@ -45,12 +49,14 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, BrowsingContextGroupUpdate) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
-  Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
-                                    initial_bcg_info);
+  Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
+                                    initial_bcg_info,
+                                    /*color_provider_colors=*/nullptr,
+                                    /*partitioned_popin_params=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(),
             initial_bcg_info.browsing_context_group_token);
@@ -72,13 +78,15 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   scoped_feature_list.InitAndEnableFeature(
       features::kPausePagesPerBrowsingContextGroup);
 
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
   auto group_a = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page1 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_a);
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_a,
+                           /*color_provider_colors=*/nullptr,
+                           /*partitioned_popin_params=*/nullptr);
 
   auto pauser_for_group_a =
       std::make_unique<ScopedBrowsingContextGroupPauser>(*page1);
@@ -89,7 +97,9 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   ASSERT_FALSE(page1->Paused());
 
   Page* page2 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_b);
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_b,
+                           /*color_provider_colors=*/nullptr,
+                           /*partitioned_popin_params=*/nullptr);
   ASSERT_FALSE(page2->Paused());
 
   page2->UpdateBrowsingContextGroup(group_a);
@@ -97,6 +107,63 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
 
   pauser_for_group_a.reset();
   ASSERT_FALSE(page2->Paused());
+}
+
+TEST(PageTest, CreateOrdinaryColorProviders) {
+  test::TaskEnvironment task_environment;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
+  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+  auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
+  auto color_provider_colors = ColorProviderColorMaps::CreateDefault();
+
+  Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
+                                    bcg_info, &color_provider_colors,
+                                    /*partitioned_popin_params=*/nullptr);
+
+  const ui::ColorProvider* light_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* dark_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kDark,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* forced_colors_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/true);
+
+  // All color provider instances should be non-null.
+  ASSERT_TRUE(light_color_provider);
+  ASSERT_TRUE(dark_color_provider);
+  ASSERT_TRUE(forced_colors_color_provider);
+}
+
+TEST(PageTest, CreateNonOrdinaryColorProviders) {
+  test::TaskEnvironment task_environment;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
+  auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
+
+  Page* page = Page::CreateNonOrdinary(*client, *scheduler,
+                                       /*color_provider_colors=*/nullptr);
+
+  const ui::ColorProvider* light_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* dark_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kDark,
+          /*in_forced_colors=*/false);
+  const ui::ColorProvider* forced_colors_color_provider =
+      page->GetColorProviderForPainting(
+          /*color_scheme=*/mojom::blink::ColorScheme::kLight,
+          /*in_forced_colors=*/true);
+
+  // All color provider instances should be non-null.
+  ASSERT_TRUE(light_color_provider);
+  ASSERT_TRUE(dark_color_provider);
+  ASSERT_TRUE(forced_colors_color_provider);
 }
 
 }  // namespace blink

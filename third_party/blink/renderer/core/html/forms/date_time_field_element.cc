@@ -81,12 +81,15 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
   if (IsDisabled() || IsFieldOwnerDisabled())
     return;
 
-  const String& key = keyboard_event.key();
-  bool is_horizontal =
-      GetComputedStyle() ? GetComputedStyle()->IsHorizontalWritingMode() : true;
+  const AtomicString key(keyboard_event.key());
+  WritingMode writing_mode = GetComputedStyle()
+                                 ? GetComputedStyle()->GetWritingMode()
+                                 : WritingMode::kHorizontalTb;
+  const PhysicalToLogical<const AtomicString*> key_mapper(
+      {writing_mode, TextDirection::kLtr}, &keywords::kArrowUp,
+      &keywords::kArrowRight, &keywords::kArrowDown, &keywords::kArrowLeft);
 
-  if ((is_horizontal && key == "ArrowLeft") ||
-      (!is_horizontal && key == "ArrowUp")) {
+  if (key == *key_mapper.InlineStart()) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use FocusController::advanceFocus(FocusDirectionLeft,
@@ -96,8 +99,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if ((is_horizontal && key == "ArrowRight") ||
-      (!is_horizontal && key == "ArrowDown")) {
+  if (key == *key_mapper.InlineEnd()) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use
@@ -111,8 +113,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
   if (IsFieldOwnerReadOnly())
     return;
 
-  if ((is_horizontal && key == "ArrowDown") ||
-      (!is_horizontal && key == "ArrowLeft")) {
+  if (key == *key_mapper.LineUnder()) {
     if (keyboard_event.getModifierState("Alt"))
       return;
     keyboard_event.SetDefaultHandled();
@@ -120,8 +121,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if ((is_horizontal && key == "ArrowUp") ||
-      (!is_horizontal && key == "ArrowRight")) {
+  if (key == *key_mapper.LineOver()) {
     keyboard_event.SetDefaultHandled();
     StepUp();
     return;
@@ -222,8 +222,10 @@ void DateTimeFieldElement::SetDisabled() {
                           style_change_extra_data::g_disabled));
 }
 
-bool DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
-  return !IsDisabled() && !IsFieldOwnerDisabled();
+FocusableState DateTimeFieldElement::SupportsFocus(UpdateBehavior) const {
+  return (!IsDisabled() && !IsFieldOwnerDisabled())
+             ? FocusableState::kFocusable
+             : FocusableState::kNotFocusable;
 }
 
 void DateTimeFieldElement::UpdateVisibleValue(EventBehavior event_behavior) {

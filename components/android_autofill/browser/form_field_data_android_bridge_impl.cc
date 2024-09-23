@@ -4,7 +4,6 @@
 
 #include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -13,10 +12,12 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "components/android_autofill/browser/jni_headers/FormFieldData_jni.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/jni_headers/FormFieldData_jni.h"
 
 namespace autofill {
 
@@ -70,19 +71,20 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
   };
 
   ScopedJavaLocalRef<jobject> obj = Java_FormFieldData_createFormFieldData(
-      env, ConvertUTF16ToJavaString(env, field.name),
-      ConvertUTF16ToJavaString(env, field.label),
-      ConvertUTF16ToJavaString(env, field.value),
-      ConvertUTF8ToJavaString(env, field.autocomplete_attribute),
-      field.should_autocomplete,
-      ConvertUTF16ToJavaString(env, field.placeholder),
-      ConvertUTF8ToJavaString(env,
-                              FormControlTypeToString(field.form_control_type)),
-      ConvertUTF16ToJavaString(env, field.id_attribute),
-      /*optionValues=*/ProjectOptions(field.options, &SelectOption::value),
-      /*optionContents=*/ProjectOptions(field.options, &SelectOption::content),
-      IsCheckable(field.check_status), IsChecked(field.check_status),
-      field.max_length,
+      env, ConvertUTF16ToJavaString(env, field.name()),
+      ConvertUTF16ToJavaString(env, field.label()),
+      ConvertUTF16ToJavaString(env, field.value()),
+      ConvertUTF8ToJavaString(env, field.autocomplete_attribute()),
+      field.should_autocomplete(),
+      ConvertUTF16ToJavaString(env, field.placeholder()),
+      ConvertUTF8ToJavaString(
+          env, FormControlTypeToString(field.form_control_type())),
+      ConvertUTF16ToJavaString(env, field.id_attribute()),
+      /*optionValues=*/ProjectOptions(field.options(), &SelectOption::value),
+      /*optionContents=*/
+      ProjectOptions(field.options(), &SelectOption::text),
+      IsCheckable(field.check_status()), IsChecked(field.check_status()),
+      field.max_length(),
       /*heuristicType=*/field_types.heuristic_type.IsUnknown()
           ? nullptr
           : ConvertUTF8ToJavaString(env,
@@ -90,13 +92,13 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF8ToJavaString(env, field_types.server_type.ToStringView()),
       ConvertUTF8ToJavaString(env, field_types.computed_type.ToStringView()),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions),
-      field.bounds.x(), field.bounds.y(), field.bounds.right(),
-      field.bounds.bottom(),
+      field.bounds().x(), field.bounds().y(), field.bounds().right(),
+      field.bounds().bottom(),
       /*datalistValues=*/
-      ProjectOptions(field.datalist_options, &SelectOption::value),
+      ProjectOptions(field.datalist_options(), &SelectOption::value),
       /*datalistLabels=*/
-      ProjectOptions(field.datalist_options, &SelectOption::content),
-      /*visible=*/field.IsFocusable(), field.is_autofilled);
+      ProjectOptions(field.datalist_options(), &SelectOption::text),
+      /*visible=*/field.IsFocusable(), field.is_autofilled());
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }
@@ -109,21 +111,21 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldFromJava(FormFieldData& field) {
     return;
   }
 
-  field.is_autofilled = Java_FormFieldData_isAutofilled(env, obj);
-  if (IsCheckable(field.check_status)) {
+  field.set_is_autofilled(Java_FormFieldData_isAutofilled(env, obj));
+  if (IsCheckable(field.check_status())) {
     SetCheckStatus(&field, true, Java_FormFieldData_isChecked(env, obj));
     return;
   }
   if (ScopedJavaLocalRef<jstring> jvalue =
           Java_FormFieldData_getValue(env, obj);
       !jvalue.is_null()) {
-    field.value = ConvertJavaStringToUTF16(env, jvalue);
+    field.set_value(ConvertJavaStringToUTF16(env, jvalue));
   }
 }
 
 void FormFieldDataAndroidBridgeImpl::UpdateFieldTypes(
     const FormFieldDataAndroid::FieldTypes& field_types) {
-  // TODO(crbug.com/1478934): Investigate why heuristic type is not updated.
+  // TODO(crbug.com/40929724): Investigate why heuristic type is not updated.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {

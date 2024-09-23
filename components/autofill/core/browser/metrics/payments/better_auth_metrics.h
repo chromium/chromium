@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BETTER_AUTH_METRICS_H_
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -131,9 +132,9 @@ enum class WebauthnResultMetric {
 // indicates whether the unmasking request was successful or not. |card_type|
 // indicates the type of the credit card that the request fetched.
 void LogCardUnmaskDurationAfterWebauthn(
-    const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result,
-    AutofillClient::PaymentsRpcCardType card_type);
+    base::TimeDelta duration,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 // Logs the number of times that we initiate the card unmask preflight flow.
 // This will log both when the user is verifiable as well as when the user is
@@ -149,7 +150,7 @@ void LogCardUnmaskPreflightCalled(bool is_user_opted_in);
 
 // Logs the duration of the PaymentsNetworkInterface::GetUnmaskDetails() call
 // (aka GetDetailsForGetRealPan).
-void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration);
+void LogCardUnmaskPreflightDuration(base::TimeDelta duration);
 
 // Logs which unmask type was used for a user with FIDO authentication
 // enabled.
@@ -178,13 +179,11 @@ void LogUserPerceivedLatencyOnCardSelectionTimedOut(bool did_time_out);
 // Logs the duration of WebAuthn's
 // IsUserVerifiablePlatformAuthenticatorAvailable() call. It is supposedly an
 // extremely quick IPC.
-void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration);
+void LogUserVerifiabilityCheckDuration(base::TimeDelta duration);
 
 // Logs the count of calls to PaymentsNetworkInterface::OptChange() (aka
 // UpdateAutofillUserPreference).
-void LogWebauthnOptChangeCalled(bool request_to_opt_in,
-                                bool is_checkout_flow,
-                                WebauthnOptInParameters metric);
+void LogWebauthnOptChangeCalled(WebauthnOptInParameters metric);
 
 // Records when the Better Auth (FIDO) opt-in promo could have been offered on
 // Desktop, but wasn't. Logged at the time of the promo not being shown. This
@@ -194,14 +193,18 @@ void LogWebauthnOptChangeCalled(bool request_to_opt_in,
 void LogWebauthnOptInPromoNotOfferedReason(
     WebauthnOptInPromoNotOfferedReason reason);
 
+// Logs true if the Better Auth (FIDO) enrollment prompt was offered, false
+// otherwise. Logged at the time of showing or not showing the FIDO enrollment
+// prompt.
+void LogWebauthnEnrollmentPromptOffered(bool offered);
+
 // Logs the number of times the opt-in promo for enabling FIDO authentication
 // for card unmasking has been shown.
-void LogWebauthnOptInPromoShown(bool is_checkout_flow);
+void LogWebauthnOptInPromoShown();
 
 // Logs the user response to the opt-in promo for enabling FIDO authentication
 // for card unmasking.
 void LogWebauthnOptInPromoUserDecision(
-    bool is_checkout_flow,
     WebauthnOptInPromoUserDecisionMetric metric);
 
 // Logs the result of a WebAuthn prompt.

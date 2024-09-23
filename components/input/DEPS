@@ -1,0 +1,13 @@
+include_rules = [
+  "+cc/input",
+  "+cc/trees",
+  "+components/viz/common",
+  "+mojo/public/cpp",
+  "+services/tracing/public/cpp",
+  "+services/viz/public/mojom/hit_test/input_target_client.mojom.h",
+  "+third_party/blink/public",
+  "+ui/base",
+  "+ui/events",
+  "+ui/gfx",
+  "+ui/latency",
+]

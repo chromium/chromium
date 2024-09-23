@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,6 +24,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "components/tpcd/metadata/browser/manager.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class PrefService;
@@ -42,7 +45,8 @@ enum class CookieControlsMode {
   kOff = 0,
   kBlockThirdParty = 1,
   kIncognitoOnly = 2,
-  kMaxValue = kIncognitoOnly,
+  kLimited = 3,
+  kMaxValue = kLimited,
 };
 
 // Default value for |extension_scheme|.
@@ -66,6 +70,9 @@ class CookieSettings
     virtual void OnCookieSettingChanged() {}
   };
 
+  using ComputeFedCmSharingPermissionsCallback =
+      base::RepeatingCallback<ContentSettingsForOneType()>;
+
   // Creates a new CookieSettings instance.
   // The caller is responsible for ensuring that |extension_scheme| is valid for
   // the whole lifetime of this instance.
@@ -76,6 +83,8 @@ class CookieSettings
       PrefService* prefs,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       bool is_incognito,
+      ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
+      tpcd::metadata::Manager* tpcd_metadata_manager,
       const char* extension_scheme = kDummyExtensionScheme);
 
   CookieSettings(const CookieSettings&) = delete;
@@ -88,7 +97,7 @@ class CookieSettings
   //
   // This may be called on any thread.
   ContentSetting GetDefaultCookieSetting(
-      std::string* provider_id = nullptr) const;
+      content_settings::ProviderType* provider_id = nullptr) const;
 
   // Returns all patterns with a non-default cookie setting, mapped to their
   // actual settings, in the precedence order of the setting rules.
@@ -109,10 +118,12 @@ class CookieSettings
 
   // Returns whether a cookie access is allowed for the `TPCD_METADATA_GRANTS`
   // content settings type, scoped on the provided `url` and `first_party_url`.
+  // Also updates `out_info` with the `SettingInfo`.
   //
   // This may be called on any thread.
   bool IsAllowedByTpcdMetadataGrant(const GURL& url,
-                                    const GURL& first_party_url) const;
+                                    const GURL& first_party_url,
+                                    SettingInfo* out_info = nullptr) const;
 
   // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
   // `first_party_url`) pair, for the provided `ttl`. By default, the patterns
@@ -147,39 +158,23 @@ class CookieSettings
   // - Cases like WebUIs, allowlisted internal apps, and extension iframes are
   // usually being exempted from storage partitioning or are allowlisted. Thus,
   // not covered by user bypass at this state of art.
-  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url);
+  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
 
-  // Sets the `settings_for_3pcd_metadata_grants_` `ContentSettingsForOneType`
-  // to be held and accessed from memory by the cookie settings object.
-  void SetContentSettingsFor3pcdMetadataGrants(
-      const ContentSettingsForOneType settings) {
-    base::AutoLock lock(tpcd_lock_);
-    settings_for_3pcd_metadata_grants_ = settings;
-    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
-        std::cmp_greater_equal(settings.size(),
-                               features::kMetadataGrantsThreshold.Get())) {
-      auto indices = HostIndexedContentSettings::Create(settings);
-      // All 3pcd metadata grants should use the same source attribute.
-      CHECK_EQ(indices.size(), 1u);
-      indexed_settings_for_3pcd_metadata_grants_ = std::move(indices.front());
-
-      // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
-      // only need one copy.
-    } else {
-      // only need one list.
-      indexed_settings_for_3pcd_metadata_grants_.Clear();
-    }
-  }
-
-  ContentSettingsForOneType GetTpcdMetadataGrants() {
-    base::AutoLock lock(tpcd_lock_);
-    return settings_for_3pcd_metadata_grants_;
+  const ContentSettingsForOneType GetTpcdMetadataGrants() const {
+    return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
+                                  : ContentSettingsForOneType();
   }
 
   // Resets the cookie setting for the given url.
   //
   // This should only be called on the UI thread.
   void ResetCookieSetting(const GURL& primary_url);
+
+  // Returns true if third party cookies should be limited (blocked with
+  // mitigations).
+  //
+  // This should only be called on the UI thread.
+  bool AreThirdPartyCookiesLimited() const;
 
   // Returns true if cookies are allowed for *most* third parties on |url|.
   // There might be rules allowing or blocking specific third parties from
@@ -220,9 +215,6 @@ class CookieSettings
   // This method may be called on any thread. Virtual for testing.
   bool MitigationsEnabledFor3pcd() const override;
 
-  // Returns true iff tracking protection for 3PCD (prefs + UX) is enabled.
-  bool TrackingProtectionEnabledFor3pcd() const;
-
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
   bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;
@@ -243,19 +235,27 @@ class CookieSettings
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
+  static ComputeFedCmSharingPermissionsCallback
+  NoFedCmSharingPermissionsCallback() {
+    return base::BindRepeating([]() { return ContentSettingsForOneType(); });
+  }
+
  protected:
   ~CookieSettings() override;
 
  private:
   // Evaluates if third-party cookies are blocked. Should only be called
   // when the preference changes to update the internal state.
-  bool ShouldBlockThirdPartyCookiesInternal();
+  bool ShouldBlockThirdPartyCookiesInternal() const;
 
   // Evaluates whether third party cookies deprecation mitigations should be
   // enabled.
-  bool MitigationsEnabledFor3pcdInternal();
+  bool MitigationsEnabledFor3pcdInternal() const;
 
   void OnCookiePreferencesChanged();
+
+  // Updates the status of cookies deprecation mitigations.
+  void OnMitigationsEnabledChanged();
 
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
@@ -267,11 +267,19 @@ class CookieSettings
       content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
-  bool IsStorageAccessApiEnabled() const override;
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;
   void OnBlockAllThirdPartyCookiesChanged() override;
+
+  // Updates the FEDERATED_IDENTITY_SHARING settings.
+  void UpdateFedCmSharingPermissions();
+
+  // Returns true iff the FedCM sharing permission has been granted between
+  // `primary_url` and `secondary_url`. Note that this is not a symmetric
+  // relation.
+  bool HasFedCmSharingPermission(const GURL& primary_url,
+                                 const GURL& secondary_url) const;
 
   // content_settings::Observer:
   void OnContentSettingChanged(
@@ -291,27 +299,26 @@ class CookieSettings
       content_settings_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const bool is_incognito_;
+
+  // Not owned by `this` as the lifetime of `tpcd::metadata::Manager` (lives
+  // "forever" as a singleton) will exceed that of `this`.
+  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
+
   const char* extension_scheme_;  // Weak.
-
-  // Used to represent content settings for 3PC accesses granted via the
-  // component updater service. This type will only be populated when
-  // `net::features::kTpcdMetadataGrants` is enabled.
-  //
-  // TODO(http://b/290039145): There's a chance for the list to get considerably
-  // big. Look into optimizing memory by querying straight from a global
-  // service.
-
-  mutable base::Lock tpcd_lock_;
-  ContentSettingsForOneType settings_for_3pcd_metadata_grants_
-      GUARDED_BY(tpcd_lock_);
-
-  HostIndexedContentSettings indexed_settings_for_3pcd_metadata_grants_
-      GUARDED_BY(tpcd_lock_);
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
   bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
   bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+
+  mutable base::Lock fedcm_sharing_permissions_lock_;
+  HostIndexedContentSettings fedcm_sharing_permissions_
+      GUARDED_BY(fedcm_sharing_permissions_lock_);
+
+  const ComputeFedCmSharingPermissionsCallback
+      compute_fedcm_sharing_permissions_
+          GUARDED_BY(fedcm_sharing_permissions_lock_) =
+              NoFedCmSharingPermissionsCallback();
 };
 
 }  // namespace content_settings

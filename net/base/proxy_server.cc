@@ -13,14 +13,34 @@
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "net/base/proxy_string_util.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
 
 namespace net {
+
+namespace {
+
+bool IsValidSchemeInt(int scheme_int) {
+  switch (scheme_int) {
+    case ProxyServer::SCHEME_INVALID:
+    case ProxyServer::SCHEME_HTTP:
+    case ProxyServer::SCHEME_SOCKS4:
+    case ProxyServer::SCHEME_SOCKS5:
+    case ProxyServer::SCHEME_HTTPS:
+    case ProxyServer::SCHEME_QUIC:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
 
 ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
       : scheme_(scheme), host_port_pair_(host_port_pair) {
@@ -60,6 +80,11 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
   // Create INVALID proxies directly using `ProxyServer()`.
   DCHECK_NE(scheme, SCHEME_INVALID);
 
+  // Trim host which may have been pasted with excess whitespace.
+  if (!host.empty()) {
+    host = base::TrimWhitespaceASCII(host, base::TRIM_ALL);
+  }
+
   // Add brackets to IPv6 literals if missing, as required by url
   // canonicalization.
   std::string bracketed_host;
@@ -91,6 +116,28 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
   uint16_t fixed_port = port.value_or(GetDefaultPortForScheme(scheme));
 
   return ProxyServer(scheme, HostPortPair(unbracketed_host, fixed_port));
+}
+
+// static
+ProxyServer ProxyServer::CreateFromPickle(base::PickleIterator* pickle_iter) {
+  Scheme scheme = SCHEME_INVALID;
+  int scheme_int;
+  if (pickle_iter->ReadInt(&scheme_int) && IsValidSchemeInt(scheme_int)) {
+    scheme = static_cast<Scheme>(scheme_int);
+  }
+
+  HostPortPair host_port_pair;
+  std::string host_port_pair_string;
+  if (pickle_iter->ReadString(&host_port_pair_string)) {
+    host_port_pair = HostPortPair::FromString(host_port_pair_string);
+  }
+
+  return ProxyServer(scheme, host_port_pair);
+}
+
+void ProxyServer::Persist(base::Pickle* pickle) const {
+  pickle->WriteInt(static_cast<int>(scheme_));
+  pickle->WriteString(host_port_pair_.ToString());
 }
 
 std::string ProxyServer::GetHost() const {

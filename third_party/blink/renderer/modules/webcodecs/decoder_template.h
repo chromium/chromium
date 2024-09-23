@@ -62,7 +62,7 @@ class MODULES_EXPORT DecoderTemplate
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue)
   void configure(const ConfigType*, ExceptionState&);
   void decode(const InputType*, ExceptionState&);
-  ScriptPromise flush(ExceptionState&);
+  ScriptPromise<IDLUndefined> flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
   String state() const { return state_; }
@@ -156,7 +156,7 @@ class MODULES_EXPORT DecoderTemplate
     scoped_refptr<media::DecoderBuffer> decoder_buffer;
 
     // For kFlush Requests.
-    Member<ScriptPromiseResolver> resolver;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver;
 
     // For reporting an error at the time when a request is processed.
     media::DecoderStatus status;

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/thread_pool.h"
@@ -98,12 +99,12 @@ SystemMonitor::SystemObserver::~SystemObserver() {
 
 void SystemMonitor::SystemObserver::OnFreePhysicalMemoryMbSample(
     int free_phys_memory_mb) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SystemMonitor::SystemObserver::OnSystemMetricsStruct(
     const base::SystemMetrics& system_metrics) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SystemMonitor::AddOrUpdateObserver(
@@ -227,7 +228,7 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
       continue;
     for (auto& observer : observers_) {
       const auto& iter = observer_metrics_.find(&observer);
-      DCHECK(iter != observer_metrics_.end());
+      CHECK(iter != observer_metrics_.end(), base::NotFatalUntil::M130);
       if (metric_evaluators_metadata_[static_cast<size_t>(metric->type())]
               .get_refresh_frequency_field_function(iter->second) !=
           SystemMonitor::SamplingFrequency::kNoSampling) {
@@ -244,10 +245,6 @@ SystemMonitor::CreateMetricEvaluatorsHelper() {
   return base::WrapUnique(new MetricEvaluatorsHelperWin());
 #elif BUILDFLAG(IS_POSIX)
   return std::make_unique<MetricEvaluatorsHelperPosix>();
-#elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1166873): Implement this in support of tracing.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
 #else
 #error Unsupported platform
 #endif

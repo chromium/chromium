@@ -116,31 +116,31 @@ suite('SecurityKeysSetPINDialog', function() {
     assertShown(allDivs, dialog, 'locked');
   });
 
-  function setPINEntry(inputElement: CrInputElement, pinValue: string) {
+  async function setPINEntry(
+      inputElement: CrInputElement, pinValue: string): Promise<void> {
     inputElement.value = pinValue;
+    await inputElement.updateComplete;
     // Dispatch input events to trigger validation and UI updates.
     inputElement.dispatchEvent(
         new CustomEvent('input', {bubbles: true, cancelable: true}));
   }
 
-  function setNewPINEntries(
+  async function setNewPINEntries(
       pinValue: string, confirmPINValue: string): Promise<void> {
-    setPINEntry(dialog.$.newPIN, pinValue);
-    setPINEntry(dialog.$.confirmPIN, confirmPINValue);
+    await setPINEntry(dialog.$.newPIN, pinValue);
+    await setPINEntry(dialog.$.confirmPIN, confirmPINValue);
     const ret = eventToPromise('ui-ready', dialog);
     dialog.$.pinSubmit.click();
     return ret;
   }
 
-  function setChangePINEntries(
+  async function setChangePINEntries(
       currentPINValue: string, pinValue: string,
       confirmPINValue: string): Promise<void> {
-    setPINEntry(dialog.$.newPIN, pinValue);
-    setPINEntry(dialog.$.confirmPIN, confirmPINValue);
-    setPINEntry(dialog.$.currentPIN, currentPINValue);
-    const ret = eventToPromise('ui-ready', dialog);
+    await setPINEntry(dialog.$.newPIN, pinValue);
+    await setPINEntry(dialog.$.confirmPIN, confirmPINValue);
+    await setPINEntry(dialog.$.currentPIN, currentPINValue);
     dialog.$.pinSubmit.click();
-    return ret;
   }
 
   test('SetPIN', async function() {
@@ -242,27 +242,27 @@ suite('SecurityKeysSetPINDialog', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertFalse(dialog.$.currentPINEntry.hidden);
 
-    setChangePINEntries(tooShortCurrentPIN, '', '');
+    await setChangePINEntries(tooShortCurrentPIN, '', '');
     assertTrue(dialog.$.currentPIN.invalid);
     assertFalse(dialog.$.newPIN.invalid);
     assertFalse(dialog.$.confirmPIN.invalid);
 
-    setChangePINEntries(tooShortCurrentPIN, tooShortNewPIN, '');
+    await setChangePINEntries(tooShortCurrentPIN, tooShortNewPIN, '');
     assertTrue(dialog.$.currentPIN.invalid);
     assertFalse(dialog.$.newPIN.invalid);
     assertFalse(dialog.$.confirmPIN.invalid);
 
-    setChangePINEntries(validCurrentPIN, tooShortNewPIN, validNewPIN);
+    await setChangePINEntries(validCurrentPIN, tooShortNewPIN, validNewPIN);
     assertFalse(dialog.$.currentPIN.invalid);
     assertTrue(dialog.$.newPIN.invalid);
     assertFalse(dialog.$.confirmPIN.invalid);
 
-    setChangePINEntries(tooShortCurrentPIN, validNewPIN, validNewPIN);
+    await setChangePINEntries(tooShortCurrentPIN, validNewPIN, validNewPIN);
     assertTrue(dialog.$.currentPIN.invalid);
     assertFalse(dialog.$.newPIN.invalid);
     assertFalse(dialog.$.confirmPIN.invalid);
 
-    setChangePINEntries(validNewPIN, validNewPIN, validNewPIN);
+    await setChangePINEntries(validNewPIN, validNewPIN, validNewPIN);
     assertFalse(dialog.$.currentPIN.invalid);
     assertTrue(dialog.$.newPIN.invalid);
     assertEquals(
@@ -272,9 +272,9 @@ suite('SecurityKeysSetPINDialog', function() {
 
     let setPINResolver = new PromiseResolver();
     browserProxy.setResponseFor('setPin', setPINResolver.promise);
-    setPINEntry(dialog.$.currentPIN, validCurrentPIN);
-    setPINEntry(dialog.$.newPIN, validNewPIN);
-    setPINEntry(dialog.$.confirmPIN, validNewPIN);
+    await setPINEntry(dialog.$.currentPIN, validCurrentPIN);
+    await setPINEntry(dialog.$.newPIN, validNewPIN);
+    await setPINEntry(dialog.$.confirmPIN, validNewPIN);
     dialog.$.pinSubmit.click();
     let {oldPIN, newPIN} = await browserProxy.whenCalled('setPin');
     assertShown(allDivs, dialog, 'pinPrompt');
@@ -291,7 +291,7 @@ suite('SecurityKeysSetPINDialog', function() {
     // Text box for current PIN should not be cleared.
     assertEquals(dialog.$.currentPIN.value, validCurrentPIN);
 
-    setPINEntry(dialog.$.currentPIN, anotherValidNewPIN);
+    await setPINEntry(dialog.$.currentPIN, anotherValidNewPIN);
 
     browserProxy.resetResolver('setPin');
     setPINResolver = new PromiseResolver();

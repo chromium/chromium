@@ -7,6 +7,8 @@ package org.chromium.android_webview.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -102,6 +104,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     }
 
     @Test
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeActionSavesState() throws Throwable {
@@ -111,6 +114,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     }
 
     @Test
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testInitSafeBrowsingSkipsGMSCoreCommunication() throws Throwable {

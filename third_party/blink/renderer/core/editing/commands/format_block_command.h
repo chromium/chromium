@@ -52,7 +52,8 @@ class CORE_EXPORT FormatBlockCommand final : public ApplyBlockElementCommand {
   void FormatRange(const Position& start,
                    const Position& end,
                    const Position& end_of_selection,
-                   HTMLElement*&,
+                   HTMLElement*& block_element,
+                   VisiblePosition& out_end_of_next_of_paragraph_to_move,
                    EditingState*) override;
 
   bool did_apply_;

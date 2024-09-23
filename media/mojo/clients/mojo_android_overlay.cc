@@ -55,19 +55,18 @@ void MojoAndroidOverlay::OnSurfaceReady(uint64_t surface_key) {
   received_surface_ = true;
 
   // Get the surface and notify our client.
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-          surface_key, &can_be_used_with_surface_control);
-  DCHECK(!can_be_used_with_surface_control);
-  if (!absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant)) {
+  auto surface_record =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_key);
+  DCHECK(!surface_record.can_be_used_with_surface_control);
+  if (!absl::holds_alternative<gl::ScopedJavaSurface>(
+          surface_record.surface_variant)) {
     config_.is_failed(this);
     // |this| may be deleted.
     return;
   }
 
-  surface_ =
-      std::move(absl::get<gl::ScopedJavaSurface>(std::move(surface_variant)));
+  surface_ = std::move(absl::get<gl::ScopedJavaSurface>(
+      std::move(surface_record.surface_variant)));
 
   // If no surface was returned, then fail instead.
   if (surface_.IsEmpty()) {

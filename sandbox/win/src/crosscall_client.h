@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef SANDBOX_WIN_SRC_CROSSCALL_CLIENT_H_
 #define SANDBOX_WIN_SRC_CROSSCALL_CLIENT_H_
 
@@ -44,7 +49,7 @@
 // return codes indicate that the IPC transport failed to deliver it.
 namespace sandbox {
 
-enum class IpcTag;
+enum class IpcTag : uint32_t;
 
 // this is the assumed channel size. This can be overridden in a given
 // IPC implementation.
@@ -156,7 +161,7 @@ class CopyHelper<const wchar_t*> {
   // We provide our not very optimized version of wcslen(), since we don't
   // want to risk having the linker use the version in the CRT since the CRT
   // might not be present when we do an early IPC call.
-  static size_t CDECL StringLength(const wchar_t* wcs) {
+  static size_t StringLength(const wchar_t* wcs) {
     const wchar_t* eos = wcs;
     while (*eos++)
       ;

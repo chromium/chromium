@@ -12,15 +12,16 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "tools/android/forwarder2/common.h"
 #include "tools/android/forwarder2/daemon.h"
@@ -97,7 +98,9 @@ class ServerDelegate : public Daemon::ServerDelegate {
       has_failed_ = true;
       return;
     }
-    const base::Pickle command_pickle(buf, bytes_read);
+    const base::Pickle command_pickle =
+        base::Pickle::WithUnownedBuffer(base::as_bytes(
+            base::span(buf, base::checked_cast<size_t>(bytes_read))));
     base::PickleIterator pickle_it(command_pickle);
 
     std::string device_serial;
@@ -146,7 +149,7 @@ class ClientDelegate : public Daemon::ClientDelegate {
     CHECK_GT(bytes_read, 0);
     DCHECK(static_cast<size_t>(bytes_read) < sizeof(buf));
     buf[bytes_read] = 0;
-    base::StringPiece msg(buf, bytes_read);
+    std::string_view msg(buf, bytes_read);
     if (base::StartsWith(msg, "ERROR")) {
       LOG(ERROR) << msg;
       has_failed_ = true;

@@ -48,21 +48,21 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data) override;
-  bool GetString(std::u16string* data) const override;
-  bool GetURLAndTitle(FilenameToURLPolicy policy,
-                      GURL* url,
-                      std::u16string* title) const override;
-  bool GetFilenames(std::vector<FileInfo>* filenames) const override;
-  bool GetPickledData(const ClipboardFormatType& format,
-                      base::Pickle* data) const override;
+  std::optional<std::u16string> GetString() const override;
+  std::optional<UrlInfo> GetURLAndTitle(
+      FilenameToURLPolicy policy) const override;
+  std::optional<std::vector<GURL>> GetURLs(
+      FilenameToURLPolicy policy) const override;
+  std::optional<std::vector<FileInfo>> GetFilenames() const override;
+  std::optional<base::Pickle> GetPickledData(
+      const ClipboardFormatType& format) const override;
   bool HasString() const override;
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-  bool GetFileContents(base::FilePath* filename,
-                       std::string* file_contents) const override;
+  std::optional<FileContentsInfo> GetFileContents() const override;
   bool HasFileContents() const override;
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& cursor_offset) override;

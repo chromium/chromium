@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <map>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace remoting::protocol {
 
@@ -22,20 +24,24 @@ PortAllocator::PortAllocator(
     : BasicPortAllocator(network_manager.get(), socket_factory.get()),
       network_manager_(std::move(network_manager)),
       socket_factory_(std::move(socket_factory)),
-      transport_context_(transport_context) {
+      transport_context_(transport_context) {}
+
+PortAllocator::~PortAllocator() = default;
+
+void PortAllocator::ApplyNetworkSettings(
+    const NetworkSettings& network_settings) {
+  DCHECK(!network_settings_applied_);
   // We always use PseudoTcp to provide a reliable channel. It provides poor
   // performance when combined with TCP-based transport, so we have to disable
   // TCP ports. ENABLE_SHARED_UFRAG flag is specified so that the same username
   // fragment is shared between all candidates.
-  // TODO(crbug.com/488760): Ideally we want to add
+  // TODO(crbug.com/41175043): Ideally we want to add
   // PORTALLOCATOR_DISABLE_COSTLY_NETWORKS, but this is unreliable on iOS and
   // may end up removing mobile networks when no WiFi is available. We may want
   // to add this flag only if there is WiFi interface.
   int flags = cricket::PORTALLOCATOR_DISABLE_TCP |
               cricket::PORTALLOCATOR_ENABLE_IPV6 |
               cricket::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI;
-
-  NetworkSettings network_settings = transport_context_->network_settings();
 
   if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_STUN)) {
     flags |= cricket::PORTALLOCATOR_DISABLE_STUN;
@@ -49,15 +55,17 @@ PortAllocator::PortAllocator(
   SetPortRange(network_settings.port_range.min_port,
                network_settings.port_range.max_port);
   Initialize();
+  network_settings_applied_ = true;
 }
 
-PortAllocator::~PortAllocator() = default;
-
 cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
-    absl::string_view content_name,
+    std::string_view content_name,
     int component,
-    absl::string_view ice_username_fragment,
-    absl::string_view ice_password) {
+    std::string_view ice_username_fragment,
+    std::string_view ice_password) {
+  // Use `CHECK` since network settings not having been applied may lead to
+  // policy violations.
+  CHECK(network_settings_applied_) << "Network settings have not been applied.";
   return new PortAllocatorSession(this, std::string(content_name), component,
                                   std::string(ice_username_fragment),
                                   std::string(ice_password));
@@ -78,8 +86,15 @@ PortAllocatorSession::PortAllocatorSession(PortAllocator* allocator,
 PortAllocatorSession::~PortAllocatorSession() = default;
 
 void PortAllocatorSession::GetPortConfigurations() {
-  transport_context_->GetIceConfig(base::BindOnce(
-      &PortAllocatorSession::OnIceConfig, weak_factory_.GetWeakPtr()));
+  // Don't need to make ICE config request if both STUN and Relay are disabled.
+  if ((flags() & cricket::PORTALLOCATOR_DISABLE_STUN) &&
+      (flags() & cricket::PORTALLOCATOR_DISABLE_RELAY)) {
+    HOST_LOG << "Skipping ICE Config request as STUN and RELAY are disabled";
+    OnIceConfig(IceConfig());
+  } else {
+    transport_context_->GetIceConfig(base::BindOnce(
+        &PortAllocatorSession::OnIceConfig, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void PortAllocatorSession::OnIceConfig(const IceConfig& ice_config) {

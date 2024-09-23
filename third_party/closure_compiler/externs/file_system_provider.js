@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,13 +80,22 @@ chrome.fileSystemProvider.CloudIdentifier;
 
 /**
  * @typedef {{
+ *   versionTag: (string|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/fileSystemProvider#type-CloudFileInfo
+ */
+chrome.fileSystemProvider.CloudFileInfo;
+
+/**
+ * @typedef {{
  *   isDirectory: (boolean|undefined),
  *   name: (string|undefined),
  *   size: (number|undefined),
  *   modificationTime: (Date|undefined),
  *   mimeType: (string|undefined),
  *   thumbnail: (string|undefined),
- *   cloudIdentifier: (!chrome.fileSystemProvider.CloudIdentifier|undefined)
+ *   cloudIdentifier: (!chrome.fileSystemProvider.CloudIdentifier|undefined),
+ *   cloudFileInfo: (!chrome.fileSystemProvider.CloudFileInfo|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-EntryMetadata
  */
@@ -167,7 +176,8 @@ chrome.fileSystemProvider.UnmountRequestedOptions;
  *   modificationTime: boolean,
  *   mimeType: boolean,
  *   thumbnail: boolean,
- *   cloudIdentifier: boolean
+ *   cloudIdentifier: boolean,
+ *   cloudFileInfo: boolean
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-GetMetadataRequestedOptions
  */
@@ -364,7 +374,8 @@ chrome.fileSystemProvider.ExecuteActionRequestedOptions;
 /**
  * @typedef {{
  *   entryPath: string,
- *   changeType: !chrome.fileSystemProvider.ChangeType
+ *   changeType: !chrome.fileSystemProvider.ChangeType,
+ *   cloudFileInfo: (!chrome.fileSystemProvider.CloudFileInfo|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-Change
  */
@@ -443,7 +454,7 @@ chrome.fileSystemProvider.get = function(fileSystemId, callback) {};
 /**
  * <p>Notifies about changes in the watched directory at
  * <code>observedPath</code> in <code>recursive</code> mode. If the file system
- * is mounted with <code>supportsNofityTag</code>, then <code>tag</code> must be
+ * is mounted with <code>supportsNotifyTag</code>, then <code>tag</code> must be
  * provided, and all changes since the last notification always reported, even
  * if the system was shutdown. The last tag can be obtained with
  * $(ref:getAll).</p><p>To use, the <code>file_system_provider.notify</code>

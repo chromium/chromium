@@ -75,7 +75,7 @@ class BufferRequesterTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
 
     std::vector<uint8_t> data = {1, 2, 3};
-    buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    buffer_ = media::DecoderBuffer::CopyFrom(data);
     buffer_->set_duration(base::Seconds(1));
     buffer_->set_timestamp(base::Seconds(2));
 

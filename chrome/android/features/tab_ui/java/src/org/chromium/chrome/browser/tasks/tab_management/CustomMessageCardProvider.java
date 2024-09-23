@@ -11,6 +11,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 
 /** An interface that retrieves and sets information on the custom message card view. */
 public interface CustomMessageCardProvider {
+    /** Returns the specific message type for this custom message card. */
+    public int getMessageType();
+
     /** Retrieve the inflated custom view for this message card. */
     public View getCustomView();
 

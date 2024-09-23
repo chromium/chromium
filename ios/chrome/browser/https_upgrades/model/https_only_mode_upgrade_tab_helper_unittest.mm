@@ -13,8 +13,9 @@
 #import "ios/chrome/browser/prerender/model/fake_prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
@@ -62,7 +63,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
         HttpsUpgradeServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeHttpsUpgradeService));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     web_state_.SetBrowserState(browser_state_.get());
 
     switch (GetParam()) {
@@ -112,9 +113,10 @@ class HttpsOnlyModeUpgradeTabHelperTest
   }
 
   void TearDown() override {
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state_.GetBrowserState());
     HttpsUpgradeService* service =
-        HttpsUpgradeServiceFactory::GetForBrowserState(
-            web_state_.GetBrowserState());
+        HttpsUpgradeServiceFactory::GetForProfile(profile);
     service->ClearAllowlist(base::Time(), base::Time::Max());
   }
 
@@ -189,16 +191,20 @@ TEST_P(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowResponse) {
                   .ShouldAllowNavigation());
 
   // Allowlisted hosts shouldn't be blocked.
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state_.GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_.GetBrowserState());
+  HttpsUpgradeService* service =
+      HttpsUpgradeServiceFactory::GetForProfile(profile);
   service->AllowHttpForHost("example.com");
   EXPECT_TRUE(ShouldAllowResponseUrl(http_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
 }
 
 TEST_P(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state_.GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_.GetBrowserState());
+  HttpsUpgradeService* service =
+      HttpsUpgradeServiceFactory::GetForProfile(profile);
 
   service->SetHttpsPortForTesting(/*https_port_for_testing=*/0,
                                   /*use_fake_https_for_testing=*/false);

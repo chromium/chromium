@@ -30,8 +30,6 @@ class CC_EXPORT SoftwareImageDecodeCache
   using CacheKey = Utils::CacheKey;
   using CacheKeyHash = Utils::CacheKeyHash;
 
-  enum class DecodeTaskType { USE_IN_RASTER_TASKS, USE_OUT_OF_RASTER_TASKS };
-
   // Identifies whether a decode task performed decode work, or was fulfilled /
   // failed trivially.
   enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
@@ -68,10 +66,9 @@ class CC_EXPORT SoftwareImageDecodeCache
   // image decode task from a worker thread.
   TaskProcessingResult DecodeImageInTask(const CacheKey& key,
                                          const PaintImage& paint_image,
-                                         DecodeTaskType task_type);
+                                         TaskType task_type);
 
-  void OnImageDecodeTaskCompleted(const CacheKey& key,
-                                  DecodeTaskType task_type);
+  void OnImageDecodeTaskCompleted(const CacheKey& key, TaskType task_type);
 
   // MemoryDumpProvider overrides.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -120,8 +117,7 @@ class CC_EXPORT SoftwareImageDecodeCache
   // if it was public (ie, all of the locks need to be properly acquired).
   TaskResult GetTaskForImageAndRefInternal(const DrawImage& image,
                                            const TracingInfo& tracing_info,
-                                           DecodeTaskType type)
-      LOCKS_EXCLUDED(lock_);
+                                           TaskType type) LOCKS_EXCLUDED(lock_);
 
   CacheEntry* AddCacheEntry(const CacheKey& key)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

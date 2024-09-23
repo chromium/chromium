@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,7 +18,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
-#include "base/test/to_vector.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -60,9 +60,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
@@ -131,7 +131,7 @@ class MultipleProfileDeletionObserver
     MaybeQuit();
   }
 
-  // TODO(https://crbug.com/704601): remove this code when bug is fixed.
+  // TODO(crbug.com/41309128): remove this code when bug is fixed.
   void OnBrowsingDataRemoverWouldComplete(
       base::OnceClosure continue_to_completion) {
     std::move(continue_to_completion).Run();
@@ -232,13 +232,11 @@ base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
   std::vector<ProfileAttributesEntry*> entries =
       storage->GetAllProfilesAttributesSortedByNameWithCheck();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::FilePath signin_path = ash::ProfileHelper::GetSigninProfileDir();
-  const base::FilePath lock_screen_apps_path =
-      ash::ProfileHelper::GetLockScreenAppProfilePath();
-
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
-    if (profile_path != signin_path && profile_path != lock_screen_apps_path) {
+    std::string base_name = profile_path.BaseName().value();
+    if (base_name != ash::kSigninBrowserContextBaseName &&
+        base_name != ash::kLockScreenAppBrowserContextBaseName) {
       return profile_path;
     }
   }
@@ -292,7 +290,7 @@ class ProfileManagerBrowserTest : public ProfileManagerBrowserTestBase,
 
 // CrOS multi-profiles implementation is too different for these tests.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1290803): Test failed on Mac.
+// TODO(crbug.com/40818380): Test failed on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DeleteSingletonProfile DISABLED_DeleteSingletonProfile
 #else
@@ -734,7 +732,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
 
 // The following check is flaky on Windows.
-// TODO(https://crbug.com/1191455): re-enable this check when the profile
+// TODO(crbug.com/40756611): re-enable this check when the profile
 // directory deletion works more reliably on Windows.
 #if !BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
@@ -920,10 +918,10 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerNonAsciiBrowserTest,
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributes();
-  EXPECT_THAT(base::test::ToVector(entries,
-                                   [](const auto* entry) {
-                                     return entry->GetPath().BaseName().value();
-                                   }),
+  EXPECT_THAT(base::ToVector(entries,
+                             [](const auto* entry) {
+                               return entry->GetPath().BaseName().value();
+                             }),
               ::testing::UnorderedElementsAreArray(expected_paths));
 }
 
@@ -962,7 +960,7 @@ class ChildProfileTransitionBrowserTest
           content::IsPreTest() ? crosapi::mojom::SessionType::kRegularSession
                                : crosapi::mojom::SessionType::kChildSession;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
@@ -975,13 +973,13 @@ class ChildProfileTransitionBrowserTest
     const bool is_pre_test = content::IsPreTest();
 
     if (transition == TransitionType::kChildToRegular) {
-      return is_pre_test ? true : false;
-    } else if (transition == TransitionType::kRegularToChild) {
-      return is_pre_test ? false : true;
-    } else {
-      NOTREACHED();
-      return false;
+      return is_pre_test;
     }
+    if (transition == TransitionType::kRegularToChild) {
+      return !is_pre_test;
+    }
+    NOTREACHED_IN_MIGRATION();
+    return false;
   }
 
   const ProfileAttributesEntry* GetProfileAttributesEntry(
@@ -1014,7 +1012,7 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, PRE_Transition) {
   // Check stored profile attributes.
   const ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
   ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(is_child_profile_expected, entry->IsChild());
+  EXPECT_EQ(is_child_profile_expected, entry->IsSupervised());
 }
 
 IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, Transition) {
@@ -1031,6 +1029,6 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, Transition) {
   // Check stored profile attributes.
   const ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
   ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(is_child_profile_expected, entry->IsChild());
+  EXPECT_EQ(is_child_profile_expected, entry->IsSupervised());
 }
 #endif

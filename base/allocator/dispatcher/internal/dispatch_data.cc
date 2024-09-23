@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
+#include "partition_alloc/buildflags.h"
 
 namespace base::allocator::dispatcher::internal {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 DispatchData& DispatchData::SetAllocationObserverHooks(
     AllocationObserverHook* allocation_observer_hook,
@@ -28,7 +29,7 @@ DispatchData::FreeObserverHook* DispatchData::GetFreeObserverHook() const {
 }
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 DispatchData& DispatchData::SetAllocatorDispatch(
     AllocatorDispatch* allocator_dispatch) {
   allocator_dispatch_ = allocator_dispatch;

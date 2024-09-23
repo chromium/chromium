@@ -114,7 +114,7 @@ class TurnSyncOnHelper {
     // |is_managed_account| is true if the account (where sync is being set up)
     // is managed (which may influence the UI or strings). |callback| must be
     // called.
-    // TODO(crbug.com/1398463): Use a new enum for this callback with only
+    // TODO(crbug.com/40249681): Use a new enum for this callback with only
     // values that make sense here (stay signed-in / signout).
     virtual void ShowSyncDisabledConfirmation(
         bool is_managed_account,
@@ -147,12 +147,15 @@ class TurnSyncOnHelper {
                    base::OnceClosure callback);
 
   // Convenience constructor using the default delegate and empty callback.
+  // `is_sync_promo` is true if the sync confirmation dialog is offered as an
+  // option. It is false if the user explicitly initiated the flow.
   TurnSyncOnHelper(Profile* profile,
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
                    const CoreAccountId& account_id,
-                   SigninAbortedMode signin_aborted_mode);
+                   SigninAbortedMode signin_aborted_mode,
+                   bool is_sync_promo);
 
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
@@ -247,6 +250,10 @@ class TurnSyncOnHelper {
 
   // Aborts the flow and deletes this object.
   void AbortAndDelete();
+
+  // Removes the account on abort taking into consideration if it is the primary
+  // account.
+  void RemoveAccount();
 
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<Profile> profile_;

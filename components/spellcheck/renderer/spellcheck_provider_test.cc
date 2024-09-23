@@ -175,12 +175,12 @@ void TestingSpellCheckProvider::RequestTextCheck(
 
 void TestingSpellCheckProvider::CheckSpelling(const std::u16string&,
                                               CheckSpellingCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
                                                    FillSuggestionListCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -193,14 +193,14 @@ void TestingSpellCheckProvider::InitializeDictionaries(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(IS_ANDROID)
 void TestingSpellCheckProvider::DisconnectSessionBridge() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

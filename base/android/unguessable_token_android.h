@@ -5,11 +5,9 @@
 #ifndef BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_
 #define BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_
 
-#include <jni.h>
-
-#include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/unguessable_token.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace base {
 namespace android {
@@ -17,21 +15,21 @@ namespace android {
 class BASE_EXPORT UnguessableTokenAndroid {
  public:
   // Create a Java UnguessableToken with the same value as |token|.
-  static ScopedJavaLocalRef<jobject> Create(
+  static jni_zero::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       const base::UnguessableToken& token);
 
   // Create a native UnguessableToken from Java UnguessableToken |token|.
-  static absl::optional<base::UnguessableToken> FromJavaUnguessableToken(
+  static base::UnguessableToken FromJavaUnguessableToken(
       JNIEnv* env,
-      const JavaRef<jobject>& token);
+      const jni_zero::JavaRef<jobject>& token);
 
   // Parcel UnguessableToken |token| and unparcel it, and return the result.
   // While this method is intended for facilitating unit tests, it results only
   // in a clone of |token|.
-  static ScopedJavaLocalRef<jobject> ParcelAndUnparcelForTesting(
+  static jni_zero::ScopedJavaLocalRef<jobject> ParcelAndUnparcelForTesting(
       JNIEnv* env,
-      const JavaRef<jobject>& token);
+      const jni_zero::JavaRef<jobject>& token);
 
   UnguessableTokenAndroid() = delete;
   UnguessableTokenAndroid(const UnguessableTokenAndroid&) = delete;
@@ -40,5 +38,22 @@ class BASE_EXPORT UnguessableTokenAndroid {
 
 }  // namespace android
 }  // namespace base
+
+namespace jni_zero {
+template <>
+inline base::UnguessableToken FromJniType<base::UnguessableToken>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  return base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+      env, j_object);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<base::UnguessableToken>(
+    JNIEnv* env,
+    const base::UnguessableToken& token) {
+  return base::android::UnguessableTokenAndroid::Create(env, token);
+}
+}  // namespace jni_zero
 
 #endif  // BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_

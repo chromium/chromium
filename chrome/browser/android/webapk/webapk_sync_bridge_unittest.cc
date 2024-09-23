@@ -11,16 +11,19 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
+#include "chrome/browser/android/webapk/test/fake_data_type_store_service.h"
 #include "chrome/browser/android/webapk/test/fake_webapk_specifics_fetcher.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -98,13 +101,11 @@ int64_t UnixTsSecToWindowsTsMsec(double unix_ts_sec) {
 class WebApkSyncBridgeTest : public ::testing::Test {
  public:
   void SetUp() override {
-    database_factory_ = std::make_unique<FakeWebApkDatabaseFactory>();
+    data_type_store_service_ = std::make_unique<FakeDataTypeStoreService>();
 
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
   }
-
-  void TearDown() override { DestroyManagers(); }
 
   void InitSyncBridge() {
     base::RunLoop loop;
@@ -119,7 +120,7 @@ class WebApkSyncBridgeTest : public ::testing::Test {
     specifics_fetcher_ = specifics_fetcher.get();
 
     sync_bridge_ = std::make_unique<WebApkSyncBridge>(
-        database_factory_.get(), loop.QuitClosure(),
+        data_type_store_service_.get(), loop.QuitClosure(),
         mock_processor_.CreateForwardingProcessor(), std::move(clock),
         std::move(specifics_fetcher));
 
@@ -127,17 +128,12 @@ class WebApkSyncBridgeTest : public ::testing::Test {
   }
 
  protected:
-  void DestroyManagers() {
-    if (sync_bridge_) {
-      sync_bridge_.reset();
-    }
-    if (database_factory_) {
-      database_factory_.reset();
-    }
+  syncer::MockDataTypeLocalChangeProcessor& processor() {
+    return mock_processor_;
   }
-
-  syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
-  FakeWebApkDatabaseFactory& database_factory() { return *database_factory_; }
+  FakeDataTypeStoreService& data_type_store_service() {
+    return *data_type_store_service_;
+  }
 
   WebApkSyncBridge& sync_bridge() { return *sync_bridge_; }
   FakeWebApkSpecificsFetcher& specifics_fetcher() {
@@ -145,16 +141,22 @@ class WebApkSyncBridgeTest : public ::testing::Test {
   }
 
  private:
+  std::unique_ptr<FakeDataTypeStoreService> data_type_store_service_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;
-  std::unique_ptr<FakeWebApkDatabaseFactory> database_factory_;
   raw_ptr<FakeWebApkSpecificsFetcher>
       specifics_fetcher_;  // owned by sync_bridge_; should not be accessed
                            // before InitSyncBridge() or after sync_bridge_ is
                            // destroyed
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
+
+TEST_F(WebApkSyncBridgeTest,
+       ManifestIdStrToAppId_DoesNotCrashOnEmptyStringOrInvalidManifestId) {
+  EXPECT_EQ(ManifestIdStrToAppId(""), "");
+  EXPECT_EQ(ManifestIdStrToAppId("%%"), "");
+}
 
 TEST_F(WebApkSyncBridgeTest, AppWasUsedRecently) {
   InitSyncBridge();
@@ -202,9 +204,9 @@ TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromSyncApps) {
       CreateWebApkProto(manifest_id_5, "name");
   InsertAppIntoRegistry(&registry, std::move(synced_app1));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   syncer::EntityData sync_data_1;
@@ -404,9 +406,9 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
       CreateWebApkProto(manifest_id_6, "app6_registry");
   InsertAppIntoRegistry(&registry, std::move(registry_app6));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   // not included in final state (older than installed version)
@@ -459,10 +461,10 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   sync_changes.push_back(std::move(sync_change_5));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
@@ -513,7 +515,7 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   EXPECT_FALSE(final_registry.at(ManifestIdStrToAppId(manifest_id_6))
                    ->is_locally_installed());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(4u, db_registry.size());
 
   EXPECT_EQ(manifest_id_1, db_registry.at(ManifestIdStrToAppId(manifest_id_1))
@@ -554,21 +556,21 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
 }
 
 TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
   std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
 
   EXPECT_EQ(std::nullopt, result);
   EXPECT_EQ(0u, sync_bridge().GetRegistryForTesting().size());
-  EXPECT_EQ(0u, database_factory().ReadRegistry().size());
+  EXPECT_EQ(0u, data_type_store_service().ReadRegistry().size());
 }
 
 TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
@@ -594,11 +596,11 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
       CreateWebApkProto(manifest_id_3, "app3_registry");
   InsertAppIntoRegistry(&registry, std::move(registry_app3));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -629,7 +631,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
   sync_changes.push_back(std::move(sync_change_4));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                                 std::move(sync_changes));
@@ -664,7 +666,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
                              ->sync_data()
                              .name());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(3u, db_registry.size());
 
   EXPECT_EQ(manifest_id_1, db_registry.at(ManifestIdStrToAppId(manifest_id_1))
@@ -690,14 +692,14 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
 }
 
 TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
   std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
@@ -705,7 +707,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
 
   EXPECT_EQ(std::nullopt, result);
   EXPECT_EQ(0u, sync_bridge().GetRegistryForTesting().size());
-  EXPECT_EQ(0u, database_factory().ReadRegistry().size());
+  EXPECT_EQ(0u, data_type_store_service().ReadRegistry().size());
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
@@ -720,10 +722,10 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
                                                 // GMT-0500 timestamp
   InsertAppIntoRegistry(&registry, std::move(registry_app));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -753,7 +755,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -767,7 +769,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
         run_loop.Quit();
       });
 
-  sync_bridge().OnWebApkUsed(std::move(used_specifics));
+  sync_bridge().OnWebApkUsed(std::move(used_specifics), false /* is_install */);
 
   run_loop.Run();
 
@@ -787,7 +789,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
   EXPECT_TRUE(final_registry.at(ManifestIdStrToAppId(manifest_id))
                   ->is_locally_installed());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(1u, db_registry.size());
 
   EXPECT_EQ(manifest_id, db_registry.at(ManifestIdStrToAppId(manifest_id))
@@ -805,8 +807,8 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -822,7 +824,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -836,7 +838,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
         run_loop.Quit();
       });
 
-  sync_bridge().OnWebApkUsed(std::move(used_specifics));
+  sync_bridge().OnWebApkUsed(std::move(used_specifics), false /* is_install */);
 
   run_loop.Run();
 
@@ -856,7 +858,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
   EXPECT_TRUE(final_registry.at(ManifestIdStrToAppId(manifest_id))
                   ->is_locally_installed());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(1u, db_registry.size());
 
   EXPECT_EQ(manifest_id, db_registry.at(ManifestIdStrToAppId(manifest_id))
@@ -873,6 +875,18 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
                   ->is_locally_installed());
 }
 
+TEST_F(WebApkSyncBridgeTest,
+       OnWebApkUninstalled_DoesNotCrashOnEmptyStringOrInvalidManifestId) {
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
+
+  InitSyncBridge();
+
+  sync_bridge().OnWebApkUninstalled("");
+  sync_bridge().OnWebApkUninstalled("%%");
+}
+
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
   const std::string manifest_id = "https://example.com/app1";
 
@@ -886,15 +900,16 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
                            // second before clock_.Now() (not recent enough)
   InsertAppIntoRegistry(&registry, std::move(registry_app));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Delete(_, _))
+  ON_CALL(processor(), Delete)
       .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
                          syncer::MetadataChangeList* metadata_change_list) {
         EXPECT_EQ(ManifestIdStrToAppId(manifest_id), storage_key);
         run_loop.Quit();
@@ -907,14 +922,14 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
   const Registry& final_registry = sync_bridge().GetRegistryForTesting();
   EXPECT_EQ(0u, final_registry.size());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(0u, db_registry.size());
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppDoesNotExist) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -923,7 +938,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppDoesNotExist) {
   const Registry& final_registry = sync_bridge().GetRegistryForTesting();
   EXPECT_EQ(0u, final_registry.size());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(0u, db_registry.size());
 }
 
@@ -940,11 +955,11 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppNewEnough) {
                            // GMT-0500 timestamp (new enough)
   InsertAppIntoRegistry(&registry, std::move(registry_app));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -967,7 +982,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppNewEnough) {
   EXPECT_FALSE(final_registry.at(ManifestIdStrToAppId(manifest_id))
                    ->is_locally_installed());
 
-  const Registry db_registry = database_factory().ReadRegistry();
+  const Registry db_registry = data_type_store_service().ReadRegistry();
   EXPECT_EQ(1u, db_registry.size());
 
   EXPECT_EQ(manifest_id, db_registry.at(ManifestIdStrToAppId(manifest_id))
@@ -998,9 +1013,9 @@ TEST_F(WebApkSyncBridgeTest, GetData) {
       CreateWebApkProto("https://example.com/app2/", "name2");
   InsertAppIntoRegistry(&registry, std::move(synced_app2));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   {
@@ -1011,28 +1026,12 @@ TEST_F(WebApkSyncBridgeTest, GetData) {
       storage_keys.push_back(id_and_web_app.first);
     }
 
-    base::RunLoop run_loop;
-    sync_bridge().GetData(
-        std::move(storage_keys),
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-              EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
-                  registry, std::move(data_batch)));
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
+        registry, sync_bridge().GetDataForCommit(std::move(storage_keys))));
   }
 
-  {
-    base::RunLoop run_loop;
-    sync_bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&](std::unique_ptr<syncer::DataBatch> data_batch) {
-          EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
-              registry, std::move(data_batch)));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(RegistryContainsSyncDataBatchChanges(
+      registry, sync_bridge().GetAllDataForDebugging()));
 }
 
 // Tests that the client & storage tags are correct for entity data.
@@ -1058,7 +1057,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyDisableSyncChanges) {
   InsertAppIntoRegistry(
       &registry, CreateWebApkProto("https://example.com/app1", "registry_app"));
 
-  database_factory().WriteRegistry(registry);
+  data_type_store_service().WriteRegistry(registry);
 
   EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   EXPECT_CALL(processor(), Put).Times(0);
@@ -1067,13 +1066,167 @@ TEST_F(WebApkSyncBridgeTest, ApplyDisableSyncChanges) {
   InitSyncBridge();
 
   ASSERT_THAT(sync_bridge().GetRegistryForTesting(), SizeIs(1));
-  ASSERT_THAT(database_factory().ReadRegistry(), SizeIs(1));
+  ASSERT_THAT(data_type_store_service().ReadRegistry(), SizeIs(1));
 
   sync_bridge().ApplyDisableSyncChanges(
       sync_bridge().CreateMetadataChangeList());
 
   EXPECT_THAT(sync_bridge().GetRegistryForTesting(), IsEmpty());
-  EXPECT_THAT(database_factory().ReadRegistry(), IsEmpty());
+  EXPECT_THAT(data_type_store_service().ReadRegistry(), IsEmpty());
+}
+
+TEST_F(WebApkSyncBridgeTest, RemoveOldWebAPKsFromSync) {
+  const std::string manifest_id_1 = "https://example.com/app1";
+  const std::string manifest_id_2 = "https://example.com/app2";
+
+  Registry registry;
+
+  std::unique_ptr<WebApkProto> registry_app_1 =
+      CreateWebApkProto(manifest_id_1, "registry_app_1");
+  registry_app_1->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(1136145845.0));  // Sun Jan 01 2006 15:04:05
+                                                // GMT-0500 timestamp (too old -
+                                                // will be deleted from sync)
+  registry_app_1->set_is_locally_installed(true);
+
+  std::unique_ptr<WebApkProto> registry_app_2 =
+      CreateWebApkProto(manifest_id_2, "registry_app_2");
+  registry_app_2->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(1136946167.0));  // Tue Jan 10 2006 21:22:47
+                                                // GMT-0500 timestamp (new
+                                                // enough - will not be deleted)
+  registry_app_2->set_is_locally_installed(true);
+
+  InsertAppIntoRegistry(&registry, std::move(registry_app_1));
+  InsertAppIntoRegistry(&registry, std::move(registry_app_2));
+
+  data_type_store_service().WriteRegistry(registry);
+
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+
+  base::RunLoop run_loop;
+
+  ON_CALL(processor(), Delete)
+      .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
+                         syncer::MetadataChangeList* metadata_change_list) {
+        EXPECT_EQ(ManifestIdStrToAppId(manifest_id_1), storage_key);
+        run_loop.Quit();
+      });
+
+  InitSyncBridge();
+
+  sync_bridge().RemoveOldWebAPKsFromSync(
+      1138933367000);  // Thu Feb 02 2006 21:22:47 GMT-0500 timestamp
+
+  const Registry& final_registry = sync_bridge().GetRegistryForTesting();
+  EXPECT_EQ(1u, final_registry.size());
+
+  EXPECT_EQ(manifest_id_2,
+            final_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("registry_app_2",
+            final_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                ->sync_data()
+                .name());
+  EXPECT_EQ(UnixTsSecToWindowsTsMsec(1136946167.0),
+            final_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                ->sync_data()
+                .last_used_time_windows_epoch_micros());
+  EXPECT_TRUE(final_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                  ->is_locally_installed());
+
+  const Registry db_registry = data_type_store_service().ReadRegistry();
+  EXPECT_EQ(1u, db_registry.size());
+
+  EXPECT_EQ(manifest_id_2, db_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                               ->sync_data()
+                               .manifest_id());
+  EXPECT_EQ(
+      "registry_app_2",
+      db_registry.at(ManifestIdStrToAppId(manifest_id_2))->sync_data().name());
+  EXPECT_EQ(UnixTsSecToWindowsTsMsec(1136946167.0),
+            db_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                ->sync_data()
+                .last_used_time_windows_epoch_micros());
+  EXPECT_TRUE(db_registry.at(ManifestIdStrToAppId(manifest_id_2))
+                  ->is_locally_installed());
+}
+
+TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
+  InitSyncBridge();
+
+  const GURL manifest_id_1("https://example.com/app1");
+  const GURL manifest_id_2("https://example.com/app2");
+  const GURL manifest_id_3("https://example.com/app3");
+  const GURL manifest_id_4("https://example.com/app4");
+  const GURL icon_url("https://example.com/app2/icon");
+
+  std::unique_ptr<WebApkProto> registry_app_1 =
+      CreateWebApkProto(manifest_id_1.spec(), "registry_app_1");
+  registry_app_1->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly
+                           // before clock_.Now() (recent enough)
+  registry_app_1->set_is_locally_installed(true);
+
+  std::unique_ptr<WebApkProto> registry_app_2 =
+      CreateWebApkProto(manifest_id_2.spec(), "registry_app_2");
+  auto* icon = registry_app_2->mutable_sync_data()->add_icon_infos();
+  icon->set_url(icon_url.spec());
+  registry_app_2->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly
+                           // before clock_.Now() (recent enough)
+  registry_app_2->set_is_locally_installed(false);
+
+  std::unique_ptr<WebApkProto> registry_app_3 =
+      CreateWebApkProto(manifest_id_3.spec(), "registry_app_3");
+  registry_app_3->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
+                           // clock_.Now() (recent enough)
+  registry_app_3->set_is_locally_installed(false);
+
+  std::unique_ptr<WebApkProto> registry_app_4 =
+      CreateWebApkProto(manifest_id_4.spec(), "registry_app_4");
+  registry_app_4->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1133640244.0));  // Sat Dec 03 2005 15:04:04 GMT-0500 - 30 days and 1
+                           // second before clock_.Now() (not recent enough)
+  registry_app_4->set_is_locally_installed(false);
+
+  Registry registry;
+
+  InsertAppIntoRegistry(&registry, std::move(registry_app_1));
+  InsertAppIntoRegistry(&registry, std::move(registry_app_2));
+  InsertAppIntoRegistry(&registry, std::move(registry_app_3));
+  InsertAppIntoRegistry(&registry, std::move(registry_app_4));
+
+  data_type_store_service().WriteRegistry(registry);
+
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
+
+  InitSyncBridge();
+
+  auto result = sync_bridge().GetRestorableAppsShortcutInfo();
+  EXPECT_EQ(result.size(), 2u);
+
+  EXPECT_EQ(result[0].app_id, ManifestIdStrToAppId(manifest_id_2.spec()));
+  EXPECT_EQ(result[0].shortcut_info->manifest_id, manifest_id_2);
+  EXPECT_EQ(result[0].shortcut_info->name, u"registry_app_2");
+  EXPECT_EQ(result[0].shortcut_info->best_primary_icon_url, icon_url);
+
+  EXPECT_EQ(result[1].app_id, ManifestIdStrToAppId(manifest_id_3.spec()));
+  EXPECT_EQ(result[1].shortcut_info->manifest_id, manifest_id_3);
+  EXPECT_EQ(result[1].shortcut_info->name, u"registry_app_3");
+  // No icon url specified for apps 3, fallback to use start url as place
+  // holder.
+  EXPECT_EQ(result[1].shortcut_info->best_primary_icon_url, manifest_id_3);
 }
 
 }  // namespace webapk

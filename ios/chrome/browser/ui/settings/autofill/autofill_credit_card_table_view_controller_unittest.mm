@@ -9,16 +9,20 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -39,7 +43,7 @@ class AutofillCreditCardTableViewControllerTest
     test_cbs_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     // Set circular SyncService dependency to null.
@@ -65,7 +69,7 @@ class AutofillCreditCardTableViewControllerTest
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+    autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(), origin);
@@ -73,10 +77,12 @@ class AutofillCreditCardTableViewControllerTest
                            base::ASCIIToUTF16(card_holder_name));
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
                            base::ASCIIToUTF16(card_number));
-    personal_data_manager->OnAcceptedLocalCreditCardSave(credit_card);
-    personal_data_manager->get_alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state_.Get());
-    waiter.Wait();  // Wait for completion of the asynchronous operation.
+    personal_data_manager->payments_data_manager()
+        .OnAcceptedLocalCreditCardSave(credit_card);
+    personal_data_manager->address_data_manager()
+        .get_alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state());
+    std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 
   // Deletes the item at (section, row) and waits util condition returns true or
@@ -98,8 +104,12 @@ class AutofillCreditCardTableViewControllerTest
     return [reauthModule canAttemptReauth];
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
 };
@@ -109,10 +119,12 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {
   CreateController();
   CheckController();
 
-  // Expect one switch section.
-  EXPECT_EQ(1, NumberOfSections());
-  // Expect switch section to contain one row (the credit card Autofill toggle).
+  // Expect two switch sections (the credit card Autofill switch and the
+  // mandatory reauth switch).
+  ASSERT_EQ(2, NumberOfSections());
+  // Expect each switch section to contain one row.
   EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
 }
 
 // Adding a single credit card results in a credit card section.
@@ -121,10 +133,11 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCard) {
   CreateController();
   CheckController();
 
-  // Expect two sections (switch and credit card section).
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect three sections (credit card switch, mandatory reauth switch and
+  // credit card section).
+  ASSERT_EQ(3, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
 }
 
 // Deleting the only credit card results in item deletion and section deletion.
@@ -134,14 +147,15 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   CreateController();
   CheckController();
 
-  // Expect two sections (switch and credit card section).
-  EXPECT_EQ(2, NumberOfSections());
+  // Expect three sections (credit card Autofill switch, mandatory reauth switch
+  // and credit card section).
+  ASSERT_EQ(3, NumberOfSections());
   // Expect credit card section to contain one row (the credit card itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
 
   // Delete the credit card item and check that the section is removed.
-  EXPECT_TRUE(DeleteItemAndWait(1, 0, ^{
-    return NumberOfSections() == 1;
+  EXPECT_TRUE(DeleteItemAndWait(2, 0, ^{
+    return NumberOfSections() == 2;
   }));
 }
 
@@ -149,12 +163,11 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
 // appears.
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestMandatoryReauthSwitchExists) {
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillEnablePaymentsMandatoryReauth};
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  EXPECT_TRUE(personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled());
+  EXPECT_TRUE(personal_data_manager->payments_data_manager()
+                  .IsPaymentMethodsMandatoryReauthEnabled());
 
   CreateController();
   CheckController();

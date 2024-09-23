@@ -21,23 +21,16 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #include "base/tracing/perfetto_platform.h"
-#endif
 
 namespace base {
 namespace trace_event {
 
 namespace {
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 std::unique_ptr<perfetto::TracingSession> g_tracing_session;
-#else
-constexpr const char kRecordAllCategoryFilter[] = "*";
-#endif
 
 void EnableTrace(bool filter_debug_annotations = false) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   g_tracing_session = perfetto::Tracing::NewTrace();
   auto config = test::TracingEnvironment::GetDefaultTraceConfig();
   if (filter_debug_annotations) {
@@ -50,33 +43,11 @@ void EnableTrace(bool filter_debug_annotations = false) {
   }
   g_tracing_session->Setup(config);
   g_tracing_session->StartBlocking();
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
-                                      TraceLog::RECORDING_MODE);
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-void CancelTraceAsync(WaitableEvent* flush_complete_event) {
-  TraceLog::GetInstance()->CancelTracing(base::BindRepeating(
-      [](WaitableEvent* complete_event,
-         const scoped_refptr<base::RefCountedString>&, bool has_more_events) {
-        if (!has_more_events)
-          complete_event->Signal();
-      },
-      base::Unretained(flush_complete_event)));
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 void CancelTrace() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   g_tracing_session.reset();
-#else  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  WaitableEvent flush_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                     WaitableEvent::InitialState::NOT_SIGNALED);
-  CancelTraceAsync(&flush_complete_event);
-  flush_complete_event.Wait();
-#endif
 }
 
 struct TestTrackEvent;
@@ -166,7 +137,6 @@ class TypedTraceEventTest : public testing::Test {
   ~TypedTraceEventTest() override { ResetTypedTraceEventsForTesting(); }
 
   void FlushTrace() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TrackEvent::Flush();
     g_tracing_session->StopBlocking();
     std::vector<char> serialized_data = g_tracing_session->ReadTraceBlocking();
@@ -194,7 +164,6 @@ class TypedTraceEventTest : public testing::Test {
         break;
       }
     }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 
   perfetto::protos::TrackEvent ParseTrackEvent() {
@@ -207,9 +176,7 @@ class TypedTraceEventTest : public testing::Test {
   }
 
  protected:
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   test::TracingEnvironment tracing_environment_;
-#endif
   TestTrackEvent event_;
   TestTracePacket packet_;
 };
@@ -220,9 +187,6 @@ TEST_F(TypedTraceEventTest, CallbackExecutedWhenTracingEnabled) {
   EnableTrace();
 
   TRACE_EVENT("cat", "Name", [&](perfetto::EventContext ctx) {
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    EXPECT_EQ(ctx.event(), event_.event.get());
-#endif
     perfetto::protos::pbzero::LogMessage* log = ctx.event()->set_log_message();
     log->set_body_iid(1);
   });
@@ -330,7 +294,8 @@ TEST_F(TypedTraceEventTest, InternedData) {
   CancelTrace();
 }
 
-TEST_F(TypedTraceEventTest, InstantThreadEvent) {
+// TODO: crbug/334063999 - The test is disabled due to flakiness.
+TEST_F(TypedTraceEventTest, DISABLED_InstantThreadEvent) {
   EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ThreadEvent", [](perfetto::EventContext) {});
@@ -340,7 +305,8 @@ TEST_F(TypedTraceEventTest, InstantThreadEvent) {
   CancelTrace();
 }
 
-TEST_F(TypedTraceEventTest, InstantProcessEvent) {
+// TODO: crbug/334063999 - The test is disabled due to flakiness.
+TEST_F(TypedTraceEventTest, DISABLED_InstantProcessEvent) {
   EnableTrace();
 
   TRACE_EVENT_INSTANT("cat", "ProcessEvent", perfetto::ProcessTrack::Current(),
@@ -400,16 +366,11 @@ TEST_F(TypedTraceEventTest, EndEventOnDefaultTrackDoesNotWriteTrackUuid) {
 // disappears from the trace. This functionality is instead tested in Perfetto's
 // API integration tests. We just verify that the macro builds correctly here
 // when building with the client library.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #define MAYBE_EmptyEvent DISABLED_EmptyEvent
-#else
-#define MAYBE_EmptyEvent EmptyEvent
-#endif
 TEST_F(TypedTraceEventTest, MAYBE_EmptyEvent) {
   EnableTrace();
 
   EXPECT_FALSE(g_test_trace_packet->emit_empty_called);
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
   EXPECT_TRUE(g_test_trace_packet->emit_empty_called);
 
   CancelTrace();

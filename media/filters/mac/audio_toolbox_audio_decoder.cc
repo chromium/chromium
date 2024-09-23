@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
 #include <optional>
@@ -12,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_codecs.h"
@@ -66,7 +70,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 
   *num_packets = buffer_list->mNumberBuffers = 1;
   buffer_list->mBuffers[0].mNumberChannels = 0;
-  buffer_list->mBuffers[0].mDataByteSize = input_data->buffer->data_size();
+  buffer_list->mBuffers[0].mDataByteSize = input_data->buffer->size();
 
   // No const version of this API unfortunately, so we need const_cast().
   buffer_list->mBuffers[0].mData =
@@ -87,7 +91,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 AudioConverterRef
 AudioToolboxAudioDecoder::ScopedAudioConverterRefTraits::Retain(
     AudioConverterRef converter) {
-  NOTREACHED() << "Only compatible with ASSUME policy";
+  NOTREACHED_IN_MIGRATION() << "Only compatible with ASSUME policy";
   return converter;
 }
 
@@ -160,7 +164,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   InputData input_data;
   input_data.buffer = buffer.get();
   if (!buffer->end_of_stream())
-    input_data.packet.mDataByteSize = buffer->data_size();
+    input_data.packet.mDataByteSize = buffer->size();
 
   // Must be filled in each time in case AudioConverterFillComplexBuffer()
   // modified it during a previous call.
@@ -267,7 +271,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       break;
 #endif
     default:
-      NOTREACHED() << "Unsupported codec: " << config.codec();
+      NOTREACHED_IN_MIGRATION() << "Unsupported codec: " << config.codec();
       return false;
   }
 

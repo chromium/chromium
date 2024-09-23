@@ -26,9 +26,14 @@ window.createRecordingCloseWatcher = (t, events, name, type, parentWatcher) => {
     t.add_cleanup(() => watcher.destroy());
   }
 
-  const prefix = name === undefined ? "" : name + " ";
-  watcher.addEventListener('cancel', () => events.push(prefix + "cancel"));
-  watcher.addEventListener('close', () => events.push(prefix + "close"));
+  const prefix = name === undefined ? '' : name + ' ';
+  watcher.addEventListener('cancel', e => {
+    const cancelable = e.cancelable ? '[cancelable=true]' : '[cancelable=false]';
+    events.push(prefix + 'cancel' + cancelable);
+  });
+  watcher.addEventListener('close', () => {
+    events.push(prefix + 'close');
+  });
 
   return watcher;
 };
@@ -36,6 +41,14 @@ window.createRecordingCloseWatcher = (t, events, name, type, parentWatcher) => {
 window.createBlessedRecordingCloseWatcher = async (t, events, name, type, parentWatcher) => {
   await maybeTopLayerBless(parentWatcher);
   return createRecordingCloseWatcher(t, events, name, type, parentWatcher);
+};
+
+window.destroyCloseWatcher = (watcher) => {
+  if (watcher instanceof HTMLElement) {
+    watcher.remove();
+  } else {
+    watcher.destroy();
+  }
 };
 
 window.sendEscKey = () => {
@@ -58,4 +71,10 @@ window.maybeTopLayerBless = (watcher) => {
     return blessTopLayer(watcher);
   }
   return test_driver.bless();
+};
+
+window.waitForPotentialCloseEvent = () => {
+  // CloseWatchers fire close events synchronously, but dialog elements wait
+  // for a rAF before firing them.
+  return new Promise(requestAnimationFrame);
 };

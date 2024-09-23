@@ -152,6 +152,8 @@ class ASH_EXPORT AshNotificationView
 
   views::Label* GetTitleRowLabelForTest();
 
+  message_center::NotificationInputContainer* GetInlineReplyForTest();
+
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {
@@ -208,7 +210,8 @@ class ASH_EXPORT AshNotificationView
     void SetMaxAvailableWidth(int max_available_width);
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
     void OnThemeChanged() override;
 
     views::Label* title_view() { return title_view_; }
@@ -291,6 +294,35 @@ class ASH_EXPORT AshNotificationView
   // Attaches the large image's binary data as drop data. This method should be
   // called only if this notification view is draggable.
   void AttachBinaryImageAsDropData(ui::OSExchangeData* data);
+
+  // Called when the fade out animation for `view` has ended. This function
+  // resets the views's opacity to 1.0f and makes it invisible.
+  void OnFadeOutAnimationEnded(views::View* view);
+
+  // Called when the grouped animation for this view has ended, or has been
+  // aborted.
+  void OnGroupedAnimationEnded(views::View* left_content,
+                               views::View* right_content,
+                               views::View* message_label_in_expanded_state,
+                               views::View* image_container_view,
+                               views::View* action_buttons_row,
+                               AshNotificationExpandButton* expand_button,
+                               std::string notification_id,
+                               std::string parent_id);
+
+  // A helper wrapping `OnFadeOutAnimationEnded` for `view` as a closure.
+  base::OnceClosure OnFadeOutAnimationEndedClosure(views::View* view);
+
+  // A helper for grouped animations ending/aborting.
+  base::OnceClosure OnGroupedAnimationEndedClosure(
+      views::View* left_content,
+      views::View* right_content,
+      views::View* message_label_in_expanded_state,
+      views::View* image_container_view,
+      views::View* action_buttons_row,
+      AshNotificationExpandButton* expand_button,
+      const std::string& notification_id,
+      std::string parent_id);
 
   // Owned by views hierarchy.
   raw_ptr<views::View> main_view_ = nullptr;

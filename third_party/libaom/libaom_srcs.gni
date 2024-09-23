@@ -4,25 +4,23 @@ aom_av1_common_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/common/x86/av1_inv_txfm_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/av1_inv_txfm_avx2.h",
   "//third_party/libaom/source/libaom/av1/common/x86/cdef_block_avx2.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/cfl_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_2d_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/highbd_inv_txfm_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/jnt_convolve_avx2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/reconinter_avx2.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/selfguided_avx2.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/warp_plane_avx2.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/wiener_convolve_avx2.c",
+  "//third_party/libaom/source/libaom/av1/common/x86/resize_avx2.c",
 ]
 
 aom_av1_common_intrin_neon = [
+  "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_horiz_rs_neon.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/av1_inv_txfm_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/av1_inv_txfm_neon.h",
   "//third_party/libaom/source/libaom/av1/common/arm/av1_txfm_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/blend_a64_hmask_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/blend_a64_vmask_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/cdef_block_neon.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/cfl_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon.h",
@@ -30,29 +28,26 @@ aom_av1_common_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/common/arm/reconinter_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/reconintra_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/resize_neon.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/selfguided_neon.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_neon.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/wiener_convolve_neon.c",
 ]
 
 aom_av1_common_intrin_neon_dotprod = [
+  "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon_dotprod.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_dotprod.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_dotprod.c",
 ]
 
 aom_av1_common_intrin_neon_i8mm = [
+  "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_i8mm.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_neon_i8mm.c",
 ]
 
 aom_av1_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/common/x86/av1_txfm_sse2.h",
-  "//third_party/libaom/source/libaom/av1/common/x86/cfl_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_2d_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/convolve_sse2.c",
   "//third_party/libaom/source/libaom/av1/common/x86/jnt_convolve_sse2.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/wiener_convolve_sse2.c",
+  "//third_party/libaom/source/libaom/av1/common/x86/resize_sse2.c",
 ]
 
 aom_av1_common_intrin_sse4_1 = [
@@ -65,22 +60,20 @@ aom_av1_common_intrin_sse4_1 = [
   "//third_party/libaom/source/libaom/av1/common/x86/highbd_inv_txfm_sse4.c",
   "//third_party/libaom/source/libaom/av1/common/x86/intra_edge_sse4.c",
   "//third_party/libaom/source/libaom/av1/common/x86/reconinter_sse4.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/selfguided_sse4.c",
-  "//third_party/libaom/source/libaom/av1/common/x86/warp_plane_sse4.c",
 ]
 
 aom_av1_common_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/av1/common/x86/av1_inv_txfm_ssse3.c",
   "//third_party/libaom/source/libaom/av1/common/x86/av1_inv_txfm_ssse3.h",
-  "//third_party/libaom/source/libaom/av1/common/x86/cfl_ssse3.c",
   "//third_party/libaom/source/libaom/av1/common/x86/jnt_convolve_ssse3.c",
   "//third_party/libaom/source/libaom/av1/common/x86/resize_ssse3.c",
 ]
 
-aom_av1_common_intrin_sve = [
-  "//third_party/libaom/source/libaom/av1/common/arm/highbd_warp_plane_sve.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_sve.c",
-]
+aom_av1_common_intrin_ssse3_x86 =
+    [ "//third_party/libaom/source/libaom/av1/common/x86/cdef_block_ssse3.c" ]
+
+aom_av1_common_intrin_sve2 =
+    [ "//third_party/libaom/source/libaom/av1/common/arm/convolve_sve2.c" ]
 
 aom_av1_common_intrin_vsx =
     [ "//third_party/libaom/source/libaom/av1/common/ppc/cfl_ppc.c" ]
@@ -106,8 +99,6 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/cdef.h",
   "//third_party/libaom/source/libaom/av1/common/cdef_block.c",
   "//third_party/libaom/source/libaom/av1/common/cdef_block.h",
-  "//third_party/libaom/source/libaom/av1/common/cfl.c",
-  "//third_party/libaom/source/libaom/av1/common/cfl.h",
   "//third_party/libaom/source/libaom/av1/common/common.h",
   "//third_party/libaom/source/libaom/av1/common/common_data.c",
   "//third_party/libaom/source/libaom/av1/common/common_data.h",
@@ -142,8 +133,6 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/reconintra.h",
   "//third_party/libaom/source/libaom/av1/common/resize.c",
   "//third_party/libaom/source/libaom/av1/common/resize.h",
-  "//third_party/libaom/source/libaom/av1/common/restoration.c",
-  "//third_party/libaom/source/libaom/av1/common/restoration.h",
   "//third_party/libaom/source/libaom/av1/common/scale.c",
   "//third_party/libaom/source/libaom/av1/common/scale.h",
   "//third_party/libaom/source/libaom/av1/common/scan.c",
@@ -159,29 +148,8 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/token_cdfs.h",
   "//third_party/libaom/source/libaom/av1/common/txb_common.c",
   "//third_party/libaom/source/libaom/av1/common/txb_common.h",
-  "//third_party/libaom/source/libaom/av1/common/warped_motion.c",
-  "//third_party/libaom/source/libaom/av1/common/warped_motion.h",
   "//third_party/libaom/source/libaom/common/args_helper.c",
   "//third_party/libaom/source/libaom/common/args_helper.h",
-]
-
-aom_av1_decoder_sources = [
-  "//third_party/libaom/source/libaom/av1/av1_dx_iface.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodeframe.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodeframe.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decodemv.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodemv.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decoder.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decoder.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decodetxb.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodetxb.h",
-  "//third_party/libaom/source/libaom/av1/decoder/detokenize.c",
-  "//third_party/libaom/source/libaom/av1/decoder/detokenize.h",
-  "//third_party/libaom/source/libaom/av1/decoder/dthread.h",
-  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.c",
-  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.h",
-  "//third_party/libaom/source/libaom/av1/decoder/obu.c",
-  "//third_party/libaom/source/libaom/av1/decoder/obu.h",
 ]
 
 aom_av1_encoder_asm_sse2 = [
@@ -191,9 +159,8 @@ aom_av1_encoder_asm_sse2 = [
 
 aom_av1_encoder_asm_ssse3_x86_64 = [ "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_ssse3_x86_64.asm" ]
 
-aom_av1_encoder_intrin_arm_crc32 = [
-  "//third_party/libaom/source/libaom/av1/encoder/arm/crc32/hash_arm_crc32.c",
-]
+aom_av1_encoder_intrin_arm_crc32 =
+    [ "//third_party/libaom/source/libaom/av1/encoder/arm/hash_arm_crc32.c" ]
 
 aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_avx2.c",
@@ -205,30 +172,23 @@ aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/rdopt_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_k_means_avx2.c",
-  "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/ml_avx2.c",
 ]
 
 aom_av1_encoder_intrin_neon = [
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_error_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_fwd_txfm2d_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_highbd_quantize_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_k_means_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/encodetxb_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/highbd_fwd_txfm_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/hybrid_fwd_txfm_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/ml_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_neon.h",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/quantize_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/rdopt_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/reconinter_enc_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/temporal_filter_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/wedge_utils_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_temporal_denoiser_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/av1_error_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/av1_fwd_txfm2d_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/av1_k_means_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/encodetxb_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/highbd_fwd_txfm_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/hybrid_fwd_txfm_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/quantize_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/rdopt_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/reconinter_enc_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/wedge_utils_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/ml_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/av1_temporal_denoiser_neon.c",
 ]
-
-aom_av1_encoder_intrin_neon_dotprod = [ "//third_party/libaom/source/libaom/av1/encoder/arm/neon/temporal_filter_neon_dotprod.c" ]
 
 aom_av1_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_fwd_txfm_sse2.c",
@@ -238,7 +198,6 @@ aom_av1_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/error_intrin_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/reconinter_enc_sse2.c",
-  "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/wedge_utils_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_temporal_denoiser_sse2.c",
 ]
@@ -259,13 +218,9 @@ aom_av1_encoder_intrin_sse4_1 = [
 aom_av1_encoder_intrin_sse4_2 =
     [ "//third_party/libaom/source/libaom/av1/encoder/x86/hash_sse42.c" ]
 
-aom_av1_encoder_intrin_ssse3 = [
-  "//third_party/libaom/source/libaom/av1/encoder/x86/reconinter_enc_ssse3.c",
-]
-
 aom_av1_encoder_intrin_sve = [
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_error_sve.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/wedge_utils_sve.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/av1_error_sve.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/wedge_utils_sve.c",
 ]
 
 aom_av1_encoder_sources = [
@@ -324,7 +279,6 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/extend.h",
   "//third_party/libaom/source/libaom/av1/encoder/external_partition.c",
   "//third_party/libaom/source/libaom/av1/encoder/external_partition.h",
-  "//third_party/libaom/source/libaom/av1/encoder/grain_test_vectors.h",
   "//third_party/libaom/source/libaom/av1/encoder/hash.c",
   "//third_party/libaom/source/libaom/av1/encoder/hash.h",
   "//third_party/libaom/source/libaom/av1/encoder/hash_motion.c",
@@ -384,8 +338,6 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/superres_scale.h",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.c",
   "//third_party/libaom/source/libaom/av1/encoder/svc_layercontext.h",
-  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.c",
-  "//third_party/libaom/source/libaom/av1/encoder/thirdpass.h",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.c",
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.h",
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.c",
@@ -431,17 +383,7 @@ aom_common_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4menc.h",
 ]
 
-aom_decoder_app_util_sources = [
-  "//third_party/libaom/source/libaom/common/obudec.c",
-  "//third_party/libaom/source/libaom/common/obudec.h",
-  "//third_party/libaom/source/libaom/common/video_reader.c",
-  "//third_party/libaom/source/libaom/common/video_reader.h",
-]
-
 aom_dsp_common_asm_sse2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_8t_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_bilinear_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_intrapred_asm_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/inv_wht_sse2.asm",
 ]
@@ -457,7 +399,6 @@ aom_dsp_common_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/common_avx2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/txfm_common_avx2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_avx2.h",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/fft_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/loopfilter_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/blend_a64_mask_avx2.c",
@@ -472,29 +413,26 @@ aom_dsp_common_intrin_avx2 = [
 aom_dsp_common_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve_copy_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/loopfilter_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/intrapred_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/subtract_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/blend_a64_mask_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/avg_pred_neon.c",
 ]
 
 aom_dsp_common_intrin_neon_dotprod = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon_dotprod.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon_dotprod.c",
 ]
 
 aom_dsp_common_intrin_neon_i8mm = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon_i8mm.c",
 ]
 
 aom_dsp_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_convolve_copy_sse2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_asm_stubs.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_sse2.h",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/fft_sse2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_intrapred_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_x86.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/loopfilter_sse2.c",
@@ -537,8 +475,6 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/blend_a64_vmask.c",
   "//third_party/libaom/source/libaom/aom_dsp/entcode.c",
   "//third_party/libaom/source/libaom/aom_dsp/entcode.h",
-  "//third_party/libaom/source/libaom/aom_dsp/fft.c",
-  "//third_party/libaom/source/libaom/aom_dsp/fft_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/grain_params.h",
   "//third_party/libaom/source/libaom/aom_dsp/intrapred.c",
   "//third_party/libaom/source/libaom/aom_dsp/intrapred_common.h",
@@ -553,18 +489,8 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/simd/v256_intrinsics_c.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v64_intrinsics.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v64_intrinsics_c.h",
-  "//third_party/libaom/source/libaom/aom_dsp/subtract.c",
   "//third_party/libaom/source/libaom/aom_dsp/txfm_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_common_intrin.h",
-]
-
-aom_dsp_decoder_sources = [
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_reader.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_reader.h",
-  "//third_party/libaom/source/libaom/aom_dsp/bitreader.c",
-  "//third_party/libaom/source/libaom/aom_dsp/bitreader.h",
-  "//third_party/libaom/source/libaom/aom_dsp/entdec.c",
-  "//third_party/libaom/source/libaom/aom_dsp/entdec.h",
 ]
 
 aom_dsp_encoder_asm_sse2 = [
@@ -590,14 +516,12 @@ aom_dsp_encoder_intrin_avx =
 
 aom_dsp_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/avg_intrin_avx2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/fft_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad_intrin_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/subtract_avx2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_quantize_intrin_avx2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_adaptive_quantize_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad4d_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad_avx2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_sad_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad_impl_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sse_avx2.c",
@@ -607,16 +531,17 @@ aom_dsp_encoder_intrin_avx2 = [
 ]
 
 aom_dsp_encoder_intrin_neon = [
+  "//third_party/libaom/source/libaom/aom_dsp/arm/avg_pred_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sadxd_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/masked_sad_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/masked_sad4d_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/subpel_variance_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/variance_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/hadamard_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/avg_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/obmc_sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sse_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/subtract_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sum_squares_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/blk_sse_sum_neon.c",
 ]
@@ -631,6 +556,7 @@ aom_dsp_encoder_intrin_neon_dotprod = [
 
 aom_dsp_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/avg_intrin_sse2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/fft_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/fwd_txfm_impl_sse2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/fwd_txfm_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/fwd_txfm_sse2.h",
@@ -650,11 +576,11 @@ aom_dsp_encoder_intrin_sse4_1 = [
 aom_dsp_encoder_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad_intrin_ssse3.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad_intrin_ssse3.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad4d_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_variance_intrin_ssse3.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_variance_intrin_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_impl_ssse3.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/variance_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/jnt_variance_ssse3.c",
 ]
 
@@ -666,20 +592,14 @@ aom_dsp_encoder_intrin_sve = [
 
 aom_dsp_encoder_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/avg.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_writer.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_writer.h",
   "//third_party/libaom/source/libaom/aom_dsp/bitwriter.c",
   "//third_party/libaom/source/libaom/aom_dsp/bitwriter.h",
   "//third_party/libaom/source/libaom/aom_dsp/blk_sse_sum.c",
   "//third_party/libaom/source/libaom/aom_dsp/entenc.c",
   "//third_party/libaom/source/libaom/aom_dsp/entenc.h",
+  "//third_party/libaom/source/libaom/aom_dsp/fft.c",
+  "//third_party/libaom/source/libaom/aom_dsp/fft_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/fwd_txfm.c",
-  "//third_party/libaom/source/libaom/aom_dsp/grain_table.c",
-  "//third_party/libaom/source/libaom/aom_dsp/grain_table.h",
-  "//third_party/libaom/source/libaom/aom_dsp/noise_model.c",
-  "//third_party/libaom/source/libaom/aom_dsp/noise_model.h",
-  "//third_party/libaom/source/libaom/aom_dsp/noise_util.c",
-  "//third_party/libaom/source/libaom/aom_dsp/noise_util.h",
   "//third_party/libaom/source/libaom/aom_dsp/psnr.c",
   "//third_party/libaom/source/libaom/aom_dsp/psnr.h",
   "//third_party/libaom/source/libaom/aom_dsp/quantize.c",
@@ -689,6 +609,7 @@ aom_dsp_encoder_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/sse.c",
   "//third_party/libaom/source/libaom/aom_dsp/ssim.c",
   "//third_party/libaom/source/libaom/aom_dsp/ssim.h",
+  "//third_party/libaom/source/libaom/aom_dsp/subtract.c",
   "//third_party/libaom/source/libaom/aom_dsp/sum_squares.c",
   "//third_party/libaom/source/libaom/aom_dsp/variance.c",
   "//third_party/libaom/source/libaom/aom_dsp/variance.h",
@@ -746,9 +667,6 @@ aom_rtcd_sources = [
 ]
 
 aom_scale_sources = [
-  "//third_party/libaom/source/libaom/aom_scale/aom_scale.h",
-  "//third_party/libaom/source/libaom/aom_scale/generic/aom_scale.c",
-  "//third_party/libaom/source/libaom/aom_scale/generic/gen_scalers.c",
   "//third_party/libaom/source/libaom/aom_scale/generic/yv12config.c",
   "//third_party/libaom/source/libaom/aom_scale/generic/yv12extend.c",
   "//third_party/libaom/source/libaom/aom_scale/yv12config.h",
@@ -757,7 +675,6 @@ aom_scale_sources = [
 aom_sources = [
   "//third_party/libaom/source/libaom/aom/aom.h",
   "//third_party/libaom/source/libaom/aom/aom_codec.h",
-  "//third_party/libaom/source/libaom/aom/aom_decoder.h",
   "//third_party/libaom/source/libaom/aom/aom_encoder.h",
   "//third_party/libaom/source/libaom/aom/aom_external_partition.h",
   "//third_party/libaom/source/libaom/aom/aom_frame_buffer.h",
@@ -768,21 +685,16 @@ aom_sources = [
   "//third_party/libaom/source/libaom/aom/internal/aom_codec_internal.h",
   "//third_party/libaom/source/libaom/aom/internal/aom_image_internal.h",
   "//third_party/libaom/source/libaom/aom/src/aom_codec.c",
-  "//third_party/libaom/source/libaom/aom/src/aom_decoder.c",
   "//third_party/libaom/source/libaom/aom/src/aom_encoder.c",
   "//third_party/libaom/source/libaom/aom/src/aom_image.c",
   "//third_party/libaom/source/libaom/aom/src/aom_integer.c",
 ]
 
 aom_util_sources = [
+  "//third_party/libaom/source/libaom/aom_util/aom_pthread.h",
   "//third_party/libaom/source/libaom/aom_util/aom_thread.c",
   "//third_party/libaom/source/libaom/aom_util/aom_thread.h",
   "//third_party/libaom/source/libaom/aom_util/endian_inl.h",
-]
-
-aom_webm_decoder_sources = [
-  "//third_party/libaom/source/libaom/common/webmdec.cc",
-  "//third_party/libaom/source/libaom/common/webmdec.h",
 ]
 
 aom_webm_encoder_sources = [

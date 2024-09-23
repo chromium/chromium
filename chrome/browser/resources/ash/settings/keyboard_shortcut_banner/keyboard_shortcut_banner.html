@@ -31,7 +31,8 @@
     margin-top: 4px;
   }
 
-  kbd {
+  kbd,
+  .reminder-accelerators {
     font-family: Roboto, sans-serif;
     font-weight: 500;
   }
@@ -55,6 +56,22 @@
   :not(kbd) > kbd {
     color: var(--cros-text-color-prominent);
   }
+
+  .parts-container {
+    flex-wrap: nowrap;
+    gap: 2px;
+    white-space: nowrap;
+  }
+
+  .reminder-label {
+    margin-inline-end: 6px;
+  }
+
+  shortcut-input-key {
+    --key-container-height: 20px;
+    --key-container-padding-bottom: 0;
+    --key-container-padding-top: 0;
+  }
 </style>
 
 <iron-icon id="keyboardShortcutIcon" icon="os-settings:keyboard-shortcut">
@@ -62,12 +79,15 @@
 
 <div id="text">
   <h2>[[header]]</h2>
-  <template is="dom-repeat" items="[[body]]" as="message">
-    <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
-        class="reminder-message"
-        inner-h-t-m-l="[[message]]">
-    </div>
+  <template is="dom-if" if="[[!showCustomizedShortcut_]]">
+    <template is="dom-repeat" items="[[body]]" as="message">
+      <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
+          class="reminder-message"
+          inner-h-t-m-l="[[message]]">
+      </div>
+    </template>
   </template>
+  <div id="partsContainer" hidden="[[!showCustomizedShortcut_]]"></div>
 </div>
 
 <cr-button on-click="onDismissClick_" id="dismiss" aria-describedby="dismiss"

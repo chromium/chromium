@@ -4,12 +4,13 @@
 
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 
+#include <string_view>
+
 #include "base/i18n/time_formatting.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/node_base.h"
-#include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -19,6 +20,7 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/node_type.h"
 
 namespace performance_manager {
 
@@ -41,7 +43,7 @@ base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks) {
       base::Time::UnixEpoch() + delta_since_epoch, "yyyy-MM-dd HH:mm:ss"));
 }
 
-base::Value MaybeNullStringToValue(base::StringPiece str) {
+base::Value MaybeNullStringToValue(std::string_view str) {
   if (str.data() == nullptr) {
     return base::Value();
   }
@@ -58,31 +60,28 @@ base::Value PriorityAndReasonToValue(
 }
 
 std::string DumpNodeDescription(const Node* node) {
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  switch (node_base->type()) {
+  switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame:
       return FrameNodeImplDescriber()
-          .DescribeNodeData(FrameNodeImpl::FromNodeBase(node_base))
+          .DescribeNodeData(FrameNodeImpl::FromNode(node))
           .DebugString();
     case NodeTypeEnum::kPage:
       return PageNodeImplDescriber()
-          .DescribeNodeData(PageNodeImpl::FromNodeBase(node_base))
+          .DescribeNodeData(PageNodeImpl::FromNode(node))
           .DebugString();
     case NodeTypeEnum::kProcess:
       return ProcessNodeImplDescriber()
-          .DescribeNodeData(ProcessNodeImpl::FromNodeBase(node_base))
+          .DescribeNodeData(ProcessNodeImpl::FromNode(node))
           .DebugString();
     case NodeTypeEnum::kSystem:
       // SystemNodeImpl has no default describer. Return an empty dictionary.
       return base::Value::Dict().DebugString();
     case NodeTypeEnum::kWorker:
       return WorkerNodeImplDescriber()
-          .DescribeNodeData(WorkerNodeImpl::FromNodeBase(node_base))
+          .DescribeNodeData(WorkerNodeImpl::FromNode(node))
           .DebugString();
-    case NodeTypeEnum::kInvalidType:
-      NOTREACHED_NORETURN();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string DumpRegisteredDescribers(const Node* node) {

@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_WINRT_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_WINRT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
@@ -31,13 +32,14 @@ class PlatformSensorProviderWinrt final : public PlatformSensorProvider {
   PlatformSensorProviderWinrt();
   ~PlatformSensorProviderWinrt() override;
 
+  base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
+
   void SetSensorReaderFactoryForTesting(
       std::unique_ptr<SensorReaderFactory> sensor_reader_factory);
 
  protected:
   // PlatformSensorProvider interface implementation.
   void CreateSensorInternal(mojom::SensorType type,
-                            SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
 
  private:
@@ -46,7 +48,6 @@ class PlatformSensorProviderWinrt final : public PlatformSensorProvider {
 
   void SensorReaderCreated(
       mojom::SensorType type,
-      SensorReadingSharedBuffer* reading_buffer,
       CreateSensorCallback callback,
       std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 
@@ -59,6 +60,8 @@ class PlatformSensorProviderWinrt final : public PlatformSensorProvider {
   PlatformSensorProviderWinrt(const PlatformSensorProviderWinrt&) = delete;
   PlatformSensorProviderWinrt& operator=(const PlatformSensorProviderWinrt&) =
       delete;
+
+  base::WeakPtrFactory<PlatformSensorProviderWinrt> weak_factory_{this};
 };
 
 }  // namespace device

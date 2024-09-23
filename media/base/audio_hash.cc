@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/audio_hash.h"
 
 #include <cmath>
+#include <numbers>
 #include <sstream>
 
-#include "base/numerics/math_constants.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 
@@ -35,7 +40,7 @@ void AudioHash::Update(const AudioBus* audio_bus, int frames) {
       if (ch == 0) {
         audio_hash_[kHashIndex] +=
             channel[i] +
-            std::sin(2.0 * base::kPiDouble * base::kPiDouble * kSampleIndex);
+            std::sin(2.0 * std::numbers::pi * std::numbers::pi * kSampleIndex);
       } else {
         audio_hash_[kHashIndex] += channel[i];
       }

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
@@ -103,8 +104,9 @@ class FakeBiodClientTest : public testing::Test {
     for (int i = 0; i < scans; ++i) {
       std::string scan = kTestScan;
       base::ReplaceSubstringsAfterOffset(
-          &scan, 0, "#", std::to_string(num_test_fingerprints_));
-      base::ReplaceSubstringsAfterOffset(&scan, 0, "$", std::to_string(i));
+          &scan, 0, "#", base::NumberToString(num_test_fingerprints_));
+      base::ReplaceSubstringsAfterOffset(&scan, 0, "$",
+                                         base::NumberToString(i));
       fingerprint.push_back(scan);
     }
     return fingerprint;

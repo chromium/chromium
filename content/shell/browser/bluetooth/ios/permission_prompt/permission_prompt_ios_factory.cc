@@ -12,7 +12,7 @@ namespace permissions {
 std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     content::WebContents* web_contents,
     Delegate* delegate) {
-  // TODO(crbug.com/1431447): Implement PermissionPrompt.
+  // TODO(crbug.com/40263537): Implement PermissionPrompt.
   return nullptr;
 }
 

@@ -55,17 +55,17 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
-  int ThumbLength(const Scrollbar&) override;
+  int ThumbLength(const Scrollbar&) const override;
   int ThumbThickness(float scale_from_dip,
                      EScrollbarWidth scrollbar_width) const;
 
-  bool NativeThemeHasButtons() override { return false; }
-  bool HasThumb(const Scrollbar&) override;
+  bool NativeThemeHasButtons() const override { return false; }
+  bool HasThumb(const Scrollbar&) const override;
 
-  gfx::Rect BackButtonRect(const Scrollbar&) override;
-  gfx::Rect ForwardButtonRect(const Scrollbar&) override;
-  gfx::Rect TrackRect(const Scrollbar&) override;
-  gfx::Rect ThumbRect(const Scrollbar&) override;
+  gfx::Rect BackButtonRect(const Scrollbar&) const override;
+  gfx::Rect ForwardButtonRect(const Scrollbar&) const override;
+  gfx::Rect TrackRect(const Scrollbar&) const override;
+  gfx::Rect ThumbRect(const Scrollbar&) const override;
 
   void PaintThumb(GraphicsContext&,
                   const Scrollbar&,
@@ -75,7 +75,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const override;
   gfx::Rect NinePatchThumbAperture(const Scrollbar&) const override;
 
-  int MinimumThumbLength(const Scrollbar&) override;
+  int MinimumThumbLength(const Scrollbar&) const override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeOverlayTest, PaintInvalidation);
@@ -85,7 +85,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
                         int thumb_thickness_thin_dip,
                         int scrollbar_margin_thin_dip);
 
-  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override;
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const override;
 
  private:
   int thumb_thickness_default_dip_;

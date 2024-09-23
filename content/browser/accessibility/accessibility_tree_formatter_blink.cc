@@ -14,12 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -50,9 +50,8 @@ std::optional<std::string> GetStringAttribute(const ui::AXNode& node,
 
   // Always return the attribute if the node has it, even if the value is an
   // empty string.
-  std::string value;
-  if (node.GetStringAttribute(attr, &value)) {
-    return value;
+  if (node.HasStringAttribute(attr)) {
+    return node.GetStringAttribute(attr);
   }
   return std::nullopt;
 }
@@ -99,14 +98,18 @@ std::string IntAttrToString(const ui::AXNode& node,
   switch (attr) {
     case ax::mojom::IntAttribute::kAriaCurrentState:
       return ui::ToString(static_cast<ax::mojom::AriaCurrentState>(value));
+    case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
+      return ui::ToString(
+          static_cast<ax::mojom::AriaNotificationInterrupt>(value));
+    case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
+      return ui::ToString(
+          static_cast<ax::mojom::AriaNotificationPriority>(value));
     case ax::mojom::IntAttribute::kCheckedState:
       return ui::ToString(static_cast<ax::mojom::CheckedState>(value));
     case ax::mojom::IntAttribute::kDefaultActionVerb:
       return ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(value));
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return ui::ToString(static_cast<ax::mojom::DescriptionFrom>(value));
-    case ax::mojom::IntAttribute::kDropeffectDeprecated:
-      return node.data().DropeffectBitfieldToString();
     case ax::mojom::IntAttribute::kHasPopup:
       return ui::ToString(static_cast<ax::mojom::HasPopup>(value));
     case ax::mojom::IntAttribute::kInvalidState:
@@ -146,7 +149,8 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kAriaRowCount:
     case ax::mojom::IntAttribute::kColorValue:
-    case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
+    case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
     case ax::mojom::IntAttribute::kHierarchicalLevel:
     case ax::mojom::IntAttribute::kInPageLinkTargetId:
@@ -185,7 +189,7 @@ std::string IntAttrToString(const ui::AXNode& node,
   }
 
   // Just return the number
-  return std::to_string(value);
+  return base::NumberToString(value);
 }
 
 }  // namespace
@@ -227,6 +231,13 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
   AddPropertyFilter(property_filters, "virtualContent=*");
+  AddPropertyFilter(property_filters, "descriptionFrom=prohibitedNameRepair");
+  // Add the rare name-from values.
+  AddPropertyFilter(property_filters, "nameFrom=caption");
+  AddPropertyFilter(property_filters, "nameFrom=placeholder");
+  AddPropertyFilter(property_filters, "nameFrom=prohibited");
+  AddPropertyFilter(property_filters, "nameFrom=title");
+  AddPropertyFilter(property_filters, "nameFrom=value");
 }
 
 const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",
@@ -241,8 +252,8 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildTree(
     return base::Value::Dict();
   }
 
-  BrowserAccessibility* root_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
+  ui::BrowserAccessibility* root_internal =
+      ui::BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
   return dict;
@@ -250,7 +261,7 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildTree(
 
 base::Value::Dict AccessibilityTreeFormatterBlink::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::Value::Dict();
 }
 
@@ -266,7 +277,8 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
   base::Value::Dict dict;
-  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  AddProperties(*ui::BrowserAccessibility::FromAXPlatformNodeDelegate(node),
+                &dict);
   return dict;
 }
 
@@ -280,7 +292,7 @@ std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
 }
 
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
-    const BrowserAccessibility& node,
+    const ui::BrowserAccessibility& node,
     base::Value::Dict* dict) const {
   if (!ShouldDumpNode(node))
     return;
@@ -313,7 +325,7 @@ void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
 }
 
 void AccessibilityTreeFormatterBlink::AddProperties(
-    const BrowserAccessibility& node,
+    const ui::BrowserAccessibility& node,
     base::Value::Dict* dict) const {
   int id = node.GetId();
   dict->Set("id", id);
@@ -412,7 +424,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
       base::Value::List value_list;
       for (const int& value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
-          BrowserAccessibility* target = node.manager()->GetFromID(value);
+          ui::BrowserAccessibility* target = node.manager()->GetFromID(value);
           if (target)
             value_list.Append(ui::ToString(target->GetRole()));
           else
@@ -554,8 +566,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
     if (node.HasIntListAttribute(attr)) {
-      std::vector<int32_t> values;
-      node.GetIntListAttribute(attr, &values);
+      const std::vector<int32_t>& values = node.GetIntListAttribute(attr);
       base::Value::List value_list;
       for (auto value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
@@ -789,7 +800,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
             &line);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

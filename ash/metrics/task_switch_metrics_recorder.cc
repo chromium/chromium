@@ -34,7 +34,6 @@ const char* GetHistogramName(TaskSwitchSource task_switch_source) {
       return nullptr;
   }
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace

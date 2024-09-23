@@ -11,8 +11,6 @@
 // dialog's content view.
 @interface FirstRunDialogViewController : NSViewController
 
-- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked;
-
 - (NSString*)windowTitle;
 
 - (BOOL)isStatsReportingEnabled;

@@ -66,8 +66,9 @@ def _SetupEnvironmentForVPython():
     post_install_script = os.path.join(
         os.path.dirname(os.path.abspath(sys.executable)),
         'pywin32_postinstall.py')
-    _RunCommand([sys.executable, post_install_script, '-install'],
-                log_error=False)
+    _RunCommand(
+        [sys.executable, post_install_script, '-install', '-silent', '-quiet'],
+        log_error=False)
 
     # Make pythonservice.exe explicit for our service. This is to avoid pickup
     # an incompatible interpreter accidentally.

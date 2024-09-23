@@ -18,6 +18,9 @@ class GURL;
 // origin `view` representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL title:(NSString*)title fromView:(UIView*)view;
 
+// Opens the Home Customization menu at the Magic Stack page.
+- (void)openMagicStackCustomizationMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_DELEGATE_H_

@@ -69,7 +69,7 @@ const char* ToRotationString(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return "270";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 
@@ -138,7 +138,7 @@ display::Display::Rotation Display::DegreesToRotation(int degrees) {
     return display::Display::ROTATE_180;
   if (degrees == 270)
     return display::Display::ROTATE_270;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::Display::ROTATE_0;
 }
 
@@ -154,7 +154,7 @@ int Display::RotationToDegrees(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return 270;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -199,7 +199,7 @@ int Display::RotationAsDegree() const {
     case ROTATE_270:
       return 270;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -227,7 +227,7 @@ void Display::SetRotationAsDegree(int rotation) {
       break;
     default:
       // We should not reach that but we will just ignore the call if we do.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -316,20 +316,31 @@ int64_t Display::InternalDisplayId() {
 }
 
 bool Display::operator==(const Display& rhs) const {
-  return id_ == rhs.id_ && bounds_ == rhs.bounds_ &&
-         size_in_pixels_ == rhs.size_in_pixels_ &&
-         native_origin_ == rhs.native_origin_ && detected_ == rhs.detected_ &&
-         work_area_ == rhs.work_area_ &&
-         device_scale_factor_ == rhs.device_scale_factor_ &&
-         rotation_ == rhs.rotation_ && touch_support_ == rhs.touch_support_ &&
-         accelerometer_support_ == rhs.accelerometer_support_ &&
-         maximum_cursor_size_ == rhs.maximum_cursor_size_ &&
+  return EqualExceptForHdrHeadroom(*this, rhs) &&
          (color_spaces_ == rhs.color_spaces_ ||
-          GetColorSpaces() == rhs.GetColorSpaces()) &&
-         color_depth_ == rhs.color_depth_ &&
-         depth_per_component_ == rhs.depth_per_component_ &&
-         is_monochrome_ == rhs.is_monochrome_ &&
-         display_frequency_ == rhs.display_frequency_ && label_ == rhs.label_;
+          GetColorSpaces() == rhs.GetColorSpaces());
+}
+
+// static
+bool Display::EqualExceptForHdrHeadroom(const Display& lhs,
+                                        const Display& rhs) {
+  return lhs.id_ == rhs.id_ && lhs.bounds_ == rhs.bounds_ &&
+         lhs.size_in_pixels_ == rhs.size_in_pixels_ &&
+         lhs.native_origin_ == rhs.native_origin_ &&
+         lhs.detected_ == rhs.detected_ && lhs.work_area_ == rhs.work_area_ &&
+         lhs.device_scale_factor_ == rhs.device_scale_factor_ &&
+         lhs.rotation_ == rhs.rotation_ &&
+         lhs.touch_support_ == rhs.touch_support_ &&
+         lhs.accelerometer_support_ == rhs.accelerometer_support_ &&
+         lhs.maximum_cursor_size_ == rhs.maximum_cursor_size_ &&
+         (lhs.color_spaces_ == rhs.color_spaces_ ||
+          gfx::DisplayColorSpaces::EqualExceptForHdrHeadroom(
+              lhs.GetColorSpaces(), rhs.GetColorSpaces())) &&
+         lhs.color_depth_ == rhs.color_depth_ &&
+         lhs.depth_per_component_ == rhs.depth_per_component_ &&
+         lhs.is_monochrome_ == rhs.is_monochrome_ &&
+         lhs.display_frequency_ == rhs.display_frequency_ &&
+         lhs.label_ == rhs.label_;
 }
 
 void Display::SetDisplayColorSpacesRef(

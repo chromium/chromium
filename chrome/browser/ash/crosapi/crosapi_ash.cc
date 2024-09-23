@@ -13,8 +13,6 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
-#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
@@ -22,6 +20,7 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
+#include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
@@ -55,6 +55,7 @@
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
 #include "chrome/browser/ash/crosapi/emoji_picker_ash.h"
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
+#include "chrome/browser/ash/crosapi/extension_printer_service_ash.h"
 #include "chrome/browser/ash/crosapi/eye_dropper_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
@@ -63,12 +64,13 @@
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
+#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
-#include "chrome/browser/ash/crosapi/guest_os_sk_forwarder_factory_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
+#include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
@@ -77,17 +79,18 @@
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
+#include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
-#include "chrome/browser/ash/crosapi/network_change_ash.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
+#include "chrome/browser/ash/crosapi/one_drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/one_drive_notification_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
@@ -103,9 +106,9 @@
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/speech_recognition_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
+#include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
-#include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/volume_manager_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
@@ -116,18 +119,14 @@
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
-#include "chrome/browser/ash/passkeys/passkey_authenticator_service_ash.h"
-#include "chrome/browser/ash/passkeys/passkey_authenticator_service_factory_ash.h"
+#include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
-#include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
-#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_ash.h"
 #include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
 #include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -141,6 +140,11 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
+#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
+#include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
+#include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/in_session_auth/in_process_instances.h"
 #include "chromeos/components/in_session_auth/in_session_auth.h"
@@ -149,6 +153,7 @@
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
+#include "chromeos/crosapi/mojom/extension_printer.mojom.h"
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
@@ -159,6 +164,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
@@ -167,6 +173,8 @@
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -193,7 +201,7 @@ namespace crosapi {
 namespace {
 
 // Assumptions:
-// 1. TODO(crbug.com/1102768): Multi-Signin / Fast-User-Switching is disabled.
+// 1. TODO(crbug.com/40704278): Multi-Signin / Fast-User-Switching is disabled.
 // 2. ash-chrome has 1 and only 1 "regular" `Profile`.
 Profile* GetAshProfile() {
 #if DCHECK_IS_ON()
@@ -212,6 +220,8 @@ Profile* GetAshProfile() {
 
 }  // namespace
 
+CrosapiAsh::TestControllerReceiver::~TestControllerReceiver() = default;
+
 CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
@@ -219,8 +229,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
           g_browser_process->component_updater())),
-      guest_os_sk_forwarder_factory_ash_(
-          std::make_unique<GuestOsSkForwarderFactoryAsh>()),
+      cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -255,6 +264,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<EmbeddedAccessibilityHelperClientAsh>()),
       emoji_picker_ash_(std::make_unique<EmojiPickerAsh>()),
       extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
+      extension_printer_service_ash_(
+          std::make_unique<ExtensionPrinterServiceAsh>()),
       eye_dropper_ash_(std::make_unique<EyeDropperAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
@@ -265,10 +276,12 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<FileSystemProviderServiceAsh>()),
       force_installed_tracker_ash_(
           std::make_unique<ForceInstalledTrackerAsh>()),
+      full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
+      input_methods_ash_(std::make_unique<InputMethodsAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
@@ -278,8 +291,11 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
+      magic_boost_controller_ash_(
+          std::make_unique<ash::MagicBoostControllerAsh>()),
       mahi_browser_delegate_ash_(
           std::make_unique<ash::MahiBrowserDelegateAsh>()),
+      media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_ash_(std::make_unique<MetricsAsh>()),
@@ -287,13 +303,14 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           g_browser_process->metrics_service())),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
-      network_change_ash_(std::make_unique<NetworkChangeAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->platform_part()->ash_proxy_monitor())),
       one_drive_notification_service_ash_(
           std::make_unique<OneDriveNotificationServiceAsh>()),
+      one_drive_integration_service_ash_(
+          std::make_unique<OneDriveIntegrationServiceAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
@@ -315,6 +332,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
+      print_preview_webcontents_adapter_ash_(
+          std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
@@ -324,10 +343,10 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
+      suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
-      url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
@@ -418,19 +437,18 @@ void CrosapiAsh::BindBrowserServiceHost(
 
 void CrosapiAsh::BindBrowserShortcutPublisher(
     mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  apps::BrowserShortcutsCrosapiPublisher* browser_shortcuts =
-      app_service_proxy->BrowserShortcutsCrosapiPublisher();
-  if (browser_shortcuts) {
-    browser_shortcuts->RegisterCrosapiHost(std::move(receiver));
-  }
+  // TODO(b/352513798): Remove after M131.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void CrosapiAsh::BindBrowserVersionService(
     mojo::PendingReceiver<crosapi::mojom::BrowserVersionService> receiver) {
   browser_version_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindCecPrivate(
+    mojo::PendingReceiver<mojom::CecPrivate> receiver) {
+  cec_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCertDatabase(
@@ -441,6 +459,12 @@ void CrosapiAsh::BindCertDatabase(
 void CrosapiAsh::BindCertProvisioning(
     mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
   cert_provisioning_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindCfmServiceContext(
+    mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
+  chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
+      std::move(receiver));
 }
 
 void CrosapiAsh::BindChapsService(
@@ -602,6 +626,11 @@ void CrosapiAsh::BindExtensionInfoPrivate(
   extension_info_private_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindExtensionPrinterService(
+    mojo::PendingReceiver<mojom::ExtensionPrinterService> receiver) {
+  extension_printer_service_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindExtensionPublisher(
     mojo::PendingReceiver<mojom::AppPublisher> receiver) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -660,6 +689,11 @@ void CrosapiAsh::BindForceInstalledTracker(
   force_installed_tracker_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindFullRestore(
+    mojo::PendingReceiver<crosapi::mojom::FullRestore> receiver) {
+  full_restore_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindFullscreenController(
     mojo::PendingReceiver<crosapi::mojom::FullscreenController> receiver) {
   fullscreen_controller_ash_->BindReceiver(std::move(receiver));
@@ -701,6 +735,11 @@ void CrosapiAsh::BindIdleService(
 void CrosapiAsh::BindImageWriter(
     mojo::PendingReceiver<mojom::ImageWriter> receiver) {
   image_writer_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindInputMethods(
+    mojo::PendingReceiver<mojom::InputMethods> receiver) {
+  input_methods_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindInSessionAuth(
@@ -772,6 +811,15 @@ void CrosapiAsh::BindMahiBrowserDelegate(
   mahi_browser_delegate_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindMagicBoostController(
+    mojo::PendingReceiver<mojom::MagicBoostController> receiver) {
+  magic_boost_controller_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindMediaApp(mojo::PendingRemote<mojom::MediaApp> remote) {
+  media_app_ash_->BindRemote(std::move(remote));
+}
+
 void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {
   media_ui_ash_->BindReceiver(std::move(receiver));
 }
@@ -821,7 +869,7 @@ void CrosapiAsh::BindNativeThemeService(
 
 void CrosapiAsh::BindNetworkChange(
     mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
-  network_change_ash_->BindReceiver(std::move(receiver));
+  NOTREACHED();
 }
 
 void CrosapiAsh::BindNetworkSettingsService(
@@ -845,20 +893,19 @@ void CrosapiAsh::BindOneDriveNotificationService(
   one_drive_notification_service_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindOneDriveIntegrationService(
+    mojo::PendingReceiver<mojom::OneDriveIntegrationService> receiver) {
+  one_drive_integration_service_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindPasskeyAuthenticator(
+void CrosapiAsh::BindPasskeyAuthenticatorDeprecated(
     mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) {
-  auto* passkey_authenticator =
-      ash::PasskeyAuthenticatorServiceFactoryAsh::GetForProfile(
-          GetAshProfile());
-  if (!passkey_authenticator) {
-    return;
-  }
-  passkey_authenticator->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindPaymentAppInstance(
@@ -885,6 +932,11 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
 void CrosapiAsh::BindNonclosableAppToastService(
     mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver) {
   nonclosable_app_toast_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindPrintPreviewCrosDelegate(
+    mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) {
+  print_preview_webcontents_adapter_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintingMetrics(
@@ -937,6 +989,11 @@ void CrosapiAsh::BindScreenManager(
   screen_manager_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindSearchControllerFactory(
+    mojo::PendingRemote<mojom::SearchControllerFactory> remote) {
+  NOTREACHED();
+}
+
 void CrosapiAsh::BindSearchControllerRegistry(
     mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) {
   search_provider_ash_->BindReceiver(std::move(receiver));
@@ -984,6 +1041,11 @@ void CrosapiAsh::BindStableVideoDecoderFactory(
 void CrosapiAsh::BindStructuredMetricsService(
     mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
   structured_metrics_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSuggestionService(
+    mojo::PendingReceiver<crosapi::mojom::SuggestionService> receiver) {
+  suggestion_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSyncService(
@@ -1047,6 +1109,18 @@ void CrosapiAsh::BindTrustedVaultBackend(
     // Nullable in Guest profile.
     return;
   }
+  backend_service->chrome_sync_trusted_vault_backend()->BindReceiver(
+      std::move(receiver));
+}
+
+void CrosapiAsh::BindTrustedVaultBackendService(
+    mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver) {
+  auto* backend_service =
+      ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile());
+  if (!backend_service) {
+    // Nullable in Guest profile.
+    return;
+  }
   backend_service->BindReceiver(std::move(receiver));
 }
 
@@ -1056,7 +1130,7 @@ void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
 
 void CrosapiAsh::BindUrlHandler(
     mojo::PendingReceiver<mojom::UrlHandler> receiver) {
-  url_handler_ash_->BindReceiver(std::move(receiver));
+  NOTREACHED();
 }
 
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
@@ -1117,7 +1191,7 @@ void CrosapiAsh::BindWebPageInfoFactory(
 
 void CrosapiAsh::BindGuestOsSkForwarderFactory(
     mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
-  guest_os_sk_forwarder_factory_ash_->BindReceiver(std::move(receiver));
+  NOTREACHED();
 }
 
 void CrosapiAsh::BindWebAppPublisher(
@@ -1149,8 +1223,8 @@ void CrosapiAsh::REMOVED_62(
 }
 
 void CrosapiAsh::SetTestControllerForTesting(
-    TestControllerReceiver* test_controller) {
-  test_controller_ = test_controller;
+    std::unique_ptr<TestControllerReceiver> test_controller) {
+  test_controller_ = std::move(test_controller);
 }
 
 void CrosapiAsh::OnDisconnected() {

@@ -31,6 +31,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "USE_V8_CONTEXT_SNAPSHOT=$use_v8_context_snapshot",
+    "INCLUDE_BOTH_V8_SNAPSHOTS=$include_both_v8_snapshots",
     "V8_CONTEXT_SNAPSHOT_FILENAME=\"$v8_context_snapshot_filename\"",
   ]
 }
@@ -51,7 +52,11 @@ if (use_v8_context_snapshot) {
         "--output_file=$output_path",
       ]
 
-      deps = [ ":v8_context_snapshot_generator" ]
+      sources = [ "$root_out_dir/snapshot_blob.bin" ]
+      deps = [
+        ":v8_context_snapshot_generator",
+        "//v8:run_mksnapshot_default",
+      ]
 
       # TODO(sky): figure out why this doesn't work on android cross compile.
       # In the case of compiling for the snapshot `shlib_extension` is ".so"
@@ -108,7 +113,7 @@ if (use_v8_context_snapshot) {
       ldflags = [ "/OPT:NOICF" ]  # link.exe, but also lld-link.exe.
     } else if (is_apple && !use_lld) {
       ldflags = [ "-Wl,-no_deduplicate" ]  # ld64.
-    } else if (use_gold || use_lld) {
+    } else if (use_lld) {
       ldflags = [ "-Wl,--icf=none" ]
     }
   }

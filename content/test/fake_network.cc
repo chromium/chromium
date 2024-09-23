@@ -4,6 +4,7 @@
 
 #include "content/test/fake_network.h"
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -105,13 +106,11 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
       network::PopulateParsedHeaders(info.headers.get(), url_request.url);
   mojo::Remote<network::mojom::URLLoaderClient>& client = params->client;
 
-  uint32_t bytes_written = response_info.body.size();
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   CHECK_EQ(MOJO_RESULT_OK,
            mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
-  producer_handle->WriteData(response_info.body.data(), &bytes_written,
-                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  producer_handle->WriteAllData(base::as_byte_span(response_info.body));
   client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
                             std::nullopt);
 

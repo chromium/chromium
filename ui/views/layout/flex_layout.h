@@ -132,6 +132,11 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
     return *this;
   }
 
+  template <class T>
+  T* GetDefaultForTesting(const ui::ClassProperty<T*>* key) const {
+    return GetDefault(key);
+  }
+
  protected:
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(

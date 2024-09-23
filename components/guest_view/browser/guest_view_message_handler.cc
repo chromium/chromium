@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -136,9 +135,6 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
   const bool changed_owner_web_contents =
       owner_web_contents !=
       content::WebContents::FromRenderFrameHost(outer_contents_frame);
-  base::UmaHistogramBoolean(
-      "Extensions.GuestView.ChangeOwnerWebContentsOnAttach",
-      changed_owner_web_contents);
 
   if (changed_owner_web_contents) {
     guest->MaybeRecreateGuestContents(outer_contents_frame);

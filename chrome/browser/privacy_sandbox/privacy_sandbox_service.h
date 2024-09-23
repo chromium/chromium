@@ -47,6 +47,15 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kM1NoticeRestricted,
   };
 
+  // A list of the client surfaces we show consents / notices on.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  enum class SurfaceType {
+    kDesktop = 0,
+    kBrApp = 1,
+    kAGACCT = 2,
+    kMaxValue = kAGACCT,
+  };
+
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
@@ -91,7 +100,10 @@ class PrivacySandboxService : public KeyedService {
     kRestrictedNoticeClosedNoInteraction = 19,
     kRestrictedNoticeMoreButtonClicked = 20,
 
-    kMaxValue = kRestrictedNoticeMoreButtonClicked,
+    // Privacy policy interactions
+    kPrivacyPolicyLinkClicked = 21,
+
+    kMaxValue = kPrivacyPolicyLinkClicked,
   };
 
   // If during the trials a previous consent decision was made, or the notice
@@ -140,14 +152,15 @@ class PrivacySandboxService : public KeyedService {
   // state of the Privacy Sandbox settings, and the current location of the
   // user, to determine the appropriate type. This is expected to be called by
   // UI code locations determining whether a prompt should be shown on startup.
-  virtual PromptType GetRequiredPromptType() = 0;
+  virtual PromptType GetRequiredPromptType(SurfaceType surface_type) = 0;
 
   // Informs the service that |action| occurred with the prompt. This allows
   // the service to record this information in preferences such that future
   // calls to GetRequiredPromptType() are correct. This is expected to be
   // called appropriately by all locations showing the prompt. Metrics shared
   // between platforms will also be recorded.
-  virtual void PromptActionOccurred(PromptAction action) = 0;
+  virtual void PromptActionOccurred(PromptAction action,
+                                    SurfaceType surface_type) = 0;
 
   // Functions for coordinating the display of the Privacy Sandbox prompts
   // across multiple browser windows. Only relevant for Desktop.
@@ -263,8 +276,10 @@ class PrivacySandboxService : public KeyedService {
 
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
-  // TODO (crbug.com/1378703): Determine whether changes to the preference,
-  // such as by policy or extensions, should also call here.
+  // This is not fired for changes to the preference for policy or extensions,
+  // and so consent information only represents direct user actions. Note that
+  // extensions and policy can only _disable_ topics, and so cannot bypass the
+  // need for user consent where required.
   // Virtual for mocking in tests.
   virtual void TopicsToggleChanged(bool new_value) const = 0;
 
@@ -276,11 +291,60 @@ class PrivacySandboxService : public KeyedService {
 
   // Functions which returns the details of the currently recorded Topics
   // consent.
-  // TODO (crbug.com/1378703): Display the output of these functions in WebUI.
   virtual privacy_sandbox::TopicsConsentUpdateSource
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Clank startup, the RecordActivityType function will be called once,
+  // passing in the corresponding PrivacySandboxStorageActivityType. Each time
+  // the function is called, the kPrivacySandboxActivityTypeRecord2 preference
+  // will be updated with a new list of activity type launches. This list is
+  // limited in size and by the timestamps of recordable launches
+  // (kPrivacySandboxActivityTypeStorageLastNLaunches and
+  // kPrivacySandboxActivityTypeStorageWithinXDays). By having this storage
+  // component, we can create an accurate heuristic to identify distinct user
+  // groups based on their Chrome usage patterns. This will enable us to tailor
+  // the user experience for specific launches in the near future.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  // LINT.IfChange(PrivacySandboxStorageActivityType)
+  enum class PrivacySandboxStorageActivityType {
+    kOther = 0,               // Partial CCT and all other unknowns
+    kTabbed = 1,              // BrApp
+    kAGSACustomTab = 2,       // AGSA-CCT
+    kNonAGSACustomTab = 3,    // Non-AGSA-CCT
+    kTrustedWebActivity = 4,  // TWA
+    //   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
+    kWebapp = 5,  // Shortcut
+    //   - https://web.dev/webapks/
+    kWebApk = 6,  // PWA
+    kPreFirstTab =
+        7,  // Chrome has started running, but no tab has yet become visible.
+    kMaxValue = kPreFirstTab,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+
+  virtual void RecordActivityType(
+      PrivacySandboxStorageActivityType type) const = 0;
+
+  // Enum used for recording metrics about Clank Activity Type Storage
+  //
+  // LINT.IfChange(PrivacySandboxStorageUserSegmentByRecentActivity)
+  enum class PrivacySandboxStorageUserSegmentByRecentActivity {
+    kHasOther = 0,
+    kHasBrowserApp = 1,
+    kHasAGSACCT = 2,
+    kHasNonAGSACCT = 3,
+    kHasPWA = 4,
+    kHasTWA = 5,
+    kHasWebapp = 6,
+    kHasPreFirstTab = 7,
+    kMaxValue = kHasPreFirstTab,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+
 #include <memory>
 #include <optional>
 #include <vector>
@@ -11,12 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -25,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::UnorderedElementsAre;
@@ -62,7 +65,9 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   ~Delegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -83,8 +88,10 @@ class Delegate : public TurnSyncOnHelper::Delegate {
       SyncConfirmationCallback callback) override {
     AdvanceFlowOrCapture(BlockingStep::kSyncDisabled, std::move(callback));
   }
-  void ShowSyncSettings() override { NOTREACHED(); }
-  void SwitchToProfile(Profile* new_profile) override { NOTREACHED(); }
+  void ShowSyncSettings() override { NOTREACHED_IN_MIGRATION(); }
+  void SwitchToProfile(Profile* new_profile) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   BlockingStep blocking_step() const { return blocking_step_; }
 
@@ -113,7 +120,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
 
     switch (blocking_step) {
       case BlockingStep::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case BlockingStep::kMergeData:
         ASSERT_TRUE(choices_.merge_data_choice.has_value());
@@ -142,29 +149,33 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   void AdvanceFlowOrCapture(BlockingStep step, CallbackVariant callback) {
     switch (step) {
       case BlockingStep::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case BlockingStep::kMergeData:
-        if (!choices_.merge_data_choice.has_value())
+        if (!choices_.merge_data_choice.has_value()) {
           break;
+        }
         std::move(absl::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.merge_data_choice);
         return;
       case BlockingStep::kEnterpriseManagement:
-        if (!choices_.enterprise_management_choice.has_value())
+        if (!choices_.enterprise_management_choice.has_value()) {
           break;
+        }
         std::move(absl::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.enterprise_management_choice);
         return;
       case BlockingStep::kSyncConfirmation:
-        if (!choices_.sync_optin_choice.has_value())
+        if (!choices_.sync_optin_choice.has_value()) {
           break;
+        }
         std::move(absl::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_optin_choice);
         return;
       case BlockingStep::kSyncDisabled:
-        if (!choices_.sync_disabled_choice.has_value())
+        if (!choices_.sync_disabled_choice.has_value()) {
           break;
+        }
         std::move(absl::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_disabled_choice);
         return;
@@ -187,22 +198,35 @@ class Delegate : public TurnSyncOnHelper::Delegate {
 
 }  // namespace
 
+// Test params:
+// - TurnSyncOnHelper::SigninAbortedMode: abort mode.
+// - bool: should_remove_initial_account
+// - bool: Explicit browser signin feature
 class TurnSyncOnHelperBrowserTestWithParam
     : public SigninBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool>> {
+          std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool, bool>> {
  public:
   TurnSyncOnHelperBrowserTestWithParam()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kExplicitBrowserSigninUIOnDesktop,
+        is_explicit_browser_signin_enabled());
+  }
 
  protected:
-  bool should_remove_initial_account() const {
-    return std::get<bool>(GetParam());
-  }
+  bool should_remove_initial_account() const { return std::get<1>(GetParam()); }
 
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
+
+  bool is_explicit_browser_signin_enabled() const {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -290,11 +314,21 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         EXPECT_EQ(second_account_id, identity_manager()->GetPrimaryAccountId(
                                          signin::ConsentLevel::kSignin));
 #else
-        // With Dice, all accounts are removed, because the first account in
-        // cookies doesn't match.
-        EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-        EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
-            signin::ConsentLevel::kSignin));
+        // With `switches::kExplicitBrowserSigninUIOnDesktop` enabled, the
+        // primary account isn't set implicitly based on cookies but by explicit
+        // user action, therefore it is also not removed when cookies change.
+        // The account should remain and Chrome still signed in.
+        if (is_explicit_browser_signin_enabled()) {
+          EXPECT_FALSE(
+              identity_manager()->GetAccountsWithRefreshTokens().empty());
+          EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
+              signin::ConsentLevel::kSignin));
+        } else {
+          EXPECT_TRUE(
+              identity_manager()->GetAccountsWithRefreshTokens().empty());
+          EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
+              signin::ConsentLevel::kSignin));
+        }
 #endif
       } else {
         // First account is still primary, second account was not removed.
@@ -311,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
       // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
       // test suite, since this mode is used only when Uno Desktop is enabled.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -322,7 +356,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT),
         // Whether the initial account should be removed during the flow.
-        testing::Values(true, false)));
+        testing::Bool(),
+        testing::Bool()));
 
 class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
@@ -383,18 +418,20 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   ASSERT_EQ(reconcilor->GetState(),
             signin_metrics::AccountReconcilorState::kRunning);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Dice platforms with `switches::kUnoDesktop` enabled and empty primary
-  // account, updating cookies is disabled. Therefore running the reconcilor
-  // doesn't require any network requests and might have been completed by now.
-  // The reconcilor will not remove the account from cookies but revoking
-  // refresh tokens should be sufficient to invalidate cookies.
+  // On Dice platforms with `switches::kExplicitBrowserSigninUIOnDesktop`
+  // enabled and empty primary account, updating cookies is disabled. Therefore
+  // running the reconcilor doesn't require any network requests and might have
+  // been completed by now. The reconcilor will not remove the account from
+  // cookies but revoking refresh tokens should be sufficient to invalidate
+  // cookies.
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class TurnSyncOnHelperBrowserTestWithUnoDesktop
     : public TurnSyncOnHelperBrowserTest {
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 // Tests that aborting a Sync opt-in flow started with a web only signed in

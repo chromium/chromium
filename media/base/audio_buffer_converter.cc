@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/audio_buffer_converter.h"
 
 #include <algorithm>
@@ -57,8 +62,9 @@ void AudioBufferConverter::AddInput(scoped_refptr<AudioBuffer> buffer) {
     return;
   }
 
-  if (timestamp_helper_.base_timestamp() == kNoTimestamp)
+  if (!timestamp_helper_.base_timestamp()) {
     timestamp_helper_.SetBaseTimestamp(buffer->timestamp());
+  }
 
   input_frames_ += buffer->frame_count();
   queued_inputs_.push_back(std::move(buffer));
@@ -79,7 +85,7 @@ void AudioBufferConverter::Reset() {
   audio_converter_.reset();
   queued_inputs_.clear();
   queued_outputs_.clear();
-  timestamp_helper_.SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_.Reset();
   input_params_ = output_params_;
   input_frames_ = 0;
   buffered_input_frames_ = 0.0;
@@ -88,7 +94,7 @@ void AudioBufferConverter::Reset() {
 
 void AudioBufferConverter::ResetTimestampState() {
   Flush();
-  timestamp_helper_.SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_.Reset();
 }
 
 double AudioBufferConverter::ProvideInput(AudioBus* audio_bus,

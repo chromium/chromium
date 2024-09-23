@@ -39,7 +39,7 @@ void ScopedAccessPermissionMap::InsertAccessPermission(
 void ScopedAccessPermissionMap::EraseAccessPermission(int32_t buffer_id) {
   auto it = scoped_access_permissions_by_buffer_id_.find(buffer_id);
   if (it == scoped_access_permissions_by_buffer_id_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   scoped_access_permissions_by_buffer_id_.erase(it);

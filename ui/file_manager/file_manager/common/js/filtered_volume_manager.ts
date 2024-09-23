@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {VolumeInfoList} from '../../background/js/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent} from '../../background/js/volume_manager.js';
 import {VolumeManager} from '../../background/js/volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {oneDriveFakeRootKey} from '../../state/ducks/volumes.js';
+import {getEntry, getStore, type Store} from '../../state/store.js';
 
 import {type SpliceEvent} from './array_data_model.js';
+import {isOneDrive} from './entry_utils.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
 
@@ -84,6 +85,8 @@ export class FilteredVolumeManager extends VolumeManager {
    */
   private readonly initialized_ = this.initialize_();
 
+  private store_: Store;
+
   private onVolumeInfoListUpdatedBound_ =
       this.onVolumeInfoListUpdated_.bind(this);
 
@@ -106,6 +109,7 @@ export class FilteredVolumeManager extends VolumeManager {
     super();
     this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
     this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
+    this.store_ = getStore();
   }
 
   override getFuseBoxOnlyFilterEnabled() {
@@ -121,33 +125,6 @@ export class FilteredVolumeManager extends VolumeManager {
    */
   get disabledVolumes(): VolumeType[] {
     return this.disabledVolumes_;
-  }
-
-  /**
-   * Checks if a volume type is allowed.
-   *
-   * Note that even if a volume type is allowed, a volume of that type might be
-   * disallowed for other restrictions. To check if a specific volume is allowed
-   * or not, use isAllowedVolume_() instead.
-   *
-   */
-  private isAllowedVolumeType_(volumeType: VolumeType): boolean {
-    switch (this.allowedPaths_) {
-      case AllowedPaths.ANY_PATH:
-      case AllowedPaths.ANY_PATH_OR_URL:
-        return true;
-      case AllowedPaths.NATIVE_PATH:
-        assert(volumeType);
-        return isNative(volumeType);
-    }
-  }
-
-  /**
-   * True if the volume |diskFileSystemType| is a fusebox file system.
-   * @param diskFileSystemType Volume diskFileSystemType.
-   */
-  private isFuseBoxFileSystem_(diskFileSystemType: string): boolean {
-    return diskFileSystemType === 'fusebox';
   }
 
   /**
@@ -175,25 +152,91 @@ export class FilteredVolumeManager extends VolumeManager {
       return false;
     }
 
-    // If the volume type is supported by fusebox, decide whether to show
-    // fusebox or non-fusebox volumes in the UI.
-    if (this.isFuseBoxDebugEnabled_) {
-      // Do nothing: show the fusebox and non-fusebox versions in the files
-      // app UI. Used for manually testing fusebox.
-    } else if (this.isFuseBoxOnly_) {
-      // SelectFileAsh requires fusebox volumes or native volumes.
-      return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
-          isNative(volumeInfo.volumeType);
-    } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
-      // Normal Files app: remove fusebox volumes.
-      return false;
-    }
+    // Volumes come in three categories: NAT, FSF and FWF.
+    //
+    //  - NAT volumes are 'native'. Their '/foo/bar.dat' file paths are visible
+    //    at the kernel level (and hence visible to all chromes).
+    //  - FSF (Foreign Sans (without) FuseBox) volumes are 'virtual',
+    //    non-native. Their '/fake/file.paths' file paths are only visible to
+    //    ash-chrome. An example of this is attaching a phone to a Chromebook
+    //    by a USB cable and viewing the phone's Downloads folder on the
+    //    Chromebook's file manager, via MTP (Media Transfer Protocol).
+    //  - FWF (Foreign With FuseBox) volumes use FuseBox to provide
+    //    kernel-visible file paths for non-native volumes, so that
+    //    lacros-chrome's file manager can also read MTP volumes.
+    //
+    // In terms of boolean expressions:
+    //
+    //  - NAT: isNative(volumeType)
+    //  - FSF: !isNative(volumeType) && (diskFileSystemType !== 'fusebox')
+    //  - FWF: !isNative(volumeType) && (diskFileSystemType === 'fusebox')
+    //
+    // Note that both FSF-MTP and FWF-MTP volumes have the same volumeType
+    // value: VolumeType.MTP. Their FSF/FWF-ness (FuseBox-ness) is instead
+    // carried by the diskFileSystemType field.
+    //
+    // As of February 2024, when attaching a phone, Chrome's C++ will actually
+    // create two MTP volumes - FSF and FWF variants - and it is up to the
+    // TypeScript code to filter out (hide) one of them. FSF-MTP and FWF-MTP
+    // are roughly equivalent, in terms of functionality. But in terms of
+    // performance, FWF-MTP has higher overheads (as it indirects through the
+    // kernel's FUSE protocol and other IPC). Hence, we prefer FSF-MTP when
+    // feasible (i.e. when in ash-chrome) but FWF-MTP when FSF-MTP won't work
+    // at all (i.e. when in lacros-chrome). In this TypeScript code, being in
+    // lacros-chrome is represented by the isFuseBoxOnly_ field.
+    //
+    // There's also the isFuseBoxDebugEnabled_ field, corresponding to
+    // chrome://flags#fuse-box-debug. When true, we should show both FSF and
+    // FWF volumes, for manual testing. But normally, we should show only one
+    // of the FSF and FWF categories.
+    //
+    // FuseBox (and its FWF volumes) was invented in 2021. Before then, there
+    // were only NAT and FSF volumes: native and non-native. There was also the
+    // AllowedPaths.NATIVE_PATH enum value, which originally meant 'only
+    // native': only NAT. After FuseBox was invented, AllowedPaths.NATIVE_PATH
+    // was retconned to mean 'kernel-visible' here: NAT or FWF.
+    //
+    // In the long term, we might be able to remove the NATIVE_PATH concept
+    // here (or remove it entirely). The original authors of that NATIVE_PATH
+    // code no longer maintain it, so it's hard to be sure, but it dates from a
+    // time before FuseBox but also possibly where non-native volume types like
+    // FSP (File System Provider) or MTP didn't have good write-support and,
+    // for some workflows, read-support was facilitated by first downloading a
+    // virtual file's contents to a temporary 'snapshot file' and passing on
+    // the snapshot file path. When showing e.g. a browser's "Save As" dialog,
+    // we'd therefore want to hide FSP, MTP, etc. volumes and an easy way to do
+    // that might have been to hide non-native volumes.
+    //
+    // However, "Save As" passes NATIVE_PATH and combining that with FSF
+    // volumes currently crashes here:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/extensions/file_manager/private_api_util.cc;l=83;drc=ccce03e75fc4822e12fb63e60021e0a5e5e9f5b0
+    // Its 'unreachable' comment is from 2014
+    // (https://codereview.chromium.org/339503003 and
+    // https://crrev.com/c/1868529) but things have changed since then.
 
-    if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
-      return false;
-    }
+    const nat = isNative(volumeInfo.volumeType);
+    const fsf = !nat && (volumeInfo.diskFileSystemType !== 'fusebox');
+    // fwf is equivalent to (!nat && !fsf).
 
-    return true;
+    switch (this.allowedPaths_) {
+      case AllowedPaths.ANY_PATH:
+      case AllowedPaths.ANY_PATH_OR_URL:
+        if (this.isFuseBoxDebugEnabled_) {
+          // chrome://flags#fuse-box-debug is enabled. Show everything.
+          return true;  // Equivalent to (nat || fsf || fwf).
+        } else if (this.isFuseBoxOnly_) {
+          // We are in lacros-chrome. SelectFileAsh needs 'kernel-visible',
+          // which means nat (native) or fwf (foreign-with-fusebox) volumes.
+          return !fsf;  // Equivalent to (nat || fwf).
+        } else {
+          // We are in ash-chrome. If not nat (native), prefer fsf
+          // (foreign-sans-fusebox) over fwf (foreign-with-fusebox).
+          return nat || fsf;  // Equivalent to (!fwf).
+        }
+      case AllowedPaths.NATIVE_PATH:
+        // 'Kernel-visible' means native (nat) or fusebox (fwf) volumes.
+        return !fsf;  // Equivalent to (nat || fwf).
+    }
   }
 
   /**
@@ -362,23 +405,57 @@ export class FilteredVolumeManager extends VolumeManager {
         this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
   }
 
-  override getDefaultDisplayRoot(
-      callback: (entry: DirectoryEntry|null) => void) {
-    this.ensureInitialized(() => {
-      const defaultVolume =
-          this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
-      if (!defaultVolume) {
-        console.warn('Cannot get default display root');
-        callback(null);
-        return;
-      }
+  override async getDefaultDisplayRoot(): Promise<DirectoryEntry|null> {
+    await this.initialized_;
 
-      defaultVolume.resolveDisplayRoot(callback, () => {
-        // defaultVolume is DOWNLOADS and resolveDisplayRoot should succeed.
-        console.error('Cannot resolve default display root');
-        callback(null);
-      });
-    });
+    // If SkyVault is disabled, this should always be set to MyFiles.
+    // If SkyVault is enabled, the default root might be MyFiles, Google
+    // Drive, or OneDrive. Fallback to MyFiles if not set, it won't be resolved
+    // if unavailable due to policy restrictions.
+    const location = this.store_.getState()?.preferences?.defaultLocation ??
+        chrome.fileManagerPrivate.DefaultLocation.MY_FILES;
+    let volumeInfo: VolumeInfo|null;
+    switch (location) {
+      case chrome.fileManagerPrivate.DefaultLocation.MY_FILES:
+        volumeInfo = this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
+        break;
+      case chrome.fileManagerPrivate.DefaultLocation.GOOGLE_DRIVE:
+        volumeInfo = this.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
+        break;
+      case chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE:
+        volumeInfo = this.getOneDriveVolumeInfo_();
+        if (!volumeInfo) {
+          // Check if the placeholder is there.
+          const entry = getEntry(this.store_.getState(), oneDriveFakeRootKey);
+          if (entry) {
+            return (entry as DirectoryEntry);
+          }
+        }
+        break;
+      default:
+        console.warn(`Invalid default location: ${location}`);
+        volumeInfo = null;
+        break;
+    }
+    if (!volumeInfo) {
+      console.warn(`Cannot get display root for ${location}`);
+      return null;
+    }
+    return volumeInfo.resolveDisplayRoot();
+  }
+
+  /**
+   * Obtains a Microsoft OneDrive volume information if available.
+   * @returns OneDrive volume info, or null if it cannot be found.
+   */
+  private getOneDriveVolumeInfo_(): VolumeInfo|null {
+    for (let i = 0; i < this.volumeInfoList.length; i++) {
+      const volumeInfo = this.volumeInfoList.item(i);
+      if (isOneDrive(volumeInfo)) {
+        return volumeInfo;
+      }
+    }
+    return null;
   }
 
   /**

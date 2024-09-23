@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.test_dummy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.modules.test_dummy.TestDummyModuleProvider;
 
@@ -26,9 +25,7 @@ public class TestDummyActivity extends AppCompatActivity {
         if (TestDummyModuleProvider.isModuleInstalled()) {
             onModuleInstalled(true);
         } else {
-            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-                TestDummyModuleProvider.installModule(this::onModuleInstalled);
-            }
+            TestDummyModuleProvider.installModule(this::onModuleInstalled);
         }
     }
 

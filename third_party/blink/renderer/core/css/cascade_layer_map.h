@@ -17,12 +17,12 @@ namespace blink {
 // layers in each sheet to the sorted layer order number.
 class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
  public:
-  static constexpr unsigned kImplicitOuterLayerOrder =
-      std::numeric_limits<unsigned>::max();
+  static constexpr uint16_t kImplicitOuterLayerOrder =
+      std::numeric_limits<uint16_t>::max();
 
   CascadeLayerMap(const ActiveStyleSheetVector& sheets);
 
-  unsigned GetLayerOrder(const CascadeLayer& layer) const {
+  uint16_t GetLayerOrder(const CascadeLayer& layer) const {
     return layer_order_map_.at(&layer);
   }
 
@@ -37,7 +37,7 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
 
  private:
   Member<const CascadeLayer> canonical_root_layer_;
-  HeapHashMap<Member<const CascadeLayer>, unsigned> layer_order_map_;
+  HeapHashMap<Member<const CascadeLayer>, uint16_t> layer_order_map_;
 };
 
 }  // namespace blink

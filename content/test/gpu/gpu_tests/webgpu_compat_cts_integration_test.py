@@ -28,10 +28,12 @@ class WebGpuCompatCtsIntegrationTest(
     return 'webgpu_compat_cts'
 
   def _GetSerialGlobs(self) -> Set[str]:
-    return set()
+    serial_globs = super()._GetSerialGlobs()
+    return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
-    return set()
+    serial_tests = super()._GetSerialTests()
+    return serial_tests
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:

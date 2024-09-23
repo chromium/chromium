@@ -8,20 +8,21 @@
 // COMMON SCREENS
 import './screens/common/adb_sideloading.js';
 import './screens/common/add_child.js';
+import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
 import './screens/common/assistant_optin.js';
-import './screens/common/autolaunch.js';
+import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
 import './screens/common/device_disabled.js';
 import './screens/common/display_size.js';
 import './screens/common/drive_pinning.js';
-import './screens/common/enable_kiosk.js';
 import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
 import './screens/common/gaia_info.js';
 import './screens/common/gaia_signin.js';
+import './screens/common/gemini_intro.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
 import './screens/common/hw_data_collection.js';
@@ -30,11 +31,12 @@ import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
 import './screens/common/multidevice_setup.js';
-import './screens/common/offline_ad_login.js';
 import './screens/common/online_authentication_screen.js';
 import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
+import './screens/common/perks_discovery.js';
+import './screens/common/personalized_recommend_apps.js';
 import './screens/common/parental_handoff.js';
 import './screens/common/quick_start.js';
 import './screens/common/recommend_apps.js';
@@ -42,6 +44,7 @@ import './screens/common/remote_activity_notification.js';
 import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.js';
 import './screens/common/smart_privacy_protection.js';
+import './screens/common/split_modifier_keyboard_info.js';
 import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/touchpad_scroll.js';
@@ -61,7 +64,6 @@ import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
 // AUTHENTICATION SCREENS USED DURING THE LOGIN FLOW
 import './screens/osauth/cryptohome_recovery.js';
-import './screens/osauth/gaia_password_changed.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
 import './screens/login/encryption_migration.js';
@@ -70,6 +72,7 @@ import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.js';
 import './screens/login/update_required_card.js';
+import './screens/common/account_selection.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/consumer_update.js';
@@ -82,21 +85,19 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/update.js';
 
-//TODO(b/324392321) Move type definition to oobe_types after its TS migration
-export interface OobeScreen {
-  tag: string;
-  id: string;
-  condition?: string;
-  extra_classes?: string[];
-}
-export interface ScreensList extends Array<OobeScreen>{}
+import {OobeTypes} from './components/oobe_types.js';
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
  */
-export const commonScreensList: ScreensList = [
+export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'adb-sideloading-element', id: 'adb-sideloading'},
   {tag: 'add-child-element', id: 'add-child'},
+  {
+    tag: 'ai-intro-element',
+    id: 'ai-intro',
+    condition: 'isOobeAiIntroEnabled',
+  },
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
   {
@@ -108,7 +109,11 @@ export const commonScreensList: ScreensList = [
     tag: 'apply-online-password-element',
     id: 'apply-online-password',
   },
-  {tag: 'autolaunch-element', id: 'autolaunch'},
+  {
+    tag: 'categories-selection-element',
+    id: 'categories-selection',
+    condition: 'isPersonalizedOnboarding',
+  },
   {
     tag: 'choobe-element',
     id: 'choobe',
@@ -128,7 +133,6 @@ export const commonScreensList: ScreensList = [
     id: 'drive-pinning',
     condition: 'isDrivePinningEnabled',
   },
-  {tag: 'enable-kiosk-element', id: 'kiosk-enable'},
   {
     tag: 'enter-old-password-element',
     id: 'enter-old-password',
@@ -142,6 +146,11 @@ export const commonScreensList: ScreensList = [
     condition: 'isOobeGaiaInfoScreenEnabled',
   },
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
+  {
+    tag: 'gemini-intro-element',
+    id: 'gemini-intro',
+    condition: 'isOobeGeminiIntroEnabled',
+  },
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},
   {tag: 'hw-data-collection-element', id: 'hw-data-collection'},
@@ -157,13 +166,22 @@ export const commonScreensList: ScreensList = [
   {tag: 'managed-terms-of-service-element', id: 'terms-of-service'},
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},
   {tag: 'multidevice-setup-element', id: 'multidevice-setup-screen'},
-  {tag: 'offline-ad-login-element', id: 'offline-ad-login'},
   {
     tag: 'online-authentication-screen-element',
     id: 'online-authentication-screen',
   },
   {tag: 'oobe-reset-element', id: 'reset'},
   {tag: 'osauth-error-element', id: 'osauth-error'},
+  {
+    tag: 'perks-discovery-element',
+    id: 'perks-discovery',
+    condition: 'isPerksDiscoveryEnabled',
+  },
+  {
+    tag: 'personalized-apps-element',
+    id: 'personalized-apps',
+    condition: 'isPersonalizedOnboarding',
+  },
   {tag: 'factor-setup-success-element', id: 'factor-setup-success'},
   {
     tag: 'os-install-element',
@@ -187,6 +205,11 @@ export const commonScreensList: ScreensList = [
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
   {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},
   {tag: 'smart-privacy-protection-element', id: 'smart-privacy-protection'},
+  {
+    tag: 'split-modifier-keyboard-info-element',
+    id: 'split-modifier-keyboard-info',
+    condition: 'isSplitModifierKeyboardInfoEnabled',
+  },
   {tag: 'sync-consent-element', id: 'sync-consent'},
   {tag: 'theme-selection-element', id: 'theme-selection'},
   {
@@ -209,7 +232,7 @@ export const commonScreensList: ScreensList = [
 /**
  * List of screens that are used during the `login` flow only.
  */
-export const loginScreensList: ScreensList = [
+export const loginScreensList: OobeTypes.ScreensList = [
   {
     tag: 'arc-vm-data-migration-element',
     id: 'arc-vm-data-migration',
@@ -217,7 +240,6 @@ export const loginScreensList: ScreensList = [
   },
   {tag: 'cryptohome-recovery-element', id: 'cryptohome-recovery'},
   {tag: 'encryption-migration-element', id: 'encryption-migration'},
-  {tag: 'gaia-password-changed-element', id: 'gaia-password-changed'},
   {
     tag: 'lacros-data-backward-migration-element',
     id: 'lacros-data-backward-migration',
@@ -235,12 +257,17 @@ export const loginScreensList: ScreensList = [
   },
   {tag: 'offline-login-element', id: 'offline-login'},
   {tag: 'update-required-card-element', id: 'update-required'},
+  {
+    tag: 'account-selection-element',
+    id: 'account-selection',
+    condition: 'isOobeAddUserDuringEnrollmentEnabled',
+  },
 ];
 
 /**
  * List of screens that are used during the `oobe` flow only.
  */
-export const oobeScreensList: ScreensList = [
+export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'auto-enrollment-check-element', id: 'auto-enrollment-check'},
   {
     tag: 'consumer-update-element',

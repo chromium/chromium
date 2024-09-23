@@ -13,11 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
-#include "chrome/browser/ash/app_list/search/system_info/battery_health.h"
-#include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
-#include "chrome/browser/ash/app_list/search/system_info/system_info_keyword_input.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
+#include "chromeos/ash/components/launcher_search/system_info/system_info_keyword_input.h"
+#include "chromeos/ash/components/system_info/battery_health.h"
+#include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -117,7 +117,6 @@ class SystemInfoCardProvider : public SearchProvider,
   ::ash::settings::MyFilesSizeCalculator my_files_size_calculator_;
   ::ash::settings::DriveOfflineSizeCalculator drive_offline_size_calculator_;
   ::ash::settings::BrowsingDataSizeCalculator browsing_data_size_calculator_;
-  ::ash::settings::AppsSizeCalculator apps_size_calculator_;
   ::ash::settings::CrostiniSizeCalculator crostini_size_calculator_;
   ::ash::settings::OtherUsersSizeCalculator other_users_size_calculator_;
 
@@ -138,13 +137,14 @@ class SystemInfoCardProvider : public SearchProvider,
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
   std::string chromeOS_version_{""};
-  CpuUsageData previous_cpu_usage_data_{CpuUsageData()};
+  system_info::CpuUsageData previous_cpu_usage_data_{
+      system_info::CpuUsageData()};
   raw_ptr<ash::cros_healthd::mojom::MemoryInfo, DanglingUntriaged> memory_info_{
       nullptr};
-  std::unique_ptr<BatteryHealth> battery_health_{nullptr};
+  std::unique_ptr<system_info::BatteryHealth> battery_health_{nullptr};
   gfx::ImageSkia os_settings_icon_;
   gfx::ImageSkia diagnostics_icon_;
-  std::vector<SystemInfoKeywordInput> keywords_;
+  std::vector<launcher_search::SystemInfoKeywordInput> keywords_;
   std::unique_ptr<base::RepeatingTimer> cpu_usage_timer_;
   std::unique_ptr<base::RepeatingTimer> memory_timer_;
   base::ObserverList<SystemInfoCardProvider::CpuDataObserver> cpu_observers_;

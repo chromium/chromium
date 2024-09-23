@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/sys_byteorder.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/gfx/x/connection.h"
@@ -46,7 +45,7 @@ x11::GrabStatus GrabPointerImpl(x11::Window window,
                 x11::Input::XIEventMask::TouchBegin |
                 x11::Input::XIEventMask::TouchUpdate |
                 x11::Input::XIEventMask::TouchEnd;
-    static_assert(sizeof(mask) == 4, "");
+    static_assert(sizeof(mask) == 4);
 
     for (auto master_pointer :
          ui::DeviceDataManagerX11::GetInstance()->master_pointers()) {
@@ -59,7 +58,7 @@ x11::GrabStatus GrabPointerImpl(x11::Window window,
           .paired_device_mode = x11::GrabMode::Async,
           .owner_events = owner_events ? x11::Input::GrabOwner::Owner
                                        : x11::Input::GrabOwner::NoOwner,
-          .mask = {base::ByteSwapToLE32(static_cast<uint32_t>(mask))},
+          .mask = {static_cast<uint32_t>(mask)},
       };
       if (auto reply = connection->xinput().XIGrabDevice(req).Sync())
         result = reply->status;

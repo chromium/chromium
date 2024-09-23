@@ -525,7 +525,7 @@ void TailoredSecurityService::Shutdown() {
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
+    // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
     prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
                        TailoredSecurityRetryState::UNKNOWN);
     prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,

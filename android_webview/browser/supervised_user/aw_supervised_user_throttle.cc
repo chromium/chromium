@@ -4,87 +4,77 @@
 
 #include "android_webview/browser/supervised_user/aw_supervised_user_throttle.h"
 
-#include "base/check_op.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
-
-namespace {
-
-const char kCancelReason[] = "SupervisedUserThrottle";
-
-}  // anonymous namespace
+#include "android_webview/browser/supervised_user/aw_supervised_user_blocking_page.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace android_webview {
 
 // static
 std::unique_ptr<AwSupervisedUserThrottle> AwSupervisedUserThrottle::Create(
+    content::NavigationHandle* navigation_handle,
     AwSupervisedUserUrlClassifier* url_classifier) {
   return base::WrapUnique<AwSupervisedUserThrottle>(
-      new AwSupervisedUserThrottle(url_classifier));
+      new AwSupervisedUserThrottle(navigation_handle, url_classifier));
 }
 
 AwSupervisedUserThrottle::AwSupervisedUserThrottle(
+    content::NavigationHandle* navigation_handle,
     AwSupervisedUserUrlClassifier* url_classifier)
-    : url_classifier_(url_classifier) {
+    : NavigationThrottle(navigation_handle), url_classifier_(url_classifier) {
   DCHECK(url_classifier_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 AwSupervisedUserThrottle::~AwSupervisedUserThrottle() = default;
 
-void AwSupervisedUserThrottle::WillStartRequest(
-    network::ResourceRequest* request,
-    bool* defer) {
+content::NavigationThrottle::ThrottleCheckResult
+AwSupervisedUserThrottle::WillStartRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
   pending_checks_++;
-  CheckShouldBlockUrl(request->url);
+  return CheckShouldBlockUrl(navigation_handle()->GetURL());
 }
 
-void AwSupervisedUserThrottle::WillRedirectRequest(
-    net::RedirectInfo* redirect_info,
-    const network::mojom::URLResponseHead& response_head,
-    bool* defer,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+content::NavigationThrottle::ThrottleCheckResult
+AwSupervisedUserThrottle::WillRedirectRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (blocked_) {
     // onShouldBlockUrlResult() has set |blocked_| to true and called
-    // |delegate_->CancelWithError|, but this method is called before the
+    // |CancelDeferredNavigation()|, but this method is called before the
     // request is actually cancelled. In that case, simply defer the request.
-    *defer = true;
-    return;
+    return NavigationThrottle::DEFER;
   }
-
   pending_checks_++;
-  CheckShouldBlockUrl(redirect_info->new_url);
+  return CheckShouldBlockUrl(navigation_handle()->GetURL());
 }
 
-void AwSupervisedUserThrottle::WillProcessResponse(
-    const GURL& response_url,
-    network::mojom::URLResponseHead* response_head,
-    bool* defer) {
+const char* AwSupervisedUserThrottle::GetNameForLogging() {
+  return "AwSupervisedUserThrottle";
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+AwSupervisedUserThrottle::WillProcessResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (blocked_) {
     // onShouldBlockUrlResult() has set |blocked_| to true and called
-    // |delegate_->CancelWithError|, but this method is called before the
+    // |CancelDeferredNavigation()|, but this method is called before the
     // request is actually cancelled. In that case, simply defer the request.
-    *defer = true;
-    return;
+    return NavigationThrottle::DEFER;
   }
 
   if (pending_checks_ == 0) {
-    return;
+    return NavigationThrottle::PROCEED;
   }
 
   DCHECK(!deferred_);
   deferred_ = true;
-  *defer = true;
+  return NavigationThrottle::DEFER;
 }
 
-void AwSupervisedUserThrottle::CheckShouldBlockUrl(const GURL& url) {
+content::NavigationThrottle::ThrottleCheckResult
+AwSupervisedUserThrottle::CheckShouldBlockUrl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url_classifier_);
 
@@ -95,6 +85,8 @@ void AwSupervisedUserThrottle::CheckShouldBlockUrl(const GURL& url) {
           base::Unretained(url_classifier_), url,
           base::BindOnce(&AwSupervisedUserThrottle::OnShouldBlockUrlResult,
                          weak_factory_.GetWeakPtr())));
+  deferred_ = true;
+  return NavigationThrottle::DEFER;
 }
 
 void AwSupervisedUserThrottle::OnShouldBlockUrlResult(bool shouldBlockUrl) {
@@ -107,17 +99,21 @@ void AwSupervisedUserThrottle::OnShouldBlockUrlResult(bool shouldBlockUrl) {
     blocked_ = true;
     pending_checks_ = 0;
 
-    DCHECK(delegate_);
-    delegate_->CancelWithExtendedError(
-        net::ERR_ACCESS_DENIED,
-        static_cast<int>(
-            blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked),
-        kCancelReason);
+    std::unique_ptr<security_interstitials::SecurityInterstitialPage>
+        blocking_page = AwSupervisedUserBlockingPage::CreateBlockingPage(
+            navigation_handle()->GetWebContents(),
+            navigation_handle()->GetURL());
+    std::string error_page_content = blocking_page->GetHTMLContents();
+    // AssociateBlockingPage takes ownership of the blocking page.
+    security_interstitials::SecurityInterstitialTabHelper::
+        AssociateBlockingPage(navigation_handle(), std::move(blocking_page));
+    CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
+        CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content));
 
   } else {
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
-      delegate_->Resume();
+      Resume();
     }
   }
 }

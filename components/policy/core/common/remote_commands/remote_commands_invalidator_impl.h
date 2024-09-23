@@ -28,7 +28,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
       public CloudPolicyStore::Observer {
  public:
   RemoteCommandsInvalidatorImpl(CloudPolicyCore* core,
-                                base::Clock* clock,
+                                const base::Clock* clock,
                                 PolicyInvalidationScope scope);
   RemoteCommandsInvalidatorImpl(const RemoteCommandsInvalidatorImpl&) = delete;
   RemoteCommandsInvalidatorImpl& operator=(
@@ -41,6 +41,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
   void OnStop() override;
   void DoRemoteCommandsFetch(
       const invalidation::Invalidation& invalidation) override;
+  void DoInitialRemoteCommandsFetch() override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(CloudPolicyCore* core) override;

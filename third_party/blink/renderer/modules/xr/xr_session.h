@@ -16,9 +16,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
@@ -39,13 +42,10 @@ class Element;
 class ExceptionState;
 class HTMLCanvasElement;
 class ResizeObserver;
-class ScriptPromiseResolver;
 class V8XRFrameRequestCallback;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
-class XRCPUDepthInformation;
-class XRDepthManager;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
 class XRHitTestSource;
@@ -62,7 +62,6 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRWebGLDepthInformation;
 class XRWebGLLayer;
 
 template <typename IDLType>
@@ -129,7 +128,8 @@ class XRSession final : public EventTarget,
             device::mojom::blink::XRInteractionMode interaction_mode,
             device::mojom::blink::XRSessionDeviceConfigPtr device_config,
             bool sensorless_session,
-            XRSessionFeatureSet enabled_feature_set);
+            XRSessionFeatureSet enabled_feature_set,
+            uint64_t trace_id);
   ~XRSession() override = default;
 
   XRSystem* xr() const { return xr_.Get(); }
@@ -149,6 +149,8 @@ class XRSession final : public EventTarget,
   const String preferredReflectionFormat() const { return "rgba16f"; }
 
   const FrozenArray<IDLString>& enabledFeatures() const;
+
+  bool isSystemKeyboardSupported() const { return false; }
 
   XRSpace* viewerSpace() const;
 
@@ -174,12 +176,13 @@ class XRSession final : public EventTarget,
   const String& depthUsage(ExceptionState& exception_state);
   const String& depthDataFormat(ExceptionState& exception_state);
 
-  ScriptPromise updateTargetFrameRate(float rate,
-                                      ExceptionState&);
+  ScriptPromise<IDLUndefined> updateTargetFrameRate(float rate,
+                                                    ExceptionState&);
 
-  ScriptPromise requestReferenceSpace(ScriptState* script_state,
-                                      const String& type,
-                                      ExceptionState&);
+  ScriptPromise<XRReferenceSpace> requestReferenceSpace(
+      ScriptState* script_state,
+      const String& type,
+      ExceptionState&);
 
   // Helper, not IDL-exposed
   // |native_origin_from_anchor| is a matrix describing transform between native
@@ -189,7 +192,7 @@ class XRSession final : public EventTarget,
   // |maybe_plane_id| is an ID of the plane to which the anchor should be
   // attached - set to std::nullopt if the plane is not to be attached to any
   // plane.
-  ScriptPromise CreateAnchorHelper(
+  ScriptPromise<XRAnchor> CreateAnchorHelper(
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
@@ -217,23 +220,26 @@ class XRSession final : public EventTarget,
 
   XRInputSourceArray* inputSources(ScriptState*) const;
 
-  ScriptPromise requestHitTestSource(ScriptState* script_state,
-                                     XRHitTestOptionsInit* options,
-                                     ExceptionState& exception_state);
-  ScriptPromise requestHitTestSourceForTransientInput(
+  ScriptPromise<XRHitTestSource> requestHitTestSource(
+      ScriptState* script_state,
+      XRHitTestOptionsInit* options,
+      ExceptionState& exception_state);
+  ScriptPromise<XRTransientInputHitTestSource>
+  requestHitTestSourceForTransientInput(
       ScriptState* script_state,
       XRTransientInputHitTestOptionsInit* options_init,
       ExceptionState& exception_state);
 
-  ScriptPromise requestLightProbe(ScriptState* script_state,
-                                  XRLightProbeInit*,
-                                  ExceptionState&);
+  ScriptPromise<XRLightProbe> requestLightProbe(ScriptState* script_state,
+                                                XRLightProbeInit*,
+                                                ExceptionState&);
 
-  ScriptPromise getTrackedImageScores(ScriptState* script_state,
-                                      ExceptionState&);
+  ScriptPromise<IDLArray<V8XRImageTrackingScore>> getTrackedImageScores(
+      ScriptState* script_state,
+      ExceptionState&);
 
   // Called by JavaScript to manually end the session.
-  ScriptPromise end(ScriptState* script_state, ExceptionState&);
+  ScriptPromise<IDLUndefined> end(ScriptState* script_state, ExceptionState&);
 
   bool ended() const { return ended_; }
 
@@ -254,6 +260,12 @@ class XRSession final : public EventTarget,
   // Describes the recommended dimensions of layer framebuffers. Should be a
   // value that provides a good balance between quality and performance.
   gfx::SizeF RecommendedFramebufferSize() const;
+
+  // Describes the recommended dimensions of layers represented by an array
+  // texture. Should be a value that provides a good balance between quality
+  // and performance.
+  gfx::SizeF RecommendedArrayTextureSize() const;
+  size_t array_texture_layers() const { return views_.size(); }
 
   // Reports the size of the output canvas, if one is available. If not
   // reports (0, 0);
@@ -288,7 +300,7 @@ class XRSession final : public EventTarget,
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (pending_views_.empty()) {
+    if (views_.empty()) {
       return true;
     }
 
@@ -297,12 +309,8 @@ class XRSession final : public EventTarget,
 
   // Immersive sessions currently use two views for VR, and only a single view
   // for smartphone immersive AR mode.
-  bool StereoscopicViews() { return pending_views_.size() >= 2; }
+  bool StereoscopicViews() { return views_.size() >= 2; }
 
-  void UpdateViews(const Vector<device::mojom::blink::XRViewPtr>& views);
-  void UpdateStageParameters(
-      uint32_t stage_parameters_id,
-      const device::mojom::blink::VRStageParametersPtr& stage_parameters);
   // Incremented every time stage_parameters_ is changed, so that other objects
   // that depend on it can know when they need to update.
   uint32_t StageParametersId() const { return stage_parameters_id_; }
@@ -344,14 +352,6 @@ class XRSession final : public EventTarget,
   std::optional<gfx::Transform> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
-  XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
-      ExceptionState& exception_state) const;
-
-  XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
-      ExceptionState& exception_state) const;
-
   XRPlaneSet* GetDetectedPlanes() const;
 
   // Creates presentation frame based on current state of the session.
@@ -363,8 +363,7 @@ class XRSession final : public EventTarget,
   // presentation frames.
   void UpdatePresentationFrameState(
       double timestamp,
-      const device::mojom::blink::VRPosePtr& mojo_from_viewer_pose,
-      const device::mojom::blink::XRFrameDataPtr& frame_data,
+      device::mojom::blink::XRFrameDataPtr frame_data,
       int16_t frame_id,
       bool emulated_position);
 
@@ -391,11 +390,15 @@ class XRSession final : public EventTarget,
     return camera_image_size_;
   }
 
+  uint64_t GetTraceId() const { return trace_id_; }
+  base::TimeDelta TakeAnimationFrameTimerAverage();
+
  private:
   class XRSessionResizeObserverDelegate;
 
   using XRVisibilityState = device::mojom::blink::XRVisibilityState;
 
+  void UpdateInlineView();
   void UpdateCanvasDimensions(Element*);
   void ApplyPendingRenderState();
 
@@ -408,6 +411,11 @@ class XRSession final : public EventTarget,
   void ProcessInputSourceEvents(
       base::span<const device::mojom::blink::XRInputSourceStatePtr>
           input_states);
+
+  void UpdateViews(Vector<device::mojom::blink::XRViewPtr> views);
+  void UpdateStageParameters(
+      uint32_t stage_parameters_id,
+      const device::mojom::blink::VRStageParametersPtr& stage_parameters);
 
   // Processes world understanding state for current frame:
   // - updates state of hit test sources & fills them out with results
@@ -429,16 +437,16 @@ class XRSession final : public EventTarget,
   void UpdateVisibilityState();
 
   void OnSubscribeToHitTestResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<XRHitTestSource>* resolver,
       device::mojom::SubscribeToHitTestResult result,
       uint64_t subscription_id);
 
   void OnSubscribeToHitTestForTransientInputResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<XRTransientInputHitTestSource>* resolver,
       device::mojom::SubscribeToHitTestResult result,
       uint64_t subscription_id);
 
-  void OnCreateAnchorResult(ScriptPromiseResolver* resolver,
+  void OnCreateAnchorResult(ScriptPromiseResolver<XRAnchor>* resolver,
                             device::mojom::CreateAnchorResult result,
                             uint64_t id);
 
@@ -459,18 +467,14 @@ class XRSession final : public EventTarget,
       const device::mojom::blink::XRTrackedImagesData*);
   Member<FrozenArray<XRImageTrackingResult>> frame_tracked_images_;
   bool tracked_image_scores_available_ = false;
-  Vector<String> tracked_image_scores_;
-  HeapVector<Member<ScriptPromiseResolver>> image_scores_resolvers_;
+  Vector<V8XRImageTrackingScore> tracked_image_scores_;
+  using ImageScoreResolverType =
+      ScriptPromiseResolver<IDLArray<V8XRImageTrackingScore>>;
+  HeapVector<Member<ImageScoreResolverType>> image_scores_resolvers_;
 
   void HandleShutdown();
 
   void ExecuteVideoFrameCallbacks(double timestamp);
-
-  // Helper, creates an instance of depth manager if depth sensing API is
-  // enabled in the session configuration.
-  XRDepthManager* CreateDepthManagerIfEnabled(
-      const XRSessionFeatureSet& feature_set,
-      const device::mojom::blink::XRSessionDeviceConfig& device_config);
 
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;
@@ -482,6 +486,12 @@ class XRSession final : public EventTarget,
   String visibility_state_string_;
   Member<XRRenderState> render_state_;
 
+  // Put the device config fairly early in the list of members so that it can be
+  // used to initialize other members.
+  device::mojom::blink::XRSessionDeviceConfigPtr device_config_;
+  String depth_usage_string_;
+  String depth_data_format_string_;
+
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;
 
@@ -491,7 +501,7 @@ class XRSession final : public EventTarget,
   // OnExitPresent is complete. If the session end was initiated from the device
   // side, or in case of connection errors, proceed to shutdown_complete_ state
   // immediately.
-  Member<ScriptPromiseResolver> end_session_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> end_session_resolver_;
   // "ended_" becomes true as soon as session shutdown is initiated.
   bool ended_ = false;
   bool waiting_for_shutdown_ = false;
@@ -524,12 +534,12 @@ class XRSession final : public EventTarget,
   // Set of promises returned from CreateAnchor that are still in-flight to the
   // device. Once the device calls us back with the newly created anchor id, the
   // resolver will be moved to |anchor_ids_to_pending_anchor_promises_|.
-  HeapHashSet<Member<ScriptPromiseResolver>> create_anchor_promises_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> create_anchor_promises_;
   // Promises for which anchors have already been created on the device side but
   // have not yet been resolved as their data is not yet available to blink.
   // Next frame update should contain the necessary data - the promise will be
   // resolved then.
-  HeapHashMap<uint64_t, Member<ScriptPromiseResolver>>
+  HeapHashMap<uint64_t, Member<ScriptPromiseResolverBase>>
       anchor_ids_to_pending_anchor_promises_;
 
   // Mapping of hit test source ids (aka hit test subscription ids) to hit test
@@ -557,14 +567,12 @@ class XRSession final : public EventTarget,
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
 
   Member<XRPlaneManager> plane_manager_;
-  Member<XRDepthManager> depth_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session
   // received a frame from the device that contained the camera image.
   std::optional<gfx::Size> camera_image_size_;
 
   HeapVector<Member<XRViewData>> views_;
-  Vector<device::mojom::blink::XRViewPtr> pending_views_;
 
   Member<XRInputSourceArray> input_sources_;
   Member<XRWebGLLayer> prev_base_layer_;
@@ -575,7 +583,8 @@ class XRSession final : public EventTarget,
   bool environment_error_handler_subscribed_ = false;
   // Set of promises returned from requestHitTestSource and
   // requestHitTestSourceForTransientInput that are still in-flight.
-  HeapHashSet<Member<ScriptPromiseResolver>> request_hit_test_source_promises_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>>
+      request_hit_test_source_promises_;
   HeapVector<Member<XRReferenceSpace>> reference_spaces_;
 
   uint32_t stage_parameters_id_ = 0;
@@ -595,7 +604,6 @@ class XRSession final : public EventTarget,
   bool resolving_frame_ = false;
   bool frames_throttled_ = false;
 
-  bool views_updated_this_frame_ = false;
   bool canvas_was_resized_ = false;
 
   // Indicates that we've already logged a metric, so don't need to log it
@@ -607,13 +615,8 @@ class XRSession final : public EventTarget,
   int output_width_ = 1;
   int output_height_ = 1;
 
-  float recommended_framebuffer_scale_ = 1.0;
-
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
-
-  // Corresponds to mojo XRSessionOptions.enable_anti_aliasing
-  bool enable_anti_aliasing_ = true;
 
   std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 
@@ -624,6 +627,10 @@ class XRSession final : public EventTarget,
   int16_t last_frame_id_ = -1;
 
   bool emulated_position_ = false;
+
+  uint64_t trace_id_;
+
+  AverageTimer page_animation_frame_timer_;
 };
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -33,6 +33,9 @@
 #include "net/ssl/ssl_private_key.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 
 namespace browser_ui {
 namespace {
@@ -336,7 +339,7 @@ static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     base::android::JavaArrayOfByteArrayToStringVector(env, encoded_chain_ref,
                                                       &encoded_chain_strings);
   }
-  const std::vector<base::StringPiece> encoded_chain(
+  const std::vector<std::string_view> encoded_chain(
       encoded_chain_strings.cbegin(), encoded_chain_strings.cend());
 
   // Create the X509Certificate object from the encoded chain.

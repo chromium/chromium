@@ -215,7 +215,7 @@ bool FindBrowser(
   base::FilePath module_dir;
 #if BUILDFLAG(IS_FUCHSIA)
   // Use -1 to allow this to compile.
-  // TODO(crbug.com/1262176): Determine whether Fuchsia should support this and
+  // TODO(crbug.com/40799321): Determine whether Fuchsia should support this and
   // if so provide an appropriate implementation for this function.
   if (base::PathService::Get(-1, &module_dir)) {
 #else

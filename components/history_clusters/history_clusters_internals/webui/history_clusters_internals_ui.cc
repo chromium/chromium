@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354691088): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 
 #include "components/grit/history_clusters_internals_resources.h"
@@ -17,8 +22,7 @@ HistoryClustersInternalsUI::HistoryClustersInternalsUI(
       history_clusters_service_(history_clusters_service),
       history_service_(history_service) {
   std::move(set_up_data_source_callback)
-      .Run(base::make_span(kHistoryClustersInternalsResources,
-                           kHistoryClustersInternalsResourcesSize),
+      .Run(base::make_span(kHistoryClustersInternalsResources),
            IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
 }
 
@@ -27,7 +31,7 @@ HistoryClustersInternalsUI::~HistoryClustersInternalsUI() = default;
 void HistoryClustersInternalsUI::BindInterface(
     mojo::PendingReceiver<history_clusters_internals::mojom::PageHandlerFactory>
         receiver) {
-  // TODO(https://crbug.com/1297362): Remove the reset which is needed now since
+  // TODO(crbug.com/40215132): Remove the reset which is needed now since
   // |this| is reused on internals page reloads.
   history_clusters_internals_page_factory_receiver_.reset();
   history_clusters_internals_page_factory_receiver_.Bind(std::move(receiver));

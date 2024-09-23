@@ -1,0 +1,13 @@
+include_rules = [
+  "+ash/shell.h",
+  "+chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h",
+  "+chromeos/ash/components/system_info",
+  "+chromeos/ash/services/cros_healthd/public/cpp",
+  "+chromeos/ash/services/cros_healthd/public/mojom",
+  "+chromeos/dbus/power",
+  "+components/manta",
+  "+mojo/public/cpp/bindings/remote.h",
+  "+ui/base/text/bytes_formatting.h",
+  "+ui/gfx/image",
+  "+ui/snapshot"
+]

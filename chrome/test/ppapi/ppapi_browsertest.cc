@@ -188,7 +188,7 @@ TEST_PPAPI_NACL(Graphics2D_Paint)
 TEST_PPAPI_NACL(Graphics2D_Scroll)
 TEST_PPAPI_NACL(Graphics2D_Replace)
 TEST_PPAPI_NACL(Graphics2D_Flush)
-// TODO(crbug.com/682275): Flaky on Ubuntu.
+// TODO(crbug.com/40502125): Flaky on Ubuntu.
 // TEST_PPAPI_NACL(Graphics2D_FlushOffscreenUpdate)
 TEST_PPAPI_NACL(Graphics2D_BindNull)
 
@@ -495,7 +495,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   void SetKeepAlive(bool enable,
                     int32_t delay_secs,
                     SetKeepAliveCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -1006,7 +1006,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Bind(const net::IPEndPoint& local_addr,
             network::mojom::UDPSocketOptionsPtr options,
@@ -1067,7 +1067,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   }
   void ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
                                  uint32_t buffer_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SendTo(const net::IPEndPoint& dest_addr,
               base::span<const uint8_t> data,
@@ -1087,7 +1087,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   void Send(base::span<const uint8_t> data,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
             SendCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Close() override {
     // Deleting |this| before closing the bindings can cause Mojo to DCHECK if
@@ -1933,7 +1933,7 @@ TEST_PPAPI_NACL(MouseCursor)
 
 TEST_PPAPI_NACL(NetworkProxy)
 
-// TODO(crbug.com/602875), TODO(crbug.com/602876) Flaky on CrOS.
+// TODO(crbug.com/41248785), TODO(crbug.com/41248786) Flaky on CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_VideoDecoder DISABLED_VideoDecoder
 #else

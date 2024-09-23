@@ -8,28 +8,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/test_printing_context.h"
 
 namespace printing {
-
-namespace {
-
-std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
-    PrintingContext::Delegate* delegate,
-    PrintingContext::ProcessBehavior process_behavior,
-    const std::string& printer_name) {
-  auto context =
-      std::make_unique<TestPrintingContext>(delegate, process_behavior);
-
-  context->SetDeviceSettings(printer_name,
-                             test::MakeDefaultPrintSettings(printer_name));
-  return context;
-}
-
-}  // namespace
 
 BrowserPrintingContextFactoryForTest::BrowserPrintingContextFactoryForTest() =
     default;
@@ -82,9 +67,14 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   if (cancel_on_ask_user_for_settings_) {
     context->SetAskUserForSettingsCanceled();
   }
+
+  if (fail_on_ask_user_for_settings_) {
+    context->SetAskUserForSettingsFails();
+  }
 #endif
 
-  context->SetUserSettings(*test::MakeUserModifiedPrintSettings(printer_name_));
+  context->SetUserSettings(*test::MakeUserModifiedPrintSettings(
+      printer_name_, base::OptionalToPtr(page_ranges_)));
 
   context->SetOnNewDocumentCallback(on_new_document_callback_);
 
@@ -94,6 +84,20 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
 void BrowserPrintingContextFactoryForTest::SetPrinterNameForSubsequentContexts(
     const std::string& printer_name) {
   printer_name_ = printer_name;
+}
+
+#if BUILDFLAG(IS_WIN)
+void BrowserPrintingContextFactoryForTest::
+    SetPrinterLanguageTypeForSubsequentContexts(
+        mojom::PrinterLanguageType printer_language_type) {
+  printer_language_type_ = printer_language_type;
+}
+#endif
+
+void BrowserPrintingContextFactoryForTest::
+    SetUserSettingsPageRangesForSubsequentContext(
+        const PageRanges& page_ranges) {
+  page_ranges_ = page_ranges;
 }
 
 void BrowserPrintingContextFactoryForTest::
@@ -151,11 +155,36 @@ void BrowserPrintingContextFactoryForTest::
     SetCancelErrorOnAskUserForSettings() {
   cancel_on_ask_user_for_settings_ = true;
 }
+
+void BrowserPrintingContextFactoryForTest::SetFailErrorOnAskUserForSettings() {
+  fail_on_ask_user_for_settings_ = true;
+}
 #endif
 
 void BrowserPrintingContextFactoryForTest::SetOnNewDocumentCallback(
     TestPrintingContext::OnNewDocumentCallback callback) {
   on_new_document_callback_ = std::move(callback);
+}
+
+std::unique_ptr<TestPrintingContext>
+BrowserPrintingContextFactoryForTest::MakeDefaultTestPrintingContext(
+    PrintingContext::Delegate* delegate,
+    PrintingContext::ProcessBehavior process_behavior,
+    const std::string& printer_name) {
+  auto context =
+      std::make_unique<TestPrintingContext>(delegate, process_behavior);
+
+  std::unique_ptr<PrintSettings> settings =
+      test::MakeDefaultPrintSettings(printer_name);
+
+#if BUILDFLAG(IS_WIN)
+  if (printer_language_type_.has_value()) {
+    settings->set_printer_language_type(printer_language_type_.value());
+  }
+#endif
+
+  context->SetDeviceSettings(printer_name, std::move(settings));
+  return context;
 }
 
 }  // namespace printing

@@ -110,11 +110,6 @@ void QuickSettingsMediaViewController::OnMediaItemUIClicked(
       GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
 }
 
-void QuickSettingsMediaViewController::OnMediaItemUIDestroyed(
-    const std::string& id) {
-  media_item_ui_observer_set_.StopObserving(id);
-}
-
 void QuickSettingsMediaViewController::OnMediaItemUIShowDevices(
     const std::string& id) {
   tray_controller_->ShowMediaControlsDetailedView(

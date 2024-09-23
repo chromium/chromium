@@ -18,6 +18,8 @@ bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
   switch (feature.type()) {
     case FeatureType::kWebFeature:
       return web_features_.test(feature.value());
+    case FeatureType::kWebDXFeature:
+      return webdx_features_.test(feature.value());
     case FeatureType::kCssProperty:
       return css_properties_.test(feature.value());
     case FeatureType::kAnimatedCssProperty:
@@ -91,6 +93,9 @@ void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,
   switch (feature.type()) {
     case FeatureType::kWebFeature:
       web_features_[feature.value()] = value;
+      break;
+    case FeatureType::kWebDXFeature:
+      webdx_features_[feature.value()] = value;
       break;
     case FeatureType::kCssProperty:
       css_properties_[feature.value()] = value;

@@ -8,10 +8,11 @@
 #include "base/test/bind.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browsing_data/content/fake_browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -24,8 +25,11 @@ namespace {
 
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
+using ::testing::Contains;
+using ::testing::Not;
 
 const char kCurrentUrl[] = "https://google.com";
+const char kCurrentUrlSubPage[] = "https://google.com/subpage";
 const char kThirdPartyUrl[] = "https://youtube.com";
 const char kExampleUrl[] = "https://example.com";
 
@@ -86,8 +90,7 @@ class PageSpecificSiteDataDialogUnitTest
     NavigateAndCommit(GURL(kCurrentUrl));
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
     profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
@@ -97,33 +100,30 @@ class PageSpecificSiteDataDialogUnitTest
 };
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, CookieAccessed) {
-  // Verify that site data access through CookiesTreeModel is correctly
+  // Verify that site data access through BrowsingDataModel is correctly
   // displayed in the dialog.
   auto* content_settings = GetContentSettings();
 
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kCurrentUrl), "A=B",
+                                             base::Time::Now()));
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kCurrentUrl),
        GURL(kCurrentUrl),
-       {*first_party_cookie},
-       false});
+       {{*first_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        /*firstparty*/ GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
+       {{*third_party_cookie}},
+       /* blocked_by_policy = */ false});
 
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
@@ -154,21 +154,19 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedFirstParty) {
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndCookieAccessedFirstParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
-  // is correctly displayed in the dialog.
+  // Verify that storage access through BrowsingDataModel is correctly displayed
+  // in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
-       {*first_party_cookie},
-       false});
+       {{*first_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -188,11 +186,11 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndPartitionedCookieAccessedFirstParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
-  // is correctly displayed in the dialog.
+  // Verify that storage access through BrowsingDataModel is correctly displayed
+  // in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kThirdPartyUrl))));
@@ -201,8 +199,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
-       {*first_party_cookie},
-       false});
+       {{*first_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -243,21 +241,19 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedThirdParty) {
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndCookieAccessedThirdParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
+  // Verify that storage access through BrowsingDataModel
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
+       {{*third_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -277,11 +273,11 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndPartitionedCookieAccessedThirdParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
+  // Verify that storage access through BrowsingDataModel
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kCurrentUrl))));
@@ -290,8 +286,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
+       {{*third_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -305,8 +301,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
   auto first_site = sites[0];
   EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
   EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
-  // TODO(crbug.com/1344787): Fix this test to return true once cookie partition
-  // logic is tested.
+  // TODO(crbug.com/40231917): Fix this test to return true once cookie
+  // partition logic is tested.
   EXPECT_EQ(first_site.is_fully_partitioned, false);
 }
 
@@ -337,37 +333,33 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, QuotaStorageAccessedMixedParty) {
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndCookieAccessedMixedParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
+  // Verify that storage access through BrowsingDataModel
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
-       {*first_party_cookie},
-       false});
+       {{*first_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   /*server_time=*/std::nullopt,
-                                   /*cookie_partition_key=*/std::nullopt));
+      net::CanonicalCookie::CreateForTesting(GURL(kThirdPartyUrl), "C=D",
+                                             base::Time::Now()));
   ASSERT_TRUE(third_party_cookie);
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
+       {{*third_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -387,11 +379,11 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
 
 TEST_F(PageSpecificSiteDataDialogUnitTest,
        QuotaStorageAndPartitionedCookieAccessedMixedParty) {
-  // Verify that storage access through CookiesTreeModel and BrowsingDataModel
+  // Verify that storage access through BrowsingDataModel
   // is correctly displayed in the dialog.
   auto* content_settings = GetContentSettings();
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kThirdPartyUrl))));
@@ -400,14 +392,14 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
-       {*first_party_cookie},
-       false});
+       {{*first_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked=*/false);
   std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(
+      net::CanonicalCookie::CreateForTesting(
           GURL(kThirdPartyUrl), "C=D", base::Time::Now(),
           /*server_time=*/std::nullopt,
           net::CookiePartitionKey::FromURLForTesting(GURL(kCurrentUrl))));
@@ -416,8 +408,8 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
+       {{*third_party_cookie}},
+       /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
       BrowsingDataModel::StorageType::kQuotaStorage,
@@ -454,41 +446,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, TrustTokenAccessed) {
   EXPECT_EQ(first_site.is_fully_partitioned, false);
 }
 
-TEST_F(PageSpecificSiteDataDialogUnitTest, MixedModelAccess) {
-  // Verify that site data access through CookiesTreeModel and BrowsingDataModel
-  // is correctly displayed in the dialog.
-  auto* content_settings = GetContentSettings();
-
-  std::unique_ptr<net::CanonicalCookie> third_party_cookie(
-      net::CanonicalCookie::Create(GURL(kThirdPartyUrl), "C=D",
-                                   base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
-  ASSERT_TRUE(third_party_cookie);
-  content_settings->OnCookiesAccessed(
-      {content::CookieAccessDetails::Type::kRead,
-       GURL(kThirdPartyUrl),
-       /*firstparty*/ GURL(kCurrentUrl),
-       {*third_party_cookie},
-       false});
-  content_settings->OnTrustTokenAccessed(
-      url::Origin::Create(GURL(kThirdPartyUrl)),
-      /*blocked=*/false);
-
-  auto delegate =
-      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
-  auto sites = delegate->GetAllSites();
-  // kThirdPartyUrl has accessed two types of site data and it's being reported
-  // through two models: CookieTreeModel and BrowsingDataModel. It should be
-  // combined into single entry in the site data dialog.
-  ASSERT_EQ(sites.size(), 1u);
-
-  auto first_site = sites[0];
-  EXPECT_EQ(first_site.origin.host(), GURL(kThirdPartyUrl).host());
-  EXPECT_EQ(first_site.setting, CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(first_site.is_fully_partitioned, false);
-}
-
 TEST_F(PageSpecificSiteDataDialogUnitTest, RemovePartitionedStorage) {
   url::Origin exampleUrlOrigin = url::Origin::Create(GURL(kExampleUrl));
   auto delegate =
@@ -500,7 +457,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemovePartitionedStorage) {
 }
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
-  // Verify that site data access through CookiesTreeModel is correctly
+  // Verify that site data access through BrowsingDataModel is correctly
   // displayed in the dialog.
   auto* content_settings = GetContentSettings();
   auto current_url = GURL(kCurrentUrl);
@@ -519,51 +476,19 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
                                     {current_url, third_party_url});
 }
 
-class PageSpecificSiteDataDialogModelUnitTest
-    : public PageSpecificSiteDataDialogUnitTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PageSpecificSiteDataDialogModelUnitTest() {
-    if (IsDeprecateCookiesTreeModelEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          browsing_data::features::kDeprecateCookiesTreeModel);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          browsing_data::features::kDeprecateCookiesTreeModel);
-    }
-  }
-  ~PageSpecificSiteDataDialogModelUnitTest() override = default;
-
- protected:
-  bool IsDeprecateCookiesTreeModelEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(PageSpecificSiteDataDialogModelUnitTest, RemoveOnlyBrowsingData) {
+TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveBrowsingData) {
   // Setup a cookie for `kCurrentUrl`.
   std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
+      net::CanonicalCookie::CreateForTesting(GURL(kCurrentUrl), "A=B",
+                                             base::Time::Now()));
   ASSERT_TRUE(first_party_cookie);
 
   auto allowed_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
   auto blocked_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-  auto* content_settings = GetContentSettings();
-  if (IsDeprecateCookiesTreeModelEnabled()) {
-    allowed_browsing_data_model->AddBrowsingData(
-        *first_party_cookie, BrowsingDataModel::StorageType::kCookie,
-        /*storage_size=*/0, /*cookie_count=*/1);
-  } else {
-    content_settings->OnCookiesAccessed(
-        {content::CookieAccessDetails::Type::kRead,
-         GURL(kCurrentUrl),
-         GURL(kCurrentUrl),
-         {*first_party_cookie},
-         /*blocked_by_policy=*/false});
-  }
+  allowed_browsing_data_model->AddBrowsingData(
+      *first_party_cookie, BrowsingDataModel::StorageType::kCookie,
+      /*storage_size=*/0, /*cookie_count=*/1);
+
   // Setup browsing data models and populate them.
   url::Origin currentUrlOrigin = url::Origin::Create(GURL(kCurrentUrl));
   url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
@@ -603,153 +528,36 @@ TEST_P(PageSpecificSiteDataDialogModelUnitTest, RemoveOnlyBrowsingData) {
   }
 }
 
-TEST_P(PageSpecificSiteDataDialogModelUnitTest, RemoveOnlyCookieTreeData) {
-  if (IsDeprecateCookiesTreeModelEnabled()) {
-    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
-                    "CookiesTreeModel tests";
+class PageSpecificSiteDataDialogWithWebAppsUnitTest
+    : public PageSpecificSiteDataDialogUnitTest {
+ public:
+  void SetUp() override {
+    PageSpecificSiteDataDialogUnitTest::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
-  // Setup CookieTreeModel and add cookie for `kCurrentUrl`.
-  auto* content_settings = GetContentSettings();
 
-  std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
-  ASSERT_TRUE(first_party_cookie);
-  content_settings->OnCookiesAccessed(
-      {content::CookieAccessDetails::Type::kRead,
-       GURL(kCurrentUrl),
-       GURL(kCurrentUrl),
-       {*first_party_cookie},
-       /*blocked_by_policy=*/false});
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPageSpecificDataDialogRelatedInstalledAppsSection};
+};
+
+// TODO(crbug.com/362922563): Add a new test once the uninstall behavior is
+// implemented.
+
+TEST_F(PageSpecificSiteDataDialogWithWebAppsUnitTest, CorrectAppDataReturned) {
+  auto app_id = web_app::test::InstallDummyWebApp(profile(), "DummyApp",
+                                                  GURL(kCurrentUrl));
+  auto sub_app_id = web_app::test::InstallDummyWebApp(profile(), "DummySubApp",
+                                                      GURL(kCurrentUrlSubPage));
+  auto unrelated_app_id = web_app::test::InstallDummyWebApp(
+      profile(), "UnrelatedDummyApp", GURL(kThirdPartyUrl));
 
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
-  auto allowed_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-  auto blocked_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-  // Setup browsing data models and populate them.
-  delegate->SetBrowsingDataModels(allowed_browsing_data_model.get(),
-                                  blocked_browsing_data_model.get());
+  std::vector<webapps::AppId> app_list = delegate->GetInstalledRelatedApps();
 
-  url::Origin currentUrlOrigin = url::Origin::Create(GURL(kCurrentUrl));
-  url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
-  BrowsingDataModel::DataKey thirdPartyDataKey =
-      blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
-  blocked_browsing_data_model->AddBrowsingData(
-      thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
-      /*storage_size=*/0);
-
-  {
-    auto sites = delegate->GetAllSites();
-    std::vector<PageSpecificSiteDataDialogSite> expected_sites = {
-        {currentUrlOrigin, /*settings=*/CONTENT_SETTING_ALLOW,
-         /*is_fully_partitioned=*/false},
-        {thirdPartyUrlOrigin, /*settings=*/CONTENT_SETTING_BLOCK,
-         /*is_fully_partitioned=*/false}};
-
-    EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
-  }
-
-  // Remove origins from the dialog.
-  delegate->DeleteStoredObjects(currentUrlOrigin);
-
-  // Validate that sites are removed from the cookie tree model.
-  {
-    auto sites = delegate->GetAllSites();
-    std::vector<PageSpecificSiteDataDialogSite> expected_sites = {
-        {thirdPartyUrlOrigin, /*settings=*/CONTENT_SETTING_BLOCK,
-         /*is_fully_partitioned=*/false}};
-
-    EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
-  }
+  EXPECT_EQ(app_list.size(), 2u);
+  EXPECT_THAT(app_list, Contains(app_id));
+  EXPECT_THAT(app_list, Contains(sub_app_id));
+  EXPECT_THAT(app_list, Not(Contains(unrelated_app_id)));
 }
-
-TEST_P(PageSpecificSiteDataDialogModelUnitTest, RemoveMixedModelData) {
-  if (IsDeprecateCookiesTreeModelEnabled()) {
-    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
-                    "CookiesTreeModel tests";
-  }
-
-  // Setup CookieTreeModel and add cookie for `kCurrentUrl` and `kExampleUrl`.
-  auto* content_settings = GetContentSettings();
-
-  std::unique_ptr<net::CanonicalCookie> first_party_cookie(
-      net::CanonicalCookie::Create(GURL(kCurrentUrl), "A=B", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
-  std::unique_ptr<net::CanonicalCookie> example_cookie(
-      net::CanonicalCookie::Create(GURL(kExampleUrl), "E=F", base::Time::Now(),
-                                   std::nullopt /* server_time */,
-                                   std::nullopt /* cookie_partition_key */));
-  ASSERT_TRUE(first_party_cookie);
-  ASSERT_TRUE(example_cookie);
-  content_settings->OnCookiesAccessed(
-      {content::CookieAccessDetails::Type::kRead,
-       GURL(kCurrentUrl),
-       GURL(kCurrentUrl),
-       {*first_party_cookie},
-       /*blocked_by_policy=*/false});
-  content_settings->OnCookiesAccessed(
-      {content::CookieAccessDetails::Type::kRead,
-       GURL(kExampleUrl),
-       /*firstparty*/ GURL(kCurrentUrl),
-       {*example_cookie},
-       /*blocked_by_policy=*/false});
-
-  auto delegate =
-      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
-  auto allowed_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-  auto blocked_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
-
-  // Setup browsing data models and populate them.
-  delegate->SetBrowsingDataModels(allowed_browsing_data_model.get(),
-                                  blocked_browsing_data_model.get());
-
-  url::Origin exampleUrlOrigin = url::Origin::Create(GURL(kExampleUrl));
-  url::Origin currentUrlOrigin = url::Origin::Create(GURL(kCurrentUrl));
-  url::Origin thirdPartyUrlOrigin = url::Origin::Create(GURL(kThirdPartyUrl));
-
-  BrowsingDataModel::DataKey exampleDataKey =
-      blink::StorageKey::CreateFirstParty(exampleUrlOrigin);
-  allowed_browsing_data_model->AddBrowsingData(
-      exampleDataKey, BrowsingDataModel::StorageType::kSharedStorage,
-      /*storage_size=*/0);
-  BrowsingDataModel::DataKey thirdPartyDataKey =
-      blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
-  blocked_browsing_data_model->AddBrowsingData(
-      thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
-      /*storage_size=*/0);
-
-  {
-    auto sites = delegate->GetAllSites();
-    std::vector<PageSpecificSiteDataDialogSite> expected_sites = {
-        {exampleUrlOrigin, /*settings=*/CONTENT_SETTING_ALLOW,
-         /*is_fully_partitioned=*/false},
-        {currentUrlOrigin, /*settings=*/CONTENT_SETTING_ALLOW,
-         /*is_fully_partitioned=*/false},
-        {thirdPartyUrlOrigin, /*settings=*/CONTENT_SETTING_BLOCK,
-         /*is_fully_partitioned=*/false}};
-
-    EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
-  }
-
-  // Remove origins from the dialog.
-  delegate->DeleteStoredObjects(exampleUrlOrigin);
-
-  // Validate that sites are removed from both models.
-  {
-    auto sites = delegate->GetAllSites();
-    std::vector<PageSpecificSiteDataDialogSite> expected_sites = {
-        {currentUrlOrigin, /*settings=*/CONTENT_SETTING_ALLOW,
-         /*is_fully_partitioned=*/false},
-        {thirdPartyUrlOrigin, /*settings=*/CONTENT_SETTING_BLOCK,
-         /*is_fully_partitioned=*/false}};
-
-    EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
-  }
-}
-
-// Boolean to enable/disable the `kDeprecateCookiesTreeModel` feature.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageSpecificSiteDataDialogModelUnitTest,
-                         testing::Bool());

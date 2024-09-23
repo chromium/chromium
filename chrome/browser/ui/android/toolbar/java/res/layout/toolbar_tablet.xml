@@ -75,13 +75,22 @@ found in the LICENSE file.
             android:paddingStart="8dp"
             android:visibility="gone" />
 
+        <ViewStub
+            android:id="@+id/incognito_indicator_stub"
+            android:inflatedId="@+id/incognito_indicator"
+            android:layout="@layout/incognito_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/location_bar_vertical_margin"
+            android:layout_marginHorizontal="@dimen/incognito_indicator_lateral_margin"
+            android:visibility="gone" />
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton"
-            android:background="@drawable/toolbar_tab_switcher_button_ripple"
-            android:paddingStart="@dimen/toolbar_tab_switcher_button_padding"
             android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
+            android:tooltipText="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:visibility="visible"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
             app:menuVerticalOverlapAnchor="false" />

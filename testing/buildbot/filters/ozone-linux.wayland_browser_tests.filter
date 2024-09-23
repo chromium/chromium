@@ -30,8 +30,10 @@
 # crbug.com/1473417
 -All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_default
 -All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_on_navigation
+# crbug.com/348626870
+-All/PdfOcrIntegrationTest.*
 
-# TODO(https://crbug.com/1084469): fix these tests.
+# TODO(crbug.com/40131756): fix these tests.
 
 # Failed:
 -BrowserViewTest.GetAccessibleTabModalDialogTree

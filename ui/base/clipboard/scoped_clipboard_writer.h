@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
  public:
   // Create an instance that is a simple wrapper around the clipboard of the
   // given buffer with an optional parameter indicating the source of the data.
-  // TODO(crbug.com/1103193): change its references to use
+  // TODO(crbug.com/40704495): change its references to use
   // DataTransferEndpoint, if possible.
   explicit ScopedClipboardWriter(
       ClipboardBuffer buffer,
@@ -99,6 +99,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // Mark the data to be written as confidential.
   void MarkAsConfidential();
 
+  // Data is copied from an incognito window.
+  void MarkAsOffTheRecord();
+
   // Removes all objects that would be written to the clipboard.
   void Reset();
 
@@ -116,7 +119,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // The type is set at construction, and can be changed before committing.
   const ClipboardBuffer buffer_;
 
-  bool confidential_ = false;
+  // Contains the `Clipboard::PrivacyTypes` based on whether the content was
+  // marked as confidential or off the record. e.g. password is considered as
+  // confidential that should be concealed.
+  uint32_t privacy_types_ = 0;
 
   // The source of the data written in ScopedClipboardWriter, nullptr means it's
   // not set, or the source of the data can't be represented by

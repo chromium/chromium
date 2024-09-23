@@ -25,6 +25,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -33,8 +34,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -66,7 +67,7 @@ public class CustomTabsTestUtils {
     }
 
     public static void cleanupSessions(final CustomTabsConnection connection) {
-        TestThreadUtils.runOnUiThreadBlocking(connection::cleanupAllForTesting);
+        ThreadUtils.runOnUiThreadBlocking(connection::cleanupAllForTesting);
     }
 
     public static ClientAndSession bindWithCallback(final CustomTabsCallback callback)
@@ -179,7 +180,13 @@ public class CustomTabsTestUtils {
     public static String getMenuTitles(ModelList list) {
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
-            items.append("\n").append(list.get(i).model.get(AppMenuItemProperties.TITLE));
+            PropertyModel model = list.get(i).model;
+            items.append("\n").append(model.get(AppMenuItemProperties.TITLE));
+            if (model.get(AppMenuItemProperties.SUBMENU) != null) {
+                for (var submenu : model.get(AppMenuItemProperties.SUBMENU)) {
+                    items.append("\n - ").append(submenu.model.get(AppMenuItemProperties.TITLE));
+                }
+            }
         }
         return items.toString();
     }

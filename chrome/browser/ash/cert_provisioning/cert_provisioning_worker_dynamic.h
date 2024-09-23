@@ -35,6 +35,7 @@ namespace ash::cert_provisioning {
 class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
  public:
   CertProvisioningWorkerDynamic(
+      std::string cert_provisioning_process_id,
       CertScope cert_scope,
       Profile* profile,
       PrefService* pref_service,
@@ -105,6 +106,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void MarkRegularKey();
   void MarkVaGeneratedKey();
   void MarkKey(CertProvisioningWorkerState target_state);
+  void MarkKeyAsCorporate();
+  void OnAllowKeyForUsageDone(chromeos::platform_keys::Status status);
   void OnMarkKeyDone(CertProvisioningWorkerState target_state,
                      chromeos::platform_keys::Status status);
 
@@ -124,7 +127,12 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void ImportCert();
   void OnImportCertDone(chromeos::platform_keys::Status status);
 
-  void ScheduleNextStep(base::TimeDelta delay);
+  // Schedule the next step after the `delay`. If `try_provisioning_on_timeout`
+  // is true, the worker will automatically try contacting the server-side after
+  // it doesn't receive an invalidation for long enough. If it's false, it will
+  // require an invalidation to continue.
+  void ScheduleNextStep(base::TimeDelta delay,
+                        bool try_provisioning_on_timeout);
   void CancelScheduledTasks();
 
   enum class ContinueReason {
@@ -183,6 +191,11 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // callers should use the above overload.
   void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
+  // A convenience method to generate a string that contains some additional
+  // info and should be included in all logs.
+  std::string GetLogInfoBlock();
+
+  std::string process_id_;
   CertScope cert_scope_ = CertScope::kUser;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -238,6 +251,10 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string va_challenge_response_;
 
   // Instruction payload and response for "Proof Of Possession".
+  // Must be provided by DMServer.
+  enterprise_management::CertProvSignatureAlgorithm signature_algorithm_ =
+      enterprise_management::CertProvSignatureAlgorithm::
+          SIGNATURE_ALGORITHM_UNSPECIFIED;
   std::vector<uint8_t> data_to_sign_;
   std::vector<uint8_t> signature_;
 
@@ -259,7 +276,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Increment this when you add/change any member in
   // CertProvisioningWorkerDynamic that affects serialization (and update all
   // functions that fail to compile because of it).
-  static constexpr int kVersion = 2;
+  static constexpr int kVersion = 3;
 
   // Unowned PlatformKeysService. Note that the CertProvisioningWorker does not
   // observe the PlatformKeysService for shutdown events. Instead, it relies on

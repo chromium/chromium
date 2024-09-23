@@ -27,9 +27,9 @@ std::unique_ptr<TestingProfile> IdentityTestEnvironmentProfileAdaptor::
 // static
 std::unique_ptr<TestingProfile>
 IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
-    const TestingProfile::TestingFactories& input_factories) {
+    TestingProfile::TestingFactories input_factories) {
   TestingProfile::Builder builder;
-  builder.AddTestingFactories(input_factories);
+  builder.AddTestingFactories(std::move(input_factories));
   return CreateProfileForIdentityTestEnvironment(builder);
 }
 
@@ -45,30 +45,31 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 void IdentityTestEnvironmentProfileAdaptor::
     SetIdentityTestEnvironmentFactoriesOnBrowserContext(
         content::BrowserContext* context) {
-  for (const auto& f : GetIdentityTestEnvironmentFactories()) {
-    CHECK_EQ(f.service_factory_and_testing_factory.index(), 0u);
-    const auto& [service_factory, testing_factory] =
-        absl::get<0>(f.service_factory_and_testing_factory);
-    service_factory->SetTestingFactory(context, testing_factory);
+  for (auto& f : GetIdentityTestEnvironmentFactories()) {
+    absl::visit(
+        [context](auto& p) {
+          p.first->SetTestingFactory(context, std::move(p.second));
+        },
+        f.service_factory_and_testing_factory);
   }
 }
 
 // static
-void IdentityTestEnvironmentProfileAdaptor::
-    AppendIdentityTestEnvironmentFactories(
-        TestingProfile::TestingFactories* factories_to_append_to) {
-  TestingProfile::TestingFactories identity_factories =
-      GetIdentityTestEnvironmentFactories();
-  factories_to_append_to->insert(factories_to_append_to->end(),
-                                 identity_factories.begin(),
-                                 identity_factories.end());
+TestingProfile::TestingFactories IdentityTestEnvironmentProfileAdaptor::
+    GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+        TestingProfile::TestingFactories testing_factories) {
+  for (auto& factory : GetIdentityTestEnvironmentFactories()) {
+    testing_factories.push_back(std::move(factory));
+  }
+  return testing_factories;
 }
 
 // static
 TestingProfile::TestingFactories
 IdentityTestEnvironmentProfileAdaptor::GetIdentityTestEnvironmentFactories() {
-  return {{IdentityManagerFactory::GetInstance(),
-           base::BindRepeating(&BuildIdentityManagerForTests)}};
+  return {TestingProfile::TestingFactory{
+      IdentityManagerFactory::GetInstance(),
+      base::BindRepeating(&BuildIdentityManagerForTests)}};
 }
 
 // static

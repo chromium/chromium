@@ -65,6 +65,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/dummy_producer.cc",
       "perfetto/dummy_producer.h",
       "perfetto/interning_index.h",
+      "perfetto/metadata_data_source.cc",
+      "perfetto/metadata_data_source.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
       "perfetto/perfetto_producer.cc",
@@ -102,10 +104,14 @@ target(tracing_lib_type, "cpp") {
       "trace_event_args_allowlist.h",
       "trace_startup.cc",
       "trace_startup.h",
+      "trace_startup_config.cc",
+      "trace_startup_config.h",
       "traced_process_impl.cc",
       "traced_process_impl.h",
       "tracing_features.cc",
       "tracing_features.h",
+      "triggers_data_source.cc",
+      "triggers_data_source.h",
     ]
 
     if (is_android) {
@@ -143,6 +149,12 @@ target(tracing_lib_type, "cpp") {
       "//build:chromeos_buildflags",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
     ]
+
+   if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+     deps += [
+       "//components/variations",
+     ]
+   }
 
     # Add the SystemProducer implementations.
     if (is_posix || is_fuchsia) {

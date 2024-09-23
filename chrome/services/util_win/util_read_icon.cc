@@ -6,10 +6,12 @@
 
 #include <windows.h>
 
-#include <string>
+#include <string.h>
 
-#include "base/files/file_path.h"
-#include "base/scoped_native_library.h"
+#include <utility>
+
+#include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,19 +22,20 @@ using chrome::mojom::IconSize;
 
 namespace {
 
-gfx::ImageSkia LoadIcon(const wchar_t* filename, int size, float scale) {
-  base::ScopedNativeLibrary library(::LoadLibraryEx(
-      filename, nullptr,
-      LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE));
-  if (!library.is_valid())
+gfx::ImageSkia LoadIcon(base::File file, int size, float scale) {
+  base::MemoryMappedFile map;
+  if (!map.Initialize(std::move(file),
+                      base::MemoryMappedFile::READ_CODE_IMAGE)) {
     return gfx::ImageSkia();
+  }
 
+  HMODULE library = reinterpret_cast<HMODULE>(map.data());
   // Find the first icon referenced in the file.  This matches Explorer.
   LPWSTR id = nullptr;
   // Because the lambda below returns FALSE, EnumResourceNames() itself will
   // return FALSE even when it "succeeds", so ignore its return value.
   ::EnumResourceNames(
-      library.get(), RT_GROUP_ICON,
+      library, RT_GROUP_ICON,
       [](HMODULE, LPCWSTR, LPWSTR name, LONG_PTR param) {
         *reinterpret_cast<LPWSTR*>(param) =
             IS_INTRESOURCE(name) ? name : _wcsdup(name);
@@ -41,7 +44,7 @@ gfx::ImageSkia LoadIcon(const wchar_t* filename, int size, float scale) {
       reinterpret_cast<LONG_PTR>(&id));
 
   base::win::ScopedHICON icon(static_cast<HICON>(
-      ::LoadImage(library.get(), id, IMAGE_ICON, size, size, LR_DEFAULTCOLOR)));
+      ::LoadImage(library, id, IMAGE_ICON, size, size, LR_DEFAULTCOLOR)));
   if (!IS_INTRESOURCE(id))
     free(id);
   if (!icon.is_valid())
@@ -64,9 +67,9 @@ UtilReadIcon::UtilReadIcon(
 
 UtilReadIcon::~UtilReadIcon() = default;
 
-// This is exposed to the browser process only. |filename| is a path to
+// This is exposed to the browser process only. |file| is a handle to
 // a downloaded file, such as an |.exe|.
-void UtilReadIcon::ReadIcon(const base::FilePath& filename,
+void UtilReadIcon::ReadIcon(base::File file,
                             IconSize icon_size,
                             float scale,
                             ReadIconCallback callback) {
@@ -83,9 +86,7 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
       size = 48;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  std::move(callback).Run(
-      LoadIcon(filename.value().c_str(), size * scale, scale),
-      filename.AsUTF16Unsafe());
+  std::move(callback).Run(LoadIcon(std::move(file), size * scale, scale));
 }

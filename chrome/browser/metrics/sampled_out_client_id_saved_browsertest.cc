@@ -8,16 +8,11 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/test/browser_test.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
@@ -119,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(
       local_state()->GetString(metrics::prefs::kMetricsClientID).empty());
-  // TODO(crbug.com/1325166): Re-enable this test
+  // TODO(crbug.com/40225372): Re-enable this test
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android Chrome, since we have not yet consented to metrics reporting,
@@ -129,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Verify that we are considered sampled out.
-  EXPECT_FALSE(ChromeMetricsServicesManagerClient::IsClientInSample());
+  EXPECT_FALSE(
+      ChromeMetricsServicesManagerClient::IsClientInSampleForMetrics());
 
   // Enable metrics reporting, and verify that it was successful.
   ASSERT_TRUE(ChangeMetricsReporting(true));
@@ -137,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
       local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
 
   // Verify that we are still considered sampled out.
-  EXPECT_FALSE(ChromeMetricsServicesManagerClient::IsClientInSample());
+  EXPECT_FALSE(
+      ChromeMetricsServicesManagerClient::IsClientInSampleForMetrics());
 
   // Verify that we are neither recording nor uploading metrics. This also
   // verifies that we are sampled out according to the metrics code, since

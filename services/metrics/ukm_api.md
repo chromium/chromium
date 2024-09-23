@@ -4,7 +4,7 @@ This document describes how to write client code to collect UKM data. Before
 you add new metrics, you should file a proposal. See [go/ukm](http://go/ukm)
 for more information.
 
-Last proofread and updated on 2023/05/18.
+Last proofread and updated on 2024/07/17.
 
 [TOC]
 
@@ -154,6 +154,17 @@ The denominator for each is 3 because there were 3 sources reporting the metric.
 The numerator for each enum value is the count of how many times the value was
 emitted.
 
+### Obsolete Events
+If any events or metrics become obsolete or deprecated, simply delete their
+definitions from
+[`tools/metrics/ukm/ukm.xml`](https://cs.chromium.org/chromium/src/tools/metrics/ukm/ukm.xml).
+Emissions of deleted events or metrics from old Chromium clients will be
+discarded by the server.
+
+Do not reuse a name from a deleted event or a name of a deleted metric within
+the same event. In case of doubt, you can check whether a name was previously
+used then deprecated in this [snapshot history](https://source.corp.google.com/search?q=f:ukm.xml&sq=package:piper%20file:%2F%2Fdepot%2Fgoogle3%20-file:google3%2Fexperimental).
+
 ## Client API
 
 ### Get UkmRecorder Instance
@@ -233,7 +244,7 @@ auto* ukm_background_service = ukm::UkmBackgroundRecorderFactory::GetForProfile(
 ukm_background_service->GetBackgroundSourceIdIfAllowed(origin, base::BindOnce(&DidGetBackgroundSourceId));
 
 // A callback will run with an optional source ID.
-void DidGetBackgroundSourceId(absl::optional<ukm::SourceId> source_id) {
+void DidGetBackgroundSourceId(std::optional<ukm::SourceId> source_id) {
   if (!source_id) return;  // Can't record as it wasn't found in the history.
 
   // Use the newly generated source ID.
@@ -243,7 +254,7 @@ void DidGetBackgroundSourceId(absl::optional<ukm::SourceId> source_id) {
 }
 ```
 
-For the remaining cases you may need to temporarily create your own IDs and associate the URL with them. However we currently prefer that this method is not used, and if you need to setup the URL yourself, please email the OWNERS of components/ukm.
+For the remaining cases you may need to temporarily create your own IDs and associate the URL with them. However we currently prefer that this method is not used, and if you need to set up the URL yourself, please email the OWNERS of components/ukm.
 Example:
 
 ```cpp
@@ -266,6 +277,18 @@ void OnGoatTeleported() {
       .SetDuration(duration.InSeconds())
       .SetGoatType(goat_type)
       .Record(ukm_recorder);
+}
+
+// You can also use the UKM builder as an interim data structure.
+void OnKangarooJumped() {
+  ukm::builder::Kangaroo_Jumped builder(source_id);
+  builder.SetJumpHeight(3)
+      .SetJumpLength(4);
+
+  // Some other calculations...
+  builder.SetJumpLength(5);
+  // Records only one `Kangaroo.Jumped` event with metric JumpLength = 5.
+  builder.Record(ukm_recorder);
 }
 ```
 
@@ -335,14 +358,23 @@ In case of doubt, or if you need a starting point to debug why `chrome://ukm` is
 ./out/Default/chrome --force-enable-metrics-reporting --metrics-upload-interval=300 --vmodule=*components/ukm*=3
 ```
 
+### When are Use Counter UKM events recorded?
+
+Use counter UKM events are appended to chrome://ukm at a different time than UMA events are appended to
+chrome://histograms. Use counter UKM events are appended to chrome://ukm when the document is destroyed. This means
+that UKM events are recorded when the tab is closed or the page leaves the BF Cache.
+
+![Use Counter Metrics Events](./ukm-use-counter.png)
+In the above screenshot, the value in the right column is the web feature id.
+
 
 ## Unit Testing
 
 You can pass your code a `TestUkmRecorder` (see [//components/ukm/test_ukm_recorder.h](https://cs.chromium.org/chromium/src/components/ukm/test_ukm_recorder.h)) and then use the methods it provides to test that your data records correctly.
 
-## Adding UKMs Every Report
+## Adding UKMs in Every Report
 
-Certain information may be useful to be included on every uploaded UKM report. This may be applicable if your information is always "available" in some sense, as opposed to triggered/computed at a particular instance, which is the default. In this case, the best way to proceed is to setup a [MetricsProvider](https://source.chromium.org/chromium/src/components/metrics/metrics_provider.h). The new Provider should implement the `ProvideCurrentSessionUKMData()` method. Record a UKM Event within that implementation, and it will be recorded exactly once per UKM report, immediately before the information is uploaded.
+Certain information may be useful to be included on every uploaded UKM report. This may be applicable if your information is always "available" in some sense, as opposed to triggered/computed at a particular instance, which is the default. In this case, the best way to proceed is to set up a [MetricsProvider](https://source.chromium.org/chromium/src/components/metrics/metrics_provider.h). The new Provider should implement the `ProvideCurrentSessionUKMData()` method. Record a UKM Event within that implementation, and it will be recorded exactly once per UKM report, immediately before the information is uploaded.
 
 ## Recording Information about Subframes URLs via Categorization
 
@@ -380,7 +412,7 @@ And in the UKM enum.xml:
 <enum name="WebFrameworkName">
   <int value="0" label="Unknown"/>
   <int value="1" label="WebFramework1"/>
-  <int value="1" label="WebFramework2"/>
+  <int value="2" label="WebFramework2"/>
   ...
 </enum>
 ```

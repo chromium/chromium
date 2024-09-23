@@ -15,11 +15,11 @@ class CORE_EXPORT MathFractionLayoutAlgorithm
  public:
   explicit MathFractionLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
+  const LayoutResult* Layout();
+
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+
  private:
-  const LayoutResult* Layout() final;
-
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
-
   void GatherChildren(BlockNode* numerator, BlockNode* denominator);
 };
 

@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -175,11 +176,13 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
       color_map_(std::move(color_map)),
       text_map_(skottie_->GetCurrentTextPropertyValues()) {
   DCHECK(skottie_);
-  bool animation_has_image_assets =
+  bool animation_has_external_image_assets =
       !skottie_->GetImageAssetMetadata().asset_storage().empty();
-  if (animation_has_image_assets) {
-    DCHECK(frame_data_provider)
-        << "SkottieFrameDataProvider required for animations with image assets";
+  // Embedded image assets would not be added to `asset_storage()` and not reach
+  // here.
+  if (animation_has_external_image_assets) {
+    DCHECK(frame_data_provider) << "SkottieFrameDataProvider required for "
+                                   "animations with external image assets";
     for (const auto& asset_metadata_pair :
          skottie_->GetImageAssetMetadata().asset_storage()) {
       const std::string& asset_id = asset_metadata_pair.first;
@@ -237,9 +240,15 @@ void Animation::Start(std::optional<PlaybackConfig> playback_config) {
   // Reset the |timer_control_| object for a new animation play.
   timer_control_.reset(nullptr);
 
-  // Schedule a play for the animation and store the necessary information
-  // needed to start playing.
-  state_ = PlayState::kSchedulePlay;
+  if (gfx::Animation::PrefersReducedMotion()) {
+    // Start in a paused state if "prefers reduced motion" is enabled on the
+    // system.
+    state_ = PlayState::kPaused;
+  } else {
+    // Schedule a play for the animation and store the necessary information
+    // needed to start playing.
+    state_ = PlayState::kSchedulePlay;
+  }
   playback_config_ = std::move(*playback_config);
 }
 

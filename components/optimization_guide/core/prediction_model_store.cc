@@ -23,22 +23,6 @@ namespace {
 
 constexpr size_t kBytesPerMegabyte = 1024 * 1024;
 
-// Returns the model info parsed from |model_info_path|.
-std::optional<proto::ModelInfo> ParseModelInfoFromFile(
-    const base::FilePath& model_info_path) {
-  std::string binary_model_info;
-  if (!base::ReadFileToString(model_info_path, &binary_model_info))
-    return std::nullopt;
-
-  proto::ModelInfo model_info;
-  if (!model_info.ParseFromString(binary_model_info))
-    return std::nullopt;
-
-  DCHECK(model_info.has_version());
-  DCHECK(model_info.has_optimization_target());
-  return model_info;
-}
-
 // Returns all the model file paths for the model |model_info| in
 // |base_model_dir|.
 std::vector<base::FilePath> GetModelFilePaths(
@@ -51,10 +35,20 @@ std::vector<base::FilePath> GetModelFilePaths(
       base_model_dir.Append(GetBaseFileNameForModelInfo()));
   for (const auto& additional_file : model_info.additional_files()) {
     auto additional_filepath = StringToFilePath(additional_file.file_path());
-    if (!additional_filepath)
+    if (!additional_filepath) {
       continue;
-    DCHECK(base_model_dir.IsParent(*additional_filepath));
-    model_file_paths.emplace_back(*additional_filepath);
+    }
+    if (!additional_filepath->IsAbsolute()) {
+      model_file_paths.emplace_back(
+          base_model_dir.Append(*additional_filepath));
+    } else {
+      // In older versions (<=127), additional files had absolute path in model
+      // info in the store. For backward compatibility, allow the absolute path
+      // to be used. This can be changed to
+      // `CHECK(!additional_filepath->IsAbsolute())` after a few of
+      // milestones.
+      model_file_paths.emplace_back(*additional_filepath);
+    }
   }
   return model_file_paths;
 }
@@ -157,14 +151,21 @@ void RecordModelStorageMetrics(const base::FilePath& base_store_dir) {
 
 PredictionModelStore::PredictionModelStore()
     : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-}
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 
 PredictionModelStore::~PredictionModelStore() = default;
 
 void PredictionModelStore::Initialize(const base::FilePath& base_store_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base_store_dir.empty());
+
+  if (!background_task_runner_) {
+    // In unit tests, to avoid leaking a task runner between test runs, the task
+    // runner can be reset at the end of each test. In that case, we'll need to
+    // recreate it here.
+    background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  }
 
   // Should not be initialized already.
   DCHECK(base_store_dir_.empty());
@@ -283,6 +284,16 @@ PredictionModelStore::LoadAndVerifyModelInBackgroundThread(
   model->mutable_model()->set_download_url(
       FilePathToString(base_model_dir.Append(GetBaseFileNameForModels())));
 
+  // Convert the additional files to absolute paths.
+  model->mutable_model_info()->clear_additional_files();
+  for (const auto& additional_file : model_info->additional_files()) {
+    auto additional_filepath = StringToFilePath(additional_file.file_path());
+    if (!additional_filepath->IsAbsolute()) {
+      additional_filepath = base_model_dir.Append(*additional_filepath);
+    }
+    model->mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(*additional_filepath));
+  }
   return model;
 }
 
@@ -309,8 +320,9 @@ void PredictionModelStore::UpdateMetadataForExistingModel(
   DCHECK(model_info.has_version());
   DCHECK_EQ(optimization_target, model_info.optimization_target());
 
-  if (!HasModel(optimization_target, model_cache_key))
+  if (!HasModel(optimization_target, model_cache_key)) {
     return;
+  }
 
   ModelStoreMetadataEntryUpdater metadata(GetLocalState(), optimization_target,
                                           model_cache_key);
@@ -507,8 +519,7 @@ void PredictionModelStore::ResetForTesting() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base_store_dir_ = base::FilePath();
-  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  background_task_runner_.reset();
 }
 
 }  // namespace optimization_guide

@@ -59,6 +59,10 @@ class MockMediaSession : public MediaSession {
   MOCK_METHOD(void, EnterPictureInPicture, (), (override));
   MOCK_METHOD(void, ExitPictureInPicture, (), (override));
   MOCK_METHOD(void,
+              GetVisibility,
+              (GetVisibilityCallback callback),
+              (override));
+  MOCK_METHOD(void,
               SetAudioSinkId,
               (const std::optional<std::string>& id),
               (override));

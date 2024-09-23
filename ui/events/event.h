@@ -126,56 +126,56 @@ class EVENTS_EXPORT Event {
 
   bool IsSynthesized() const { return (flags_ & EF_IS_SYNTHESIZED) != 0; }
 
-  bool IsCancelModeEvent() const { return type_ == ET_CANCEL_MODE; }
+  bool IsCancelModeEvent() const { return type_ == EventType::kCancelMode; }
 
   bool IsKeyEvent() const {
-    return type_ == ET_KEY_PRESSED || type_ == ET_KEY_RELEASED;
+    return type_ == EventType::kKeyPressed || type_ == EventType::kKeyReleased;
   }
 
   bool IsMouseEvent() const {
-    return type_ == ET_MOUSE_PRESSED ||
-           type_ == ET_MOUSE_DRAGGED ||
-           type_ == ET_MOUSE_RELEASED ||
-           type_ == ET_MOUSE_MOVED ||
-           type_ == ET_MOUSE_ENTERED ||
-           type_ == ET_MOUSE_EXITED ||
-           type_ == ET_MOUSEWHEEL ||
-           type_ == ET_MOUSE_CAPTURE_CHANGED;
+    return type_ == EventType::kMousePressed ||
+           type_ == EventType::kMouseDragged ||
+           type_ == EventType::kMouseReleased ||
+           type_ == EventType::kMouseMoved ||
+           type_ == EventType::kMouseEntered ||
+           type_ == EventType::kMouseExited ||
+           type_ == EventType::kMousewheel ||
+           type_ == EventType::kMouseCaptureChanged;
   }
 
   bool IsTouchEvent() const {
-    return type_ == ET_TOUCH_RELEASED ||
-           type_ == ET_TOUCH_PRESSED ||
-           type_ == ET_TOUCH_MOVED ||
-           type_ == ET_TOUCH_CANCELLED;
+    return type_ == EventType::kTouchReleased ||
+           type_ == EventType::kTouchPressed ||
+           type_ == EventType::kTouchMoved ||
+           type_ == EventType::kTouchCancelled;
   }
 
   bool IsGestureEvent() const {
     switch (type_) {
-      case ET_GESTURE_SCROLL_BEGIN:
-      case ET_GESTURE_SCROLL_END:
-      case ET_GESTURE_SCROLL_UPDATE:
-      case ET_GESTURE_TAP:
-      case ET_GESTURE_DOUBLE_TAP:
-      case ET_GESTURE_TAP_CANCEL:
-      case ET_GESTURE_TAP_DOWN:
-      case ET_GESTURE_TAP_UNCONFIRMED:
-      case ET_GESTURE_BEGIN:
-      case ET_GESTURE_END:
-      case ET_GESTURE_TWO_FINGER_TAP:
-      case ET_GESTURE_PINCH_BEGIN:
-      case ET_GESTURE_PINCH_END:
-      case ET_GESTURE_PINCH_UPDATE:
-      case ET_GESTURE_LONG_PRESS:
-      case ET_GESTURE_LONG_TAP:
-      case ET_GESTURE_SWIPE:
-      case ET_GESTURE_SHOW_PRESS:
+      case EventType::kGestureScrollBegin:
+      case EventType::kGestureScrollEnd:
+      case EventType::kGestureScrollUpdate:
+      case EventType::kGestureTap:
+      case EventType::kGestureDoubleTap:
+      case EventType::kGestureTapCancel:
+      case EventType::kGestureTapDown:
+      case EventType::kGestureTapUnconfirmed:
+      case EventType::kGestureBegin:
+      case EventType::kGestureEnd:
+      case EventType::kGestureTwoFingerTap:
+      case EventType::kGesturePinchBegin:
+      case EventType::kGesturePinchEnd:
+      case EventType::kGesturePinchUpdate:
+      case EventType::kGestureLongPress:
+      case EventType::kGestureLongTap:
+      case EventType::kGestureSwipe:
+      case EventType::kGestureShowPress:
         // When adding a gesture event which is paired with an event which
         // occurs earlier, add the event to |IsEndingEvent|.
         return true;
 
-      case ET_SCROLL_FLING_CANCEL:
-      case ET_SCROLL_FLING_START:
+      case EventType::kScrollFlingCancel:
+      case EventType::kScrollFlingStart:
         // These can be ScrollEvents too. EF_FROM_TOUCH determines if they're
         // Gesture or Scroll events.
         return (flags_ & EF_FROM_TOUCH) == EF_FROM_TOUCH;
@@ -190,11 +190,11 @@ class EVENTS_EXPORT Event {
   // should not prevent ending events from getting to their initial target.
   bool IsEndingEvent() const {
     switch (type_) {
-      case ET_TOUCH_CANCELLED:
-      case ET_GESTURE_TAP_CANCEL:
-      case ET_GESTURE_END:
-      case ET_GESTURE_SCROLL_END:
-      case ET_GESTURE_PINCH_END:
+      case EventType::kTouchCancelled:
+      case EventType::kGestureTapCancel:
+      case EventType::kGestureEnd:
+      case EventType::kGestureScrollEnd:
+      case EventType::kGesturePinchEnd:
         return true;
       default:
         return false;
@@ -204,30 +204,34 @@ class EVENTS_EXPORT Event {
   bool IsScrollEvent() const {
     // Flings can be GestureEvents too. EF_FROM_TOUCH determines if they're
     // Gesture or Scroll events.
-    return type_ == ET_SCROLL || ((type_ == ET_SCROLL_FLING_START ||
-                                   type_ == ET_SCROLL_FLING_CANCEL) &&
-                                  !(flags() & EF_FROM_TOUCH));
+    return type_ == EventType::kScroll ||
+           ((type_ == EventType::kScrollFlingStart ||
+             type_ == EventType::kScrollFlingCancel) &&
+            !(flags() & EF_FROM_TOUCH));
   }
 
   bool IsPinchEvent() const {
-    return type_ == ET_GESTURE_PINCH_BEGIN ||
-           type_ == ET_GESTURE_PINCH_UPDATE || type_ == ET_GESTURE_PINCH_END;
+    return type_ == EventType::kGesturePinchBegin ||
+           type_ == EventType::kGesturePinchUpdate ||
+           type_ == EventType::kGesturePinchEnd;
   }
 
   bool IsScrollGestureEvent() const {
-    return type_ == ET_GESTURE_SCROLL_BEGIN ||
-           type_ == ET_GESTURE_SCROLL_UPDATE || type_ == ET_GESTURE_SCROLL_END;
+    return type_ == EventType::kGestureScrollBegin ||
+           type_ == EventType::kGestureScrollUpdate ||
+           type_ == EventType::kGestureScrollEnd;
   }
 
   bool IsFlingScrollEvent() const {
-    return type_ == ET_SCROLL_FLING_CANCEL || type_ == ET_SCROLL_FLING_START;
+    return type_ == EventType::kScrollFlingCancel ||
+           type_ == EventType::kScrollFlingStart;
   }
 
-  bool IsMouseWheelEvent() const { return type_ == ET_MOUSEWHEEL; }
+  bool IsMouseWheelEvent() const { return type_ == EventType::kMousewheel; }
 
   bool IsLocatedEvent() const {
     return IsMouseEvent() || IsScrollEvent() || IsTouchEvent() ||
-           IsGestureEvent() || type_ == ET_DROP_TARGET_EVENT;
+           IsGestureEvent() || type_ == EventType::kDropTargetEvent;
   }
 
   // Convenience methods to cast |this| to a CancelModeEvent.
@@ -478,7 +482,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
     SetFlags(flags);
   }
 
-  // Note: Use the ctor for MouseWheelEvent if type is ET_MOUSEWHEEL.
+  // Note: Use the ctor for MouseWheelEvent if type is EventType::kMousewheel.
   MouseEvent(EventType type,
              const gfx::PointF& location,
              const gfx::PointF& root_location,
@@ -764,7 +768,8 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
 //
 // For a keystroke event,
 // -- |bool is_char_| is false.
-// -- |EventType Event::type()| can be ET_KEY_PRESSED or ET_KEY_RELEASED.
+// -- |EventType Event::type()| can be EventType::kKeyPressed or
+// EventType::kKeyReleased.
 // -- |DomCode code_| and |int Event::flags()| represent the physical key event.
 //    - code_ is a platform-independent representation of the physical key,
 //      based on DOM UI Events KeyboardEvent |code| values. It does not
@@ -795,7 +800,7 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
 //
 // For a character event,
 // -- |bool is_char_| is true.
-// -- |EventType Event::type()| is ET_KEY_PRESSED.
+// -- |EventType Event::type()| is EventType::kKeyPressed.
 // -- |DomCode code_| is DomCode::NONE.
 // -- |DomKey key_| is a UTF-16 code point.
 // -- |KeyboardCode key_code_| is conflated with the character-valued key_

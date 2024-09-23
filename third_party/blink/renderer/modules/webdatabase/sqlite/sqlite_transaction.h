@@ -53,7 +53,7 @@ class SQLiteTransaction {
   bool WasRolledBackBySqlite() const;
 
  private:
-  const raw_ref<SQLiteDatabase, ExperimentalRenderer> db_;
+  const raw_ref<SQLiteDatabase> db_;
   bool in_progress_;
   bool read_only_;
 };

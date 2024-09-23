@@ -4,8 +4,10 @@
 
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
+#include <array>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -47,16 +49,16 @@ TEST(CSVPasswordSequenceTest, Iteration) {
       ",<,Alice,123?,even,https://example.net,213,,past header count = "
       "ignored\n"
       ":),,Bob,ABCD!,odd,https://example.org,132,regular note\n";
-  constexpr struct {
-    base::StringPiece url;
-    base::StringPiece username;
-    base::StringPiece password;
-    base::StringPiece note;
-  } kExpectedCredentials[] = {
-      {"http://example.com", "user", "pwd", "Note\nwith two lines"},
-      {"https://example.net", "Alice", "even", ""},
-      {"https://example.org", "Bob", "odd", "regular note"},
+  struct ExpectedCredential {
+    std::string_view url;
+    std::string_view username;
+    std::string_view password;
+    std::string_view note;
   };
+  constexpr auto kExpectedCredentials = std::to_array<ExpectedCredential>(
+      {{"http://example.com", "user", "pwd", "Note\nwith two lines"},
+       {"https://example.net", "Alice", "even", ""},
+       {"https://example.org", "Bob", "odd", "regular note"}});
   CSVPasswordSequence seq(kCsv);
   EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
 

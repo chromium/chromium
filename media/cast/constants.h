@@ -26,7 +26,7 @@ enum Specifications {
   // the implementation must retain in order to process the acknowledgements of
   // past frames.
   //
-  // This value is carefully choosen such that it fits in the 8-bits range for
+  // This value is carefully chosen such that it fits in the 8-bits range for
   // frame IDs. It is also less than half of the full 8-bits range such that
   // logic can handle wrap around and compare two frame IDs meaningfully.
   kMaxUnackedFrames = 120,

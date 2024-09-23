@@ -9,8 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
-#include "media/midi/midi_jni_headers/UsbMidiDeviceFactoryAndroid_jni.h"
 #include "media/midi/usb_midi_device_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/midi/midi_jni_headers/UsbMidiDeviceFactoryAndroid_jni.h"
 
 using base::android::JavaParamRef;
 

@@ -7,22 +7,31 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/permissions_updater.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/permissions_helpers.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/permissions.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace extensions {
@@ -40,11 +49,83 @@ const char kNotInManifestPermissionsError[] =
     "Only permissions specified in the manifest may be requested.";
 const char kUserGestureRequiredError[] =
     "This function must be called during a user gesture";
+constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
+    "Must specify either 'documentId' or 'tabId'.";
+constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
+constexpr char kInvalidDocumentIdError[] = "No document with ID '*'.";
+constexpr char kExtensionHasSiteAccessError[] =
+    "Extension cannot add a site access request for a site it already has "
+    "access to.";
+constexpr char kExtensionHasNoHostPermissionsError[] =
+    "Extension cannot add a site access request when it does not have any host "
+    "permissions.";
+constexpr char kExtensionRequestCannotBeRemovedError[] =
+    "Extension cannot remove a site access request that doesn't exist.";
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
+PermissionsRequestFunction::ShowDialogCallback* g_show_dialog_callback =
+    nullptr;
 PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
+
+// Returns whether `tab_id` is a valid tab. Populates `web_contents` with the
+// ones belonging to the tab , and `error` if tab is invalid.
+bool ValidateTab(int tab_id,
+                 bool include_incognito_information,
+                 content::BrowserContext* browser_context,
+                 content::WebContents** web_contents,
+                 std::string* error) {
+  bool is_valid = ExtensionTabUtil::GetTabById(
+      tab_id, browser_context, include_incognito_information, web_contents);
+  if (!is_valid) {
+    *error = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
+                                            base::NumberToString(tab_id));
+  }
+
+  return is_valid;
+}
+
+// Returns whether `document_id` is a valid document. Populates `web_contents`
+// with the ones belonging to the document attached frame, and `error` if
+// document is invalid.
+bool ValidateDocument(const std::string& document_id,
+                      bool include_incognito_information,
+                      content::BrowserContext* browser_context,
+                      content::WebContents** web_contents,
+                      std::string* error) {
+  // Document is invalid if its id doesn't exist.
+  ExtensionApiFrameIdMap::DocumentId frame_document_id =
+      ExtensionApiFrameIdMap::DocumentIdFromString(document_id);
+  if (!frame_document_id) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  // Document is invalid if there it has no frame attached.
+  content::RenderFrameHost* frame =
+      ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+          frame_document_id);
+  if (!frame) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  // Document is invalid if the web contents doesn't exist in our
+  // BrowserContext. We check for this since we found the RenderFrameHost
+  // through a generic lookup.
+  *web_contents = content::WebContents::FromRenderFrameHost(frame);
+  if (!ExtensionTabUtil::IsWebContentsInContext(
+          *web_contents, browser_context, include_incognito_information)) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace
 
@@ -174,13 +255,24 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
 base::AutoReset<PermissionsRequestFunction::DialogAction>
 PermissionsRequestFunction::SetDialogActionForTests(
     DialogAction dialog_action) {
+  CHECK_IS_TEST();
   return base::AutoReset<PermissionsRequestFunction::DialogAction>(
       &g_dialog_action, dialog_action);
 }
 
 // static
+base::AutoReset<PermissionsRequestFunction::ShowDialogCallback*>
+PermissionsRequestFunction::SetShowDialogCallbackForTests(
+    ShowDialogCallback* callback) {
+  CHECK_IS_TEST();
+  return base::AutoReset<ShowDialogCallback*>(&g_show_dialog_callback,
+                                              callback);
+}
+
+// static
 void PermissionsRequestFunction::ResolvePendingDialogForTests(
     bool accept_dialog) {
+  CHECK_IS_TEST();
   CHECK(g_pending_request_function);
   PermissionsRequestFunction* pending_function = g_pending_request_function;
   // Clear out the pending function now. After Release() below, it's unsafe to
@@ -197,6 +289,7 @@ void PermissionsRequestFunction::ResolvePendingDialogForTests(
 // static
 void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
     bool ignore) {
+  CHECK_IS_TEST();
   ignore_user_gesture_for_tests = ignore;
 }
 
@@ -352,6 +445,9 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
       // A test will let us know when to resolve the prompt. Add a reference to
       // wait.
       AddRef();  // Balanced in ResolvePendingDialogForTests().
+      if (g_show_dialog_callback) {
+        g_show_dialog_callback->Run(native_window);
+      }
       g_pending_request_function = this;
     }
     return did_respond() ? AlreadyResponded() : RespondLater();
@@ -428,6 +524,133 @@ void PermissionsRequestFunction::RespondIfRequestsFinished() {
 std::unique_ptr<const PermissionSet>
 PermissionsRequestFunction::TakePromptedPermissionsForTesting() {
   return std::move(prompted_permissions_for_testing_);
+}
+
+ExtensionFunction::ResponseAction
+PermissionsAddSiteAccessRequestFunction::Run() {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kApiPermissionsSiteAccessRequests));
+  std::optional<api::permissions::AddSiteAccessRequest::Params> params =
+      api::permissions::AddSiteAccessRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::optional<std::string>& document_id_param =
+      params->request.document_id;
+  std::optional<int> tab_id_param = params->request.tab_id;
+  // TODO(crbug.com/330588494): Add `pattern` parameter.
+
+  if ((!document_id_param && !tab_id_param) ||
+      (document_id_param && tab_id_param)) {
+    return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
+  }
+
+  // Values to be computed for either tab id or document id.
+  content::WebContents* web_contents = nullptr;
+  int tab_id = -1;
+
+  bool is_valid = false;
+  std::string error;
+  if (tab_id_param) {
+    is_valid =
+        ValidateTab(tab_id_param.value(), include_incognito_information(),
+                    browser_context(), &web_contents, &error);
+    tab_id = tab_id_param.value();
+  } else {
+    // document_id_param.
+    is_valid = ValidateDocument(document_id_param.value(),
+                                include_incognito_information(),
+                                browser_context(), &web_contents, &error);
+    tab_id = is_valid ? ExtensionTabUtil::GetTabId(web_contents) : -1;
+  }
+
+  if (!is_valid) {
+    CHECK(!error.empty());
+    return RespondNow(Error(error));
+  }
+
+  // Verify we properly retrieved the necessary information.
+  DCHECK(web_contents);
+  DCHECK_NE(tab_id, -1);
+
+  const GURL& url = web_contents->GetLastCommittedURL();
+  auto* permissions_manager = PermissionsManager::Get(browser_context());
+
+  // Request is invalid if extension didn't request any host permissions.
+  if (!permissions_manager->HasRequestedHostPermissions(*extension())) {
+    return RespondNow(Error(kExtensionHasNoHostPermissionsError));
+  }
+
+  // Request is invalid if extension has access to the tab's current web
+  // contents.
+  PermissionsManager::ExtensionSiteAccess site_access =
+      permissions_manager->GetSiteAccess(*extension(), url);
+  if (site_access.has_site_access ||
+      extension()->permissions_data()->HasTabPermissionsForSecurityOrigin(
+          tab_id, url)) {
+    return RespondNow(Error(kExtensionHasSiteAccessError));
+  }
+
+  // TODO(crbug.com/330588494): Use pattern from parameter, if given, once it's
+  // added.
+  std::optional<URLPattern> pattern;
+  permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension(),
+                                            pattern);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+PermissionsRemoveSiteAccessRequestFunction::Run() {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kApiPermissionsSiteAccessRequests));
+  std::optional<api::permissions::RemoveSiteAccessRequest::Params> params =
+      api::permissions::RemoveSiteAccessRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::optional<std::string>& document_id_param =
+      params->request.document_id;
+  std::optional<int> tab_id_param = params->request.tab_id;
+  // TODO(crbug.com/330588494): Add `pattern` parameter.
+
+  if ((!document_id_param && !tab_id_param) ||
+      (document_id_param && tab_id_param)) {
+    return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
+  }
+
+  // Values to be computed for either tab id or document id.
+  content::WebContents* web_contents = nullptr;
+  int tab_id = -1;
+
+  bool is_valid = false;
+  std::string error;
+  if (tab_id_param) {
+    is_valid =
+        ValidateTab(tab_id_param.value(), include_incognito_information(),
+                    browser_context(), &web_contents, &error);
+    tab_id = tab_id_param.value();
+  } else {
+    // document_id_param.
+    is_valid = ValidateDocument(document_id_param.value(),
+                                include_incognito_information(),
+                                browser_context(), &web_contents, &error);
+    tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  }
+
+  if (!is_valid) {
+    CHECK(!error.empty());
+    return RespondNow(Error(error));
+  }
+
+  // Verify we properly retrieved the necessary information.
+  DCHECK(web_contents);
+  DCHECK_NE(tab_id, -1);
+
+  bool is_removed = PermissionsManager::Get(browser_context())
+                        ->RemoveSiteAccessRequest(tab_id, extension()->id());
+  if (!is_removed) {
+    return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
+  }
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

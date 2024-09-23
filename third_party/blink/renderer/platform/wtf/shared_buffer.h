@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
@@ -31,6 +36,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -43,11 +49,31 @@
 
 namespace WTF {
 
-class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
+// This class is designed to store and manage large amounts of data that may be
+// split into multiple segments.
+class WTF_EXPORT SegmentedBuffer {
  public:
-  // Iterator for ShreadBuffer contents. An Iterator will get invalid once the
-  // associated SharedBuffer is modified (e.g., Append() is called). An Iterator
-  // doesn't retain the associated container.
+  class Segment {
+   public:
+    Segment(size_t start_position, Vector<char>&& data)
+        : start_position_(start_position), data_(std::move(data)) {}
+    ~Segment() = default;
+    Segment(const Segment&) = delete;
+    Segment& operator=(const Segment&) = delete;
+    Segment(Segment&&) = default;
+    Segment& operator=(Segment&&) = default;
+
+    size_t start_position() const { return start_position_; }
+    const Vector<char>& data() const { return data_; }
+
+   private:
+    size_t start_position_;
+    Vector<char> data_;
+  };
+
+  // Iterator for SegmentedBuffer contents. An Iterator will get invalid once
+  // the associated SegmentedBuffer is modified (e.g., Append() is called). An
+  // Iterator doesn't retain the associated container.
   class WTF_EXPORT Iterator final {
    public:
     ~Iterator() = default;
@@ -73,80 +99,59 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
     }
 
    private:
-    friend class SharedBuffer;
+    friend class SegmentedBuffer;
     // for end()
-    Iterator(const SharedBuffer* buffer);
-    // for the consecutive part
-    Iterator(size_t offset, const SharedBuffer* buffer);
+    explicit Iterator(const SegmentedBuffer* buffer);
     // for the rest
-    Iterator(wtf_size_t segment_index,
+    Iterator(Vector<Segment>::const_iterator segment_it,
              size_t offset,
-             const SharedBuffer* buffer);
+             const SegmentedBuffer* buffer);
 
     void Init(size_t offset);
-    bool IsEnd() const { return index_ == buffer_->segments_.size() + 1; }
+    bool IsEnd() const { return segment_it_ == buffer_->segments_.end(); }
 
-    // It represents |buffer_->buffer| if |index_| is 0, and
-    // |buffer_->segments[index_ - 1]| otherwise.
-    wtf_size_t index_;
+    Vector<Segment>::const_iterator segment_it_;
     base::span<const char> value_;
-    const SharedBuffer* buffer_;
+    const SegmentedBuffer* buffer_;
   };
 
-  static constexpr unsigned kSegmentSize = 0x1000;
-
-  static scoped_refptr<SharedBuffer> Create() {
-    return base::AdoptRef(new SharedBuffer);
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(base::checked_cast<wtf_size_t>(size)));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
-  }
-
-  static scoped_refptr<SharedBuffer> AdoptVector(Vector<char>&);
-
-  // DEPRECATED: use a segment iterator, FlatData or explicit Copy() instead.
-  //
-  // Calling this function will force internal segmented buffers to be merged
-  // into a flat buffer. Use iterator whenever possible for better performance.
-  const char* Data();
+  SegmentedBuffer() = default;
+  ~SegmentedBuffer() = default;
+  SegmentedBuffer(const SegmentedBuffer&) = delete;
+  SegmentedBuffer& operator=(const SegmentedBuffer&) = delete;
+  SegmentedBuffer(SegmentedBuffer&&) = default;
+  SegmentedBuffer& operator=(SegmentedBuffer&&) = default;
 
   size_t size() const { return size_; }
 
   bool empty() const { return !size(); }
 
-  void Append(const SharedBuffer&);
-
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
+  // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
+  // ones.
   HAS_STRICTLY_TYPED_ARG
   void Append(const char* data, STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    AppendInternal(data, size);
+    Append(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_TODO(base::span(data, size)));
   }
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   HAS_STRICTLY_TYPED_ARG
   void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    AppendInternal(reinterpret_cast<const char*>(data), size);
+    Append(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_TODO(base::span(data, size)));
   }
-  void Append(const Vector<char>& data) { Append(data.data(), data.size()); }
+
+  void Append(base::span<const char> data);
+  void Append(base::span<const unsigned char> data) {
+    Append(base::as_chars(data));
+  }
+  void Append(Vector<char>&& vector);
 
   void Clear();
 
@@ -160,6 +165,8 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   // Supported Ts: WTF::Vector<char>, std::vector<char>.
   template <typename T>
   T CopyAs() const;
+
+  Vector<Vector<char>> TakeData() &&;
 
   // Returns an iterator for the given position of bytes. Returns |cend()| if
   // |position| is greater than or equal to |size()|.
@@ -181,82 +188,57 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   void GetMemoryDumpNameAndSize(String& dump_name, size_t& dump_size) const;
 
-  // Helper for providing a contiguous view of the data.  If the SharedBuffer is
-  // segmented, this will copy/merge all segments into a temporary buffer.
+  // Helper for providing a contiguous view of the data.  If the SegmentedBuffer
+  // is segmented, this will copy/merge all segments into a temporary buffer.
   // In general, clients should use the efficient/segmented accessors.
   class WTF_EXPORT DeprecatedFlatData {
     STACK_ALLOCATED();
 
    public:
-    explicit DeprecatedFlatData(scoped_refptr<const SharedBuffer>);
+    explicit DeprecatedFlatData(const SegmentedBuffer*);
 
-    const char* Data() const { return data_; }
+    const char* data() const { return data_; }
     size_t size() const { return buffer_->size(); }
 
    private:
-    scoped_refptr<const SharedBuffer> buffer_;
+    const SegmentedBuffer* buffer_;
     Vector<char> flat_buffer_;
     const char* data_;
   };
 
  private:
-  friend class RefCounted<SharedBuffer>;
-  ~SharedBuffer();
-
-  struct SegmentDeleter;
-  using Segment = std::unique_ptr<char[], SegmentDeleter>;
-  static Segment CreateSegment();
-
-  SharedBuffer();
-  explicit SharedBuffer(wtf_size_t);
-  SharedBuffer(const char*, wtf_size_t);
-  SharedBuffer(const unsigned char*, wtf_size_t);
-
-  // See SharedBuffer::data().
-  void MergeSegmentsIntoBuffer();
-
-  void AppendInternal(const char* data, size_t);
   bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
-  size_t GetLastSegmentSize() const {
-    DCHECK(!segments_.empty());
-    return (size_ - buffer_.size() + kSegmentSize - 1) % kSegmentSize + 1;
-  }
 
-  size_t size_;
-  Vector<char> buffer_;
+  size_t size_ = 0;
   Vector<Segment> segments_;
 };
 
 // Current CopyAs specializations.
 template <>
-inline Vector<char> SharedBuffer::CopyAs() const {
+inline Vector<char> SegmentedBuffer::CopyAs() const {
   Vector<char> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
-
-  for (const auto& span : *this)
-    buffer.Append(span.data(), static_cast<wtf_size_t>(span.size()));
-
+  for (const auto& span : *this) {
+    buffer.AppendSpan(span);
+  }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
 
 template <>
-inline Vector<uint8_t> SharedBuffer::CopyAs() const {
+inline Vector<uint8_t> SegmentedBuffer::CopyAs() const {
   Vector<uint8_t> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
-
   for (const auto& span : *this) {
-    buffer.Append(reinterpret_cast<const uint8_t*>(span.data()),
-                  static_cast<wtf_size_t>(span.size()));
+    buffer.AppendSpan(span);
   }
-
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
 
 template <>
-inline std::vector<char> SharedBuffer::CopyAs() const {
+inline std::vector<char> SegmentedBuffer::CopyAs() const {
   std::vector<char> buffer;
   buffer.reserve(size_);
 
@@ -268,7 +250,7 @@ inline std::vector<char> SharedBuffer::CopyAs() const {
 }
 
 template <>
-inline std::vector<uint8_t> SharedBuffer::CopyAs() const {
+inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
   std::vector<uint8_t> buffer;
   buffer.reserve(size_);
 
@@ -279,6 +261,62 @@ inline std::vector<uint8_t> SharedBuffer::CopyAs() const {
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
+
+// This is a RefCounted version of the SegmentedBuffer class.
+class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
+                                public RefCounted<SharedBuffer> {
+ public:
+  static scoped_refptr<SharedBuffer> Create() {
+    return base::AdoptRef(new SharedBuffer);
+  }
+
+  static scoped_refptr<SharedBuffer> Create(base::span<const char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(
+      base::span<const unsigned char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(SegmentedBuffer&& data) {
+    return base::AdoptRef(new SharedBuffer(std::move(data)));
+  }
+
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
+  HAS_STRICTLY_TYPED_ARG
+  static scoped_refptr<SharedBuffer> Create(const char* data,
+                                            STRICTLY_TYPED_ARG(size)) {
+    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_TODO(base::span(data, size)));
+  }
+
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
+  HAS_STRICTLY_TYPED_ARG
+  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
+                                            STRICTLY_TYPED_ARG(size)) {
+    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_TODO(base::span(data, size)));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
+
+ private:
+  friend class RefCounted<SharedBuffer>;
+  ~SharedBuffer();
+
+  SharedBuffer();
+  explicit SharedBuffer(wtf_size_t);
+  explicit SharedBuffer(base::span<const char>);
+  explicit SharedBuffer(base::span<const unsigned char>);
+  explicit SharedBuffer(SegmentedBuffer&&);
+};
 
 }  // namespace WTF
 

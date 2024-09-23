@@ -18,7 +18,9 @@ class UnzipperImpl : public Unzipper {
   void Unzip(const base::FilePath& zip_file,
              const base::FilePath& destination,
              UnzipCompleteCallback callback) override {
-    unzip::Unzip(callback_.Run(), zip_file, destination, std::move(callback));
+    unzip::Unzip(callback_.Run(), zip_file, destination,
+                 unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
+                 base::DoNothing(), std::move(callback));
   }
 
  private:

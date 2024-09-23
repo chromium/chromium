@@ -44,10 +44,6 @@ AccessibilityNotificationController::~AccessibilityNotificationController() =
 
 void AccessibilityNotificationController::ShowToast(
     AccessibilityToastType type) {
-  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
-    return;
-  }
-
   Shell::Get()->toast_manager()->Show(GetToastData(type));
   if (show_anchored_nudge_callback_for_testing_) {
     show_anchored_nudge_callback_for_testing_.Run(type);

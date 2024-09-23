@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Този сайт не може да извежда запитвания за разрешения</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Включете Bluetooth<ph name="END_LINK" />, за да разрешите сдвояването</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> се нуждае от разрешение да проследява ръцете ви.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" />, докато се сканира за устройства…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> се нуждае от разрешение за достъп до микрофона ви за този сайт.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> иска да сканира за устройства с Bluetooth в близост. Намерени са следните:</translation>

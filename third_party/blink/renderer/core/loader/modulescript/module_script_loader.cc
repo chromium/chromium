@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -51,7 +52,7 @@ const char* ModuleScriptLoader::StateToString(ModuleScriptLoader::State state) {
     case State::kFinished:
       return "Finished";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 #endif
@@ -65,7 +66,7 @@ void ModuleScriptLoader::AdvanceState(ModuleScriptLoader::State new_state) {
       DCHECK_EQ(new_state, State::kFinished);
       break;
     case State::kFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -129,7 +130,7 @@ void SetFetchDestinationFromModuleType(
     case ModuleType::kInvalid:
       // ModuleTreeLinker checks that the module type is valid
       // before creating ModuleScriptFetchRequest objects.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -159,6 +160,9 @@ void ModuleScriptLoader::FetchInternal(
 
   ResourceLoaderOptions options(&modulator_->GetScriptState()->World());
 
+  // <spec step="11">Set request's initiator type to "script".</spec>
+  options.initiator_info.name = fetch_initiator_type_names::kScript;
+
   // <spec step="12">Set up the module script request given request and
   // options.</spec>
   //
@@ -168,11 +172,6 @@ void ModuleScriptLoader::FetchInternal(
   // <spec label="SMSR">... its parser metadata to options's parser metadata,
   // ...</spec>
   options.parser_disposition = options_.ParserState();
-
-  // As initiator for module script fetch is not specified in HTML spec,
-  // we specify "" as initiator per:
-  // https://fetch.spec.whatwg.org/#concept-request-initiator
-  options.initiator_info.name = g_empty_atom;
 
   // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
   options.reject_coep_unsafe_none = options_.GetRejectCoepUnsafeNone();
@@ -292,6 +291,8 @@ void ModuleScriptLoader::NotifyFetchFinishedError(
   AdvanceState(State::kFinished);
 }
 
+// This implements the `processResponseConsumeBody` part of
+// https://html.spec.whatwg.org/C#fetch-a-single-module-script
 void ModuleScriptLoader::NotifyFetchFinishedSuccess(
     const ModuleScriptCreationParams& params) {
   // [nospec] Abort the steps if the browsing context is discarded.
@@ -300,18 +301,14 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
     return;
   }
 
-  // <spec step="12.1">Let source text be the result of UTF-8 decoding
-  // response's body.</spec>
+  // <spec step="13.2">Let source text be the result of UTF-8 decoding
+  // bodyBytes.</spec>
   //
-  // <spec step="12.2">Set module script to the result of creating a JavaScript
-  // module script given source text, module map settings object, response's
-  // url, and options.</spec>
-
-  // <spec step="12.6">If referrerPolicy is not the empty string, set options's
-  // referrer policy to referrerPolicy.</spec>
+  // <spec step="13.6">If referrerPolicy is not the empty string, set
+  // options's referrer policy to referrerPolicy.</spec>
   //
-  // Note that the "empty string" referrer policy corresponds to `kDefault`, so
-  // we only use the response referrer policy if it is *not* `kDefault`.
+  // Note that the "empty string" referrer policy corresponds to `kDefault`,
+  // so we only use the response referrer policy if it is *not* `kDefault`.
   if (params.ResponseReferrerPolicy() !=
       network::mojom::ReferrerPolicy::kDefault) {
     options_.UpdateReferrerPolicyAfterResponseReceived(
@@ -328,15 +325,17 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
     case ModuleType::kJavaScript:
-      // Step 9. "Let source text be the result of UTF-8 decoding response's
-      // body." [spec text]
-      // Step 10. "Let module script be the result of creating
-      // a module script given source text, module map settings object,
-      // response's url, and options." [spec text]
+      // <spec step="13.7">If mimeType is a JavaScript MIME type and
+      // moduleType is "javascript", then set moduleScript to the result of
+      // creating a JavaScript module script given sourceText, settingsObject,
+      // response's URL, options, and importMap.</spec>
+      //
+      // The MIME type verification happens at
+      // ModuleScriptFetcher::WasModuleLoadSuccessful.
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
     case ModuleType::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   AdvanceState(State::kFinished);

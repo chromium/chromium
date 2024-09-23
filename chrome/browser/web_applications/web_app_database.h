@@ -15,7 +15,7 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -68,22 +68,18 @@ class WebAppDatabase {
  private:
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
-                        std::unique_ptr<syncer::ModelTypeStore> store);
+                        std::unique_ptr<syncer::DataTypeStore> store);
 
-  void OnAllDataRead(
+  void OnAllDataAndMetadataRead(
       RegistryOpenedCallback callback,
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
-  void OnAllMetadataRead(
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-      RegistryOpenedCallback callback,
-      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
                      const std::optional<syncer::ModelError>& error);
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   const raw_ptr<AbstractWebAppDatabaseFactory, DanglingUntriaged>
       database_factory_;
   ReportErrorCallback error_callback_;
@@ -98,9 +94,6 @@ class WebAppDatabase {
 };
 
 DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode);
-
-DisplayMode ToMojomDisplayMode(
-    ::sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode);
 
 WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode);
 

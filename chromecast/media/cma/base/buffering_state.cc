@@ -105,8 +105,6 @@ static const char* StateToString(BufferingState::State state) {
     default:
       NOTREACHED();
   }
-  NOTREACHED();
-  return "";
 }
 
 static std::string TimeDeltaToString(const base::TimeDelta& t) {

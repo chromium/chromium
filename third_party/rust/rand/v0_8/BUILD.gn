@@ -72,5 +72,6 @@ cargo_crate("lib") {
     "std",
     "std_rng",
   ]
+
   testonly = true
 }

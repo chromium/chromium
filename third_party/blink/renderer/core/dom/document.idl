@@ -81,7 +81,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://html.spec.whatwg.org/C/#the-document-object
 
     // https://github.com/whatwg/html/pull/9538
-    [RuntimeEnabled=HTMLUnsafeMethods,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(DOMString html);
+    [CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(HTMLString html);
 
     // resource metadata management
 
@@ -184,12 +184,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [MeasureAs=DocumentCaretRangeFromPoint] Range caretRangeFromPoint(optional long x = 0, optional long y = 0);
 
     // https://www.w3.org/TR/cssom-view/#dom-document-caretpositionfrompoint
-    [NewObject, RuntimeEnabled=CaretPositionFromPoint] CaretPosition? caretPositionFromPoint(float x, float y);
-
-    // Storage Access API
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_HasStorageAccess_Method] Promise<boolean> hasStorageAccess();
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_requestStorageAccess_Method] Promise<void> requestStorageAccess();
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_requestStorageAccessFor_Method] Promise<void> requestStorageAccessFor(USVString requestedOrigin);
+    [NewObject, MeasureAs=CaretPositionFromPoint, RuntimeEnabled=CaretPositionFromPoint] CaretPosition? caretPositionFromPoint(float x, float y, optional CaretPositionFromPointOptions options = {});
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -209,9 +204,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasRedemptionRecord(USVString issuer);
 
-    // Confirmation of Action API
+    // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
-    [RuntimeEnabled=ConfirmationOfAction] void ariaNotify(HTMLString announcement, optional AriaNotificationOptions options = {});
+    [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
     // The (experimental) DOM Parts API.
     [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();

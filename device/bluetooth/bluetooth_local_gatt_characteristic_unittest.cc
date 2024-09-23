@@ -22,27 +22,23 @@ class BluetoothLocalGattCharacteristicTest : public BluetoothGattServerTest {
     // We will need this device to use with simulating read/write attribute
     // value events.
     device_ = SimulateLowEnergyDevice(1);
-    read_characteristic_ = BluetoothLocalGattCharacteristic::Create(
+    read_characteristic_ = service_->CreateCharacteristic(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::
             PROPERTY_READ_ENCRYPTED_AUTHENTICATED,
-        device::BluetoothLocalGattCharacteristic::Permissions(),
-        service_.get());
-    write_characteristic_ = BluetoothLocalGattCharacteristic::Create(
+        device::BluetoothLocalGattCharacteristic::Permissions());
+    write_characteristic_ = service_->CreateCharacteristic(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::PROPERTY_RELIABLE_WRITE,
-        device::BluetoothLocalGattCharacteristic::Permissions(),
-        service_.get());
-    notify_characteristic_ = BluetoothLocalGattCharacteristic::Create(
+        device::BluetoothLocalGattCharacteristic::Permissions());
+    notify_characteristic_ = service_->CreateCharacteristic(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::PROPERTY_NOTIFY,
-        device::BluetoothLocalGattCharacteristic::Permissions(),
-        service_.get());
-    indicate_characteristic_ = BluetoothLocalGattCharacteristic::Create(
+        device::BluetoothLocalGattCharacteristic::Permissions());
+    indicate_characteristic_ = service_->CreateCharacteristic(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::PROPERTY_INDICATE,
-        device::BluetoothLocalGattCharacteristic::Permissions(),
-        service_.get());
+        device::BluetoothLocalGattCharacteristic::Permissions());
     EXPECT_LT(0u, read_characteristic_->GetIdentifier().size());
     EXPECT_LT(0u, write_characteristic_->GetIdentifier().size());
     EXPECT_LT(0u, notify_characteristic_->GetIdentifier().size());

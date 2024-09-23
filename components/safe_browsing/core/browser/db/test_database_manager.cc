@@ -15,20 +15,11 @@
 namespace safe_browsing {
 
 TestSafeBrowsingDatabaseManager::TestSafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                  std::move(io_task_runner)),
-      enabled_(false) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : SafeBrowsingDatabaseManager(std::move(ui_task_runner)), enabled_(false) {}
 
 void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
-}
-
-bool TestSafeBrowsingDatabaseManager::CanCheckRequestDestination(
-    network::mojom::RequestDestination request_destination) const {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 bool TestSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
@@ -59,18 +50,13 @@ bool TestSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-bool TestSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
-                                                       Client* client) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
 void TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(false);
+  std::move(callback).Run(
+      /*url_on_high_confidence_allowlist=*/false,
+      /*logging_details=*/std::nullopt);
 }
 
 bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
@@ -107,21 +93,16 @@ TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::UNKNOWN;
 }
 
-bool TestSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void TestSafeBrowsingDatabaseManager::StartOnSBThread(
+void TestSafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
   enabled_ = true;
 }
 
-void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void TestSafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   enabled_ = false;
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool TestSafeBrowsingDatabaseManager::IsDatabaseReady() const {

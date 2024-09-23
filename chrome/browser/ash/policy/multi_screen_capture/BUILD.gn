@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("multi_screen_capture") {
+  sources = [
+    "multi_screen_capture_policy_service.cc",
+    "multi_screen_capture_policy_service.h",
+    "multi_screen_capture_policy_service_factory.cc",
+    "multi_screen_capture_policy_service_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+}

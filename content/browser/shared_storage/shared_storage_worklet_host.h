@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -33,6 +34,7 @@ class BrowserContext;
 class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
+class SharedStorageCodeCacheHostProxy;
 class SharedStorageWorkletDriver;
 class SharedStorageWorkletHostManager;
 class StoragePartitionImpl;
@@ -69,6 +71,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   SharedStorageWorkletHost(
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
+      const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
@@ -86,14 +89,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
           urls_with_metadata,
       blink::CloneableMessage serialized_data,
       bool keep_alive_after_operation,
-      const std::optional<std::string>& context_id,
-      const std::optional<url::Origin>& aggregation_coordinator_origin,
+      blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
       SelectURLCallback callback) override;
   void Run(const std::string& name,
            blink::CloneableMessage serialized_data,
            bool keep_alive_after_operation,
-           const std::optional<std::string>& context_id,
-           const std::optional<url::Origin>& aggregation_coordinator_origin,
+           blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
            RunCallback callback) override;
 
   // Whether there are unfinished worklet operations (i.e. `addModule()`,
@@ -130,6 +131,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
                               const std::string& message) override;
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
+
+  void ReportNoBinderForInterface(const std::string& error);
 
   // Returns the process host associated with the worklet. Returns nullptr if
   // the process has gone (e.g. during shutdown).
@@ -208,17 +211,21 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   blink::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
 
-  // Binds a receiver to the `PrivateAggregationManager` and returns the
-  // `PendingRemote`. If there is no `PrivateAggregationManger`, returns an
-  // invalid `PendingRemote`.
-  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-  MaybeBindPrivateAggregationHost(
-      const std::optional<std::string>& context_id,
-      const std::optional<url::Origin>& aggregation_coordinator_origin);
+  // Constructs a `PrivateAggregationOperationDetails` object, including binding
+  // a receiver to the `PrivateAggregationManager` and returning the
+  // `PendingRemote`. If there is no `PrivateAggregationManger`, returns a null
+  // pointer.
+  blink::mojom::PrivateAggregationOperationDetailsPtr
+  MaybeConstructPrivateAggregationOperationDetails(
+      const blink::mojom::PrivateAggregationConfigPtr&
+          private_aggregation_config);
 
-  bool IsSharedStorageAllowed(std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowed(
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific = nullptr);
   bool IsSharedStorageSelectURLAllowed(
-      std::string* out_debug_message = nullptr);
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific);
 
   // RAII helper object for talking to `SharedStorageWorkletDevToolsManager`.
   std::unique_ptr<ScopedDevToolsHandle> devtools_handle_;
@@ -263,7 +270,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.
   raw_ptr<BrowserContext> browser_context_;
 
-  // The shared storage owner document's origin and site.
+  // The shared storage worklet's origin and site for data access and permission
+  // checks.
   url::Origin shared_storage_origin_;
   net::SchemefulSite shared_storage_site_;
 
@@ -271,6 +279,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // able to call `IsSharedStorageAllowed()` during keep-alive, we need to save
   // the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
+
+  // Whether `shared_storage_origin_` is same origin with the creator context's
+  // origin.
+  bool is_same_origin_worklet_;
 
   // A map of unresolved URNs to the candidate URL with metadata vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is
@@ -334,6 +346,29 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // ensure the URL is not modified by a compromised worklet; to enforce the
   // application/javascript request header; to enforce same-origin mode; etc.
   std::unique_ptr<SharedStorageURLLoaderFactoryProxy> url_loader_factory_proxy_;
+
+  // The proxy is used to limit the request that the worklet can make, e.g. to
+  // ensure the URL is not modified by a compromised worklet. This is reset
+  // after the script loading finishes, to prevent leaking the shared storage
+  // data after that.
+  std::unique_ptr<SharedStorageCodeCacheHostProxy> code_cache_host_proxy_;
+
+  // Handles code cache requests after being proxied from
+  // `SharedStorageCodeCacheHostProxy`.
+  std::unique_ptr<CodeCacheHostImpl::ReceiverSet> code_cache_host_receivers_;
+
+  // BrowserInterfaceBroker implementation through which this
+  // SharedStorageWorkletHost exposes Mojo services to the corresponding worklet
+  // in the renderer.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `SharedStorageWorkletHost*` parameter.
+  BrowserInterfaceBrokerImpl<SharedStorageWorkletHost,
+                             SharedStorageWorkletHost*>
+      broker_{this};
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
+      &broker_};
 
   base::WeakPtrFactory<SharedStorageWorkletHost> weak_ptr_factory_{this};
 };

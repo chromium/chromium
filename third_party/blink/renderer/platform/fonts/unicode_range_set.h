@@ -26,13 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UNICODE_RANGE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UNICODE_RANGE_SET_H_
 
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -56,12 +55,13 @@ struct PLATFORM_EXPORT UnicodeRange final {
   UChar32 to_;
 };
 
-class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
-  USING_FAST_MALLOC(UnicodeRangeSet);
-
+class PLATFORM_EXPORT UnicodeRangeSet
+    : public GarbageCollected<UnicodeRangeSet> {
  public:
-  explicit UnicodeRangeSet(const Vector<UnicodeRange>&);
+  explicit UnicodeRangeSet(HeapVector<UnicodeRange>&&);
   UnicodeRangeSet() = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(ranges_); }
 
   bool Contains(UChar32) const;
   bool IntersectsWith(const String&) const;
@@ -71,7 +71,8 @@ class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
   bool operator==(const UnicodeRangeSet& other) const;
 
  private:
-  Vector<UnicodeRange> ranges_;  // If empty, represents the whole code space.
+  HeapVector<UnicodeRange>
+      ranges_;  // If empty, represents the whole code space.
 };
 
 }  // namespace blink

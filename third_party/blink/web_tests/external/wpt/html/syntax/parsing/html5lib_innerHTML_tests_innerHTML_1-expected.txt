@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] html5lib_innerHTML_tests_innerHTML_1.html 2c4284e6b2bb480daa50bca43bcbe29cfcdeeab4
+  assert_equals: expected "#document\\n| <option>" but got "#document\\n| <input>\\n| <option>"
+[FAIL] html5lib_innerHTML_tests_innerHTML_1.html d75277b65d0118463afeb66b478509d4e27565ab
+  assert_equals: expected "#document\\n| <option>" but got "#document\\n| <keygen>\\n| <option>"
+[FAIL] html5lib_innerHTML_tests_innerHTML_1.html b354df69dbe9b3ef0c42177648e3aace114cf8ea
+  assert_equals: expected "#document\\n| <option>" but got "#document\\n| <textarea>\\n|   \\"<option>\\""
+Harness: the test ran to completion.
+

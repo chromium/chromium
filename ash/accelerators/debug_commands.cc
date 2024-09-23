@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -38,7 +39,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
@@ -141,10 +142,6 @@ void HandleToggleDarkMode() {
 }
 
 void HandleToggleDynamicColor() {
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Only toggle colors when Dynamic Colors are enabled.
-    return;
-  }
   static int index = 0;
   SkColor color;
   switch (++index % 2) {
@@ -252,10 +249,8 @@ void HandleToggleVirtualTrackpad() {
 }
 
 void HandleShowInformedRestore() {
-  if (features::IsForestFeatureEnabled()) {
-    Shell::Get()
-        ->pine_controller()
-        ->MaybeStartPineOverviewSessionDevAccelerator();
+  if (auto* pine_controller = Shell::Get()->informed_restore_controller()) {
+    pine_controller->MaybeStartInformedRestoreSessionDevAccelerator();
   }
 }
 
@@ -329,6 +324,13 @@ void HandleShowSystemNudge() {
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 }
 
+void HandleStartSunfishSession() {
+  if (features::IsSunfishFeatureEnabled() &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    CaptureModeController::Get()->StartSunfishSession();
+  }
+}
+
 // TODO(b/318897434): Remove this shortcut after testing is complete.
 void HandleToggleFocusModeState() {
   auto* controller = FocusModeController::Get();
@@ -385,6 +387,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugPrintWindowHierarchy:
       HandlePrintWindowHierarchy();
+      break;
+    case AcceleratorAction::kDebugStartSunfishSession:
+      HandleStartSunfishSession();
       break;
     case AcceleratorAction::kDebugShowInformedRestore:
       HandleShowInformedRestore();

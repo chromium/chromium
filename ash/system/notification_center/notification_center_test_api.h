@@ -87,6 +87,10 @@ class NotificationCenterTestApi {
   // the provided url as a string. Useful for testing notification grouping.
   std::string AddNotificationWithSourceUrl(const std::string& url);
 
+  // Adds a pinned notification with a source URL, which creates a `NotifierId`
+  // object with type `WEB_PAGE`.
+  std::string AddPinnedNotificationWithSourceUrl(const std::string& url);
+
   // Adds a pinned notification and return the associated id.
   std::string AddPinnedNotification();
 

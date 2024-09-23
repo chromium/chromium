@@ -19,6 +19,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.CompositorStatus;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests for the LongScreenshotsEntryTest. */
@@ -56,7 +56,7 @@ public class BitmapGeneratorTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mGenerator != null) {
                         mGenerator.destroy();
@@ -90,7 +90,7 @@ public class BitmapGeneratorTest {
             @Override
             public void onCompositorResult(@CompositorStatus int status) {
                 Assert.assertEquals(CompositorStatus.OK, status);
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mGenerator.compositeBitmap(
                                     new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated);
@@ -103,7 +103,7 @@ public class BitmapGeneratorTest {
             }
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGenerator =
                             new BitmapGenerator(

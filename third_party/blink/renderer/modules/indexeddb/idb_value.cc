@@ -20,7 +20,7 @@
 namespace blink {
 
 IDBValue::IDBValue(
-    scoped_refptr<SharedBuffer> data,
+    Vector<char>&& data,
     Vector<WebBlobInfo> blob_info,
     Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
         file_system_access_tokens)
@@ -29,20 +29,17 @@ IDBValue::IDBValue(
       file_system_access_tokens_(std::move(file_system_access_tokens)) {}
 
 IDBValue::~IDBValue() {
-  if (isolate_ && external_allocated_size_)
-    isolate_->AdjustAmountOfExternalAllocatedMemory(-external_allocated_size_);
+  if (isolate_) {
+    external_memory_accounter_.Clear(isolate_.get());
+  }
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
-  scoped_refptr<SharedBuffer> decompressed;
-  if (IDBValueUnwrapper::Decompress(*data_, &decompressed)) {
-    const_cast<IDBValue*>(this)->SetData(decompressed);
+  Vector<char> decompressed;
+  if (IDBValueUnwrapper::Decompress(data_, &decompressed)) {
+    const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
   }
-  return SerializedScriptValue::Create(data_);
-}
-
-bool IDBValue::IsNull() const {
-  return !data_.get();
+  return SerializedScriptValue::Create(base::as_byte_span(data_));
 }
 
 void IDBValue::SetIsolate(v8::Isolate* isolate) {
@@ -50,20 +47,18 @@ void IDBValue::SetIsolate(v8::Isolate* isolate) {
   DCHECK(!isolate_) << "SetIsolate must be called at most once";
 
   isolate_ = isolate;
-  external_allocated_size_ = data_ ? static_cast<int64_t>(data_->size()) : 0l;
-  if (external_allocated_size_)
-    isolate_->AdjustAmountOfExternalAllocatedMemory(external_allocated_size_);
+  size_t external_allocated_size = DataSize();
+  if (external_allocated_size) {
+    external_memory_accounter_.Increase(isolate_.get(),
+                                        external_allocated_size);
+  }
 }
 
-void IDBValue::SetData(scoped_refptr<SharedBuffer> new_data) {
+void IDBValue::SetData(Vector<char>&& new_data) {
   DCHECK(isolate_)
       << "Value unwrapping should be done after an isolate has been associated";
-  DCHECK(new_data) << "Value unwrapping must result in a non-empty buffer";
 
-  int64_t old_external_allocated_size = external_allocated_size_;
-  external_allocated_size_ = new_data->size();
-  isolate_->AdjustAmountOfExternalAllocatedMemory(external_allocated_size_ -
-                                                  old_external_allocated_size);
+  external_memory_accounter_.Set(isolate_.get(), new_data.size());
 
   data_ = std::move(new_data);
 }
@@ -83,8 +78,7 @@ scoped_refptr<BlobDataHandle> IDBValue::TakeLastBlob() {
 std::unique_ptr<IDBValue> IDBValue::ConvertReturnValue(
     const mojom::blink::IDBReturnValuePtr& input) {
   if (!input) {
-    return std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
-                                      Vector<WebBlobInfo>());
+    return std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>());
   }
 
   std::unique_ptr<IDBValue> output = std::move(input->value);

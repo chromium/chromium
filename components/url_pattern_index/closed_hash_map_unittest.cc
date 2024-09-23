@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "components/url_pattern_index/uint64_hasher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,7 +97,7 @@ TEST(ClosedHashMapTest, InsertManyKeysWithCustomHasher) {
 
   std::vector<std::pair<uint64_t, std::string>> entries;
   for (int key = 10, i = 0; key < 1000000; key += ++i) {
-    entries.push_back(std::make_pair(key, std::to_string(key)));
+    entries.push_back(std::make_pair(key, base::NumberToString(key)));
   }
 
   uint32_t expected_size = 0;

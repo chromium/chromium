@@ -79,10 +79,12 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   // memory model.
   int GenerateTotalMemoryMb(bool large_memory) {
     int total_mb = 64;
-    while (total_mb < SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb)
+    while (total_mb < SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb) {
       total_mb *= 2;
-    if (large_memory)
+    }
+    if (large_memory) {
       return total_mb * 2;
+    }
     return total_mb / 2;
   }
 
@@ -316,75 +318,6 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
             evaluator.current_vote());
   testing::Mock::VerifyAndClearExpectations(&evaluator);
-}
-
-TEST_F(WinSystemMemoryPressureEvaluatorTest, OSSignalsMemoryPressureEvaluator) {
-  MultiSourceMemoryPressureMonitor monitor;
-  testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
-      true, monitor.CreateVoter());
-  evaluator.CreateOSSignalPressureEvaluator(monitor.CreateVoter());
-
-  // Mock function used to ensure that the proper memory pressure signals are
-  // emitted.
-  testing::MockFunction<void(base::MemoryPressureListener::MemoryPressureLevel)>
-      mock_listener_function;
-  base::MemoryPressureListener listener(
-      FROM_HERE,
-      base::BindLambdaForTesting(
-          [&](base::MemoryPressureListener::MemoryPressureLevel level) {
-            mock_listener_function.Call(level);
-          }));
-
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(
-        mock_listener_function,
-        Call(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL))
-        .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
-    // A manual-reset event that is not yet signaled.
-    base::win::ScopedHandle event_low_memory(
-        CreateEvent(nullptr, TRUE, FALSE, nullptr));
-    auto* handle = event_low_memory.Get();
-    // Replace the handle watched by the evaluator to be able to simulate a low
-    // pressure OS notification.
-    evaluator.ReplaceWatchedHandleForTesting(std::move(event_low_memory));
-    ::SetEvent(handle);
-    run_loop.Run();
-    testing::Mock::VerifyAndClearExpectations(&mock_listener_function);
-
-    // |event_low_memory| will be automatically closed by the pressure
-    // evaluator, no need to call CloseEvent on it.
-  }
-
-  {
-    base::RunLoop run_loop;
-    // The evaluator will automatically start watching for a high memory
-    // notification after receiving the previous low memory notification, wait
-    // for it to arrive.
-    evaluator.WaitForHighMemoryNotificationForTesting(run_loop.QuitClosure());
-    run_loop.Run();
-    // There should be no MEMORY_PRESSURE_LEVEL_NONE notification emitted.
-    testing::Mock::VerifyAndClearExpectations(&mock_listener_function);
-  }
-
-  // Do another low memory notification test to make sure that the evaluator
-  // can detect several critical pressure sessions.
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(
-        mock_listener_function,
-        Call(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL))
-        .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
-    base::win::ScopedHandle event_low_memory(
-        CreateEvent(nullptr, TRUE, FALSE, nullptr));
-    auto* handle = event_low_memory.Get();
-    evaluator.ReplaceWatchedHandleForTesting(std::move(event_low_memory));
-    ::SetEvent(handle);
-    run_loop.Run();
-    testing::Mock::VerifyAndClearExpectations(&mock_listener_function);
-  }
 }
 
 }  // namespace win

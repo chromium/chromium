@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -10,18 +11,22 @@
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/sync/test/test_matchers.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
-using testing::Eq;
-
 namespace {
+
+using syncer::MatchesDeletionOrigin;
+using testing::ElementsAre;
+using testing::Eq;
 
 // Checker used to block until the reading list URLs on the server match a
 // given set of expected reading list URLs.
@@ -36,7 +41,7 @@ class ServerReadingListURLsEqualityChecker
     *os << "Waiting for server-side reading list URLs to match expected.";
 
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+        fake_server()->GetSyncEntitiesByDataType(syncer::READING_LIST);
 
     std::set<GURL> actual_urls;
     for (const sync_pb::SyncEntity& entity : entities) {
@@ -114,7 +119,7 @@ class ServerReadingListTitlesEqualityChecker
     *os << "Waiting for server-side reading list titles to match expected.";
 
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+        fake_server()->GetSyncEntitiesByDataType(syncer::READING_LIST);
 
     std::set<std::string> actual_titles;
     for (const sync_pb::SyncEntity& entity : entities) {
@@ -258,19 +263,49 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDeleteTheDeletedEntryFromTheServer) {
   const GURL kUrl("http://url.com/");
+  const base::Location kLocation = FROM_HERE;
+
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
   ASSERT_TRUE(SetupClients());
-
   ASSERT_THAT(model()->size(), Eq(0ul));
-
   SignInAndWaitForReadingListActive();
-
   ASSERT_THAT(model()->size(), Eq(1ul));
 
-  model()->RemoveEntryByURL(kUrl);
+  model()->RemoveEntryByURL(kUrl, kLocation);
   ASSERT_THAT(model()->size(), Eq(0ul));
   EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+
+  EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
+                  syncer::DataType::READING_LIST),
+              ElementsAre(MatchesDeletionOrigin(
+                  version_info::GetVersionNumber(), kLocation)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldDeleteAllEntriesFromTheServer) {
+  const base::Location kLocation = FROM_HERE;
+
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(GURL("http://url1.com/"), "entry_title1"));
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(GURL("http://url2.com/"), "entry_title2"));
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+  SignInAndWaitForReadingListActive();
+  ASSERT_THAT(model()->size(), Eq(2ul));
+
+  model()->DeleteAllEntries(kLocation);
+  ASSERT_THAT(model()->size(), Eq(0ul));
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+
+  EXPECT_THAT(
+      GetFakeServer()->GetCommittedDeletionOrigins(
+          syncer::DataType::READING_LIST),
+      ElementsAre(
+          MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation),
+          MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation)));
 }
 
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other
@@ -516,9 +551,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(model()->size(), Eq(1ul));
 }
 
+// TODO: crbug.com/41490059 - Flaky on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate \
+  DISABLED_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate
+#else
+#define MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate \
+  ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientReadingListSyncTest,
-    ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate) {
+    MAYBE_ShouldFilterEntriesWithEmptyEntryIdUponIncrementalRemoteUpdate) {
   ASSERT_TRUE(SetupClients());
 
   ASSERT_THAT(model()->size(), Eq(0ul));

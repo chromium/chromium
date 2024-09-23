@@ -13,6 +13,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <string_view>
+
 #include "base/apple/bundle_locations.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -103,7 +105,7 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   const base::FilePath log_file = temp_path.Append("log-file");
   const base::FilePath exec_file("/bin/ls");
 
-  // TODO(crbug.com/1456568): re-enable syscall filter for this test.
+  // TODO(crbug.com/40273168): re-enable syscall filter for this test.
   // SandboxV2Test.SandboxProfileTest uses system() which uses a denied syscall,
   // which should cause the test to fail.
   SetParametersForTest(&compiler, log_file, exec_file,
@@ -114,8 +116,8 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   CHECK(result) << error;
 
   // Test the properties of the sandbox profile.
-  constexpr base::StringPiece log_msg = "logged";
-  CHECK(base::WriteFile(log_file, base::StringPiece(log_msg)));
+  constexpr std::string_view log_msg = "logged";
+  CHECK(base::WriteFile(log_file, std::string_view(log_msg)));
   // Log file is write only.
   char read_buf[log_msg.size()];
   CHECK_EQ(-1, base::ReadFile(log_file, read_buf, sizeof(read_buf)));

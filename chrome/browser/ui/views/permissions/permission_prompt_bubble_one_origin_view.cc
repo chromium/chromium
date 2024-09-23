@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_effects/media_device_info.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
@@ -36,6 +37,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -56,8 +58,8 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
 #endif
 
 namespace {
@@ -137,24 +139,6 @@ std::optional<std::u16string> GetExtraText(
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-std::optional<MediaCoordinator::ViewType> ComputePreviewType(
-    std::vector<std::string> requested_audio_capture_device_ids,
-    std::vector<std::string> requested_video_capture_device_ids) {
-  if (!requested_audio_capture_device_ids.empty() &&
-      !requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kBoth;
-  }
-  if (!requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kCameraOnly;
-  }
-  if (!requested_audio_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kMicOnly;
-  }
-  return std::nullopt;
-}
-#endif
-
 }  // namespace
 
 PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
@@ -173,8 +157,15 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
 
   SetAccessibleTitle(GetAccessibleWindowTitleInternal(
       GetUrlIdentityObject().name, visible_requests));
+
+  size_t title_offset;
   SetTitle(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
-                                      GetUrlIdentityObject().name));
+                                      GetUrlIdentityObject().name,
+                                      &title_offset));
+  // Calculate the range of $ORIGIN which should be bold. It will be used while
+  // creating title label via `CreateTitleOriginLabel()`.
+  SetTitleBoldedRanges(
+      {{title_offset, title_offset + GetUrlIdentityObject().name.length()}});
 
   auto extra_text = GetExtraText(*delegate.get());
   if (extra_text.has_value()) {
@@ -186,7 +177,9 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
     if (visible_requests[i]->request_type() ==
-        permissions::RequestType::kCameraStream) {
+            permissions::RequestType::kCameraStream ||
+        visible_requests[i]->request_type() ==
+            permissions::RequestType::kCameraPanTiltZoom) {
       requested_video_capture_device_ids =
           visible_requests[i]->GetRequestedVideoCaptureDeviceIds();
     } else if (visible_requests[i]->request_type() ==
@@ -204,23 +197,16 @@ PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
 
 void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto button = GetPermissionDialogButton(button_id);
   if (button == PermissionDialogButton::kAccept ||
       button == PermissionDialogButton::kAcceptOnce) {
-    if (media_preview_coordinator_.has_value()) {
-      media_preview_coordinator_->UpdateDevicePreferenceRanking();
+    if (media_previews_.has_value()) {
+      media_previews_->UpdateDevicePreferenceRanking();
     }
   }
 #endif
   PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
-}
-
-void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
-    views::View* child) {
-  if (GetBubbleFrameView()) {
-    SizeToContents();
-  }
 }
 
 void PermissionPromptBubbleOneOriginView::AddRequestLine(
@@ -236,7 +222,7 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
       provider->GetDistanceMetric(
           DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
 
-  const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
+  constexpr int kPermissionIconSize = 20;
   auto* icon = line_container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           permissions::GetIconId(request->request_type()), ui::kColorIcon,
@@ -248,10 +234,22 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
 
-  if (features::IsChromeRefresh2023()) {
-    label->SetTextStyle(views::style::STYLE_BODY_3);
-    label->SetEnabledColorId(kColorPermissionPromptRequestText);
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (request->request_type() == permissions::RequestType::kMicStream) {
+    mic_permission_label_ = label;
+  } else if (request->request_type() ==
+             permissions::RequestType::kCameraStream) {
+    camera_permission_label_ = label;
+  } else if (request->request_type() ==
+             permissions::RequestType::kCameraPanTiltZoom) {
+    ptz_camera_permission_label_ = label;
+  }
+#endif
 
+  label->SetTextStyle(views::style::STYLE_BODY_3);
+  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+
+  if (index == 0u) {
     constexpr int kPermissionBodyTopMargin = 10;
     line_container->SetProperty(
         views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
@@ -262,24 +260,89 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     std::vector<std::string> requested_audio_capture_device_ids,
     std::vector<std::string> requested_video_capture_device_ids,
     size_t index) {
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-  if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Unit tests call this without initializing `browser_`, but this should not
+  // happen in production code.
+  if (!browser()) {
     return;
   }
 
-  auto view_type = ComputePreviewType(requested_audio_capture_device_ids,
-                                      requested_video_capture_device_ids);
-  if (!view_type) {
+  if (requested_audio_capture_device_ids.empty() &&
+      requested_video_capture_device_ids.empty()) {
     return;
   }
 
-  media_preview_coordinator_.emplace(
-      view_type.value(),
-      *scroll_media_preview::CreateScrollViewAndGetContents(*this, index),
-      /*is_subsection=*/false,
-      MediaCoordinator::EligibleDevices{
-          /*cameras=*/requested_video_capture_device_ids,
-          /*mics=*/requested_audio_capture_device_ids},
-      *browser_->profile()->GetPrefs());
+  if (!camera_permission_label_ && !mic_permission_label_ &&
+      !ptz_camera_permission_label_) {
+    return;
+  }
+
+  // Check this last, as it queries the origin trials service.
+  if (!media_preview_feature::ShouldShowMediaPreview(
+          *browser()->profile(), delegate()->GetRequestingOrigin(),
+          delegate()->GetEmbeddingOrigin(),
+          media_preview_metrics::UiLocation::kPermissionPrompt)) {
+    return;
+  }
+
+  auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
+  devices_observer_.Observe(cached_device_info);
+  if (camera_permission_label_ || ptz_camera_permission_label_) {
+    // Initialize camera label with the current number of cached video devices.
+    OnVideoDevicesChanged(cached_device_info->GetVideoDeviceInfos());
+  }
+  if (mic_permission_label_) {
+    // Initialize mic label with the current number of cached audio devices.
+    OnAudioDevicesChanged(cached_device_info->GetAudioDeviceInfos());
+  }
+
+  media_previews_.emplace(browser(), this, index,
+                          requested_audio_capture_device_ids,
+                          requested_video_capture_device_ids);
 #endif
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
+    const std::optional<std::vector<media::AudioDeviceDescription>>&
+        device_infos) {
+  if (!mic_permission_label_ || !device_infos) {
+    return;
+  }
+
+  const auto real_device_names =
+      media_effects::GetRealAudioDeviceNames(device_infos.value());
+
+  mic_permission_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+      base::NumberToString16(real_device_names.size())));
+
+  mic_permission_label_->SetTooltipText(
+      base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
+}
+
+void PermissionPromptBubbleOneOriginView::OnVideoDevicesChanged(
+    const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+        device_infos) {
+  bool have_any_camera_label =
+      ptz_camera_permission_label_ || camera_permission_label_;
+  if (!have_any_camera_label || !device_infos) {
+    return;
+  }
+
+  auto camera_label = camera_permission_label_;
+  auto message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT;
+  if (ptz_camera_permission_label_) {
+    camera_label = ptz_camera_permission_label_;
+    message_id =
+        IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT_WITH_COUNT;
+  }
+
+  const auto real_device_names =
+      media_effects::GetRealVideoDeviceNames(device_infos.value());
+  camera_label->SetText(l10n_util::GetStringFUTF16(
+      message_id, base::NumberToString16(real_device_names.size())));
+  camera_label->SetTooltipText(
+      base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
+}
+#endif

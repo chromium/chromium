@@ -13,6 +13,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-fuzzing-core",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-fuzzing-core+bots@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-lacros-engprod-alerts",
     on_status_change = True,
     notify_emails = [
@@ -112,26 +120,11 @@ luci.notifier(
     ],
 )
 
-luci.notifier(
-    name = "weblayer-sheriff",
-    on_new_status = ["FAILURE"],
-    notify_emails = [
-        "weblayer-sheriff@grotations.appspotmail.com",
-    ],
-)
-
-luci.notifier(
-    name = "chrome-build-perf",
-    on_new_status = ["FAILURE"],
-    notify_emails = [
-        "chrome-build-team+alert@google.com",
-    ],
-)
-
 TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",
     "gclient runhooks",
+    "generate_build_files",
     "runhooks",
     "update",
     "\\w*nocompile_test",
@@ -273,8 +266,10 @@ luci.notifier(
 luci.notifier(
     name = "annotator-rel",
     notify_emails = [
-        "pastarmovj@chromium.org",
+        "chiav@chromium.org",
+        "crmullins@chromium.org",
         "nicolaso@chromium.org",
+        "pastarmovj@chromium.org",
     ],
     on_new_status = ["FAILURE"],
 )
@@ -321,4 +316,23 @@ luci.notifier(
         name = "build_with_step_summary_template",
         body = io.read_file("templates/build_with_step_summary.template"),
     ),
+)
+
+luci.notifier(
+    name = "Chromium Build Time Watcher",
+    notify_emails = [
+        "jwata@google.com",
+        "pasthana@google.com",
+        "thakis@google.com",
+    ],
+    on_new_status = ["INFRA_FAILURE"],
+)
+
+luci.notifier(
+    name = "chrome-fake-vaapi-test",
+    on_occurrence = ["SUCCESS", "FAILURE", "INFRA_FAILURE"],
+    failed_step_regexp = "video_decode_accelerator_tests_fake_vaapi.*",
+    notify_emails = [
+        "bchoobineh@google.com",
+    ],
 )

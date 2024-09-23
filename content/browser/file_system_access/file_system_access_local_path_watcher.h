@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCAL_PATH_WATCHER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_LOCAL_PATH_WATCHER_H_
 
-#include "base/files/file_path_watcher.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 
@@ -36,11 +36,11 @@ class FileSystemAccessLocalPathWatcher : public FileSystemAccessChangeSource {
           on_source_initialized) override;
 
  private:
-  void OnFilePathChanged(const base::FilePathWatcher::ChangeInfo& change_info,
+  void OnFilePathChanged(const FilePathWatcher::ChangeInfo& change_info,
                          const base::FilePath& changed_path,
                          bool error);
 
-  base::SequenceBound<base::FilePathWatcher> watcher_
+  base::SequenceBound<FilePathWatcher> watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<FileSystemAccessLocalPathWatcher> weak_factory_

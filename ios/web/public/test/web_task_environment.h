@@ -5,7 +5,11 @@
 #ifndef IOS_WEB_PUBLIC_TEST_WEB_TASK_ENVIRONMENT_H_
 #define IOS_WEB_PUBLIC_TEST_WEB_TASK_ENVIRONMENT_H_
 
+#include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
+#include "base/traits_bag.h"
 
 // WebTaskEnvironment is the iOS equivalent of content::BrowserTaskEnvironment.
 //
@@ -26,15 +30,9 @@
 // WebTaskEnvironment lives. The destructor of WebTaskEnvironment runs remaining
 // TestWebThreads tasks and remaining BLOCK_SHUTDOWN thread pool tasks.
 //
-// Some tests using the IO thread expect a MessageLoopForIO. Passing IO_MAINLOOP
-// will use a MessageLoopForIO for the main MessageLoop. Most of the time, this
-// avoids needing to use a REAL_IO_THREAD.
-
-#include <memory>
-
-namespace base {
-class MessageLoop;
-}  // namespace base
+// Some tests using the IO thread expect a MessageLoopForIO. Passing
+// MainThreadType::IO will use a MessageLoopForIO for the main MessageLoop.
+// Most of the time, this avoids needing to use a IOThreadType::REAL_THREAD.
 
 namespace web {
 
@@ -42,28 +40,68 @@ class TestWebThread;
 
 class WebTaskEnvironment : public base::test::TaskEnvironment {
  public:
-  // Used to specify the type of MessageLoop that backs the UI thread, and
-  // which of the named WebThreads should be backed by a real
-  // threads. The UI thread is always the main thread in a unit test.
-  enum Options {
-    DEFAULT = 0,
-    IO_MAINLOOP = 1 << 0,
-    REAL_IO_THREAD = 1 << 1,
+  // This type will determine which events will be pumped by the main
+  // thread. Note that the default is different from TaskEnvironment.
+  enum class MainThreadType {
+    UI,
+    IO,
+    DEFAULT = UI,
   };
 
-  explicit WebTaskEnvironment(
-      int options = Options::DEFAULT,
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::DEFAULT);
+  // This type will determine whether the IO thread is backed by a real
+  // thread or not (DEFAULT).
+  enum class IOThreadType {
+    FAKE_THREAD,
+    REAL_THREAD,
+
+    // If used, the IO thread is backed by a real thread but is not started
+    // automatically. Instead, user must call StartIOThread() to start it.
+    REAL_THREAD_DELAYED,
+    DEFAULT = FAKE_THREAD,
+  };
+
+  // List of traits that are valid inputs for the constructor below.
+  struct ValidTraits {
+    ValidTraits(TimeSource);
+    ValidTraits(IOThreadType);
+    ValidTraits(MainThreadType);
+  };
+
+  // Constructor accepts zero or more traits which customize the environment.
+  template <typename... WebTaskEnvironmentTraits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits,
+                                                 WebTaskEnvironmentTraits...>
+  NOINLINE explicit WebTaskEnvironment(WebTaskEnvironmentTraits... traits)
+      : WebTaskEnvironment(
+            base::trait_helpers::GetEnum<TimeSource,  //
+                                         TimeSource::DEFAULT>(traits...),
+            base::trait_helpers::GetEnum<MainThreadType,  //
+                                         MainThreadType::DEFAULT>(traits...),
+            base::trait_helpers::GetEnum<IOThreadType,  //
+                                         IOThreadType::DEFAULT>(traits...),
+            base::trait_helpers::NotATraitTag()) {}
 
   WebTaskEnvironment(const WebTaskEnvironment&) = delete;
   WebTaskEnvironment& operator=(const WebTaskEnvironment&) = delete;
 
   ~WebTaskEnvironment() override;
 
- private:
-  void Init(int options);
+  // Starts the IO thread. This method must only be called if IOThreadType was
+  // initialized with REAL_THREAD_DELAYED during construction.
+  void StartIOThread();
 
+ private:
+  // The template constructor has to be in the header but it delegates to this
+  // constructor to initialize all other members out-of-line.
+  WebTaskEnvironment(TimeSource time_source,
+                     MainThreadType main_thread_type,
+                     IOThreadType io_thread_type,
+                     base::trait_helpers::NotATraitTag tag);
+
+  // Starts the IO thread.
+  void StartIOThreadInternal();
+
+  const IOThreadType io_thread_type_;
   std::unique_ptr<TestWebThread> ui_thread_;
   std::unique_ptr<TestWebThread> io_thread_;
 };

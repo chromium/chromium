@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/setup/setup_install_details.h"
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/win/registry.h"
@@ -37,7 +43,7 @@ const install_static::InstallConstants* FindInstallMode(
 // nullopt otherwise.
 std::optional<std::wstring> GetSwitchValue(
     const base::CommandLine& command_line,
-    base::StringPiece switch_name) {
+    std::string_view switch_name) {
   std::optional<std::wstring> result;
   if (command_line.HasSwitch(switch_name))
     result = command_line.GetSwitchValueNative(switch_name);

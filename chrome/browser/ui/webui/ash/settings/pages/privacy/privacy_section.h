@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
+#include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/sync_section.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"

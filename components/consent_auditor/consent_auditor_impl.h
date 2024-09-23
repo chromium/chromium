@@ -53,7 +53,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  void RecordRecorderSpeakerLabelConsent(
+      const CoreAccountId& account_id,
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
+      override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:

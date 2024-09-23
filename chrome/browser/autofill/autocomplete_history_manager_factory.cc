@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 
@@ -31,9 +31,12 @@ AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory()
           "AutocompleteHistoryManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(WebDataServiceFactory::GetInstance());
 }

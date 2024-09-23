@@ -80,8 +80,7 @@ constexpr auto kKnownUsernamePlaceholders =
 }  // namespace
 
 base::span<const std::string_view> KnownUsernamePlaceholders() {
-  return base::make_span(kKnownUsernamePlaceholders.begin(),
-                         kKnownUsernamePlaceholders.end());
+  return kKnownUsernamePlaceholders;
 }
 
 bool PossiblePrefilledUsernameValue(const std::string& username_value,

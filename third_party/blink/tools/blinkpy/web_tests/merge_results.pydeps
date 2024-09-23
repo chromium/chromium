@@ -45,6 +45,7 @@ models/test_configuration.py
 models/test_expectations.py
 models/test_failures.py
 models/test_run_results.py
+models/testharness_results.py
 models/typ_types.py
 port/__init__.py
 port/base.py

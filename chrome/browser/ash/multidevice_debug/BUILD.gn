@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("multidevice_debug") {
+  sources = [
+    "proximity_auth_ui_config.cc",
+    "proximity_auth_ui_config.h",
+  ]
+
+  deps = [
+    "//ash/webui/multidevice_debug",
+    "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/services/multidevice_setup",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+}

@@ -67,7 +67,7 @@ CellularESimProfile::State FromProfileState(hermes::profile::State state) {
     case hermes::profile::State::kActive:
       return CellularESimProfile::State::kActive;
     default:
-      NOTREACHED() << "Unexpected Hermes profile state: " << state;
+      NOTREACHED_IN_MIGRATION() << "Unexpected Hermes profile state: " << state;
       return CellularESimProfile::State::kInactive;
   }
 }
@@ -209,16 +209,16 @@ std::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
 std::vector<std::string> GetSmdsActivationCodes() {
   std::vector<std::string> activation_codes;
   if (features::ShouldUseStorkSmds()) {
-    activation_codes.push_back(kSmdsStork);
+    activation_codes.emplace_back(kSmdsStork);
   }
   if (features::ShouldUseAndroidStagingSmds()) {
-    activation_codes.push_back(kSmdsAndroidStaging);
+    activation_codes.emplace_back(kSmdsAndroidStaging);
   }
   if (activation_codes.empty()) {
-    if (features::IsSmdsSupportEnabled()) {
-      activation_codes.push_back(kSmdsAndroidProduction);
-    }
-    activation_codes.push_back(kSmdsGsma);
+    activation_codes = {
+        kSmdsAndroidProduction,
+        kSmdsGsma,
+    };
   }
   return activation_codes;
 }

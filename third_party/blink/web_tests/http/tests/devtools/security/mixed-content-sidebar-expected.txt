@@ -19,22 +19,32 @@ Origin sidebar:
         </STYLE>
         <STYLE >
         </STYLE>
+        <STYLE >
+        </STYLE>
         <DIV class=tree-outline-disclosure >
-            <OL class=tree-outline role=tree tabindex=-1 >
-                <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-main-view-sidebar-tree-item selected force-white-icons title=Overview tabindex=0 aria-selected=true >
+            <OL class=tree-outline role=tree tabindex=-1 jslog=Tree >
+                <LI jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=security-main-view-sidebar-tree-item selected force-white-icons title=Overview tabindex=0 aria-selected=true >
                     <DIV class=selection fill >
+                    </DIV>
+                    <DIV class=leading-icons icons-container >
+                        <DEVTOOLS-ICON role=presentation name=indeterminate-question-box class=lock-icon lock-icon-neutral >
+                            <#document-fragment >
+                                <SPAN style=--icon-url: var(--image-file-indeterminate-question-box); >
+                                </SPAN>
+                                <STYLE >
+                                </STYLE>
+                            </#document-fragment>
+                        </DEVTOOLS-ICON>
                     </DIV>
                     <SPAN class=tree-element-title >
                     </SPAN>
-                    <DIV class=icon lock-icon lock-icon-neutral >
-                    </DIV>
                     <SPAN class=title >
 Overview
                     </SPAN>
                 </LI>
                 <OL class=children role=group >
                 </OL>
-                <LI title=Main origin jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                <LI title=Main origin jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -42,7 +52,7 @@ Main origin
                     </SPAN>
                 </LI>
                 <OL class=children expanded role=group aria-label=Main origin >
-                    <LI title=Reload to view details jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-main-view-reload-message hidden >
+                    <LI title=Reload to view details jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=security-main-view-reload-message hidden >
                         <DIV class=selection fill >
                         </DIV>
                         <SPAN class=tree-element-title >
@@ -52,7 +62,7 @@ Reload to view details
                     <OL class=children hidden role=group >
                     </OL>
                 </OL>
-                <LI title=Non-secure origins jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                <LI title=Non-secure origins jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -60,14 +70,22 @@ Non-secure origins
                     </SPAN>
                 </LI>
                 <OL class=children expanded role=group aria-label=Non-secure origins >
-                    <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-sidebar-tree-item title=http://foo.test >
+                    <LI jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=security-sidebar-tree-item title=http://foo.test >
                         <DIV class=selection fill >
+                        </DIV>
+                        <DIV class=leading-icons icons-container >
+                            <DEVTOOLS-ICON role=presentation name=warning class=security-property security-property-insecure >
+                                <#document-fragment >
+                                    <SPAN style=--icon-url: var(--image-file-warning); >
+                                    </SPAN>
+                                    <STYLE >
+                                    </STYLE>
+                                </#document-fragment>
+                            </DEVTOOLS-ICON>
                         </DIV>
                         <SPAN class=tree-element-title >
                         </SPAN>
-                        <DIV class=icon security-property security-property-insecure >
-                        </DIV>
-                        <SPAN >
+                        <SPAN class=highlighted-url >
                             <SPAN class=url-scheme-insecure >
 http
                             </SPAN>
@@ -81,14 +99,22 @@ foo.test
                     </LI>
                     <OL class=children role=group >
                     </OL>
-                    <LI jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=security-sidebar-tree-item title=http://bar.test >
+                    <LI jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=security-sidebar-tree-item title=http://bar.test >
                         <DIV class=selection fill >
+                        </DIV>
+                        <DIV class=leading-icons icons-container >
+                            <DEVTOOLS-ICON role=presentation name=warning class=security-property security-property-insecure >
+                                <#document-fragment >
+                                    <SPAN style=--icon-url: var(--image-file-warning); >
+                                    </SPAN>
+                                    <STYLE >
+                                    </STYLE>
+                                </#document-fragment>
+                            </DEVTOOLS-ICON>
                         </DIV>
                         <SPAN class=tree-element-title >
                         </SPAN>
-                        <DIV class=icon security-property security-property-insecure >
-                        </DIV>
-                        <SPAN >
+                        <SPAN class=highlighted-url >
                             <SPAN class=url-scheme-insecure >
 http
                             </SPAN>
@@ -103,7 +129,7 @@ bar.test
                     <OL class=children role=group >
                     </OL>
                 </OL>
-                <LI title=Secure origins jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                <LI title=Secure origins jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >
@@ -112,7 +138,7 @@ Secure origins
                 </LI>
                 <OL class=children expanded hidden role=group aria-label=Secure origins >
                 </OL>
-                <LI title=Unknown / canceled jslog=TreeItem; track: click; parent: parentTreeItem; context: disclosureTriangle role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                <LI title=Unknown / canceled jslog=TreeItem; parent: parentTreeItem; track: click, keydown: ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Backspace|Delete|Enter|Space|Home|End role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
                     <DIV class=selection fill >
                     </DIV>
                     <SPAN class=tree-element-title >

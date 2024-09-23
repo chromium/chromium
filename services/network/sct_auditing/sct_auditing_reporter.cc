@@ -313,7 +313,7 @@ void SCTAuditingReporter::ScheduleRequestWithBackoff(base::OnceClosure request,
     delay = std::max(backoff_entry_->GetTimeUntilRelease(), delay);
   }
   if (delay.is_positive()) {
-    // TODO(crbug.com/1199827): Investigate if explicit task traits should be
+    // TODO(crbug.com/40761454): Investigate if explicit task traits should be
     // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(request), delay);
@@ -531,7 +531,7 @@ void SCTAuditingReporter::SendReport() {
   url_loader_->SetRetryOptions(0, SimpleURLLoader::RETRY_NEVER);
 
   // Serialize the report and attach it to the loader.
-  // TODO(crbug.com/1199566): Should we store the serialized report instead, so
+  // TODO(crbug.com/40761306): Should we store the serialized report instead, so
   // we don't serialize on every retry?
   std::string report_data;
   bool ok = report_->SerializeToString(&report_data);

@@ -8,8 +8,8 @@
 
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
@@ -26,7 +26,7 @@ SharedWebContentsWithAppLockDescription::
 
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
     base::WeakPtr<WebAppLockManager> lock_manager,
-    std::unique_ptr<content::PartitionedLockHolder> holder,
+    std::unique_ptr<PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents)
     : Lock(std::move(holder), lock_manager),
       WithSharedWebContentsResources(lock_manager, shared_web_contents),

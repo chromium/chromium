@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -329,7 +330,9 @@ class LogFileWriterTest
         EXPECT_EQ(uncompressed, expected_contents);
         break;
       }
-      default: { NOTREACHED(); }
+      default: {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 
@@ -705,9 +708,6 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     case user_manager::UserType::kChild:
       fake_user_manager_->AddChildUser(account_id);
       break;
-    case user_manager::UserType::kArcKioskApp:
-      fake_user_manager_->AddArcKioskAppUser(account_id);
-      break;
     default:
       FAIL() << "Invalid test setup. Unexpected user type.";
   }
@@ -731,7 +731,6 @@ INSTANTIATE_TEST_SUITE_P(
             {user_manager::UserType::kPublicAccount, false},
             {user_manager::UserType::kKioskApp, false},
             {user_manager::UserType::kChild, false},
-            {user_manager::UserType::kArcKioskApp, false},
         }));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

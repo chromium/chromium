@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/google/model/google_brand.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -86,7 +86,7 @@ bool RLZTrackerDelegateImpl::ShouldEnableZeroDelayForTesting() {
 }
 
 bool RLZTrackerDelegateImpl::GetLanguage(std::u16string* language) {
-  // TODO(crbug.com/1288100): Implement.
+  // TODO(crbug.com/40816693): Implement.
   NOTIMPLEMENTED();
   return false;
 }
@@ -115,15 +115,15 @@ void RLZTrackerDelegateImpl::SetOmniboxSearchCallback(
 
 void RLZTrackerDelegateImpl::SetHomepageSearchCallback(
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RLZTrackerDelegateImpl::RunHomepageSearchCallback() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool RLZTrackerDelegateImpl::ShouldUpdateExistingAccessPointRlz() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

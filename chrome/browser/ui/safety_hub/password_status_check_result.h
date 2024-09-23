@@ -10,8 +10,12 @@
 
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
-inline constexpr char kSafetyHubPasswordCheckOriginsKey[] =
-    "passwordCheckOrigins";
+struct PasswordPair {
+  std::string origin;
+  std::string username;
+
+  auto operator<=>(const PasswordPair&) const = default;
+};
 
 // The result of the periodic password status checks for weak, unused and
 // compromised passwords. This result will be used to show a notifcication on
@@ -21,21 +25,16 @@ class PasswordStatusCheckResult : public SafetyHubService::Result {
  public:
   PasswordStatusCheckResult();
 
-  // 'dict' should be a base::Value::List that holds the origins as the format
-  // below:
-  // {kSafetyHubPasswordCheckOriginsKey: ["example1.com", "example2.com"]}
-  explicit PasswordStatusCheckResult(const base::Value::Dict& dict);
-
   PasswordStatusCheckResult(const PasswordStatusCheckResult&);
   PasswordStatusCheckResult& operator=(const PasswordStatusCheckResult&);
 
   ~PasswordStatusCheckResult() override;
 
-  const std::set<std::string>& GetCompromisedOrigins() const {
-    return compromised_origins_;
+  const std::set<PasswordPair>& GetCompromisedPasswords() const {
+    return compromised_passwords_;
   }
 
-  void AddToCompromisedOrigins(std::string origin);
+  void AddToCompromisedPasswords(std::string origin, std::string username);
 
   // SafetyHubService::Result implementation
 
@@ -45,14 +44,15 @@ class PasswordStatusCheckResult : public SafetyHubService::Result {
 
   bool IsTriggerForMenuNotification() const override;
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) const override;
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 
   int GetNotificationCommandId() const override;
 
  private:
-  std::set<std::string> compromised_origins_;
+  std::set<PasswordPair> compromised_passwords_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_RESULT_H_

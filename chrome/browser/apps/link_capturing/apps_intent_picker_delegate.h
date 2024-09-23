@@ -41,7 +41,8 @@ class AppsIntentPickerDelegate {
   virtual void RecordIntentPickerIconEvent(
       apps::IntentPickerIconEvent event) = 0;
   virtual bool ShouldLaunchAppDirectly(const GURL& url,
-                                       const std::string& app_name) = 0;
+                                       const std::string& app_name,
+                                       PickerEntryType entry_type) = 0;
   virtual void RecordOutputMetrics(PickerEntryType entry_type,
                                    IntentPickerCloseReason close_reason,
                                    bool should_persist,

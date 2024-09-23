@@ -14,7 +14,7 @@
 <translation id="1291104554099683393">ചെറിയ ഭാഗങ്ങളായി ടെക്‌സ്‌റ്റ് പങ്കിടാൻ ശ്രമിക്കൂ.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">ഇടതുനിന്ന് വലത്തേക്ക്</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">തിരയുക</translation>
 <translation id="1398853756734560583">വലുതാക്കുക</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> പങ്കിടാനാവുന്നില്ല</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">സർവ്വേ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">നിങ്ങളുടെ ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
+<translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2388990488038464401">നിങ്ങളുടെ ഫോണിൽ നിന്ന് ഈ നമ്പറിലേക്ക് വിളിക്കണോ?</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="24452542372838207">അറിയിപ്പ് വികസിപ്പിക്കുക</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">പുതിയവ</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ടു</translation>
-<translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ഒരു വർഷം മുമ്പ്}other{# വർഷം മുമ്പ്}}</translation>
 <translation id="2878511608894704031">എല്ലാം ഇല്ലാതാക്കൂ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ഒരു ദിവസത്തിൽ}other{# ദിവസത്തിൽ}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> സിസ്‌റ്റം</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="5613020302032141669">ഇടത് ആരോ അടയാളം</translation>
+<translation id="5633029987065897167">ഒന്നുമില്ല</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ഒരു മിനിറ്റ്}other{# മിനിറ്റ്}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ഇന്ന് സജീവമായിരുന്നു}=1{ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു}other{# ദിവസം മുമ്പ് സജീവമായിരുന്നു}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{ഒരു ദിവസവും }other{# ദിവസവും }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF ഉള്ളടക്കം</translation>
 <translation id="6539092367496845964">എന്തോ കുഴപ്പം സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="654149438358937226">എല്ലാ അറിയിപ്പുകളും ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="6612467943526193239">കാലിബറേഷനിൽ നിന്ന് പുറത്തുകടക്കാൻ Esc അമർത്തുക.</translation>
 <translation id="6620110761915583480">ഫയല്‍‌ സംരക്ഷിക്കുക</translation>
 <translation id="6699343763173986273">അടുത്ത മീഡിയാ ട്രാക്ക്</translation>
 <translation id="6808150112686056157">മീഡിയ ‌നിർത്തുക</translation>

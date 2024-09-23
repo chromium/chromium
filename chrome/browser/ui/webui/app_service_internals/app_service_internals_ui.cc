@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 
 #include <memory>
@@ -15,6 +20,10 @@
 #include "chrome/grit/app_service_internals_resources.h"
 #include "chrome/grit/app_service_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+
+AppServiceInternalsUIConfig::AppServiceInternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAppServiceInternalsHost) {}
 
 AppServiceInternalsUI::AppServiceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {

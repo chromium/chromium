@@ -1,0 +1,76 @@
+<style include="cr-icons searchbox-shared-style">
+:host {
+  --cr-searchbox-height: 48px;
+  --cr-searchbox-min-width: 332px;
+  --cr-searchbox-shadow: none;
+}
+
+cr-searchbox::part(searchbox-dropdown) {
+  left: -8px;
+  right: -8px;
+  top: 60px;
+}
+
+cr-searchbox::part(dropdown-content) {
+  border-radius: 0px;
+  padding-top: 0px;
+}
+
+#container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#header {
+  app-region: drag;
+  flex: 1;
+}
+
+:host-context([dir='ltr']) #header {
+  padding-left: 48px;
+}
+
+:host-context([dir='rtl']) #header {
+  padding-right: 48px;
+}
+
+#closeButton {
+  --cr-icon-button-fill-color: #474747;
+  --cr-icon-button-icon-size: 16px;
+}
+
+:host([dark-mode]) #closeButton {
+  --cr-icon-button-fill-color: #9AA0A6;
+}
+
+:host-context([dir='ltr']) #closeButton {
+  margin-right: 16px;
+}
+
+:host-context([dir='rtl']) #closeButton {
+  margin-left: 16px;
+}
+
+#searchboxContainer {
+  flex-basis: 100%;
+  justify-content: center;
+  --color-searchbox-results-background: none;
+  --color-bubble-searchbox-results-input-background: #F1F3F4;
+}
+
+:host([dark-mode]) #searchboxContainer {
+  --color-bubble-searchbox-results-input-background: #303134;
+}
+
+cr-searchbox {
+  --cr-searchbox-match-padding-inline-start: 20px;
+}
+</style>
+<div id="container">
+  <div id="header"></div>
+  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}"
+    on-click="onClose_"></cr-icon-button>
+  <div id="searchboxContainer">
+    <cr-searchbox id="realbox"></cr-searchbox>
+  </div>
+</div>

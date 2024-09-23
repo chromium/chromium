@@ -15,13 +15,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
+
+enum class BrowserClosingStatus;
 
 class Browser;
 class Profile;
@@ -35,8 +37,9 @@ class BrowserListObserver;
 // Maintains a list of Browser objects.
 class BrowserList {
  public:
-  using BrowserSet = base::flat_set<Browser*>;
+  using BrowserSet = base::flat_set<raw_ptr<Browser, CtnExperimental>>;
   using BrowserVector = std::vector<raw_ptr<Browser, VectorExperimental>>;
+  using BrowserWeakVector = std::vector<base::WeakPtr<Browser>>;
   using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   using const_iterator = BrowserVector::const_iterator;
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
@@ -196,7 +199,7 @@ class BrowserList {
   // method to handle any other OnBeforeUnload events. If aborted in the
   // OnBeforeUnload event, PostTryToCloseBrowserWindow will call
   // |on_close_aborted| instead and reset all OnBeforeUnload event handlers.
-  static void TryToCloseBrowserList(const BrowserVector& browsers_to_close,
+  static void TryToCloseBrowserList(const BrowserWeakVector& browsers_to_close,
                                     const CloseCallback& on_close_success,
                                     const CloseCallback& on_close_aborted,
                                     const base::FilePath& profile_path,
@@ -208,7 +211,7 @@ class BrowserList {
   // |profile_path|. Otherwise, resets all the OnBeforeUnload event handlers and
   // calls |on_close_aborted|.
   static void PostTryToCloseBrowserWindow(
-      const BrowserVector& browsers_to_close,
+      const BrowserWeakVector& browsers_to_close,
       const CloseCallback& on_close_success,
       const CloseCallback& on_close_aborted,
       const base::FilePath& profile_path,

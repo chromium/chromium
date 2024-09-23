@@ -85,8 +85,7 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const std::optional<net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
-      base::ElapsedTimer timer) const;
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Synchronous version of `ComputeMetadata`, to be run only once the instance
   // is fully initialized.
@@ -109,8 +108,7 @@ class FirstPartySetsManager {
   void FindEntriesAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
       const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(EntriesResult)> callback,
-      base::ElapsedTimer timer) const;
+      base::OnceCallback<void(EntriesResult)> callback) const;
 
   // Synchronous version of `FindEntries`, to be run only once the instance is
   // initialized.

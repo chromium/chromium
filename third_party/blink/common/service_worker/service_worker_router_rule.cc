@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 
 namespace blink {
 
@@ -15,6 +16,32 @@ bool ServiceWorkerRouterRequestCondition::operator==(
 bool ServiceWorkerRouterOrCondition::operator==(
     const ServiceWorkerRouterOrCondition& other) const {
   return conditions == other.conditions;
+}
+
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition() = default;
+ServiceWorkerRouterNotCondition::~ServiceWorkerRouterNotCondition() = default;
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition(
+    const ServiceWorkerRouterNotCondition& other) {
+  *this = other;
+}
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition(
+    ServiceWorkerRouterNotCondition&&) = default;
+
+ServiceWorkerRouterNotCondition& ServiceWorkerRouterNotCondition::operator=(
+    const ServiceWorkerRouterNotCondition& other) {
+  if (other.condition) {
+    condition =
+        std::make_unique<ServiceWorkerRouterCondition>(*other.condition);
+  }
+  return *this;
+}
+ServiceWorkerRouterNotCondition& ServiceWorkerRouterNotCondition::operator=(
+    ServiceWorkerRouterNotCondition&&) = default;
+
+bool ServiceWorkerRouterNotCondition::operator==(
+    const ServiceWorkerRouterNotCondition& other) const {
+  // Returns false unless both have their value.
+  return condition && other.condition && *condition == *other.condition;
 }
 
 bool ServiceWorkerRouterCondition::operator==(
@@ -33,13 +60,13 @@ bool ServiceWorkerRouterSource::operator==(
     return false;
   }
   switch (type) {
-    case Type::kNetwork:
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return network_source == other.network_source;
-    case Type::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
       return race_source == other.race_source;
-    case Type::kFetchEvent:
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return fetch_event_source == other.fetch_event_source;
-    case Type::kCache:
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return cache_source == other.cache_source;
   }
 }

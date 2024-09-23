@@ -59,7 +59,7 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
     case ax::mojom::Event::kMediaStartedPlaying:
     case ax::mojom::Event::kMediaStoppedPlaying:
     case ax::mojom::Event::kMenuEnd:
-    case ax::mojom::Event::kMenuListValueChanged:
+    case ax::mojom::Event::kMenuListValueChangedDeprecated:
     case ax::mojom::Event::kMenuPopupEnd:
     case ax::mojom::Event::kMenuPopupStart:
     case ax::mojom::Event::kMenuStart:
@@ -87,7 +87,7 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -104,6 +104,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
     case AXEventGenerator::Event::ALERT:
     case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+    case AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
     case AXEventGenerator::Event::ATOMIC_CHANGED:
     case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
@@ -112,7 +113,6 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
     case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case AXEventGenerator::Event::CHILDREN_CHANGED:
-    case AXEventGenerator::Event::CLASS_NAME_CHANGED:
     case AXEventGenerator::Event::COLLAPSED:
     case AXEventGenerator::Event::CONTROLS_CHANGED:
     case AXEventGenerator::Event::DETAILS_CHANGED:
@@ -120,14 +120,12 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::DESCRIPTION_CHANGED:
     case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
     case AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-    case AXEventGenerator::Event::DROPEFFECT_CHANGED:
     case AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
     case AXEventGenerator::Event::ENABLED_CHANGED:
     case AXEventGenerator::Event::EXPANDED:
     case AXEventGenerator::Event::FOCUS_CHANGED:
     case AXEventGenerator::Event::FLOW_FROM_CHANGED:
     case AXEventGenerator::Event::FLOW_TO_CHANGED:
-    case AXEventGenerator::Event::GRABBED_CHANGED:
     case AXEventGenerator::Event::HASPOPUP_CHANGED:
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
     case AXEventGenerator::Event::IGNORED_CHANGED:
@@ -150,10 +148,8 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::NAME_CHANGED:
     case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
     case AXEventGenerator::Event::ORIENTATION_CHANGED:
-    case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
     case AXEventGenerator::Event::PARENT_CHANGED:
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-    case AXEventGenerator::Event::PORTAL_ACTIVATED:
     case AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
     case AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case AXEventGenerator::Event::READONLY_CHANGED:
@@ -185,7 +181,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

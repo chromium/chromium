@@ -1,13 +1,13 @@
 NAME_FIRST | FirstName | First name: |  | FirstName_1
 NAME_LAST | LastName | Last name: |  | FirstName_1
-UNKNOWN_TYPE | UsernameSelector |  | header | FirstName_1
+UNKNOWN_TYPE | UsernameSelector |  | header | -default
 EMAIL_ADDRESS | Email |  |  | FirstName_1
 UNKNOWN_TYPE | Passwd |  |  | FirstName_1
 UNKNOWN_TYPE | PasswdAgain | Re-enter password: |  | FirstName_1
 UNKNOWN_TYPE | PersistentCookie | Re-enter password: | yes | FirstName_1
 UNKNOWN_TYPE | smhck | Re-enter password: | 1 | FirstName_1
 UNKNOWN_TYPE | selection | Security question: | choosequestion | FirstName_1
-UNKNOWN_TYPE | ownquestion | Security question: |  | FirstName_1
+UNKNOWN_TYPE | ownquestion | Security question: |  | -default
 UNKNOWN_TYPE | IdentityAnswer | Answer: |  | FirstName_1
 EMAIL_ADDRESS | SecondaryEmail | Recovery email: |  | SecondaryEmail_2
 ADDRESS_HOME_COUNTRY | loc | Location: | US | SecondaryEmail_2

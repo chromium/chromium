@@ -49,7 +49,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  friend class SearchEnginesHandlerTestBase;
+  friend class SearchEnginesHandlerTest;
 
   // Retrieves all search engines and returns them to WebUI.
   void HandleGetSearchEnginesList(const base::Value::List& args);

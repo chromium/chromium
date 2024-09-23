@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/editing/state_machines/forward_grapheme_boundary_state_machine.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -84,15 +90,17 @@ ForwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
     case InternalState::kStartForwardWaitTrailSurrgate:  // Fallthrough
     case InternalState::kSearch:                         // Fallthrough
     case InternalState::kSearchWaitTrailSurrogate:       // Fallthrough
-      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once "
-                   << TextSegmentationMachineState::kNeedFollowingCodeUnit
-                   << " is returned. InternalState: " << internal_state_;
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedPrecedingCodeUnit() once "
+          << TextSegmentationMachineState::kNeedFollowingCodeUnit
+          << " is returned. InternalState: " << internal_state_;
       return Finish();
     case InternalState::kFinished:
-      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedPrecedingCodeUnit() once it finishes.";
       return Finish();
   }
-  NOTREACHED() << "Unhandled state: " << internal_state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
   return Finish();
 }
 
@@ -101,9 +109,10 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
   switch (internal_state_) {
     case InternalState::kCountRIS:  // Fallthrough
     case InternalState::kCountRISWaitLeadSurrogate:
-      NOTREACHED() << "Do not call feedFollowingCodeUnit() until "
-                   << TextSegmentationMachineState::kNeedFollowingCodeUnit
-                   << " is returned. InternalState: " << internal_state_;
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedFollowingCodeUnit() until "
+          << TextSegmentationMachineState::kNeedFollowingCodeUnit
+          << " is returned. InternalState: " << internal_state_;
       return Finish();
     case InternalState::kStartForward:
       DCHECK_EQ(prev_code_point_, kUnsetCodePoint);
@@ -175,10 +184,11 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
         return MoveToNextState(InternalState::kSearch);
       }
     case InternalState::kFinished:
-      NOTREACHED() << "Do not call feedFollowingCodeUnit() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedFollowingCodeUnit() once it finishes.";
       return Finish();
   }
-  NOTREACHED() << "Unhandled staet: " << internal_state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled staet: " << internal_state_;
   return Finish();
 }
 
@@ -249,8 +259,9 @@ void ForwardGraphemeBoundaryStateMachine::FinishWithEndOfText() {
     case InternalState::kSearchWaitTrailSurrogate:  // Fallthrough
       return;
     case InternalState::kFinished:  // Fallthrough
-      NOTREACHED() << "Do not call finishWithEndOfText() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call finishWithEndOfText() once it finishes.";
   }
-  NOTREACHED() << "Unhandled state: " << internal_state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
 }
 }  // namespace blink

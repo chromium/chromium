@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/renderers/win/media_foundation_renderer.h"
 
 #include <mfapi.h>
@@ -86,7 +91,7 @@ class MediaFoundationRendererIntegrationTest
 };
 
 TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {
-  // TODO(crbug.com/1240681): This test is very flaky on win10-20h2.
+  // TODO(crbug.com/40194343): This test is very flaky on win10-20h2.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10_20H2) {
     GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
@@ -101,7 +106,7 @@ TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {
 }
 
 TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback_MediaSource) {
-  // TODO(crbug.com/1240681): This test is very flaky on win10-20h2.
+  // TODO(crbug.com/40194343): This test is very flaky on win10-20h2.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10_20H2) {
     GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
@@ -132,6 +137,39 @@ TEST_F(MediaFoundationRendererIntegrationTest,
       {media::VideoCodecProfile::HEVCPROFILE_MAIN});
 
   ASSERT_EQ(PIPELINE_OK, Start("bear-3840x2160-hevc.mp4", kUnreliableDuration));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  Stop();
+}
+
+TEST_F(MediaFoundationRendererIntegrationTest, ChangePlaybackRate) {
+  // Test changing the playback rate.
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "ChangePlaybackRate test requires VP9 decoder.";
+  }
+
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+  // Check the default playback rate.
+  ASSERT_EQ(0.0f, pipeline_->GetPlaybackRate());
+  // Start playback at rate 2.0.
+  pipeline_->SetPlaybackRate(2.0);
+  EXPECT_EQ(2.0f, pipeline_->GetPlaybackRate());
+  ASSERT_TRUE(WaitUntilOnEnded());
+  Stop();
+}
+
+TEST_F(MediaFoundationRendererIntegrationTest, ChangeVolume) {
+  // Test changing the volume.
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "ChangeVolume test requires VP9 decoder.";
+  }
+
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+  // Check default volume
+  ASSERT_EQ(1.0f, pipeline_->GetVolume());
+  // Change volume and verify
+  pipeline_->SetVolume(0.5f);
+  EXPECT_EQ(0.5f, pipeline_->GetVolume());
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   Stop();

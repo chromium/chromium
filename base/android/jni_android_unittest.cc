@@ -9,7 +9,6 @@
 
 #include "base/android/java_exception_reporter.h"
 #include "base/at_exit.h"
-#include "base/base_unittest_support_jni/JniAndroidTestUtils_jni.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +17,9 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_unittest_support_jni/JniAndroidTestUtils_jni.h"
 
 using ::testing::Eq;
 using ::testing::Optional;

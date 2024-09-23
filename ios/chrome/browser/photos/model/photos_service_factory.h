@@ -9,15 +9,18 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class PhotosService;
 
 // Singleton that owns all PhotosService-s and associates them with
-// ChromeBrowserState.
+// Profile.
 class PhotosServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static PhotosService* GetForBrowserState(ChromeBrowserState* browser_state);
+
+  static PhotosService* GetForProfile(ProfileIOS* profile);
   static PhotosServiceFactory* GetInstance();
 
  private:

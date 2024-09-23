@@ -41,7 +41,7 @@ TouchHandleOrientation ToTouchHandleOrientation(
     case gfx::SelectionBound::EMPTY:
       return TouchHandleOrientation::UNDEFINED;
   }
-  NOTREACHED() << "Invalid selection bound type: " << type;
+  NOTREACHED_IN_MIGRATION() << "Invalid selection bound type: " << type;
   return TouchHandleOrientation::UNDEFINED;
 }
 

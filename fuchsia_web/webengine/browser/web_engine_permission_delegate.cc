@@ -35,7 +35,7 @@ void WebEnginePermissionDelegate::ResetPermission(
     blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  // TODO(crbug.com/1063094): Implement when the PermissionManager protocol is
+  // TODO(crbug.com/40680523): Implement when the PermissionManager protocol is
   // defined and implemented.
   NOTIMPLEMENTED() << ": " << static_cast<int>(permission);
 }
@@ -60,7 +60,7 @@ blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
   // Although GetPermissionStatusForCurrentDocument() should be used for most
   // permissions, some use cases (e.g., BACKGROUND_SYNC) do not have a frame.
   //
-  // TODO(crbug.com/1063094): Handle frame-less permission status checks in the
+  // TODO(crbug.com/40680523): Handle frame-less permission status checks in the
   // PermissionManager API. Until then, reject such requests.
   return blink::mojom::PermissionStatus::DENIED;
 }
@@ -80,7 +80,8 @@ WebEnginePermissionDelegate::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   return frame->permission_controller()->GetPermissionState(
@@ -108,22 +109,16 @@ WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
                                                             overridden_origin);
 }
 
-WebEnginePermissionDelegate::SubscriptionId
-WebEnginePermissionDelegate::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  // TODO(crbug.com/1063094): Implement permission status subscription. It's
+void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
+    content::PermissionController::SubscriptionId subscription_id) {
+  // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
   NOTIMPLEMENTED_LOG_ONCE();
-  return SubscriptionId();
 }
 
 void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {
-  // TODO(crbug.com/1063094): Implement permission status subscription. It's
+    content::PermissionController::SubscriptionId subscription_id) {
+  // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
   NOTIMPLEMENTED_LOG_ONCE();
 }

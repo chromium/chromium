@@ -11,10 +11,11 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -22,6 +23,12 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -36,53 +43,38 @@ GetTrustedWebBundleIdsForTesting() {
 
 }  // namespace
 
-IsolatedWebAppTrustChecker::IsolatedWebAppTrustChecker(
-    const PrefService& pref_service)
-    : pref_service_(pref_service) {}
+IsolatedWebAppTrustChecker::IsolatedWebAppTrustChecker(Profile& profile)
+    : profile_(profile) {}
 
 IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
 
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
-    const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block) const {
-  if (expected_web_bundle_id.type() !=
-      web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
+    const web_package::SignedWebBundleId& web_bundle_id,
+    bool is_dev_mode_bundle) const {
+  if (web_bundle_id.is_for_proxy_mode()) {
     return {.status = Result::Status::kErrorUnsupportedWebBundleIdType,
-            .message =
-                "Only Web Bundle IDs of type Ed25519PublicKey are supported."};
-  }
-
-  if (integrity_block.signature_stack().size() != 1) {
-    // TODO(crbug.com/1366303): Support more than one signature.
-    return {.status = Result::Status::kErrorInvalidSignatureStackLength,
-            .message =
-                base::StringPrintf("Expected exactly 1 signature, but got %zu.",
-                                   integrity_block.signature_stack().size())};
-  }
-
-  auto derived_web_bundle_id =
-      integrity_block.signature_stack().derived_web_bundle_id();
-  if (derived_web_bundle_id != expected_web_bundle_id) {
-    return {
-        .status = Result::Status::kErrorWebBundleIdNotDerivedFromFirstPublicKey,
-        .message = base::StringPrintf(
-            "The Web Bundle ID (%s) derived from the public key does not "
-            "match the expected Web Bundle ID (%s).",
-            derived_web_bundle_id.id().c_str(),
-            expected_web_bundle_id.id().c_str())};
+            .message = "Web Bundle IDs of type ProxyMode are not supported."};
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsTrustedViaPolicy(expected_web_bundle_id)) {
+  if (IsTrustedViaPolicy(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (IsTrustedViaDevMode(expected_web_bundle_id)) {
+// TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
+      chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
+    return {.status = Result::Status::kTrusted};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (is_dev_mode_bundle && IsIwaDevModeEnabled(&*profile_)) {
     return {.status = Result::Status::kTrusted};
   }
 
-  if (GetTrustedWebBundleIdsForTesting().contains(expected_web_bundle_id)) {
+  if (GetTrustedWebBundleIdsForTesting().contains(web_bundle_id)) {
     CHECK_IS_TEST();
     return {.status = Result::Status::kTrusted};
   }
@@ -94,10 +86,10 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
     const web_package::SignedWebBundleId& web_bundle_id) const {
-  const PrefService::Preference* pref =
-      pref_service_->FindPreference(prefs::kIsolatedWebAppInstallForceList);
+  const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
+      prefs::kIsolatedWebAppInstallForceList);
   if (!pref) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -112,20 +104,12 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool IsolatedWebAppTrustChecker::IsTrustedViaDevMode(
-    const web_package::SignedWebBundleId& web_bundle_id) const {
-  return base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode);
-}
-
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {
-  DCHECK(base::ranges::all_of(
-      trusted_web_bundle_ids,
-      [](const web_package::SignedWebBundleId& web_bundle_id) {
-        return web_bundle_id.type() ==
-               web_package::SignedWebBundleId::Type::kEd25519PublicKey;
-      }))
-      << "Can only trust Web Bundle IDs of type Ed25519PublicKey";
+  DCHECK(
+      base::ranges::none_of(trusted_web_bundle_ids,
+                            &web_package::SignedWebBundleId::is_for_proxy_mode))
+      << "Cannot trust Web Bundle IDs of type ProxyMode";
 
   GetTrustedWebBundleIdsForTesting() =  // IN-TEST
       std::move(trusted_web_bundle_ids);
@@ -133,9 +117,8 @@ void SetTrustedWebBundleIdsForTesting(  // IN-TEST
 
 void AddTrustedWebBundleIdForTesting(  // IN-TEST
     const web_package::SignedWebBundleId& trusted_web_bundle_id) {
-  DCHECK(trusted_web_bundle_id.type() ==
-         web_package::SignedWebBundleId::Type::kEd25519PublicKey)
-      << "Can only trust Web Bundle IDs of type Ed25519PublicKey";
+  DCHECK(!trusted_web_bundle_id.is_for_proxy_mode())
+      << "Cannot trust Web Bundle IDs of type ProxyMode";
 
   GetTrustedWebBundleIdsForTesting().insert(trusted_web_bundle_id);  // IN-TEST
 }

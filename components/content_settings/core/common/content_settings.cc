@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -20,7 +21,7 @@ namespace {
 
 void FilterRulesForType(ContentSettingsForOneType& settings,
                         const GURL& primary_url) {
-  base::EraseIf(settings,
+  std::erase_if(settings,
                 [&primary_url](const ContentSettingPatternSource& source) {
                   return !source.primary_pattern.Matches(primary_url);
                 });
@@ -41,7 +42,7 @@ ContentSettingPatternSource::ContentSettingPatternSource(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value setting_value,
-    const std::string& source,
+    content_settings::mojom::ProviderType source,
     bool incognito,
     content_settings::RuleMetaData metadata)
     : primary_pattern(primary_pattern),
@@ -81,13 +82,7 @@ bool ContentSettingPatternSource::IsExpired() const {
 }
 
 bool ContentSettingPatternSource::operator==(
-    const ContentSettingPatternSource& other) const {
-  return std::tie(primary_pattern, secondary_pattern, setting_value, metadata,
-                  source, incognito) ==
-         std::tie(other.primary_pattern, other.secondary_pattern,
-                  other.setting_value, other.metadata, other.source,
-                  other.incognito);
-}
+    const ContentSettingPatternSource& other) const = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const ContentSettingPatternSource& source) {
@@ -95,7 +90,7 @@ std::ostream& operator<<(std::ostream& os,
   PrintTo(source.primary_pattern, &os);
   os << ", ";
   PrintTo(source.secondary_pattern, &os);
-  os << ") source=" << source.source
+  os << ") source=" << static_cast<int>(source.source)
      << " value=" << source.setting_value.DebugString() << "]";
   return os;
 }
@@ -112,11 +107,7 @@ bool RendererContentSettingRules::IsRendererContentSetting(
 
 void RendererContentSettingRules::FilterRulesByOutermostMainFrameURL(
     const GURL& outermost_main_frame_url) {
-  FilterRulesForType(image_rules, outermost_main_frame_url);
-  FilterRulesForType(script_rules, outermost_main_frame_url);
-  FilterRulesForType(popup_redirect_rules, outermost_main_frame_url);
   FilterRulesForType(mixed_content_rules, outermost_main_frame_url);
-  FilterRulesForType(auto_dark_content_rules, outermost_main_frame_url);
 }
 
 RendererContentSettingRules::RendererContentSettingRules() = default;
@@ -136,10 +127,4 @@ RendererContentSettingRules& RendererContentSettingRules::operator=(
     RendererContentSettingRules&& rules) = default;
 
 bool RendererContentSettingRules::operator==(
-    const RendererContentSettingRules& other) const {
-  return std::tie(image_rules, script_rules, popup_redirect_rules,
-                  mixed_content_rules, auto_dark_content_rules) ==
-         std::tie(other.image_rules, other.script_rules,
-                  other.popup_redirect_rules, other.mixed_content_rules,
-                  other.auto_dark_content_rules);
-}
+    const RendererContentSettingRules& other) const = default;

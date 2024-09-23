@@ -6,22 +6,27 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
-namespace content {
+namespace content::internal {
 
 base::SupportsUserData::Data* GetDocumentUserData(const RenderFrameHost* rfh,
                                                   const void* key) {
-  return static_cast<const RenderFrameHostImpl*>(rfh)->GetDocumentUserData(key);
+  return static_cast<const RenderFrameHostImpl*>(rfh)
+      ->document_associated_data()
+      .GetUserData(key);
 }
 
 void SetDocumentUserData(RenderFrameHost* rfh,
                          const void* key,
                          std::unique_ptr<base::SupportsUserData::Data> data) {
-  static_cast<RenderFrameHostImpl*>(rfh)->SetDocumentUserData(key,
-                                                              std::move(data));
+  static_cast<RenderFrameHostImpl*>(rfh)
+      ->document_associated_data()
+      .SetUserData(key, std::move(data));
 }
 
 void RemoveDocumentUserData(RenderFrameHost* rfh, const void* key) {
-  static_cast<RenderFrameHostImpl*>(rfh)->RemoveDocumentUserData(key);
+  static_cast<RenderFrameHostImpl*>(rfh)
+      ->document_associated_data()
+      .RemoveUserData(key);
 }
 
-}  // namespace content
+}  // namespace content::internal

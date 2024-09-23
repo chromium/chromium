@@ -50,6 +50,8 @@ void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
     client_->CloseChannel(kNativeHostExited);
   } else if (request_string.find("bigMessageTest") != std::string::npos) {
     client_->CloseChannel(kHostInputOutputError);
+  } else if (request_string.find("sendInvalidResponse") != std::string::npos) {
+    SendInvalidResponse();
   } else {
     ProcessEcho(request_value->GetDict());
   }
@@ -68,6 +70,11 @@ void NativeMessageEchoHost::ProcessEcho(const base::Value::Dict& request) {
   std::string response_string;
   base::JSONWriter::Write(response, &response_string);
   client_->PostMessageFromNativeHost(response_string);
+}
+
+void NativeMessageEchoHost::SendInvalidResponse() {
+  // Send a malformed JSON string.
+  client_->PostMessageFromNativeHost("{");
 }
 
 }  // namespace extensions

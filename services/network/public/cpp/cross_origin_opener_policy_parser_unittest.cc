@@ -19,7 +19,11 @@ namespace network {
 TEST(CrossOriginOpenerPolicyTest, Parse) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kCrossOriginOpenerPolicy, features::kCoopRestrictProperties},
+      {
+          features::kCrossOriginOpenerPolicy,
+          features::kCoopRestrictProperties,
+          features::kCoopNoopenerAllowPopups,
+      },
       {});
 
   using mojom::CrossOriginOpenerPolicyValue;
@@ -36,6 +40,8 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
   constexpr auto kCoepNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   constexpr auto kCoepCorp =
       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  constexpr auto kNoopenerAllowPopups =
+      CrossOriginOpenerPolicyValue::kNoopenerAllowPopups;
 
   const auto kNoHeader = std::optional<std::string>();
   const auto kNoEndpoint = kNoHeader;
@@ -205,6 +211,8 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
       {kNoHeader, kCoepNone, "restrict-properties", kCoepCorp, kNoEndpoint,
        kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
        kRestrictPropertiesPlusCoep},
+      {"noopener-allow-popups", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
+       kNoopenerAllowPopups, kNoopenerAllowPopups, kNoEndpoint, kUnsafeNone},
   };
 
   for (const auto& test_case : kTestCases) {

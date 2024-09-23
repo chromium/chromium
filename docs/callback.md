@@ -716,13 +716,16 @@ designated callback type expects. The extra arguments can be ignored as long
 as they are leading.
 
 ```cpp
-void LogError(char* error_message) {
-  if (error_message)
+bool LogError(char* error_message) {
+  if (error_message) {
     cout << "Log: " << error_message << endl;
+    return false;
+  }
+  return true;
 }
-base::RepeatingCallback<void(int, char*)> cb =
+base::RepeatingCallback<bool(int, char*)> cb =
     base::IgnoreArgs<int>(base::BindRepeating(&LogError));
-cb.Run(42, nullptr);
+CHECK_EQ(true, cb.Run(42, nullptr));
 ```
 
 Note in the example above that the type(s) passed to `IgnoreArgs` represent

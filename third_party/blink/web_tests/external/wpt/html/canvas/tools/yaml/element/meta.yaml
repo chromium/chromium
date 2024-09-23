@@ -61,63 +61,6 @@
         } )
 
 - meta: |
-    state = [ # some non-default values to test with
-        ('strokeStyle', '"#ff0000"'),
-        ('fillStyle', '"#ff0000"'),
-        ('globalAlpha', 0.5),
-        ('lineWidth', 0.5),
-        ('lineCap', '"round"'),
-        ('lineJoin', '"round"'),
-        ('miterLimit', 0.5),
-        ('shadowOffsetX', 5),
-        ('shadowOffsetY', 5),
-        ('shadowBlur', 5),
-        ('shadowColor', '"#ff0000"'),
-        ('globalCompositeOperation', '"copy"'),
-        ('font', '"25px serif"'),
-        ('textAlign', '"center"'),
-        ('textBaseline', '"bottom"'),
-    ]
-    for key,value in state:
-        tests.append( {
-            'name': '2d.state.saverestore.%s' % key,
-            'desc': 'save()/restore() works for %s' % key,
-            'code':
-    """// Test that restore() undoes any modifications
-    var old = ctx.%(key)s;
-    ctx.save();
-    ctx.%(key)s = %(value)s;
-    ctx.restore();
-    @assert ctx.%(key)s === old;
-
-    // Also test that save() doesn't modify the values
-    ctx.%(key)s = %(value)s;
-    old = ctx.%(key)s;
-        // we're not interested in failures caused by get(set(x)) != x (e.g.
-        // from rounding), so compare against 'old' instead of against %(value)s
-    ctx.save();
-    @assert ctx.%(key)s === old;
-    ctx.restore();
-    """ % { 'key':key, 'value':value }
-        } )
-
-    tests.append( {
-        'name': '2d.canvas.host.initial.reset.2dstate',
-        'desc': 'Resetting the canvas state resets 2D state variables',
-        'code':
-    """canvas.width = 100;
-    var default_val;
-    """ + "".join(
-    """
-    default_val = ctx.%(key)s;
-    ctx.%(key)s = %(value)s;
-    canvas.width = 100;
-    @assert ctx.%(key)s === default_val;
-    """ % { 'key':key, 'value':value }
-        for key,value in state),
-    } )
-
-- meta: |
     # Composite operation tests
     # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
     ops = [
@@ -390,18 +333,12 @@
         ('hsl-4', 'hsl(-360240, 100%, 50%)', 0,255,0,255, ""),
         ('hsl-5', 'hsl(120.0, 100.0%, 50.0%)', 0,255,0,255, ""),
         ('hsl-6', 'hsl(+120, +100%, +50%)', 0,255,0,255, ""),
-        ('hsl-clamp-1', 'hsl(120, 200%, 50%)', 0,255,0,255, ""),
-        ('hsl-clamp-2', 'hsl(120, -200%, 49.9%)', 127,127,127,255, ""),
-        ('hsl-clamp-3', 'hsl(120, 100%, 200%)', 255,255,255,255, ""),
-        ('hsl-clamp-4', 'hsl(120, 100%, -200%)', 0,0,0,255, ""),
+        ('hsl-clamp-negative-saturation', 'hsl(120, -200%, 49.9%)', 127,127,127,255, ""),
         ('hsla-1', 'hsla(120, 100%, 50%, 0.499)', 0,255,0,127, ""),
         ('hsla-2', 'hsla( 120.0 , 100.0% , 50.0% , 1 )', 0,255,0,255, ""),
-        ('hsla-clamp-1', 'hsla(120, 200%, 50%, 1)', 0,255,0,255, ""),
-        ('hsla-clamp-2', 'hsla(120, -200%, 49.9%, 1)', 127,127,127,255, ""),
-        ('hsla-clamp-3', 'hsla(120, 100%, 200%, 1)', 255,255,255,255, ""),
-        ('hsla-clamp-4', 'hsla(120, 100%, -200%, 1)', 0,0,0,255, ""),
-        ('hsla-clamp-5', 'hsla(120, 100%, 50%, 2)', 0,255,0,255, ""),
-        ('hsla-clamp-6', 'hsla(120, 100%, 0%, -2)', 0,0,0,0, ""),
+        ('hsla-clamp-negative-saturation', 'hsla(120, -200%, 49.9%, 1)', 127,127,127,255, ""),
+        ('hsla-clamp-alpha-1', 'hsla(120, 100%, 50%, 2)', 0,255,0,255, ""),
+        ('hsla-clamp-alpha-2', 'hsla(120, 100%, 0%, -2)', 0,0,0,0, ""),
         ('svg-1', 'gray', 128,128,128,255, ""),
         ('svg-2', 'grey', 128,128,128,255, ""),
         # css-color-4 rgb() color function

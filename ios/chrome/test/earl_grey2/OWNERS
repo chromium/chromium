@@ -1,0 +1,6 @@
+# This is for the common case of adding, removing, or renaming deps entries for
+# EG2 test targets (e.g.. deps entries of the form "..foo:eg2_tests"). For other
+# changes, including adding new `chrome_ios_eg2_test` targets (e.g., targets of
+# of the form "ios_chrome_foo_eg2tests_module") please use the usual set of
+# OWNERS.
+per-file BUILD.gn=*

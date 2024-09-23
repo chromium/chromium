@@ -7,6 +7,10 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/page_type.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -140,7 +144,57 @@ void OffscreenCreateDocumentFunction::OnExtensionHostDestroyed(
 
 void OffscreenCreateDocumentFunction::OnExtensionHostDidStopFirstLoad(
     const ExtensionHost* host) {
+  content::NavigationEntry* nav_entry =
+      host->host_contents()->GetController().GetLastCommittedEntry();
+  // If the page failed to load, fire an error instead.
+  if (!nav_entry || nav_entry->GetPageType() == content::PAGE_TYPE_ERROR) {
+    // We need to do this asynchronously by posting a task since this is
+    // currently within the context of being notified as an observer that the
+    // ExtensionHost finished its first load. `NotifyPageFailedToLoad()` will
+    // delete the extension host, which isn't allowed in the middle of observer
+    // iteration.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OffscreenCreateDocumentFunction::NotifyPageFailedToLoad,
+                       this));
+    return;
+  }
+
   SendResponseToExtension(NoArguments());
+}
+
+void OffscreenCreateDocumentFunction::NotifyPageFailedToLoad() {
+  OffscreenDocumentManager* manager =
+      GetManagerToUse(*browser_context(), *extension());
+  OffscreenDocumentHost* offscreen_document =
+      manager->GetOffscreenDocumentForExtension(*extension());
+  if (!offscreen_document ||
+      !host_observer_.IsObservingSource(offscreen_document)) {
+    // It's possible the offscreen document went away in between when we
+    // queued up the task to notify the page failed to load and when the
+    // task ran (or, rarer yet, that it went away and there's a whole new
+    // offscreen document in its place). In that case, the function should
+    // have already responded (such as due to the ExtensionHost closing), or
+    // it should be an edge case such as the browser shutting down. Bail out.
+    // ExtensionFunction's dtor will check that this function properly
+    // responded, if it should have.
+    return;
+  }
+
+  // In any other case, we shouldn't have responded to the extension yet.
+  CHECK(!did_respond());
+
+  // The document still exists. Since it failed to load, we should close it and
+  // notify the extension.
+
+  // Remove ourselves as an observer, since otherwise closing the document
+  // would trigger `OnExtensionHostDestroyed()`.
+  host_observer_.Reset();
+
+  // Close out the document and notify the calling extension.
+  manager->CloseOffscreenDocumentForExtension(*extension());
+  SendResponseToExtension(Error("Page failed to load."));
+  return;
 }
 
 void OffscreenCreateDocumentFunction::SendResponseToExtension(

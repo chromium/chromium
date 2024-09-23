@@ -21,8 +21,8 @@ import {AuthenticationType, Network} from './network_health_provider.mojom-webui
 const EthernetInfoElementBase = I18nMixin(PolymerElement);
 
 export class EthernetInfoElement extends EthernetInfoElementBase {
-  static get is(): string {
-    return 'ethernet-info';
+  static get is(): 'ethernet-info' {
+    return 'ethernet-info' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -75,7 +75,7 @@ export class EthernetInfoElement extends EthernetInfoElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ethernet-info': EthernetInfoElement;
+    [EthernetInfoElement.is]: EthernetInfoElement;
   }
 }
 

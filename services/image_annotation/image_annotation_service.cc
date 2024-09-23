@@ -30,6 +30,7 @@ ImageAnnotationService::ImageAnnotationService(
     mojo::PendingReceiver<mojom::ImageAnnotationService> receiver,
     std::string api_key,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    std::unique_ptr<manta::AnchovyProvider> anchovy_provider,
     std::unique_ptr<Annotator::Client> annotator_client)
     : receiver_(this, std::move(receiver)),
       annotator_(GURL(kPixelsServerUrl.Get()),
@@ -39,6 +40,7 @@ ImageAnnotationService::ImageAnnotationService(
                  kBatchSize.Get(),
                  kMinOcrConfidence.Get(),
                  shared_url_loader_factory,
+                 std::move(anchovy_provider),
                  std::move(annotator_client)) {}
 
 ImageAnnotationService::~ImageAnnotationService() = default;

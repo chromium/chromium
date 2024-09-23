@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/exo/wayland/wayland_keyboard_delegate.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <cstring>
+#include "components/exo/wayland/wayland_keyboard_delegate.h"
 
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+
+#include <cstring>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -42,16 +48,19 @@ bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
 
 void WaylandKeyboardDelegate::OnKeyboardEnter(
     Surface* surface,
-    const base::flat_map<ui::DomCode, KeyState>& pressed_keys) {
+    const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
+        pressed_keys) {
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   wl_array keys;
   wl_array_init(&keys);
   for (const auto& entry : pressed_keys) {
-    uint32_t* value =
-        static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
-    DCHECK(value);
-    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second.code);
+    for (const auto& key_state : entry.second) {
+      uint32_t* value =
+          static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
+      DCHECK(value);
+      *value = ui::KeycodeConverter::DomCodeToEvdevCode(key_state.code);
+    }
   }
   wl_keyboard_send_enter(
       keyboard_resource_,
@@ -100,8 +109,7 @@ void WaylandKeyboardDelegate::OnKeyboardModifiers(
   SendKeyboardModifiers();
 }
 
-void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
-    base::StringPiece keymap) {
+void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(std::string_view keymap) {
   // Sent the content of |keymap| with trailing '\0' termination via shared
   // memory.
   base::UnsafeSharedMemoryRegion shared_keymap_region =

@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/apps/platform_apps/api/arc_apps_private.h"
 #include "ui/events/event_constants.h"
@@ -119,9 +118,6 @@ ExtensionFunction::ResponseAction ArcAppsPrivateLaunchAppFunction::Run() {
           arc::UserInteractionType::APP_STARTED_FROM_EXTENSION_API)) {
     return RespondNow(Error("Launch failed"));
   }
-
-  ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-      ash::DemoSession::AppLaunchSource::kExtensionApi);
 
   return RespondNow(NoArguments());
 }

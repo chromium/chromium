@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <string>
@@ -21,9 +26,7 @@ TEST(LoggingInstallerTest, TestTruncate) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
   int64_t file_size = 0;
@@ -47,9 +50,7 @@ TEST(LoggingInstallerTest, TestTruncationNotNeeded) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
   int64_t file_size = 0;
@@ -70,9 +71,7 @@ TEST(LoggingInstallerTest, TestInUseNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
   int64_t file_size = 0;
   EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
@@ -98,9 +97,7 @@ TEST(LoggingInstallerTest, TestMoveFailsNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
   int64_t file_size = 0;
   EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));

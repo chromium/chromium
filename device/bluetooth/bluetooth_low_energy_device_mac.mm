@@ -84,7 +84,7 @@ uint16_t BluetoothLowEnergyDeviceMac::GetDeviceID() const {
 }
 
 uint16_t BluetoothLowEnergyDeviceMac::GetAppearance() const {
-  // TODO(crbug.com/588083): Implementing GetAppearance()
+  // TODO(crbug.com/41240161): Implementing GetAppearance()
   // on mac, win, and android platforms for chrome
   NOTIMPLEMENTED();
   return 0;
@@ -537,7 +537,7 @@ void BluetoothLowEnergyDeviceMac::DidDisconnectPeripheral(NSError* error) {
 
 std::ostream& operator<<(std::ostream& out,
                          const BluetoothLowEnergyDeviceMac& device) {
-  // TODO(crbug.com/703878): Should use
+  // TODO(crbug.com/40511884): Should use
   // BluetoothLowEnergyDeviceMac::GetNameForDisplay() instead.
   std::optional<std::string> name = device.GetName();
   const char* is_gatt_connected =

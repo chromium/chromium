@@ -40,8 +40,7 @@ void ReportInvalidReferrerSend(const GURL& target_url,
   // Record information to help debug http://crbug.com/422871
   if (!target_url.SchemeIsHTTPOrHTTPS())
     return;
-  base::debug::DumpWithoutCrashing();
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 }  // namespace
@@ -104,6 +103,18 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
     return true;
 
   return cookie_settings_->IsFullCookieAccessAllowed(
+      request.url(), request.site_for_cookies(),
+      request.isolation_info().top_frame_origin(),
+      request.cookie_setting_overrides());
+}
+
+// This implementation is currently never called in practice due to Bling not
+// using `//net` code for web navigation (unless `use_blink = true` which is
+// experimental).
+std::optional<net::cookie_util::StorageAccessStatus>
+IOSChromeNetworkDelegate::OnGetStorageAccessStatus(
+    const net::URLRequest& request) const {
+  return cookie_settings_->GetStorageAccessStatus(
       request.url(), request.site_for_cookies(),
       request.isolation_info().top_frame_origin(),
       request.cookie_setting_overrides());

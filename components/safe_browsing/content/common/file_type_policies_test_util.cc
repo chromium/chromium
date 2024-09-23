@@ -4,7 +4,22 @@
 
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 
+#include "base/values.h"
+
 namespace safe_browsing {
+
+namespace {
+
+base::Value::List CreateStringListValueForTest(
+    const std::vector<std::string>& items) {
+  base::Value::List list;
+  for (const auto& item : items) {
+    list.Append(item);
+  }
+  return list;
+}
+
+}  // namespace
 
 FileTypePoliciesTestOverlay::FileTypePoliciesTestOverlay()
     : orig_config_(new DownloadFileTypeConfig()) {
@@ -49,6 +64,15 @@ FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting() {
       safe_browsing::DownloadFileType::DANGEROUS);
   file_type_configuration.SwapConfig(fake_file_type_config);
   return file_type_configuration;
+}
+
+base::Value::Dict CreateNotDangerousOverridePolicyEntryForTesting(
+    const std::string& extension,
+    const std::vector<std::string>& domains) {
+  base::Value::Dict out;
+  out.Set("file_extension", base::Value{extension});
+  out.Set("domains", CreateStringListValueForTest(domains));
+  return out;
 }
 
 }  // namespace safe_browsing

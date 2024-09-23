@@ -25,8 +25,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
       const LayoutAlgorithmParams& params,
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const LayoutResult* Layout() override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   const LayoutResult* RelayoutIgnoringChildScrollbarChanges();
@@ -41,27 +41,13 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
-  Length GetUsedFlexBasis(const BlockNode& child) const;
-  // This has an optional out parameter so that callers can avoid a subsequent
-  // redundant call to GetUsedFlexBasis.
-  bool IsUsedFlexBasisDefinite(const BlockNode& child,
-                               Length* flex_basis) const;
-  bool DoesItemCrossSizeComputeToAuto(const BlockNode& child) const;
-  bool IsItemCrossAxisLengthDefinite(const BlockNode& child,
-                                     const Length& length) const;
-  bool AspectRatioProvidesMainSize(const BlockNode& child) const;
+  bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
   bool DoesItemStretch(const BlockNode& child) const;
   // This checks for one of the scenarios where a flex-item box has a definite
   // size that would be indefinite if the box weren't a flex item.
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
   bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child) const;
-  LayoutUnit AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-      const BlockNode& child,
-      LayoutUnit main_size,
-      const MinMaxSizes& cross_min_max,
-      const BoxStrut& border_padding_in_child_writing_mode);
 
-  bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
 
   enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
@@ -78,6 +64,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   ConstraintSpace BuildSpaceForLayout(
       const BlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
+      bool is_initial_block_size_indefinite,
       std::optional<LayoutUnit> override_inline_size = std::nullopt,
       std::optional<LayoutUnit> line_cross_size_for_stretch = std::nullopt,
       std::optional<LayoutUnit> block_offset_for_fragmentation = std::nullopt,
@@ -86,8 +73,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void ConstructAndAppendFlexItems(
       Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
-  void ApplyFinalAlignmentAndReversals(
-      HeapVector<NGFlexLine>* flex_line_outputs);
+  void ApplyReversals(HeapVector<NGFlexLine>* flex_line_outputs);
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs);
@@ -103,13 +89,13 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
-  bool MainAxisIsInlineAxis(const BlockNode& child) const;
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
   void HandleOutOfFlowPositionedItems(
       HeapVector<Member<LayoutBox>>& oof_children);
 
-  void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
+  // Set reading flow so they can be accessed by LayoutBox.
+  void SetReadingFlowElements(const HeapVector<NGFlexLine>& flex_line_outputs);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
@@ -123,9 +109,22 @@ class CORE_EXPORT FlexLayoutAlgorithm
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
   void ConsumeRemainingFragmentainerSpace(
-      LayoutUnit previously_consumed_block_size,
+      LayoutUnit offset_in_stitched_container,
       NGFlexLine* flex_line,
       const FlexColumnBreakInfo* column_break_info = nullptr);
+
+  BreakStatus BreakBeforeChildIfNeeded(
+      LayoutInputNode child,
+      const LayoutResult& layout_result,
+      LayoutUnit fragmentainer_block_offset,
+      bool has_container_separation,
+      bool is_row_item,
+      FlexColumnBreakInfo* flex_column_break_info) {
+    return ::blink::BreakBeforeChildIfNeeded(
+        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        FragmentainerCapacityForChildren(), has_container_separation,
+        &container_builder_, is_row_item, flex_column_break_info);
+  }
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a

@@ -6,14 +6,14 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -25,6 +25,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 // The URL prefixes that are removed from shown origin.
 const char* const kRemovedPrefixes[] = {"m.", "mobile.", "www."};
@@ -70,8 +72,8 @@ std::string GetShownOrigin(const url::Origin& origin) {
   std::string original =
       base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-  base::StringPiece result = original;
-  for (base::StringPiece prefix : kRemovedPrefixes) {
+  std::string_view result = original;
+  for (std::string_view prefix : kRemovedPrefixes) {
     if (base::StartsWith(result, prefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       result.remove_prefix(prefix.length());
@@ -79,8 +81,8 @@ std::string GetShownOrigin(const url::Origin& origin) {
     }
   }
 
-  return result.find('.') != base::StringPiece::npos ? std::string(result)
-                                                     : original;
+  return result.find('.') != std::string_view::npos ? std::string(result)
+                                                    : original;
 }
 
 void UpdatePasswordFormUsernameAndPassword(

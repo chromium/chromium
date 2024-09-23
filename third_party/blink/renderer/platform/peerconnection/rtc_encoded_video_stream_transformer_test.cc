@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -83,7 +84,7 @@ class RTCEncodedVideoStreamTransformerTest
             new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         metronome_(GetParam() ? new NiceMock<MockMetronome>() : nullptr),
         encoded_video_stream_transformer_(main_task_runner_,
-                                          absl::WrapUnique(metronome_)) {}
+                                          absl::WrapUnique(metronome_.get())) {}
 
   void SetUp() override {
     EXPECT_FALSE(
@@ -106,6 +107,7 @@ class RTCEncodedVideoStreamTransformerTest
   }
 
   void TearDown() override {
+    metronome_ = nullptr;
     encoded_video_stream_transformer_.UnregisterTransformedFrameSinkCallback(
         kSSRC);
     EXPECT_FALSE(
@@ -119,7 +121,7 @@ class RTCEncodedVideoStreamTransformerTest
   scoped_refptr<base::SingleThreadTaskRunner> webrtc_task_runner_;
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   MockTransformerCallbackHolder mock_transformer_callback_holder_;
-  MockMetronome* metronome_;
+  raw_ptr<MockMetronome> metronome_;
   RTCEncodedVideoStreamTransformer encoded_video_stream_transformer_;
 };
 
@@ -222,6 +224,68 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
                           CrossThreadUnretained(&callback)));
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FramesBufferedBeforeShortcircuiting) {
+  // Send some frames to be transformed before shortcircuiting.
+  const size_t transform_count = 5;
+  for (size_t i = 0; i < transform_count; i++) {
+    PostCrossThreadTask(
+        *webrtc_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                            encoded_video_stream_transformer_.Delegate(),
+                            CreateMockFrame()));
+  }
+
+  task_environment_.RunUntilIdle();
+
+  // All frames should be passed back once short circuiting starts.
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame).Times(transform_count);
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FrameArrivingAfterShortcircuitingIsPassedBack) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  // Frames passed to Transform after shortcircuting should be passed straight
+  // back.
+  PostCrossThreadTask(
+      *webrtc_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                          encoded_video_stream_transformer_.Delegate(),
+                          CreateMockFrame()));
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FramesBufferedBeforeSettingTransform) {
+  // Send some frames to be transformed before a transform is set.
+  const size_t transform_count = 5;
+  for (size_t i = 0; i < transform_count; i++) {
+    PostCrossThreadTask(
+        *webrtc_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                            encoded_video_stream_transformer_.Delegate(),
+                            CreateMockFrame()));
+  }
+
+  task_environment_.RunUntilIdle();
+
+  // All frames should be passed as soon as a transform callback is provided
+  EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
+      .Times(transform_count);
+  encoded_video_stream_transformer_.SetTransformerCallback(
+      WTF::CrossThreadBindRepeating(
+          &MockTransformerCallbackHolder::OnEncodedFrame,
+          WTF::CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }
 
 }  // namespace blink

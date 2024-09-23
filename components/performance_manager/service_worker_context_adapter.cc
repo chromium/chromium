@@ -17,15 +17,15 @@
 
 namespace performance_manager {
 
-// ServiceWorkerContextAdapter::RunningServiceWorker ---------------------------
+// ServiceWorkerContextAdapterImpl::RunningServiceWorker -----------------------
 
 // Observes when the render process of a running service worker exits and
 // notifies its owner.
-class ServiceWorkerContextAdapter::RunningServiceWorker
+class ServiceWorkerContextAdapterImpl::RunningServiceWorker
     : content::RenderProcessHostObserver {
  public:
   RunningServiceWorker(int64_t version_id,
-                       ServiceWorkerContextAdapter* adapter);
+                       ServiceWorkerContextAdapterImpl* adapter);
   ~RunningServiceWorker() override;
 
   void Subscribe(content::RenderProcessHost* worker_process_host);
@@ -44,35 +44,35 @@ class ServiceWorkerContextAdapter::RunningServiceWorker
 
   // The adapter that owns |this|. Notified when RenderProcessExited() is
   // called.
-  const raw_ptr<ServiceWorkerContextAdapter> adapter_;
+  const raw_ptr<ServiceWorkerContextAdapterImpl> adapter_;
 
   base::ScopedObservation<content::RenderProcessHost,
                           content::RenderProcessHostObserver>
       scoped_observation_{this};
 };
 
-ServiceWorkerContextAdapter::RunningServiceWorker::RunningServiceWorker(
+ServiceWorkerContextAdapterImpl::RunningServiceWorker::RunningServiceWorker(
     int64_t version_id,
-    ServiceWorkerContextAdapter* adapter)
+    ServiceWorkerContextAdapterImpl* adapter)
     : version_id_(version_id), adapter_(adapter) {}
 
-ServiceWorkerContextAdapter::RunningServiceWorker::~RunningServiceWorker() {
+ServiceWorkerContextAdapterImpl::RunningServiceWorker::~RunningServiceWorker() {
   DCHECK(!scoped_observation_.IsObserving());
 }
 
-void ServiceWorkerContextAdapter::RunningServiceWorker::Subscribe(
+void ServiceWorkerContextAdapterImpl::RunningServiceWorker::Subscribe(
     content::RenderProcessHost* worker_process_host) {
   DCHECK(!scoped_observation_.IsObserving());
   scoped_observation_.Observe(worker_process_host);
 }
 
-void ServiceWorkerContextAdapter::RunningServiceWorker::Unsubscribe() {
+void ServiceWorkerContextAdapterImpl::RunningServiceWorker::Unsubscribe() {
   DCHECK(scoped_observation_.IsObserving());
 
   scoped_observation_.Reset();
 }
 
-void ServiceWorkerContextAdapter::RunningServiceWorker::RenderProcessExited(
+void ServiceWorkerContextAdapterImpl::RunningServiceWorker::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   adapter_->OnRenderProcessExited(version_id_);
@@ -80,7 +80,7 @@ void ServiceWorkerContextAdapter::RunningServiceWorker::RenderProcessExited(
   /* This object is deleted inside the above, don't touch "this". */
 }
 
-void ServiceWorkerContextAdapter::RunningServiceWorker::
+void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
     InProcessRendererExiting(content::RenderProcessHost* host) {
   CHECK(content::RenderProcessHost::run_renderer_in_process());
   adapter_->OnRenderProcessExited(version_id_);
@@ -88,222 +88,36 @@ void ServiceWorkerContextAdapter::RunningServiceWorker::
   /* This object is deleted inside the above, don't touch "this". */
 }
 
-void ServiceWorkerContextAdapter::RunningServiceWorker::
+void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
     RenderProcessHostDestroyed(content::RenderProcessHost* host) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
-// ServiceWorkerContextAdapter::RunningServiceWorker ---------------------------
+// ServiceWorkerContextAdapterImpl ---------------------------------------------
 
-ServiceWorkerContextAdapter::ServiceWorkerContextAdapter(
+ServiceWorkerContextAdapterImpl::ServiceWorkerContextAdapterImpl(
     content::ServiceWorkerContext* underlying_context) {
   scoped_underlying_context_observation_.Observe(underlying_context);
 }
 
-ServiceWorkerContextAdapter::~ServiceWorkerContextAdapter() {
+ServiceWorkerContextAdapterImpl::~ServiceWorkerContextAdapterImpl() {
   // Clean up any outstanding running service worker process subscriptions.
   for (const auto& item : running_service_workers_)
     item.second->Unsubscribe();
   running_service_workers_.clear();
 }
 
-void ServiceWorkerContextAdapter::AddObserver(
+void ServiceWorkerContextAdapterImpl::AddObserver(
     content::ServiceWorkerContextObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void ServiceWorkerContextAdapter::RemoveObserver(
+void ServiceWorkerContextAdapterImpl::RemoveObserver(
     content::ServiceWorkerContextObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ServiceWorkerContextAdapter::RegisterServiceWorker(
-    const GURL& script_url,
-    const blink::StorageKey& key,
-    const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    StatusCodeCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::UnregisterServiceWorker(
-    const GURL& scope,
-    const blink::StorageKey& key,
-    ResultCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::UnregisterServiceWorkerImmediately(
-    const GURL& scope,
-    const blink::StorageKey& key,
-    ResultCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-content::ServiceWorkerExternalRequestResult
-ServiceWorkerContextAdapter::StartingExternalRequest(
-    int64_t service_worker_version_id,
-    content::ServiceWorkerExternalRequestTimeoutType timeout_type,
-    const base::Uuid& request_uuid) {
-  NOTIMPLEMENTED();
-  return content::ServiceWorkerExternalRequestResult::kOk;
-}
-
-content::ServiceWorkerExternalRequestResult
-ServiceWorkerContextAdapter::FinishedExternalRequest(
-    int64_t service_worker_version_id,
-    const base::Uuid& request_uuid) {
-  NOTIMPLEMENTED();
-  return content::ServiceWorkerExternalRequestResult::kOk;
-}
-
-size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
-    const blink::StorageKey& key) {
-  NOTIMPLEMENTED();
-  return 0u;
-}
-
-bool ServiceWorkerContextAdapter::ExecuteScriptForTest(
-    const std::string& script,
-    int64_t version_id,
-    content::ServiceWorkerScriptExecutionCallback callback) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool ServiceWorkerContextAdapter::MaybeHasRegistrationForStorageKey(
-    const blink::StorageKey& key) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void ServiceWorkerContextAdapter::GetAllStorageKeysInfo(
-    GetUsageInfoCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::DeleteForStorageKey(
-    const blink::StorageKey& key,
-    ResultCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::CheckHasServiceWorker(
-    const GURL& url,
-    const blink::StorageKey& key,
-    CheckHasServiceWorkerCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::CheckOfflineCapability(
-    const GURL& url,
-    const blink::StorageKey& key,
-    CheckOfflineCapabilityCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::ClearAllServiceWorkersForTest(
-    base::OnceClosure callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::StartWorkerForScope(
-    const GURL& scope,
-    const blink::StorageKey& key,
-    StartWorkerCallback info_callback,
-    StatusCodeCallback status_callback) {
-  NOTIMPLEMENTED();
-}
-
-bool ServiceWorkerContextAdapter::IsLiveStartingServiceWorker(
-    int64_t service_worker_version_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool ServiceWorkerContextAdapter::IsLiveRunningServiceWorker(
-    int64_t service_worker_version_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-service_manager::InterfaceProvider&
-ServiceWorkerContextAdapter::GetRemoteInterfaces(
-    int64_t service_worker_version_id) {
-  NOTREACHED_NORETURN();
-}
-
-blink::AssociatedInterfaceProvider&
-ServiceWorkerContextAdapter::GetRemoteAssociatedInterfaces(
-    int64_t service_worker_version_id) {
-  NOTREACHED_NORETURN();
-}
-
-void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
-    const GURL& scope,
-    const blink::StorageKey& key,
-    blink::TransferableMessage message,
-    ResultCallback result_callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::StartServiceWorkerForNavigationHint(
-    const GURL& document_url,
-    const blink::StorageKey& key,
-    StartServiceWorkerForNavigationHintCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::WarmUpServiceWorker(
-    const GURL& document_url,
-    const blink::StorageKey& key,
-    WarmUpServiceWorkerCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::StopAllServiceWorkersForStorageKey(
-    const blink::StorageKey& key) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::StopAllServiceWorkers(
-    base::OnceClosure callback) {
-  NOTIMPLEMENTED();
-}
-
-const base::flat_map<int64_t /* version_id */,
-                     content::ServiceWorkerRunningInfo>&
-ServiceWorkerContextAdapter::GetRunningServiceWorkerInfos() {
-  NOTIMPLEMENTED();
-  static const base::NoDestructor<
-      base::flat_map<int64_t, content::ServiceWorkerRunningInfo>>
-      unused;
-  return *unused;
-}
-
-void ServiceWorkerContextAdapter::OnRegistrationCompleted(const GURL& scope) {
-  for (auto& observer : observer_list_)
-    observer.OnRegistrationCompleted(scope);
-}
-
-void ServiceWorkerContextAdapter::OnRegistrationStored(int64_t registration_id,
-                                                       const GURL& scope) {
-  for (auto& observer : observer_list_)
-    observer.OnRegistrationStored(registration_id, scope);
-}
-
-void ServiceWorkerContextAdapter::OnVersionActivated(int64_t version_id,
-                                                     const GURL& scope) {
-  for (auto& observer : observer_list_)
-    observer.OnVersionActivated(version_id, scope);
-}
-
-void ServiceWorkerContextAdapter::OnVersionRedundant(int64_t version_id,
-                                                     const GURL& scope) {
-  for (auto& observer : observer_list_)
-    observer.OnVersionRedundant(version_id, scope);
-}
-
-void ServiceWorkerContextAdapter::OnVersionStartedRunning(
+void ServiceWorkerContextAdapterImpl::OnVersionStartedRunning(
     int64_t version_id,
     const content::ServiceWorkerRunningInfo& running_info) {
   content::RenderProcessHost* worker_process_host =
@@ -325,7 +139,8 @@ void ServiceWorkerContextAdapter::OnVersionStartedRunning(
     observer.OnVersionStartedRunning(version_id, running_info);
 }
 
-void ServiceWorkerContextAdapter::OnVersionStoppedRunning(int64_t version_id) {
+void ServiceWorkerContextAdapterImpl::OnVersionStoppedRunning(
+    int64_t version_id) {
   bool removed = MaybeRemoveRunningServiceWorker(version_id);
   if (!removed) {
 #if DCHECK_IS_ON()
@@ -341,7 +156,7 @@ void ServiceWorkerContextAdapter::OnVersionStoppedRunning(int64_t version_id) {
     observer.OnVersionStoppedRunning(version_id);
 }
 
-void ServiceWorkerContextAdapter::OnControlleeAdded(
+void ServiceWorkerContextAdapterImpl::OnControlleeAdded(
     int64_t version_id,
     const std::string& client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
@@ -350,7 +165,7 @@ void ServiceWorkerContextAdapter::OnControlleeAdded(
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
   if (!inserted) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -358,20 +173,20 @@ void ServiceWorkerContextAdapter::OnControlleeAdded(
     observer.OnControlleeAdded(version_id, client_uuid, client_info);
 }
 
-void ServiceWorkerContextAdapter::OnControlleeRemoved(
+void ServiceWorkerContextAdapterImpl::OnControlleeRemoved(
     int64_t version_id,
     const std::string& client_uuid) {
   // If |client_uuid| is not already marked as a client of |version_id|, the
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
   size_t removed = it->second.erase(client_uuid);
   if (!removed) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -384,13 +199,7 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
     observer.OnControlleeRemoved(version_id, client_uuid);
 }
 
-void ServiceWorkerContextAdapter::OnNoControllees(int64_t version_id,
-                                                  const GURL& scope) {
-  for (auto& observer : observer_list_)
-    observer.OnNoControllees(version_id, scope);
-}
-
-void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
+void ServiceWorkerContextAdapterImpl::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& client_uuid,
     content::GlobalRenderFrameHostId render_frame_host_id) {
@@ -398,12 +207,12 @@ void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
   // not already a client of |version_id|.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
   if (it->second.find(client_uuid) == it->second.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -412,20 +221,8 @@ void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
                                              render_frame_host_id);
 }
 
-void ServiceWorkerContextAdapter::OnReportConsoleMessage(
-    int64_t version_id,
-    const GURL& scope,
-    const content::ConsoleMessage& message) {
-  for (auto& observer : observer_list_)
-    observer.OnReportConsoleMessage(version_id, scope, message);
-}
-
-void ServiceWorkerContextAdapter::OnDestruct(ServiceWorkerContext* context) {
-  for (auto& observer : observer_list_)
-    observer.OnDestruct(context);
-}
-
-void ServiceWorkerContextAdapter::OnRenderProcessExited(int64_t version_id) {
+void ServiceWorkerContextAdapterImpl::OnRenderProcessExited(
+    int64_t version_id) {
   bool removed = MaybeRemoveRunningServiceWorker(version_id);
   DCHECK(removed);
 
@@ -440,10 +237,10 @@ void ServiceWorkerContextAdapter::OnRenderProcessExited(int64_t version_id) {
 #endif  // DCHECK_IS_ON()
 }
 
-void ServiceWorkerContextAdapter::AddRunningServiceWorker(
+void ServiceWorkerContextAdapterImpl::AddRunningServiceWorker(
     int64_t version_id,
     content::RenderProcessHost* worker_process_host) {
-  std::unique_ptr<ServiceWorkerContextAdapter::RunningServiceWorker>
+  std::unique_ptr<ServiceWorkerContextAdapterImpl::RunningServiceWorker>
       running_service_worker =
           std::make_unique<RunningServiceWorker>(version_id, this);
 
@@ -454,7 +251,7 @@ void ServiceWorkerContextAdapter::AddRunningServiceWorker(
   DCHECK(inserted);
 }
 
-bool ServiceWorkerContextAdapter::MaybeRemoveRunningServiceWorker(
+bool ServiceWorkerContextAdapterImpl::MaybeRemoveRunningServiceWorker(
     int64_t version_id) {
   auto it = running_service_workers_.find(version_id);
   if (it == running_service_workers_.end())

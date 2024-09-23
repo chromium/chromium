@@ -750,7 +750,7 @@ void ArcAppIcon::UpdateImageSkia(
   image_skia.AddRepresentation(image_rep);
   image_skia.RemoveUnsupportedRepresentationsForScale(image_rep.scale());
 
-  // TODO(crbug.com/1083331): Track the adaptive icon load time in a separate
+  // TODO(crbug.com/40131344): Track the adaptive icon load time in a separate
   // UMA.
   if (icon_loaded_count_++ < 5) {
     base::UmaHistogramTimes(

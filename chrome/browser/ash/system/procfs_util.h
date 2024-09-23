@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/process/process_handle.h"
 
 namespace ash {
 namespace system {
@@ -52,6 +54,25 @@ std::optional<SingleProcStat> GetSingleProcStat(
 // The input |stat_file| is used for testing.
 std::optional<int64_t> GetCpuTimeJiffies(
     const base::FilePath& stat_file = base::FilePath("/proc/stat"));
+
+// A file object for "/proc/<pid>/stat".
+class ProcStatFile {
+ public:
+  explicit ProcStatFile(base::ProcessId process_id);
+  ProcStatFile(ProcStatFile&&) = default;
+  ProcStatFile(ProcStatFile&) = delete;
+  ~ProcStatFile();
+
+  // Returns whether the stat file is valid. See `base::File::IsValid()` for
+  // details.
+  bool IsValid() const;
+
+  // Returns whether the process is still alive or not.
+  bool IsPidAlive();
+
+ private:
+  base::File file_;
+};
 
 }  // namespace system
 }  // namespace ash

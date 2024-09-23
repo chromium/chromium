@@ -6,11 +6,11 @@
 #define COMPONENTS_PREFS_IN_MEMORY_PREF_STORE_H_
 
 #include <stdint.h>
-#include <string>
+
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -27,7 +27,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   InMemoryPrefStore& operator=(const InMemoryPrefStore&) = delete;
 
   // PrefStore implementation.
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
@@ -36,23 +36,24 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   bool IsInitializationComplete() const override;
 
   // PersistentPrefStore implementation.
-  bool GetMutableValue(const std::string& key, base::Value** result) override;
-  void ReportValueChanged(const std::string& key, uint32_t flags) override;
-  void SetValue(const std::string& key,
+  bool GetMutableValue(std::string_view key, base::Value** result) override;
+  void ReportValueChanged(std::string_view key, uint32_t flags) override;
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override;
-  void SetValueSilently(const std::string& key,
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override;
-  void RemoveValue(const std::string& key, uint32_t flags) override;
+  void RemoveValue(std::string_view key, uint32_t flags) override;
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
   PersistentPrefStore::PrefReadError ReadPrefs() override;
-  void ReadPrefsAsync(ReadErrorDelegate* error_delegate) override {}
+  void ReadPrefsAsync(ReadErrorDelegate* error_delegate) override;
   void SchedulePendingLossyWrites() override {}
   void OnStoreDeletionFromDisk() override {}
   bool IsInMemoryPrefStore() const override;
-  void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+  void RemoveValuesByPrefixSilently(std::string_view prefix) override;
+  bool HasReadErrorDelegate() const override;
 
  protected:
   ~InMemoryPrefStore() override;
@@ -61,7 +62,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   // Stores the preference values.
   PrefValueMap prefs_;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 };
 
 #endif  // COMPONENTS_PREFS_IN_MEMORY_PREF_STORE_H_

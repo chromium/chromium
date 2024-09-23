@@ -9,7 +9,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -27,16 +27,16 @@ namespace blink {
 
 FileSystemAccessCapacityTracker::FileSystemAccessCapacityTracker(
     ExecutionContext* context,
-    mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
-        capacity_allocation_host_remote,
+    mojo::PendingRemote<mojom::blink::FileSystemAccessFileModificationHost>
+        file_modification_host_remote,
     int64_t file_size,
     base::PassKey<FileSystemAccessRegularFileDelegate>)
-    : capacity_allocation_host_(context),
+    : file_modification_host_(context),
       file_size_(file_size),
       file_capacity_(file_size) {
-  capacity_allocation_host_.Bind(std::move(capacity_allocation_host_remote),
-                                 context->GetTaskRunner(TaskType::kStorage));
-  DCHECK(capacity_allocation_host_.is_bound());
+  file_modification_host_.Bind(std::move(file_modification_host_remote),
+                               context->GetTaskRunner(TaskType::kStorage));
+  DCHECK(file_modification_host_.is_bound());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -62,7 +62,7 @@ void FileSystemAccessCapacityTracker::RequestFileCapacityChange(
     std::move(callback).Run(true);
     return;
   }
-  capacity_allocation_host_->RequestCapacityChange(
+  file_modification_host_->RequestCapacityChange(
       capacity_delta,
       WTF::BindOnce(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
                     WrapPersistent(this), required_capacity,
@@ -91,7 +91,7 @@ bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(
 
   int64_t granted_capacity;
   // Request the necessary capacity from the browser process.
-  bool call_succeeded = capacity_allocation_host_->RequestCapacityChange(
+  bool call_succeeded = file_modification_host_->RequestCapacityChange(
       capacity_delta, &granted_capacity);
   DCHECK(call_succeeded) << "Mojo call failed";
 
@@ -112,7 +112,7 @@ void FileSystemAccessCapacityTracker::OnFileContentsModified(int64_t new_size) {
 
   file_size_ = new_size;
 
-  capacity_allocation_host_->OnContentsModified();
+  file_modification_host_->OnContentsModified();
 }
 
 void FileSystemAccessCapacityTracker::DidRequestCapacityChange(

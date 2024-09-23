@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
 
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -39,8 +40,8 @@ void BaseLockDialog::AdjustWidgetInitParams(views::Widget::InitParams* params) {
   params->type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 }
 
-ui::ModalType BaseLockDialog::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType BaseLockDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 }  // namespace ash

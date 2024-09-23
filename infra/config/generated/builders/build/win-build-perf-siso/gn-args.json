@@ -1,0 +1,43 @@
+{
+  "phases": {
+    "builtin": {
+      "gn_args": {
+        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+        "dcheck_always_on": true,
+        "enable_dangling_raw_ptr_checks": true,
+        "enable_dangling_raw_ptr_feature_flag": true,
+        "enable_resource_allowlist_generation": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "target_cpu": "x64",
+        "target_os": "win",
+        "use_clang_coverage": true,
+        "use_reclient": false,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+        "dcheck_always_on": true,
+        "enable_dangling_raw_ptr_checks": true,
+        "enable_dangling_raw_ptr_feature_flag": true,
+        "enable_resource_allowlist_generation": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "target_cpu": "x64",
+        "target_os": "win",
+        "use_clang_coverage": true,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    }
+  }
+}

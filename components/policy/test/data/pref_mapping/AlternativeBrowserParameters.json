@@ -6,32 +6,15 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "browser_switcher.alternative_browser_parameters": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "AlternativeBrowserParameters": [
-            "-foreground",
-            "-new-window"
-          ]
-        },
-        "prefs": {
-          "browser_switcher.alternative_browser_parameters": {
-            "value": [
-              "-foreground",
-              "-new-window"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_switcher.alternative_browser_parameters",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "-foreground",
+          "-new-window"
+        ]
+      ]
+    }
   }
 ]

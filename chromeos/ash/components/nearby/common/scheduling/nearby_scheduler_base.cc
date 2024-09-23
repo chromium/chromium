@@ -13,6 +13,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/network_service_instance.h"
@@ -38,12 +39,14 @@ NearbySchedulerBase::NearbySchedulerBase(bool retry_failures,
                                          const std::string& pref_name,
                                          PrefService* pref_service,
                                          OnRequestCallback callback,
+                                         Feature logging_feature,
                                          const base::Clock* clock)
     : NearbyScheduler(std::move(callback)),
       retry_failures_(retry_failures),
       require_connectivity_(require_connectivity),
       pref_name_(pref_name),
       pref_service_(pref_service),
+      logging_feature_(logging_feature),
       clock_(clock) {
   DCHECK(pref_service_);
 
@@ -71,8 +74,9 @@ void NearbySchedulerBase::HandleResult(bool success) {
   base::Time now = clock_->Now();
   SetLastAttemptTime(now);
 
-  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
-  // (see go/np-plumbing).
+  CD_LOG(VERBOSE, logging_feature_)
+      << "NearbyScheduler \"" << pref_name_ << "\" latest attempt "
+      << (success ? "succeeded" : "failed");
 
   if (success) {
     SetLastSuccessTime(now);
@@ -153,8 +157,8 @@ size_t NearbySchedulerBase::GetNumConsecutiveFailures() const {
 
 void NearbySchedulerBase::OnStart() {
   Reschedule();
-  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
-  // (see go/np-plumbing).
+  CD_LOG(VERBOSE, logging_feature_)
+      << "Starting NearbyScheduler \"" << pref_name_ << "\"";
   PrintSchedulerState();
 }
 
@@ -258,8 +262,8 @@ void NearbySchedulerBase::PrintSchedulerState() const {
       GetTimeUntilNextRequest();
 
   std::stringstream ss;
-  ss << "State of Nearby Share scheduler \"" << pref_name_ << "\":"
-     << "\n  Last attempt time: ";
+  ss << "State of NearbyScheduler scheduler \"" << pref_name_
+     << "\":" << "\n  Last attempt time: ";
   if (last_attempt_time) {
     ss << base::TimeFormatShortDateAndTimeWithTimeZone(*last_attempt_time);
   } else {
@@ -291,8 +295,7 @@ void NearbySchedulerBase::PrintSchedulerState() const {
      << (HasPendingImmediateRequest() ? "Yes" : "No");
   ss << "\n  Num consecutive failures: " << GetNumConsecutiveFailures();
 
-  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
-  // (see go/np-plumbing).
+  CD_LOG(VERBOSE, logging_feature_) << ss.str();
 }
 
 }  // namespace ash::nearby

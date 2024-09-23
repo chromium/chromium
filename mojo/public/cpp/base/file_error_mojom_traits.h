@@ -53,7 +53,6 @@ struct EnumTraits<mojo_base::mojom::FileError, base::File::Error> {
         return mojo_base::mojom::FileError::FAILED;
     }
     NOTREACHED();
-    return mojo_base::mojom::FileError::FAILED;
   }
 
   static bool FromMojom(mojo_base::mojom::FileError in,
@@ -112,7 +111,6 @@ struct EnumTraits<mojo_base::mojom::FileError, base::File::Error> {
         return true;
     }
     NOTREACHED();
-    return false;
   }
 };
 

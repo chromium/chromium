@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -64,6 +63,10 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+
+  // Lazy removal of an unused timeline.
+  void DetachAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+
   const AnimationTimeline* GetTimelineById(int timeline_id) const;
   AnimationTimeline* GetTimelineById(int timeline_id);
 
@@ -112,6 +115,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void PushPropertiesTo(MutatorHost* host_impl,
                         const PropertyTrees& property_trees) override;
+
+  void RemoveStaleTimelines() override;
 
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
@@ -264,15 +269,18 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
 
+  // A list of IDs for detached timelines. A timeline may be detached on the
+  // owner thread even during a protected sequence. These timelines are no
+  // longer used and should be cleaned up at the next opportune moment.
+  ProtectedSequenceForbidden<IdToTimelineMap> detached_timeline_map_;
+
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is
   // implemented using this member. As such the various helpers can not be used
   // to protect access (otherwise we would get infinite recursion).
   raw_ptr<MutatorHostClient> mutator_host_client_ = nullptr;
 
   // This is only non-null within the call scope of PushPropertiesTo().
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const PropertyTrees* property_trees_ = nullptr;
+  raw_ptr<const PropertyTrees> property_trees_ = nullptr;
 
   // Exactly one of scroll_offset_animations_ and scroll_offset_animations_impl_
   // will be non-null for a given AnimationHost instance (the former if

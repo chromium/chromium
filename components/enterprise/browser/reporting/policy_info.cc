@@ -12,7 +12,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -30,8 +30,8 @@ em::Policy_PolicyLevel GetLevel(const base::Value& policy) {
     case policy::POLICY_LEVEL_MANDATORY:
       return em::Policy_PolicyLevel_LEVEL_MANDATORY;
   }
-  NOTREACHED() << "Invalid policy level: "
-               << *policy.GetDict().FindInt("level");
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid policy level: " << *policy.GetDict().FindInt("level");
   return em::Policy_PolicyLevel_LEVEL_UNKNOWN;
 }
 
@@ -43,8 +43,8 @@ em::Policy_PolicyScope GetScope(const base::Value& policy) {
     case policy::POLICY_SCOPE_MACHINE:
       return em::Policy_PolicyScope_SCOPE_MACHINE;
   }
-  NOTREACHED() << "Invalid policy scope: "
-               << *policy.GetDict().FindInt("scope");
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid policy scope: " << *policy.GetDict().FindInt("scope");
   return em::Policy_PolicyScope_SCOPE_UNKNOWN;
 }
 
@@ -74,12 +74,30 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
       return em::
           Policy_PolicySource_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE;
     case policy::POLICY_SOURCE_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return em::Policy_PolicySource_SOURCE_UNKNOWN;
   }
-  NOTREACHED() << "Invalid policy source: "
-               << *policy.GetDict().FindInt("source");
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid policy source: " << *policy.GetDict().FindInt("source");
   return em::Policy_PolicySource_SOURCE_UNKNOWN;
+}
+
+void UpdateConflictedPolicy(em::Policy* policy_info,
+                            const base::Value& policy) {
+  policy_info->set_level(GetLevel(policy));
+  policy_info->set_scope(GetScope(policy));
+  policy_info->set_source(GetSource(policy));
+}
+
+void UpdateConflictedPolicies(const std::string conflict_key,
+                              em::Policy* policy_info,
+                              const base::Value::Dict& policy) {
+  if (!policy.contains(conflict_key)) {
+    return;
+  }
+  for (const auto& conflicted_policy : *policy.FindList(conflict_key)) {
+    UpdateConflictedPolicy(policy_info->add_conflicts(), conflicted_policy);
+  }
 }
 
 void UpdatePolicyInfo(em::Policy* policy_info,
@@ -111,6 +129,9 @@ void UpdatePolicyInfo(em::Policy* policy_info,
     policy_info->set_error(*error);
   else if (!deprecated_error.empty())
     policy_info->set_error(deprecated_error);
+
+  UpdateConflictedPolicies("conflicts", policy_info, policy.GetDict());
+  UpdateConflictedPolicies("superseded", policy_info, policy.GetDict());
 }
 
 }  // namespace
@@ -147,15 +168,12 @@ void AppendExtensionPolicyInfoIntoProfileReport(
   }
 }
 
-void AppendMachineLevelUserCloudPolicyFetchTimestamp(
-    em::ChromeUserProfileInfo* profile_info,
-    policy::MachineLevelUserCloudPolicyManager* manager) {
+void AppendCloudPolicyFetchTimestamp(em::ChromeUserProfileInfo* profile_info,
+                                     policy::CloudPolicyManager* manager) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!manager || !manager->IsClientRegistered())
     return;
   auto* timestamp = profile_info->add_policy_fetched_timestamps();
-  timestamp->set_type(
-      policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
   timestamp->set_timestamp(manager->core()
                                ->client()
                                ->last_policy_timestamp()

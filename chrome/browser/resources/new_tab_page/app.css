@@ -1,0 +1,419 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
+  --cr-searchbox-height: 44px;
+  --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-size-in-searchbox: 20px;
+  --cr-searchbox-icon-top-position: 0;
+  --cr-searchbox-min-width: var(--ntp-search-box-width);
+  --ntp-theme-text-shadow: none;
+  --ntp-one-google-bar-height: 56px;
+  --ntp-search-box-width: 337px;
+  --ntp-menu-shadow:
+      var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
+      var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
+  --ntp-module-width: var(--ntp-search-box-width);
+  --ntp-module-layout-width: var(--ntp-search-box-width);
+  --ntp-module-border-radius: 5px;
+  --ntp-protected-icon-background-color: transparent;
+  --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
+}
+
+/**
+ * Maintain a larger width if the secondary side can be shown and was at any
+ * point available to be shown.
+ */
+:host([realbox-can-show-secondary-side][realbox-had-secondary-side]),
+:host([realbox-can-show-secondary-side][searchbox-width-behavior_='wide']) {
+  --ntp-search-box-width: 746px;
+}
+
+@media (min-width: 560px) {
+  :host {
+    --ntp-search-box-width: 449px;
+  }
+}
+
+@media (min-width: 672px) {
+  :host {
+    --ntp-search-box-width: 561px;
+  }
+}
+
+:host([realbox-is-tall_]) {
+  --cr-searchbox-height: 48px;
+}
+
+/*A module width of 768px with 18px gaps on each side. */
+@media (min-width: 804px) {
+  :host([wide-modules-enabled_]) {
+    --ntp-module-layout-width: 768px;
+    --ntp-module-width: 768px;
+  }
+}
+
+cr-most-visited {
+  --add-shortcut-background-color:
+      var(--color-new-tab-page-add-shortcut-background);
+  --add-shortcut-foreground-color:
+      var(--color-new-tab-page-add-shortcut-foreground);
+}
+
+:host([modules-redesigned-enabled_]) {
+  --ntp-module-border-radius: 16px;
+  --ntp-module-item-border-radius: 12px;
+  --ntp-module-layout-width: 360px;
+  --ntp-module-width: 360px;
+}
+
+:host([show-background-image_]) {
+  --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
+      0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
+  --ntp-protected-icon-background-color: rgba(0, 0, 0, .6);
+  --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .7);
+}
+
+#oneGoogleBarScrim {
+  background: linear-gradient(rgba(0,0,0,0.25) 0%,
+                              rgba(0,0,0,0.12) 45%,
+                              rgba(0,0,0,0.05) 65%,
+                              transparent 100%);
+  height: 80px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#oneGoogleBarScrim[fixed] {
+  /* Prevent scrim from bouncing when overscrolling. */
+  position: fixed;
+}
+
+#oneGoogleBar {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--ntp-one-google-bar-height));
+  min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
+  padding-top: var(--ntp-one-google-bar-height);
+  position: relative;
+  z-index: 1;
+}
+
+#logo {
+  margin-bottom: 38px;
+  z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
+}
+
+#searchboxContainer {
+  display: inherit;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+ntp-modules {
+  flex-shrink: 0;
+  width: var(--ntp-module-layout-width);
+}
+
+#modules:not([hidden]) {
+  /* We use animation instead of transition to allow a fade-in out of
+     display: none. */
+  animation: 300ms ease-in-out fade-in-animation;
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+ntp-middle-slot-promo {
+  max-width: var(--ntp-search-box-width);
+}
+
+cr-searchbox {
+  visibility: hidden;
+}
+
+cr-searchbox[shown] {
+  visibility: visible;
+}
+
+cr-most-visited {
+  --cr-menu-shadow: var(--ntp-menu-shadow);
+  --most-visited-focus-shadow: var(--ntp-focus-shadow);
+  --most-visited-text-color:
+      var(--color-new-tab-page-most-visited-foreground);
+  --most-visited-text-shadow: var(--ntp-theme-text-shadow);
+}
+
+/* ~ because the dom-if results in a template between the middle-slot-promo
+   and ntp-modules. */
+ntp-middle-slot-promo:not([hidden]) ~ #modules {
+  margin-top: 16px;
+}
+
+#customizeButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  bottom: 16px;
+  position: fixed;
+}
+
+#wallpaperSearchButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-wallpaper-search-button-background-hovered);
+  --cr-button-text-color:
+      var(--color-new-tab-page-wallpaper-search-button-foreground);
+  --cr-button-background-color:
+      var(--color-new-tab-page-wallpaper-search-button-background);
+}
+
+#customizeButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-button-background-hovered);
+  --cr-button-text-color: var(--color-new-tab-page-button-foreground);
+  --cr-button-background-color: var(--color-new-tab-page-button-background);
+}
+
+:host([show-background-image_]) #customizeButton,
+:host([show-background-image_]) #wallpaperSearchButton {
+  --cr-hover-background-color:
+      var(--ntp-protected-icon-background-color-hovered);
+  --cr-button-text-color: white;
+  --cr-button-background-color: var(--ntp-protected-icon-background-color);
+}
+
+#customizeButton:has(help-bubble) {
+  /* help-bubble parent needs z-index to overlay ntp-iframe */
+  z-index: 1001;
+}
+
+:host-context([dir='ltr']) #customizeButtons {
+  right: 16px;
+}
+
+:host-context([dir='rtl']) #customizeButtons {
+  left: 16px;
+}
+
+.customize-button {
+  --cr-button-height: 32px;
+  border: none;
+  border-radius: calc(.5 * var(--cr-button-height));
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
+  font-weight: 400;
+  min-width: 32px;
+  padding-inline-end: 16px;
+  padding-inline-start: 16px;
+}
+
+:host([show-background-image_]) #customizeButton,
+:host([wallpaper-search-button-enabled_]) #customizeButton,
+:host([show-wallpaper-search_]) #wallpaperSearchButton {
+  box-shadow: none;
+  padding-inline-end: 0;
+  padding-inline-start: 8px;
+}
+
+:host-context(.focus-outline-visible) .customize-button:focus {
+  box-shadow: var(--ntp-focus-shadow);
+}
+
+.customize-icon {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-color: var(--cr-button-text-color);
+  --cr-icon-ripple-margin: 0;
+  --cr-icon-ripple-size: 16px;
+  --cr-icon-size: 100%;
+}
+
+#wallpaperSearchIcon {
+  --cr-icon-image: url(icons/sparkle.svg);
+}
+
+#customizeIcon {
+  --cr-icon-image: url(icons/icon_pencil.svg);
+}
+
+@media (max-width: 550px) {
+  .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  .customize-text {
+    display: none;
+  }
+}
+
+@media (max-width: 1110px) {
+  :host([modules-redesigned-enabled_][modules-shown-to-user])
+      .customize-text {
+    display: none;
+  }
+
+  :host([modules-redesigned-enabled_][modules-shown-to-user])
+      .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+}
+
+@media (max-width: 970px) {
+  :host([modules-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  :host([modules-shown-to-user]) .customize-text {
+    display: none;
+  }
+}
+
+:host([wallpaper-search-button-animation-enabled_])
+    #wallpaperSearchButton {
+  animation: 750ms forwards grow-container, 500ms forwards 300ms color-text;
+  color: rgba(0,0,0,0);
+  opacity: 0;
+  transform-origin: right;
+}
+
+@keyframes grow-container {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 100%;
+    transform: scale(1);
+  }
+}
+
+/* The text inherits the color of the button,
+while the icon has a color rule of it's own. */
+@keyframes color-text {
+  from { color: rgba(0,0,0,0); }
+  to { color: var(--cr-button-text-color); }
+}
+
+:host([wallpaper-search-button-animation-enabled_])
+    #wallpaperSearchIcon {
+  animation: 2.5s 350ms spin-icon;
+}
+
+@keyframes spin-icon {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(720deg); }
+}
+
+#themeAttribution {
+  align-self: flex-start;
+  bottom: 16px;
+  color: var(--color-new-tab-page-secondary-foreground);
+  margin-inline-start: 16px;
+  position: fixed;
+}
+
+#backgroundImageAttribution {
+  border-radius: 8px;
+  bottom: 16px;
+  color: var(--color-new-tab-page-attribution-foreground);
+  line-height: 20px;
+  max-width: 50vw;
+  padding: 8px;
+  position: fixed;
+  z-index: -1;
+  background-color: var(--ntp-protected-icon-background-color);
+  text-shadow: none;
+}
+
+#backgroundImageAttribution:hover {
+  background-color: var(--ntp-protected-icon-background-color-hovered);
+  background: rgba(var(--google-grey-900-rgb), .1);
+}
+
+:host-context([dir='ltr']) #backgroundImageAttribution {
+  left: 16px;
+}
+
+:host-context([dir='rtl']) #backgroundImageAttribution {
+  right: 16px;
+}
+
+#backgroundImageAttribution1Container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+#linkIcon {
+  -webkit-mask-image: url(icons/link.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--color-new-tab-page-attribution-foreground);
+  height: 16px;
+  margin-inline-end: 8px;
+  width: 16px;
+}
+
+#backgroundImageAttribution1,
+#backgroundImageAttribution2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#backgroundImageAttribution1 {
+  font-size: .875rem;
+}
+
+#backgroundImageAttribution2 {
+  font-size: .75rem;
+}
+
+#contentBottomSpacer {
+  flex-shrink: 0;
+  height: 32px;
+  width: 1px;
+}
+
+svg {
+  position: fixed;
+}
+
+ntp-lens-upload-dialog {
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 101;
+}
+
+#webstoreToast {
+  padding: 16px;
+}

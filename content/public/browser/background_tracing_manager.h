@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -30,12 +29,6 @@ class BackgroundTracingManager {
 
   // Returns the global instance created with CreateInstance().
   CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
-
-  // Notifies that a manual trigger event has occurred. Returns true if the
-  // trigger caused a scenario to either begin recording or finalize the trace
-  // depending on the config, or false if the trigger had no effect. If the
-  // trigger specified isn't active in the config, this will do nothing.
-  CONTENT_EXPORT static bool EmitNamedTrigger(const std::string& trigger_name);
 
   CONTENT_EXPORT static const char kContentTriggerConfig[];
 
@@ -78,8 +71,8 @@ class BackgroundTracingManager {
   // }
   //
   using FinishedProcessingCallback = base::OnceCallback<void(bool success)>;
-  using ReceiveCallback =
-      base::RepeatingCallback<void(std::string, FinishedProcessingCallback)>;
+  using ReceiveCallback = base::RepeatingCallback<
+      void(const std::string&, std::string, FinishedProcessingCallback)>;
 
   virtual void SetReceiveCallback(ReceiveCallback receive_callback) = 0;
 
@@ -109,15 +102,47 @@ class BackgroundTracingManager {
       std::unique_ptr<BackgroundTracingConfig> config,
       DataFiltering data_filtering) = 0;
 
-  // Initializes background tracing with a set of scenarios, each
-  // associated with specific tracing configs. Scenarios are enrolled by
-  // clients based on a set of start and stop rules that delimitate a
-  // meaningful tracing interval, usually covering a user journey or a
-  // guardian metric (e.g. FirstContentfulPaint). This can only be
-  // called once.
-  virtual bool InitializeScenarios(
+  // Initializes a list of triggers from `config` to be forwarded to
+  // perfetto. This is useful when system tracing is running. This will
+  // fail and return false if any scenario was previously enabled,
+  // either with InitializeFieldScenarios() or SetEnabledScenarios().
+  // This shouldn't be called if SetActiveScenario() was previously
+  // called.
+  virtual bool InitializePerfettoTriggerRules(
+      const perfetto::protos::gen::TracingTriggerRulesConfig& config) = 0;
+
+  // Tracing Scenarios are enrolled by clients based on a set of start and
+  // stop rules that delimitate a meaningful tracing interval, usually covering
+  // a user journey or a guardian metric (e.g. FirstContentfulPaint). This can
+  // only be called once.
+  // Field scenarios are enabled automatically for a subset of the population.
+  // Preset scenarios are predefined and enabled locally by manual action from
+  // a user. When enabled, they take precedence over field scenarios if any.
+
+  // Saves and enables a set of field scenarios, each associated with specific
+  // tracing configs. Returns true if all scenarios were successfully
+  // initialized. This will fail and return false if any scenario was previously
+  // enabled, either with InitializeFieldScenarios() or SetEnabledScenarios().
+  // This shouldn't be called if SetActiveScenario() was previously called.
+  virtual bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) = 0;
+
+  // Saves a set of preset scenarios, each associated with specific tracing
+  // configs, without enabling them. These scenarios can be enabled with
+  // SetEnabledScenarios(). Returns the list of scenario hashes that were
+  // successfully added. This can be called multiple times.
+  virtual std::vector<std::string> AddPresetScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
+      DataFiltering data_filtering) = 0;
+
+  // Enables a list of preset scenarios identified by their hashes. This
+  // disables all previously enabled scenarios and aborts the current background
+  // tracing session if any. Since InitializeFieldScenarios() above fails if
+  // scenarios are enabled, field scenarios can't be re-enabled after calling
+  // this.
+  virtual bool SetEnabledScenarios(
+      std::vector<std::string> enabled_preset_scenario_hashes) = 0;
 
   virtual bool HasActiveScenario() = 0;
 
@@ -160,8 +185,6 @@ class BackgroundTracingManager {
   // Sets the instance returns by GetInstance() globally to |tracing_manager|.
   CONTENT_EXPORT static void SetInstance(
       BackgroundTracingManager* tracing_manager);
-
-  virtual bool DoEmitNamedTrigger(const std::string& trigger_name) = 0;
 };
 
 }  // namespace content

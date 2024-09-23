@@ -22,11 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="LegacyIdentifierType">
-  <variant name="ManifestUrl"/>
-  <variant name="StartUrl"/>
-</variants>
-
 <variants name="WebApkDistributorType">
   <variant name=".Browser" summary="Installed by Chrome"/>
   <variant name=".DevicePolicy" summary="Installed by device policy"/>
@@ -34,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebApk.AppIdentityDialog.PendingImageUpdateDiffValue"
-    units="%" expires_after="2024-08-04">
+    units="%" expires_after="2025-02-09">
   <owner>finnur@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -47,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.AppIdentityDialog.PendingImageUpdateDiffValueScaled"
-    units="%" expires_after="2024-08-04">
+    units="%" expires_after="2025-02-09">
   <owner>finnur@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -60,14 +55,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Database.WriteResult" enum="Boolean"
-    expires_after="2024-06-01">
+    expires_after="2025-03-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>Records the write result (boolean) in WebApkDatabase.</summary>
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayErrorCode"
-    enum="WebApkInstallGooglePlayErrorCode" expires_after="2024-05-12">
+    enum="WebApkInstallGooglePlayErrorCode" expires_after="2025-02-10">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -77,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayInstallResult"
-    enum="WebApkGooglePlayInstallResult" expires_after="2024-06-30">
+    enum="WebApkGooglePlayInstallResult" expires_after="2025-03-09">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -98,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallEvent" enum="WebApkInstallEvent"
-    expires_after="2024-07-21">
+    expires_after="2025-01-26">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -109,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallResult" enum="WebApkInstallResult"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>eirage@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -119,20 +114,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Install.InstallRetryResult" enum="WebApkInstallResult"
-    expires_after="2024-04-28">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When a user retry installing the WebAPK through the install failure
-    notification, record whether installation was successful. If not record the
-    reason that the install failed.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
-    expires_after="2024-07-21">
+    expires_after="2025-01-26">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -145,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.RequestTokenDurationV2" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2025-01-19">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -158,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.InstallPrompt.SegmentationResult"
-    enum="SegmentationResult" expires_after="2024-12-01">
+    enum="SegmentationResult" expires_after="2025-02-02">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -174,6 +157,17 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records the error codes when a WebAPK is launched with network failures.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.LaunchFromViewIntent" enum="Boolean"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records every WebApk launch attempt originating from a view intent in
+    LaunchIntentDispatcher. A value of &quot;true&quot; indicates a successful
+    launch, while a value of &quot;false&quot; indicates a failure.
   </summary>
 </histogram>
 
@@ -202,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Session.TotalDuration3{WebApkDistributorType}"
-    units="ms" expires_after="2024-08-04">
+    units="ms" expires_after="2025-02-10">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -213,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.ShellApkVersion2{WebApkDistributorType}" units="units"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -257,14 +251,152 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApk.Sync.Restore.FetchInstallableData.AppType"
+    enum="WebApkAppType" expires_after="2025-03-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When user selected to restore a WebAPK from sync data, we will try to fetch
+    the installable data from the website. Record the type of the app from the
+    installable check result.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.Restore.FetchInstallableData.NotWebApkStatusCode"
+    enum="InstallableStatusCode" expires_after="2025-03-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When user selected to restore a WebAPK from sync data, we will try to fetch
+    the installable data from the website. If the fetched result is not a valid
+    WebAPK, record the status code from the installable check.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.Restore.InstallEvent"
+    enum="WebApkRestoreFallbackReason" expires_after="2025-03-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When user selected to restore a WebAPK from sync data, we will try to fetch
+    the installable data from the website. If the fetched result is not
+    installable, we will use the sync data as fallback. Records whether a
+    fallback is used and the reason for using fallback.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.Restore.InstallResult.{RestoreType}"
+    enum="WebApkInstallResult" expires_after="2025-03-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When installing the sync restored WebAPK finished, records a enum for the
+    install result.
+  </summary>
+  <token key="RestoreType">
+    <variant name="Fallback"/>
+    <variant name="Fetched"/>
+  </token>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkAddition"
+    enum="WebApkSyncAddOrModifyType" expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records additions and modifications to the WebAPK Sync database. In
+    particular, this keeps track of whether the addition is new on the device
+    (vs just a launch of an existing WebAPK) and whether it's new to the Sync
+    database (vs a modification of an existing item). Recorded every time a
+    WebAPK is installed or launched.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkCount" units="WebApks"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records a count of the number of WebAPKs in the WebAPK Sync database.
+    Recorded when the WebAPK Database is opened, which happens on every Chrome
+    launch on Android.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkRemovalCount" units="WebApks"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records the number of WebAPKs that get removed from the WebAPK Sync
+    database. Recorded when removing a WebAPK from the Sync database, which
+    happens when an unused WebAPK is uninstalled, or when Chrome is launched on
+    Android when expired WebAPK entries exist in Sync.
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Uninstall{WebApkDistributorType}" enum="BooleanHit"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records that a WebAPK was uninstalled. {WebApkDistributorType}
   </summary>
   <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.DialogAction"
+    enum="UniversalInstallDialogActions" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records what happens in the Universal Install dialog (dialog opened, app
+    installed, shortcut created, etc). Recorded once per action taken in the
+    dialog.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.DialogShownForAppType"
+    enum="WebApkAppType" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records which app type the Universal Install dialog was shown. Recorded once
+    per dialog shown, after we've figured out which type app it is. Note: In
+    versions prior to 125 this metric overcounted app types in scenarios where
+    the dialog redirects to the install dialog (instead of showing) because we
+    detect that only one action was meaningful to the user.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.TimeoutWithAppType"
+    enum="WebApkAppType" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records which app types were detected when the Universal Install dialog was
+    shown after timing out. Recorded once per dialog shown, but only if a
+    timeout has occured before figuring out which type app it is.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.{AppType}.AppDataFetchTime" units="ms"
+    expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records how long it takes (in milliseconds per {AppType}), from the time the
+    dialog is requested until the application data has been fetched. Note that
+    this does not reflect actual time it takes the installability check to
+    finish, because it will run in the background before the dialog starts, and
+    might even have completed before the dialog is requested. Recorded once per
+    dialog (right after the application data becomes available).
+  </summary>
+  <token key="AppType">
+    <variant name="Homebrew"/>
+    <variant name="Shortcut"/>
+    <variant name="WebApk"/>
+  </token>
 </histogram>
 
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
@@ -278,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.NumStaleUpdateRequestFiles" units="files"
-    expires_after="2024-08-04">
+    expires_after="2024-10-06">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -299,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.ShellVersion" units="units"
-    expires_after="2025-01-01">
+    expires_after="2025-03-02">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -310,24 +442,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Update.UniqueId{SameOrEmpty}.{LegacyIdentifierType}"
-    enum="Boolean" expires_after="2024-04-28">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When WebAPK updates with empty or same UniqueId, record whether each of the
-    {LegacyIdentifierType} was the same.
-  </summary>
-  <token key="SameOrEmpty">
-    <variant name="Empty"/>
-    <variant name="Same"/>
-  </token>
-  <token key="LegacyIdentifierType" variants="LegacyIdentifierType"/>
-</histogram>
-
 <histogram name="WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade" enum="Boolean"
-    expires_after="2024-06-17">
+    expires_after="2025-02-23">
   <owner>eirage@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -339,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.WebappRegistry.NumberOfOrigins" units="count"
-    expires_after="2024-07-28">
+    expires_after="2025-02-10">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

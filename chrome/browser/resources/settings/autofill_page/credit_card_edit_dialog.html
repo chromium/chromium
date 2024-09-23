@@ -10,6 +10,13 @@
         margin-inline-start: 8px;
       }
 
+      #numberInput {
+        /* Add a larger gap between the card input and the 'Expiration date'
+           text, as the default height for cr-input does not leave enough room
+           for the error text when it is visible. */
+        margin-bottom: 10px;
+      }
+
       #month {
         width: 70px;
       }
@@ -80,7 +87,10 @@
       <div slot="title">[[title_]]</div>
       <div slot="body">
         <cr-input id="numberInput" label="$i18n{creditCardNumber}"
-            value="{{cardNumber_}}" autofocus>
+            on-blur="onNumberInputBlurred_"
+            invalid="[[showErrorForCardNumber_(cardNumberValidationState_)]]"
+            error-message="$i18n{creditCardNumberInvalid}"
+            value="{{rawCardNumber_}}" autofocus>
         </cr-input>
         <!-- aria-hidden for creditCardExpiration label since
           creditCardExpirationMonth and creditCardExpirationYear provide
@@ -113,8 +123,8 @@
               placeholder="$i18n{creditCardCvcInputPlaceholder}"
               value="{{cvc_}}">
             <img slot="suffix" id="cvcImage"
-                src="[[getCvcImageSource_(cardNumber_)]]"
-                title="[[getCvcImageTooltip_(cardNumber_)]]">
+                src="[[getCvcImageSource_(sanitizedCardNumber_)]]"
+                title="[[getCvcImageTooltip_(sanitizedCardNumber_)]]">
             </img>
           </cr-input>
         </template>
@@ -126,7 +136,8 @@
             value="{{nickname_}}" spellcheck="false" maxlength="25"
             on-input="validateNickname_"
             invalid="[[nicknameInvalid_]]"
-            error-message="$i18n{creditCardNicknameInvalid}">
+            error-message="$i18n{creditCardNicknameInvalid}"
+            aria-description="[[i18n('inputMaxLengthDescription', 25)]]">
             <div id="charCount" slot="suffix" aria-hidden="true">
               [[computeNicknameCharCount_(nickname_)]]/25
             </div>
@@ -140,8 +151,8 @@
             on-click="onCancelButtonClick_">$i18n{cancel}</cr-button>
         <cr-button id="saveButton" class="action-button"
             on-click="onSaveButtonClick_"
-            disabled="[[!saveEnabled_(nicknameInvalid_,
-                expired_, name_, cardNumber_, nickname_)]]">
+            disabled="[[!saveEnabled_(nicknameInvalid_, cardNumberValidationState_,
+                expired_, name_, sanitizedCardNumber_, nickname_)]]">
           $i18n{save}
         </cr-button>
       </div>

@@ -1,0 +1,2 @@
+Tests text auto hyphenation.
+PASS

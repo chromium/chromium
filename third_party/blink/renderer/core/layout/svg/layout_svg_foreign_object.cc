@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -89,7 +91,8 @@ bool LayoutSVGForeignObject::CreatesNewFormattingContext() const {
   return true;
 }
 
-void LayoutSVGForeignObject::UpdateLayout() {
+SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -109,8 +112,8 @@ void LayoutSVGForeignObject::UpdateLayout() {
   const ComputedStyle& style = StyleRef();
   viewport_.set_origin(
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style));
-  gfx::Vector2dF size = VectorForLengthPair(
-      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                            viewport_resolver, style);
   // gfx::SizeF() will clamp negative width/height to zero.
   viewport_.set_size(gfx::SizeF(size.x(), size.y()));
 
@@ -140,12 +143,13 @@ void LayoutSVGForeignObject::UpdateLayout() {
   builder.SetAvailableSize(zoomed_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);
-  const auto* result = BlockNode(this).Layout(builder.ToConstraintSpace());
+  const auto* content_result =
+      BlockNode(this).Layout(builder.ToConstraintSpace());
 
   // Any propagated sticky-descendants may have invalid sticky-constraints.
   // Clear them now.
   if (const auto* sticky_descendants =
-          result->GetPhysicalFragment().PropagatedStickyDescendants()) {
+          content_result->GetPhysicalFragment().PropagatedStickyDescendants()) {
     for (const auto& sticky_descendant : *sticky_descendants) {
       sticky_descendant->SetStickyConstraints(nullptr);
     }
@@ -155,28 +159,31 @@ void LayoutSVGForeignObject::UpdateLayout() {
 
   const PhysicalRect frame_rect(PhysicalLocation(), Size());
   const bool bounds_changed = old_frame_rect != frame_rect;
-  bool update_parent_boundaries = false;
+
+  SVGLayoutResult result;
   if (bounds_changed) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
-  if (UpdateAfterSvgLayout(bounds_changed)) {
-    update_parent_boundaries = true;
+  if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
+    result.bounds_changed = true;
   }
 
-  // Notify ancestor about our bounds changing.
-  if (update_parent_boundaries) {
-    LayoutSVGBlock::SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
 
   DCHECK(!needs_transform_update_);
+  return result;
 }
 
-bool LayoutSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGForeignObject::UpdateAfterSVGLayout(
+    const SVGLayoutInfo& layout_info,
+    bool bounds_changed) {
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && bounds_changed) {
     SVGResourceInvalidator(*this).InvalidateEffects();
   }
-  return UpdateTransformAfterLayout(bounds_changed);
+  return UpdateTransformAfterLayout(layout_info, bounds_changed);
 }
 
 void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,

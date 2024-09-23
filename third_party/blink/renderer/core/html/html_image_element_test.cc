@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -168,6 +171,34 @@ TEST_F(HTMLImageElementTest, ImageAdRectangleUpdate) {
             gfx::Rect());
 }
 
+TEST_F(HTMLImageElementTest, ResourceWidthWithPicture) {
+  SetBodyInnerHTML(R"HTML(
+    <picture>
+      <source srcset="a.png" sizes="auto"/>
+      <img id="i" width="5" height="5" src="b.png" loading="lazy" sizes="auto"/>
+    </picture>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_NE(image, nullptr);
+  EXPECT_EQ(*image->GetResourceWidth(), 5);
+}
+
+TEST_F(HTMLImageElementTest, ResourceWidthWithPictureContainingScripts) {
+  SetBodyInnerHTML(R"HTML(
+    <picture>
+      <source srcset="a.png" sizes="auto"/>
+      <script></script>
+      <img id="i" width="5" height="5" src="b.png" loading="lazy" sizes="auto"/>
+      <script></script>
+    </picture>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_NE(image, nullptr);
+  EXPECT_EQ(*image->GetResourceWidth(), 5);
+}
+
 using HTMLImageElementSimTest = SimTest;
 
 TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
@@ -209,6 +240,68 @@ TEST_F(HTMLImageElementSimTest,
       << "Expect error that Shared Storage operations are not allowed in "
          "insecure contexts but got: "
       << ConsoleMessages().front();
+}
+
+class TransparentPlaceholderImageSimTest
+    : public SimTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    SimTest::SetUp();
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderImageSimTest,
+                         TransparentPlaceholderImageSimTest,
+                         testing::Bool());
+
+TEST_P(TransparentPlaceholderImageSimTest, OnloadTransparentPlaceholderImage) {
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <body onload='console.log("main body onload");'>
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+           onload='console.log("image element onload");'>
+    </body>)");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Ensure that both body and image are successfully loaded.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("image element onload"));
+}
+
+TEST_P(TransparentPlaceholderImageSimTest,
+       CurrentSrcForTransparentPlaceholderImage) {
+  const String image_source =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <img id="myimg" src=)" +
+                         image_source + R"(>
+    <script>
+      console.log(myimg.currentSrc);
+    </script>)");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Ensure that currentSrc is correctly set as the image source.
+  EXPECT_TRUE(ConsoleMessages().Contains(image_source));
 }
 
 class HTMLImageElementUseCounterTest : public HTMLImageElementTest {

@@ -19,7 +19,7 @@
 
 - (instancetype)initWithView:(UIView*)debuggerParentView
                        prefs:(PrefService*)prefs {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _debuggerParentView = debuggerParentView;
 
     // Set up the callback for when the pref to show/hide the debugger changes.

@@ -10,7 +10,7 @@
 
 namespace sharing {
 
-// TODO(crbug.com/1044522): reuse code from blink instead.
+// TODO(crbug.com/40115622): reuse code from blink instead.
 class P2PSocketClientDelegate {
  public:
   virtual ~P2PSocketClientDelegate() {}

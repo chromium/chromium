@@ -36,7 +36,6 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
   std::u16string GetAccessibleNameString() const;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
@@ -69,10 +68,6 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
   network_icon::IconType GetIconType();
 
   ActiveNetworkIcon::Type type_;
-
-  // The name provided by GetAccessibleNodeData, which includes the network
-  // name and connection state.
-  std::u16string accessible_name_;
 
   // The description provided by GetAccessibleNodeData. For wifi networks this
   // is the signal strength of the network. Otherwise it is empty.

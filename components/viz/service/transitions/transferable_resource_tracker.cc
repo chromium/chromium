@@ -22,29 +22,22 @@
 namespace viz {
 
 TransferableResourceTracker::TransferableResourceTracker(
-    SharedBitmapManager* shared_bitmap_manager)
-    : starting_id_(kVizReservedRangeStartId.GetUnsafeValue()),
-      next_id_(kVizReservedRangeStartId.GetUnsafeValue()),
-      shared_bitmap_manager_(shared_bitmap_manager) {}
+    SharedBitmapManager* shared_bitmap_manager,
+    ReservedResourceIdTracker* id_tracker)
+    : shared_bitmap_manager_(shared_bitmap_manager), id_tracker_(id_tracker) {
+  CHECK(id_tracker_);
+}
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
 TransferableResourceTracker::ResourceFrame
 TransferableResourceTracker::ImportResources(
-    std::unique_ptr<SurfaceSavedFrame> saved_frame) {
-  DCHECK(saved_frame);
-  // Since we will be dereferencing this blindly, CHECK that the frame is indeed
-  // valid.
-  CHECK(saved_frame->IsValid());
-
-  std::optional<SurfaceSavedFrame::FrameResult> frame_copy =
-      saved_frame->TakeResult();
-  const auto& directive = saved_frame->directive();
-
+    SurfaceSavedFrame::FrameResult frame_result,
+    CompositorFrameTransitionDirective directive) {
   ResourceFrame resource_frame;
-  resource_frame.shared.resize(frame_copy->shared_results.size());
-  for (size_t i = 0; i < frame_copy->shared_results.size(); ++i) {
-    auto& shared_result = frame_copy->shared_results[i];
+  resource_frame.shared.resize(frame_result.shared_results.size());
+  for (size_t i = 0; i < frame_result.shared_results.size(); ++i) {
+    auto& shared_result = frame_result.shared_results[i];
     if (shared_result.has_value()) {
       resource_frame.shared[i].emplace(
           ImportResource(std::move(*shared_result)));
@@ -58,7 +51,7 @@ TransferableResourceTracker::ImportResources(
     }
   }
 
-  for (auto resource_id : frame_copy->empty_resource_ids) {
+  for (auto resource_id : frame_result.empty_resource_ids) {
     DCHECK(!resource_frame.element_id_to_resource.contains(resource_id));
     resource_frame.element_id_to_resource[resource_id] = TransferableResource();
   }
@@ -73,46 +66,62 @@ TransferableResourceTracker::ImportResource(
 
   TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.is_software) {
-    DCHECK(output_copy.mailbox.IsZero());
-    DCHECK(!output_copy.release_callback);
-
-    SharedBitmapId id = SharedBitmap::GenerateId();
-    shared_bitmap_manager_->LocalAllocatedSharedBitmap(
-        std::move(output_copy.bitmap), id);
-    resource = TransferableResource::MakeSoftware(
-        id, gpu::SyncToken(), output_copy.draw_data.size,
-        SinglePlaneFormat::kRGBA_8888,
-        TransferableResource::ResourceSource::kSharedElementTransition);
-
-    // Remove the bitmap from shared bitmap manager when no longer in use.
-    release_callback = base::BindOnce(
-        [](SharedBitmapManager* manager, const TransferableResource& resource) {
-          const SharedBitmapId& id = resource.mailbox_holder.mailbox;
-          manager->ChildDeletedSharedBitmap(id);
-        },
-        shared_bitmap_manager_);
+    // TODO(vmpstr): Clean this up after verifying that non-shared_image path
+    // can't be reached.
+    if (output_copy.shared_image) {
+      resource = TransferableResource::MakeSoftwareSharedImage(
+          output_copy.shared_image, gpu::SyncToken(),
+          output_copy.draw_data.size, output_copy.shared_image->format());
+      resource.color_space = output_copy.shared_image->color_space();
+    } else {
+      SharedBitmapId id = SharedBitmap::GenerateId();
+      shared_bitmap_manager_->LocalAllocatedSharedBitmap(
+          std::move(output_copy.bitmap), id);
+      resource = TransferableResource::MakeSoftwareSharedBitmap(
+          id, gpu::SyncToken(), output_copy.draw_data.size,
+          SinglePlaneFormat::kRGBA_8888,
+          TransferableResource::ResourceSource::kViewTransition);
+      // Remove the bitmap from shared bitmap manager when no longer in use.
+      DCHECK(!output_copy.release_callback);
+      release_callback = base::BindOnce(
+          [](SharedBitmapManager* manager, const TransferableResource& resource,
+             const gpu::SyncToken& sync_token) {
+            const SharedBitmapId& id = resource.shared_bitmap_id();
+            manager->ChildDeletedSharedBitmap(id);
+          },
+          shared_bitmap_manager_);
+    }
   } else {
     DCHECK(output_copy.bitmap.drawsNothing());
 
-    resource = TransferableResource::MakeGpu(
-        output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
-        output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false,
-        TransferableResource::ResourceSource::kSharedElementTransition);
-    resource.color_space = output_copy.color_space;
-
-    // Run the SingleReleaseCallback when no longer in use.
-    if (output_copy.release_callback) {
-      release_callback = base::BindOnce(
-          [](ReleaseCallback callback, const TransferableResource& resource) {
-            std::move(callback).Run(resource.mailbox_holder.sync_token,
-                                    /*is_lost=*/false);
-          },
-          std::move(output_copy.release_callback));
+    if (output_copy.shared_image) {
+      resource = TransferableResource::MakeGpu(
+          output_copy.shared_image, GL_TEXTURE_2D, output_copy.sync_token,
+          output_copy.draw_data.size, output_copy.shared_image->format(),
+          /*is_overlay_candidate=*/false,
+          TransferableResource::ResourceSource::kViewTransition);
+      resource.color_space = output_copy.shared_image->color_space();
+    } else {
+      resource = TransferableResource::MakeGpu(
+          output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
+          output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
+          /*is_overlay_candidate=*/false,
+          TransferableResource::ResourceSource::kViewTransition);
+      resource.color_space = output_copy.color_space;
     }
   }
 
-  resource.id = GetNextAvailableResourceId();
+  if (output_copy.release_callback) {
+    DCHECK(!release_callback);
+    release_callback = base::BindOnce(
+        [](ReleaseCallback callback, const TransferableResource& resource,
+           const gpu::SyncToken& sync_token) {
+          std::move(callback).Run(sync_token, /*is_lost=*/false);
+        },
+        std::move(output_copy.release_callback));
+  }
+
+  resource.id = id_tracker_->AllocId(/*initial_ref_count=*/1);
   DCHECK(!base::Contains(managed_resources_, resource.id));
   managed_resources_.emplace(
       resource.id,
@@ -126,46 +135,41 @@ TransferableResourceTracker::ImportResource(
 
 void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
   for (const auto& shared : frame.shared) {
-    if (shared.has_value())
-      UnrefResource(shared->resource.id, /*count=*/1);
+    if (shared.has_value()) {
+      UnrefResource(shared->resource.id, /*count=*/1, gpu::SyncToken());
+    }
   }
 }
 
 void TransferableResourceTracker::RefResource(ResourceId id) {
-  DCHECK(base::Contains(managed_resources_, id));
-  ++managed_resources_[id].ref_count;
-}
-
-void TransferableResourceTracker::UnrefResource(ResourceId id, int count) {
-  DCHECK(base::Contains(managed_resources_, id));
-  DCHECK_LE(count, managed_resources_[id].ref_count);
-  managed_resources_[id].ref_count -= count;
-  if (managed_resources_[id].ref_count == 0)
-    managed_resources_.erase(id);
-}
-
-ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
-  uint32_t result = next_id_;
-
-  // Since we're working with a limit range of resources, it is a lot more
-  // likely that we will loop back to the starting id after running out of
-  // resource ids. This loop ensures that `next_id_` is set to a value that is
-  // not `result` and is also available in that it's currently tracked by
-  // `managed_resources_`. Note that if we end up looping twice, we fail with a
-  // CHECK since we don't have any available resources for this request.
-  bool looped = false;
-  while (next_id_ == result ||
-         base::Contains(managed_resources_, ResourceId(next_id_))) {
-    if (next_id_ == std::numeric_limits<uint32_t>::max()) {
-      CHECK(!looped);
-      next_id_ = starting_id_;
-      looped = true;
-    } else {
-      ++next_id_;
-    }
+  if (!base::Contains(managed_resources_, id)) {
+    return;
   }
-  DCHECK_GE(result, kVizReservedRangeStartId.GetUnsafeValue());
-  return ResourceId(result);
+
+  id_tracker_->RefId(id, /*count=*/1);
+}
+
+void TransferableResourceTracker::UnrefResource(
+    ResourceId id,
+    int count,
+    const gpu::SyncToken& sync_token) {
+  if (!base::Contains(managed_resources_, id)) {
+    return;
+  }
+
+  // Always update the release sync token, even if we're still keeping the
+  // resource. This way, if we first return it from the display compositor and
+  // then release it from surface animation manager, we will still have the
+  // right sync token.
+  if (sync_token.HasData()) {
+    auto it = managed_resources_.find(id);
+    CHECK(it != managed_resources_.end());
+    it->second.release_sync_token = sync_token;
+  }
+
+  if (id_tracker_->UnrefId(id, count)) {
+    managed_resources_.erase(id);
+  }
 }
 
 TransferableResourceTracker::TransferableResourceHolder::
@@ -175,14 +179,13 @@ TransferableResourceTracker::TransferableResourceHolder::
 TransferableResourceTracker::TransferableResourceHolder::
     TransferableResourceHolder(const TransferableResource& resource,
                                ResourceReleaseCallback release_callback)
-    : resource(resource),
-      release_callback(std::move(release_callback)),
-      ref_count(1u) {}
+    : resource(resource), release_callback(std::move(release_callback)) {}
 
 TransferableResourceTracker::TransferableResourceHolder::
     ~TransferableResourceHolder() {
-  if (release_callback)
-    std::move(release_callback).Run(resource);
+  if (release_callback) {
+    std::move(release_callback).Run(resource, release_sync_token);
+  }
 }
 
 TransferableResourceTracker::TransferableResourceHolder&

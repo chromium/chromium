@@ -5,25 +5,31 @@
 #include "components/signin/public/base/session_binding_utils.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "crypto/signature_verifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using testing::ElementsAre;
 
 namespace signin {
 
 namespace {
 
-base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
+base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
@@ -32,7 +38,45 @@ base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
   return std::move(*result);
 }
 
+std::string Base64UrlEncode(std::string_view input) {
+  std::string result;
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &result);
+  return result;
+}
+
 }  // namespace
+
+TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256"), ECDSA_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("es256"), ECDSA_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("RS256"), RSA_PKCS1_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("rs256"), RSA_PKCS1_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256 blah"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString("AB512"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString(""), std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_THAT(ParseSignatureAlgorithmList("ES256 RS256"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Extra whitespace is ignored.
+  EXPECT_THAT(ParseSignatureAlgorithmList("   ES256      RS256   "),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Order is preserved.
+  EXPECT_THAT(ParseSignatureAlgorithmList("RS256 ES256"),
+              ElementsAre(RSA_PKCS1_SHA256, ECDSA_SHA256));
+  // Unknown algorithms are skipped.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 ES256 WAT2 RS256 WAT3"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_THAT(ParseSignatureAlgorithmList(""), ElementsAre());
+  // All unknown -- empty result.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 WAT2 WAT3"), ElementsAre());
+}
 
 TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {
@@ -45,7 +89,7 @@ TEST(SessionBindingUtilsTest,
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -82,7 +126,7 @@ TEST(SessionBindingUtilsTest,
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -107,14 +151,26 @@ TEST(SessionBindingUtilsTest,
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
+class SessionBindingUtilsEphemeralKeyParamTest
+    : public testing::TestWithParam<bool> {
+ public:
+  bool UseEphemeralKey() { return GetParam(); }
+};
+
+TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
+       CreateKeyAssertionHeaderAndPayload) {
+  std::optional<HybridEncryptionKey> ephemeral_key;
+  if (UseEphemeralKey()) {
+    ephemeral_key = CreateHybridEncryptionKeyForTesting();
+  }
   std::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
-      GURL("https://accounts.google.com/VerifyKey"), "test_namespace");
+      GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
+      base::OptionalToPtr(ephemeral_key));
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -135,10 +191,28 @@ TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
           // Base64UrlEncode(SHA256(public_key));
           .Set("iss", "A5BYxvLAy0ksUzsKTRTvd8wPeKvMztUofYShogEc-4E")
           .Set("namespace", "test_namespace");
+  if (UseEphemeralKey()) {
+    expected_payload.Set(
+        "ephemeral_key",
+        base::Value::Dict()
+            .Set(
+                "kty",
+                "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
+            .Set("TinkKeysetPublicKeyInfo",
+                 Base64UrlEncode(ephemeral_key->ExportPublicKey())));
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SessionBindingUtilsEphemeralKeyParamTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithEphemeralKey"
+                                             : "WithoutEphemeralKey";
+                         });
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
@@ -157,7 +231,7 @@ TEST(SessionBindingUtilsTest,
       0x02, 0x21, 0x00, 0xbc, 0xb5, 0xee, 0x42, 0xe2, 0x5a, 0x87, 0xae, 0x21,
       0x18, 0xda, 0x7e, 0x68, 0x65, 0x30, 0xbe, 0xe5, 0x69, 0x3d, 0xc5, 0x5f,
       0xd5, 0x62, 0x45, 0x3e, 0x8d, 0x0b, 0x05, 0x1a, 0x33, 0x79, 0x8d};
-  constexpr base::StringPiece kRawSignatureBase64UrlEncoded =
+  constexpr std::string_view kRawSignatureBase64UrlEncoded =
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
 

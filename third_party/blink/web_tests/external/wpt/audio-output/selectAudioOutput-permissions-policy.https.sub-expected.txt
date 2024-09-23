@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Default "speaker-selection" permissions policy ["self"] allows the top-level document.
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.mediaDevices.selectAudioOutput is not a function"
+[FAIL] Default "speaker-selection" permissions policy ["self"] allows same-origin iframes.
+  assert_equals: navigator.mediaDevices.selectAudioOutput is not a function. expected "#OK" but got "TypeError"
+[FAIL] Default "speaker-selection" permissions policy ["self"] disallows cross-origin iframes.
+  assert_equals: navigator.mediaDevices.selectAudioOutput is not a function. expected "NotAllowedError" but got "TypeError"
+[FAIL] permissions policy "speaker-selection" can be enabled in cross-origin iframes using "allow" attribute.
+  assert_equals: navigator.mediaDevices.selectAudioOutput is not a function. expected "#OK" but got "TypeError"
+[FAIL] permissions policy "speaker-selection" can be disabled in same-origin iframes using "allow" attribute.
+  assert_equals: navigator.mediaDevices.selectAudioOutput is not a function. expected "NotAllowedError" but got "TypeError"
+Harness: the test ran to completion.
+

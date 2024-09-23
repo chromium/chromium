@@ -1,0 +1,57 @@
+This is a testharness.js-based test.
+[FAIL] Property clip-path value 'shape(from 20px 40px, line to 20px 30px)'
+  assert_true: 'shape(from 20px 40px, line to 20px 30px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, line to 20px 30px )'
+  assert_true: 'shape(from 20px 40px, line to 20px 30px )' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 0 0, line to 100% 100%)'
+  assert_true: 'shape(from 0 0, line to 100% 100%)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, line by 20px 30px)'
+  assert_true: 'shape(from 20px 40px, move to 20px 30px, line by 20px 30px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, hline to 100px)'
+  assert_true: 'shape(from 20px 40px, move to 20px 30px, hline to 100px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, hline by 100%)'
+  assert_true: 'shape(from 20px 40px, move to 20px 30px, hline by 100%)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, vline to 100px)'
+  assert_true: 'shape(from 20px 40px, move to 20px 30px, vline to 100px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, vline by 100%)'
+  assert_true: 'shape(from 20px 40px, move to 20px 30px, vline by 100%)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, curve by 20px 20px using 10px 30px)'
+  assert_true: 'shape(from 20px 40px, curve by 20px 20px using 10px 30px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, curve by 20px 20px using 10px 30px 12px 32px)'
+  assert_true: 'shape(from 20px 40px, curve by 20px 20px using 10px 30px 12px 32px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, smooth by 20px 20px)'
+  assert_true: 'shape(from 20px 40px, smooth by 20px 20px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, smooth by 20px 20px using 12px 32px)'
+  assert_true: 'shape(from 20px 40px, smooth by 20px 20px using 12px 32px)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10%)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10%)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 0)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 0)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 0)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 0)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 0deg)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 0deg)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20%)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20%)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of -10% -20% large)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of -10% -20% large)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 3.14159265rad)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 3.14159265rad)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)' is a supported value for clip-path. expected true got false
+[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)'
+  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)' is a supported value for clip-path. expected true got false
+Harness: the test ran to completion.
+

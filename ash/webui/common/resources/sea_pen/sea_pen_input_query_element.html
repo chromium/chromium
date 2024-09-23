@@ -1,38 +1,117 @@
-<style include="wallpaper common cros-button-style">
+<style include="wallpaper common cros-button-style sea-pen">
   #container {
     align-items: center;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
     justify-content: center;
   }
 
-  #queryInput {
-    padding: 12px 0;
-    text-align: center;
-    --cr-input-error-display: none;
+  #innerContainer {
+    display: flex;
+    flex-direction: column;
+    transition: height 300ms cubic-bezier(0, 0, 0, 1);
+    width: 100%;
   }
 
-  #buttonContainer {
-    padding: 12px 0;
+  #inputTextArea {
+    width: 100%;
+  }
+
+  #queryInput {
+    --cr-input-underline-display: none;
+    --cr-textarea-autogrow-max-height: 3.5lh;
+    color: var(--cros-sys-on_secondary_container);
+    font: var(--cros-display-6-font);
+    font-weight: 400;
+    margin-top: 28px;
+    text-align: start;
+    width: 100%;
+  }
+
+  #thumbnailsLoadingText {
+    color: var(--cros-sys-on_primary_container);
+    font: var(--cros-annotation-1-font);
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
+    padding: 0px 12px;
+  }
+
+  #underline {
+    background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #D7E6FF, #C7E4FF, #DCE2FF, #ECDCFB);
+    background-size: 12px 3px, 100% 3px;
+    border: none;
+    height: 3px;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #underline {
+      background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
+    }
   }
 </style>
-
 <div id="container">
-  <cr-input id="queryInput"
-      maxlength="[[maxTextLength_]]"
-      placeholder="Describe your wallpaper"
-      type="text"
-      value="{{textValue_}}">
-  </cr-input>
-  <div id="buttonContainer">
-    <cr-button
-        id="searchButton"
-        class="action-button"
-        disabled$="[[thumbnailsLoading_]]"
-        on-click="onClickInputQuerySearchButton_">
-      <iron-icon icon$="[[getSearchButtonIcon_(path, thumbnails_)]]" slot="prefix-icon"></iron-icon>
-      [[getSearchButtonText_(path, thumbnails_)]]
-    </cr-button>
+  <div id="inputTextArea">
+    <cr-textarea id="queryInput"
+        value="{{textValue_}}"
+        rows=1
+        has-max-height
+        autogrow
+        disabled="[[thumbnailsLoading_]]"
+        placeholder="[[i18n('seaPenFreeformInputPlaceholder')]]"
+        maxlength="[[maxTextLength_]]"
+        spellcheck="false"
+        on-keypress="onClickInputQuerySearchButton_"
+        on-focus="onTextInputFocused_">
+    </cr-textarea>
+    <div id="underline"></div>
+  </div>
+  <div id="innerContainer">
+    <template is="dom-if" if="[[shouldShowSuggestions_]]"
+        on-dom-change="onSeaPenSuggestionsDomChanged_" restamp>
+      <sea-pen-suggestions class="fade-in-200ms"
+          on-sea-pen-suggestion-selected="onSuggestionSelected_">
+      </sea-pen-suggestions>
+    </template>
+    <div id="searchButtons">
+      <template is="dom-if" if="[[thumbnailsLoading_]]">
+        <span id="thumbnailsLoadingText" aria-description="{{textValue_}}" aria-live="polite">
+          [[i18n('seaPenThumbnailsLoading')]]
+        </span>
+      </template>
+      <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+        <cr-button
+            id="inspire"
+            on-click="onClickInspire_"
+            on-mouseleave="stopInspireIconAnimation_"
+            on-mouseenter="startInspireIconAnimation_">
+          <cros-lottie-renderer
+              id="inspireMeAnimation"
+              slot="prefix-icon"
+              asset-url="chrome://resources/ash/common/sea_pen/lightbulb_icon.json"
+              loop
+              dynamic
+              aria-hidden>
+          </cros-lottie-renderer>
+          <iron-icon id="inspireIcon" icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+          <p>[[i18n('seaPenInspireMeButton')]]</p>
+        </cr-button>
+        <cr-button
+            id="searchButton"
+            class="action-button"
+            on-click="onClickInputQuerySearchButton_">
+          <iron-icon icon$="[[searchButtonIcon_]]" slot="prefix-icon">
+          </iron-icon>
+          <p>[[searchButtonText_]]</p>
+        </cr-button>
+      </template>
+    </div>
   </div>
 </div>

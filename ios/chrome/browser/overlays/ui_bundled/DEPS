@@ -1,0 +1,17 @@
+include_rules = [
+  "+ios/chrome/browser/alert_view/ui_bundled",
+  "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/parcel_tracking",
+  "+ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h",
+  "+ios/chrome/browser/permissions/model/permissions_infobar_delegate.h",
+  "+ios/chrome/browser/safe_browsing/model",
+  "+ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h",
+  "+ios/chrome/browser/translate/model/translate_infobar_metrics_recorder.h",
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/ui/infobars/infobar_constants.h",
+  "+ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h",
+  "+ios/chrome/browser/ui/presenters",
+]

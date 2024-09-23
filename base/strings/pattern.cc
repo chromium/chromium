@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/strings/pattern.h"
+
+#include <string_view>
 
 #include "base/third_party/icu/icu_utf.h"
 
@@ -142,12 +149,12 @@ struct NextCharUTF16 {
 
 }  // namespace
 
-bool MatchPattern(StringPiece eval, StringPiece pattern) {
+bool MatchPattern(std::string_view eval, std::string_view pattern) {
   return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(),
                        pattern.data() + pattern.size(), NextCharUTF8());
 }
 
-bool MatchPattern(StringPiece16 eval, StringPiece16 pattern) {
+bool MatchPattern(std::u16string_view eval, std::u16string_view pattern) {
   return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(),
                        pattern.data() + pattern.size(), NextCharUTF16());
 }

@@ -10,9 +10,8 @@
 
 namespace google_apis {
 
-// Returns the CredentialsMode that should be used for requests to Gaia. It
-// returns kCredentialsMode::kOmit or kOmitBug_775438_Workaround depending on a
-// variations-controlled feature toggle.
+// Returns the CredentialsMode that should be used for uncredentialed requests
+// to Gaia.
 COMPONENT_EXPORT(GOOGLE_APIS)
 network::mojom::CredentialsMode GetOmitCredentialsModeForGaiaRequests();
 

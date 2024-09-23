@@ -23,24 +23,39 @@ import "url/mojom/url.mojom";
 // if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
+  enum TextDirection {
+    // Text direction is unknown.
+    kAuto,
+    // Left-to-right text.
+    kLTR,
+    // Right-to-left text.
+    kRTL,
+  };
+
+  // The URL this manifest was loaded from. This can be an empty URL if this is
+  // an automatically generated "default" manifest.
+  url.mojom.Url manifest_url;
+
+  TextDirection dir;
+
   mojo_base.mojom.String16? name;
 
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
 
-  // This is empty if the start_url is empty.
+  // This is empty or invalid iff the start_url is empty or invalid.
   url.mojom.Url id;
 
   // Set to true if the json specified a specific value for the id.
   bool has_custom_id;
 
-  // TODO(crbug.com/1466730): Investigate if this should return the
-  // document_url_ if ManifestParser fails to parse the start_url as per
-  // the spec. This can sometimes be an empty KURL, which can be
-  // intentional so that the non existence of a start URL can be handled
-  // further down the callstack.
+  // This defaults to the document_url. See `has_valid_specified_start_url` to know if
+  // this was specified by the manifest json itself.
   url.mojom.Url start_url;
+
+  // True if the json specified a start_url.
+  bool has_valid_specified_start_url;
 
   DisplayMode display;
 
@@ -126,11 +141,7 @@ struct Manifest {
   // A mapping of locales to their translations.
   map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
 
-  // TODO(crbug.com/1271804): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
-  ManifestUserPreferences? user_preferences;
-
+  // TODO(b:340126786): Remove these obsolete fields.
   // TODO(crbug.com/1318305): This field is non-standard and part of a Chrome
   // experiment. See: https://github.com/w3c/manifest/issues/1045
   bool has_dark_theme_color;
@@ -349,21 +360,6 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? description;
 };
 
-// Structure representing overrides for certain user preferences.
-struct ManifestUserPreferences {
-  ManifestUserPreferenceOverrides? color_scheme_dark;
-};
-
-// Structure representing manifest fields that can be overridden given certain
-// user preferences (eg. dark mode). All fields are optional.
-struct ManifestUserPreferenceOverrides {
-  bool has_theme_color;
-  uint32 theme_color;
-
-  bool has_background_color;
-  uint32 background_color;
-};
-
 // Structure representing customizations to the tab strip.
 struct ManifestTabStrip {
   HomeTabUnion home_tab;
@@ -412,4 +408,24 @@ struct ManifestError {
   bool critical;
   uint32 line;
   uint32 column;
+};
+
+// Possible results of requesting the manifest for a document.
+enum ManifestRequestResult {
+  // Something unexpectedly went wrong, no default manifest will be returned
+  // with this response.
+  kUnexpectedFailure,
+  // This page isn't allowed to have a manifest, for example because it has a
+  // unique origin. No default manifest will be returned, but the manifest url
+  // (if any) specified in the page is still returned.
+  kNoManifestAllowed,
+  // The page does not specify a manifest, a default manifest is returned
+  // instead.
+  kNoManifestSpecified,
+  // The manifest failed to fetch or failed to parse. A default manifest will
+  // be returned in addition to the manifest URL the page specified.
+  kManifestFailedToFetch,
+  kManifestFailedToParse,
+  // Success, the manifest was loaded from the URL specified by the page.
+  kSuccess
 };

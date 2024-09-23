@@ -78,9 +78,33 @@ class DocumentScannerServiceClient {
 
   void OnMojoDisconnected();
 
+  DetectCornersCallback* AddDetectCornersCallback(
+      DetectCornersCallback callback);
+
+  void ConsumeDetectCornersCallback(
+      DetectCornersCallback* callback_id,
+      chromeos::machine_learning::mojom::DetectCornersResultPtr result);
+
+  DoPostProcessingCallback* AddDoPostProcessingCallback(
+      DoPostProcessingCallback callback);
+
+  void ConsumeDoPostProcessingCallback(
+      DoPostProcessingCallback* callback_id,
+      chromeos::machine_learning::mojom::DoPostProcessingResultPtr result);
+
+  void CleanupCallbacks();
+
   LoadStatus document_scanner_loaded_ = LoadStatus::NOT_LOADED;
 
   std::vector<OnReadyCallback> on_ready_callbacks_;
+
+  std::unordered_map<DetectCornersCallback*,
+                     std::unique_ptr<DetectCornersCallback>>
+      detect_corners_callbacks_;
+
+  std::unordered_map<DoPostProcessingCallback*,
+                     std::unique_ptr<DoPostProcessingCallback>>
+      do_post_processing_callbacks_;
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;

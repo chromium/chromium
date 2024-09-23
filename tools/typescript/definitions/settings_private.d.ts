@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.settingsPrivate API */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from './chrome_event.js';
 
@@ -35,8 +35,8 @@ declare global {
         PARENT_SUPERVISED = 'PARENT_SUPERVISED',
       }
 
-      // TODO(crbug/1373934) Update existing usages of PrefObject to be typed,
-      // removing the need to use any here.
+      // TODO(crbug.com/40242259) Update existing usages of PrefObject to be
+      // typed, removing the need to use any here.
       export interface PrefObject<T = any> {
         key: string;
         type:

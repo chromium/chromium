@@ -12,8 +12,10 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -30,7 +32,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -48,6 +49,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -55,6 +57,10 @@
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
+
+BASE_FEATURE(kExoDisableBeginFrameAcks,
+             "ExoDisableBeginFrameAcks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -172,6 +178,13 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
 
   if (root_surface) {
     root_surface_ = root_surface;
+    // If lacros happens to be below the version where augmented_surface changed
+    // to compositing-only, `root_surface_` will be augmented, and its
+    // content_size will be ignored, producing empty bounds. Hence, set
+    // set_is_augmented(false) forcibly.
+    // TODO(crbug.com/40058249): Remove when lacros/ash version skew
+    // window is passed.
+    root_surface_->set_is_augmented(false);
     root_surface_->SetSurfaceDelegate(this);
 
     if (client_submits_surfaces_in_pixel_coordinates_) {
@@ -293,6 +306,16 @@ void SurfaceTreeHost::OnContextLost() {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+void SurfaceTreeHost::OnFrameSinkLost() {
+  // HandleContextLost() may happen during this period. If the frame_sink is
+  // still lost after 16ms, we need to resubmit to avoid blank content.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SurfaceTreeHost::HandleFrameSinkLost,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(16));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceTreeHost, protected:
 
@@ -319,21 +342,6 @@ void SurfaceTreeHost::WillCommit() {
 
 void SurfaceTreeHost::SubmitCompositorFrame() {
   viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
-
-  // TODO(1041932,1034876): Remove or early return once these issues
-  // are fixed or identified.
-  if (frame.size_in_pixels().IsEmpty()) {
-    aura::Window* toplevel = root_surface_->window()->GetToplevelWindow();
-    auto app_type = toplevel->GetProperty(aura::client::kAppType);
-    const std::string* app_id = GetShellApplicationId(toplevel);
-    const std::string* startup_id = GetShellStartupId(toplevel);
-    auto* shell_surface = GetShellSurfaceBaseForWindow(toplevel);
-    CHECK(!frame.size_in_pixels().IsEmpty())
-        << " Title=" << shell_surface->GetWindowTitle()
-        << ", AppType=" << static_cast<int>(app_type)
-        << ", AppId=" << (app_id ? *app_id : "''")
-        << ", StartupId=" << (startup_id ? *startup_id : "''");
-  }
 
   const int64_t frame_trace_id = root_surface_->GetFrameTraceId();
   if (frame_trace_id != -1) {
@@ -384,13 +392,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     // |prev_frame_verified_tokens| has, have that flag set. If that is not done
     // locally here, the comparison of the tokens fails as all fields of each
     // tokens are compared during ::find().
-    auto tmp_sync_token = resource.mailbox_holder.sync_token;
+    auto tmp_sync_token = resource.sync_token();
     tmp_sync_token.SetVerifyFlush();
     if (prev_frame_verified_tokens_.find(tmp_sync_token) !=
         prev_frame_verified_tokens_.end()) {
-      resource.mailbox_holder.sync_token.SetVerifyFlush();
+      resource.mutable_sync_token().SetVerifyFlush();
     }
-    sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
+    sync_tokens.push_back(resource.mutable_sync_token().GetData());
   }
   gpu::InterfaceBase* rii = context_provider_->RasterInterface();
   rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
@@ -398,8 +406,8 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   prev_frame_verified_tokens_.clear();
   frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {
-    if (resource.mailbox_holder.sync_token.verified_flush()) {
-      prev_frame_verified_tokens_.insert(resource.mailbox_holder.sync_token);
+    if (resource.sync_token().verified_flush()) {
+      prev_frame_verified_tokens_.insert(resource.sync_token());
     }
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,
@@ -484,31 +492,45 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     gfx::Rect updated_bounds(root_surface_origin_dp, window_bounds.size());
     root_surface_->window()->SetBounds(updated_bounds);
   }
+
+  UpdateHostWindowOpaqueRegion();
 }
 
 void SurfaceTreeHost::UpdateHostLayerOpacity() {
   ui::Layer* commit_target_layer = GetCommitTargetLayer();
 
-  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-
-  const bool fills_bounds_opaquely =
-      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
-      root_surface_->FillsBoundsOpaquely();
-
   if (commit_target_layer == host_window_->layer()) {
-    host_window_->SetTransparent(!fills_bounds_opaquely);
+    UpdateHostWindowOpaqueRegion();
   } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
+    commit_target_layer->SetFillsBoundsOpaquely(
+        ContentsFillsHostWindowOpaquely());
+  }
+}
+
+void SurfaceTreeHost::UpdateHostWindowOpaqueRegion() {
+  if (ContentsFillsHostWindowOpaquely()) {
+    host_window_->SetOpaqueRegionsForOcclusion(
+        {gfx::Rect(host_window_->bounds().size())});
+  } else {
+    host_window_->SetOpaqueRegionsForOcclusion({});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceTreeHost, private:
 
+bool SurfaceTreeHost::ContentsFillsHostWindowOpaquely() const {
+  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
+  return gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
+         root_surface_->FillsBoundsOpaquely();
+}
+
 void SurfaceTreeHost::InitHostWindow(const std::string& window_name) {
   host_window_->SetName(window_name);
   host_window_->Init(ui::LAYER_SOLID_COLOR);
   host_window_->set_owned_by_parent(false);
+  host_window_->SetTransparent(true);
+
   // The host window is a container of surface tree. It doesn't handle pointer
   // events.
   host_window_->SetEventTargetingPolicy(
@@ -547,18 +569,14 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  if (base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame) &&
-      !base::FeatureList::IsEnabled(kExoReactiveFrameSubmission)) {
-    static bool logged_once = false;
-    LOG_IF(WARNING, !logged_once)
-        << "Feature ExoAutoNeedsBeginFrame is ignored because "
-           "ExoReactiveFrameSubmission is not enabled.";
-    logged_once = true;
+  // Disable merge of frame acks with begin frame so that clients of exo can
+  // get frame callbacks and resources reclaimed as soon as possible.
+  if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
+    params.wants_begin_frame_acks = false;
   }
 
   params.auto_needs_begin_frame =
-      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission) &&
-      base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame);
+      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission);
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           nullptr /* context_provider */, nullptr /* worker_context_provider */,
@@ -619,7 +637,12 @@ const ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() const {
   return host_window_->layer();
 }
 
-void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {}
+void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {
+  // TODO(b/319939913): Remove this log when the issue is fixed.
+  old_layer->SetName(old_layer->name() + "-host");
+  CHECK(old_layer->parent());
+  CHECK(host_window()->layer()->parent());
+}
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   DCHECK(root_surface_);
@@ -657,7 +680,7 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   gfx::Size output_surface_size_in_pixels =
       root_surface_->surface_hierarchy_content_bounds().size();
   if (!client_submits_surfaces_in_pixel_coordinates_) {
-    // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+    // TODO(crbug.com/40150290): Should this be ceil? Why do we choose floor?
     output_surface_size_in_pixels = gfx::ScaleToFlooredSize(
         output_surface_size_in_pixels, device_scale_factor);
   }
@@ -702,6 +725,23 @@ void SurfaceTreeHost::HandleContextLost() {
   SubmitCompositorFrame();
 }
 
+void SurfaceTreeHost::HandleFrameSinkLost() {
+  if (!layer_tree_frame_sink_holder_->is_lost()) {
+    // If the frame_sink loss happens together with a context loss and
+    // HandleContextLost() is called first, `layer_tree_frame_sink_holder_` is
+    // already recreated with a compositor frame resubmitted. Skip to avoid an
+    // unnecessary compositor frame.
+    return;
+  }
+
+  if (!GetSurfaceId().is_valid() || !root_surface_) {
+    return;
+  }
+
+  // Resubmit compositor frame.
+  SubmitCompositorFrame();
+}
+
 float SurfaceTreeHost::GetScaleFactor() const {
   return CalculateScaleFactor(scale_factor_);
 }
@@ -741,7 +781,7 @@ SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
 float SurfaceTreeHost::CalculateScaleFactor(
     const std::optional<float>& scale_factor) const {
   if (scale_factor) {
-    // TODO(crbug.com/1412420): Remove this once the scale factor precision
+    // TODO(crbug.com/40255259): Remove this once the scale factor precision
     // issue is fixed for ARC.
     if (std::abs(scale_factor.value() -
                  host_window_->layer()->device_scale_factor()) <
@@ -784,7 +824,6 @@ void SurfaceTreeHost::ApplyAndPropagateRoundedCornersToSurfaceTree(
     Surface* surface,
     const gfx::RRectF& rounded_corners_bounds) {
   surface->SetRoundedCorners(rounded_corners_bounds,
-                             /*is_root_coordinates=*/false,
                              /*commit_override=*/true);
   for (auto& sub_surface_entry : surface->sub_surfaces()) {
     // Convert the rounded corners bounds to sub_surface local coordinates by

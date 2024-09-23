@@ -27,6 +27,10 @@
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class Document;
@@ -38,7 +42,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // TODO(sashab): Remove this method and move logic to the caller.
   static CSSValue* Create(const Length& value, float zoom);
 
-  String CssText() const;
+  WTF::String CssText() const;
 
   bool IsNumericLiteralValue() const {
     return class_type_ == kNumericLiteralClass;
@@ -48,6 +52,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return IsNumericLiteralValue() || IsMathFunctionValue();
   }
   bool IsIdentifierValue() const { return class_type_ == kIdentifierClass; }
+  bool IsScopedKeywordValue() const {
+    return class_type_ == kScopedKeywordClass;
+  }
   bool IsValuePair() const { return class_type_ == kValuePairClass; }
   bool IsValueList() const { return class_type_ >= kValueListClass; }
 
@@ -185,6 +192,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsCyclicVariableValue() const {
     return class_type_ == kCyclicVariableValueClass;
   }
+  bool IsFlipRevertValue() const { return class_type_ == kFlipRevertClass; }
   bool IsAlternateValue() const { return class_type_ == kAlternateClass; }
   bool IsAxisValue() const { return class_type_ == kAxisClass; }
   bool IsShorthandWrapperValue() const {
@@ -196,12 +204,19 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsLightDarkValuePair() const {
     return class_type_ == kLightDarkValuePairClass;
   }
+  bool IsAppearanceAutoBaseSelectValuePair() const {
+    return class_type_ == kAppearanceAutoBaseSelectValuePairClass;
+  }
 
   bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsViewValue() const { return class_type_ == kViewClass; }
   bool IsRatioValue() const { return class_type_ == kRatioClass; }
 
   bool IsRepeatStyleValue() const { return class_type_ == kRepeatStyleClass; }
+
+  bool IsRelativeColorValue() const {
+    return class_type_ == kRelativeColorClass;
+  }
 
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
@@ -220,8 +235,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
+  const CSSValue* UntaintedCopy() const;
+
 #if DCHECK_IS_ON()
-  String ClassTypeToString() const;
+  WTF::String ClassTypeToString() const;
 #endif
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
@@ -235,6 +252,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kNumericLiteralClass,
     kMathFunctionClass,
     kIdentifierClass,
+    kScopedKeywordClass,
     kColorClass,
     kColorMixClass,
     kCounterClass,
@@ -244,9 +262,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kURIClass,
     kValuePairClass,
     kLightDarkValuePairClass,
+    kAppearanceAutoBaseSelectValuePairClass,
     kScrollClass,
     kViewClass,
     kRatioClass,
+    kRelativeColorClass,
 
     // Basic shape classes.
     // TODO(sashab): Represent these as a single subclass, BasicShapeClass.
@@ -302,6 +322,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kPendingSystemFontValueClass,
     kInvalidVariableValueClass,
     kCyclicVariableValueClass,
+    kFlipRevertClass,
     kLayoutFunctionClass,
 
     kCSSContentDistributionClass,
@@ -361,6 +382,14 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // The flag is true if the value contains such references but hasn't been
   // populated with a tree scope.
   uint8_t needs_tree_scope_population_ : 1;  // NOLINT
+
+  // Whether this value originally came from a quirksmode-specific declaration.
+  // Used for use counting of such situations (to see if we can try to remove
+  // the functionality).
+  uint8_t was_quirky_ : 1 = false;
+
+  // See css_attr_value_tainting.h.
+  uint8_t attr_tainted_ : 1 = false;
 
  private:
   const uint8_t class_type_;  // ClassType

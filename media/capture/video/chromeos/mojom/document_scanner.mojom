@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+// The corner detection result.
+struct DetectCornersResult {
+  // Even when there is no corners detected, `success` is still true.
+  // `success` is false when ML service is not available or crashed.
+  bool success;
+
+  // Detected document corners.
+  array<gfx.mojom.PointF> corners;
+};
+
+// The mojom interface for performing corner detection.
+//
+// Next method ID: 1
+interface CrosDocumentScanner {
+  // Detect document corners for given `nv12_image` which is in 256x256 size.
+  DetectCornersFromNV12Image@0(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion nv12_image)
+      => (DetectCornersResult result);
+};

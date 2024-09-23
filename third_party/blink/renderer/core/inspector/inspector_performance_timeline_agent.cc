@@ -149,7 +149,7 @@ void InspectorPerformanceTimelineAgent::PerformanceEntryAdded(
   } else if (auto* global_scope = DynamicTo<WorkerGlobalScope>(context)) {
     performance = WorkerGlobalScopePerformance::performance(*global_scope);
   } else {
-    NOTREACHED() << "Unexpected subtype of ExecutionContext";
+    NOTREACHED_IN_MIGRATION() << "Unexpected subtype of ExecutionContext";
   }
   GetFrontend()->timelineEventAdded(
       BuildProtocolEvent(frame_id, performance->timeOrigin(), entry));

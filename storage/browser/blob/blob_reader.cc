@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/browser/blob/blob_reader.h"
 
 #include <stddef.h>
@@ -65,7 +70,6 @@ int ConvertBlobErrorToNetError(BlobStatus reason) {
       NOTREACHED();
   }
   NOTREACHED();
-  return net::ERR_FAILED;
 }
 }  // namespace
 
@@ -73,7 +77,7 @@ BlobReader::FileStreamReaderProvider::~FileStreamReaderProvider() = default;
 
 BlobReader::BlobReader(const BlobDataHandle* blob_handle)
     : file_task_runner_(base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})),
       net_error_(net::OK) {
   if (blob_handle) {
     if (blob_handle->IsBroken()) {
@@ -510,7 +514,6 @@ BlobReader::Status BlobReader::ReadItem() {
     return ReadReadableDataHandle(item, bytes_to_read);
   if (!IsFileType(item.type())) {
     NOTREACHED();
-    return ReportError(net::ERR_UNEXPECTED);
   }
   FileStreamReader* const reader =
       GetOrCreateFileReaderAtIndex(current_item_index_);
@@ -752,7 +755,6 @@ std::unique_ptr<FileStreamReader> BlobReader::CreateFileStreamReader(
   }
 
   NOTREACHED();
-  return nullptr;
 }
 
 void BlobReader::SetFileReaderAtIndex(

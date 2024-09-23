@@ -19,15 +19,13 @@ namespace tracing {
 struct MessageInfo {
   // List of accepted field ids in the output for this message. The end of list
   // is marked by a -1.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-var-initializer
+  // RAW_PTR_EXCLUSION: constant data that is not freed.
   RAW_PTR_EXCLUSION const int* accepted_field_ids;
 
   // List of sub messages that correspond to the accepted field ids list. There
   // is no end of list marker and the length is this list is equal to length of
   // |accepted_field_ids| - 1.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-var-initializer
+  // RAW_PTR_EXCLUSION: constant data that is not freed.
   RAW_PTR_EXCLUSION const MessageInfo* const* const sub_messages;
 };
 
@@ -59,7 +57,7 @@ constexpr MessageInfo kMajorState = {kMajorStateIndices, nullptr};
 constexpr int kMinorStateIndices[] = {
     1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-    33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, -1};
+    33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, -1};
 constexpr MessageInfo kMinorState = {kMinorStateIndices, nullptr};
 
 // Proto Message: ChromeCompositorStateMachine
@@ -233,7 +231,7 @@ constexpr MessageInfo kChromeTaskGraphRunner = {kChromeTaskGraphRunnerIndices,
                                                 nullptr};
 
 // Proto Message: ChromeMessagePumpForUI
-constexpr int kChromeMessagePumpForUIIndices[] = {1, -1};
+constexpr int kChromeMessagePumpForUIIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePumpForUI = {kChromeMessagePumpForUIIndices,
                                                  nullptr};
 
@@ -473,6 +471,33 @@ constexpr int kWebContentInteractionIndices[] = {1, 2, -1};
 constexpr MessageInfo kWebContentInteraction = {kWebContentInteractionIndices,
                                                 nullptr};
 
+// Proto Message: EventForwarder
+constexpr int kEventForwarderIndices[] = {1, 2, 5, 6, 7, -1};
+constexpr MessageInfo kEventForwarder = {kEventForwarderIndices, nullptr};
+
+// Proto Message: TouchDispositionGestureFilter
+constexpr int kTouchDispositionGestureFilterIndices[] = {1, -1};
+constexpr MessageInfo kTouchDispositionGestureFilter = {
+    kTouchDispositionGestureFilterIndices, nullptr};
+
+// Proto Message: ViewClassName
+constexpr int kViewClassNameIndices[] = {1, -1};
+constexpr MessageInfo kViewClassName = {kViewClassNameIndices, nullptr};
+
+// Proto Message: AnimationFrameTimingInfo
+constexpr int kAnimationFrameTimingInfoIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kAnimationFrameTimingInfo = {
+    kAnimationFrameTimingInfoIndices, nullptr};
+
+// Proto Message: AnimationFrameScriptTimingInfo
+constexpr int kAnimationFrameScriptTimingInfoIndices[] = {1, 2, 3, 9, 10, -1};
+constexpr MessageInfo kAnimationFrameScriptTimingInfo = {
+    kAnimationFrameScriptTimingInfoIndices, nullptr};
+
+// Proto Message: EventTiming
+constexpr int kEventTimingIndices[] = {1, 3, 4, 5, 6, 7, 8, 9, -1};
+constexpr MessageInfo kEventTiming = {kEventTimingIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -481,7 +506,8 @@ constexpr int kTrackEventIndices[] = {
     1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
-    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, -1};
+    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,
+    1060, 1061, 1064, 1065, 1069, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -565,7 +591,13 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kScrollPredictorMetrics,
     &kPageLoad,
     &kStartUp,
-    &kWebContentInteraction};
+    &kWebContentInteraction,
+    &kEventForwarder,
+    &kTouchDispositionGestureFilter,
+    &kViewClassName,
+    &kAnimationFrameTimingInfo,
+    &kAnimationFrameScriptTimingInfo,
+    &kEventTiming};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
@@ -731,7 +763,7 @@ constexpr int kCounterDescriptorIndices[] = {1, 3, 4, 5, -1};
 constexpr MessageInfo kCounterDescriptor = {kCounterDescriptorIndices, nullptr};
 
 // Proto Message: TrackDescriptor
-constexpr int kTrackDescriptorIndices[] = {1, 3, 4, 5, 6, 7, 8, 9, -1};
+constexpr int kTrackDescriptorIndices[] = {1, 3, 4, 5, 6, 7, 8, 9, 10, -1};
 constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     nullptr,
     &kProcessDescriptor,
@@ -740,6 +772,7 @@ constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     &kChromeProcessDescriptor,
     &kChromeThreadDescriptor,
     &kCounterDescriptor,
+    nullptr,
     nullptr};
 constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
                                           kTrackDescriptorComplexMessages};
@@ -748,10 +781,14 @@ constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
 constexpr int kTraceUuidIndices[] = {1, 2, -1};
 constexpr MessageInfo kTraceUuid = {kTraceUuidIndices, nullptr};
 
+// Proto Message: ChromeTrigger
+constexpr int kChromeTriggerIndices[] = {2, -1};
+constexpr MessageInfo kChromeTrigger = {kChromeTriggerIndices, nullptr};
+
 // Proto Message: TracePacket
-constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35,
-                                       36, 41, 42, 43, 44, 51, 54,
-                                       56, 58, 59, 60, 87, 89, -1};
+constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12,  13, 35, 36,
+                                       41, 42, 43, 44, 51,  54, 56, 58,
+                                       59, 60, 87, 89, 109, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kClockSnapshot,
     nullptr,
@@ -772,7 +809,8 @@ constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kTracePacketDefaults,
     &kTrackDescriptor,
     nullptr,
-    &kTraceUuid};
+    &kTraceUuid,
+    &kChromeTrigger};
 constexpr MessageInfo kTracePacket = {kTracePacketIndices,
                                       kTracePacketComplexMessages};
 

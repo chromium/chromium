@@ -7,6 +7,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -353,14 +354,13 @@ void Clipboard::RemoveObserver(ClipboardWriteObserver* observer) {
   write_observers_.RemoveObserver(observer);
 }
 
-void Clipboard::NotifyCopyWithUrl(const base::StringPiece text,
+void Clipboard::NotifyCopyWithUrl(const std::string_view text,
                                   const GURL& frame,
                                   const GURL& main_frame) {
   GURL text_url(text);
   if (text_url.is_valid()) {
-    for (ClipboardWriteObserver& obs : write_observers_) {
-      obs.OnCopyURL(text_url, frame, main_frame);
-    }
+    write_observers_.Notify(&ClipboardWriteObserver::OnCopyURL, text_url, frame,
+                            main_frame);
   }
 }
 
@@ -386,8 +386,6 @@ base::Lock& Clipboard::ClipboardMapLock() {
 bool Clipboard::IsMarkedByOriginatorAsConfidential() const {
   return false;
 }
-
-void Clipboard::MarkAsConfidential() {}
 
 void Clipboard::ReadAvailableTypes(ClipboardBuffer buffer,
                                    const DataTransferEndpoint* data_dst,
@@ -441,12 +439,13 @@ void Clipboard::ReadRTF(ClipboardBuffer buffer,
   std::move(callback).Run(std::move(result));
 }
 
-void Clipboard::ReadCustomData(ClipboardBuffer buffer,
-                               const std::u16string& type,
-                               const DataTransferEndpoint* data_dst,
-                               ReadCustomDataCallback callback) const {
+void Clipboard::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    ReadDataTransferCustomDataCallback callback) const {
   std::u16string result;
-  ReadCustomData(buffer, type, data_dst, &result);
+  ReadDataTransferCustomData(buffer, type, data_dst, &result);
   std::move(callback).Run(std::move(result));
 }
 

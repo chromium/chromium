@@ -7,20 +7,20 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 // Returns true if Cast Streaming is enabled for this process.
 bool IsCastStreamingEnabled();
 
-// TODO(crbug.com/1082821): Remove these 2 functions below once the Cast
+// TODO(crbug.com/40131115): Remove these 2 functions below once the Cast
 // Streaming Receiver is implemented as a separate component from WebEngine.
 
 // Returns true if |origin| is the Cast Streaming MessagePort origin.
-bool IsCastStreamingAppOrigin(base::StringPiece origin);
+bool IsCastStreamingAppOrigin(std::string_view origin);
 
 // Returns true if |origin| is the Cast Streaming MessagePort origin for a
 // video-only receiver.
-bool IsCastStreamingVideoOnlyAppOrigin(base::StringPiece origin);
+bool IsCastStreamingVideoOnlyAppOrigin(std::string_view origin);
 
 // Returns true if |message| contains a valid Cast Streaming Message.
 bool IsValidCastStreamingMessage(const fuchsia::web::WebMessage& message);

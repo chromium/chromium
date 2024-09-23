@@ -109,7 +109,7 @@ class ModelProviderFactory {
   // Creates a default model provider to be used when the original provider did
   // not provide a model. Returns `nullptr` when a default provider is not
   // available.
-  // TODO(crbug.com/1346389): This method should be moved to Config after
+  // TODO(crbug.com/40232484): This method should be moved to Config after
   // migrating all the tests that use this.
   virtual std::unique_ptr<DefaultModelProvider> CreateDefaultProvider(
       proto::SegmentId) = 0;

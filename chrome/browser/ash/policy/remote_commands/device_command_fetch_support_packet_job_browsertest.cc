@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
@@ -157,8 +156,8 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
     base::FilePath exported_file(event.upload_settings().origin_path());
     // Ensure that the resulting `exported_file` exist under target directory.
     EXPECT_EQ(exported_file.DirName(), target_dir());
-    EXPECT_TRUE(event.has_command_id());
-    EXPECT_EQ(event.command_id(), command_id);
+    EXPECT_TRUE(event.has_remote_command_details());
+    EXPECT_EQ(event.remote_command_details().command_id(), command_id);
 
     std::string expected_upload_parameters = test::GetExpectedUploadParameters(
         command_id, exported_file.BaseName().value());
@@ -178,8 +177,8 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
                        enterprise_management::FetchSupportPacketResultNote::
                            WARNING_PII_NOT_ALLOWED));
     }
-    EXPECT_THAT(event.command_result_payload(),
-                IsJson(std::move(expected_payload)));
+    EXPECT_THAT(event.remote_command_details().command_result_payload(),
+                IsJson(expected_payload));
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -247,7 +246,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
         ASSERT_NO_FATAL_FAILURE(LaunchMGS());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -255,8 +254,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
   void LoginUserAndSetAffiliation(
       const ash::LoginManagerMixin::TestUserInfo& user,
       bool is_affiliated) {
-    login_manager_mixin_.LoginWithDefaultContext(
-        user, /*wait_for_profile_prepared=*/true);
+    login_manager_mixin_.LoginWithDefaultContext(user);
     login_manager_mixin_.WaitForActiveSession();
     // UserManager is initialized as ash::FakeChromeUserManager by the included
     // mixins so it's safe to cast.
@@ -325,9 +323,7 @@ class DeviceCommandFetchSupportPacketBrowserTestManualKioskSession
     : public DeviceCommandFetchSupportPacketBrowserTestBase<
           ash::KioskBaseTest> {
  protected:
-  DeviceCommandFetchSupportPacketBrowserTestManualKioskSession() {
-    set_use_consumer_kiosk_mode(false);
-  }
+  DeviceCommandFetchSupportPacketBrowserTestManualKioskSession() = default;
 
   void SetLogUploadEnabledPolicy(bool enabled) {
     em::ChromeDeviceSettingsProto& proto(
@@ -533,8 +529,7 @@ IN_PROC_BROWSER_TEST_F(
     SuccessCommandRequestWithoutPii) {
   SetLogUploadEnabledPolicy(true);
 
-  StartAppLaunchFromLoginScreen(
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(false /* check launch data */,
                               false /* terminate app */,
                               true /* keep app open */);
@@ -576,8 +571,7 @@ IN_PROC_BROWSER_TEST_F(
     SuccessCommandRequestWithPii) {
   SetLogUploadEnabledPolicy(true);
 
-  StartAppLaunchFromLoginScreen(
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(false /* check launch data */,
                               false /* terminate app */,
                               true /* keep app open */);

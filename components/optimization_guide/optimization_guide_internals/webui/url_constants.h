@@ -8,7 +8,8 @@
 namespace optimization_guide_internals {
 
 // The host of the optimization guide internals page URL.
-extern const char kChromeUIOptimizationGuideInternalsHost[];
+inline constexpr char kChromeUIOptimizationGuideInternalsHost[] =
+    "optimization-guide-internals";
 
 }  // namespace optimization_guide_internals
 

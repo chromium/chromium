@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -25,9 +24,20 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabModel;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModelChange / TabStripSelectionChange
+//
+// This observer is not appropriate for most use cases. It's primarily used for
+// features that must directly interface with the tab strip, for example: tab
+// groups, tab search, etc.
+// Most features in Chrome need to hold state on a per-tab basis. In that case,
+// add a controller to TabFeatures and use TabInterface to observe for the tab
+// events.
 //
 // The following class and structures are used to inform TabStripModelObservers
 // of changes to:
@@ -46,11 +56,6 @@ class TabStripModelChange {
   enum class RemoveReason {
     // WebContents will be deleted.
     kDeleted,
-
-    // WebContents will be stored in ClosedTabCache. After some amount of time,
-    // the WebContents will either be deleted, or inserted back into another
-    // TabStripModel.
-    kCached,
 
     // WebContents got detached from a TabStrip and inserted into another
     // TabStrip.
@@ -76,9 +81,7 @@ class TabStripModelChange {
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    // This field is not a raw_ptr<> because of incompatibilities with tracing
-    // in not-rewritten platform specific code.
-    RAW_PTR_EXCLUSION content::WebContents* contents;
+    raw_ptr<content::WebContents, DanglingUntriaged> contents;
     int index;
     RemoveReason remove_reason;
     std::optional<SessionID> session_id;
@@ -349,14 +352,20 @@ class TabStripModelObserver {
   // TabStripModel, which allows an observer to react to an impending change to
   // the TabStripModel. The only use case of this signal that is currently
   // supported is the drag controller completing a drag before a tab is removed.
-  // TODO(1322943): Unify and generalize this and OnTabWillBeAdded, e.g. via
-  // OnTabStripModelWillChange().
+  // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
+  // e.g. via OnTabStripModelWillChange().
   virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
   // independent of the tabstrip model and do not affect any tab state.
   virtual void OnTabGroupChanged(const TabGroupChange& change);
+
+  // Notfies us when a Tab Group is added to the Tab Group Model.
+  virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
+
+  // Notfies us when a Tab Group will be removed from the Tab Group Model.
+  virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
 
   // The specified WebContents at |index| changed in some way. |contents|
   // may be an entirely different object and the old value is no longer
@@ -381,7 +390,7 @@ class TabStripModelObserver {
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
       std::optional<tab_groups::TabGroupId> group,
-      content::WebContents* contents,
+      tabs::TabModel* tab,
       int index);
 
   // The TabStripModel now no longer has any tabs. The implementer may
@@ -400,7 +409,7 @@ class TabStripModelObserver {
   // CloseAllTabsStopped() is sent with reason 'CANCELED'. On the other hand if
   // the close does finish then CloseAllTabsStopped() is sent with reason
   // 'COMPLETED'. Also note that if the last tab is detached
-  // (DetachAndDeleteWebContentsAt()/DetachWebContentsAtForInsertion()) then
+  // (DetachAndDeleteWebContentsAt()) then
   // this is not sent.
   virtual void WillCloseAllTabs(TabStripModel* tab_strip_model);
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,

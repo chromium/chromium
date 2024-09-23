@@ -218,7 +218,7 @@ def _CheckDuplicateColors(input_api, output_api):
 
     This is banned, please reference the existing color resource from
     color_palette.xml or one_off_colors.xml using @color/... and if needed,
-    give the existing color resource a more general name (e.g. modern_grey_100).
+    give the existing color resource a more general name (e.g. baseline_neutral_90).
 
     See https://crbug.com/775198 for more information.
   ''', errors)

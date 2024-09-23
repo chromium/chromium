@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
 
 #include <algorithm>
@@ -87,7 +92,7 @@ void CollectSolidEdges(Vector<ExclusionSpaceInternal::ShelfEdge>* edges,
                        LayoutUnit block_offset,
                        Vector<ExclusionSpaceInternal::ShelfEdge>* out_edges) {
   *out_edges = std::move(*edges);
-  for (auto* it = out_edges->begin(); it != out_edges->end();) {
+  for (auto it = out_edges->begin(); it != out_edges->end();) {
     if ((*it).block_end <= block_offset) {
       it = out_edges->erase(it);
     } else {
@@ -176,6 +181,7 @@ ExclusionSpaceInternal::ExclusionSpaceInternal(
           other.initial_letter_left_clear_offset_),
       initial_letter_right_clear_offset_(
           other.initial_letter_right_clear_offset_),
+      non_hidden_clear_offset_(other.non_hidden_clear_offset_),
       track_shape_exclusions_(other.track_shape_exclusions_),
       has_break_before_left_float_(other.has_break_before_left_float_),
       has_break_before_right_float_(other.has_break_before_right_float_),
@@ -203,6 +209,7 @@ void ExclusionSpaceInternal::CopyFrom(const ExclusionSpaceInternal& other) {
   last_float_block_start_ = other.last_float_block_start_;
   initial_letter_left_clear_offset_ = other.initial_letter_left_clear_offset_;
   initial_letter_right_clear_offset_ = other.initial_letter_right_clear_offset_;
+  non_hidden_clear_offset_ = other.non_hidden_clear_offset_;
   track_shape_exclusions_ = other.track_shape_exclusions_;
   has_break_before_left_float_ = other.has_break_before_left_float_;
   has_break_before_right_float_ = other.has_break_before_right_float_;
@@ -269,7 +276,7 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
 
   // Update the members used for clearance calculations.
   LayoutUnit clear_offset = exclusion->rect.BlockEndOffset();
-  if (UNLIKELY(exclusion->IsForInitialLetterBox())) {
+  if (exclusion->IsForInitialLetterBox()) [[unlikely]] {
     if (exclusion->type == EFloat::kLeft) {
       initial_letter_left_clear_offset_ =
           std::max(initial_letter_left_clear_offset_, clear_offset);
@@ -278,19 +285,23 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
           std::max(initial_letter_right_clear_offset_, clear_offset);
     }
 
+    if (!exclusion->is_hidden_for_paint) {
+      non_hidden_clear_offset_ =
+          std::max(non_hidden_clear_offset_, clear_offset);
+    }
+
     if (!already_exists) {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
       const auto& source_exclusions = *exclusions_;
       exclusions_ = MakeGarbageCollected<ExclusionAreaPtrArray>();
       exclusions_->resize(num_exclusions_ + 1);
-      const auto* const source_end =
-          source_exclusions.begin() + num_exclusions_;
+      const auto source_end = source_exclusions.begin() + num_exclusions_;
       // Initial-letters are special in that they can be inserted "before"
       // other floats. Ensure we insert |exclusion| in the correct place
       // (ascent order by block-start).
-      auto* destination = exclusions_->begin();
-      for (auto* it = source_exclusions.begin(); it != source_end; ++it) {
+      auto destination = exclusions_->begin();
+      for (auto it = source_exclusions.begin(); it != source_end; ++it) {
         if (exclusion->rect.BlockStartOffset() <
             (*it)->rect.BlockStartOffset()) {
           *destination = exclusion;
@@ -319,6 +330,10 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
     left_clear_offset_ = std::max(left_clear_offset_, clear_offset);
   else if (exclusion->type == EFloat::kRight)
     right_clear_offset_ = std::max(right_clear_offset_, clear_offset);
+
+  if (!exclusion->is_hidden_for_paint) {
+    non_hidden_clear_offset_ = std::max(non_hidden_clear_offset_, clear_offset);
+  }
 
   if (derived_geometry_)
     derived_geometry_->Add(*exclusion);
@@ -680,11 +695,11 @@ void ExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
     const BfcOffset& offset,
     const LayoutUnit available_inline_size,
     const LambdaFunc& lambda) const {
-  auto* shelves_it = shelves_.begin();
-  auto* areas_it = areas_.begin();
+  auto shelves_it = shelves_.begin();
+  auto areas_it = areas_.begin();
 
-  auto* const shelves_end = shelves_.end();
-  auto* const areas_end = areas_.end();
+  auto const shelves_end = shelves_.end();
+  auto const areas_end = areas_.end();
 
   while (shelves_it != shelves_end || areas_it != areas_end) {
     // We should never exhaust the opportunities list before the shelves list,
@@ -752,13 +767,13 @@ ExclusionSpaceInternal::GetDerivedGeometry(
     DCHECK_LE(num_exclusions_, exclusions_->size());
     DCHECK_GE(num_exclusions_, 1u);
 
-    const auto* begin = exclusions_->begin();
-    const auto* end = begin + num_exclusions_;
+    const auto begin = exclusions_->begin();
+    const auto end = begin + num_exclusions_;
     DCHECK_LE(end, exclusions_->end());
 
     // Find the first exclusion whose block-start offset is "after" the
     // |block_offset_limit|.
-    auto* it = std::lower_bound(
+    auto it = std::lower_bound(
         begin, end, block_offset_limit,
         [](const auto& exclusion, const auto& block_offset) -> bool {
           return exclusion->rect.BlockStartOffset() < block_offset;

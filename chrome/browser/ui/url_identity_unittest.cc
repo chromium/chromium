@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/url_identity.h"
 
+#include <string_view>
+
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
@@ -36,11 +38,11 @@ struct TestCase {
   UrlIdentity expected_result;
 };
 
-constexpr base::StringPiece kTestIsolatedWebAppUrl =
+constexpr std::string_view kTestIsolatedWebAppUrl =
     "isolated-app://"
     "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-constexpr base::StringPiece kTestIsolatedWebAppName = "Test IWA Name";
-constexpr base::StringPiece kTestExtensionId =
+constexpr std::string_view kTestIsolatedWebAppName = "Test IWA Name";
+constexpr std::string_view kTestExtensionId =
     "0264075e-fd33-4a20-8484-b834afb0333d";
 }  // namespace
 

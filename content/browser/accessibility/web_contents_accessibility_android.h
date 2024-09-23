@@ -5,21 +5,22 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
-#include "base/memory/raw_ptr.h"
-#include "content/browser/accessibility/web_contents_accessibility.h"
-#include "content/common/content_export.h"
-
 #include <unordered_map>
 
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/accessibility/web_contents_accessibility.h"
+#include "content/common/content_export.h"
+#include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class MotionEventAndroid;
+struct AXTreeUpdate;
 }
 
 namespace content {
@@ -51,7 +52,8 @@ class WebContentsImpl;
 // Owned by |Connector|, and destroyed together when the associated web contents
 // is destroyed.
 class CONTENT_EXPORT WebContentsAccessibilityAndroid
-    : public WebContentsAccessibility {
+    : public WebContentsAccessibility,
+      public ui::AXNodeIdDelegate {
  public:
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
@@ -65,6 +67,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       jlong ax_tree_update_ptr,
       const base::android::JavaParamRef<jobject>&
           jaccessibility_node_info_builder);
+  WebContentsAccessibilityAndroid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jassist_data_builder,
+      WebContents* web_contents);
 
   WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
       delete;
@@ -72,6 +79,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const WebContentsAccessibilityAndroid&) = delete;
 
   ~WebContentsAccessibilityAndroid() override;
+
+  // ui::AXNodeIdDelegate:
+  ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
+      ui::AXNodeID ax_node_id) override;
+  void OnAXNodeDeleted(ui::AXNodeID ax_node_id) override;
 
   // Notify the root BrowserAccessibilityManager that this is the
   // WebContentsAccessibilityAndroid it should talk to.
@@ -120,7 +132,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents);
 
-  base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
+  base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
 
   void SetAllowImageDescriptions(JNIEnv* env,
@@ -143,15 +155,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
       JNIEnv* env,
       jint unique_id);
-
-  // This block of methods is experimental.
-  jboolean UpdateCachedAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
-  jboolean PopulateAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
-  void UpdateAccessibilityNodeInfoBoundsRect_exp(
-      JNIEnv* env,
-      const base::android::ScopedJavaLocalRef<jobject>& obj,
-      jint id,
-      BrowserAccessibilityAndroid* node);
 
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
@@ -303,27 +306,49 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Note: This cache is only meant for common strings that might be shared
   //       across many nodes (e.g. role or role description), which have a
   //       finite number of possibilities. Do not use it for page content.
-  base::android::ScopedJavaGlobalRef<jstring> GetCanonicalJNIString(
+  const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
       std::string str) {
     return GetCanonicalJNIString(env, base::UTF8ToUTF16(str));
   }
 
-  base::android::ScopedJavaGlobalRef<jstring> GetCanonicalJNIString(
+  const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
       std::u16string str) {
-    // Check if this string has already been added to the cache.
-    auto it = common_string_cache_.find(str);
-    if (it != common_string_cache_.end()) {
-      return it->second;
+    auto& slot = common_string_cache_[str];
+    if (!slot) {
+      // Otherwise, convert the string and add it to the cache, then return.
+      slot = base::android::ConvertUTF16ToJavaString(env, str);
+      DCHECK(common_string_cache_.size() < 500);
     }
 
-    // Otherwise, convert the string and add it to the cache, then return.
-    common_string_cache_[str] =
-        base::android::ConvertUTF16ToJavaString(env, str);
-    DCHECK(common_string_cache_.size() < 500);
-    return common_string_cache_[str];
+    return slot;
   }
+
+  void RequestAccessibilityTreeSnapshot(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& view_structure_root,
+      const base::android::JavaParamRef<jobject>& accessibility_coordinates,
+      const base::android::JavaParamRef<jobject>& view,
+      const base::android::JavaParamRef<jobject>& on_done_callback);
+
+  void ProcessCompletedAccessibilityTreeSnapshot(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& view_structure_root,
+      ui::AXTreeUpdate& result);
+
+  void RecursivelyPopulateViewStructureTree(
+      JNIEnv* env,
+      base::android::ScopedJavaLocalRef<jobject> obj,
+      const BrowserAccessibilityAndroid* node,
+      const base::android::JavaRef<jobject>& java_side_assist_data_object,
+      bool is_root);
+
+  void PopulateViewStructureNode(
+      JNIEnv* env,
+      base::android::ScopedJavaLocalRef<jobject> obj,
+      const BrowserAccessibilityAndroid* node,
+      const base::android::JavaRef<jobject>& java_side_assist_data_object);
 
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
@@ -377,7 +402,16 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   JavaObjectWeakGlobalRef java_ref_;
   JavaObjectWeakGlobalRef java_anib_ref_;
 
+  // A weak reference to the AssistData tree builder which will only be
+  // instantiated after a request from the Android framework.
+  JavaObjectWeakGlobalRef java_adb_ref_;
+
   raw_ptr<WebContentsImpl> web_contents_;
+
+  // Used by the accessibility tree snapshotter when snapshot is completed.
+  base::android::ScopedJavaGlobalRef<jobject> on_done_callback_;
+  base::android::ScopedJavaGlobalRef<jobject> accessibility_coordinates_;
+  base::android::ScopedJavaGlobalRef<jobject> view_;
 
   bool frame_info_initialized_;
 

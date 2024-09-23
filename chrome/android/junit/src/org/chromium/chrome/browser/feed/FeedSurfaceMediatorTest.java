@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static junit.framework.Assert.assertEquals;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -45,7 +43,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -64,6 +61,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -86,19 +84,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
+// TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not
 // available to provide a default value. This should be enabled if the feature is enabled by
 // default or removed if the flag is removed.
 @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
 @EnableFeatures({
-    ChromeFeatureList.WEB_FEED,
     ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
     ChromeFeatureList.WEB_FEED_SORT,
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public JniMocker mocker = new JniMocker();
 
     // Mocked JNI.
@@ -142,6 +139,7 @@ public class FeedSurfaceMediatorTest {
         // We want to make the feed service bridge ignore the ablation flag.
         when(mFeedServiceBridgeJniMock.isEnabled())
                 .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
+        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
@@ -173,7 +171,7 @@ public class FeedSurfaceMediatorTest {
 
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
         SignInPromo.setDisablePromoForTesting(true);
@@ -468,7 +466,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseFeedOnOff() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -488,7 +485,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseFeedOffOn() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -509,7 +505,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseOff() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -526,9 +521,9 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testObserveTemplateUrlService() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
@@ -548,21 +543,17 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testWithEeaCountryOnlyEnabled() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(false);
 
         // Verifies that Feeds is enabled if the device isn't from an EEA country.
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         verify(mPrefService).setBoolean(eq(Pref.ENABLE_SNIPPETS_BY_DSE), eq(true));
 
         // Verifies that Feeds is disabled if the device is from an EEA country.
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, true);
+        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         verify(mPrefService).setBoolean(eq(Pref.ENABLE_SNIPPETS_BY_DSE), eq(false));
     }

@@ -122,10 +122,8 @@ const wchar_t* GetCursorId(mojom::CursorType type) {
     case mojom::CursorType::kNone:
     case mojom::CursorType::kCustom:
       NOTREACHED();
-      return IDC_ARROW;
   }
   NOTREACHED();
-  return IDC_ARROW;
 }
 
 }  // namespace

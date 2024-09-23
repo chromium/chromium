@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Synchronisierte Geräte für die Wiederherstellung von Tabs können durch Berührung geändert werden. Prüfe ausgewählte Tabs für das aktuelle Gerät durch Berührung oder stelle sie wieder her. Tastatur ausgeblendet.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab öffnen}other{<ph name="TABS_COUNT_MANY" /> Tabs öffnen}}</translation>
 <translation id="4509609396389120020">Tabs von anderen Geräten abrufen</translation>
+<translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4811934403802581334">Alle Tabs, die für das aktuell ausgewählte Gerät ausgewählt sind, werden wiederhergestellt.</translation>
 <translation id="5336031759968328813">Alle Tabs ansehen</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>

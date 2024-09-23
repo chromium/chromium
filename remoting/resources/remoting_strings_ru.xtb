@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Не удалось открыть <ph name="URL" /> в клиенте.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2366718077645204424">Не удалось связаться с хостом. Вероятная причина – используемые вами настройки сети.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Последний раз в Интернете <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Предоставьте расширению "<ph name="PRODUCT_NAME" />" доступ к специальным возможностям</translation>
 <translation id="2509394361235492552">Подключено к устройству "<ph name="HOSTNAME" />"</translation>
 <translation id="2540992418118313681">Предоставить доступ к этому компьютеру другому пользователю?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Процесс удаленного управления электронным ключом</translation>
 <translation id="3581045510967524389">Не удалось подключиться к сети. Проверьте наличие подключения на устройстве.</translation>
 <translation id="3596628256176442606">Данная служба обеспечивает входящие соединения от клиентов Пульта Chrome.</translation>
-<translation id="369442766917958684">Офлайн.</translation>
 <translation id="3695446226812920698">Подробнее</translation>
 <translation id="3776024066357219166">Сеанс Удаленного рабочего стола Chrome завершен.</translation>
 <translation id="3858860766373142691">Название</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">В настоящее время доступ к вашему рабочему столу предоставлен пользователю <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Выполнен вход через аккаунт <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Подключиться повторно</translation>
 <translation id="5810269635982033450">Пользоваться экраном как сенсорной панелью компьютера</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> запрашивает доступ к вашему экрану, клавиатуре и мыши. Нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', если не хотите предоставлять доступ. Чтобы разрешить доступ после установки соединения, нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''.</translation>

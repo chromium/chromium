@@ -11,33 +11,34 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/storage_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace base {
 class Clock;
+class Location;
 }  // namespace base
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 class MutableDataBatch;
 }  // namespace syncer
 
 class ReadingListEntry;
 class ReadingListModelImpl;
 
-// Sync bridge implementation for READING_LIST model type. Takes care of
+// Sync bridge implementation for READING_LIST data type. Takes care of
 // propagating local passwords to other clients and vice versa.
-class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
+class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   ReadingListSyncBridge(
       syncer::StorageType storage_type,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   ReadingListSyncBridge(const ReadingListSyncBridge&) = delete;
   ReadingListSyncBridge& operator=(const ReadingListSyncBridge&) = delete;
@@ -53,9 +54,10 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void DidAddOrUpdateEntry(const ReadingListEntry& entry,
                            syncer::MetadataChangeList* metadata_change_list);
   void DidRemoveEntry(const ReadingListEntry& entry,
+                      const base::Location& location,
                       syncer::MetadataChangeList* metadata_change_list);
 
-  // Exposes whether the underlying ModelTypeChangeProcessor is tracking
+  // Exposes whether the underlying DataTypeLocalChangeProcessor is tracking
   // metadata. This means sync is enabled and the initial download of data is
   // completed, which implies that the relevant ReadingListModel already
   // reflects remote data. Note however that this doesn't mean reading list
@@ -67,7 +69,7 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   syncer::StorageType GetStorageTypeForUma() const;
 
   // Creates an object used to communicate changes in the sync metadata to the
-  // model type store.
+  // data type store.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
 
@@ -80,7 +82,7 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   // immediately be Put(...) to the processor before returning. The same
   // MetadataChangeList that was passed into this function can be passed to
   // Put(...) calls. Delete(...) can also be called but should not be needed for
-  // most model types. Durable storage writes, if not able to combine all change
+  // most data types. Durable storage writes, if not able to combine all change
   // atomically, should save the metadata after the data changes, so that this
   // merge will be re-driven by sync if is not completely saved during the
   // current run.
@@ -130,11 +132,12 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   static bool CompareEntriesForSync(const sync_pb::ReadingListSpecifics& lhs,
                                     const sync_pb::ReadingListSpecifics& rhs);
 
-  // Asynchronously retrieve the corresponding sync data for |storage_keys|.
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
+  // Retrieve the corresponding sync data for |storage_keys|.
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
 
-  // Asynchronously retrieve all of the local sync data.
-  void GetAllDataForDebugging(DataCallback callback) override;
+  // Retrieve all of the local sync data.
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
 
   // Get or generate a client tag for |entity_data|. This must be the same tag
   // that was/would have been generated in the SyncableService/Directory world

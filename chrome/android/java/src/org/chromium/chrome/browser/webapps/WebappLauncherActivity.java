@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
@@ -36,9 +37,11 @@ import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.ref.WeakReference;
 
@@ -67,6 +70,13 @@ public class WebappLauncherActivity extends Activity {
     private static final int WEBAPK_LAUNCH_DELAY_MS = 20;
 
     private static final String TAG = "webapps";
+
+    private static final int DEFAULT_WEBAPK_MIN_VERSION = 146;
+    public static final IntCachedFieldTrialParameter MIN_SHELL_APK_VERSION =
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.WEB_APK_MIN_SHELL_APK_VERSION,
+                    "version",
+                    DEFAULT_WEBAPK_MIN_VERSION);
 
     /** Extracted parameters from the launch intent. */
     @VisibleForTesting
@@ -217,7 +227,10 @@ public class WebappLauncherActivity extends Activity {
             // filter for the URL.
             if (!TextUtils.isEmpty(launchData.url)
                     && WebApkValidator.canWebApkHandleUrl(
-                            appContext, launchData.webApkPackageName, launchData.url)) {
+                            appContext,
+                            launchData.webApkPackageName,
+                            launchData.url,
+                            MIN_SHELL_APK_VERSION.getValue())) {
                 return true;
             }
 

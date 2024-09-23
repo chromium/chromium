@@ -183,7 +183,7 @@ void PrefetchProxyConfigurator::OnTunnelProxyConnectionError(
   }
   DCHECK(prefetch_proxy_not_available_until_);
 
-  // TODO(crbug/1136114): Consider persisting to prefs.
+  // TODO(crbug.com/40152136): Consider persisting to prefs.
 }
 
 }  // namespace content

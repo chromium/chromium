@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import android.content.Context;
-
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -14,7 +12,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -22,14 +19,13 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /** Refocus on previously selected tab if the selected tab closure was undone. */
-public class UndoRefocusHelper implements DestroyObserver {
+public class UndoRefocusHelper {
     private final Set<Integer> mTabsClosedFromTabStrip;
     private final TabModelSelector mModelSelector;
     private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
@@ -37,34 +33,19 @@ public class UndoRefocusHelper implements DestroyObserver {
     private LayoutManagerImpl mLayoutManager;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
-    private Integer mSelectedTabIdWhenTabClosed;
+    private int mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private boolean mIsTablet;
 
     /**
-     * This method is used to create and initialize the UndoRefocusHelper.
-     * @param context Application context to check form factor.
      * @param modelSelector TabModelSelector used to subscribe to TabModelSelectorTabModelObserver
-     *         to capture when tabs are being closed or the closure is being undone.
+     *     to capture when tabs are being closed or the closure is being undone.
      * @param layoutManagerObservableSupplier This supplies the LayoutManager implementation to
-     *         observe the layout state when it's available.
+     *     observe the layout state when it's available.
      * @param isTablet Whether the current device is a tablet.
      */
-    public static void initialize(
-            Context context,
-            TabModelSelector modelSelector,
-            ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
-            boolean isTablet) {
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return;
-        }
-
-        new UndoRefocusHelper(modelSelector, layoutManagerObservableSupplier, isTablet);
-    }
-
-    @VisibleForTesting
-    protected UndoRefocusHelper(
+    public UndoRefocusHelper(
             TabModelSelector modelSelector,
             ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
@@ -78,18 +59,19 @@ public class UndoRefocusHelper implements DestroyObserver {
         observeLayoutState();
     }
 
-    @Override
-    public void onDestroy() {
+    public void destroy() {
         mTabModelSelectorTabModelObserver.destroy();
         mLayoutManagerObservableSupplier.removeObserver(mLayoutManagerSupplierCallback);
-        mLayoutManager.removeObserver(mLayoutStateObserver);
+        if (mLayoutManager != null) {
+            mLayoutManager.removeObserver(mLayoutStateObserver);
+        }
     }
 
     private void observeTabModel() {
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mModelSelector) {
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // Tabs not closed alone are handled in #willCloseMultipleTabs and
                         // #willCloseAllTabs
                         if (!didCloseAlone || tab.isIncognito()) return;
@@ -104,7 +86,7 @@ public class UndoRefocusHelper implements DestroyObserver {
 
                     @Override
                     public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        if (!allowUndo || tabs.size() < 1) return;
+                        if (!allowUndo || tabs.isEmpty()) return;
 
                         // Record metric only once for the set.
                         // Use the first id to track the set.
@@ -150,15 +132,14 @@ public class UndoRefocusHelper implements DestroyObserver {
                     public void tabClosureUndone(Tab tab) {
                         int id = tab.getId();
                         recordClosureCancellation(id);
-                        if (mSelectedTabIdWhenTabClosed != null
-                                && mSelectedTabIdWhenTabClosed == id) {
+                        if (mSelectedTabIdWhenTabClosed == id) {
                             selectPreviouslySelectedTab();
                         }
                     }
 
                     @Override
                     public void allTabsClosureUndone() {
-                        if (mSelectedTabIdWhenTabClosed != null) {
+                        if (mSelectedTabIdWhenTabClosed != Tab.INVALID_TAB_ID) {
                             selectPreviouslySelectedTab();
                         }
 
@@ -169,8 +150,10 @@ public class UndoRefocusHelper implements DestroyObserver {
                     @Override
                     public void tabClosureCommitted(Tab tab) {
                         if (!tab.isIncognito()) {
-                            resetSelectionsForUndo();
-                            mTabsClosedFromTabStrip.clear();
+                            if (tab.getId() == mSelectedTabIdWhenTabClosed) {
+                                resetSelectionsForUndo();
+                            }
+                            mTabsClosedFromTabStrip.remove(tab.getId());
                         }
                     }
 
@@ -186,7 +169,8 @@ public class UndoRefocusHelper implements DestroyObserver {
                         TabModel model = mModelSelector.getModel(false);
                         int tabId = tab.getId();
                         int selTabIndex = model.index();
-                        if (selTabIndex > -1 && selTabIndex < model.getCount()) {
+                        if (selTabIndex != TabModel.INVALID_TAB_INDEX
+                                && selTabIndex < model.getCount()) {
                             Tab selectedTab = model.getTabAt(selTabIndex);
                             if (selectedTab != null && tabId == selectedTab.getId()) {
                                 mSelectedTabIdWhenTabClosed = tabId;
@@ -210,6 +194,10 @@ public class UndoRefocusHelper implements DestroyObserver {
     private void observeLayoutState() {
         mLayoutManagerSupplierCallback = this::onLayoutManagerAvailable;
         mLayoutManagerObservableSupplier.addObserver(mLayoutManagerSupplierCallback);
+        @Nullable LayoutManagerImpl layoutManager = mLayoutManagerObservableSupplier.get();
+        if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+            mTabSwitcherActive = true;
+        }
     }
 
     private void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
@@ -218,8 +206,7 @@ public class UndoRefocusHelper implements DestroyObserver {
                 new LayoutStateProvider.LayoutStateObserver() {
                     @Override
                     public void onFinishedShowing(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
+                        if (layoutType != LayoutType.TAB_SWITCHER) {
                             return;
                         }
                         mTabSwitcherActive = true;
@@ -227,8 +214,7 @@ public class UndoRefocusHelper implements DestroyObserver {
 
                     @Override
                     public void onFinishedHiding(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
+                        if (layoutType != LayoutType.TAB_SWITCHER) {
                             return;
                         }
                         mTabSwitcherActive = false;
@@ -240,12 +226,10 @@ public class UndoRefocusHelper implements DestroyObserver {
 
     /** If a tab closure is undone, this selects tab if it was previously selected. */
     private void selectPreviouslySelectedTab() {
-        TabModel model = mModelSelector.getCurrentModel();
-        if (model == null || mSelectedTabIdWhenTabClosed == null) return;
+        if (mSelectedTabIdWhenTabClosed == Tab.INVALID_TAB_ID) return;
 
-        int prevSelectedIndex = TabModelUtils.getTabIndexById(model, mSelectedTabIdWhenTabClosed);
-
-        TabModelUtils.setIndex(model, prevSelectedIndex, false, TabSelectionType.FROM_UNDO);
+        TabModelUtils.selectTabById(
+                mModelSelector, mSelectedTabIdWhenTabClosed, TabSelectionType.FROM_UNDO);
         resetSelectionsForUndo();
     }
 
@@ -254,22 +238,6 @@ public class UndoRefocusHelper implements DestroyObserver {
      * are reset so the next undo closure action does not reselect the reopened tab.
      */
     private void resetSelectionsForUndo() {
-        mSelectedTabIdWhenTabClosed = null;
-    }
-
-    public TabModelSelectorTabModelObserver getTabModelSelectorTabModelObserverForTests() {
-        return mTabModelSelectorTabModelObserver;
-    }
-
-    public Callback<LayoutManagerImpl> getLayoutManagerSupplierCallbackForTests() {
-        return mLayoutManagerSupplierCallback;
-    }
-
-    public void setTabSwitcherVisibilityForTests(boolean tabSwitcherActive) {
-        this.mTabSwitcherActive = tabSwitcherActive;
-    }
-
-    public void setLayoutManagerForTesting(LayoutManagerImpl layoutManager) {
-        this.mLayoutManager = layoutManager;
+        mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     }
 }

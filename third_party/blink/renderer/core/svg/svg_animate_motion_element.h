@@ -33,7 +33,7 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   explicit SVGAnimateMotionElement(Document&);
   ~SVGAnimateMotionElement() override;
 
-  void UpdateAnimationPath();
+  void ChildMPathChanged();
 
  private:
   bool HasValidAnimation() const override;
@@ -46,9 +46,9 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   void ClearAnimationValue() override;
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) override;
-  bool CalculateFromAndToValues(const String& from_string,
+  void CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
-  bool CalculateFromAndByValues(const String& from_string,
+  void CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
   void CalculateAnimationValue(SMILAnimationValue&,
                                float percentage,
@@ -60,7 +60,8 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   enum RotateMode { kRotateAngle, kRotateAuto, kRotateAutoReverse };
   RotateMode GetRotateMode() const;
 
-  void UpdateAnimationMode() override;
+  AnimationMode CalculateAnimationMode() override;
+  void UpdateAnimationPath();
 
   // Note: we do not support percentage values for to/from coords as the spec
   // implies we should (opera doesn't either)

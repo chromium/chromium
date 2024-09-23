@@ -1,0 +1,36 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--pdf-toolbar-text-color);
+  --cr-icon-button-focus-outline-color: var(--google-grey-500);
+  margin: 0;
+}
+
+cr-icon-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+/* Dark mode styles copied from
+   ui/webui/resources/cr_elements/shared_vars_css.html. Unfortunately there
+   seems to be no great way to share styles with the
+   "prefers-color-scheme: dark" @media query selector.
+   TODO(crbug.com/40779507): Remove these overrides when the PDF viewer
+   supports light and dark modes. */
+cr-action-menu,
+viewer-bookmark {
+  --cr-menu-background-color: var(--google-grey-900);
+  --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
+                    rgba(0, 0, 0, .15) 0 3px 6px 2px;
+  --cr-primary-text-color: var(--google-grey-200);
+  --cr-menu-background-focus-color: var(--google-grey-700);
+  --cr-separator-line: var(--cr-separator-height) solid
+      rgba(255, 255, 255, .1);
+}

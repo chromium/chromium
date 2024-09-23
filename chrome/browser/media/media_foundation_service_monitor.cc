@@ -300,7 +300,7 @@ void MediaFoundationServiceMonitor::Initialize() {
     AddGlobalSample(kSignificantPlayback, base::Time::Now());
 
   content::ServiceProcessHost::AddObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 }
 
@@ -355,7 +355,8 @@ void MediaFoundationServiceMonitor::OnDisplayAdded(
     const display::Display& /*new_display*/) {
   OnPowerOrDisplayChange();
 }
-void MediaFoundationServiceMonitor::OnDidRemoveDisplays() {
+void MediaFoundationServiceMonitor::OnDisplaysRemoved(
+    const display::Displays& /*removed_displays*/) {
   OnPowerOrDisplayChange();
 }
 void MediaFoundationServiceMonitor::OnDisplayMetricsChanged(
