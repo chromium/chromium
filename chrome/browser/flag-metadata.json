@@ -7068,11 +7068,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "per-desk-wallpaper",
-    "owners": ["xiaohuic@chromium.org", "skau@chromium.org", "janetmac@chromium.org"],
-    "expiry_milestone": 118
-  },
-  {
     "name": "performance-intervention-demo-mode",
     "owners": [
       "stluong@chromium.org",

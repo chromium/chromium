@@ -2322,9 +2322,6 @@ extern const char kWallpaperFastRefreshDescription[];
 extern const char kWallpaperGooglePhotosSharedAlbumsName[];
 extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 
-extern const char kWallpaperPerDeskName[];
-extern const char kWallpaperPerDeskDescription[];
-
 extern const char kWallpaperSearchSettingsVisibilityName[];
 extern const char kWallpaperSearchSettingsVisibilityDescription[];
 

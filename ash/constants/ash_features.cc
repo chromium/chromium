@@ -3233,11 +3233,6 @@ BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              "WallpaperGooglePhotosSharedAlbums",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable different wallpapers per desk.
-BASE_FEATURE(kWallpaperPerDesk,
-             "WallpaperPerDesk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a new Welcome Experience for first-time peripheral connections.
 BASE_FEATURE(kWelcomeExperience,
              "WelcomeExperience",
@@ -4940,10 +4935,6 @@ bool IsWallpaperFastRefreshEnabled() {
 
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperGooglePhotosSharedAlbums);
-}
-
-bool IsWallpaperPerDeskEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperPerDesk);
 }
 
 bool IsWelcomeExperienceEnabled() {

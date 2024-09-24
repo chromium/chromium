@@ -3042,7 +3042,6 @@ constexpr char kTaskManagerEndProcessDisabledForExtensionInternalName[] =
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
-constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
 constexpr char kGlanceablesTimeManagementClassroomStudentViewInternalName[] =
     "glanceables-time-management-classroom-student-view";
 constexpr char kGlanceablesTimeManagementTasksViewInternalName[] =
@@ -9086,9 +9085,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWallpaperGooglePhotosSharedAlbumsName,
      flag_descriptions::kWallpaperGooglePhotosSharedAlbumsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperGooglePhotosSharedAlbums)},
-    {kWallpaperPerDeskName, flag_descriptions::kWallpaperPerDeskName,
-     flag_descriptions::kWallpaperPerDeskDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kWallpaperPerDesk)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

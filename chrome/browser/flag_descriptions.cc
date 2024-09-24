@@ -4005,11 +4005,6 @@ const char kWallpaperGooglePhotosSharedAlbumsDescription[] =
     "Allow users to set shared Google Photos albums as the source for their "
     "wallpaper.";
 
-const char kWallpaperPerDeskName[] =
-    "Enable setting different wallpapers per desk";
-const char kWallpaperPerDeskDescription[] =
-    "Allow users to set different wallpapers on each of their active desks";
-
 const char kWallpaperSearchSettingsVisibilityName[] =
     "Wallpaper Search Settings Visibility";
 const char kWallpaperSearchSettingsVisibilityDescription[] =
