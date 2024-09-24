@@ -391,6 +391,7 @@ class ProductSpecificationsServiceSyncDisabledTest
             .value());
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(false));
+    service()->DisableInitializedForTesting();
   }
 
   ProductSpecificationsSet* initial_set() { return initial_set_.get(); }

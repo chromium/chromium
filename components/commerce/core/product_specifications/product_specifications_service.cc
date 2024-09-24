@@ -194,7 +194,7 @@ ProductSpecificationsService::GetSyncControllerDelegate() {
 
 const std::vector<ProductSpecificationsSet>
 ProductSpecificationsService::GetAllProductSpecifications() {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return {};
   }
 
@@ -293,7 +293,7 @@ void ProductSpecificationsService::GetAllProductSpecifications(
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return std::nullopt;
   }
 
@@ -341,7 +341,7 @@ const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<UrlInfo>& url_infos) {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return std::nullopt;
   }
 
@@ -397,7 +397,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
                                       const std::vector<UrlInfo>& url_infos) {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return std::nullopt;
   }
   if (base::FeatureList::IsEnabled(
@@ -453,7 +453,7 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetName(const base::Uuid& uuid,
                                       const std::string& name) {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return std::nullopt;
   }
 
@@ -522,7 +522,7 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
     const std::string& uuid) {
-  if (!bridge_->IsSyncEnabled()) {
+  if (!is_initialized_) {
     return;
   }
   if (base::FeatureList::IsEnabled(
@@ -726,6 +726,10 @@ void ProductSpecificationsService::MigrateLegacySpecificsIfApplicable() {
       }
     }
   }
+}
+
+void ProductSpecificationsService::DisableInitializedForTesting() {
+  is_initialized_ = false;
 }
 
 }  // namespace commerce
