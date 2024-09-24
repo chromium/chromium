@@ -572,8 +572,10 @@ void ProcessSingletonNotificationCallbackImpl(
 bool ShouldInstallSodaDuringPostProfileInit(
     const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(
-      ash::features::kOnDeviceSpeechRecognition);
+  // TODO(b:369008001): Make this return base::FeatureList::IsEnabled(
+  // ash::features::kOnDeviceSpeechRecognition) once DLC can reliably accept
+  // install requests immediately upon start.
+  return false;
 #elif !BUILDFLAG(IS_CHROMEOS_LACROS)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
