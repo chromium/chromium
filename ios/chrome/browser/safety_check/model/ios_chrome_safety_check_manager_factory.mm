@@ -21,15 +21,14 @@ namespace {
 std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 
   return std::make_unique<IOSChromeSafetyCheckManager>(
-      browser_state->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browser_state),
+      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      IOSChromePasswordCheckManagerFactory::GetForProfile(profile),
       task_runner);
 }
 

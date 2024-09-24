@@ -171,10 +171,10 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
       return;
     }
 
-    ChromeBrowserState* browser_state = browser->GetBrowserState();
+    ProfileIOS* profile = browser->GetProfile();
 
     IOSChromeSafetyCheckManager* safety_check_manager =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
 
     safety_check_manager->AddObserver(this);
 
@@ -487,8 +487,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
   // page even if the original notification data is outdated (by at least
   // 'kSafetyCheckNotificationDefaultDelay').
   IOSChromeSafetyCheckManager* safety_check_manager =
-      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      IOSChromeSafetyCheckManagerFactory::GetForProfile(browser->GetProfile());
 
   // If Update Chrome notification, then show the Chrome App Upgrade page.
   if (notification_metadata[kSafetyCheckUpdateChromeNotificationID]) {

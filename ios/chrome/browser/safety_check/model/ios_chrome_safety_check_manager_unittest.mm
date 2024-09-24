@@ -39,7 +39,7 @@ namespace {
 class IOSChromeSafetyCheckManagerTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -47,16 +47,16 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    ChromeBrowserState* browser_state =
+    ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    pref_service_ = browser_state->GetPrefs();
+    pref_service_ = profile->GetPrefs();
 
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
   }
 
   void TearDown() override {

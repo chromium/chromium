@@ -94,18 +94,17 @@ class TestSendTabToSelfSyncService
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
   SendTabToSelfBrowserAgentTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(&::TestSendTabToSelfSyncService::Build));
 
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(test_profile_builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = SendTabToSelfBrowserAgent::FromBrowser(browser_.get());
     model_ = static_cast<FakeSendTabToSelfModel*>(
-        SendTabToSelfSyncServiceFactory::GetForBrowserState(
-            browser_->GetBrowserState())
+        SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
             ->GetSendTabToSelfModel());
   }
 
@@ -140,7 +139,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<SendTabToSelfBrowserAgent> agent_;
   raw_ptr<FakeSendTabToSelfModel> model_;

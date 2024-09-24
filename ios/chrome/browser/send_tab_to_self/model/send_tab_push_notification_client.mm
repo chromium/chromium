@@ -52,8 +52,8 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
       response.notification.request.content.userInfo[kGuidKey]);
   LoadUrlInNewTab(GURL(url), base::BindOnce(^(Browser* browser) {
                     send_tab_to_self::SendTabToSelfModel* send_tab_model =
-                        SendTabToSelfSyncServiceFactory::GetForBrowserState(
-                            browser->GetBrowserState())
+                        SendTabToSelfSyncServiceFactory::GetForProfile(
+                            browser->GetProfile())
                             ->GetSendTabToSelfModel();
                     send_tab_model->MarkEntryOpened(guid);
                   }));
