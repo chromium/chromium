@@ -89,8 +89,8 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
   base::RecordAction(base::UserMetricsAction("IOSReadingListItemsAddedInBulk"));
 
   ReadingListModel* reading_list_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetInstance()->GetForProfile(
+          browser_->GetProfile());
   if (!reading_list_model->loaded()) {
     return;
   }
@@ -159,12 +159,12 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
 AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
     const GURL& url) {
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetInstance()->GetForProfile(
+          browser_->GetProfile());
   CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
-          browser_->GetBrowserState()->GetOriginalChromeBrowserState());
+          browser_->GetProfile()->GetOriginalProfile());
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);
   return account_info;
@@ -189,8 +189,8 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
   RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
   base::RecordAction(base::UserMetricsAction("MobileReadingListAdd"));
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetInstance()->GetForProfile(
+          browser_->GetProfile());
   reading_model->AddOrReplaceEntry(url, base::SysNSStringToUTF8(title),
                                    reading_list::ADDED_VIA_CURRENT_APP,
                                    /*estimated_read_time=*/base::TimeDelta());
@@ -221,8 +221,8 @@ ReadingListBrowserAgent::CreateUndoActionWithReadingListURLs(
 void ReadingListBrowserAgent::RemoveURLsFromReadingList(
     NSArray<URLWithTitle*>* urls) {
   ReadingListModel* reading_model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          browser_->GetBrowserState());
+      ReadingListModelFactory::GetInstance()->GetForProfile(
+          browser_->GetProfile());
 
   for (URLWithTitle* url_with_title in urls) {
     reading_model->RemoveEntryByURL(url_with_title.URL, FROM_HERE);

@@ -23,7 +23,7 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
  public:
   using Callback = base::OnceCallback<void(bool)>;
 
-  explicit ReadingListRemoverHelper(ChromeBrowserState* browser_state);
+  explicit ReadingListRemoverHelper(ProfileIOS* profile);
 
   ReadingListRemoverHelper(const ReadingListRemoverHelper&) = delete;
   ReadingListRemoverHelper& operator=(const ReadingListRemoverHelper&) = delete;

@@ -343,10 +343,10 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
   }
 
   base::FilePath offline_path = entry->DistilledPath();
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =
-      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state)
+      ReadingListDownloadServiceFactory::GetForProfile(profile)
           ->OfflineRoot()
           .DirName();
 
@@ -361,10 +361,10 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
 }
 
 void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =
-      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state)
+      ReadingListDownloadServiceFactory::GetForProfile(profile)
           ->OfflineRoot()
           .DirName();
 

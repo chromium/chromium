@@ -14,12 +14,10 @@
 
 namespace reading_list {
 
-ReadingListRemoverHelper::ReadingListRemoverHelper(
-    ChromeBrowserState* browser_state) {
-  reading_list_model_ =
-      ReadingListModelFactory::GetForBrowserState(browser_state);
+ReadingListRemoverHelper::ReadingListRemoverHelper(ProfileIOS* profile) {
+  reading_list_model_ = ReadingListModelFactory::GetForProfile(profile);
   reading_list_download_service_ =
-      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state);
+      ReadingListDownloadServiceFactory::GetForProfile(profile);
 }
 
 ReadingListRemoverHelper::~ReadingListRemoverHelper() {

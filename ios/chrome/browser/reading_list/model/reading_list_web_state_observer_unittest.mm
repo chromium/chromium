@@ -72,14 +72,14 @@ class ReadingListWebStateObserverTest : public PlatformTest {
     initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
         GURL(kTestURL), kTestTitle, base::Time::Now()));
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    test_web_state_.SetBrowserState(browser_state_.get());
+    test_web_state_.SetBrowserState(profile_.get());
 
     auto fake_navigation_manager = std::make_unique<FakeNavigationManager>();
     GURL url(kTestURL);
@@ -99,12 +99,12 @@ class ReadingListWebStateObserverTest : public PlatformTest {
   }
 
   ReadingListModel* reading_list_model() {
-    return ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+    return ReadingListModelFactory::GetForProfile(profile_.get());
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   FakeWebState test_web_state_;
 };
 
