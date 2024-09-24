@@ -15,3 +15,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*pixeltest\.cc": [
+     "+chrome/browser/ui/views/frame/browser_view.h",
+     "+chrome/browser/ui/browser.h",
+  ]
+}
