@@ -312,7 +312,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // at the time the feature transitions from disabled to enabled, the
         // state at the time is captured as explicit value in
         // `MaybeMigratePrefsForSyncToSigninPart1()`.
-        if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+        if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
+            !base::FeatureList::IsEnabled(
+                kEnableBookmarksSelectedTypeOnSigninForTesting)) {
           type_enabled = false;
         }
       } else if (type == UserSelectableType::kExtensions) {

@@ -2629,6 +2629,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-bookmarks-selected-type-on-signin-for-testing",
+    "owners": [ "msalama@chromium.org", "victorvianna@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 132

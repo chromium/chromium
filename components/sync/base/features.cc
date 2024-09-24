@@ -146,6 +146,10 @@ BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
 #endif  // BUILDFLAG(IS_IOS)
 );
 
+BASE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting,
+             "EnableBookmarksSelectedTypeOnSigninForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",

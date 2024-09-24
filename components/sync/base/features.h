@@ -123,6 +123,11 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // TODO(crbug.com/40943550): Remove this.
 BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
 
+// Normally, if kReplaceSyncPromosWithSignInPromos is disabled,
+// UserSelectableType::kBookmarks is disabled by default upon sign-in. This
+// flag makes the type enabled by default, for manual testing.
+BASE_DECLARE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting);
+
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.
 #if !BUILDFLAG(IS_IOS)

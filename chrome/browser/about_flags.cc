@@ -11992,6 +11992,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
 
+    {"enable-bookmarks-selected-type-on-signin-for-testing",
+     flag_descriptions::kEnableBookmarksSelectedTypeOnSigninForTestingName,
+     flag_descriptions::
+         kEnableBookmarksSelectedTypeOnSigninForTestingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         syncer::kEnableBookmarksSelectedTypeOnSigninForTesting)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -17219,6 +17219,8 @@ from previous Chrome versions.
   <int value="-1268228824" label="PasswordStrongLabel:disabled"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
   <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
+  <int value="-1265863577"
+      label="EnableBookmarksSelectedTypeOnSigninForTesting:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
   <int value="-1264634670" label="HideTabOnTabSwitcher:disabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
@@ -22132,6 +22134,8 @@ from previous Chrome versions.
   <int value="767545979" label="SendTabToSelfSigninPromo:enabled"/>
   <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
+  <int value="768093619"
+      label="EnableBookmarksSelectedTypeOnSigninForTesting:disabled"/>
   <int value="768158833" label="ViewTransitionOnNavigationForIframes:enabled"/>
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
   <int value="768468500" label="FedCmAddAccount:disabled"/>

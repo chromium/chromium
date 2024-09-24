@@ -349,6 +349,13 @@ const char kEnableBenchmarkingChoiceDefaultFeatureStates[] =
 const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[] =
     "Match Field Trial Testing Config";
 
+const char kEnableBookmarksSelectedTypeOnSigninForTestingName[] =
+    "Enable bookmarks selected type on sign-in for testing";
+const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[] =
+    "Test-only flag to help with the development of "
+    "sync-enable-bookmarks-in-transport-mode. Enables the bookmarks "
+    "UserSelectableType upon sign-in";
+
 const char kPreloadingOnPerformancePageName[] =
     "Preloading Settings on Performance Page";
 const char kPreloadingOnPerformancePageDescription[] =

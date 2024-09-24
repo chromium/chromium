@@ -219,6 +219,9 @@ extern const char kEnableBenchmarkingChoiceDisabled[];
 extern const char kEnableBenchmarkingChoiceDefaultFeatureStates[];
 extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 
+extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
+extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
+
 extern const char kFontationsFontBackendName[];
 extern const char kFontationsFontBackendDescription[];
 
