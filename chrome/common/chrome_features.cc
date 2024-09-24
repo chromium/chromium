@@ -977,16 +977,6 @@ BASE_FEATURE(kOnConnectNative,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables/disables marketing emails for other countries other than US,CA,UK.
-BASE_FEATURE(kOobeMarketingAdditionalCountriesSupported,
-             "kOobeMarketingAdditionalCountriesSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables/disables marketing emails for double opt-in countries.
-BASE_FEATURE(kOobeMarketingDoubleOptInCountriesSupported,
-             "kOobeMarketingDoubleOptInCountriesSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables or disables the OOM intervention.
 BASE_FEATURE(kOomIntervention,
