@@ -261,6 +261,10 @@ class WaylandSurface {
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
   FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
                            UiScale_HandleFontScaleChange);
+  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
+                           UiScale_HandleServerTriggeredBoundsChange);
+  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
+                           UiScale_InitScaleAndBounds);
   // Holds information about each explicit synchronization buffer release.
   struct ExplicitReleaseInfo {
     ExplicitReleaseInfo(

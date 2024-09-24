@@ -665,6 +665,10 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
       bounds_dip.Inset(-insets);
       bounds_dip.set_origin({x, y});
     }
+    // UI Scale must be applied only for size coming from the server. Restored
+    // and current dip bounds (used below) are already ui-scale'd.
+    bounds_dip = gfx::ScaleToEnclosingRectIgnoringError(
+        bounds_dip, 1.f / applied_state().ui_scale);
   } else if (ShouldSetBounds(window_state)) {
     bounds_dip = !restored_bounds_dip().IsEmpty() ? restored_bounds_dip()
                                                   : GetBoundsInDIP();
@@ -787,7 +791,8 @@ void WaylandToplevelWindow::SetWindowGeometry(
   if (!shell_toplevel_)
     return;
 
-  gfx::Rect geometry_dip(state.bounds_dip.size());
+  gfx::Rect geometry_dip = gfx::ScaleToEnclosingRectIgnoringError(
+      gfx::Rect(state.bounds_dip.size()), state.ui_scale);
 
   auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
   if (!insets_dip.IsEmpty()) {

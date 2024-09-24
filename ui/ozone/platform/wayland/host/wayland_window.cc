@@ -957,11 +957,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     state.bounds_dip = gfx::Rect(origin, {1, 1});
   }
 
-  // Properties contain DIP bounds but the buffer scale is initially 1 so it's
-  // OK to assign.  The bounds will be recalculated when the buffer scale
-  // changes.
-  state.size_px = state.bounds_dip.size();
-
   opacity_ = properties.opacity;
   type_ = properties.type;
 
@@ -983,6 +978,17 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   if (!OnInitialize(std::move(properties), &state)) {
     return false;
   }
+
+  // Properties contain DIP bounds, whose value is derived from the current
+  // window's DIP bounds, which is ui-scale'd. Thus, besides initializing
+  // ui scale with the current font scale, the pixel size must be scaled
+  // accordingly. Both scale and bounds might get updated later in the window
+  // configuration process.
+  state.ui_scale = connection_->window_manager()->font_scale();
+  state.size_px = gfx::ScaleToEnclosingRectIgnoringError(
+                      gfx::Rect(state.bounds_dip.size()),
+                      state.window_scale * state.ui_scale)
+                      .size();
 
   applied_state_ = state;
   latched_state_ = state;

@@ -197,6 +197,7 @@ void WaylandBubble::SetSubsurfacePosition() {
     wl_subsurface_set_position(subsurface_.get(), bounds_px_in_parent.x(),
                                bounds_px_in_parent.y());
   } else {
+    // TODO(crbug.com/369213517): Handle ui scale before enabling this on Linux.
     const auto bounds_dip_in_parent =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
     wl_subsurface_set_position(subsurface_.get(), bounds_dip_in_parent.x(),
@@ -210,14 +211,10 @@ bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
                                  PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
 
-  // `window_state` is always `kNormal` on WaylandPopup.
+  // `window_state` is always `kNormal` on WaylandBubble.
   state->window_state = PlatformWindowState::kNormal;
 
   state->window_scale = parent_window()->applied_state().window_scale;
-  // See details in WaylandWindow::RequestState().
-  state->size_px = gfx::ScaleToEnclosingRectIgnoringError(
-                       gfx::Rect(state->bounds_dip.size()), state->window_scale)
-                       .size();
   activatable_ = properties.activatable;
   accept_events_ = properties.accept_events;
 

@@ -303,21 +303,20 @@ class WaylandWindowTest : public WaylandTest {
     return mock_cursor_shapes;
   }
 
-  // It verifies expectations on both client and server. It does not handle all
-  // expectations, so you may need to call `Mock::VerifyAndClearExpectations`
-  // directly against other mock objects that are not listed in this method.
-  // Note: It is not required to call this at the end of the test to verify the
-  // expectations.
-  void VerifyAndClearExpectations() {
+  // Verifies and clearis expectations for a toplevel window associated with
+  // `delegate` and whose root surface id is `surface_id`. Both client and
+  // server-side expectations are checked, including xdg-toplevel as well as
+  // wp-viewport.
+  void VerifyAndClearExpectations(MockWaylandPlatformWindowDelegate& delegate,
+                                  uint32_t surface_id) {
     // Client side verification.
-    Mock::VerifyAndClearExpectations(&delegate_);
+    Mock::VerifyAndClearExpectations(&delegate);
 
     // Server side verification.
     // `PostToServerAndWait` runs `RoundTripQueue` to wait for the queue to be
     // empty. It makes sure that `VerifyAndClearExpectations` below will run
     // after all requests had been handled.
-    PostToServerAndWait([id =
-                             surface_id_](wl::TestWaylandServerThread* server) {
+    PostToServerAndWait([id = surface_id](wl::TestWaylandServerThread* server) {
       wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
       ASSERT_TRUE(mock_surface);
       wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
@@ -328,6 +327,17 @@ class WaylandWindowTest : public WaylandTest {
       Mock::VerifyAndClearExpectations(xdg_surface->xdg_toplevel());
       Mock::VerifyAndClearExpectations(mock_surface->viewport());
     });
+  }
+
+  // Verifies expectations for `window_` on both client and server. It does not
+  // handle all expectations, so more calls to Mock::VerifyAndClearExpectations
+  // for other associated mock objects not listed in this method might be
+  // needed.
+  //
+  // Note: It is not required to call this at the end of the test to verify the
+  // expectations.
+  void VerifyAndClearExpectations() {
+    VerifyAndClearExpectations(delegate_, surface_id_);
   }
 
   void VerifyXdgPopupPosition(WaylandWindow* menu_window,
@@ -5767,8 +5777,9 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
     ASSERT_TRUE(mock_surface->viewport());
     EXPECT_CALL(*mock_surface->viewport(), SetSource(_, _, _, _)).Times(0);
     EXPECT_CALL(*mock_surface->viewport(), SetDestination(_, _)).Times(0);
-    // TODO(crbug.com/40856031): Match geometry once ui_scale is applied to it.
     ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(800, 600)));
     EXPECT_CALL(*mock_surface->xdg_surface(), AckConfigure(_)).Times(0);
   });
   CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
@@ -5780,6 +5791,160 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
   EXPECT_EQ(window_->latched_state().ui_scale, 1.25f);
   EXPECT_EQ(window_->latched_state().window_scale, 1.0f);
   EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
+}
+
+TEST_P(PerSurfaceScaleWaylandWindowTest,
+       UiScale_HandleServerTriggeredBoundsChange) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  // Initialize surface preferred scale.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->fractional_scale());
+    mock_surface->fractional_scale()->SendPreferredScale(1.0f);
+  });
+  WaylandTestBase::SyncDisplay();
+  EXPECT_EQ(1.0f, window_->GetPreferredScaleFactor().value_or(0));
+
+  // Set font scale to 1.25.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+  connection_->window_manager()->SetFontScale(1.25f);
+  VerifyAndClearExpectations();
+
+  // Emulate a server-triggered bounds change.
+  constexpr uint32_t kConfigureSerial = 55u;
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+  SendConfigureEvent(surface_id_, gfx::Size(1000, 1000), wl::ScopedWlArray({}),
+                     kConfigureSerial);
+  VerifyAndClearExpectations();
+  // Ensure a bounds change request was issued, where DIP bounds is downsized
+  // proportionally to `ui_scale`, while pixel bounds keeps unchanged.
+  EXPECT_EQ(1.25f, window_->applied_state().ui_scale);
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(800, 800), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(1000, 1000), window_->applied_state().size_px);
+  // Verify that correct values are used for wayland requests issued when
+  // applying surface state, even though Viz' buffer scale factor is 1.25, i.e:
+  // `ui_scale * window_scale`.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    EXPECT_CALL(*mock_surface, Damage(0, 0, 1000, 1000));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(1000, 1000)));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kConfigureSerial)));
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/gfx::Size(1000, 1000),
+                                   /*buffer_scale=*/1.25f);
+  // Sync display and verify the expectations.
+  VerifyAndClearExpectations();
+  EXPECT_EQ(window_->latched_state().ui_scale, 1.25f);
+  EXPECT_EQ(window_->latched_state().window_scale, 1.0f);
+  EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
+}
+
+TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  // Set font scale to 1.25.
+  connection_->window_manager()->SetFontScale(1.25f);
+
+  // Create a new toplelvel `window`.
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> new_window_delegate;
+  EXPECT_CALL(new_window_delegate, OnAcceleratedWidgetAvailable(_));
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
+  PlatformWindowInitProperties properties(gfx::Rect(800, 800));
+  auto new_window = new_window_delegate.CreateWaylandWindow(
+      connection_.get(), std::move(properties));
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&new_window_delegate);
+  const uint32_t new_window_surface_id =
+      new_window->root_surface()->get_surface_id();
+  ASSERT_NE(new_window_surface_id, 0u);
+
+  // Upon initialization, even though the window scale is assumed as 1 (and
+  // updated asynchronously per wayland events), the UI scale must be set to the
+  // current font scale straight away (see WaylandWindow::Initialize comments
+  // for more context) and pixel size must be computed based on the DIP bounds
+  // passed in.
+  EXPECT_EQ(gfx::Size(800, 800), new_window->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(1000, 1000), new_window->applied_state().size_px);
+  EXPECT_EQ(new_window->applied_state().ui_scale, 1.25f);
+  EXPECT_EQ(new_window->applied_state().window_scale, 1.0f);
+  EXPECT_EQ(new_window->applied_state(), new_window->latched_state());
+  PlatformWindowDelegate::State initial_state(new_window->applied_state());
+  // Ensure ui_scale is returned while preferred surface scale has not been
+  // received yet.
+  EXPECT_EQ(1.25f, screen_
+                       ->GetPreferredScaleFactorForAcceleratedWidget(
+                           new_window->GetWidget())
+                       .value_or(0.f));
+
+  // Request window to be shown and verify initial state is set as expected,
+  // including ui scale.
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
+  new_window->Show(/*inactive=*/false);
+  Mock::VerifyAndClearExpectations(&new_window_delegate);
+  CreateBufferAndPresentAsNewFrame(new_window.get(), new_window_delegate,
+                                   /*buffer_size=*/gfx::Size(1000, 1000),
+                                   /*buffer_scale=*/1.25f);
+  VerifyAndClearExpectations(new_window_delegate, new_window_surface_id);
+  EXPECT_EQ(new_window->applied_state(), initial_state);
+  EXPECT_EQ(new_window->applied_state(), new_window->latched_state());
+  EXPECT_EQ(new_window->root_surface()->state_.buffer_scale_float, 1.0f);
+
+  // Emulate a wayland surface preferred fractional scale of 2.0 for
+  // `new_window`.
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(1);
+  PostToServerAndWait(
+      [id = new_window_surface_id](wl::TestWaylandServerThread* server) {
+        wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+        ASSERT_TRUE(mock_surface->fractional_scale());
+        mock_surface->fractional_scale()->SendPreferredScale(2.0f);
+      });
+  VerifyAndClearExpectations(new_window_delegate, new_window_surface_id);
+  EXPECT_EQ(gfx::Size(800, 800), new_window->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(2000, 2000), new_window->applied_state().size_px);
+  EXPECT_EQ(new_window->applied_state().ui_scale, 1.25);
+  EXPECT_EQ(new_window->applied_state().window_scale, 2.0f);
+  EXPECT_EQ(2.5, screen_
+                     ->GetPreferredScaleFactorForAcceleratedWidget(
+                         new_window->GetWidget())
+                     .value_or(0.f));
+
+  // Send the initial activation configure events sequence, with (0, 0) size,
+  // such that the client-requested size is used, i.e (1000, 1000) set above.
+  // Then, emulate a new frame coming from Viz and verify the correct Wayland
+  // requests and parameters are used in response to it.
+  constexpr uint32_t kConfigureSerial = 11u;
+  EXPECT_CALL(new_window_delegate, OnBoundsChanged(_)).Times(0);
+  PostToServerAndWait([id = new_window_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    EXPECT_CALL(*mock_surface, Damage(0, 0, 1000, 1000));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kConfigureSerial)));
+    // No new xdg_surface.set_window_geometry requests as DIP geometry
+    // has not changed.
+    EXPECT_CALL(*mock_surface->xdg_surface(), SetWindowGeometry(_)).Times(0);
+  });
+  SendConfigureEvent(new_window_surface_id, gfx::Size(0, 0),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}),
+                     kConfigureSerial);
+  CreateBufferAndPresentAsNewFrame(new_window.get(), new_window_delegate,
+                                   /*buffer_size=*/gfx::Size(2000, 2000),
+                                   /*buffer_scale=*/2.5f);
+
+  // Sync display and verify the expectations.
+  VerifyAndClearExpectations(new_window_delegate, new_window_surface_id);
+  EXPECT_EQ(new_window->applied_state(), new_window->latched_state());
+  EXPECT_EQ(new_window->latched_state().ui_scale, 1.25f);
+  EXPECT_EQ(new_window->latched_state().window_scale, 2.0f);
+  EXPECT_EQ(new_window->root_surface()->state_.buffer_scale_float, 2.0f);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
