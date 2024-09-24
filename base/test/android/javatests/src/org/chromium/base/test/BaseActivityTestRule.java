@@ -100,7 +100,7 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     @CallSuper
     protected void after() {
         if (mFinishActivity && mActivity != null) {
-            ApplicationTestUtils.finishActivity(mActivity);
+            finishActivity();
         }
     }
 
