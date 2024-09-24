@@ -1278,6 +1278,8 @@ public class StripLayoutHelperTest {
         // Arrange: Initialize tabs with tenth tab selected and MSB visible (long fade).
         initializeTest(false, true, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
+        float scrollOffsetBefore = mStripLayoutHelper.getScrollOffset();
+        StripLayoutTab selectedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[9];
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
@@ -1285,11 +1287,18 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
 
-        // optimalEnd =
-        // stripWidth(800) - rightPadding(20) - rightFade(136) - (index(9) + 1) * tabWidth(108-28) -
-        // overlapWidth(28)
-        float expectedFinalX = -184.f;
-        assertEquals(expectedFinalX, mStripLayoutHelper.getScrollOffset(), EPSILON);
+        // optimalEndDelta =
+        // stripWidth(800) - rightPadding(60) - rightFade(136) - selectedTab.idealX -
+        // mCachedTabWidth(108)
+        // expectedOffset = scrollOffsetBefore + optimalEndDelta
+        float expectedOffset =
+                scrollOffsetBefore
+                        + SCREEN_WIDTH
+                        - 60
+                        - StripLayoutHelperManager.FADE_LONG_WIDTH_DP
+                        - selectedTab.getIdealX()
+                        - 108;
+        assertEquals(expectedOffset, mStripLayoutHelper.getScrollOffset(), EPSILON);
     }
 
     @Test
@@ -1297,6 +1306,8 @@ public class StripLayoutHelperTest {
         // Arrange: Initialize tabs with tenth tab selected and MSB not visible (medium fade).
         initializeTest(false, false, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
+        float scrollOffsetBefore = mStripLayoutHelper.getScrollOffset();
+        StripLayoutTab selectedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[9];
 
         // Set screen width to 800dp and scroll selected tab to view.
         mStripLayoutHelper.onSizeChanged(
@@ -1304,11 +1315,18 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
 
-        // optimalEnd =
-        // stripWidth(800) - rightPadding(20) - rightFade(72) - (index(9) + 1) * tabWidth(108-28) -
-        // overlapWidth(28)
-        float expectedFinalX = -120.f;
-        assertEquals(expectedFinalX, mStripLayoutHelper.getScrollOffset(), EPSILON);
+        // optimalEndDelta =
+        // stripWidth(800) - rightPadding(60) - rightFade(72) - selectedTab.idealX -
+        // mCachedTabWidth(108)
+        // expectedOffset = scrollOffsetBefore + optimalEndDelta
+        float expectedOffset =
+                scrollOffsetBefore
+                        + SCREEN_WIDTH
+                        - 60
+                        - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP
+                        - selectedTab.getIdealX()
+                        - 108;
+        assertEquals(expectedOffset, mStripLayoutHelper.getScrollOffset(), EPSILON);
     }
 
     @Test
@@ -1321,8 +1339,8 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         mStripLayoutHelper.scrollTabToView(TIMESTAMP, false);
 
-        // optimalStart = leftFade(60) - (index(0) * tabWidth(108-28)) - leftPadding(10)
-        int expectedFinalX = 50;
+        // optimalStart = leftFade(60) + leftPadding(10) - (index(0) * tabWidth(108-28))
+        int expectedFinalX = 70;
         assertEquals(expectedFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX());
     }
 
@@ -1333,6 +1351,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_SMALL, 150.f, 10);
         when(tabs[9].isVisible()).thenReturn(true);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        StripLayoutTab selectedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[9];
 
         // Set screen width to 1200 to start.
         mStripLayoutHelper.onSizeChanged(
@@ -1355,10 +1374,16 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, true, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Assert: finalX value after orientation change.
-        // stripWidth(800) - rightFade(72) - rightPadding(20) - tabWidth(108-28) - idealX(720) -
-        // overlapWidth(28) + leftPadding(10)
-        int expectedFinalX = -110;
-        assertEquals(expectedFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX());
+        // stripWidth(800) - rightPadding(60) - rightFade(72) - selectedTab.idealX -
+        // mCachedTabWidth(108)
+        float expectedFinalX =
+                SCREEN_WIDTH
+                        - 60
+                        - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP
+                        - selectedTab.getIdealX()
+                        - 108;
+        assertEquals(
+                expectedFinalX, mStripLayoutHelper.getScrollerForTesting().getFinalX(), EPSILON);
     }
 
     @Test
@@ -1550,18 +1575,25 @@ public class StripLayoutHelperTest {
         // Set initial scroller position to -500.
         mStripLayoutHelper.setScrollOffsetForTesting(-500);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
+        float scrollOffsetBefore = mStripLayoutHelper.getScrollOffset();
+        StripLayoutTab selectedTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
 
         // Act: Tab was restored during startup.
-        boolean selected = false;
-        boolean onStartup = true;
         mModel.addTab("new tab");
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 12, 12, selected, false, onStartup);
+        mStripLayoutHelper.tabCreated(
+                TIMESTAMP, 12, 12, /* selected= */ false, false, /* onStartup= */ true);
 
         // Assert: We don't scroll to the created tab. The selected tab is not already visible, so
-        // we scroll to it. With right padding, the scroll offset needs to include the rightPadding
-        // so the last tab is made visible.
-        // Offset = -(1 tab width) + leftTabWidth - rightPadding(20)= -80 + 60 -20= -40.
-        float expectedOffset = -40f;
+        // we scroll to it.
+        // deltaToOptimalStart = optimalStart - scrollOffset
+        //        = ((mLeftFadeWidth + mLeftMargin) - (selectedTab.getIdealX() - scrollOffset)) -
+        // scrollOffset
+        // ExpectedOffset = scrollOffsetBefore + deltaToOptimalStart
+        float expectedOffset =
+                scrollOffsetBefore
+                        + (StripLayoutHelperManager.FADE_SHORT_WIDTH_DP
+                                + PADDING_LEFT
+                                - selectedTab.getIdealX());
         assertEquals(
                 "We should scroll to the selected tab",
                 expectedOffset,

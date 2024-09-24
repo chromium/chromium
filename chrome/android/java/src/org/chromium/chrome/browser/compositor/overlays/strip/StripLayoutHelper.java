@@ -3548,15 +3548,20 @@ public class StripLayoutHelper
 
         // 1. Calculate offsets to fully show the tab at the start and end of the strip.
         final boolean isRtl = LocalizationUtils.isLayoutRtl();
-        final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
-        final float startOffset = (isRtl ? mRightFadeWidth : mLeftFadeWidth);
-        final float endOffset = (isRtl ? mLeftFadeWidth : mRightFadeWidth);
+        final float rightOffset = mRightFadeWidth + mRightMargin;
+        final float leftOffset = mLeftFadeWidth + mLeftMargin;
+
+        // Offsets where tab content is not drawn.
+        final float startOffset = isRtl ? rightOffset : leftOffset;
+        final float endOffset = isRtl ? leftOffset : rightOffset;
         final float scrollOffset = mScrollDelegate.getScrollOffset();
-        final float tabPosition = tab.getIdealX() - scrollOffset + mLeftMargin;
+        // Tab position in visible area not accounting for any fades.
+        final float tabPosition = tab.getIdealX() - scrollOffset;
 
         final float optimalStart = startOffset - tabPosition;
-        final float optimalEnd = mWidth - endOffset - tabWidth - tabPosition - mTabOverlapWidth;
+        // Also account for mCachedTabWidth to allocate space to show tab at the end.
+        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidth;
 
         // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
         // This will result in the tab being at either the start or end of the strip.
