@@ -2917,7 +2917,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.PlatformVerification.Result2"
-    enum="ChromeOSPlatformVerificationResult2" expires_after="2024-09-01">
+    enum="ChromeOSPlatformVerificationResult2" expires_after="2025-09-01">
   <owner>erikchen@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
