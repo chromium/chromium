@@ -212,14 +212,17 @@ platforms that support some level of Site Isolation.
     ([IsolateOrigins](https://chromeenterprise.google/policies/#IsolateOrigins)
     or
     [IsolateOriginsAndroid](https://chromeenterprise.google/policies/#IsolateOriginsAndroid)).
+    It is also possible to isolate all origins (except those that opt-out) using
+    `chrome://flags/#origin-keyed-processes-by-default`.
 * **Opt-in**: The [Origin-Agent-Cluster](https://web.dev/origin-agent-cluster)
     HTTP response header can be used by web developers to hint to the browser
     that an origin locked process can be used. This is not a security guarantee
     and may not always be honored (e.g., to keep all same-origin documents
     consistent within a given browsing context group), though it allows finer
-    grained isolation in the common case. Note that there are plans to enable
-    [Origin-Agent-Cluster by default](https://github.com/mikewest/deprecating-document-domain),
-    effectively disabling changes to document.domain.
+    grained isolation in the common case. Note that
+    [Origin-Agent-Cluster is now enabled by default](https://github.com/mikewest/deprecating-document-domain),
+    effectively disabling changes to document.domain unless an OAC opt-out
+    header is used.
 
 
 ### CrossOriginIsolated
@@ -320,9 +323,9 @@ decision.
     sites than the limit), Chromium makes an attempt to start randomly reusing
     same-site processes when over this limit. For example, if the limit is 100
     processes and the user has 50 open tabs to `example.com` and 50 open tabs to
-    example.org, then a new `example.com` tab will share a process with a random
-    existing `example.com` tab, while a chromium.org tab will create a 101st
-    process. Note that Chromium on Android does not set this soft process
+    `example.org`, then a new `example.com` tab will share a process with a
+    random existing `example.com` tab, while a `chromium.org` tab will create a
+    101st process. Note that Chromium on Android does not set this soft process
     limit, and instead relies on the OS to discard processes.
 * **Aggressive Reuse**: For some cases (including on Android), Chromium will
     aggressively look for existing same-site processes to reuse even before
@@ -381,7 +384,7 @@ Note that content may be allowed in a locked process based on its origin
 (e.g., an `about:blank` page with an inherited `https://example.com` origin is
 allowed in a process locked to `https://example.com`). Also, some opaque origin
 cases are allowed into a locked process as well, such as `data:` URLs created
-within that process, or same-site sandboxed iframes.
+within that process.
 
 
 ## Special Cases
@@ -421,9 +424,8 @@ affect invariants or how features are designed.
     looks like a `chrome-extension://` URL, causing it to be treated
     differently in the process model. This support may eventually be removed.
 * **Chrome Web Store**: The [Chrome Web
-    Store](https://chrome.google.com/webstore) is a rare example of a privileged
-    web page, to which Chrome grants special APIs for installing extensions.
-    This implementation currently relies on hosted apps.
+    Store](https://chromewebstore.google.com/) is a rare example of a privileged
+    web origin, to which Chrome grants special APIs for installing extensions.
 * **[Isolated Web Apps](https://github.com/WICG/isolated-web-apps/blob/main/README.md)**: Isolated
     Web Apps (IWAs) are a type of web app that has stricter security and
     isolation requirements compared to normal web apps. The StoragePartition
