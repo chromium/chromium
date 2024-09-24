@@ -55,9 +55,12 @@ bool operator<(std::u16string_view a, PrefixMatcher b) {
 struct EmojiMatchCost {
   // Costs are compared by the language cost first (the lower the better).
   // The relevance cost is only used when the language costs are equal.
+  // The name length (the lower the better) is used when both the language and
+  // relevance scores are equal.
   int language_cost;
   // This value should be negative.
   float relevance_cost;
+  int name_length = 0;
 
   auto operator<=>(const EmojiMatchCost& other) const = default;
 };
@@ -136,6 +139,7 @@ void AddDataFromFileToMap(
 std::map<std::string_view, EmojiMatchCost> GetResultsFromMap(
     const EmojiEntryMap& map,
     base::span<const std::u16string_view> lowercase_words,
+    std::map<std::string, std::string, std::less<>> names,
     int language_cost) {
   std::map<std::string_view, EmojiMatchCost> emoji_costs;
   for (const std::u16string_view lowercase_word : lowercase_words) {
@@ -168,6 +172,11 @@ std::map<std::string_view, EmojiMatchCost> GetResultsFromMap(
       break;
     }
     emoji_costs = std::move(emoji_costs_for_word);
+  }
+  for (auto& [emoji, cost] : emoji_costs) {
+    if (auto it = names.find(emoji); it != names.end()) {
+      cost.name_length = it->second.length();
+    }
   }
   return emoji_costs;
 }
@@ -367,15 +376,15 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
       // we can stop adding to the map.
       if (!max_emojis.has_value() || emojis.size() < *max_emojis) {
         emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
-                                       language_cost));
+                                       it->second.names, language_cost));
       }
       if (!max_symbols.has_value() || symbols.size() < *max_symbols) {
         symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
-                                        language_cost));
+                                        it->second.names, language_cost));
       }
       if (!max_emoticons.has_value() || emoticons.size() < *max_emoticons) {
         emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
-                                          language_cost));
+                                          it->second.names, language_cost));
       }
       ++language_cost;
     }
