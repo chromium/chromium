@@ -1976,49 +1976,13 @@ class OperatorFromIterableSubscribeDelegate final
       : iterable_(iterable), exception_context_(exception_context) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context_);
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    v8::Local<v8::Value> v8_value = iterable_.V8Value();
-    // `Observable::from()` already checks that `iterable_` is a JS object, so
-    // we can safely convert it here.
-    CHECK(v8_value->IsObject());
-    v8::Local<v8::Object> v8_iterable = v8_value.As<v8::Object>();
-    v8::Isolate* isolate = script_state->GetIsolate();
-
-    // This invokes script, so we have to check if there was an exception. In
-    // all of the exception-throwing cases in this method, we always catch the
-    // exception, clear it, and report it properly through `subscriber`.
-    ScriptIterator iterator = ScriptIterator::FromIterable(
-        script_state->GetIsolate(), v8_iterable, exception_state,
-        ScriptIterator::Kind::kSync);
-    if (exception_state.HadException()) {
-      v8::Local<v8::Value> v8_exception = exception_state.GetException();
-      exception_state.ClearException();
-      subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+    if (subscriber->signal()->aborted()) {
       return;
     }
 
-    if (!iterator.IsNull()) {
-      while (iterator.Next(execution_context, exception_state)) {
-        CHECK(!exception_state.HadException());
-
-        v8::Local<v8::Value> value = iterator.GetValue().ToLocalChecked();
-        subscriber->next(ScriptValue(isolate, value));
-      }
-    }
-
-    // If any call to `ScriptIterator::Next()` above throws an error, then the
-    // loop will break, and we'll need to catch any exceptions here and properly
-    // report the error to the `subscriber`.
-    if (exception_state.HadException()) {
-      v8::Local<v8::Value> v8_exception = exception_state.GetException();
-      exception_state.ClearException();
-      subscriber->error(script_state, ScriptValue(isolate, v8_exception));
-      return;
-    }
-
-    subscriber->complete(script_state);
+    MakeGarbageCollected<SubscriptionRunner>(
+        iterable_.V8Value().As<v8::Object>(), subscriber, script_state,
+        exception_context_);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -2028,6 +1992,106 @@ class OperatorFromIterableSubscribeDelegate final
   }
 
  private:
+  class SubscriptionRunner final : public AbortSignal::Algorithm {
+   public:
+    SubscriptionRunner(v8::Local<v8::Object> v8_iterable,
+                       Subscriber* subscriber,
+                       ScriptState* script_state,
+                       ExceptionContext exception_context)
+        : signal_(subscriber->signal()),
+          script_state_(script_state),
+          exception_context_(exception_context) {
+      CHECK(subscriber);
+      CHECK(script_state);
+
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     exception_context);
+
+      ExecutionContext* execution_context =
+          ExecutionContext::From(script_state);
+      v8::Isolate* isolate = script_state->GetIsolate();
+
+      // This invokes script, so we have to check if there was an exception. In
+      // all of the exception-throwing cases in this method, we always catch the
+      // exception, clear it, and report it properly through `subscriber`.
+      iterator_ = ScriptIterator::FromIterable(script_state->GetIsolate(),
+                                               v8_iterable, exception_state,
+                                               ScriptIterator::Kind::kSync);
+      if (exception_state.HadException()) {
+        v8::Local<v8::Value> v8_exception = exception_state.GetException();
+        exception_state.ClearException();
+        subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+        return;
+      }
+
+      // This happens if `ScriptIterator::FromIterable()`, which runs script,
+      // aborts the subscription. In that case, we respect the abort and leave
+      // the iterator alone.
+      if (subscriber->signal()->aborted()) {
+        return;
+      }
+
+      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
+
+      if (!iterator_.IsNull()) {
+        while (iterator_.Next(execution_context, exception_state)) {
+          CHECK(!exception_state.HadException());
+
+          v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
+          subscriber->next(ScriptValue(isolate, value));
+
+          if (subscriber->signal()->aborted()) {
+            break;
+          }
+        }
+      }
+
+      // If any call to `ScriptIterator::Next()` above throws an error, then the
+      // loop will break, and we'll need to catch any exceptions here and
+      // properly report the error to the `subscriber`.
+      if (exception_state.HadException()) {
+        v8::Local<v8::Value> v8_exception = exception_state.GetException();
+        exception_state.ClearException();
+        ClearAbortAlgorithm();
+        subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+        return;
+      }
+
+      ClearAbortAlgorithm();
+      subscriber->complete(script_state);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(abort_algorithm_handle_);
+      visitor->Trace(iterator_);
+      visitor->Trace(signal_);
+      visitor->Trace(script_state_);
+
+      Algorithm::Trace(visitor);
+    }
+
+    void ClearAbortAlgorithm() {
+      signal_->RemoveAlgorithm(abort_algorithm_handle_);
+      abort_algorithm_handle_.Clear();
+    }
+
+    void Run() override {
+      // The abort algorithm is only set up once the `iterator_` is established.
+      DCHECK(!iterator_.IsNull());
+      ExceptionState exception_state(script_state_->GetIsolate(),
+                                     exception_context_);
+      iterator_.CloseSync(script_state_, exception_state,
+                          signal_->reason(script_state_).V8Value());
+    }
+
+   private:
+    Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+    ScriptIterator iterator_;
+    Member<AbortSignal> signal_;
+    Member<ScriptState> script_state_;
+    ExceptionContext exception_context_;
+  };
+
   // The iterable that `this` synchronously pushes values from, for the
   // subscription that `this` represents.
   ScriptValue iterable_;

@@ -1,17 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] from(): Errors thrown in async iterator's next() GETTER are propagated in a microtask
   assert_array_equals: lengths differ, expected array [] length 0, got [object "Error: next error"] length 1
-[FAIL] from(): Aborting sync iterable midway through iteration both stops iteration and invokes `IteratorRecord#return()
-  assert_array_equals: lengths differ, expected array ["IteratorRecord#next() pushing 0", "Observing 0", "IteratorRecord#next() pushing 1", "Observing 1", "IteratorRecord#next() pushing 2", "Observing 2", "IteratorRecord#next() pushing 3", "Observing 3", "IteratorRecord#return() called with this.val=4"] length 9, got ["IteratorRecord#next() pushing 0", "Observing 0", "IteratorRecord#next() pushing 1", "Observing 1", "IteratorRecord#next() pushing 2", "Observing 2", "IteratorRecord#next() pushing 3", "Observing 3", "IteratorRecord#next() pushing 4", "IteratorRecord#next() pushing 5", "IteratorRecord#next() pushing 6", "IteratorRecord#next() pushing 7", "IteratorRecord#next() pushing 8", "IteratorRecord#next() pushing 9", "IteratorRecord#next() pushing 10"] length 15
-[FAIL] from(): Sync iterable: `Iterator#return()` must return an Object, or an error is thrown
-  assert_not_equals: abort() threw an Error got disallowed value null
 [FAIL] from(): Asynchronous iterable conversion, with synchronous iterable fallback
   promise_test: Unhandled rejection with value: object "TypeError: Object must be iterable"
-[FAIL] from(): Sync iterable: error thrown from IteratorRecord#return() can be synchronously caught
-  assert_array_equals: lengths differ, expected array ["next() called", "next() called", "next() called", "next() called", "return() about to throw an error", "AbortController#abort() threw an error: return() error"] length 6, got ["next() called", "next() called", "next() called", "next() called", "next() called", "next() called", "next() called", "next() called", "next() called", "next() called", "next() called"] length 11
-[FAIL] from(): Subscribing to an iterable Observable with an aborted signal does not call next()
-  assert_array_equals: lengths differ, expected array [] length 0, got ["next() running"] length 1
-[FAIL] from(): When iterable conversion aborts the subscription, next() is never called
-  assert_array_equals: lengths differ, expected array [] length 0, got ["next() called"] length 1
 Harness: the test ran to completion.
 
