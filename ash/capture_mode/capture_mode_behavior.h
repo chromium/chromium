@@ -19,6 +19,7 @@ class Window;
 }  // namespace aura
 
 namespace gfx {
+class Canvas;
 class Rect;
 }  // namespace gfx
 
@@ -117,6 +118,13 @@ class CaptureModeBehavior {
   // `root` window. The returned bounds of the bar will vary depending on the
   // actual type of the behavior.
   gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
+
+  // Paints the capture region overlay onto `canvas` if supported by the
+  // behavior, otherwise does nothing. `region_bounds_in_canvas` specifies the
+  // coordinates of `canvas` to paint the overlay.
+  virtual void PaintCaptureRegionOverlay(
+      gfx::Canvas& canvas,
+      const gfx::Rect& region_bounds_in_canvas) const;
 
   // Notifies the behavior on audio recording mode settings change and the
   // behavior will decide whether to remember the audio recording mode settings

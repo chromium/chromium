@@ -1339,6 +1339,9 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
           capture_mode::kDimmingShieldColor));
 
   PaintCaptureRegion(recorder.canvas());
+
+  active_behavior_->PaintCaptureRegionOverlay(
+      *recorder.canvas(), controller_->user_capture_region());
 }
 
 void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {

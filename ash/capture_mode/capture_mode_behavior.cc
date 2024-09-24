@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
@@ -317,12 +318,23 @@ class SunfishBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
   }
+  void PaintCaptureRegionOverlay(
+      gfx::Canvas& canvas,
+      const gfx::Rect& region_bounds_in_canvas) const override {
+    capture_region_overlay_controller_.PaintCaptureRegionOverlay(
+        canvas, region_bounds_in_canvas);
+  }
   void OnRegionSelected() override {
     // `CaptureModeController` will perform DLP restriction checks and determine
     // whether the image can be sent for search.
     CaptureModeController::Get()->PerformCapture();
   }
   void OnEnterKeyPressed() override {}
+
+ private:
+  // Controls the overlay shown on the capture region to indicate detected text,
+  // translations, etc.
+  CaptureRegionOverlayController capture_region_overlay_controller_;
 };
 
 }  // namespace
@@ -547,6 +559,10 @@ int CaptureModeBehavior::GetCaptureBarBottomPadding() const {
 int CaptureModeBehavior::GetCaptureBarWidth() const {
   return kFullCaptureBarWidth;
 }
+
+void CaptureModeBehavior::PaintCaptureRegionOverlay(
+    gfx::Canvas& canvas,
+    const gfx::Rect& region_bounds_in_canvas) const {}
 
 void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 

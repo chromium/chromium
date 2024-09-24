@@ -471,6 +471,8 @@ component("ash") {
     "capture_mode/capture_mode_types.h",
     "capture_mode/capture_mode_util.cc",
     "capture_mode/capture_mode_util.h",
+    "capture_mode/capture_region_overlay_controller.cc",
+    "capture_mode/capture_region_overlay_controller.h",
     "capture_mode/capture_window_observer.cc",
     "capture_mode/capture_window_observer.h",
     "capture_mode/folder_selection_dialog_controller.cc",
