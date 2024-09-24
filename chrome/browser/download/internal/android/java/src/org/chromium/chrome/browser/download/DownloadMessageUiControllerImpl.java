@@ -753,8 +753,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             } else {
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
+                boolean allFailedDownloadsAreBlocked =
+                        (downloadCount.blocked == downloadCount.failed);
                 if (downloadCount.blocked > 0) {
-                    if (downloadCount.failed == 1) {
+                    if (allFailedDownloadsAreBlocked) {
                         info.description =
                                 getContext()
                                         .getString(
@@ -770,8 +772,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                                                 downloadCount.blocked);
                     }
                 }
-                boolean allFailedDownloadsAreBlocked =
-                        (downloadCount.blocked == downloadCount.failed);
                 if (allFailedDownloadsAreBlocked) {
                     info.link = getContext().getString(R.string.ok);
                     info.ignoreAction = true;

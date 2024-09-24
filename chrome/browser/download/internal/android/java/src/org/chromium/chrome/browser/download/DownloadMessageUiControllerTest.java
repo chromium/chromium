@@ -63,7 +63,6 @@ public class DownloadMessageUiControllerTest {
     private static final String DESCRIPTION_DOWNLOAD_COMPLETE_ELIDED = "(0.01 KB) example.com";
     private static final String DESCRIPTION_BLOCKED = "Blocked by your organization";
     private static final String DESCRIPTION_ONE_BLOCKED = "1 was blocked by your organization";
-    private static final String DESCRIPTION_TWO_BLOCKED = "2 were blocked by your organization";
 
     private static final String TEST_FILE_NAME = "TestFile";
     private static final long TEST_TO_NEXT_STEP_DELAY = 100;
@@ -265,7 +264,7 @@ public class DownloadMessageUiControllerTest {
         OfflineItem item2 = createOfflineItem(OfflineItemState.FAILED);
         item2.failState = FailState.FILE_BLOCKED;
         mTestController.onItemUpdated(item2);
-        mTestController.verify(MESSAGE_TWO_DOWNLOAD_FAILED, DESCRIPTION_TWO_BLOCKED);
+        mTestController.verify(MESSAGE_TWO_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
         mTestController.verifyIgnoreAction(true);
     }
 
