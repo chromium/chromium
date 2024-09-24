@@ -123,6 +123,8 @@ constexpr size_t kBlockedBodyAllocationSize = 1;
 // Size to allocate for `discard_buffer_`.
 constexpr size_t kDiscardBufferSize = 128 * 1024;
 
+constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
+
 // A subclass of net::UploadBytesElementReader which owns
 // ResourceRequestBody.
 class BytesElementReader : public net::UploadBytesElementReader {
@@ -1439,8 +1441,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->client_address_space =
       private_network_access_checker_.ClientAddressSpace();
 
-  response->load_with_storage_access =
-      url_request_->ShouldSetLoadWithStorageAccess();
+  response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
 
   return response;
 }
@@ -3025,6 +3026,26 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 bool URLLoader::ShouldSendTransferSizeUpdated() const {
   return devtools_request_id() || url_request_->ad_tagged() ||
          !base::FeatureList::IsEnabled(features::kReduceTransferSizeUpdatedIPC);
+}
+
+bool URLLoader::ShouldSetLoadWithStorageAccess() const {
+  CHECK(url_request_);
+  if (!url_request_context_->network_delegate()->IsStorageAccessHeaderEnabled(
+          base::OptionalToPtr(
+              url_request_->isolation_info().top_frame_origin()),
+          url_request_->url())) {
+    return false;
+  }
+  switch (url_request_->StorageAccessStatus()) {
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return false;
+    case net::cookie_util::StorageAccessStatus::kInactive:
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return url_request_->response_headers() &&
+             url_request_->response_headers()->HasHeaderValue(
+                 kActivateStorageAccessHeader, "load");
+  }
+  NOTREACHED();
 }
 
 void URLLoader::RecordRequestMetrics() {

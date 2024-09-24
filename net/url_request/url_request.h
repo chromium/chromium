@@ -864,9 +864,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return storage_access_api_status_;
   }
 
-  // Returns true if the corresponding `URLResponseHead`'s
-  // `load_with_storage_access` field should be set.
-  bool ShouldSetLoadWithStorageAccess() const;
+  // Returns the StorageAccessStatus for this request.
+  // TODO(https://crbug.com/366284840): move this state out of //net (into
+  // network::URLLoader) to respect layering rules.
+  cookie_util::StorageAccessStatus StorageAccessStatus() const;
 
   static bool DefaultCanUseCookies();
 

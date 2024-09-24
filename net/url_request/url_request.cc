@@ -1317,23 +1317,9 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   socket_tag_ = socket_tag;
 }
 
-bool URLRequest::ShouldSetLoadWithStorageAccess() const {
+cookie_util::StorageAccessStatus URLRequest::StorageAccessStatus() const {
   CHECK(job_);
-  auto storage_access_can_be_activated = [this]() -> bool {
-    switch (job_->StorageAccessStatus()) {
-      case cookie_util::StorageAccessStatus::kNone:
-        return false;
-      case cookie_util::StorageAccessStatus::kInactive:
-        return true;
-      case cookie_util::StorageAccessStatus::kActive:
-        return true;
-    }
-    NOTREACHED();
-  };
-  return network_delegate()->IsStorageAccessHeaderEnabled(
-             base::OptionalToPtr(isolation_info().top_frame_origin()), url()) &&
-         storage_access_can_be_activated() && response_headers() &&
-         response_headers()->HasStorageAccessLoadHeader();
+  return job_->StorageAccessStatus();
 }
 
 void URLRequest::SetSharedDictionaryGetter(

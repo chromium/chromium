@@ -317,10 +317,6 @@ class NET_EXPORT HttpResponseHeaders
   // `expected_origin`.
   bool HasStorageAccessRetryHeader(const std::string* expected_origin) const;
 
-  // Returns true if this response included the `Activate-Storage-Access: load`
-  // header.
-  bool HasStorageAccessLoadHeader() const;
-
   // Returns true if the HTTP response code passed in corresponds to a
   // redirect.
   static bool IsRedirectResponseCode(int response_code);

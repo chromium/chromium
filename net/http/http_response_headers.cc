@@ -1147,10 +1147,6 @@ bool HttpResponseHeaders::HasStorageAccessRetryHeader(
   return false;
 }
 
-bool HttpResponseHeaders::HasStorageAccessLoadHeader() const {
-  return HasHeaderValue(kActivateStorageAccessHeader, "load");
-}
-
 // static
 bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
   // Users probably want to see 300 (multiple choice) pages, so we don't count

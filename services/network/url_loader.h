@@ -614,6 +614,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
 
+  // Returns true if the corresponding `URLResponseHead`'s
+  // `load_with_storage_access` field should be set.
+  bool ShouldSetLoadWithStorageAccess() const;
+
   // Records metrics about GET requests.
   void RecordRequestMetrics();
 
