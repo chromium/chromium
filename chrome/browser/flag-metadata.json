@@ -9296,7 +9296,8 @@
   {
     "name": "wallpaper-fast-refresh",
     "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
-    "expiry_milestone": 120
+    // Used for manual testing for daily wallpaper refresh feature
+    "expiry_milestone": -1 
   },
   {
     "name": "wallpaper-google-photos-shared-albums",

@@ -152,6 +152,7 @@
   "use-wallpaper-staging-url",
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
+  "wallpaper-fast-refresh",
   "web-authentication-permit-enterprise-attestation",
   "webrtc-hw-decoding",
   "webrtc-hw-encoding",
