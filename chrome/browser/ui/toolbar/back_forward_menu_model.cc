@@ -247,8 +247,9 @@ void BackForwardMenuModel::MenuWillShow() {
   content::WebContentsObserver::Observe(GetWebContents());
 
   // Close the IPH popup if the user opens the menu.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHBackNavigationMenuFeature);
+  browser_->window()->EndFeaturePromo(
+      feature_engagement::kIPHBackNavigationMenuFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
 }
 
 void BackForwardMenuModel::MenuWillClose() {

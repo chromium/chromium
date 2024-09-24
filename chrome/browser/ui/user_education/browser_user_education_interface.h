@@ -71,10 +71,9 @@ class BrowserUserEducationInterface {
   // Closes the in-product help promo for `iph_feature` if it is showing or
   // cancels a pending startup promo; returns true if a promo bubble was
   // actually closed.
-  virtual bool CloseFeaturePromo(
+  virtual bool EndFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::EndFeaturePromoReason end_promo_reason =
-          user_education::EndFeaturePromoReason::kFeatureEngaged) = 0;
+      user_education::EndFeaturePromoReason end_promo_reason) = 0;
 
   // Closes the bubble for a feature promo but continues the promo; returns a
   // handle that can be used to end the promo when it is destructed. The handle

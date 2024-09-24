@@ -45,8 +45,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
   auto& browser = GetBrowser();
   signin_ui_util::RecordProfileMenuViewShown(browser.profile());
   // Close any existing IPH bubble for the profile menu.
-  browser.window()->CloseFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature);
+  browser.window()->EndFeaturePromo(
+      feature_engagement::kIPHProfileSwitchFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
   bool is_incognito = browser.profile()->IsIncognitoProfile();

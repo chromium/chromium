@@ -47,6 +47,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -488,12 +489,15 @@ void SidePanelCoordinator::Show(
         ->NotifyEvent("side_panel_shown");
 
     // Close IPH for side panel if shown.
-    browser_view_->browser()->window()->CloseFeaturePromo(
-        feature_engagement::kIPHReadingListInSidePanelFeature);
-    browser_view_->browser()->window()->CloseFeaturePromo(
-        feature_engagement::kIPHPowerBookmarksSidePanelFeature);
-    browser_view_->browser()->window()->CloseFeaturePromo(
-        feature_engagement::kIPHReadingModeSidePanelFeature);
+    browser_view_->browser()->window()->EndFeaturePromo(
+        feature_engagement::kIPHReadingListInSidePanelFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
+    browser_view_->browser()->window()->EndFeaturePromo(
+        feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
+    browser_view_->browser()->window()->EndFeaturePromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature,
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
   }
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
@@ -901,7 +905,7 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
   }
 
   if (pinned) {
-    browser_view_->CloseFeaturePromo(
+    browser_view_->EndFeaturePromo(
         *pending_pin_promo_,
         user_education::EndFeaturePromoReason::kFeatureEngaged);
     if (pending_pin_promo_ ==
@@ -915,7 +919,7 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
           feature_engagement::events::kSidePanelPinned);
     }
   } else {
-    browser_view_->CloseFeaturePromo(
+    browser_view_->EndFeaturePromo(
         *pending_pin_promo_,
         user_education::EndFeaturePromoReason::kAbortPromo);
   }

@@ -95,8 +95,9 @@ void PwaInstallView::OnTabStripModelChanged(
   bool web_content_replaced =
       change.type() == TabStripModelChange::Type::kReplaced;
   if ((active_tab_changed || web_content_replaced)) {
-    browser_->window()->CloseFeaturePromo(
-        feature_engagement::kIPHDesktopPwaInstallFeature);
+    browser_->window()->EndFeaturePromo(
+        feature_engagement::kIPHDesktopPwaInstallFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 
@@ -199,8 +200,9 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Close PWA install IPH if it is showing.
   web_app::PwaInProductHelpState iph_state =
       web_app::PwaInProductHelpState::kNotShown;
-  install_icon_clicked_after_iph_shown_ = browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHDesktopPwaInstallFeature);
+  install_icon_clicked_after_iph_shown_ = browser_->window()->EndFeaturePromo(
+      feature_engagement::kIPHDesktopPwaInstallFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
   if (install_icon_clicked_after_iph_shown_) {
     iph_state = web_app::PwaInProductHelpState::kShown;
   }

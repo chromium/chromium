@@ -317,7 +317,7 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
   Browser* const browser = chrome::FindBrowserWithTab(web_contents());
   if (browser && browser->window() &&
       browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
-    browser->window()->CloseFeaturePromo(
+    browser->window()->EndFeaturePromo(
         customize_chrome_feature,
         user_education::EndFeaturePromoReason::kAbortPromo);
   }

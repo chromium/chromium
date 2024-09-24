@@ -1666,12 +1666,15 @@ void ShowTranslateBubble(Browser* browser) {
 }
 
 void ManagePasswordsForPage(Browser* browser) {
-  browser->window()->CloseFeaturePromo(
-      feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
-  browser->window()->CloseFeaturePromo(
-      feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
-  browser->window()->CloseFeaturePromo(
-      feature_engagement::kIPHPasswordManagerShortcutFeature);
+  browser->window()->EndFeaturePromo(
+      feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
+  browser->window()->EndFeaturePromo(
+      feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
+  browser->window()->EndFeaturePromo(
+      feature_engagement::kIPHPasswordManagerShortcutFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ManagePasswordsUIController* controller =

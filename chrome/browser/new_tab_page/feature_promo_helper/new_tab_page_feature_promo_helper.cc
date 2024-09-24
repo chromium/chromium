@@ -11,6 +11,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/ui_base_features.h"
 
 void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsage(
@@ -51,7 +52,8 @@ void NewTabPageFeaturePromoHelper::CloseFeaturePromo(
     content::WebContents* web_contents) {
   if (auto* const browser_window =
           BrowserWindow::FindBrowserWindowWithWebContents(web_contents)) {
-    browser_window->CloseFeaturePromo(iph_feature);
+    browser_window->EndFeaturePromo(
+        iph_feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
   }
 }
 

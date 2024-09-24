@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -956,8 +957,9 @@ void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
 
 void ExtensionsToolbarContainer::OnMenuOpening() {
   // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
+  browser_->window()->EndFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
 
   // Record IPH usage, which should only be shown when any extension has access.
   if (GetExtensionsButton()->state() ==

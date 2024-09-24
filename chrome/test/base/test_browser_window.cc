@@ -401,7 +401,7 @@ bool TestBrowserWindow::MaybeShowStartupFeaturePromo(
   return feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
 }
 
-bool TestBrowserWindow::CloseFeaturePromo(
+bool TestBrowserWindow::EndFeaturePromo(
     const base::Feature& iph_feature,
     user_education::EndFeaturePromoReason close_reason) {
   return feature_promo_controller_ &&

@@ -121,7 +121,7 @@ void BatterySaverButton::CloseFeaturePromo(
   // CloseFeaturePromo checks if the promo is active for the feature before
   // attempting to close the promo bubble
   pending_promo_ = false;
-  browser_view_->CloseFeaturePromo(
+  browser_view_->EndFeaturePromo(
       feature_engagement::kIPHBatterySaverModeFeature, close_reason);
 }
 

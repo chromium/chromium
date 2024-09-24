@@ -50,7 +50,7 @@ class MediaToolbarButtonView : public ToolbarButton,
 
  private:
   void ButtonPressed();
-  void ClosePromoBubble();
+  void ClosePromoBubble(bool engaged);
 
   const raw_ptr<const Browser> browser_;
 

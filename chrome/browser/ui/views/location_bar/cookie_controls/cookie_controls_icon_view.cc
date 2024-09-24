@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "cookie_controls_bubble_coordinator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -268,10 +269,11 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
   // Need to close IPH before opening bubble view, as on some platforms closing
   // the IPH bubble can cause activation to move between windows, and cookie
   // control bubble is close-on-deactivate.
-  browser_->window()->CloseFeaturePromo(
+  browser_->window()->EndFeaturePromo(
+      feature_engagement::kIPHCookieControlsFeature,
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
+  browser_->window()->NotifyPromoFeatureUsed(
       feature_engagement::kIPHCookieControlsFeature);
-  browser_->window()->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kCookieControlsBubbleShown);
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
   CHECK(ShouldBeVisible());

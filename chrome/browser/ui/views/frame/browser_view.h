@@ -635,7 +635,7 @@ class BrowserView : public BrowserWindow,
       user_education::FeaturePromoParams params) override;
   bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  bool CloseFeaturePromo(
+  bool EndFeaturePromo(
       const base::Feature& iph_feature,
       user_education::EndFeaturePromoReason end_promo_reason) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(

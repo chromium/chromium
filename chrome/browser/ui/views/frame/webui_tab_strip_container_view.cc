@@ -695,7 +695,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
 
     time_at_open_ = base::TimeTicks::Now();
 
-    browser_view_->CloseFeaturePromo(
+    browser_view_->EndFeaturePromo(
         feature_engagement::kIPHWebUITabStripFeature,
         user_education::EndFeaturePromoReason::kFeatureEngaged);
   } else {
