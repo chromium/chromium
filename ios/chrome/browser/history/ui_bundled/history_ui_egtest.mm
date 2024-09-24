@@ -34,12 +34,17 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
+using chrome_test_util::BrowsingDataButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::ContainsPartialText;
 using chrome_test_util::DeleteButton;
+using chrome_test_util::HistoryClearBrowsingDataButton;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
@@ -187,6 +192,18 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
   [super tearDown];
+}
+
+// From history, delets browsing data with the default values which is 15min
+// time range and includes history.
+- (void)deleteBrowsingDataFromHistory {
+  [ChromeEarlGreyUI tapPrivacyMenuButton:HistoryClearBrowsingDataButton()];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Wait for the browsing data button to disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
 }
 
 #pragma mark Tests
@@ -578,8 +595,7 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   [self openHistoryPanel];
 
   // Open Clear Browsing Data
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryClearBrowsingDataButton()]
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
 
   // Check that the TableView is presented.
@@ -835,13 +851,53 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
     [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
+// Tests that if only some of the history entries are deleted from Delete
+// Browsing Data, then the history view is updated to reflect those deletions.
+- (void)testPartialDeletion {
+  const char olderURLString[] = "https://example.com";
+  const GURL olderURL = GURL(olderURLString);
+
+  // Create an history entry that took place one day ago.
+  const base::Time oneDayAgo = base::Time::Now() - base::Days(1);
+  [ChromeEarlGrey addHistoryServiceTypedURL:olderURL visitTimestamp:oneDayAgo];
+
+  // Create a recent history entry.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Open history and delete browsing data with the default configuration.
+  [self openHistoryPanel];
+  [self deleteBrowsingDataFromHistory];
+
+  // Check that the day old URL is still present.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          olderURL)),
+              olderURLString)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the more recent visit is gone.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests that if all history entries are deleted from Delete Browsing Data, that
+// then the history view is updated to show the empty state.
 - (void)testEmptyState {
     [self loadTestURLs];
     [self openHistoryPanel];
 
     // The toolbar should contain the CBD and edit buttons.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            HistoryClearBrowsingDataButton()]
+    [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
         assertWithMatcher:grey_notNil()];
     [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
         assertWithMatcher:grey_notNil()];
@@ -850,8 +906,7 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 
     // Toolbar should only contain CBD button and the background should contain
     // the Illustrated empty view
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            HistoryClearBrowsingDataButton()]
+    [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
         assertWithMatcher:grey_notNil()];
     [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
         assertWithMatcher:grey_nil()];
