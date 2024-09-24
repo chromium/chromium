@@ -697,6 +697,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   [self updateActionButtonLayout];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -705,6 +706,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
   [self updateActionButtonLayout];
 }
+#endif
 
 // Updates and activates constraints which depend on ui size class.
 - (void)updateConstraintsForTraitCollection:
