@@ -171,13 +171,6 @@ PlusAddressService::~PlusAddressService() {
   }
 }
 
-bool PlusAddressService::IsPlusAddressFillingEnabled(
-    const url::Origin& origin) const {
-  // Check that the feature is enabled and the origin is supported (not opaque,
-  // in the `excluded_sites_`, or is non http/https scheme)
-  return IsEnabled() && IsSupportedOrigin(origin);
-}
-
 bool PlusAddressService::IsPlusAddressCreationEnabled(
     const url::Origin& origin,
     bool is_off_the_record) const {
@@ -282,6 +275,13 @@ bool PlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.IsPlusAddress(potential_plus_address);
+}
+
+bool PlusAddressService::IsPlusAddressFillingEnabled(
+    const url::Origin& origin) const {
+  // Check that the feature is enabled and the origin is supported (not opaque,
+  // in the `excluded_sites_`, or is non http/https scheme)
+  return IsEnabled() && IsSupportedOrigin(origin);
 }
 
 void PlusAddressService::GetSuggestions(

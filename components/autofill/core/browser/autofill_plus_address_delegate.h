@@ -68,6 +68,12 @@ class AutofillPlusAddressDelegate {
   virtual bool IsPlusAddress(
       const std::string& potential_plus_address) const = 0;
 
+  // Returns whether plus address filling is supported for the given `origin`.
+  // This is true iff:
+  // - the `PlusAddressService` is enabled and
+  // - `origin` is not a blocked origin.
+  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
+
   // Returns the suggestions to show for the given origin and
   // `focused_field_value`. If `trigger_source` indicates that this is a manual
   // fallback (e.g. the suggestions were triggered from the context menu on

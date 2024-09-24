@@ -100,6 +100,7 @@ class PlusAddressService : public KeyedService,
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
+  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
   void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
@@ -144,12 +145,6 @@ class PlusAddressService : public KeyedService,
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
-
-  // Returns whether plus address filling is supported for the given `origin`.
-  // This is true iff:
-  // - the `PlusAddressService` is enabled and
-  // - `origin` is not a blocked origin.
-  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const;
 
   // Returns whether plus address creation is supported for the given `origin`.
   // This is true iff:

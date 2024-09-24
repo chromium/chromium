@@ -19,6 +19,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
   ~MockAutofillPlusAddressDelegate() override;
 
   MOCK_METHOD(bool, IsPlusAddress, (const std::string&), (const override));
+  MOCK_METHOD(bool,
+              IsPlusAddressFillingEnabled,
+              (const url::Origin& origin),
+              (const override));
   MOCK_METHOD(void,
               GetSuggestions,
               (const url::Origin&,
