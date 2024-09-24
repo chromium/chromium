@@ -4,6 +4,7 @@
 
 #include "ui/gl/direct_composition_support.h"
 
+#include <d3d11on12.h>
 #include <dcomp.h>
 #include <dxgi1_6.h>
 
@@ -1004,6 +1005,14 @@ bool DirectCompositionTextureSupported() {
 
   if (supports_composition_textures == FALSE) {
     DLOG(ERROR) << "CheckCompositionTextureSupport reported unsupported";
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11On12Device> d3d11on12_device;
+  if (SUCCEEDED(d3d11_device.As(&d3d11on12_device))) {
+    // IDCompositionTexture is not implemented on an 11on12, even though the
+    // device will claim support for it.
+    LOG(WARNING) << "IDCompositionTexture is not supported on 11on12 devices.";
     return false;
   }
 
