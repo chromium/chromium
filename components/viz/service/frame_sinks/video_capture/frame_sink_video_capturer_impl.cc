@@ -1140,12 +1140,6 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     }
   }
 
-  // Note: Externally-sampled images are readonly and hence we should never be
-  // creating VideoFrames with external sampling for this use case (and the
-  // creation flow of `frame` will not do so).
-  CHECK_NE(frame_capture.frame->shared_image_format_type(),
-           media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-
   // Request a copy of the next frame from the frame sink.
   auto request = std::make_unique<CopyOutputRequest>(
       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),

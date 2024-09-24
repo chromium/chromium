@@ -1401,16 +1401,12 @@ bool VideoFrame::RequiresExternalSampler() const {
       format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_NV12A ||
       format() == PIXEL_FORMAT_YV12 || format() == PIXEL_FORMAT_P010LE;
 
-  // With SharedImageFormats NumTextures() is always 1. Use
-  // SharedImageFormatType to check for NumTextures for legacy formats and
-  // kSharedImageFormatExternalSampler for SharedImageFormats. Note that
-  // kSharedImageFormatExternalSampler is set only for multiplanar formats.
+  // Note that kSharedImageFormatExternalSampler is set only for multiplanar
+  // formats.
   const bool requires_external_sampler =
       is_multiplanar_pixel_format &&
-      ((shared_image_format_type() ==
-        SharedImageFormatType::kSharedImageFormatExternalSampler) ||
-       (NumTextures() == 1 &&
-        shared_image_format_type() == SharedImageFormatType::kLegacy));
+      shared_image_format_type() ==
+          SharedImageFormatType::kSharedImageFormatExternalSampler;
 
   // The texture target can be 0 for Fuchsia.
   DCHECK(!requires_external_sampler ||

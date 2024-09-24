@@ -1002,12 +1002,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   gfx::ColorSpace color_space_;
   std::optional<gfx::HDRMetadata> hdr_metadata_;
 
-  // The format type used to create shared images. When set to Legacy creates
-  // shared images with current path; when set to SharedImageFormat with/without
-  // external sampler, creates shared image with new path (IPC) taking in
+  // The format type used to create shared images. When set to SharedImageFormat
+  // with/without external sampler, creates shared image taking in
   // SharedImageFormat with/without prefers_external_sampler set.
   SharedImageFormatType shared_image_format_type_ =
-      SharedImageFormatType::kLegacy;
+      SharedImageFormatType::kSharedImageFormatExternalSampler;
 
   // Sampler conversion information which is used in vulkan context for android.
   std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;

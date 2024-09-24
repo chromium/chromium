@@ -1504,10 +1504,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!video_frame->metadata().texture_origin_is_top_left)
       flip_y = !flip_y;
 
-    DCHECK(video_frame->shared_image_format_type() ==
-               SharedImageFormatType::kLegacy ||
-           video_frame->shared_image_format_type() ==
-               SharedImageFormatType::kSharedImageFormatExternalSampler);
+    DCHECK_EQ(video_frame->shared_image_format_type(),
+              SharedImageFormatType::kSharedImageFormatExternalSampler);
     const gpu::MailboxHolder& mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
     DCHECK(mailbox_holder.texture_target == GL_TEXTURE_2D ||
@@ -1842,10 +1840,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     //   via checking `texture_target`, which will be set only if this is the
     //   case)
     bool can_wrap_texture =
-        (video_frame->shared_image_format_type() ==
-             SharedImageFormatType::kLegacy ||
-         video_frame->shared_image_format_type() ==
-             SharedImageFormatType::kSharedImageFormatExternalSampler) &&
+        video_frame->shared_image_format_type() ==
+            SharedImageFormatType::kSharedImageFormatExternalSampler &&
         video_frame->mailbox_holder(0).texture_target != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {
@@ -1993,9 +1989,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     bool use_visible_rect) {
   auto* ri = raster_context_provider->RasterInterface();
 
-  // If we have single source shared image (either single-plane,
-  // legacy-multiplanar with external sampler, or multiplanar), just use
-  // CopySharedImage().
+  // If we have single source shared image, just use CopySharedImage().
   if (video_frame->HasTextures()) {
     const auto& source = video_frame->mailbox_holder(0);
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
