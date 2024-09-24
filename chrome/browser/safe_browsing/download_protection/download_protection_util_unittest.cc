@@ -431,7 +431,7 @@ TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING));
   }
   {
-    // Report should be sent because it is under async scanning.
+    // Report should be sent because it is under async local password scanning.
     TestingProfile profile;
     NiceMock<download::MockDownloadItem> download_item;
     setup(&profile, &download_item);
@@ -439,6 +439,22 @@ TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
     ON_CALL(download_item, GetDangerType)
         .WillByDefault(Return(
             download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING));
+    // Async scanning may be triggered when the response is safe.
+    DownloadProtectionService::SetDownloadProtectionData(
+        &download_item, "download_token", ClientDownloadResponse::SAFE,
+        ClientDownloadResponse::TailoredVerdict());
+    EXPECT_TRUE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY));
+  }
+  {
+    // Report should be sent because it is under deep scanning.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    ON_CALL(download_item, IsDangerous).WillByDefault(Return(false));
+    ON_CALL(download_item, GetDangerType)
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING));
     // Async scanning may be triggered when the response is safe.
     DownloadProtectionService::SetDownloadProtectionData(
         &download_item, "download_token", ClientDownloadResponse::SAFE,

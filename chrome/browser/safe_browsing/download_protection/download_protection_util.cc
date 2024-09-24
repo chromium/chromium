@@ -454,7 +454,8 @@ bool ShouldSendDangerousDownloadReport(
     return (has_token && has_unsafe_verdict) ||
            danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
   } else if (danger_type ==
-             download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING) {
+                 download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
     // Async scanning may be triggered when the verdict is safe. Still send the
     // report in this case.
     return has_token;
