@@ -49,17 +49,11 @@ enum class ManualFillDataType;
     delegate;
 
 // Designated initializer. `dataType` represents the type of manual filling
-// options to show in the expanded manual fill view. `focusedFieldDataType`
-// represents the manual fill data type associated with the currently focused
-// field. `dataType` and `focusedFieldDataType` can differ when the type of
-// manual filling options to show was selected by the user (by tapping the
-// password, card or address icon in the keyboard accessory).
+// options to show in the expanded manual fill view.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                    forDataType:(manual_fill::ManualFillDataType)dataType
-          focusedFieldDataType:
-              (manual_fill::ManualFillDataType)focusedFieldDataType
         reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
     NS_DESIGNATED_INITIALIZER;
 

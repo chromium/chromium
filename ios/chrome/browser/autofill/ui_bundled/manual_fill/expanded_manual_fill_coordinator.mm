@@ -48,16 +48,15 @@ using manual_fill::ManualFillDataType;
   ManualFillPlusAddressMediator* _manualFillPlusAddressMediator;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                   forDataType:(ManualFillDataType)dataType
-          focusedFieldDataType:(ManualFillDataType)focusedFieldDataType
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               forDataType:(ManualFillDataType)dataType
+                    reauthenticationModule:
+                        (ReauthenticationModule*)reauthenticationModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _focusedFieldDataType = dataType;
     _selectedSegmentDataType = dataType;
-    _focusedFieldDataType = focusedFieldDataType;
     _reauthenticationModule = reauthenticationModule;
     _manualFillPlusAddressMediator = nil;
   }
@@ -68,9 +67,9 @@ using manual_fill::ManualFillDataType;
   self.expandedManualFillViewController =
       [[ExpandedManualFillViewController alloc]
           initWithDelegate:self
-               forDataType:_selectedSegmentDataType];
+               forDataType:_focusedFieldDataType];
 
-  [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
+  [self showManualFillingOptionsForDataType:_focusedFieldDataType];
 }
 
 - (void)stop {
