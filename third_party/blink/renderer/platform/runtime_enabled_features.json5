@@ -1984,6 +1984,12 @@
       status: "experimental",
     },
     {
+      // crbug.com/40755728
+      name: "FindTextSkipCollapsedText",
+      status: "stable",
+      depends_on: ["FindDecomposedInShortText"],
+    },
+    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",

@@ -164,7 +164,9 @@ Node* GetVisibleTextNode(Node& start_node) {
       continue;
     }
     if (style && style->UsedVisibility() == EVisibility::kVisible &&
-        node->IsTextNode()) {
+        node->IsTextNode() &&
+        (!RuntimeEnabledFeatures::FindTextSkipCollapsedTextEnabled() ||
+         node->GetLayoutObject())) {
       return node;
     }
     // This element is hidden, but node might be visible,

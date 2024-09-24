@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -921,6 +922,14 @@ TEST_F(FindBufferTest, GetFirstBlockLevelAncestorInclusive) {
             FindBuffer::GetFirstBlockLevelAncestorInclusive(*text_node_c));
   ASSERT_EQ(inner_div,
             FindBuffer::GetFirstBlockLevelAncestorInclusive(*text_node_b));
+}
+
+TEST_F(FindBufferTest, ForwardVisibleTextNode) {
+  SetBodyContent("\n<div>\n<p>a</p></div");
+  Node* text = FindBuffer::ForwardVisibleTextNode(*GetDocument().body());
+  ASSERT_TRUE(text);
+  EXPECT_TRUE(IsA<Text>(*text));
+  EXPECT_EQ(String("a"), To<Text>(text)->data());
 }
 
 }  // namespace blink
