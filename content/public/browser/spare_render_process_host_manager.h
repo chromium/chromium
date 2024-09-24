@@ -7,9 +7,8 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
-#include "base/time/time.h"
+#include "base/observer_list_types.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -23,6 +22,27 @@ class BrowserContext;
 class CONTENT_EXPORT SpareRenderProcessHostManager {
  public:
   static SpareRenderProcessHostManager& Get();
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked when the spare process is started and ready.
+    virtual void OnSpareRenderProcessHostReady(RenderProcessHost* host) {}
+
+    // Invoked when the spare process is either used, or cleaned up. Note that
+    // it is possible to get a OnSpareRenderProcessHostRemoved() notification
+    // without an corresponding OnSpareRenderProcessHostReady(), as the spare
+    // can be taken/cleaned up before its process is ready.
+    virtual void OnSpareRenderProcessHostRemoved(RenderProcessHost* host) {}
+  };
+
+  // Adds/removes an observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Return the spare RenderProcessHost, if it exists. There is at most one
+  // globally-used spare RenderProcessHost at any time. Can be used in tandem
+  // with the Observer interface above to track the spare RenderProcessHost.
+  virtual RenderProcessHost* GetSpare() = 0;
 
   // Possibly start an unbound, spare RenderProcessHost. A subsequent creation
   // of a RenderProcessHost with a matching browser_context may use this
@@ -42,21 +62,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManager {
   // //content layer will maintain a warm spare process host at all times
   // (without a need for separate calls to WarmupSpare).
   virtual void WarmupSpare(BrowserContext* browser_context) = 0;
-
-  // Return the spare RenderProcessHost, if it exists. There is at most one
-  // globally-used spare RenderProcessHost at any time.
-  // TODO(crbug.com/41492171): remove the non-test method once the performance
-  // investigation is finished.
-  virtual RenderProcessHost* GetSpare() = 0;
-  virtual RenderProcessHost* GetSpareForTesting() = 0;
-
-  // Registers a callback to be notified when the spare RenderProcessHost is
-  // changed. If a new spare RenderProcessHost is created, the callback is made
-  // when the host is ready (RenderProcessHostObserver::RenderProcessReady). If
-  // the spare RenderProcessHost is promoted to be a "real" RenderProcessHost or
-  // discarded for any reason, the callback is made with a null pointer.
-  virtual base::CallbackListSubscription RegisterSpareChangedCallback(
-      const base::RepeatingCallback<void(RenderProcessHost*)>& cb) = 0;
 
  protected:
   virtual ~SpareRenderProcessHostManager() = default;

@@ -54,6 +54,14 @@ bool SpareRenderProcessHostManagerImpl::DestroyTimerWillFireBefore(
          deferred_destroy_timer_.GetCurrentDelay() < timeout;
 }
 
+void SpareRenderProcessHostManagerImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SpareRenderProcessHostManagerImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context) {
   WarmupSpare(browser_context, std::nullopt);
@@ -61,19 +69,6 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
 RenderProcessHost* SpareRenderProcessHostManagerImpl::GetSpare() {
   return spare_rph_;
-}
-
-RenderProcessHost* SpareRenderProcessHostManagerImpl::GetSpareForTesting() {
-  return spare_rph_;
-}
-
-base::CallbackListSubscription
-SpareRenderProcessHostManagerImpl::RegisterSpareChangedCallback(
-    const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
-  // Do an initial notification, as the subscriber will need to know what the
-  // current spare host is.
-  cb.Run(spare_rph_.get());
-  return spare_changed_callback_list_.Add(cb);
 }
 
 void SpareRenderProcessHostManagerImpl::WarmupSpare(
@@ -264,7 +259,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   StoragePartition* site_storage =
       browser_context->GetStoragePartition(site_instance);
 
-  // Log UMA metrics.
+  // GetSpare UMA metrics.
   using SpareProcessMaybeTakeAction =
       RenderProcessHostImpl::SpareProcessMaybeTakeAction;
   SpareProcessMaybeTakeAction action =
@@ -366,9 +361,12 @@ void SpareRenderProcessHostManagerImpl::CleanupSpare() {
     // Stop the destroy timer since it is no longer required.
     deferred_destroy_timer_.Stop();
 
-    // Drop reference to the RenderProcessHost object.
-    spare_rph_ = nullptr;
-    spare_changed_callback_list_.Notify(nullptr);
+    // Drop reference to the RenderProcessHost object
+    RenderProcessHost* spare_rph = std::exchange(spare_rph_, nullptr);
+
+    for (auto& observer : observer_list_) {
+      observer.OnSpareRenderProcessHostRemoved(spare_rph);
+    }
   }
 }
 
@@ -382,8 +380,11 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare() {
   CHECK(spare_rph_);
 
   spare_rph_->RemoveObserver(this);
-  spare_rph_ = nullptr;
-  spare_changed_callback_list_.Notify(nullptr);
+
+  RenderProcessHost* spare_rph = std::exchange(spare_rph_, nullptr);
+  for (auto& observer : observer_list_) {
+    observer.OnSpareRenderProcessHostRemoved(spare_rph);
+  }
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
@@ -393,7 +394,9 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
                       process_startup_timer_->Elapsed());
   process_startup_timer_.reset();
-  spare_changed_callback_list_.Notify(spare_rph_);
+  for (auto& observer : observer_list_) {
+    observer.OnSpareRenderProcessHostReady(spare_rph_);
+  }
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessExited(

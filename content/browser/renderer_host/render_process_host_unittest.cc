@@ -1257,7 +1257,7 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererTaken) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
-  RenderProcessHost* spare_rph = spare_manager.GetSpareForTesting();
+  RenderProcessHost* spare_rph = spare_manager.GetSpare();
   EXPECT_EQ(spare_rph, rph_factory_.GetProcesses()->at(0).get());
 
   const GURL kUrl1("http://foo.com");
@@ -1268,12 +1268,12 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererTaken) {
   ExpectSpareProcessMaybeTakeActionBucket(
       histograms, SpareProcessMaybeTakeAction::kSpareTaken);
 
-  EXPECT_NE(spare_rph, spare_manager.GetSpareForTesting());
+  EXPECT_NE(spare_rph, spare_manager.GetSpare());
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
-    EXPECT_NE(nullptr, spare_manager.GetSpareForTesting());
+    EXPECT_NE(nullptr, spare_manager.GetSpare());
     EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
   } else {
-    EXPECT_EQ(nullptr, spare_manager.GetSpareForTesting());
+    EXPECT_EQ(nullptr, spare_manager.GetSpare());
     EXPECT_EQ(1U, rph_factory_.GetProcesses()->size());
   }
 }
@@ -1283,7 +1283,7 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
   std::unique_ptr<BrowserContext> alternate_context(new TestBrowserContext());
   spare_manager.WarmupSpare(alternate_context.get());
   ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
-  RenderProcessHost* old_spare = spare_manager.GetSpareForTesting();
+  RenderProcessHost* old_spare = spare_manager.GetSpare();
   EXPECT_EQ(alternate_context.get(), old_spare->GetBrowserContext());
   EXPECT_EQ(old_spare, rph_factory_.GetProcesses()->at(0).get());
 
@@ -1302,7 +1302,7 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
   base::RunLoop().RunUntilIdle();
   PruneDeadRenderProcessHosts();
 
-  RenderProcessHost* new_spare = spare_manager.GetSpareForTesting();
+  RenderProcessHost* new_spare = spare_manager.GetSpare();
   EXPECT_NE(old_spare, new_spare);
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
@@ -1345,7 +1345,7 @@ TEST_F(SpareRenderProcessHostUnitTest,
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
-  RenderProcessHost* spare_rph = spare_manager.GetSpareForTesting();
+  RenderProcessHost* spare_rph = spare_manager.GetSpare();
   EXPECT_EQ(spare_rph, rph_factory_.GetProcesses()->at(0).get());
   std::vector<SpareProcessRefusedByEmbedderReason> test_reasons = {
       SpareProcessRefusedByEmbedderReason::DefaultDisabled,
@@ -1374,7 +1374,7 @@ TEST_F(SpareRenderProcessHostUnitTest, SpareMissing) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.CleanupSpare();
   ASSERT_EQ(0U, rph_factory_.GetProcesses()->size());
-  RenderProcessHost* spare_rph = spare_manager.GetSpareForTesting();
+  RenderProcessHost* spare_rph = spare_manager.GetSpare();
   EXPECT_FALSE(spare_rph);
 
   const GURL kUrl1("http://foo.com");
@@ -1385,7 +1385,7 @@ TEST_F(SpareRenderProcessHostUnitTest, SpareMissing) {
   ExpectSpareProcessMaybeTakeActionBucket(
       histograms, SpareProcessMaybeTakeAction::kNoSparePresent);
 
-  spare_rph = spare_manager.GetSpareForTesting();
+  spare_rph = spare_manager.GetSpare();
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     EXPECT_TRUE(spare_rph);
     EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
@@ -1401,7 +1401,7 @@ TEST_F(SpareRenderProcessHostUnitTest,
   std::unique_ptr<BrowserContext> alternate_context(new TestBrowserContext());
   spare_manager.WarmupSpare(alternate_context.get());
   ASSERT_EQ(1U, rph_factory_.GetProcesses()->size());
-  RenderProcessHost* old_spare = spare_manager.GetSpareForTesting();
+  RenderProcessHost* old_spare = spare_manager.GetSpare();
   EXPECT_EQ(alternate_context.get(), old_spare->GetBrowserContext());
   EXPECT_EQ(old_spare, rph_factory_.GetProcesses()->at(0).get());
 
@@ -1424,7 +1424,7 @@ TEST_F(SpareRenderProcessHostUnitTest,
   // There should be no new spare at this point to avoid launching 2 processes
   // at the same time.  Note that the spare might still be created later during
   // a navigation (e.g. after cross-site redirects or when committing).
-  RenderProcessHost* new_spare = spare_manager.GetSpareForTesting();
+  RenderProcessHost* new_spare = spare_manager.GetSpare();
   if (new_spare != old_spare)
     EXPECT_FALSE(new_spare);
 }
@@ -1444,7 +1444,7 @@ TEST_F(SpareRenderProcessHostUnitTest, JustBelowProcessLimit) {
   RenderProcessHost::SetMaxRendererProcessCount(1);
 
   // No spare or any other renderer process at the start of the test.
-  EXPECT_FALSE(spare_manager.GetSpareForTesting());
+  EXPECT_FALSE(spare_manager.GetSpare());
   EXPECT_EQ(0U, rph_factory_.GetProcesses()->size());
 
   // Navigation can't take a spare (none present) and needs to launch a new
@@ -1457,7 +1457,7 @@ TEST_F(SpareRenderProcessHostUnitTest, JustBelowProcessLimit) {
   EXPECT_EQ(1U, rph_factory_.GetProcesses()->size());
 
   // There should be no spare - having one would put us over the process limit.
-  EXPECT_FALSE(spare_manager.GetSpareForTesting());
+  EXPECT_FALSE(spare_manager.GetSpare());
 }
 
 // This unit test verifies that a mismatched spare RenderProcessHost is dropped
@@ -1472,7 +1472,7 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   const GURL kUrl1("http://foo.com");
   std::unique_ptr<WebContents> contents1(CreateTestWebContents());
   static_cast<TestWebContents*>(contents1.get())->NavigateAndCommit(kUrl1);
-  EXPECT_NE(spare_manager.GetSpareForTesting(),
+  EXPECT_NE(spare_manager.GetSpare(),
             contents1->GetPrimaryMainFrame()->GetProcess());
 
   // Warm up a mismatched spare.
@@ -1492,7 +1492,7 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   // Creating a 2nd WebContents shouldn't share a renderer process with the 1st
   // one - instead the spare should be dropped to stay under the process limit.
   EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
-  EXPECT_FALSE(spare_manager.GetSpareForTesting());
+  EXPECT_FALSE(spare_manager.GetSpare());
   EXPECT_NE(contents1->GetPrimaryMainFrame()->GetProcess(),
             contents2->GetPrimaryMainFrame()->GetProcess());
 }

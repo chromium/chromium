@@ -20,7 +20,7 @@ namespace {
 
 void DestroySpareRenderProcess() {
   content::RenderProcessHost* spare_render_process_host =
-      content::SpareRenderProcessHostManager::Get().GetSpareForTesting();
+      content::SpareRenderProcessHostManager::Get().GetSpare();
   if (!spare_render_process_host) {
     return;
   }
@@ -157,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 // TODO(crbug.com/325316150): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   // Use the spare renderer if there is one.
-  EXPECT_NE(content::SpareRenderProcessHostManager::Get().GetSpareForTesting(),
-            nullptr);
+  EXPECT_NE(content::SpareRenderProcessHostManager::Get().GetSpare(), nullptr);
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->contents_warmup_level(),
             WebUIContentsWarmupLevel::kSpareRenderer);

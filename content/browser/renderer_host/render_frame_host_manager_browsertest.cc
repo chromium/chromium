@@ -6021,7 +6021,7 @@ IN_PROC_BROWSER_TEST_P(
   // is created and has the right prioritization.
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.CleanupSpare();
-  EXPECT_FALSE(spare_manager.GetSpareForTesting());
+  EXPECT_FALSE(spare_manager.GetSpare());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is different.
@@ -6082,7 +6082,7 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Start off navigating to a.com and capture the process used to commit.
-  SpareRenderProcessObserver render_process_observer;
+  SpareRenderProcessHostStartedObserver spare_started_observer;
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   // The AndroidWarmUpSpareRendererWithTimeout feature will create a spare
@@ -6090,7 +6090,7 @@ IN_PROC_BROWSER_TEST_P(
   // explicitly wait.
   if (base::FeatureList::IsEnabled(
           features::kAndroidWarmUpSpareRendererWithTimeout)) {
-    render_process_observer.WaitForSpareRenderProcessCreation();
+    spare_started_observer.WaitForSpareRenderProcessStarted();
   }
   RenderProcessHost* start_rph =
       web_contents->GetPrimaryMainFrame()->GetProcess();
@@ -6098,7 +6098,7 @@ IN_PROC_BROWSER_TEST_P(
   // At this time, there should be a spare RenderProcesHost. Capture it for
   // testing expectations later.
   RenderProcessHost* spare_rph =
-      SpareRenderProcessHostManagerImpl::Get().GetSpareForTesting();
+      SpareRenderProcessHostManagerImpl::Get().GetSpare();
   EXPECT_TRUE(spare_rph);
   EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 

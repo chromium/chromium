@@ -7,9 +7,8 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -38,11 +37,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   static SpareRenderProcessHostManagerImpl& Get();
 
   // SpareRenderProcessHostManager:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void WarmupSpare(BrowserContext* browser_context) override;
   RenderProcessHost* GetSpare() override;
-  RenderProcessHost* GetSpareForTesting() override;
-  base::CallbackListSubscription RegisterSpareChangedCallback(
-      const base::RepeatingCallback<void(RenderProcessHost*)>& cb) override;
 
   // Start a spare renderer immediately if there isn't one.
   // If the timeout is given, the spare render process will not be created
@@ -116,8 +114,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   // The clients who want to know when the spare render process host has
   // changed.
-  base::RepeatingCallbackList<void(RenderProcessHost*)>
-      spare_changed_callback_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().

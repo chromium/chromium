@@ -61,7 +61,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -4432,34 +4431,32 @@ void SpeculativeRenderFrameHostObserver::RenderFrameCreated(
   }
 }
 
-SpareRenderProcessObserver::SpareRenderProcessObserver() {
-  subscription_ =
-      SpareRenderProcessHostManagerImpl::Get().RegisterSpareChangedCallback(
-          base::BindRepeating(
-              &SpareRenderProcessObserver::SpareRenderProcessHostChanged,
-              weak_factory_.GetWeakPtr()));
+SpareRenderProcessHostStartedObserver::SpareRenderProcessHostStartedObserver() {
+  scoped_observation_.Observe(&SpareRenderProcessHostManager::Get());
 }
 
-SpareRenderProcessObserver::~SpareRenderProcessObserver() = default;
+SpareRenderProcessHostStartedObserver::
+    ~SpareRenderProcessHostStartedObserver() = default;
 
-void SpareRenderProcessObserver::SpareRenderProcessHostChanged(
-    RenderProcessHost* render_process_host) {
-  spare_render_process_host_ = render_process_host;
+void SpareRenderProcessHostStartedObserver::OnSpareRenderProcessHostReady(
+    RenderProcessHost* host) {
+  spare_render_process_host_ = host;
   if (quit_closure_) {
     std::move(quit_closure_).Run();
   }
 }
 
-RenderProcessHost* SpareRenderProcessObserver::spare_render_process_host() {
-  return spare_render_process_host_;
-}
-
-void SpareRenderProcessObserver::WaitForSpareRenderProcessCreation() {
+RenderProcessHost*
+SpareRenderProcessHostStartedObserver::WaitForSpareRenderProcessStarted() {
   base::RunLoop loop;
   quit_closure_ = loop.QuitClosure();
   if (!spare_render_process_host_) {
     loop.Run();
   }
+
+  RenderProcessHost* host = std::exchange(spare_render_process_host_, nullptr);
+  scoped_observation_.Reset();
+  return host;
 }
 
 base::CallbackListSubscription RegisterWebContentsCreationCallback(

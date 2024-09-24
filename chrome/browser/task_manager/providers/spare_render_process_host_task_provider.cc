@@ -34,39 +34,42 @@ void SpareRenderProcessHostTaskProvider::StartUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!task_);
 
-  // base::Unretained is safe as the destruction of this object will release the
-  // subscription and cancel the callback. This will immediately call back with
-  // the current host (if any).
-  subscription_ = content::SpareRenderProcessHostManager::Get()
-                      .RegisterSpareChangedCallback(base::BindRepeating(
-                          &SpareRenderProcessHostTaskProvider::
-                              SpareRenderProcessHostTaskChanged,
-                          base::Unretained(this)));
+  auto& spare_manager = content::SpareRenderProcessHostManager::Get();
+  RenderProcessHost* spare_rph = spare_manager.GetSpare();
+  if (spare_rph && spare_rph->IsReady()) {
+    OnSpareRenderProcessHostReady(spare_rph);
+  }
+  scoped_observation_.Observe(&spare_manager);
 }
 
 void SpareRenderProcessHostTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  subscription_ = {};
+  scoped_observation_.Reset();
 
   task_.reset();
 }
 
-void SpareRenderProcessHostTaskProvider::SpareRenderProcessHostTaskChanged(
+void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
     RenderProcessHost* host) {
-  if (task_) {
-    NotifyObserverTaskRemoved(task_.get());
-    task_.reset();
-  }
+  CHECK(!task_);
+  ChildProcessData data(content::PROCESS_TYPE_RENDERER);
+  data.SetProcess(host->GetProcess().Duplicate());
+  data.id = host->GetID();
+  task_ = std::make_unique<ChildProcessTask>(
+      data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
+  NotifyObserverTaskAdded(task_.get());
+}
 
-  if (host) {
-    ChildProcessData data(content::PROCESS_TYPE_RENDERER);
-    data.SetProcess(host->GetProcess().Duplicate());
-    data.id = host->GetID();
-    task_ = std::make_unique<ChildProcessTask>(
-        data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
-    NotifyObserverTaskAdded(task_.get());
+void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostRemoved(
+    RenderProcessHost* host) {
+  if (!task_) {
+    // This can happen when a spare RenderProcessHost was created but never
+    // reached the "ready" state.
+    return;
   }
+  NotifyObserverTaskRemoved(task_.get());
+  task_.reset();
 }
 
 }  // namespace task_manager

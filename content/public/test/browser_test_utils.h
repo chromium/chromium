@@ -36,6 +36,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -2411,24 +2412,23 @@ class SpeculativeRenderFrameHostObserver : public content::WebContentsObserver {
   GURL url_;
 };
 
-class SpareRenderProcessObserver {
+class SpareRenderProcessHostStartedObserver
+    : public SpareRenderProcessHostManager::Observer {
  public:
-  SpareRenderProcessObserver();
+  SpareRenderProcessHostStartedObserver();
+  ~SpareRenderProcessHostStartedObserver() override;
 
-  void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host);
+  // SpareRenderProcessHostManager::Observer:
+  void OnSpareRenderProcessHostReady(RenderProcessHost* host) override;
 
-  RenderProcessHost* spare_render_process_host();
-
-  void WaitForSpareRenderProcessCreation();
-
-  ~SpareRenderProcessObserver();
+  RenderProcessHost* WaitForSpareRenderProcessStarted();
 
  private:
+  base::ScopedObservation<SpareRenderProcessHostManager,
+                          SpareRenderProcessHostManager::Observer>
+      scoped_observation_{this};
   raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
   base::OnceClosure quit_closure_;
-  base::CallbackListSubscription subscription_;
-
-  base::WeakPtrFactory<SpareRenderProcessObserver> weak_factory_{this};
 };
 
 [[nodiscard]] base::CallbackListSubscription

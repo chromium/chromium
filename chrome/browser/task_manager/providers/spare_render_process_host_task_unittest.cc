@@ -27,10 +27,16 @@ class SpareRenderProcessHostTaskTest : public testing::Test,
     provided_task_ = nullptr;
   }
 
-  void SpareRenderProcessHostTaskChanged(
+  void OnSpareRenderProcessHostReady(
       SpareRenderProcessHostTaskProvider* provider,
       content::RenderProcessHost* render_process) {
-    provider->SpareRenderProcessHostTaskChanged(render_process);
+    provider->OnSpareRenderProcessHostReady(render_process);
+  }
+
+  void OnSpareRenderProcessHostRemoved(
+      SpareRenderProcessHostTaskProvider* provider,
+      content::RenderProcessHost* render_process) {
+    provider->OnSpareRenderProcessHostRemoved(render_process);
   }
 
  protected:
@@ -48,10 +54,10 @@ TEST_F(SpareRenderProcessHostTaskTest, Basic) {
   auto render_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context.get());
 
-  SpareRenderProcessHostTaskChanged(&provider, render_process.get());
+  OnSpareRenderProcessHostReady(&provider, render_process.get());
   EXPECT_NE(nullptr, provided_task_);
 
-  SpareRenderProcessHostTaskChanged(&provider, nullptr);
+  OnSpareRenderProcessHostRemoved(&provider, render_process.get());
   EXPECT_EQ(nullptr, provided_task_.get());
 
   provider.ClearObserver();

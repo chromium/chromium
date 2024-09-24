@@ -9188,7 +9188,7 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   SpareRenderProcessHostManagerImpl::Get().CleanupSpare();
-  SpareRenderProcessObserver render_process_observer;
+  SpareRenderProcessHostStartedObserver spare_started_observer;
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
   TestNavigationManager nav_manager(web_contents, url);
@@ -9204,11 +9204,10 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
   VerifyDeferSpeculativeRFHActionUMA(histogram_tester, expected_action);
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
+  RenderProcessHost* created_process = nullptr;
   if (WillWarmupSpareRenderProcess()) {
-    render_process_observer.WaitForSpareRenderProcessCreation();
+    created_process = spare_started_observer.WaitForSpareRenderProcessStarted();
   }
-  RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
   ASSERT_EQ(!!created_process, WillWarmupSpareRenderProcess());
   ASSERT_TRUE(navigation_request);
   // The navigation manager pauses the navigation in the WillStartRequest
@@ -9665,14 +9664,13 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.CleanupSpare();
-  SpareRenderProcessObserver render_process_observer;
+  SpareRenderProcessHostStartedObserver spare_started_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  render_process_observer.WaitForSpareRenderProcessCreation();
   RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
+      spare_started_observer.WaitForSpareRenderProcessStarted();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(spare_manager.GetSpareForTesting(), created_process);
+  ASSERT_EQ(spare_manager.GetSpare(), created_process);
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ASSERT_TRUE(NavigateToURL(
@@ -9688,14 +9686,13 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   const base::TimeDelta kTimeout = base::Seconds(10);
 
   spare_manager.CleanupSpare();
-  SpareRenderProcessObserver render_process_observer;
+  SpareRenderProcessHostStartedObserver spare_started_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  render_process_observer.WaitForSpareRenderProcessCreation();
   RenderProcessHost* created_process =
-      render_process_observer.spare_render_process_host();
+      spare_started_observer.WaitForSpareRenderProcessStarted();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(spare_manager.GetSpareForTesting(), created_process);
+  ASSERT_EQ(spare_manager.GetSpare(), created_process);
 
   if (!SpareRendererHasTimeout()) {
     // Warming up a spare renderer with a timeout shall not override
@@ -9706,9 +9703,9 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   task_runner->FastForwardBy(kTimeout);
   base::RunLoop().RunUntilIdle();
   if (SpareRendererHasTimeout()) {
-    ASSERT_FALSE(!!spare_manager.GetSpareForTesting());
+    ASSERT_FALSE(!!spare_manager.GetSpare());
   } else {
-    ASSERT_EQ(created_process, spare_manager.GetSpareForTesting());
+    ASSERT_EQ(created_process, spare_manager.GetSpare());
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

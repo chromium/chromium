@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   // Capture current spare renderer.
   content::RenderProcessHost* spare =
-      content::SpareRenderProcessHostManager::Get().GetSpareForTesting();
+      content::SpareRenderProcessHostManager::Get().GetSpare();
   ASSERT_TRUE(spare);
 
   // Note the current render processes before the navigation. These should all

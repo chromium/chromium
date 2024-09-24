@@ -279,7 +279,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
     // Memory.RenderProcessHost.Count.All includes the spare process. If a
     // spare is present, subtract it from total count since the tests below
     // assume no spare.
-    if (content::SpareRenderProcessHostManager::Get().GetSpareForTesting()) {
+    if (content::SpareRenderProcessHostManager::Get().GetSpare()) {
       rph_count--;
     }
 
