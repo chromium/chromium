@@ -13,7 +13,7 @@ import(gn_configs_path)
 # targeting, e.g. in their top-level //.gn file or gn_configs.gni.
 # Fuchsia-sdk decides the supported api-levels.
 if (!defined(fuchsia_target_api_level)) {
-  fuchsia_target_api_level = 22
+  fuchsia_target_api_level = 23
 }
 
 # The SDK manifest file. This is useful to include as a dependency for some
