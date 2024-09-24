@@ -61,6 +61,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -4433,7 +4434,7 @@ void SpeculativeRenderFrameHostObserver::RenderFrameCreated(
 
 SpareRenderProcessObserver::SpareRenderProcessObserver() {
   subscription_ =
-      RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
+      SpareRenderProcessHostManagerImpl::Get().RegisterSpareChangedCallback(
           base::BindRepeating(
               &SpareRenderProcessObserver::SpareRenderProcessHostChanged,
               weak_factory_.GetWeakPtr()));

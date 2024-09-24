@@ -9,6 +9,7 @@
 #include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/common/process_type.h"
 
 using content::BrowserThread;
@@ -36,11 +37,11 @@ void SpareRenderProcessHostTaskProvider::StartUpdating() {
   // base::Unretained is safe as the destruction of this object will release the
   // subscription and cancel the callback. This will immediately call back with
   // the current host (if any).
-  subscription_ =
-      RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
-          base::BindRepeating(&SpareRenderProcessHostTaskProvider::
-                                  SpareRenderProcessHostTaskChanged,
-                              base::Unretained(this)));
+  subscription_ = content::SpareRenderProcessHostManager::Get()
+                      .RegisterSpareChangedCallback(base::BindRepeating(
+                          &SpareRenderProcessHostTaskProvider::
+                              SpareRenderProcessHostTaskChanged,
+                          base::Unretained(this)));
 }
 
 void SpareRenderProcessHostTaskProvider::StopUpdating() {

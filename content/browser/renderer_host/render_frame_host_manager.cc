@@ -56,7 +56,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/browser/renderer_host/spare_render_process_host_manager.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -1693,7 +1693,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
             frame_tree_node_)) {
       if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
           !dest_site_instance->HasProcess()) {
-        SpareRenderProcessHostManager::Get().WarmupSpare(
+        SpareRenderProcessHostManagerImpl::Get().WarmupSpare(
             dest_site_instance->GetBrowserContext());
         defer_action =
             DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp;

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -19,7 +20,7 @@ namespace {
 
 void DestroySpareRenderProcess() {
   content::RenderProcessHost* spare_render_process_host =
-      content::RenderProcessHost::GetSpareRenderProcessHostForTesting();
+      content::SpareRenderProcessHostManager::Get().GetSpareForTesting();
   if (!spare_render_process_host) {
     return;
   }
@@ -156,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 // TODO(crbug.com/325316150): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   // Use the spare renderer if there is one.
-  EXPECT_NE(content::RenderProcessHost::GetSpareRenderProcessHostForTesting(),
+  EXPECT_NE(content::SpareRenderProcessHostManager::Get().GetSpareForTesting(),
             nullptr);
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->contents_warmup_level(),

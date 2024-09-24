@@ -193,6 +193,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -4935,7 +4936,7 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
     }
     if (companion::GetShouldIssueProcessPrewarmingForCompanion() &&
         !base::SysInfo::IsLowEndDevice()) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(
           browser_context_);
     }
     return;
@@ -4949,7 +4950,7 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
     }
     if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
         !base::SysInfo::IsLowEndDevice()) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(
           browser_context_);
     }
     return;

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -180,7 +181,7 @@ class PowerMonitorTest : public ContentBrowserTest {
       ++request_count_from_renderer_;
       std::move(renderer_bound_closure_).Run();
     } else {
-      DCHECK(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+      DCHECK(SpareRenderProcessHostManagerImpl::Get().GetSpare());
     }
 
     power_monitor_message_broadcaster_.Bind(std::move(receiver));

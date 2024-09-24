@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/spare_render_process_host_manager.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
@@ -21,33 +21,62 @@
 
 namespace content {
 
-SpareRenderProcessHostManager::SpareRenderProcessHostManager() = default;
-SpareRenderProcessHostManager::~SpareRenderProcessHostManager() = default;
+SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl() =
+    default;
+SpareRenderProcessHostManagerImpl::~SpareRenderProcessHostManagerImpl() =
+    default;
 
 // static
 SpareRenderProcessHostManager& SpareRenderProcessHostManager::Get() {
-  static base::NoDestructor<SpareRenderProcessHostManager> s_instance;
+  return SpareRenderProcessHostManagerImpl::Get();
+}
+
+// static
+SpareRenderProcessHostManagerImpl& SpareRenderProcessHostManagerImpl::Get() {
+  static base::NoDestructor<SpareRenderProcessHostManagerImpl> s_instance;
   return *s_instance;
 }
 
-void SpareRenderProcessHostManager::StartDestroyTimer(
+void SpareRenderProcessHostManagerImpl::StartDestroyTimer(
     std::optional<base::TimeDelta> timeout) {
   if (!timeout) {
     return;
   }
   deferred_destroy_timer_.Start(
       FROM_HERE, timeout.value(),
-      base::BindOnce(&SpareRenderProcessHostManager::CleanupSpare,
+      base::BindOnce(&SpareRenderProcessHostManagerImpl::CleanupSpare,
                      base::Unretained(this)));
 }
 
-bool SpareRenderProcessHostManager::DestroyTimerWillFireBefore(
+bool SpareRenderProcessHostManagerImpl::DestroyTimerWillFireBefore(
     base::TimeDelta timeout) {
   return deferred_destroy_timer_.IsRunning() &&
          deferred_destroy_timer_.GetCurrentDelay() < timeout;
 }
 
-void SpareRenderProcessHostManager::WarmupSpare(
+void SpareRenderProcessHostManagerImpl::WarmupSpare(
+    BrowserContext* browser_context) {
+  WarmupSpare(browser_context, std::nullopt);
+}
+
+RenderProcessHost* SpareRenderProcessHostManagerImpl::GetSpare() {
+  return spare_rph_;
+}
+
+RenderProcessHost* SpareRenderProcessHostManagerImpl::GetSpareForTesting() {
+  return spare_rph_;
+}
+
+base::CallbackListSubscription
+SpareRenderProcessHostManagerImpl::RegisterSpareChangedCallback(
+    const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
+  // Do an initial notification, as the subscriber will need to know what the
+  // current spare host is.
+  cb.Run(spare_rph_.get());
+  return spare_changed_callback_list_.Add(cb);
+}
+
+void SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> timeout) {
   if (delay_timer_) {
@@ -137,14 +166,14 @@ void SpareRenderProcessHostManager::WarmupSpare(
   // process changed" callback in RenderProcessReady().
 }
 
-void SpareRenderProcessHostManager::DeferredWarmupSpare(
+void SpareRenderProcessHostManagerImpl::DeferredWarmupSpare(
     BrowserContext* browser_context,
     base::TimeDelta delay,
     std::optional<base::TimeDelta> timeout) {
   deferred_warmup_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(
-          [](SpareRenderProcessHostManager* self,
+          [](SpareRenderProcessHostManagerImpl* self,
              base::WeakPtr<BrowserContext> browser_context,
              std::optional<base::TimeDelta> timeout) {
             // Don't create spare process if the browser context is destroyed
@@ -156,7 +185,7 @@ void SpareRenderProcessHostManager::DeferredWarmupSpare(
           base::Unretained(this), browser_context->GetWeakPtr(), timeout));
 }
 
-RenderProcessHost* SpareRenderProcessHostManager::MaybeTakeSpare(
+RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     BrowserContext* browser_context,
     SiteInstanceImpl* site_instance) {
   // Give embedder a chance to disable using a spare RenderProcessHost for
@@ -288,7 +317,7 @@ RenderProcessHost* SpareRenderProcessHostManager::MaybeTakeSpare(
   return returned_process;
 }
 
-void SpareRenderProcessHostManager::PrepareForFutureRequests(
+void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> delay) {
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
@@ -322,7 +351,7 @@ void SpareRenderProcessHostManager::PrepareForFutureRequests(
   }
 }
 
-void SpareRenderProcessHostManager::CleanupSpare() {
+void SpareRenderProcessHostManagerImpl::CleanupSpare() {
   if (spare_rph_) {
     // Stop observing the process, to avoid getting notifications as a
     // consequence of the Cleanup call below - such notification could call
@@ -343,22 +372,13 @@ void SpareRenderProcessHostManager::CleanupSpare() {
   }
 }
 
-base::CallbackListSubscription
-SpareRenderProcessHostManager::RegisterSpareChangedCallback(
-    const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
-  // Do an initial notification, as the subscriber will need to know what the
-  // current spare host is.
-  cb.Run(spare_rph_.get());
-  return spare_changed_callback_list_.Add(cb);
-}
-
-void SpareRenderProcessHostManager::SetDeferTimerTaskRunnerForTesting(
+void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   deferred_warmup_timer_.SetTaskRunner(task_runner);
   deferred_destroy_timer_.SetTaskRunner(task_runner);
 }
 
-void SpareRenderProcessHostManager::ReleaseSpare() {
+void SpareRenderProcessHostManagerImpl::ReleaseSpare() {
   CHECK(spare_rph_);
 
   spare_rph_->RemoveObserver(this);
@@ -366,7 +386,7 @@ void SpareRenderProcessHostManager::ReleaseSpare() {
   spare_changed_callback_list_.Notify(nullptr);
 }
 
-void SpareRenderProcessHostManager::RenderProcessReady(
+void SpareRenderProcessHostManagerImpl::RenderProcessReady(
     RenderProcessHost* host) {
   CHECK_EQ(spare_rph_, host);
   CHECK(process_startup_timer_);
@@ -376,14 +396,14 @@ void SpareRenderProcessHostManager::RenderProcessReady(
   spare_changed_callback_list_.Notify(spare_rph_);
 }
 
-void SpareRenderProcessHostManager::RenderProcessExited(
+void SpareRenderProcessHostManagerImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
   CHECK_EQ(spare_rph_, host);
   CleanupSpare();
 }
 
-void SpareRenderProcessHostManager::RenderProcessHostDestroyed(
+void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   CHECK_EQ(spare_rph_, host);
   ReleaseSpare();

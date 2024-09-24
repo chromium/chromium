@@ -43,6 +43,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -1110,7 +1111,7 @@ void PrefetchService::StartSinglePrefetch(
   // Start a spare renderer now so that it will be ready by the time it is
   // useful to have.
   if (ShouldStartSpareRenderer()) {
-    RenderProcessHost::WarmupSpareRenderProcessHost(browser_context_);
+    SpareRenderProcessHostManager::Get().WarmupSpare(browser_context_);
   }
 }
 

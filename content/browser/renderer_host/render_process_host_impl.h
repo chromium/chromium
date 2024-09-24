@@ -661,10 +661,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       RenderProcessHost* render_process_host,
       const SiteInfo& site_info);
 
-  // Discards the spare RenderProcessHost.  After this call,
-  // GetSpareRenderProcessHostForTesting will return nullptr.
-  static void DiscardSpareRenderProcessHostForTesting();
-
   // Returns true if a spare RenderProcessHost should be kept at all times.
   static bool IsSpareProcessKeptAtAllTimes();
 

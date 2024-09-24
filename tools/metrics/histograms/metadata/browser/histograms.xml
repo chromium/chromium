@@ -1246,9 +1246,9 @@ chromium-metrics-reviews@google.com.
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
-    Records true if WarmupSpareRenderProcessHost evicted an existing spare
-    process that had a different BrowserContext, or false if there wasn't an
-    existing spare process.
+    Records true if SpareRenderProcessHostManager::WarmupSpare evicted an
+    existing spare process that had a different BrowserContext, or false if
+    there wasn't an existing spare process.
   </summary>
 </histogram>
 

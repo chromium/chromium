@@ -28,6 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
@@ -117,7 +118,7 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
         content::BrowserThread::IsThreadInitialized(
             content::BrowserThread::IO) &&
         (!is_default || kCreateSpareRendererForDefaultIfMultiProfile.Get())) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(
           entry->instance.get());
     }
   }

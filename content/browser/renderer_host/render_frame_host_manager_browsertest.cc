@@ -42,6 +42,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -6018,8 +6019,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Discard the spare RenderProcessHost to ensure a new RenderProcessHost
   // is created and has the right prioritization.
-  RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting();
-  EXPECT_FALSE(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  spare_manager.CleanupSpare();
+  EXPECT_FALSE(spare_manager.GetSpareForTesting());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is different.
@@ -6096,7 +6098,7 @@ IN_PROC_BROWSER_TEST_P(
   // At this time, there should be a spare RenderProcesHost. Capture it for
   // testing expectations later.
   RenderProcessHost* spare_rph =
-      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+      SpareRenderProcessHostManagerImpl::Get().GetSpareForTesting();
   EXPECT_TRUE(spare_rph);
   EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 

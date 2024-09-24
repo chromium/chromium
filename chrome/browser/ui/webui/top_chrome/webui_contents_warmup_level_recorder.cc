@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -52,7 +53,7 @@ WebUIContentsWarmupLevelRecorder::~WebUIContentsWarmupLevelRecorder() = default;
 void WebUIContentsWarmupLevelRecorder::BeforeContentsCreation() {
   pre_condition_.emplace();
   pre_condition_->spare_process =
-      content::RenderProcessHost::GetSpareRenderProcessHost();
+      content::SpareRenderProcessHostManager::Get().GetSpare();
   if (content::WebContents* preloaded_contents =
           WebUIContentsPreloadManager::GetInstance()
               ->preloaded_web_contents()) {

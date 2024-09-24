@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   // Capture current spare renderer.
   content::RenderProcessHost* spare =
-      content::RenderProcessHost::GetSpareRenderProcessHostForTesting();
+      content::SpareRenderProcessHostManager::Get().GetSpareForTesting();
   ASSERT_TRUE(spare);
 
   // Note the current render processes before the navigation. These should all
