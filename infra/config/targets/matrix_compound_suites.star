@@ -730,7 +730,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             variants = [
-                "CROS_BRYA_RELEASE_LKGM",
+                "CROS_GPU_BRYA_RELEASE_LKGM",
             ],
         ),
     },
@@ -741,7 +741,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             variants = [
-                "CROS_CORSOLA_RELEASE_LKGM",
+                "CROS_GPU_CORSOLA_RELEASE_LKGM",
             ],
         ),
     },
@@ -829,7 +829,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             variants = [
-                "CROS_SKYRIM_RELEASE_LKGM",
+                "CROS_GPU_SKYRIM_RELEASE_LKGM",
             ],
         ),
     },

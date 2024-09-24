@@ -333,13 +333,14 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "brya",
+        "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "noop_sleep_tests BRYA_RELEASE_LKGM",
+        "name": "noop_sleep_tests GPU_BRYA_RELEASE_LKGM",
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
         "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
+        "variant_id": "GPU_BRYA_RELEASE_LKGM"
       }
     ]
   },
@@ -362,13 +363,14 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "corsola",
+        "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "noop_sleep_tests CORSOLA_RELEASE_LKGM",
+        "name": "noop_sleep_tests GPU_CORSOLA_RELEASE_LKGM",
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
         "use_lkgm": true,
-        "variant_id": "CORSOLA_RELEASE_LKGM"
+        "variant_id": "GPU_CORSOLA_RELEASE_LKGM"
       }
     ]
   },
@@ -391,13 +393,14 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "skyrim",
+        "dut_pool": "chrome-gpu",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "name": "noop_sleep_tests SKYRIM_RELEASE_LKGM",
+        "name": "noop_sleep_tests GPU_SKYRIM_RELEASE_LKGM",
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
         "use_lkgm": true,
-        "variant_id": "SKYRIM_RELEASE_LKGM"
+        "variant_id": "GPU_SKYRIM_RELEASE_LKGM"
       }
     ]
   }
