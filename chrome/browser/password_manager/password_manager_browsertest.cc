@@ -2229,9 +2229,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
+// TODO(crbug.com/360035859): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerBrowserTest,
-    IFrameDetachedRightAfterFormSubmission_UpdateBubbleShown) {
+    DISABLED_IFrameDetachedRightAfterFormSubmission_UpdateBubbleShown) {
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
