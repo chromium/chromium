@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
@@ -558,7 +559,9 @@ public class ManualFillingControllerTest {
         // Simulate closing the tab (uncommitted):
         mMediator.getTabModelObserverForTesting().willCloseTab(tab, true);
         mMediator.getTabObserverForTesting().onHidden(tab, TabHidingType.CHANGED_TABS);
-        getStateForBrowserTab().getWebContentsObserverForTesting().wasHidden();
+        getStateForBrowserTab()
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.HIDDEN);
         // The state should be kept if the closure wasn't committed.
         assertThat(getStateForBrowserTab().getTabs().length, is(1));
         mLastMockWebContents = null;
@@ -1429,14 +1432,18 @@ public class ManualFillingControllerTest {
         if (lastTab != null) {
             lastId = lastTab.getId();
             mediator.getTabObserverForTesting().onHidden(lastTab, TabHidingType.CHANGED_TABS);
-            mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+            mCache.getStateFor(mLastMockWebContents)
+                    .getWebContentsObserverForTesting()
+                    .onVisibilityChanged(Visibility.HIDDEN);
         }
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(id);
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
         mLastMockWebContents = mock(WebContents.class);
         when(tab.getWebContents()).thenReturn(mLastMockWebContents);
-        mCache.getStateFor(tab).getWebContentsObserverForTesting().wasShown();
+        mCache.getStateFor(tab)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.VISIBLE);
         when(tab.getContentView()).thenReturn(mMockContentView);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
         mActivityTabProvider.set(tab);
@@ -1462,10 +1469,14 @@ public class ManualFillingControllerTest {
         if (from != null) {
             lastId = from.getId();
             mediator.getTabObserverForTesting().onHidden(from, TabHidingType.CHANGED_TABS);
-            mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+            mCache.getStateFor(mLastMockWebContents)
+                    .getWebContentsObserverForTesting()
+                    .onVisibilityChanged(Visibility.HIDDEN);
         }
         mLastMockWebContents = to.getWebContents();
-        mCache.getStateFor(to).getWebContentsObserverForTesting().wasShown();
+        mCache.getStateFor(to)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.VISIBLE);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(to);
         mediator.getTabModelObserverForTesting().didSelectTab(to, FROM_USER, lastId);
         mediator.getTabObserverForTesting().onShown(to, FROM_USER);
@@ -1480,7 +1491,9 @@ public class ManualFillingControllerTest {
     private void closeBrowserTab(ManualFillingMediator mediator, Tab tabToBeClosed) {
         mediator.getTabModelObserverForTesting().willCloseTab(tabToBeClosed, true);
         mediator.getTabObserverForTesting().onHidden(tabToBeClosed, TabHidingType.CHANGED_TABS);
-        mCache.getStateFor(mLastMockWebContents).getWebContentsObserverForTesting().wasHidden();
+        mCache.getStateFor(mLastMockWebContents)
+                .getWebContentsObserverForTesting()
+                .onVisibilityChanged(Visibility.HIDDEN);
         mLastMockWebContents = null;
         mediator.getTabModelObserverForTesting().tabClosureCommitted(tabToBeClosed);
         mediator.getTabObserverForTesting().onDestroyed(tabToBeClosed);

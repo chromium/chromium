@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -41,16 +42,11 @@ class ManualFillingState {
         }
 
         @Override
-        public void wasShown() {
-            super.wasShown();
-            mWebContentsShowing = true;
-            if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
-        }
-
-        @Override
-        public void wasHidden() {
-            super.wasHidden();
-            mWebContentsShowing = false;
+        public void onVisibilityChanged(@Visibility int visibility) {
+            mWebContentsShowing = visibility == Visibility.VISIBLE;
+            if (mWebContentsShowing && mActionsProvider != null) {
+                mActionsProvider.notifyAboutCachedItems();
+            }
         }
     }
 

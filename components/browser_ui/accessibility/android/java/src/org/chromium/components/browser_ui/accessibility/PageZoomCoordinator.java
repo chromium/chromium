@@ -16,6 +16,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -108,10 +109,12 @@ public class PageZoomCoordinator {
                     }
 
                     @Override
-                    public void wasHidden() {
-                        // When the web contents are hidden (i.e. navigate to another tab), hide the
-                        // dialog
-                        hide();
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        if (visibility != Visibility.VISIBLE) {
+                            // When the web contents are hidden or occluded (i.e. navigate to
+                            // another tab), hide the dialog
+                            hide();
+                        }
                     }
 
                     @Override

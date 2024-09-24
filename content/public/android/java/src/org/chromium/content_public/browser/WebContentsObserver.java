@@ -113,14 +113,12 @@ public abstract class WebContentsObserver {
     /** Called when the page had painted something non-empty. */
     public void didFirstVisuallyNonEmptyPaint() {}
 
-    /** The web contents was shown. */
-    public void wasShown() {}
-
-    /** The web contents was hidden. */
-    public void wasHidden() {}
+    /** The web contents visibility changed. */
+    public void onVisibilityChanged(@Visibility int visibility) {}
 
     /**
      * Title was set.
+     *
      * @param title The updated title.
      */
     public void titleWasSet(String title) {}

@@ -59,6 +59,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestSelectionPopupController;
@@ -822,7 +823,7 @@ public class ContextualSearchInstrumentationBase {
         Assert.assertTrue(isWebContentsVisible());
     }
 
-    /** Asserts that the Panel's WebContents.onShow() method was never called. */
+    /** Asserts that the Panel's WebContents was never shown. */
     protected void assertNeverCalledWebContentsOnShow() {
         Assert.assertFalse(mFakeServer.didEverCallWebContentsOnShow());
     }
@@ -1278,7 +1279,7 @@ public class ContextualSearchInstrumentationBase {
                 () -> {
                     mPanel.notifyBarTouched(0);
                     if (mFakeServer.getContentsObserver() != null) {
-                        mFakeServer.getContentsObserver().wasShown();
+                        mFakeServer.getContentsObserver().onVisibilityChanged(Visibility.VISIBLE);
                     }
                     mPanel.animatePanelToState(
                             PanelState.EXPANDED,

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentFacto
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
@@ -58,7 +59,7 @@ class ContextualSearchFakeServer
     private boolean mIsExactResolve;
     private ContextualSearchContext mSearchContext;
 
-    private boolean mDidEverCallWebContentsOnShow;
+    private boolean mDidEverShowWebContents;
 
     /** An expected search, to be returned by this fake server when non-null. */
     private FakeResolveSearch mExpectedFakeResolveSearch;
@@ -121,14 +122,13 @@ class ContextualSearchFakeServer
         }
 
         @Override
-        public void wasShown() {
-            mIsVisible = true;
-            mDidEverCallWebContentsOnShow = true;
-        }
-
-        @Override
-        public void wasHidden() {
-            mIsVisible = false;
+        public void onVisibilityChanged(@Visibility int visibility) {
+            if (visibility == Visibility.VISIBLE) {
+                mIsVisible = true;
+                mDidEverShowWebContents = true;
+            } else {
+                mIsVisible = false;
+            }
         }
     }
 
@@ -504,7 +504,7 @@ class ContextualSearchFakeServer
      */
     @VisibleForTesting
     boolean didEverCallWebContentsOnShow() {
-        return mDidEverCallWebContentsOnShow;
+        return mDidEverShowWebContents;
     }
 
     /** Resets the fake server's member data. */

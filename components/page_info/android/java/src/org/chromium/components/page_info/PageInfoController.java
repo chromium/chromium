@@ -40,6 +40,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.Clipboard;
@@ -321,10 +322,12 @@ public class PageInfoController
                     }
 
                     @Override
-                    public void wasHidden() {
-                        // The web contents were hidden (potentially by loading another URL via an
-                        // intent), so dismiss the dialog).
-                        mDialog.dismiss(true);
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        // The web contents were hidden or occluded (potentially by loading another
+                        // URL via an intent), so dismiss the dialog).
+                        if (visibility != Visibility.VISIBLE) {
+                            mDialog.dismiss(true);
+                        }
                     }
 
                     @Override

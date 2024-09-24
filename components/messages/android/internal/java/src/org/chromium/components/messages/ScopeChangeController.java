@@ -100,17 +100,13 @@ class ScopeChangeController {
         }
 
         @Override
-        public void wasShown() {
+        public void onVisibilityChanged(@Visibility int visibility) {
+            mIsActive = visibility == Visibility.VISIBLE;
             mDelegate.onScopeChange(
-                    new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.ACTIVE));
-            mIsActive = true;
-        }
-
-        @Override
-        public void wasHidden() {
-            mDelegate.onScopeChange(
-                    new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.INACTIVE));
-            mIsActive = false;
+                    new MessageScopeChange(
+                            mScopeKey.scopeType,
+                            mScopeKey,
+                            mIsActive ? ChangeType.ACTIVE : ChangeType.INACTIVE));
         }
 
         @Override

@@ -107,6 +107,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -600,47 +601,46 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
-                    public void wasShown() {
-                        // The Tab holding |this| instance was shown, e.g. the user brings Chrome
-                        // back to the foreground, switches to this Tab, etc.
-                        super.wasShown();
-                        mHistogramRecorder.updateTimeOfFirstShown();
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        if (visibility == Visibility.VISIBLE) {
+                            // The Tab holding |this| instance was shown, e.g. the user brings
+                            // Chrome back to the foreground, switches to this Tab, etc.
+                            mHistogramRecorder.updateTimeOfFirstShown();
 
-                        // Accessibility state may have changed while |this| was not shown, so
-                        // refresh.
-                        refreshNativeState();
-                        if (isNativeInitialized()) {
-                            // When we are in an initialized state, accessibility may be disabled.
-                            // In that case, we should not update the time of native
-                            // initialization, and instead only update the time of the last
-                            // disabled call so we don't count any time while this instance was
-                            // hidden/backgrounded.
-                            if (mIsCurrentlyAutoDisabled) {
-                                mHistogramRecorder.showAutoDisabledInstance();
-                            } else {
-                                mHistogramRecorder.updateTimeOfNativeInitialization();
+                            // Accessibility state may have changed while |this| was not shown, so
+                            // refresh.
+                            refreshNativeState();
+                            if (isNativeInitialized()) {
+                                // When we are in an initialized state, accessibility may be
+                                // disabled. In that case, we should not update the time of native
+                                // initialization, and instead only update the time of the last
+                                // disabled call so we don't count any time while this instance was
+                                // hidden/backgrounded.
+                                if (mIsCurrentlyAutoDisabled) {
+                                    mHistogramRecorder.showAutoDisabledInstance();
+                                } else {
+                                    mHistogramRecorder.updateTimeOfNativeInitialization();
+                                }
                             }
-                        }
-                    }
+                        } else {
+                            // The Tab holding |this| instance was hidden or occluded, e.g. a new
+                            // Tab was opened, user has backgrounded Chrome, opened Settings, etc.
+                            // Record usage times and reset state.
+                            mHistogramRecorder.recordAccessibilityUsageHistograms();
 
-                    @Override
-                    public void wasHidden() {
-                        // The Tab holding |this| instance was hidden, e.g. a new Tab was opened,
-                        // user has backgrounded Chrome, opened Settings, etc. Record usage times
-                        // and reset state.
-                        super.wasHidden();
-                        mHistogramRecorder.recordAccessibilityUsageHistograms();
-
-                        // When the native code was initialized, also record performance metrics.
-                        if (isNativeInitialized()) {
-                            mHistogramRecorder.recordAccessibilityPerformanceHistograms();
-                            // When we are in an initialized state, accessibility may be disabled.
-                            // In that case, we should keep an on-going sum of the time spent
-                            // disabled (without counting time while hidden/backgrounded).
-                            if (mIsCurrentlyAutoDisabled) {
-                                mHistogramRecorder.hideAutoDisabledInstance();
+                            // When the native code was initialized, also record performance
+                            // metrics.
+                            if (isNativeInitialized()) {
+                                mHistogramRecorder.recordAccessibilityPerformanceHistograms();
+                                // When we are in an initialized state, accessibility may be
+                                // disabled. In that case, we should keep an on-going sum of the
+                                // time spent disabled (without counting time while
+                                // hidden/backgrounded).
+                                if (mIsCurrentlyAutoDisabled) {
+                                    mHistogramRecorder.hideAutoDisabledInstance();
+                                }
+                                mAutoDisableAccessibilityHandler.cancelDisableTimer();
                             }
-                            mAutoDisableAccessibilityHandler.cancelDisableTimer();
                         }
                     }
                 };
@@ -655,9 +655,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mCaptioningController.stopListening();
 
             // Destroy the WebContentsObserver if |this| is no longer attached to a Window, but
-            // first record whatever data we have collected since #wasHidden may not have been
-            // called, for example when opening the Tab Switcher. Timers will restart during the
-            // next onAttach.
+            // first record whatever data we have collected since
+            // onVisibilityChanged(Visibility.HIDDEN) may not have been called, for example when
+            // opening the Tab Switcher. Timers will restart during the next onAttach.
             if (mWebContentsObserver != null) {
                 mHistogramRecorder.recordAccessibilityUsageHistograms();
                 mWebContentsObserver.destroy();
@@ -698,7 +698,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // When webContents is non-null (e.g. not a Paint Preview), we will track usage stats.
         if (mDelegate.getWebContents() != null) {
             registerWebContentsObserver(mDelegate.getWebContents());
-            mWebContentsObserver.wasShown();
+            mWebContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
         }
 
         refreshNativeState();
