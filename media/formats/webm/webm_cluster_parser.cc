@@ -638,6 +638,11 @@ bool WebMClusterParser::Track::AddBuffer(
   if (last_added_buffer_missing_duration_) {
     base::TimeDelta derived_duration =
         buffer->timestamp() - last_added_buffer_missing_duration_->timestamp();
+    if (derived_duration == kInfiniteDuration) {
+      DVLOG(2) << "Duration of last buffer is too large.";
+      return false;
+    }
+
     last_added_buffer_missing_duration_->set_duration(derived_duration);
 
     DVLOG(2) << "AddBuffer() : applied derived duration to held-back buffer : "
