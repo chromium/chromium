@@ -4,12 +4,18 @@
 <script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<selectlist id="selectlist">
+<select id="select">
     <option>Canada</option>
     <option>Spain</option>
     <option>United Arab Emirates</option>
     <option>United States</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 <script>
 description('Two keystrokes are considered as part of one typehead session if time difference between them is less than 1 sec');
 
@@ -22,12 +28,12 @@ function keyDown(key, modifiers)
     eventSender.keyDown(key, modifiers);
 }
 
-var popup = document.getElementById("selectlist");
+var select = document.getElementById("select");
 
 function test1() {
     debug('1. space key as part of search string.');
-    popup.focus();
-    popup.value = "Canada";
+    select.focus();
+    select.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
@@ -36,13 +42,13 @@ function test1() {
     keyDown('d');
     keyDown(' ');
     keyDown('S');
-    shouldBeFalse('popup.open');
-    shouldBeEqualToString('popup.value', 'United States');
-    popup.blur();
+    shouldBeFalse('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'United States');
+    select.blur();
 
     debug('2. space key as part of search string with some delay.');
-    popup.focus();
-    popup.value = "Canada";
+    select.focus();
+    select.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
@@ -50,26 +56,26 @@ function test1() {
     keyDown('e');
     keyDown('d');
     keyDown(' ');
-    internals.resetSelectListTypeAheadSession(popup);
+    internals.resetTypeAheadSession(select);
     keyDown('S');
-    shouldBeFalse('popup.open');
-    shouldBeEqualToString('popup.value', 'Spain');
-    popup.blur();
+    shouldBeFalse('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'Spain');
+    select.blur();
 
-    debug('3. space key to open popup menu.');
-    popup.focus();
-    popup.value = "Canada";
+    debug('3. space key to open select menu.');
+    select.focus();
+    select.value = "Canada";
     keyDown('U');
     keyDown('n');
     keyDown('i');
     keyDown('t');
     keyDown('e');
     keyDown('d');
-    internals.resetSelectListTypeAheadSession(popup);
+    internals.resetTypeAheadSession(select);
     keyDown(' ');
-    shouldBeTrue('popup.open');
-    shouldBeEqualToString('popup.value', 'United Arab Emirates');
-    popup.blur();
+    shouldBeTrue('select.matches(":open")');
+    shouldBeEqualToString('select.value', 'United Arab Emirates');
+    select.blur();
 
     finishJSTest();
 }

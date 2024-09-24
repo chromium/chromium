@@ -4,14 +4,20 @@
 <script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<selectlist id="selectlist" tabindex="0">
+<select id="select" tabindex="0">
     <option>Canada</option>
     <option>Spain</option>
     <option disabled>United Arab Emirates</option>
     <option>United States</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 <script>
-description('Typeahead does not select disabled selectlist option');
+description('Typeahead does not select disabled select option');
 
 window.jsTestIsAsync = true;
 
@@ -22,14 +28,14 @@ function keyDown(key)
     eventSender.keyDown(key);
 }
 
-var selectlist = document.getElementById("selectlist");
+var select = document.getElementById("select");
 
-selectlist.focus();
-selectlist.value = "Canada";
+select.focus();
+select.value = "Canada";
 // Should skip disabled "United Arab Emirates" <option>
 keyDown('U');
-shouldBeFalse('selectlist.open');
-shouldBeEqualToString('selectlist.value', 'United States');
+shouldBeFalse('select.matches(":open")');
+shouldBeEqualToString('select.value', 'United States');
 finishJSTest();
 </script>
 </body>

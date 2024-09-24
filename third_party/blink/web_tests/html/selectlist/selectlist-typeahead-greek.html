@@ -6,8 +6,8 @@
     <script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-    <p>This test verifies a selectlist can refine the selection when we send keydown events consisting of Greek small characters.</p>
-    <selectlist id="selectlist">
+    <p>This test verifies a select can refine the selection when we send keydown events consisting of Greek small characters.</p>
+    <select id="select">
         <option value="-1">should not see me</option>
         <option value="0">&#x0391;</option>
         <option value="1">&#x0391;&#x0392;</option>
@@ -33,13 +33,19 @@
         <option value="22">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;</option>
         <option value="23">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;&#x03A8;</option>
         <option value="24">&#x0391;&#x0392;&#x0393;&#x0394;&#x0395;&#x0396;&#x0397;&#x0398;&#x0399;&#x039A;&#x039B;&#x039C;&#x039D;&#x039E;&#x039F;&#x03A0;&#x03A1;&#x03A3;&#x03A4;&#x03A5;&#x03A6;&#x03A7;&#x03A8;&#x03A9;</option>
-    </selectlist>
+    </select>
     <ul id="console"></ul>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 </body>
 <script>
 // Set the input focus to the <select> element.
-var selectlist = document.getElementById("selectlist");
-selectlist.focus();
+var select = document.getElementById("select");
+select.focus();
 
 var base = 0x03B1;
 for (var i = base; i <= 0x03C9; i++) {
@@ -52,8 +58,8 @@ for (var i = base; i <= 0x03C9; i++) {
         // Send a key event consisting of a Greek small character.
         eventSender.keyDown(String.fromCharCode(i));
 
-        // Compare the value of this <selectlist> element with the expected result.
-        assert_equals(selectlist.value, (i - base).toString());
+        // Compare the value of this <select> element with the expected result.
+        assert_equals(select.value, (i - base).toString());
     }
   });
 }

@@ -1,4 +1,4 @@
-PASS selectlist.open is true
+PASS select.open is true
 PASS successfullyParsed is true
 
 TEST COMPLETE

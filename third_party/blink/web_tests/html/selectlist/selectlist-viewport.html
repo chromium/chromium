@@ -6,11 +6,17 @@
 <script src="../../resources/testdriver-actions.js"></script>
 <script src="../../resources/testdriver-vendor.js"></script>
 
-<selectlist id="selectList">
+<select id="select">
   <option>one</option>
   <option>two</option>
   <option>three</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
 function clickOn(element) {
@@ -26,15 +32,15 @@ promise_test(async () => {
       // Regression test for crbug.com/1252600
       // On mobile, <meta name="viewport"> can trigger a layout pass when
       // querying FrameView size. This test ensures that that this doesn't
-      // cause a re-entrant layout when opening the <selectlist> popup.
+      // cause a re-entrant layout when opening the <select> popup.
       // Since desktop browsers ignore <meta name="viewport">, set viewport
       // using internals.settings.
       internals.settings.setViewportEnabled(true);
       internals.settings.setViewportMetaEnabled(true);
   }
-  const selectList = document.getElementById("selectList");
-  assert_false(selectList.open);
-  await clickOn(selectList);
-  assert_true(selectList.open);
+  const select = document.getElementById("select");
+  assert_false(select.matches(':open'));
+  await clickOn(select);
+  assert_true(select.matches(':open'));
 }, "select should open successfully if viewport is enabled");
 </script>
