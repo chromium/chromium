@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.AutoOpen{State}FileType"
-    enum="SBClientDownloadExtensions" expires_after="2024-11-03">
+    enum="SBClientDownloadExtensions" expires_after="2025-11-03">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
