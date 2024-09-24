@@ -57,7 +57,9 @@ class ManifestV2ExperimentManager : public KeyedService,
     // Any other state. This includes e.g. extensions that are disabled, but for
     // other reasons.
     kOther = 3,
-    kMaxValue = kOther,
+    // The extension is disabled, and may not be re-enabled by the user.
+    kHardDisabled = 4,
+    kMaxValue = kHardDisabled,
   };
 
   // Possible actions taken by the user on an MV2 extension.

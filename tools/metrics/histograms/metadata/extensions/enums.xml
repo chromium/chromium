@@ -3349,6 +3349,7 @@ Called by update_extension_permission.py.-->
   <int value="1" label="Soft-disabled by Chrome"/>
   <int value="2" label="Re-enabled by user"/>
   <int value="3" label="Other (e.g. disabled for another reason)"/>
+  <int value="4" label="Hard-disabled by Chrome"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

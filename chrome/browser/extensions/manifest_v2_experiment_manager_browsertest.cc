@@ -865,6 +865,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
       extension_prefs()->GetDisableReasons(extension_id2));
 
+  // The extensions should be recorded as "soft disabled".
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 2);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kSoftDisabled, 2);
+
   // Re-enable the first MV2 extension (this is allowed in this phase).
   extension_service()->EnableExtension(extension_id1);
 
@@ -881,6 +888,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 
   WaitForExtensionSystemReady();
 
+  // Both extensions should be disabled.
   // In the "unsupported" phase, both extensions should be disabled again, even
   // though the first was re-enabled in a previous phase.
   const Extension* extension1 = GetExtensionByName(
@@ -902,6 +910,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
       extension_prefs()->GetDisableReasons(extension_id2));
+
+  // The extensions should now be recorded as "hard disabled".
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 2);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kHardDisabled, 2);
 }
 
 class ManifestV2ExperimentWithLegacyExtensionSupportTest

@@ -501,14 +501,6 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
     return;
   }
 
-  if (experiment_stage_ == MV2ExperimentStage::kUnsupported) {
-    // We don't yet differentiate between unsupported and disable-with-reenable
-    // phases, so just early out for unsupported.
-    // TODO(https://crbug.com/367395349): Add differentiated metrics for
-    // MV2ExperimentStage::kUnsupported and remove this early-return.
-    return;
-  }
-
   if (!profile_util::ProfileCanUseNonComponentExtensions(
           Profile::FromBrowserContext(browser_context_))) {
     // Don't report metrics if the user can't install extensions in this
@@ -544,7 +536,11 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
                    extension.id(),
                    disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
       CHECK(!is_enabled);
-      extension_state = MV2ExtensionState::kSoftDisabled;
+      CHECK(experiment_stage_ == MV2ExperimentStage::kUnsupported ||
+            experiment_stage_ == MV2ExperimentStage::kDisableWithReEnable);
+      extension_state = experiment_stage_ == MV2ExperimentStage::kUnsupported
+                            ? MV2ExtensionState::kHardDisabled
+                            : MV2ExtensionState::kSoftDisabled;
     } else {
       extension_state = MV2ExtensionState::kOther;
     }
@@ -567,6 +563,13 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
 void ManifestV2ExperimentManager::RecordUkmForExtension(
     const GURL& extension_url,
     ExtensionMV2DeprecationAction action) {
+  if (experiment_stage_ != MV2ExperimentStage::kDisableWithReEnable) {
+    // The UKM is only emitted for the "disable with re-enable" phase. We do
+    // not need UKM for the "hard disable" phase (as the only action available
+    // to the user is to remove or find alternatives).
+    return;
+  }
+
   ukm::builders::Extensions_MV2ExtensionHandledInSoftDisable(
       ukm::UkmRecorder::GetSourceIdForExtensionUrl(
           base::PassKey<ManifestV2ExperimentManager>(), extension_url))
