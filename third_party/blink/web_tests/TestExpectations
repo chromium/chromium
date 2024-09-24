@@ -5522,8 +5522,8 @@ crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element
 crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # The listbox doesn't scroll to the selected option, during typeahead:
-crbug.com/362922565 html/selectlist/selectlist-typeahead-scroll.html [ Failure ]
-crbug.com/362922565 html/selectlist/selectlist-typeahead-with-spacekey.html [ Failure ]
+crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
+crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
