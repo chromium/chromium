@@ -153,29 +153,6 @@ class SandboxLaunchTimer {
   base::TimeDelta process_resumed_;
 };
 
-// Adds the policy rules to allow read-only access to the windows system fonts
-// directory, and any subdirectories. Used by PDF renderers.
-bool AddWindowsFontsDir(TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
-  base::FilePath directory;
-  if (!base::PathService::Get(base::DIR_WINDOWS_FONTS, &directory)) {
-    return false;
-  }
-
-  ResultCode result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
-                                              directory.value().c_str());
-  if (result != SBOX_ALL_OK)
-    return false;
-
-  std::wstring directory_str = directory.value() + L"\\*";
-  result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
-                                   directory_str.c_str());
-  if (result != SBOX_ALL_OK)
-    return false;
-
-  return true;
-}
-
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
 // short name, e.g. EXAMPL~1.DLL.
@@ -641,10 +618,6 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (sandbox_type == Sandbox::kGpu) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
-  }
-
-  if (delegate->AllowWindowsFontsDir()) {
-    AddWindowsFontsDir(config);
   }
 
   result = AddGenericConfig(config);

@@ -434,7 +434,6 @@ class TestSandboxDelegate : public SandboxDelegate {
   bool ShouldUnsandboxedRunInJob() override { return false; }
 
   bool CetCompatible() override { return true; }
-  bool AllowWindowsFontsDir() override { return true; }
 
  private:
   sandbox::mojom::Sandbox sandbox_type_;

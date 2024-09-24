@@ -62,8 +62,6 @@ class SandboxDelegate {
   // Technology (CET) / Hardware-enforced Stack Protection.
   virtual bool CetCompatible() = 0;
 
-  // Whether this process will need to directly access the Windows fonts dir.
-  virtual bool AllowWindowsFontsDir() = 0;
 #endif  // BUILDFLAG(IS_WIN)
 };
 
