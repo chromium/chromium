@@ -66,5 +66,10 @@ void fct() {
   std::array<Arr, buf3[0]> buf9 = {{nullptr}};
   buf9[index] = nullptr;
 
+  // Expected rewrite:
+  // static std::array<const volatile char*, 3> buf10 = {{"1", "2", "3"}};
+  static std::array<const volatile char*, 3> buf10 = {{"1", "2", "3"}};
+  buf10[index] = nullptr;
+
   index = kPropertyVisitedIDs[index];
 }

@@ -244,7 +244,7 @@ struct B {
 
 void fct() {
   // Expected rewrite:
-  // base::span<namespace_stuff::ns1::B> ptr = new ns1::B[32];
+  // base::span<ns1::B> ptr = new ns1::B[32];
   auto* buf = new ns1::B[32];
   // However since there is no viable conversion from `B*` into
   // `base::span<ns1::B>`, the rewrite will cause compile error.
