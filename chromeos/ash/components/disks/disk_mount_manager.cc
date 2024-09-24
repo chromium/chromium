@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -34,6 +36,10 @@ namespace ash::disks {
 namespace {
 
 using base::BindOnce;
+
+std::string Redact(const std::string_view s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
 
 DiskMountManager* g_disk_mount_manager = nullptr;
 
@@ -164,7 +170,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                            const std::string& label) override {
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       // We can't call OnFormatCompleted until |pending_format_changes_| has
       // been populated.
       NotifyFormatStatusUpdate(FORMAT_COMPLETED, FormatError::kUnknownError,
@@ -402,7 +408,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (mount_point == mount_points_.end()) {
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       OnMountCompleted({disk.device_path(), mount_path, MountType::kDevice,
                         MountError::kPathNotMounted});
       return;
@@ -458,7 +464,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // Do standard processing for Unmount event.
       OnUnmountPath(UnmountPathCallback(), mount_path, error);
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       // This causes the last non-success error to be reported.
       cb_data->error_code = error;
     }
@@ -506,8 +512,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     } else {
       if (base::SysInfo::IsRunningOnChromeOS()) {
-        LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
-                   << mount_info.mount_path << "': " << entry.mount_error;
+        LOG(ERROR) << "Cannot mount " << Redact(mount_info.source_path)
+                   << " as " << Redact(mount_info.mount_path) << ": "
+                   << entry.mount_error;
       }
       if (const MountPoints::const_iterator it =
               mount_points_.find(mount_info.mount_path);
@@ -547,7 +554,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       std::move(it->second).Run(entry.mount_error, mount_info);
       mount_callbacks_.erase(std::move(it));
     } else {
-      LOG(ERROR) << "No mount callback for '" << entry.source_path << "'";
+      LOG(ERROR) << "No mount callback for " << Redact(entry.source_path);
     }
 
     NotifyMountStatusUpdate(MOUNTING, entry.mount_error, mount_info);
@@ -596,7 +603,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (error == MountError::kSuccess) {
       VLOG(1) << "Unmounted '" << mount_path << "'";
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       if (error == MountError::kPathNotMounted ||
           error == MountError::kInvalidPath) {
         // The path was already unmounted by something else.

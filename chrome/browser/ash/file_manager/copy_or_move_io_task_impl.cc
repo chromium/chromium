@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
@@ -51,8 +52,11 @@
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace file_manager::io_task {
-
 namespace {
+
+std::string Redact(const storage::FileSystemURL& url) {
+  return LOG_IS_ON(INFO) ? url.DebugString() : "(redacted)";
+}
 
 bool* DestinationNoSpace() {
   static bool destination_no_space = false;
@@ -419,8 +423,7 @@ void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
     // Log the error if we couldn't fetch the quota (probably because we are
     // offline), but continue the operation and we will show an error later
     // when we come back online and try to sync.
-    LOG(ERROR) << "Error fetching drive quota: "
-               << drive::FileErrorToString(error);
+    LOG(ERROR) << "Error fetching drive quota: " << error;
   } else {
     bool org_exceeded =
         usage->user_type == drivefs::mojom::UserType::kOrganization &&
@@ -461,8 +464,7 @@ void CopyOrMoveIOTaskImpl::GotSharedDriveMetadata(
     // Log the error if we couldn't fetch the metadata (probably because we are
     // offline), but continue the operation and we will show an error later
     // when we come back online and try to sync.
-    LOG(ERROR) << "Error fetching shared drive metadata: "
-               << drive::FileErrorToString(error);
+    LOG(ERROR) << "Error fetching shared drive metadata: " << error;
   } else if (metadata->shared_drive_quota) {
     const auto& quota = metadata->shared_drive_quota;
     if ((quota->individual_quota_bytes_total -
@@ -857,7 +859,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   for (const auto& source : progress_->sources) {
     DCHECK(source.error.has_value());
     if (source.error.value() != base::File::FILE_OK) {
-      LOG(ERROR) << "Cannot copy or move " << source.url.DebugString() << ": "
+      LOG(ERROR) << "Cannot copy or move " << Redact(source.url) << ": "
                  << base::File::ErrorToString(source.error.value());
       complete_state = State::kError;
       break;
