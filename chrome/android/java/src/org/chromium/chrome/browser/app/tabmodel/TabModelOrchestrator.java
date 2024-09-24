@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -21,8 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
-
-import java.util.Locale;
 
 /**
  * Implementers are glue-level objects that manage lifetime of root .tabmodel objects: {@link
@@ -152,34 +149,6 @@ public abstract class TabModelOrchestrator {
                     mStandardActiveIndex != TabModel.INVALID_TAB_INDEX
                             ? mStandardActiveIndex - mIncognitoCount
                             : TabModel.INVALID_TAB_INDEX;
-
-            // Log additional info to help determine why we're seeing OOB-exceptions on startup.
-            // TODO(crbug.com/352550150): Clean up once investigation is complete.
-            boolean isStandardIndexOutOfBounds =
-                    standardActiveIndex < TabModel.INVALID_TAB_INDEX
-                            || standardActiveIndex >= mStandardCount;
-            boolean isIncognitoIndexOutOfBounds =
-                    mIncognitoActiveIndex < TabModel.INVALID_TAB_INDEX
-                            || mIncognitoActiveIndex >= mIncognitoCount;
-            if (isStandardIndexOutOfBounds || isIncognitoIndexOutOfBounds) {
-                String message =
-                        String.format(
-                                Locale.ENGLISH,
-                                "This is not a crash. See https://crbug.com/352550150.\n"
-                                        + "Standard index: %d, Original: %d, Incognito index: %d\n"
-                                        + "Standard count: %d, Incognito count: %d\n"
-                                        + "Created standard tab: %b, Created Incognito tab: %b\n"
-                                        + "Ignoring Incognito tabs: %b",
-                                standardActiveIndex,
-                                mStandardActiveIndex,
-                                mIncognitoActiveIndex,
-                                mStandardCount,
-                                mIncognitoCount,
-                                createdStandardTabOnStartup,
-                                createdIncognitoTabOnStartup,
-                                mIgnoreIncognitoFiles);
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
-            }
 
             // If we're going to cull the Incognito tabs, reset the startup state.
             if (mIgnoreIncognitoFiles) {
