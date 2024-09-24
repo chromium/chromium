@@ -39,4 +39,8 @@
   // NO-OP
 }
 
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
 @end

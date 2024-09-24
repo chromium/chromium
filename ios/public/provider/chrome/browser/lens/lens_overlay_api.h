@@ -67,6 +67,8 @@ class GURL;
                 reposition:(BOOL)reposition
                   animated:(BOOL)animated;
 
+// Resets the selection area to the initial position.
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion;
 @end
 
 namespace ios {

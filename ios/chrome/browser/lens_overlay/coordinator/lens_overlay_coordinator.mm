@@ -341,14 +341,18 @@ const CGFloat kMenuSymbolSize = 18;
   // Taking the screenshot triggered fullscreen mode. Ensure it's reverted in
   // the cleanup process. Exiting fullscreen has to happen on destruction to
   // ensure a smooth transition back to the content.
-  __weak __typeof(self) weakSelf = self;
-  if (_containerViewController.presentingViewController) {
-    [self exitFullscreenAnimated:YES];
-    [_containerViewController.presentingViewController
-        dismissViewControllerAnimated:animated
-                           completion:^{
-                             [weakSelf destroyViewControllersAndMediators];
-                           }];
+  __weak UIViewController* presentingViewController =
+      _containerViewController.presentingViewController;
+  if (presentingViewController) {
+    __weak __typeof(self) weakSelf = self;
+    [_selectionViewController resetSelectionAreaToInitialPosition:^{
+      [presentingViewController
+          dismissViewControllerAnimated:animated
+                             completion:^{
+                               [weakSelf exitFullscreenAnimated:animated];
+                               [weakSelf destroyViewControllersAndMediators];
+                             }];
+    }];
   } else {
     [self exitFullscreenAnimated:NO];
     [self destroyViewControllersAndMediators];

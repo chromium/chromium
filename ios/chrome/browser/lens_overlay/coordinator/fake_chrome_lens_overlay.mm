@@ -83,6 +83,11 @@
   // NO-OP
 }
 
+// Resets the selection area to the initial position.
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
