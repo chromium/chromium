@@ -691,8 +691,6 @@ source_set("web_applications_test_support") {
     "test/web_app_test_observers.h",
     "test/web_app_test_utils.cc",
     "test/web_app_test_utils.h",
-    "test/with_crosapi_param.cc",
-    "test/with_crosapi_param.h",
   ]
   if (is_chromeos) {
     sources += [

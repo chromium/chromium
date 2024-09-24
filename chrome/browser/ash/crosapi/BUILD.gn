@@ -864,10 +864,6 @@ source_set("browser_tests") {
     "video_conference_ash_browsertest.cc",
   ]
 
-  if (!is_official_build) {
-    sources += [ "sharesheet_ash_browsertest.cc" ]
-  }
-
   if (enable_print_preview) {
     sources += [ "extension_printer_service_ash_browsertest.cc" ]
   }

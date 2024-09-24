@@ -85,24 +85,14 @@ class SystemWebAppLinkCaptureBrowserTest
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
-  bool IsLacrosOnly() {
-    return GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled;
-  }
-
   content::WebContents* CreateInitiatingWebContents() {
-    if (IsLacrosOnly()) {
-      // Ash can only have app windows, launch the helper app.
-      return LaunchApp(kInitiatingAppType);
-    } else {
-      // Ash can have ordinary tabbed browser windows.
-      GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
-      NavigateViaLinkClickToURLAndWait(browser(), kInitiatingChromeUrl);
-      EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetLastCommittedURL());
-      return browser()->tab_strip_model()->GetActiveWebContents();
-    }
+    GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
+    NavigateViaLinkClickToURLAndWait(browser(), kInitiatingChromeUrl);
+    EXPECT_EQ(kInitiatingChromeUrl, browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetLastCommittedURL());
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -126,12 +116,6 @@ class SystemWebAppLinkCaptureBrowserTest
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        OmniboxTypeURLAndNavigate) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
-                    "Omnibox. Because users can't interact with Omnibox, "
-                    "there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   content::TestNavigationObserver observer(GetStartUrl());
@@ -149,12 +133,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox. Because users can't interact with "
-                    "Omnibox, there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
@@ -222,13 +200,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewTab) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox, and we don't show new tab option for links "
-                    "to a different SWA in SWA browser windows. So it makes no "
-                    "sense to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -274,13 +245,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewWindow) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
-                    "with Omnibox, and we don't show new window option for "
-                    "links to SWA in SWA browser windows. So it makes no sense "
-                    "to test this.";
-  }
-
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -464,12 +428,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        IncognitoBrowserOmniboxLinkCapture) {
-  if (IsLacrosOnly()) {
-    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
-                    "Omnibox. Because users can't interact with Omnibox, "
-                    "there's no need to test this.";
-  }
-
   WaitForTestSystemAppInstall();
   GURL start_url = GetStartUrl();
 

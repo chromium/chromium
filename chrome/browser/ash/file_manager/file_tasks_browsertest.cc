@@ -35,8 +35,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -92,8 +90,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_instance_waiter.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/network_service_instance.h"
@@ -234,147 +230,23 @@ content::WebContents* GetWebContentsFromOfficeFallbackAndWaitForDialog() {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Auxiliary class for abstracting over differences between the crosapi and
-// non-crosapi test variants.
 class TestController {
  public:
-  virtual ~TestController() = default;
-
-  virtual void SetUpInProcessBrowserTestFixture() = 0;
-  virtual void SetUpOnMainThread(InProcessBrowserTest* test_class_obj) {
-    profile_ = test_class_obj->browser()->profile();
-  }
-  virtual void TearDownOnMainThread() { profile_ = nullptr; }
-
-  virtual std::string InstallExtension(const char* path) = 0;
-  virtual void RemoveComponentExtension(const std::string& extension_id) = 0;
-  virtual std::string ExecuteFileTaskAndWaitForDomMessage(
-      const TaskDescriptor& task,
-      const std::vector<storage::FileSystemURL>& files) = 0;
-
- protected:
   TestController() = default;
-  Profile* profile() { return profile_; }
+  ~TestController() = default;
 
- private:
-  raw_ptr<Profile> profile_ = nullptr;
-};
-
-// Class for letting the (Ash) test observe Lacros DOM messages.
-class DomMessageObserverAsh : public crosapi::mojom::DomMessageObserver {
- public:
-  explicit DomMessageObserverAsh(
-      base::test::TestFuture<std::string>* message_future)
-      : message_future_(message_future) {}
-
-  mojo::PendingRemote<crosapi::mojom::DomMessageObserver> Bind() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
- private:
-  void OnMessage(const std::string& message) override {
-    message_future_->SetValue(message);
-  }
-
-  mojo::Receiver<crosapi::mojom::DomMessageObserver> receiver_{this};
-  raw_ptr<base::test::TestFuture<std::string>> message_future_;
-};
-
-// For testing with crosapi enabled. Makes use of
-// StandaloneBrowserTestController to talk to Lacros.
-class TestControllerLacros : public TestController {
- public:
-  TestControllerLacros() = default;
-  ~TestControllerLacros() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    if (lacros_starter_.HasLacrosArgument()) {
-      ASSERT_TRUE(lacros_starter_.PrepareEnvironmentForLacros());
-    }
-  }
-
-  void SetUpOnMainThread(InProcessBrowserTest* test_class_obj) override {
-    TestController::SetUpOnMainThread(test_class_obj);
-
-    if (!lacros_starter_.HasLacrosArgument()) {
-      GTEST_SKIP() << "This test needs to run together with Lacros but the "
-                      "--lacros-chrome-path switch is missing.";
-    }
-
-    lacros_starter_.StartLacros(test_class_obj);
-
-    // Wait until StandaloneBrowserTestController binds with TestControllerAsh.
-    CHECK(crosapi::TestControllerAsh::Get());
-    base::test::TestFuture<void> waiter;
-    crosapi::TestControllerAsh::Get()
-        ->on_standalone_browser_test_controller_bound()
-        .Post(FROM_HERE, waiter.GetCallback());
-    ASSERT_TRUE(waiter.Wait())
-        << "Could not bind StandaloneBrowserTestController - make sure that "
-           "the --lacros-chrome-path value points to a test_lacros_chrome "
-           "binary (the last component should not be a directory).";
-
-    lacros_waiter_.emplace(crosapi::TestControllerAsh::Get()
-                               ->GetStandaloneBrowserTestController());
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // QuickOffice loads from rootfs at /usr/share/chromeos-assets/quickoffce
-    // which does not exist on bots for tests, so load test version.
-    base::FilePath data_dir;
-    CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir));
-    lacros_waiter_->InstallComponentExtension(
-        data_dir.Append("chromeos/file_manager/quickoffice").value(),
-        extension_misc::kQuickOfficeComponentExtensionId);
-#endif
-  }
-
-  std::string InstallExtension(const char* path) override {
-    base::FilePath data_dir;
-    CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir));
-    return lacros_waiter_->InstallUnpackedExtension(
-        data_dir.Append(path).value());
-  }
-
-  void RemoveComponentExtension(const std::string& extension_id) override {
-    lacros_waiter_->RemoveComponentExtension(extension_id);
-  }
-
-  std::string ExecuteFileTaskAndWaitForDomMessage(
-      const TaskDescriptor& task,
-      const std::vector<storage::FileSystemURL>& files) override {
-    // Extension background page may not have finished loading yet, but the
-    // FileTask machinery will wait for that.
-    base::test::TestFuture<std::string> message;
-    DomMessageObserverAsh observer(&message);
-    lacros_waiter_->ObserveDomMessages(observer.Bind());
-    ExecuteFileTask(profile(), task, files, base::DoNothing());
-    return message.Get();
-  }
-
- private:
-  ::test::AshBrowserTestStarter lacros_starter_;
-  std::optional<crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter>
-      lacros_waiter_;
-};
-
-// For testing with crosapi disabled.
-class TestControllerAsh : public TestController {
- public:
-  TestControllerAsh() = default;
-  ~TestControllerAsh() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {}
-
-  void SetUpOnMainThread(InProcessBrowserTest* test_class_obj) override {
-    TestController::SetUpOnMainThread(test_class_obj);
+  void SetUpOnMainThread(InProcessBrowserTest* test_class_obj) {
+    profile_ = test_class_obj->browser()->profile();
     test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
 
-  std::string InstallExtension(const char* path) override {
+  void TearDownOnMainThread() { profile_ = nullptr; }
+
+  std::string InstallExtension(const char* path) {
     return test::InstallTestingChromeApp(profile(), path)->id();
   }
 
-  void RemoveComponentExtension(const std::string& extension_id) override {
+  void RemoveComponentExtension(const std::string& extension_id) {
     extensions::ExtensionSystem::Get(profile())
         ->extension_service()
         ->RemoveComponentExtension(extension_id);
@@ -382,13 +254,18 @@ class TestControllerAsh : public TestController {
 
   std::string ExecuteFileTaskAndWaitForDomMessage(
       const TaskDescriptor& task,
-      const std::vector<storage::FileSystemURL>& files) override {
+      const std::vector<storage::FileSystemURL>& files) {
     content::DOMMessageQueue message_queue;
     ExecuteFileTask(profile(), task, files, base::DoNothing());
     std::string message;
     CHECK(message_queue.WaitForMessage(&message));
     return message;
   }
+
+  Profile* profile() { return profile_; }
+
+ private:
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 // Helper to exit a RunLoop when the given WebContents is destroyed.
@@ -409,20 +286,6 @@ class WebContentsDestroyedWaiter : public content::WebContentsObserver {
 
 class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
  public:
-  FileTasksBrowserTest() : TestProfileTypeMixin<InProcessBrowserTest>() {
-    if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-      test_controller_ = std::make_unique<TestControllerLacros>();
-    } else {
-      test_controller_ = std::make_unique<TestControllerAsh>();
-    }
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    TestProfileTypeMixin<
-        InProcessBrowserTest>::SetUpInProcessBrowserTestFixture();
-    test_controller()->SetUpInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     TestProfileTypeMixin<InProcessBrowserTest>::SetUpOnMainThread();
     ash::SystemWebAppManager::GetForTest(browser()->profile())
@@ -462,11 +325,11 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
   }
 
  protected:
-  TestController* test_controller() { return test_controller_.get(); }
+  TestController* test_controller() { return &test_controller_; }
 
  private:
   base::test::ScopedFeatureList feature_list_{kFileHandlingAPI};
-  std::unique_ptr<TestController> test_controller_;
+  TestController test_controller_;
 };
 
 }  // namespace
@@ -620,8 +483,6 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 // Check that QuickOffice has a handler installed for common Office doc types.
 // This test only runs with the is_chrome_branded GN flag set because otherwise
 // QuickOffice is not installed.
-// NOTE: For the Crosapi variant, Lacros must be a branded build as well,
-// otherwise the test will fail.
 // Disabled due to crbug.com/347884251.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DISABLED_QuickOffice) {
   std::vector<Expectation> expectations = {
@@ -654,8 +515,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
       browser()->profile(),
       TaskDescriptor(extension_id, StringToTaskType("app"), "tiffAction"),
       {"tiff"}, {"image/tiff"});
-  if (profile_type() == TestProfileType::kIncognito &&
-      GetParam().crosapi_state == TestProfileParam::CrosapiParam::kDisabled) {
+  if (profile_type() == TestProfileType::kIncognito) {
     // If installed in incognito, the installed app is not enabled and we filter
     // it out.
     TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
@@ -735,37 +595,24 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   web_app_info->file_handlers.push_back(std::move(handler));
 
   Profile* const profile = browser()->profile();
-  TaskDescriptor task_descriptor;
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kDisabled) {
-    // Install a PWA in ash.
-    webapps::AppId app_id =
-        web_app::test::InstallWebApp(profile, std::move(web_app_info));
-    task_descriptor = TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
-                                     "https://www.example.com/handle_file");
-    // Skip past the permission dialog.
-    web_app::WebAppProvider::GetForTest(profile)
-        ->sync_bridge_unsafe()
-        .SetAppFileHandlerApprovalState(app_id,
-                                        web_app::ApiApprovalState::kAllowed);
-  } else {
-    // Use an existing SWA in ash - Media app.
-    task_descriptor = TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP,
-                                     "chrome://media-app/open");
-    // TODO(petermarshall): Install the web app in Lacros once installing and
-    // launching apps from ash -> lacros is possible.
-  }
+
+  // Install a PWA.
+  webapps::AppId app_id =
+      web_app::test::InstallWebApp(profile, std::move(web_app_info));
+  TaskDescriptor task_descriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
+                                 "https://www.example.com/handle_file");
+  // Skip past the permission dialog.
+  web_app::WebAppProvider::GetForTest(profile)
+      ->sync_bridge_unsafe()
+      .SetAppFileHandlerApprovalState(app_id,
+                                      web_app::ApiApprovalState::kAllowed);
 
   base::RunLoop run_loop;
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams params) {
-            if (GetParam().crosapi_state ==
-                TestProfileParam::CrosapiParam::kDisabled) {
-              EXPECT_EQ(params.override_url,
-                        "https://www.example.com/handle_file");
-            } else {
-              EXPECT_EQ(params.override_url, "chrome://media-app/open");
-            }
+            EXPECT_EQ(params.override_url,
+                      "https://www.example.com/handle_file");
             EXPECT_EQ(params.launch_files.size(), 2U);
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
                                        "foo.jpeg"));
