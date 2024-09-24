@@ -285,6 +285,7 @@
         [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
         break;
       case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+      case OmniboxFocusTrigger::kUnpinnedFakebox:
         [self.toolbarAnimatee setToolbarFaded:YES];
         break;
       default:
@@ -400,6 +401,7 @@
       [self.toolbarAnimatee setLocationBarHeightExpanded];
       break;
     case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+    case OmniboxFocusTrigger::kUnpinnedFakebox:
       [self.toolbarAnimatee setToolbarFaded:NO];
       break;
     default:
