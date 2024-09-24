@@ -1970,6 +1970,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/369237322
+      name: "FindDecomposedInShortText",
+      status: "stable",
+    },
+    {
       // crbug.com/40755728
       name: "FindRubyInPage",
       status: "test",

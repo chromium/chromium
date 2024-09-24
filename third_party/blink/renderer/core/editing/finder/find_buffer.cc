@@ -369,11 +369,15 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
 FindResults FindBuffer::FindMatches(const WebString& search_text,
                                     const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
-  // empty or too short), or when something went wrong in layout, in which case
+  // empty), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
-  if (buffer_.empty() || search_text.length() > buffer_.size() ||
-      !offset_mapping_)
+  if (buffer_.empty() || !offset_mapping_) {
     return FindResults();
+  }
+  if (!RuntimeEnabledFeatures::FindDecomposedInShortTextEnabled() &&
+      search_text.length() > buffer_.size()) {
+    return FindResults();
+  }
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);

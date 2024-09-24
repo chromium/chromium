@@ -609,6 +609,15 @@ TEST_F(FindBufferTest, KanaDecomposed) {
   EXPECT_EQ(1u, buffer.FindMatches("ﾊ ゛", kCaseInsensitive).CountForTesting());
 }
 
+TEST_F(FindBufferTest, FindDecomposedKanaInComposed) {
+  // Hiragana Ba, composed
+  SetBodyInnerHTML(u"\u3070");
+  FindBuffer buffer(WholeDocumentRange());
+  // Hiragana Ba, decomposed
+  EXPECT_EQ(1u, buffer.FindMatches(String(u"\u306F\u3099"), kCaseInsensitive)
+                    .CountForTesting());
+}
+
 TEST_F(FindBufferTest, FindPlainTextInvalidTarget1) {
   static const char* body_content = "<div>foo bar test</div>";
   SetBodyContent(body_content);
