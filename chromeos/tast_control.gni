@@ -71,10 +71,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
-  # b/344945274
-  "nacl.Pnacl.lacros@jacuzzi",
-  "nacl.Pnacl.lacros@volteer",
-
   # b/346793249, b/330290054
   "videoconferencing.OpenCLCacher",
 
@@ -82,29 +78,14 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
 
-  # b/354218429
-  "crostini.LaunchBrowser.bookworm_stable_lacros@betty",
-
   # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
   "inputs.PhysicalKeyboardEmojiSuggestion",
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
-  "inputs.PhysicalKeyboardEmojiSuggestion.guest_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
-  "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
-  "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
 
   # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
-
-  # b/358376069, b/359411206: These lacros tests are failing at this
-  # moment but they will be removed soon.
-  "lacros.Activate.keep_alive",
-  "lacros.Activate.no_keep_alive",
-  "login.Chrome.lacros",
-  "security.ChromeSandboxed.lacros",
-  "security.GPUSandboxed.lacros",
-  "ui.StackSampledMetricsV2.lacros",
 
   # b/359336803: These tests are failing on brya (specifically kano) and
   # blocking LKGM.
