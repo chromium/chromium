@@ -10,11 +10,18 @@ import "services/video_effects/public/mojom/video_effects_processor.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
+[EnableIfNot=is_linux]
+const sandbox.mojom.Sandbox kVideoEffectsSandbox
+  = sandbox.mojom.Sandbox.kService;
+[EnableIf=is_linux]
+const sandbox.mojom.Sandbox kVideoEffectsSandbox
+  = sandbox.mojom.Sandbox.kVideoEffects;
+
 // Entry point to the Video Effects Service API.
 // This interface is intended to be hosted in the Video Effects utility
 // process. The Browser process uses this to create video effect processors
 // and broker the created processors to the Video Capture Service.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=kVideoEffectsSandbox]
 interface VideoEffectsService {
   // Creates a Video Effects Processor whose effects configuration will be
   // managed by the passed in `manager`. Note that the created processor will
