@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -111,6 +112,9 @@ public class ChromeCachedFlags {
                         BottomBarConfigCreator
                                 .GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE,
                         BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED,
+                        EdgeToEdgeUtils.DISABLE_HUB_E2E,
+                        EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E,
+                        EdgeToEdgeUtils.DISABLE_NTP_E2E,
                         HubFieldTrial.ALTERNATIVE_FAB_COLOR,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,
                         HubFieldTrial.SUPPORTS_OTHER_TABS,

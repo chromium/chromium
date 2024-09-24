@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +39,29 @@ public class EdgeToEdgeUtils {
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
             "Android.EdgeToEdge.IneligibilityReason";
+
+    private static final String PARAM_DISABLE_INCOGNITO_NTP_E2E = "disable_incognito_ntp_e2e";
+
+    /** Cached param whether we disable e2e on incognito new tab page. See crbug.com/368675202 */
+    public static BooleanCachedFieldTrialParameter DISABLE_INCOGNITO_NTP_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+                    PARAM_DISABLE_INCOGNITO_NTP_E2E,
+                    false);
+
+    private static final String PARAM_DISABLE_NTP_E2E = "disable_ntp_e2e";
+
+    /** Cached param whether we disable e2e on new tab page. */
+    public static BooleanCachedFieldTrialParameter DISABLE_NTP_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE, PARAM_DISABLE_NTP_E2E, false);
+
+    private static final String PARAM_DISABLE_HUB_E2E = "disable_hub_e2e";
+
+    /** Cached param whether we disable e2e on the hub. */
+    public static BooleanCachedFieldTrialParameter DISABLE_HUB_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE, PARAM_DISABLE_HUB_E2E, false);
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -159,7 +183,9 @@ public class EdgeToEdgeUtils {
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
         return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
                 || (isEdgeToEdgeBottomChinEnabled() && isBottomChinAllowed(layoutType, bottomInset))
-                || (layoutType == LayoutType.TAB_SWITCHER && isDrawKeyNativePageToEdgeEnabled());
+                || (isDrawKeyNativePageToEdgeEnabled()
+                        && layoutType == LayoutType.TAB_SWITCHER
+                        && !DISABLE_HUB_E2E.getValue());
     }
 
     /**

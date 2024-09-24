@@ -156,7 +156,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return true;
+        return !EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E.getValue();
     }
 
     // InvalidationAwareThumbnailProvider

@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -1013,7 +1014,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return true;
+        return !EdgeToEdgeUtils.DISABLE_NTP_E2E.getValue();
     }
 
     @Override
