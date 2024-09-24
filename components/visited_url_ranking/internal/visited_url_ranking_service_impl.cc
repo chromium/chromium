@@ -257,18 +257,10 @@ void AddFrequentlyVisitedAtTimeDecoration(
 void AddVisitedXAgoDecoration(
     URLVisitAggregate& url_visit_aggregate,
     base::TimeDelta recently_visited_minutes_threshold) {
-  if (base::Time::Now() - url_visit_aggregate.GetLastVisitTime() <
-      recently_visited_minutes_threshold) {
-    url_visit_aggregate.decorations.emplace_back(
-        DecorationType::kVisitedXAgo,
-        GetStringForDecoration(DecorationType::kVisitedXAgo,
-                               /*visited_recently=*/true));
-    return;
-  }
   url_visit_aggregate.decorations.emplace_back(
-      DecorationType::kVisitedXAgo,
-      GetStringForRecencyDecorationWithTime(
-          url_visit_aggregate.GetLastVisitTime()));
+      DecorationType::kVisitedXAgo, GetStringForRecencyDecorationWithTime(
+                                        url_visit_aggregate.GetLastVisitTime(),
+                                        recently_visited_minutes_threshold));
 }
 
 }  // namespace
