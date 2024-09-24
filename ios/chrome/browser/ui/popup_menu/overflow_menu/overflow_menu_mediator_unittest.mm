@@ -568,7 +568,8 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
 
 // Tests that the "Add to Reading List" button is disabled while overlay UI is
 // displayed in OverlayModality::kWebContentArea.
-TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
+// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
@@ -601,7 +602,8 @@ TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
 }
 
 // Tests that the "Text Zoom..." button is disabled on non-HTML pages.
-TEST_F(OverflowMenuMediatorTest, TestTextZoomDisabled) {
+// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestTextZoomDisabled) {
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
@@ -627,7 +629,8 @@ TEST_F(OverflowMenuMediatorTest, TestTextZoomDisabled) {
 
 // Tests that the "Managed by..." item is hidden when none of the policies is
 // set.
-TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoHidden) {
+// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestEnterpriseInfoHidden) {
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
 
@@ -641,7 +644,9 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoHidden) {
 // Tests that the "Managed by..." item is shown for user level policies when
 // the UserPolicy features is enabled and the browser is signed in with a
 // managed account.
-TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
+// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
+TEST_F(OverflowMenuMediatorTest,
+       DISABLED_TestEnterpriseInfoShownForUserLevelPolicies) {
   // Enable the UserPolicy feature.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
