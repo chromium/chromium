@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -114,11 +113,10 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       auto cancel_result = ReadableStream::Cancel(
           script_state, engine_->stream_, composite_reason);
       //     iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state,
-                                        cancel_result.V8Promise());
+      engine_->cancel_promise_->Resolve(cancel_result);
     }
     //   d. Return cancelPromise.
-    return engine_->cancel_promise_->V8Promise(isolate);
+    return engine_->cancel_promise_->V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -195,7 +193,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 6. If canceled1 is false or canceled2 is false, resolve cancelPromise
     // with undefined.
     if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-      engine_->cancel_promise_->ResolveWithUndefined(script_state);
+      engine_->cancel_promise_->Resolve();
     }
   }
 
@@ -380,7 +378,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 7. If byobCanceled is false or otherCanceled is false, resolve
     //    cancelPromise with undefined.
     if (!byob_canceled || !other_canceled) {
-      engine_->cancel_promise_->ResolveWithUndefined(script_state);
+      engine_->cancel_promise_->Resolve();
     }
   }
 
@@ -519,7 +517,7 @@ void ByteStreamTeeEngine::ForwardReaderError(
       //     iv. If canceled1 is false or canceled2 is false, resolve
       //     cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
@@ -660,7 +658,8 @@ void ByteStreamTeeEngine::Start(ScriptState* script_state,
   DCHECK(!branch_[1]);
 
   // 13. Let cancelPromise be a new promise.
-  cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  cancel_promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLPromise>>(script_state);
 
   // 17. Let pull1Algorithm be the following steps:
   // (See PullAlgorithm::Run()).

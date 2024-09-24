@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -217,8 +216,8 @@ TransformStream* TransformStream::Create(
   auto* stream = MakeGarbageCollected<TransformStream>();
 
   // 8. Let startPromise be a new promise.
-  auto* start_promise = MakeGarbageCollected<StreamPromiseResolver>(
-      script_state, exception_state);
+  auto* start_promise =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
 
   // 9. Perform ! InitializeTransformStream(stream, startPromise,
   //    writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -248,7 +247,7 @@ TransformStream* TransformStream::Create(
   DCHECK(!exception_state.HadException());
 
   // 13. Resolve startPromise with startResult.
-  start_promise->Resolve(script_state, start_result);
+  start_promise->Resolve(start_result);
 
   // 14. Return stream.
   return stream;
@@ -282,12 +281,12 @@ void TransformStream::Trace(Visitor* visitor) const {
 class TransformStream::ReturnStartPromiseAlgorithm final
     : public StreamStartAlgorithm {
  public:
-  explicit ReturnStartPromiseAlgorithm(StreamPromiseResolver* start_promise)
+  explicit ReturnStartPromiseAlgorithm(
+      ScriptPromiseResolver<IDLAny>* start_promise)
       : start_promise_(start_promise) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState&) override {
-    return start_promise_->V8Promise(script_state->GetIsolate());
+  v8::MaybeLocal<v8::Promise> Run(ScriptState*, ExceptionState&) override {
+    return start_promise_->V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -296,7 +295,7 @@ class TransformStream::ReturnStartPromiseAlgorithm final
   }
 
  private:
-  Member<StreamPromiseResolver> start_promise_;
+  Member<ScriptPromiseResolver<IDLAny>> start_promise_;
 };
 
 //
@@ -328,8 +327,8 @@ class TransformStream::DefaultSinkWriteAlgorithm final
     if (stream_->had_backpressure_) {
       // a. Let backpressureChangePromise be
       //    stream.[[backpressureChangePromise]].
-      StreamPromiseResolver* backpressure_change_promise =
-          stream_->backpressure_change_promise_;
+      auto* backpressure_change_promise =
+          stream_->backpressure_change_promise_.Get();
 
       // b. Assert: backpressureChangePromise is not undefined.
       DCHECK(backpressure_change_promise);
@@ -380,8 +379,7 @@ class TransformStream::DefaultSinkWriteAlgorithm final
 
       // c. Return the result of transforming backpressureChangePromise ...
       return StreamThenPromise(
-          script_state->GetContext(),
-          backpressure_change_promise->V8Promise(script_state->GetIsolate()),
+          script_state->GetContext(), backpressure_change_promise->V8Promise(),
           MakeGarbageCollected<ScriptFunction>(
               script_state, MakeGarbageCollected<ResponseFunction>(
                                 script_state, stream_, chunk)));
@@ -562,8 +560,7 @@ class TransformStream::DefaultSourcePullAlgorithm final
     SetBackpressure(script_state, stream_, false);
 
     // 4. Return stream.[[backpressureChangePromise]].
-    return stream_->backpressure_change_promise_->V8Promise(
-        script_state->GetIsolate());
+    return stream_->backpressure_change_promise_->V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -715,8 +712,8 @@ void TransformStream::InitInternal(ScriptState* script_state,
   }
 
   // 15. Let startPromise be a new promise.
-  auto* start_promise = MakeGarbageCollected<StreamPromiseResolver>(
-      script_state, exception_state);
+  auto* start_promise =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
 
   // 16. Perform ! InitializeTransformStream(this, startPromise,
   //     writableHighWaterMark, writableSizeAlgorithm, readableHighWaterMark,
@@ -747,12 +744,12 @@ void TransformStream::InitInternal(ScriptState* script_state,
   DCHECK(!exception_state.HadException());
 
   // 19. Resolve startPromise with startResult.
-  start_promise->Resolve(script_state, start_result);
+  start_promise->Resolve(start_result);
 }
 
 void TransformStream::Initialize(ScriptState* script_state,
                                  TransformStream* stream,
-                                 StreamPromiseResolver* start_promise,
+                                 ScriptPromiseResolver<IDLAny>* start_promise,
                                  double writable_high_water_mark,
                                  StrategySizeAlgorithm* writable_size_algorithm,
                                  double readable_high_water_mark,
@@ -815,8 +812,8 @@ void TransformStream::Initialize(ScriptState* script_state,
   DCHECK(stream->had_backpressure_);
   DCHECK(!stream->backpressure_change_promise_);
   stream->backpressure_change_promise_ =
-      MakeGarbageCollected<StreamPromiseResolver>(script_state,
-                                                  exception_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  stream->backpressure_change_promise_->SuppressDetachCheck();
 
   // 11. Set stream.[[transformStreamController]] to undefined.
   // (This is set by the constructor; just verify the value here).
@@ -873,11 +870,12 @@ void TransformStream::SetBackpressure(ScriptState* script_state,
   // the function is never called without |backpressure_change_promise_| set
   // and we don't need to test it.
   DCHECK(stream->backpressure_change_promise_);
-  stream->backpressure_change_promise_->ResolveWithUndefined(script_state);
+  stream->backpressure_change_promise_->Resolve();
 
   // 3. Set stream.[[backpressureChangePromise]] to a new promise.
   stream->backpressure_change_promise_ =
-      MakeGarbageCollected<StreamPromiseResolver>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  stream->backpressure_change_promise_->SuppressDetachCheck();
 
   // 4. Set stream.[[backpressure]] to backpressure.
   stream->had_backpressure_ = backpressure;

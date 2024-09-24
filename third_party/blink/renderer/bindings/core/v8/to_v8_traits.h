@@ -251,6 +251,11 @@ struct ToV8Traits<IDLPromise> {
     DCHECK(!script_promise.IsEmpty());
     return script_promise.V8Value();
   }
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      v8::Local<v8::Promise> script_promise) {
+    return script_promise;
+  }
 };
 
 // ScriptWrappable

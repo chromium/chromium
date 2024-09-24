@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -119,7 +118,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // 4. If canceled1 is false or canceled2 is false, resolve
       // cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
@@ -172,10 +171,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
               script_state, engine_->controller_[1], exception);
           //     iii. Resolve cancelPromise with !
           //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
-          engine_->cancel_promise_->Resolve(
-              script_state,
-              ReadableStream::Cancel(script_state, engine_->stream_, exception)
-                  .V8Promise());
+          engine_->cancel_promise_->Resolve(ReadableStream::Cancel(
+              script_state, engine_->stream_, exception));
           //     iv. Return.
           return;
         } else {
@@ -262,13 +259,12 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // ii. Let cancelResult be ! ReadableStreamCancel(stream,
       //    compositeReason).
       auto cancel_result = ReadableStream::Cancel(
-                               script_state, engine_->stream_, composite_reason)
-                               .V8Promise();
+          script_state, engine_->stream_, composite_reason);
 
       // iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state, cancel_result);
+      engine_->cancel_promise_->Resolve(cancel_result);
     }
-    return engine_->cancel_promise_->V8Promise(isolate);
+    return engine_->cancel_promise_->V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -326,7 +322,8 @@ void TeeEngine::Start(ScriptState* script_state,
   DCHECK(!branch_[1]);
 
   // 12. Let cancelPromise be a new promise.
-  cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  cancel_promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLPromise>>(script_state);
 
   // 13. Let pullAlgorithm be the following steps:
   // (steps are defined in PullAlgorithm::Run()).
@@ -393,7 +390,7 @@ void TeeEngine::Start(ScriptState* script_state,
       // If canceled1 is false or canceled2 is false, resolve |cancelPromise|
       // with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
