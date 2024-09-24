@@ -287,8 +287,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Records whether the user opened the panel when it was shown. Recorded for
@@ -303,11 +303,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2025-03-09">
+    enum="BooleanBottomSearchKind" expires_after="2025-11-01">
 <!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
-  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -323,8 +323,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchCardTag" expires_after="never">
 <!-- expires-never: tracks key server results returned to the user. -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     The type of card returned in the Search Term Resolution Response from the
     server when a search is resolved in response to a Tap gesture that uses
@@ -337,8 +337,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchCardTag" expires_after="never">
 <!-- expires-never: tracks key server results returned to the user. -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     The type of card shown in the Bar when the panel has been opened. Recorded
     when the panel is closed. Implemented for Android.
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Event"
-    enum="ContextualSearchCountedEvent" expires_after="2025-03-09">
+    enum="ContextualSearchCountedEvent" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Searches" enum="Boolean"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
 <!-- TODO(donnd): change expires_after to "never" once established and
          approved. -->
 
@@ -381,8 +381,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.NetError" enum="NetErrorCodes"
-    expires_after="2025-02-23">
-  <owner>donnd@chromium.org</owner>
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
     Network status codes recorded for each Contextual Search request after the
@@ -438,9 +439,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
-    expires_after="2025-02-23">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records that a resolve response was received from the server, and whether
     that was due to a Tap gesture or not (vs longpress). Recorded when the user
@@ -450,9 +451,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="2025-03-09">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="ContextualSearchGestureIsTap" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records that a resolve request was sent to the server, and whether that was
     due to a Tap or not (vs longpress). Recorded when the user triggers the
@@ -462,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2025-09-15">
+    enum="ContextualSearchGestureIsTap" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -490,9 +491,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Tap.ResultsSeen" enum="Boolean"
-    expires_after="2025-02-10">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records whether the user opened the panel when it was shown in response to a
     tap gesture, for all users. Recorded when the UX is hidden. Implemented for
@@ -501,9 +502,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen"
-    enum="Boolean" expires_after="2025-03-02">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records whether the user opened the panel when it was shown for sync-enabled
     users only (this is an approximation for the population that logs to UKM).
@@ -513,9 +514,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.PreviouslyUndecided"
-    enum="Boolean" expires_after="2024-10-01">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records the previous state of the user's enabled preference to indicate
     whether they were decided or undecided about fully enabling this feature.
@@ -526,9 +527,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.ThrottledRequests"
-    enum="Boolean" expires_after="2024-10-01">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records whether throttling for Unified Consent was done for all requests.
     Recorded when the user taps on text and the system would like the server to
@@ -540,9 +541,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.UnifiedConsent.ThrottleEligible"
-    enum="Boolean" expires_after="2024-10-01">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records whether this user had a request throttled or not when needed.
     Recorded when the user taps on text and the system would like the server to
@@ -557,8 +558,8 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="never">
 <!-- expires-never: key metric on usefulness of Touch to Search. -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether Contextual Cards data was shown in the Contextual Search Bar.
     Contextual Cards data is included with the search term resolution response.
@@ -594,8 +595,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchPreferenceState" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     The state of the Contextual Search Preference. Can be logged multiple times.
     Used to determine the population size (user view). Logged whenever the
@@ -607,8 +608,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchPreferenceState" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     The Contextual Search preference state after a modification from the
     preference menu. Implemented for Android.
@@ -628,7 +629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoCardChoice" enum="BooleanOptedIn"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -651,9 +652,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2025-01-26">
+    enum="ContextualSearchQuickActionCategory" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>contextual-search-eng@chromium.org</owner>
   <summary>
     The category of quick actions shown in the Contextual Search bar. Recorded
     when the quick action is set. Implemented for Android. (Expired in
@@ -665,8 +666,8 @@ chromium-metrics-reviews@google.com.
     enum="BooleanClicked" expires_after="never">
 <!-- expires-never: indicates completion of a user journey. -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether a quick action in the Contextual Search bar was clicked, which
     activates the associated intent. Recorded when Contextual Search is
@@ -677,9 +678,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ContextualSearchQuickActions.IntentResolution"
     enum="ContextualSearchQuickActionIntentResolution"
-    expires_after="2024-10-01">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether a Contextual Search quick action intent resolved to zero, one, or
     many apps. Recorded when the quick action intent URI is resolved.
@@ -688,9 +689,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.ResultsSeen"
-    enum="ContextualSearchResultsSeen" expires_after="2024-10-01">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="ContextualSearchResultsSeen" expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether search results were seen as part of a Contextual Search when a quick
     action was shown. Recorded when Contextual Search is dismissed. Implemented
@@ -702,8 +703,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchResultsSeen" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether search results were seen as part of a contextual search. Implemented
     for Android.
@@ -714,8 +715,8 @@ chromium-metrics-reviews@google.com.
     enum="ContextualSearchSeenByGesture" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
 
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Whether search results were seen, broken down by original triggering
     gesture. Only includes users that have enabled. Implemented for Android.
@@ -1018,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.AllUserPermissions"
-    enum="ContextualSearchPermissions" expires_after="2025-03-09">
+    enum="ContextualSearchPermissions" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1033,7 +1034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselLastVisibleItemPosition"
-    units="position" expires_after="2025-05-05">
+    units="position" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1046,7 +1047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselScrollAndClick"
-    enum="ScrollAndClickStatus" expires_after="2025-05-05">
+    enum="ScrollAndClickStatus" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1057,7 +1058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselScrolled" enum="Boolean"
-    expires_after="2025-05-05">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1069,7 +1070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CTR" enum="BooleanClicked"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1084,7 +1085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked2"
-    units="selected" expires_after="2025-02-01">
+    units="selected" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1095,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
-    expires_after="2025-05-05">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1110,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1121,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedSuggestionIndex"
-    units="position" expires_after="2025-03-09">
+    units="position" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
