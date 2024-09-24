@@ -8,11 +8,8 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-:host {
-  --cr-spinner-size: 28px;
-}
-
 .spinner {
+  --cr-spinner-size: 28px;
   mask-image: url(//resources/images/throbber_small.svg);
   mask-position: center;
   mask-repeat: no-repeat;
