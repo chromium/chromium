@@ -21,4 +21,15 @@
   }
 }
 
+#pragma mark - SceneStateObserver
+
+// Empty implementation of -sceneState:transitionedToActivationLevel: to
+// simplify the implementation of -profileState:sceneConnected: (as the
+// method is declared optional in SceneStateObserver, without this empty
+// method we would have to check whether the instance responds to the
+// corresponding selector).
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)activationLevel {
+}
+
 @end
