@@ -376,8 +376,7 @@ void PrefetchManager::TryToLaunchPrefetchJobs() {
   UMA_HISTOGRAM_COUNTS_100("Navigation.Prefetch.PrefetchJobQueueLength",
                            queued_jobs_.size());
 
-  if (queued_jobs_.empty() ||
-      inflight_jobs_count_ >= features::GetMaxInflightPrefetches()) {
+  if (queued_jobs_.empty() || inflight_jobs_count_ >= kMaxInflightPrefetches) {
     return;
   }
 
@@ -390,7 +389,7 @@ void PrefetchManager::TryToLaunchPrefetchJobs() {
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
 
   while (!queued_jobs_.empty() &&
-         inflight_jobs_count_ < features::GetMaxInflightPrefetches()) {
+         inflight_jobs_count_ < kMaxInflightPrefetches) {
     std::unique_ptr<PrefetchJob> job = std::move(queued_jobs_.front());
     queued_jobs_.pop_front();
     base::WeakPtr<PrefetchInfo> info = job->info;

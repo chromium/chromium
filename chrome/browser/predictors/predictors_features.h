@@ -32,8 +32,6 @@ enum class PrefetchSubresourceType { kAll, kCss, kJsAndCss };
 extern const base::FeatureParam<PrefetchSubresourceType>
     kLoadingPredictorPrefetchSubresourceType;
 
-BASE_DECLARE_FEATURE(kLoadingPredictorInflightPredictiveActions);
-
 BASE_DECLARE_FEATURE(kLoadingPredictorPrefetchUseReadAndDiscardBody);
 
 // Returns whether local predictions should be used to make preconnect
@@ -51,10 +49,6 @@ bool ShouldUseOptimizationGuidePredictions();
 // Returns whether optimization guide predictions should always be retrieved,
 // even if local predictions are available for preconnect predictions.
 bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
-
-// Returns the maximum number of prefetches that can be inflight at any given
-// time.
-size_t GetMaxInflightPrefetches();
 
 BASE_DECLARE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup);
 

@@ -81,10 +81,6 @@ const base::FeatureParam<PrefetchSubresourceType>
         &kLoadingPredictorPrefetch, "subresource_type",
         PrefetchSubresourceType::kAll, &kPrefetchSubresourceTypeParamOptions};
 
-BASE_FEATURE(kLoadingPredictorInflightPredictiveActions,
-             "kLoadingPredictorInflightPredictiveActions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool ShouldUseLocalPredictions() {
   return base::FeatureList::IsEnabled(kLoadingPredictorUseLocalPredictions);
 }
@@ -101,12 +97,6 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kLoadingPredictorUseOptimizationGuide, "always_retrieve_predictions",
       false);
-}
-
-size_t GetMaxInflightPrefetches() {
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-      kLoadingPredictorInflightPredictiveActions, "max_inflight_prefetches",
-      3));
 }
 
 // If this is enabled, LoadingPredictor avoids prefetching during
