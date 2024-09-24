@@ -263,24 +263,24 @@ TEST_F(AXComputedNodeDataTest, UnignoredValues) {
   }
 }
 
-TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
-  EXPECT_TRUE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+TEST_F(AXComputedNodeDataTest, CanComputeAttribute) {
+  EXPECT_TRUE(root_node_->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kValue));
-  EXPECT_FALSE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(root_node_->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_TRUE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(root_node_->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kWordStarts));
-  EXPECT_FALSE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(root_node_->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds));
 
   AXNode* paragraph_0_node = root_node_->GetChildAtIndex(0);
-  EXPECT_FALSE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kValue));
-  EXPECT_FALSE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_TRUE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(paragraph_0_node->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kWordStarts));
-  EXPECT_FALSE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(paragraph_0_node->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds));
 
   // By removing the `ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot`
@@ -303,30 +303,36 @@ TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
   ASSERT_EQ(root_.id, root_node_->id());
 
   // Computing the value attribute is only supported on non-atomic text fields.
-  EXPECT_FALSE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(root_node_->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kValue));
-  EXPECT_FALSE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(root_node_->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_TRUE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(root_node_->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kWordStarts));
-  EXPECT_TRUE(root_node_->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(root_node_->HasIntListAttribute(
+      ax::mojom::IntListAttribute::kLabelledbyIds));
+  EXPECT_FALSE(root_node_->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds));
 
   paragraph_0_node = root_node_->GetChildAtIndex(0);
   // However, for maximum flexibility, if the value attribute is already present
   // in the node's data we should use it without checking if the role supports
   // it.
-  EXPECT_TRUE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(
+      paragraph_0_node->HasStringAttribute(ax::mojom::StringAttribute::kValue));
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
       ax::mojom::StringAttribute::kValue));
-  EXPECT_TRUE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_TRUE(paragraph_0_node->HasStringAttribute(
       ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_TRUE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
+      ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_TRUE(paragraph_0_node->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kWordStarts));
-  EXPECT_FALSE(paragraph_0_node->GetComputedNodeData().HasOrCanComputeAttribute(
+  EXPECT_FALSE(paragraph_0_node->CanComputeIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds));
 }
 
-TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
+TEST_F(AXComputedNodeDataTest, ComputeAttribute) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
   ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
@@ -334,89 +340,70 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
 
   // Line breaks should be inserted between each paragraph to mirror how HTML's
   // "textContent" works.
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttributeUTF8(
                   ax::mojom::StringAttribute::kValue),
               StrEq("\nt_1\ns+t++2...0.  0s t\n2\r0\r\n1"));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kHtmlTag),
-              StrEq(""));
 
   // Boundaries are delimited by a vertical bar, '|'.
   // Words: "|t|_|1s|+|t|++|2|...|0|.  |0s| |t|\n|2|\r|0|\r\n|1|".
   int32_t word_starts[] = {0, 5, 8, 12, 16, 19, 21, 23, 26};
   int32_t word_ends[] = {4, 6, 9, 13, 18, 20, 22, 24, 27};
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordStarts),
               ElementsAreArray(word_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordEnds),
               ElementsAreArray(word_ends));
 
   // Lines: "|t_1s+t++2...0.  0s t|\n|2|\r|0|\r\n|1|".
   int32_t line_starts[] = {0, 21, 23, 26};
   int32_t line_ends[] = {21, 23, 26, 27};
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineStarts),
               ElementsAreArray(line_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineEnds),
               ElementsAreArray(line_ends));
 
   // Sentences: "|t_1s+t++2...0.|  |0s t|\n|2|\r|0|\r\n|1|".
   int32_t sentence_starts[] = {0, 21, 23, 26};
   int32_t sentence_ends[] = {21, 23, 26, 27};
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceStarts),
               ElementsAreArray(sentence_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceEnds),
               ElementsAreArray(sentence_ends));
 
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
-                  ax::mojom::IntListAttribute::kLabelledbyIds),
-              SizeIs(0));
-
   AXNode* paragraph_0_node = root_node_->GetChildAtIndex(0);
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kValue),
-              StrEq(""))
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
+      ax::mojom::StringAttribute::kValue))
       << "The static text child should be ignored.";
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kHtmlTag),
-              StrEq(""));
 
-  // Ignored text produces no boundaries.
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordStarts),
               SizeIs(0));
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordEnds),
               SizeIs(0));
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineStarts),
               SizeIs(0));
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineEnds),
               SizeIs(0));
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceStarts),
               SizeIs(0));
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceEnds),
-              SizeIs(0));
-
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
-                  ax::mojom::IntListAttribute::kLabelledbyIds),
               SizeIs(0));
 
   // By removing the `ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot`
   // attribute, the root is no longer a content editable.
   root_.RemoveBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
-  root_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
-                            {static_text_0_0_ignored_.id});
   paragraph_0_.AddStringAttribute(ax::mojom::StringAttribute::kValue,
                                   "New: \nvalue.");
-  paragraph_0_.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "p");
   // Word starts/ends are intentionally set to the wrong values to ensure that
   // `AXNodeData` takes priority over `AXComputedNodeData` if present.
   std::vector<int32_t> wrong_word_starts = {1, 5};
@@ -434,78 +421,67 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
   root_node_ = GetTree()->root();
   ASSERT_EQ(root_.id, root_node_->id());
 
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kValue),
-              SizeIs(0))
+  EXPECT_FALSE(
+      root_node_->CanComputeStringAttribute(ax::mojom::StringAttribute::kValue))
       << "Computing the value attribute is only supported on non-atomic text "
          "fields.";
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kHtmlTag),
-              SizeIs(0));
 
   // No change to the various boundaries should have been observed since the
   // root's text content hasn't changed.
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordStarts),
               ElementsAreArray(word_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kWordEnds),
               ElementsAreArray(word_ends));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineStarts),
               ElementsAreArray(line_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kLineEnds),
               ElementsAreArray(line_ends));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceStarts),
               ElementsAreArray(sentence_starts));
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(root_node_->GetComputedNodeData().ComputeAttribute(
                   ax::mojom::IntListAttribute::kSentenceEnds),
               ElementsAreArray(sentence_ends));
 
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
-                  ax::mojom::IntListAttribute::kLabelledbyIds),
-              ElementsAre(static_text_0_0_ignored_.id));
-
   paragraph_0_node = root_node_->GetChildAtIndex(0);
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kValue),
-              StrEq("New: \nvalue."))
+  EXPECT_FALSE(paragraph_0_node->CanComputeStringAttribute(
+      ax::mojom::StringAttribute::kValue));
+  EXPECT_THAT(
+      paragraph_0_node->GetStringAttribute(ax::mojom::StringAttribute::kValue),
+      StrEq("New: \nvalue."))
       << "For maximum flexibility, if the value attribute is already present "
          "in the node's data we should use it without checking if the role "
          "supports it.";
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttributeUTF8(
-                  ax::mojom::StringAttribute::kHtmlTag),
-              StrEq("p"));
 
   // Word starts/ends are intentionally set to the wrong values in `AXNodeData`.
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kWordStarts),
               ElementsAreArray(wrong_word_starts))
       << "`AXNodeData` should take priority over `AXComputedNodeData`, if "
          "present.";
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kWordEnds),
               ElementsAreArray(wrong_word_ends))
       << "`AXNodeData` should take priority over `AXComputedNodeData`, if "
          "present.";
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kLineStarts),
               ElementsAre());
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kLineEnds),
               ElementsAre());
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kSentenceStarts),
               ElementsAre());
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
+  EXPECT_THAT(paragraph_0_node->GetIntListAttribute(
                   ax::mojom::IntListAttribute::kSentenceEnds),
               ElementsAre());
-
-  EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
-                  ax::mojom::IntListAttribute::kLabelledbyIds),
-              SizeIs(0));
 }
 
 TEST_F(AXComputedNodeDataTest, GetOrComputeTextContent) {

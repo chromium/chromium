@@ -310,10 +310,35 @@ class AX_EXPORT AXNode final {
   // are computed on the browser side. (See `AXNodeData` and
   // `AXComputedNodeData` for more information.)
   //
-  // Please prefer using the methods in this file for retrieving attributes, as
+  // Please prefer using the methods in this class for retrieving attributes, as
   // computed attributes would be automatically returned if available.
+  // Requesting the computed value for an attribute that cannot be computed
+  // triggers a DCHECK failure. All Get...Attribute methods in this class do
+  // the appropriate verification before requesting a computed attribute value.
   //
-
+  // Each of the Get...Attribute methods returns a default value if not set.
+  // The Has...Attribute methods can be used to disambiguate a missing value
+  // from a default value. The default values are 0 for numerical attributes,
+  // an empty string for string attributes, an empty list for list valued
+  // attributes, and false for boolean attributes.
+  //
+  // Example:
+  //
+  // const std::string& value =
+  //     GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  // if (!value.empty() ||
+  //     HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
+  //    // Handle explicitly set attribute even if an empty string.
+  // }
+  //
+  // Unless specifically needing a UTF16 string, it is generally advisable to
+  // use UTF8 strings, since these are fetched as a constant reference, whereas
+  // the UTF16 versions are converted from their UTF8 counterparts on demand.
+  //
+  // An explicitly set attribute may disagree with the computed value. The
+  // Get..Attribute methods return the explicitly set value rather than the
+  // computed value in this case.
+  //
   ax::mojom::Role GetRole() const { return data().role; }
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
@@ -350,6 +375,7 @@ class AX_EXPORT AXNode final {
     return data().string_attributes;
   }
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
+  bool CanComputeStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
 
@@ -368,6 +394,7 @@ class AX_EXPORT AXNode final {
     return data().intlist_attributes;
   }
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
+  bool CanComputeIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
 

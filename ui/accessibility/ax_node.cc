@@ -969,17 +969,62 @@ int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
 }
 
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+  if (data().HasStringAttribute(attribute)) {
+    return true;
+  }
+  return CanComputeStringAttribute(attribute);
+}
+
+bool AXNode::CanComputeStringAttribute(
+    ax::mojom::StringAttribute attribute) const {
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      // The value attribute could be computed on the browser for content
+      // editables and ARIA text/search boxes.
+      return data().IsNonAtomicTextField();
+
+    case ax::mojom::StringAttribute::kName:
+      // The name may be suppressed when serializing an AXInlineTextBox if it
+      // can be inferred from the parent.
+      return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
+             data().role == ax::mojom::Role::kInlineTextBox &&
+             data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
+             GetParent() &&
+             GetParent()->data().GetNameFrom() ==
+                 ax::mojom::NameFrom::kContents &&
+             GetParent()->data().HasStringAttribute(
+                 ax::mojom::StringAttribute::kName);
+
+    default:
+      return false;
+  }
 }
 
 const std::string& AXNode::GetStringAttribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
+  if (data().HasStringAttribute(attribute)) {
+    return data().GetStringAttribute(attribute);
+  }
+  if (CanComputeStringAttribute(attribute)) {
+    // Computed string attributes are cached.
+    return GetComputedNodeData().ComputeAttributeUTF8(attribute);
+  }
+  return base::EmptyString();
 }
 
 std::u16string AXNode::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
+  // String values in AXNodeData are in utf8 format. The getter for UTF16 does
+  // an implicit conversion.
+  if (data().HasStringAttribute(attribute)) {
+    const std::string& value_utf8 = data().GetStringAttribute(attribute);
+    return base::UTF8ToUTF16(value_utf8);
+  }
+
+  if (CanComputeStringAttribute(attribute)) {
+    return GetComputedNodeData().ComputeAttributeUTF16(attribute);
+  }
+  return std::u16string();
 }
 
 bool AXNode::HasInheritedStringAttribute(
@@ -1008,12 +1053,37 @@ std::u16string AXNode::GetInheritedString16Attribute(
 }
 
 bool AXNode::HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
-  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+  if (data().HasIntListAttribute(attribute)) {
+    return true;
+  }
+  return CanComputeIntListAttribute(attribute);
+}
+
+bool AXNode::CanComputeIntListAttribute(
+    ax::mojom::IntListAttribute attribute) const {
+  switch (attribute) {
+    case ax::mojom::IntListAttribute::kLineStarts:
+    case ax::mojom::IntListAttribute::kLineEnds:
+    case ax::mojom::IntListAttribute::kSentenceStarts:
+    case ax::mojom::IntListAttribute::kSentenceEnds:
+    case ax::mojom::IntListAttribute::kWordStarts:
+    case ax::mojom::IntListAttribute::kWordEnds:
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 const std::vector<int32_t>& AXNode::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
-  return GetComputedNodeData().GetOrComputeAttribute(attribute);
+  if (data().HasIntListAttribute(attribute)) {
+    return data().GetIntListAttribute(attribute);
+  }
+  if (CanComputeIntListAttribute(attribute)) {
+    return GetComputedNodeData().ComputeAttribute(attribute);
+  }
+  return data().GetIntListAttribute(ax::mojom::IntListAttribute::kNone);
 }
 
 AXLanguageInfo* AXNode::GetLanguageInfo() const {
