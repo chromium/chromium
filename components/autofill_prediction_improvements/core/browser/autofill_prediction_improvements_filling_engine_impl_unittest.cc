@@ -69,6 +69,12 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
           ->mutable_field_data();
   filled_field->set_field_label("label");
   filled_field->set_field_value("value");
+  optimization_guide::proto::FormFieldData* empty_field =
+      response.mutable_form_data()
+          ->add_filled_form_field_data()
+          ->mutable_field_data();
+  empty_field->set_field_label("empty");
+  empty_field->set_field_value("");
   optimization_guide::proto::FormFieldData* not_in_original_form_field =
       response.mutable_form_data()
           ->add_filled_form_field_data()
@@ -90,8 +96,10 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   form_field_data.set_label(u"label");
   autofill::FormFieldData form_field_data2;
   form_field_data2.set_label(u"notinresponseandnotfilled");
+  autofill::FormFieldData form_field_data3;
+  form_field_data3.set_label(u"empty");
   autofill::FormData form_data;
-  form_data.set_fields({form_field_data, form_field_data2});
+  form_data.set_fields({form_field_data, form_field_data2, form_field_data3});
   optimization_guide::proto::AXTreeUpdate ax_tree;
   base::test::TestFuture<base::expected<autofill::FormData, bool>,
                          std::optional<std::string>>
@@ -101,7 +109,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   base::expected<autofill::FormData, bool> form_data_or_err =
       std::get<0>(test_future.Take());
   EXPECT_TRUE(form_data_or_err.has_value());
-  EXPECT_EQ(2u, form_data_or_err->fields().size());
+  EXPECT_EQ(3u, form_data_or_err->fields().size());
   autofill::FormFieldData filled_field_response = form_data_or_err->fields()[0];
   EXPECT_EQ(u"label", filled_field_response.label());
   EXPECT_EQ(u"value", filled_field_response.value());
@@ -109,6 +117,10 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
       form_data_or_err->fields()[1];
   EXPECT_EQ(u"notinresponseandnotfilled", filled_field_response2.label());
   EXPECT_TRUE(filled_field_response2.value().empty());
+  autofill::FormFieldData filled_field_response3 =
+      form_data_or_err->fields()[2];
+  EXPECT_EQ(u"empty", filled_field_response3.label());
+  EXPECT_TRUE(filled_field_response3.value().empty());
 }
 
 TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,

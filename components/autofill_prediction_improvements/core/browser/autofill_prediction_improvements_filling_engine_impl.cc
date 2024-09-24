@@ -114,6 +114,10 @@ void AutofillPredictionImprovementsFillingEngineImpl::FillFormDataWithResponse(
       form_data.mutable_fields(/*pass_key=*/{});
   for (const optimization_guide::proto::FilledFormFieldData&
            filled_form_field_proto : form_data_proto.filled_form_field_data()) {
+    if (filled_form_field_proto.field_data().field_value().empty()) {
+      continue;
+    }
+
     // TODO: b/357098401 - Change it to look by renderer ID which is unique
     // rather than label.
     if (auto it = base::ranges::find(
