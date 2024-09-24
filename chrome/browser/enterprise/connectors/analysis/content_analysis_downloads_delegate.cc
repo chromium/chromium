@@ -70,7 +70,6 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
               enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
 
   if (obfuscation_data && obfuscation_data->is_obfuscated) {
-    LOG(ERROR) << "is obfuscated!";
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
@@ -89,10 +88,7 @@ void ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete(
   if (!deobfuscation_result.has_value()) {
     // TODO(b/367259664): Add better error handling for deobfuscation.
     DVLOG(1) << "Failed to deobfuscate file.";
-    LOG(ERROR) << "failed deobfuscation";
   }
-  LOG(ERROR) << "deobfuscation was successful";
-
   Open();
 }
 
