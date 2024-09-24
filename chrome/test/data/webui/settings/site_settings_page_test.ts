@@ -61,6 +61,12 @@ suite('SiteSettingsPage', function() {
           },
         },
       },
+      tracking_protection: {
+        block_all_3pc_toggle_enabled: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
     };
     document.body.appendChild(page);
     flush();
@@ -131,9 +137,40 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
+  test('CookiesLinkRowSublabelInModeB', async function() {
+    // This test verifies the Tracking Protection rewind label.
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: true,
+      isTrackingProtectionUxEnabled: false,
+    });
+    setupPage();
+    const cookiesLinkRow =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!;
+
+    page.set(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', true);
+    await flushTasks;
+    assertTrue(Boolean(page.get(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
+    await flushTasks;
+    assertFalse(Boolean(page.get(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelLimited'),
+        cookiesLinkRow.subLabel);
+  });
+
   test('TrackingProtectionLinkRowSubLabel', async function() {
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: true,
+      isTrackingProtectionUxEnabled: true,
     });
     setupPage();
     const cookiesLinkRow =
@@ -267,7 +304,6 @@ suite('SiteSettingsPage', function() {
     assertTrue(Boolean(page.get(
         'prefs.safety_hub.unused_site_permissions_revocation.enabled.value')));
   });
-
 });
 
 const unusedSitePermissionMockData = [{

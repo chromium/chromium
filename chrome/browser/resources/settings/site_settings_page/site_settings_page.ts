@@ -444,14 +444,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:zoom-in',
     },
   ];
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
+      loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
     categoryList.push({
       route: routes.TRACKING_PROTECTION,
       id: Id.COOKIES,
       label: 'trackingProtectionLinkRowLabel',
       icon: 'settings:visibility-off',
-      enabledLabel: 'siteSettingsCookiesAllowed',
-      disabledLabel: 'siteSettingsBlocked',
     });
   } else {
     categoryList.push({
@@ -459,8 +458,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
       icon: 'privacy:cookie',
-      enabledLabel: 'trackingProtectionLinkRowSubLabel',
-      disabledLabel: 'trackingProtectionLinkRowSubLabel',
     });
   }
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));

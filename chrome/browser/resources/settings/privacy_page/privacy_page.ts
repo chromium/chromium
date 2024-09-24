@@ -198,8 +198,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       is3pcdRedesignEnabled_: {
         type: Boolean,
         value() {
-            return loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')
-             && loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
+          return loadTimeData.getBoolean(
+                     'is3pcdCookieSettingsRedesignEnabled') &&
+              loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
         },
       },
 
@@ -620,6 +621,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private computeThirdPartyCookiesSublabel_(): string {
+    // Handle the correct pref in Mode B.
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+      if (this.getPref('tracking_protection.block_all_3pc_toggle_enabled')
+              .value) {
+        return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
+      }
+      return this.i18n('thirdPartyCookiesLinkRowSublabelLimited');
+    }
     const currentCookieSetting =
         this.getPref('profile.cookie_controls_mode').value;
     switch (currentCookieSetting) {

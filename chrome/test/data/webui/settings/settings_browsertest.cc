@@ -1015,6 +1015,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionSubpage) {
           "runMochaSuite('TrackingProtectionSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, TrackingProtectionUxDisabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('TrackingProtectionUxDisabled')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");
 }

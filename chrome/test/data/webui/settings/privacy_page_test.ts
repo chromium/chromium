@@ -440,6 +440,7 @@ suite(`TrackingProtectionSubpage`, function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       is3pcdCookieSettingsRedesignEnabled: true,
+      isTrackingProtectionUxEnabled: true,
     });
     resetRouterForTesting();
 
@@ -495,6 +496,63 @@ suite(`TrackingProtectionSubpage`, function() {
     await flushTasks();
     assertEquals(
         routes.TRACKING_PROTECTION, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite(`TrackingProtectionUxDisabled`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      // Covering the case where we are in Mode B without the Tracking
+      // Protection UX.
+      is3pcdCookieSettingsRedesignEnabled: true,
+      isTrackingProtectionUxEnabled: false,
+    });
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('cookiesSubpageAttributes', async function() {
+    // The subpage is only in the DOM if the corresponding route is open.
+    page.shadowRoot!
+        .querySelector<CrLinkRowElement>('#thirdPartyCookiesLinkRow')!.click();
+    await flushTasks();
+
+    const cookiesSubpage =
+        page.shadowRoot!.querySelector<PolymerElement>('#cookies');
+    assertTrue(!!cookiesSubpage);
+    assertEquals(
+        page.i18n('thirdPartyCookiesPageTitle'),
+        cookiesSubpage.getAttribute('page-title'));
+    const associatedControl = cookiesSubpage.get('associatedControl');
+    assertTrue(!!associatedControl);
+    assertEquals('thirdPartyCookiesLinkRow', associatedControl.id);
+  });
+
+  test('clickCookiesRow', async function() {
+    const thirdPartyCookiesLinkRow =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#thirdPartyCookiesLinkRow');
+    assertTrue(!!thirdPartyCookiesLinkRow);
+    thirdPartyCookiesLinkRow.click();
+    // Ensure we navigate to the correct page.
+    await flushTasks();
+    assertEquals(
+        routes.COOKIES, Router.getInstance().getCurrentRoute());
   });
 });
 

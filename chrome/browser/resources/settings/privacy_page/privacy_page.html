@@ -64,7 +64,9 @@
               start-icon="privacy:cookie"
               class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
               sub-label="[[computeThirdPartyCookiesSublabel_(
-                  prefs.profile.cookie_controls_mode.*)]]"
+                  prefs.profile.cookie_controls_mode.*,
+                  prefs.tracking_protection.block_all_3pc_toggle_enabled.*
+                  )]]"
               on-click="onCookiesClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
