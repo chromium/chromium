@@ -2610,12 +2610,10 @@ crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/allow-attri
 crbug.com/367497041 [ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/create.tentative.https.html [ Failure Timeout ]
-crbug.com/367426156 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366343803 external/wpt/css/css-inline/text-box-trim/text-box-trim-ignore-nested-text-box-edge.html [ Failure ]
 crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
 crbug.com/367426146 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
-crbug.com/366323456 [ Win11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366307885 [ Mac15-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?npu [ Skip Timeout ]
 crbug.com/366343782 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/background-repeat/background-repeat-repeat-x.xht [ Failure ]
 crbug.com/366307017 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
@@ -5439,9 +5437,6 @@ crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.htm
 crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash Failure Pass ]
 
 
-# Selectlist flakes
-crbug.com/1394524 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-form-state-restore.tentative.html [ Failure Pass Timeout ]
-
 # CustomizableSelect
 crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-child-button-and-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-child-button-and-datalist-invalidation.tentative.html [ Timeout ]
@@ -5488,6 +5483,17 @@ crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customi
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
 crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
 
+# "Selectlist" tests to be moved to select:
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-events.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-keyboard-behavior.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-focusable.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-pseudo-light-dismiss-invalidation.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-selectedoption-element-cloning.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-selectedoption-element.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-text-only.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/tab-closes-listbox.tentative.html [ Failure ]
+
+
 # Position-try-fallbacks UA stylesheet parsing problem:
 # WPT reference image infra problem:
 crbug.com/364669904 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
@@ -5498,6 +5504,10 @@ crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element
 crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-left.tentative.html [ Failure ]
 crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-right.tentative.html [ Failure ]
 crbug.com/364669904 [ Win ] wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
+
+# I think these are just test issues, but at least the scrollbars are related:
+crbug.com/362536387 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-many-options.tentative.html [ Failure ]
+crbug.com/362536387 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-popover-position-with-zoom.tentative.html [ Failure ]
 
 # These are accessibility tests which fail when CustomizableSelect is enabled,
 # which is set to experimental. They will pass after work has been completed on
@@ -5518,12 +5528,28 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 # crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
 # wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
 # so, please file a bug for that case with details.
-crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
-crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # The listbox doesn't scroll to the selected option, during typeahead:
 crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
 crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
+
+# Several behavior differences between <selectlist> and <select style="appearance:base-select">:
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-events.tentative.html [ Timeout ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-explicit-size.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-font-size.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-keyboard.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-visible-overflow.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-label-rendering.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-overflow-x.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-pseudo-open-closed.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-rtl.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-selected-value-behavior.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-value-selectedOption.tentative.html [ Failure ]
+# Shape of the disclosure:
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-text-only.tentative.html [ Failure ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]

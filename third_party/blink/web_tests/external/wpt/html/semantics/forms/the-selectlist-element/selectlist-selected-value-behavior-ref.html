@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<script src="support/fake-selectlist.js"></script>
-<body>
-<script>
-  const selectlist = createFakeSelectlist('hello world');
-  document.body.appendChild(selectlist);
-  selectlist.querySelector('.fake-selectlist-selected-value')
-    .style.color = 'blue';
-</script>
+<link rel=stylesheet href="support/customizable-select-styles.css">
+<div class="customizable-select-button open" style="anchor-name:--button" popovertarget=popover id=button>
+  <span class=customizable-select-selectedoption>option</span>
+</div>
+<div id=popover popover=auto style="position-anchor:--button" class=customizable-select-popover>
+</div>
+
+<style>
+  .customizable-select-selectedoption {
+    color: blue;
+  }
+</style>

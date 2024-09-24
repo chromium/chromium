@@ -6,12 +6,18 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <input id="input1">
-<selectlist id="selectlist" tabindex="2">
+<select id="select" tabindex="2">
   <option>one</option>
   <option>two</option>
   <option>three</option>
-</selectlist>
+</select>
 <input id="input3" tabindex="1">
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
 promise_test(async () => {
@@ -27,7 +33,7 @@ promise_test(async () => {
   assert_equals(document.activeElement.id, "input3", "input3 should be active");
 
   await test_driver.send_keys(input3, TAB_KEY);
-  assert_equals(document.activeElement.id, "selectlist", "selectlist should be active");
-}, "Check that tabindex applies to <selectlist>");
+  assert_equals(document.activeElement.id, "select", "select should be active");
+}, "Check that tabindex applies to <select>");
 </script>
 

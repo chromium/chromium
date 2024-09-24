@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>HTMLSelectListElement Test: many options</title>
+<title>HTMLselectElement Test: many options</title>
 <link rel="author" title="Ionel Popescu" href="mailto:iopopesc@microsoft.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,13 +9,13 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <style>
-  #selectList0 {
+  #select0 {
     position: absolute;
     top: 0px;
     left: 0px;
   }
 
-  #selectList0-popover {
+  ::picker(select) {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
@@ -23,10 +23,13 @@
     overflow: auto;
     padding: 4px;
   }
+  select, ::picker(select) {
+    appearance: base-select;
+  }
 </style>
 
-<selectlist id="selectList0">
-  <div popover slot="listbox" behavior="listbox" id="selectList0-popover">
+<select id="select0">
+  <div id="select0-popover">
     <option>bottom left</option>
     <option>two</option>
     <option>three</option>
@@ -115,7 +118,7 @@
     <option>two</option>
     <option>three</option>
   </div>
-</selectlist>
+</select>
 <br>
 
 <script>
@@ -128,13 +131,13 @@
   }
 
   promise_test(async () => {
-    const selectList0 = document.getElementById("selectList0");
-    const selectList0Popover = document.getElementById("selectList0-popover");
+    const select0 = document.getElementById("select0");
+    const select0Popover = document.getElementById("select0-popover");
 
-    await clickOn(selectList0);
-    assert_equals(Math.round(selectList0.getBoundingClientRect().bottom), Math.round(selectList0Popover.getBoundingClientRect().top));
-    assert_equals(Math.round(selectList0.getBoundingClientRect().left), Math.round(selectList0Popover.getBoundingClientRect().left));
-    assert_equals(window.innerHeight, Math.round(selectList0Popover.getBoundingClientRect().bottom));
+    await clickOn(select0);
+    assert_equals(Math.round(select0.getBoundingClientRect().bottom), Math.round(select0Popover.getBoundingClientRect().top));
+    assert_equals(Math.round(select0.getBoundingClientRect().left), Math.round(select0Popover.getBoundingClientRect().left));
+    assert_equals(window.innerHeight, Math.round(select0Popover.getBoundingClientRect().bottom));
   }, "The popover should be bottom left positioned");
 
 </script>

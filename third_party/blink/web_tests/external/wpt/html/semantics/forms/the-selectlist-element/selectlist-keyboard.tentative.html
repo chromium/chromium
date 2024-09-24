@@ -1,34 +1,49 @@
 <!doctype html>
-<title>HTMLSelectListElement Test: keyboard accessibility</title>
+<title>HTMLselectElement Test: keyboard accessibility</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-  <selectlist id="selectList0">
-    <button id="selectList0-button0" type=selectlist>button</button>
+
+
+<!-- NOTE: most of this test is duplicated in the
+     select-keyboard-behavior{.tentative}.html test. It'd be good to
+     merge the content of this test into that one.-->
+
+
+  <select id="select0">
+    <button id="select0-button0" type=select>button</button>
     <option class=one>one</option>
     <option class=two>two</option>
     <option class=three>three</option>
-  </selectlist>
+  </select>
 
-  <selectlist id="selectList1">
-    <option id="selectList1-child0">one</option>
-  </selectlist>
+  <select id="select1">
+    <option id="select1-child0">one</option>
+  </select>
 
-  <selectlist id="selectList2" disabled>
-    <button id="selectList2-button0" type=selectlist>button</button>
+  <select id="select2" disabled>
+    <button id="select2-button0" type=select>button</button>
     <option disabled>one</option>
     <option>two</option>
     <option>three</option>
-  </selectlist>
+  </select>
 
-  <selectlist id="selectList3">
-    <button id="selectList3-button0" type=selectlist>button</button>
+  <select id="select3">
+    <button id="select3-button0" type=select>button</button>
     <option class=one>one</option>
     <option disabled>two</option>
     <option class=three>three</option>
-  </selectlist>
+  </select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+
 <script>
 // See https://w3c.github.io/webdriver/#keyboard-actions
 const KEY_CODE_MAP = {
@@ -47,96 +62,96 @@ function clickOn(element) {
   }
 
 promise_test(async t => {
-  const selectList = document.querySelector("#selectList0");
-  const button = document.querySelector("#selectList0-button0");
-  assert_false(selectList.open, "selectlist should not be initially open");
+  const select = document.querySelector("#select0");
+  const button = document.querySelector("#select0-button0");
+  assert_false(select.matches(':open'), "select should not be initially open");
 
   await test_driver.send_keys(button, KEY_CODE_MAP.Enter);
-  assert_false(selectList.open, "Enter key shouldn't open selectlist");
+  assert_false(select.matches(':open'), "Enter key shouldn't open select");
   await test_driver.send_keys(button, KEY_CODE_MAP.Space);
-  assert_true(selectList.open, "Space key should open selectlist");
-  assert_equals(selectList.value, "one");
+  assert_true(select.matches(':open'), "Space key should open select");
+  assert_equals(select.value, "one");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowDown);
-  assert_equals(document.activeElement, selectList.querySelector('.two'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowDown);
+  assert_equals(document.activeElement, select.querySelector('.two'),
     "Down arrow should focus the next option.");
-  assert_equals(selectList.value, "one", "Down arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Down arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowDown);
-  assert_equals(document.activeElement, selectList.querySelector('.three'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowDown);
+  assert_equals(document.activeElement, select.querySelector('.three'),
     "Down arrow should focus the next option.");
-  assert_equals(selectList.value, "one", "Down arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Down arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowDown);
-  assert_equals(document.activeElement, selectList.querySelector('.three'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowDown);
+  assert_equals(document.activeElement, select.querySelector('.three'),
     "Down arrow should do nothing if already at the last option.");
-  assert_equals(selectList.value, "one", "Down arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Down arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowUp);
-  assert_equals(document.activeElement, selectList.querySelector('.two'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowUp);
+  assert_equals(document.activeElement, select.querySelector('.two'),
     "Up arrow should focus the previous option.");
-  assert_equals(selectList.value, "one", "Up arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Up arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowUp);
-  assert_equals(document.activeElement, selectList.querySelector('.one'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowUp);
+  assert_equals(document.activeElement, select.querySelector('.one'),
     "Up arrow should focus the previous option.");
-  assert_equals(selectList.value, "one", "Up arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Up arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.ArrowUp);
-  assert_equals(document.activeElement, selectList.querySelector('.one'),
+  await test_driver.send_keys(select, KEY_CODE_MAP.ArrowUp);
+  assert_equals(document.activeElement, select.querySelector('.one'),
     "Up arrow should do nothing if already at the first option.");
-  assert_equals(selectList.value, "one", "Up arrow should not commit the newly focused option.");
+  assert_equals(select.value, "one", "Up arrow should not commit the newly focused option.");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.Enter);
-  assert_false(selectList.open, "Enter key should close selectlist");
+  await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+  assert_false(select.matches(':open'), "Enter key should close select");
 
   await test_driver.send_keys(button, KEY_CODE_MAP.Space);
-  assert_true(selectList.open, "Space key should open selectlist");
+  assert_true(select.matches(':open'), "Space key should open select");
 
-  // This behavior is suspicious (since Space key can open the selectlist),
+  // This behavior is suspicious (since Space key can open the select),
   // but it maches <select>. See https://github.com/openui/open-ui/issues/386
-  await test_driver.send_keys(selectList, " ");
-  assert_true(selectList.open, "Space key should *not* close selectlist");
+  await test_driver.send_keys(select, " ");
+  assert_true(select.matches(':open'), "Space key should *not* close select");
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.Enter);
-  assert_false(selectList.open, "Enter key should close selectlist");
-}, "Validate Enter, Up/Down Arrow, and Space keyboard accessibility support for <selectlist>");
+  await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+  assert_false(select.matches(':open'), "Enter key should close select");
+}, "Validate Enter, Up/Down Arrow, and Space keyboard accessibility support for <select>");
 
 promise_test(async t => {
-  const selectListOption = document.getElementById("selectList1-child0");
+  const selectOption = document.getElementById("select1-child0");
   const event = document.createEvent("Event");
   event.initEvent("keydown");
-  selectListOption.dispatchEvent(event);
-}, "Firing a synthetic event at a selectlist's option doesn't crash");
+  selectOption.dispatchEvent(event);
+}, "Firing a synthetic event at a select's option doesn't crash");
 
 promise_test(async t => {
-  const selectList2 = document.querySelector("#selectList2");
-  const selectList2Button = document.querySelector("#selectList2-button0");
-  assert_false(selectList2.open, "selectlist should not be initially open");
+  const select2 = document.querySelector("#select2");
+  const select2Button = document.querySelector("#select2-button0");
+  assert_false(select2.matches(':open'), "select should not be initially open");
 
-  await test_driver.send_keys(selectList2Button, KEY_CODE_MAP.Enter);
-  assert_false(selectList2.open, "Enter key should not open a disabled selectlist");
-  await clickOn(selectList2);
-  assert_false(selectList2.open, "Click should not open a disabled selectlist");
-  assert_equals(selectList2.value, "one");
+  await test_driver.send_keys(select2Button, KEY_CODE_MAP.Enter);
+  assert_false(select2.matches(':open'), "Enter key should not open a disabled select");
+  await clickOn(select2);
+  assert_false(select2.matches(':open'), "Click should not open a disabled select");
+  assert_equals(select2.value, "one");
 
-  const selectList3 = document.querySelector("#selectList3");
-  const selectList3Button = document.querySelector("#selectList3-button0");
-  assert_false(selectList3.open, "selectlist should not be initially open");
+  const select3 = document.querySelector("#select3");
+  const select3Button = document.querySelector("#select3-button0");
+  assert_false(select3.matches(':open'), "select should not be initially open");
 
-  await test_driver.send_keys(selectList3Button, KEY_CODE_MAP.Enter);
-  assert_false(selectList3.open, "Enter key shouldn't open selectlist");
+  await test_driver.send_keys(select3Button, KEY_CODE_MAP.Enter);
+  assert_false(select3.matches(':open'), "Enter key shouldn't open select");
 
-  await test_driver.send_keys(selectList3Button, KEY_CODE_MAP.Space);
-  assert_true(selectList3.open, "Space key should open selectlist");
-  assert_equals(selectList3.value, "one");
+  await test_driver.send_keys(select3Button, KEY_CODE_MAP.Space);
+  assert_true(select3.matches(':open'), "Space key should open select");
+  assert_equals(select3.value, "one");
 
-  await test_driver.send_keys(selectList3, KEY_CODE_MAP.ArrowDown);
-  assert_equals(document.activeElement, selectList3.querySelector('.three'),
+  await test_driver.send_keys(select3, KEY_CODE_MAP.ArrowDown);
+  assert_equals(document.activeElement, select3.querySelector('.three'),
     "Down arrow should go to next non-disabled option");
 
-  await test_driver.send_keys(selectList3, KEY_CODE_MAP.ArrowUp);
-  assert_equals(document.activeElement, selectList3.querySelector('.one'),
+  await test_driver.send_keys(select3, KEY_CODE_MAP.ArrowUp);
+  assert_equals(document.activeElement, select3.querySelector('.one'),
     "Up arrow should go to the previous non-disabled option");
-}, "Validate Enter, Up/Down Arrow keyboard accessibility support for disabled <selectlist>");
+}, "Validate Enter, Up/Down Arrow keyboard accessibility support for disabled <select>");
 </script>

@@ -3,7 +3,13 @@
 <link rel=help href="https://github.com/openui/open-ui/issues/702">
 <link rel=match href="selectlist-text-only-ref.html">
 
-<selectlist>
+<select>
   text node
   <option>option</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>

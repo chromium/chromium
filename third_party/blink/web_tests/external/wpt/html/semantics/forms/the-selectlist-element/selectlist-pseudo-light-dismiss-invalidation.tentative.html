@@ -6,42 +6,45 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<selectlist id=selectlist>
+<select id=select>
   <option id=optone>one</option>
   <option id=opttwo>two</option>
-</selectlist>
+</select>
 <style>
-selectlist {
+select {
   background-color: rgb(0, 0, 255);
 }
-selectlist:closed {
+select:closed {
   background-color: rgb(0, 255, 0);
 }
-selectlist:open {
+select:open {
   background-color: rgb(255, 0, 0);
 }
+select, ::picker(select) {
+  appearance: base-select;
+}
 </style>
-<button id=button>hello world</button>
+<button id=button>option</button>
 
 <script>
 promise_test(async () => {
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(0, 255, 0)',
-    'The selectlist should match :closed at the start of the test.');
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
+    'The select should match :closed at the start of the test.');
 
-  await test_driver.click(selectlist);
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(255, 0, 0)',
-    'The selectlist should match :open when opened.');
+  await test_driver.click(select);
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
+    'The select should match :open when opened.');
 
   await test_driver.click(opttwo);
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(0, 255, 0)',
-    'The selectlist should match :closed after clicking an option.');
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
+    'The select should match :closed after clicking an option.');
 
-  await test_driver.click(selectlist);
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(255, 0, 0)',
-    'The selectlist should match :open when reopened.');
+  await test_driver.click(select);
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
+    'The select should match :open when reopened.');
 
   await test_driver.click(button);
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(0, 255, 0)',
-    'The selectlist should match :closed after light dismiss.');
-}, 'selectlist should not match :open when light dismissed.');
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 255, 0)',
+    'The select should match :closed after light dismiss.');
+}, 'select should not match :open when light dismissed.');
 </script>

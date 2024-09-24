@@ -4,58 +4,71 @@
 <link rel=help href="https://drafts.csswg.org/selectors/#open-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
-<selectlist id=myselectlist>
-  <button type=selectlist id=custombutton>button</button>
+<select id=myselect>
   <option>one</option>
   <option>two</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
-test(() => {
-  assert_false(myselectlist.matches(':open'),
-    'Selectlist should not match :open while it is closed.');
-  assert_true(myselectlist.matches(':closed'),
-    'Selectlist should match :closed while it is closed.');
+function clickOn(element) {
+  const actions = new test_driver.Actions();
+  return actions.pointerMove(0, 0, {origin: element})
+    .pointerDown({button: actions.ButtonType.LEFT})
+    .pointerUp({button: actions.ButtonType.LEFT})
+    .send();
+}
 
-  custombutton.click();
+promise_test(async () => {
+  assert_false(myselect.matches(':open'),
+    'select should not match :open while it is closed.');
+  assert_true(myselect.matches(':closed'),
+    'select should match :closed while it is closed.');
+  await clickOn(myselect);
 
-  assert_true(myselectlist.matches(':open'),
-    'Selectlist should match :open while it is open.');
-  assert_false(myselectlist.matches(':closed'),
-    'Selectlist should not match :closed while it is open.');
-}, 'Selectlist should support :open and :closed pseudo selectors.');
+  assert_true(myselect.matches(':open'),
+    'select should match :open while it is open.');
+  assert_false(myselect.matches(':closed'),
+    'select should not match :closed while it is open.');
+}, 'select should support :open and :closed pseudo selectors.');
 </script>
 
-<selectlist id=selectlistinvalidation>
-  <button type=selectlist>button</button>
+<select id=selectinvalidation>
   <option>one</option>
   <option>two</option>
-</selectlist>
+</select>
 <style>
-selectlist:closed {
+select:closed {
   background-color: red;
 }
-selectlist:open {
+select:open {
   background-color: green;
 }
 </style>
 
 <script>
-test(() => {
-  const selectlist = document.getElementById('selectlistinvalidation');
-  const button = selectlist.querySelector('button');
-  const option = selectlist.querySelector('option');
+promise_test(async () => {
+  const select = document.getElementById('selectinvalidation');
+  const option = select.querySelector('option');
 
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(255, 0, 0)',
-    'The style rules from :closed should apply when the selectlist is closed.');
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
+    'The style rules from :closed should apply when the select is closed.');
 
-  button.click();
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(0, 128, 0)',
-    'The style rules from :open should apply when the selectlist is open.');
+  await clickOn(select);
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(0, 128, 0)',
+    'The style rules from :open should apply when the select is open.');
 
   option.click();
-  assert_equals(getComputedStyle(selectlist).backgroundColor, 'rgb(255, 0, 0)',
-    'The style rules from :closed should apply when the selectlist is opened and closed again.');
-}, 'Selectlist :open and :closed should invalidate correctly.');
+  assert_equals(getComputedStyle(select).backgroundColor, 'rgb(255, 0, 0)',
+    'The style rules from :closed should apply when the select is opened and closed again.');
+}, 'select :open and :closed should invalidate correctly.');
 </script>

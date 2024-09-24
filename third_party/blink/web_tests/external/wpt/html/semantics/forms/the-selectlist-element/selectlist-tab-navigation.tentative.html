@@ -6,28 +6,34 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <input id="input1">
-<selectlist id="selectlist">
+<select id="select">
   <option>one</option>
   <option>two</option>
   <option>three</option>
-</selectlist>
+</select>
 <input id="input3">
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
 promise_test(async () => {
   const TAB_KEY = "\uE004";
 
   const input1 = document.getElementById("input1");
-  const selectlist = document.getElementById("selectlist");
+  const select = document.getElementById("select");
 
   input1.focus();
   assert_equals(document.activeElement.id, "input1", "input1 should be active");
 
   await test_driver.send_keys(input1, TAB_KEY);
-  assert_equals(document.activeElement.id, "selectlist", "selectlist should be active");
+  assert_equals(document.activeElement.id, "select", "select should be active");
 
-  await test_driver.send_keys(selectlist, TAB_KEY);
+  await test_driver.send_keys(select, TAB_KEY);
   assert_equals(document.activeElement.id, "input3", "input3 should be active");
-}, "Check that <selectlist> occupies just one slot in tab navigation.");
+}, "Check that <select> occupies just one slot in tab navigation.");
 </script>
 

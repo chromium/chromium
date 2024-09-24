@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<script src="support/fake-selectlist.js"></script>
-<body>
-<script>
-  const selectlist = createFakeSelectlist('option');
-  document.body.appendChild(selectlist);
-  const button = selectlist.querySelector('.fake-selectlist-internal-selectlist-button');
-  button.style.width = "400px";
-  button.style.height = "50px";
-</script>
+
+<link rel=stylesheet href="support/customizable-select-styles.css">
+<div class="customizable-select-button open" style="anchor-name:--button" popovertarget=popover id=button>
+  <span class=customizable-select-selectedoption>option</span>
+</div>
+<div id=popover popover=auto style="position-anchor:--button" class=customizable-select-popover>
+  <div class="customizable-select-option selected">one</div>
+  <div class=customizable-select-option>two</div>
+</div>
+
+<style>
+  button {
+    width: 400px;
+    height: 50px;
+  }
+</style>

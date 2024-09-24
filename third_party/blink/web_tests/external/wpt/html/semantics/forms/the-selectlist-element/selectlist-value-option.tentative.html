@@ -4,17 +4,23 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<selectlist id=selectlist>
+<select id=select>
   <option id=optone>innertext one</option>
   <option id=opttwo value=valueattribute>innertext two</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
 test(() => {
-  assert_equals(selectlist.value, 'innertext one',
+  assert_equals(select.value, 'innertext one',
     'The first option should be selected initially.');
-  selectlist.value = 'valueattribute';
-  assert_equals(selectlist.value, 'valueattribute',
+  select.value = 'valueattribute';
+  assert_equals(select.value, 'valueattribute',
     'Assigning value should look at the options value, not innertext');
-}, 'selectlist.value should reflect option.value');
+}, 'select.value should reflect option.value');
 </script>

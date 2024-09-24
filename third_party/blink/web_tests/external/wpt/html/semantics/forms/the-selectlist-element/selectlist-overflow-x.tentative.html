@@ -1,16 +1,22 @@
 <!DOCTYPE html>
-<!-- Tests that selectlist button part text is truncated by the button. -->
+<!-- Tests that select button part text is truncated by the button. -->
 <link rel=author href="mailto:pkotwicz@chromium.org">
 <link rel="match" href="selectlist-overflow-x-ref.tentative.html">
 <style>
-selectlist {
+select {
   width:30px;
   height:20px;
 }
-selectlist::part(button) {
+select::part(button) {
   background-color:blue;
 }
 </style>
-<selectlist>
+<select>
   <option>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>

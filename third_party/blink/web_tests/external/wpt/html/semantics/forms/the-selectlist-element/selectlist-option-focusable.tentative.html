@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>HTMLSelectListElement Test: option facusable</title>
+<title>select element: option focusable</title>
 <link rel="author" title="Ionel Popescu" href="mailto:iopopesc@microsoft.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,21 +8,19 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<selectlist id="selectlist0">
+<select id="select0">
   <option>one</option>
-  <option id="selectlist0-option2">two</option>
+  <option id="select0-option2">two</option>
   <option>three</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
 
 <script>
-// See https://w3c.github.io/webdriver/#keyboard-actions
-const KEY_CODE_MAP = {
-  'Enter':      '\uE007',
-  'Space':      '\uE00D',
-  'ArrowUp':    '\uE013',
-  'ArrowDown':  '\uE015'
-};
-
 function clickOn(element) {
   const actions = new test_driver.Actions();
   return actions.pointerMove(0, 0, {origin: element})
@@ -32,18 +30,19 @@ function clickOn(element) {
 }
 
 promise_test(async t => {
-  const selectList = document.querySelector("#selectlist0");
-  assert_false(selectList.open, "selectlist should not be initially open");
+  const select = document.querySelector("#select0");
+  assert_false(select.matches(':open'), "select should not be initially open");
 
-  await clickOn(selectList);
-  assert_true(selectList.open);
-  assert_equals(selectList.value, "one");
+  await clickOn(select);
+  assert_true(select.matches(':open'));
+  assert_equals(select.value, "one");
 
-  const option2 = document.querySelector('#selectlist0-option2');
+  const option2 = document.querySelector('#select0-option2');
   option2.focus();
   assert_equals(document.activeElement, option2);
 
-  await test_driver.send_keys(selectList, KEY_CODE_MAP.Enter);
-  assert_equals(selectList.value, "two");
-}, "Validate <option> is focusable when is a descendant of <selectlist>");
+  const kEnter = '\uE007';
+  await test_driver.send_keys(option2, kEnter);
+  assert_equals(select.value, "two");
+}, "Validate <option> is focusable when is a descendant of <select>");
 </script>

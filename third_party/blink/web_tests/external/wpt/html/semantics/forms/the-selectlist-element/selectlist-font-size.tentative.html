@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<!-- Tests that selectlist respects explicit size -->
+<!-- Tests that select respects explicit size -->
 <link rel=author href="mailto:pkotwicz@chromium.org">
 <link rel="match" href="selectlist-font-size-ref.tentative.html">
 
 <style>
-selectlist {
+select {
   font-size:48px;
 }
 </style>
-<selectlist>
+<select>
   <option>option</option>
-</selectlist>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
