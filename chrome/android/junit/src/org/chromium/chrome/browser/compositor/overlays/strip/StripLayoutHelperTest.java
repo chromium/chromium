@@ -675,7 +675,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabSelected_SelectedLastTab_RTL_HideCloseBtn() {
+    public void testTabSelected_SelectedLastTab_Rtl_HideCloseBtn() {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
@@ -698,7 +698,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabSelected_SelectedLastTab_RTL_ShowCloseBtn() {
+    public void testTabSelected_SelectedLastTab_Rtl_ShowCloseBtn() {
         initializeTest(true, false, 4);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
@@ -721,7 +721,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabSelected_SelectedNonLastTab_RTL_HideCloseBtn() {
+    public void testTabSelected_SelectedNonLastTab_Rtl_HideCloseBtn() {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
@@ -743,7 +743,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabSelected_SelectedNonLastTab_RTL_ShowCloseBtn() {
+    public void testTabSelected_SelectedNonLastTab_Rtl_ShowCloseBtn() {
         initializeTest(true, false, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.onSizeChanged(
@@ -963,7 +963,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testNewTabButtonXPosition_RTL() {
+    public void testNewTabButtonXPosition_Rtl() {
         int tabCount = 1;
         initializeTest(true, false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(
@@ -986,7 +986,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testNewTabButtonXPosition_TabStripFull_RTL() {
+    public void testNewTabButtonXPosition_TabStripFull_Rtl() {
         // Setup
         int tabCount = 5;
         initializeTest(true, false, false, 0, tabCount);
@@ -1043,37 +1043,37 @@ public class StripLayoutHelperTest {
         TintedCompositorButton ntb = spy(mStripLayoutHelper.getNewTabButton());
         when(ntb.isHovered()).thenReturn(true);
 
-        int defaultNTBHoverBackgroundTint =
+        int defaultNtbHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.08 * 255));
         assertEquals(
                 "New tab button hover highlight default tint is not as expected",
-                defaultNTBHoverBackgroundTint,
+                defaultNtbHoverBackgroundTint,
                 ntb.getBackgroundTint());
 
         // Verify new tab button hover highlight pressed tint.
         when(ntb.isHovered()).thenReturn(false);
         when(ntb.isPressed()).thenReturn(true);
         when(ntb.isPressedFromMouse()).thenReturn(true);
-        int pressedNTBHoverBackgroundTint =
+        int pressedNtbHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
         assertEquals(
                 "New tab button hover highlight pressed tint is not as expected",
-                pressedNTBHoverBackgroundTint,
+                pressedNtbHoverBackgroundTint,
                 ntb.getBackgroundTint());
         when(ntb.isPressedFromMouse()).thenReturn(false);
 
         // Verify new tab button incognito hover highlight default tint.
         when(ntb.isHovered()).thenReturn(true);
         when(ntb.isIncognito()).thenReturn(true);
-        int defaultNTBHoverBackgroundIncognitoTint =
+        int defaultNtbHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
                 "New tab button hover highlight default tint is not as expected",
-                defaultNTBHoverBackgroundIncognitoTint,
+                defaultNtbHoverBackgroundIncognitoTint,
                 ntb.getBackgroundTint());
 
         // Verify new tab button incognito hover highlight pressed tint.
@@ -1182,13 +1182,13 @@ public class StripLayoutHelperTest {
         // Verify close button incognito hover highlight default tint.
         when(closeButton.isIncognito()).thenReturn(true);
         when(closeButton.isHovered()).thenReturn(true);
-        int defaultNTBHoverBackgroundIncognitoTint =
+        int defaultNtbHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
                 "Close button hover highlight default tint is not as expected",
-                defaultNTBHoverBackgroundIncognitoTint,
+                defaultNtbHoverBackgroundIncognitoTint,
                 closeButton.getBackgroundTint());
 
         // Verify close button incognito hover highlight pressed tint.

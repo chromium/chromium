@@ -28,7 +28,7 @@ public class TabUiThemeProvider {
      *
      * @param context {@link Context} used to retrieve color.
      */
-    public static @ColorInt int getDefaultNTBContainerColor(Context context) {
+    public static @ColorInt int getDefaultNtbContainerColor(Context context) {
         return MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG);
     }
 
