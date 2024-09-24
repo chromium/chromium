@@ -134,8 +134,8 @@ class PageLoadMetricsEmbedder
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:
-  void RegisterEmbedderObservers(
-      page_load_metrics::PageLoadTracker* tracker) override;
+  void RegisterObservers(page_load_metrics::PageLoadTracker* tracker,
+                         content::NavigationHandle* navigation_handle) override;
 };
 
 PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
@@ -144,8 +144,17 @@ PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
 
 PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
-void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
-    page_load_metrics::PageLoadTracker* tracker) {
+void PageLoadMetricsEmbedder::RegisterObservers(
+    page_load_metrics::PageLoadTracker* tracker,
+    content::NavigationHandle* navigation_handle) {
+  // Page-specific observers.
+  //
+  // Other observers don't get installed because they measure things that
+  // don't apply to this type of page, rely on invariants that aren't true
+  // about WebUI chrome pages (such as visibility-related things),
+  // or because they depend on objects that don't exist for WebUI pages
+  // (namely `TabHelper`s).
+
   // TODO(crbug.com/40823327): Integrate side panel metrics with UKM.
   if (IsSidePanel(web_contents())) {
 #if defined(TOOLKIT_VIEWS)
@@ -160,16 +169,20 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (IsNonTabWebUI()) {
-    // This embedder is for a non-tab chrome:// page. Other observers don't get
-    // installed because they measure things that don't apply to this type of
-    // page, rely on invariants that aren't true about non-tab chrome pages
-    // (such as visibility-related things), or because they depend on objects
-    // that don't exist for non-tab pages (namely `TabHelper`s).
+    // This embedder is for a non-tab chrome:// page.
     tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
         GetNonTabWebUIName(web_contents())));
     return;
   }
 #endif
+
+  if (IsNewTabPageUrl(navigation_handle->GetURL())) {
+    // TODO(crbug.com/365784990): add an observer for NTP.
+    return;
+  }
+
+  // Observers for regular web pages.
+  RegisterCommonObservers(tracker);
 
   if (!IsNoStatePrefetch(web_contents())) {
     tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());

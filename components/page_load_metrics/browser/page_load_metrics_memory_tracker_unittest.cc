@@ -63,11 +63,6 @@ class TestPageLoadMetricsEmbedder
     return &memory_tracker_;
   }
 
- protected:
-  // page_load_metrics::PageLoadMetricsEmbedderBase:
-  void RegisterEmbedderObservers(
-      page_load_metrics::PageLoadTracker* tracker) override {}
-
  private:
   page_load_metrics::PageLoadMetricsMemoryTracker memory_tracker_;
 };

@@ -55,7 +55,9 @@ class TestPageLoadMetricsEmbedderInterface
 
   // Forward the registration logic to the test class so that derived classes
   // can override the logic there without depending on the embedder interface.
-  void RegisterObservers(PageLoadTracker* tracker) override {
+  void RegisterObservers(
+      PageLoadTracker* tracker,
+      content::NavigationHandle* navigation_handle) override {
     test_->RegisterObservers(tracker);
   }
 

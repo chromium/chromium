@@ -1367,8 +1367,11 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     explicit Embedder(MetricsWebContentsObserverNonPrimaryPageTest* owner)
         : owner_(owner) {}
 
-    void RegisterObservers(PageLoadTracker* tracker) override {
-      TestMetricsWebContentsObserverEmbedder::RegisterObservers(tracker);
+    void RegisterObservers(
+        PageLoadTracker* tracker,
+        content::NavigationHandle* navigation_handle) override {
+      TestMetricsWebContentsObserverEmbedder::RegisterObservers(
+          tracker, navigation_handle);
       tracker->AddObserver(std::make_unique<MetricsObserver>(owner_));
     }
 

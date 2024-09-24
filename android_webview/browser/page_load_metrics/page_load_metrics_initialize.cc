@@ -47,8 +47,8 @@ class PageLoadMetricsEmbedder
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:
-  void RegisterEmbedderObservers(
-      page_load_metrics::PageLoadTracker* tracker) override;
+  void RegisterObservers(page_load_metrics::PageLoadTracker* tracker,
+                         content::NavigationHandle* navigation_handle) override;
 };
 
 PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
@@ -57,8 +57,10 @@ PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
 
 PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
-void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
-    page_load_metrics::PageLoadTracker* tracker) {
+void PageLoadMetricsEmbedder::RegisterObservers(
+    page_load_metrics::PageLoadTracker* tracker,
+    content::NavigationHandle* navigation_handle) {
+  RegisterCommonObservers(tracker);
   tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
   tracker->AddObserver(std::make_unique<AbandonedPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<GWSAbandonedPageLoadMetricsObserver>());
