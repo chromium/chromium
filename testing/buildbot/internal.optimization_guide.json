@@ -1293,27 +1293,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
-        "swarming": {
-          "dimensions": {
-            "gpu": "8086:9bc5|8086:4680",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "optimization_guide_gpu_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "Intel UHD 630 or 770"
-      },
-      {
-        "args": [
-          "--ui-test-action-timeout=30000",
-          "-use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
