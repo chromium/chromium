@@ -1366,16 +1366,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SupportsDX12" enum="BooleanSupported"
-    expires_after="2024-09-15">
-  <owner>magchen@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <summary>
-    This metric shows whether the GPU supports D3D12. It is recorded in the
-    browser process 120 seconds after the browser launch.
-  </summary>
-</histogram>
-
 <histogram name="GPU.TransferCache.EntryFound" enum="BooleanYesNo"
     expires_after="2025-02-10">
   <owner>boliu@chromium.org</owner>

@@ -736,9 +736,6 @@ uint32_t GetGpuSupportedVulkanVersion(
 void RecordGpuSupportedDx12VersionHistograms(
     uint32_t d3d12_feature_level,
     uint32_t highest_shader_model_version) {
-  bool supports_dx12 =
-      (d3d12_feature_level >= D3D_FEATURE_LEVEL_12_0) ? true : false;
-  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", supports_dx12);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.D3D12FeatureLevel",
       ConvertToHistogramFeatureLevel(d3d12_feature_level));
