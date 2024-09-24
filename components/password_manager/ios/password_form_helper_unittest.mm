@@ -325,14 +325,18 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Success) {
   IOSPasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state(),
                                                                frame);
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(
-                  driver, std::make_optional<FormRendererId>(form_id),
-                  username_field_id, username_value));
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(
-                  driver, std::make_optional<FormRendererId>(form_id),
-                  password_field_id, password_value));
+  auto* field_data_manager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+  EXPECT_CALL(
+      password_manager_,
+      UpdateStateOnUserInput(driver, ::testing::Ref(*field_data_manager),
+                             std::make_optional<FormRendererId>(form_id),
+                             username_field_id, username_value));
+  EXPECT_CALL(
+      password_manager_,
+      UpdateStateOnUserInput(driver, ::testing::Ref(*field_data_manager),
+                             std::make_optional<FormRendererId>(form_id),
+                             password_field_id, password_value));
 
   __block bool called = false;
   __block BOOL succeeded = false;
@@ -539,18 +543,22 @@ TEST_F(PasswordFormHelperTest,
   IOSPasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state(),
                                                                frame);
+  auto* field_data_manager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
   // Don't expect to update the state for the username field because it was
   // skipped.
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(
-                  driver, std::make_optional<FormRendererId>(form_id),
-                  username_field_id, username_value))
+  EXPECT_CALL(
+      password_manager_,
+      UpdateStateOnUserInput(driver, ::testing::Ref(*field_data_manager),
+                             std::make_optional<FormRendererId>(form_id),
+                             username_field_id, username_value))
       .Times(0);
   // Expect a state update on the password field.
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(
-                  driver, std::make_optional<FormRendererId>(form_id),
-                  password_field_id, password_value));
+  EXPECT_CALL(
+      password_manager_,
+      UpdateStateOnUserInput(driver, ::testing::Ref(*field_data_manager),
+                             std::make_optional<FormRendererId>(form_id),
+                             password_field_id, password_value));
 
   __block bool called = NO;
   __block bool succeeded = NO;

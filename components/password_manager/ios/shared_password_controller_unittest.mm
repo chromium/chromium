@@ -29,6 +29,7 @@
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
@@ -1601,11 +1602,14 @@ TEST_F(SharedPasswordControllerTest, DidFillField) {
   const std::u16string value(u"value");
   auto* driver = IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
       &web_state_, frame.get());
+  auto* field_data_manager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame.get());
 
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(
-                  driver, std::make_optional<FormRendererId>(form_id), field_id,
-                  value));
+  EXPECT_CALL(
+      password_manager_,
+      UpdateStateOnUserInput(driver, ::testing::Ref(*field_data_manager),
+                             std::make_optional<FormRendererId>(form_id),
+                             field_id, value));
 
   auto* agent = autofill::PasswordAutofillAgent::FromWebState(&web_state_);
   agent->DidFillField(frame.get(), form_id, field_id, value);

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_H_
 
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -119,6 +120,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
   MOCK_METHOD(void,
               UpdateStateOnUserInput,
               (password_manager::PasswordManagerDriver*,
+               const autofill::FieldDataManager&,
                std::optional<autofill::FormRendererId>,
                autofill::FieldRendererId,
                const std::u16string&),

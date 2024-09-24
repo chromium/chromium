@@ -284,7 +284,7 @@ const char kFrameIdKey[] = "frame_id";
 
     if (*did_fill_username) {
       driver->GetPasswordManager()->UpdateStateOnUserInput(
-          driver, fillData.form_id, fillData.username_element_id,
+          driver, *manager, fillData.form_id, fillData.username_element_id,
           fillData.username_value);
     }
   }
@@ -294,7 +294,7 @@ const char kFrameIdKey[] = "frame_id";
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
     if (*did_fill_password) {
       driver->GetPasswordManager()->UpdateStateOnUserInput(
-          driver, fillData.form_id, fillData.password_element_id,
+          driver, *manager, fillData.form_id, fillData.password_element_id,
           fillData.password_value);
     }
   }

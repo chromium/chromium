@@ -113,10 +113,12 @@ class PasswordManager : public PasswordManagerInterface {
 #if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
-  void UpdateStateOnUserInput(PasswordManagerDriver* driver,
-                              std::optional<autofill::FormRendererId> form_id,
-                              autofill::FieldRendererId field_id,
-                              const std::u16string& field_value) override;
+  void UpdateStateOnUserInput(
+      PasswordManagerDriver* driver,
+      const autofill::FieldDataManager& field_data_manager,
+      std::optional<autofill::FormRendererId> form_id,
+      autofill::FieldRendererId field_id,
+      const std::u16string& field_value) override;
   void OnPasswordNoLongerGenerated() override;
   void OnPasswordFormsRemoved(
       PasswordManagerDriver* driver,

@@ -27,6 +27,7 @@
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/password_form_generation_data.h"
@@ -39,6 +40,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -116,8 +118,12 @@ class PasswordAutofillAgentDelegateImpl
     auto* driver = IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
         web_state_, frame);
     CHECK(driver);
-    driver->GetPasswordManager()->UpdateStateOnUserInput(driver, form_id,
-                                                         field_id, field_value);
+
+    autofill::FieldDataManager* field_data_manager =
+        autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
+    driver->GetPasswordManager()->UpdateStateOnUserInput(
+        driver, *field_data_manager, form_id, field_id, field_value);
   }
 
  private:
@@ -580,9 +586,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       [self.formHelper updateFieldDataOnUserInput:formQuery.fieldRendererID
                                           inFrame:frame
                                        inputValue:formQuery.typedValue];
+      autofill::FieldDataManager* fieldDataManager =
+          autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
       _passwordManager->UpdateStateOnUserInput(
-          [_driverHelper PasswordManagerDriver:frame], formQuery.formRendererID,
-          formQuery.fieldRendererID, SysNSStringToUTF16(formQuery.typedValue));
+          [_driverHelper PasswordManagerDriver:frame], *fieldDataManager,
+          formQuery.formRendererID, formQuery.fieldRendererID,
+          SysNSStringToUTF16(formQuery.typedValue));
     }
   }
 }

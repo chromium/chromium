@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -916,6 +917,81 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
 }
 
 #if BUILDFLAG(IS_IOS)
+
+// Tests that the information held by the field data manager is propagated on
+// user input. Also verifies that it is reflected in the filling assistance
+// metric.
+TEST_P(PasswordManagerTest,
+       PropagationOfFieldDataManagerInformationOnUserInput) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm password_form = MakeSimpleForm();
+  FormData form_data = password_form.form_data;
+  const std::u16string username = form_data.fields()[0].value();
+  const std::u16string password = form_data.fields()[1].value();
+  const FieldRendererId username_element = form_data.fields()[0].renderer_id();
+  const FieldRendererId password_element = form_data.fields()[1].renderer_id();
+
+  // A credential so the filling assistance metric is recorded as manual
+  // filling.
+  store_->AddLogin(password_form);
+
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(form_data.url()));
+
+  // A form is found by PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
+  // Set both fields as autofilled on user trigger.
+  field_data_manager->UpdateFieldDataMap(
+      password_element, password,
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  field_data_manager->UpdateFieldDataMap(
+      username_element, username,
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+  // Update on user input which will submit the form.
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), username_element,
+                                    username);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    password);
+  task_environment_.RunUntilIdle();
+
+  // Verify that the information from the field data manager was propagated to
+  // the submitted form upon calling UpdateStateOnUserInput().
+  PasswordFormManager* submitted_manager =
+      manager()->GetSubmittedManagerForTest();
+  ASSERT_TRUE(submitted_manager);
+  const std::vector<FormFieldData>& fields =
+      submitted_manager->GetSubmittedForm()->form_data.fields();
+  EXPECT_THAT(fields,
+              ::testing::Each(::testing::Property(
+                  &FormFieldData::properties_mask,
+                  autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger)));
+
+  // Detect form submission through form removal.
+  manager()->OnPasswordFormsRemoved(&driver_, *field_data_manager,
+                                    {form_data.renderer_id()}, {});
+
+  // Delete password manager to record metrics.
+  manager_.reset();
+
+  // Verify that the filling assistance is correctly recorded as manually
+  // autofilled.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FillingAssistance",
+      PasswordFormMetricsRecorder::FillingAssistance::kManual, 1);
+}
+
 TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -945,11 +1021,15 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
                   ElementsAre(FormUsernamePasswordAre(
                       form_data.fields()[0].value(), generated_password)))));
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Test when the user is changing the generated password, presaved credential
   // is updated.
   generated_password += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    generation_element, generated_password);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), generation_element,
+                                    generated_password);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(
@@ -960,8 +1040,9 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   // Test when the user is changing the username, presaved credential is
   // updated.
   username += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    username_element, username);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), username_element,
+                                    username);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(GetSignonRealm(form_data.url()),
@@ -979,14 +1060,18 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Check that the saving manual fallback is shown the user typed in a password
   // field.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
       .WillOnce(MoveArg<0>(&form_manager_to_save));
   std::u16string typed_password = u"password";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    password_element, typed_password);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    typed_password);
   Mock::VerifyAndClearExpectations(&client_);
 
   ASSERT_TRUE(form_manager_to_save);
@@ -996,8 +1081,9 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   // Check that the saving manual is hidden when the user cleared the password
   // field value.
   EXPECT_CALL(client_, HideManualFallbackForSaving());
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    password_element, std::u16string());
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    std::u16string());
 }
 
 // Tests that there is no manual fallback for saving when there is a mismatch
@@ -1021,8 +1107,11 @@ TEST_P(PasswordManagerTest,
   std::u16string typed_password = u"password";
   MockPasswordManagerDriver fake_driver;
   ASSERT_NE(&fake_driver, &driver_);
-  manager()->UpdateStateOnUserInput(&fake_driver, form_data.renderer_id(),
-                                    password_element, typed_password);
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+  manager()->UpdateStateOnUserInput(&fake_driver, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    typed_password);
 }
 
 // Tests that the user input in a single username form is correctly added to
@@ -1043,9 +1132,13 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the user input was cached as a possible username.
@@ -1087,9 +1180,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, std::nullopt,
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager, std::nullopt,
                                     username_renderer_id, typed_username);
 
   // Do a spot check that the user input state was correctly updated.
@@ -1121,9 +1217,13 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that that the autocomplete bit is correctly set in the possible
@@ -1157,9 +1257,13 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the otp bit is correctly set.
@@ -1185,8 +1289,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_DisabledByDefault) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1213,8 +1321,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1248,8 +1360,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     element_renderer_id, u"on");
 
   // Verify that there was no user input cached as possible username because the
@@ -1282,8 +1398,12 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, u"test_username");
 
   // Verify that there was no user input cached as possible username because the

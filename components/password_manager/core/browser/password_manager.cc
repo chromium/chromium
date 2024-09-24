@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -1014,6 +1015,7 @@ void PasswordManager::NotifyStorePasswordCalled() {
 // LINT.IfChange(update_password_state_for_text_change)
 void PasswordManager::UpdateStateOnUserInput(
     PasswordManagerDriver* driver,
+    const FieldDataManager& field_data_manager,
     std::optional<FormRendererId> form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
@@ -1023,6 +1025,10 @@ void PasswordManager::UpdateStateOnUserInput(
   if (!manager) {
     return;
   }
+
+  // Ensure that the submitted form has the most up to date information from the
+  // field data manager.
+  PropagateFieldDataManagerInfo(field_data_manager, driver);
 
   const autofill::FormData* observed_form = manager->observed_form();
 
