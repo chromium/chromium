@@ -470,17 +470,6 @@ std::optional<media::VideoPixelFormat> CopyToFormat(
     return frame.format();
   }
 
-  // Per-plane readback is not possible for multiplanar SI with external
-  // sampling. Similarly, for legacy shared image formats, readback is only
-  // possible when planes and textures are 1:1.
-  auto format_type = frame.shared_image_format_type();
-  if (format_type ==
-          media::SharedImageFormatType::kSharedImageFormatExternalSampler ||
-      (format_type == media::SharedImageFormatType::kLegacy &&
-       frame.NumTextures() != media::VideoFrame::NumPlanes(frame.format()))) {
-    return std::nullopt;
-  }
-
   return frame.format();
 }
 
