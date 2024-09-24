@@ -23,7 +23,7 @@ class MojoInitData {
     uint32_t version;
 
     // Comparison as a tuple of (`uuid`, `version`).
-    bool operator<(const InterfaceVersion& other) const;
+    constexpr bool operator<(const InterfaceVersion& other) const;
   };
 
   MojoInitData();

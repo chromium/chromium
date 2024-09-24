@@ -13,6 +13,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/arc_bridge.mojom.h"
+#include "ash/components/arc/mojom/power.mojom.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,8 +22,8 @@ namespace arc {
 
 // Comparison of `MojoInitData::InterfaceVersion` is needed to sort
 // `kInterfaceVersions`.
-bool MojoInitData::InterfaceVersion::operator<(
-    const InterfaceVersion& other) const {
+constexpr bool MojoInitData::InterfaceVersion::operator<(
+    const MojoInitData::InterfaceVersion& other) const {
   return std::tie(uuid, version) < std::tie(other.uuid, other.version);
 }
 static_assert(std::is_standard_layout_v<MojoInitData::InterfaceVersion>,
@@ -46,8 +47,9 @@ std::string GenerateRandomToken() {
 
 // Initialize `kInterfaceVersions` as a constant, sorted array.
 static constexpr auto kInterfaceVersions = []() {
-  std::array data = {MojoInitData::InterfaceVersion{
-      mojom::ArcBridgeHost::Uuid_, mojom::ArcBridgeHost::Version_}};
+  auto data = std::to_array<MojoInitData::InterfaceVersion>(
+      {{mojom::ArcBridgeHost::Uuid_, mojom::ArcBridgeHost::Version_},
+       {mojom::PowerHost::Uuid_, mojom::PowerHost::Version_}});
   std::sort(data.begin(), data.end());
   return data;
 }();
