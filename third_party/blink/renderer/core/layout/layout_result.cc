@@ -327,6 +327,13 @@ void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
       other.OutOfFlowPositionedOffset());
 }
 
+void LayoutResult::MutableForOutOfFlow::SetAccessibilityAnchor(
+    Element* anchor) {
+  if (layout_result_->rare_data_ || anchor) {
+    layout_result_->EnsureRareData()->accessibility_anchor = anchor;
+  }
+}
+
 void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
     HeapHashSet<Member<Element>>* display_locks) {
   if (layout_result_->rare_data_ || display_locks) {
@@ -401,6 +408,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   // constructor and never changed.
   if (const BlockData* data = GetBlockData())
     visitor->Trace(data->column_spanner_path);
+  visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }
 

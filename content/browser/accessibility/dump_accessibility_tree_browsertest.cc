@@ -192,6 +192,36 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioning) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioningChanged) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioningChangedSimple) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning-changed-simple.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioningMultipleAnchors) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning-multiple-anchors.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioningPositionFallback) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning-position-fallback.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAnchorPositioningWithoutDetails) {
+  RunCSSTest(FILE_PATH_LITERAL("anchor-positioning-without-details.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSBackgroundColorTransparent) {
   RunCSSTest(FILE_PATH_LITERAL("background-color-transparent.html"));
 }

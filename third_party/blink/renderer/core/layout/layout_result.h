@@ -491,6 +491,15 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // Returns the space which generated this object for caching purposes.
   const ConstraintSpace& GetConstraintSpaceForCaching() const { return space_; }
 
+  // Returns the most recent anchor evaluated (if there is only one anchor).
+  // This value is cleared before a position fallback is applied.
+  Element* AccessibilityAnchor() const {
+    if (!rare_data_) {
+      return nullptr;
+    }
+    return rare_data_->accessibility_anchor;
+  }
+
   const HeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const {
     if (!rare_data_) {
       return nullptr;
@@ -552,6 +561,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
             non_overflowing_ranges);
       }
     }
+
+    void SetAccessibilityAnchor(Element* anchor);
 
     void SetDisplayLocksAffectedByAnchors(
         HeapHashSet<Member<Element>>* display_locks);
@@ -989,6 +1000,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     std::optional<LineClampData::UntilClamp> state_until_clamp;
+    Member<Element> accessibility_anchor;
     Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
    private:

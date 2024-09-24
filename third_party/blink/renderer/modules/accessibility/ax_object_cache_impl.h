@@ -255,6 +255,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void StyleChanged(const LayoutObject*,
                     bool visibility_or_inertness_changed) override;
 
+  // Called when the anchor(s) of |positioned_obj| change.
+  void CSSAnchorChanged(const LayoutObject* positioned_obj) override;
+  void CSSAnchorChangedWithCleanLayout(Node* positioned_node);
+
   // Called by a node when text or a text equivalent (e.g. alt) attribute is
   // changed.
   void TextChanged(const LayoutObject*) override;
@@ -379,6 +383,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If |parent_for_repair| is provided, and the object had been detached from
   // its parent, it will be set as the new parent.
   AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
+
+  // Return the object that has been anchored (with css anchor positioning)
+  // to the input object.
+  AXObject* GetPositionedObjectForAnchor(const AXObject*);
+
+  // Return the input object's anchor.
+  AXObject* GetAnchorForPositionedObject(const AXObject*);
 
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.
@@ -688,6 +699,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     kAriaOwnsChanged,
     kAriaPressedChanged,
     kAriaSelectedChanged,
+    kCSSAnchorChanged,
     kDelayEventFromPostNotification,
     kDidShowMenuListPopup,
     kEditableTextContentChanged,

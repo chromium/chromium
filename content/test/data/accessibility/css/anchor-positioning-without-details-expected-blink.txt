@@ -1,0 +1,48 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='tooltip-anchor'
+++++++++++inlineTextBox name='tooltip-anchor'
+++++++paragraph name='positioned element (labelledby)'
+++++++++staticText name='labelledby-anchor'
+++++++++++inlineTextBox name='labelledby-anchor'
+++++++paragraph description='positioned element (describedby)' descriptionFrom=relatedElement
+++++++++staticText name='describedby-anchor'
+++++++++++inlineTextBox name='describedby-anchor'
+++++++paragraph controlsIds=genericContainer
+++++++++staticText name='controls-anchor'
+++++++++++inlineTextBox name='controls-anchor'
+++++++paragraph
+++++++++staticText name='owns-anchor'
+++++++++++inlineTextBox name='owns-anchor'
+++++++++genericContainer
+++++++++++staticText name='positioned element (aria-owns)'
+++++++++++++inlineTextBox name='positioned element (aria-owns)'
+++++++paragraph
+++++++++staticText name='multiple-anchor-1'
+++++++++++inlineTextBox name='multiple-anchor-1'
+++++++paragraph
+++++++++staticText name='multiple-anchor-2'
+++++++++++inlineTextBox name='multiple-anchor-2'
+++++++paragraph
+++++++++staticText name='sibling-anchor'
+++++++++++inlineTextBox name='sibling-anchor'
+++++++genericContainer
+++++++++staticText name='positioned element (dom sibling of anchor)'
+++++++++++inlineTextBox name='positioned element (dom sibling of anchor)'
+++++++tooltip name='positioned element (tooltip)'
+++++++++staticText name='positioned element (tooltip)'
+++++++++++inlineTextBox name='positioned element (tooltip)'
+++++++genericContainer
+++++++++staticText name='positioned element (labelledby)'
+++++++++++inlineTextBox name='positioned element (labelledby)'
+++++++genericContainer
+++++++++staticText name='positioned element (describedby)'
+++++++++++inlineTextBox name='positioned element (describedby)'
+++++++genericContainer
+++++++++staticText name='positioned element (aria-controls)'
+++++++++++inlineTextBox name='positioned element (aria-controls)'
+++++++genericContainer
+++++++++staticText name='positioned element (with multiple anchors)'
+++++++++++inlineTextBox name='positioned element (with multiple anchors)'

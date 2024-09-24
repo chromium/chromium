@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -574,6 +575,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     return std::nullopt;
   }
 
+  UpdateAccessibilityAnchor(anchor_reference->layout_object);
+
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
       display_locks_affected_by_anchors_->insert(display_lock);
@@ -625,6 +628,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     return std::nullopt;
   }
 
+  UpdateAccessibilityAnchor(anchor_reference->layout_object);
+
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
       display_locks_affected_by_anchors_->insert(display_lock);
@@ -635,6 +640,31 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
                                      container_converter_.GetWritingMode(),
                                      self_writing_direction_.GetWritingMode());
+}
+
+void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(
+    const LayoutObject* anchor) const {
+  if (!anchor->GetDocument().ExistingAXObjectCache()) {
+    return;
+  }
+
+  Element* anchor_element = To<Element>(anchor->GetNode());
+  if (accessibility_anchor_ && accessibility_anchor_ != anchor_element) {
+    has_multiple_accessibility_anchors_ = true;
+  }
+  accessibility_anchor_ = anchor_element;
+}
+
+Element* AnchorEvaluatorImpl::AccessibilityAnchor() const {
+  if (has_multiple_accessibility_anchors_) {
+    return nullptr;
+  }
+  return accessibility_anchor_;
+}
+
+void AnchorEvaluatorImpl::ClearAccessibilityAnchor() {
+  accessibility_anchor_ = nullptr;
+  has_multiple_accessibility_anchors_ = false;
 }
 
 std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(

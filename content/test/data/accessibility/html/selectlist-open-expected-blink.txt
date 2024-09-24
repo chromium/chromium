@@ -1,7 +1,7 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer
-++++++genericContainer
+++++++genericContainer detailsIds=listBox
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton focusable value='Option 1' haspopup=listbox
 ++++++++++++staticText name='Custom selectlist button'

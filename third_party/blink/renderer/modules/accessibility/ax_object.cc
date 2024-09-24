@@ -1441,8 +1441,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeUnignoredAttributes(node_data, accessibility_mode);
 
-  SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
-
   if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     // Return early. None of the following attributes are needed outside of
     // screen reader mode.
@@ -2308,6 +2306,8 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
 // Attributes that don't need to be serialized on ignored nodes.
 void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                             ui::AXMode accessibility_mode) const {
+  SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
+
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     SerializeMarkerAttributes(node_data);
     SerializeStyleAttributes(node_data);
@@ -2515,6 +2515,14 @@ void AXObject::SerializeComputedDetailsRelation(
     node_data->AddIntListAttribute(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(popover->AXObjectID())});
+    return;
+  }
+
+  // Add aria-details for the element anchored to this object.
+  if (AXObject* positioned_obj = GetPositionedObjectForAnchor(node_data)) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kDetailsIds,
+        {static_cast<int32_t>(positioned_obj->AXObjectID())});
   }
 }
 
@@ -2547,6 +2555,45 @@ AXObject* AXObject::GetTargetPopoverForInvoker() const {
     return nullptr;
   }
   return AXObjectCache().Get(target_popover);
+}
+
+AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {
+  AXObject* positioned_obj = AXObjectCache().GetPositionedObjectForAnchor(this);
+  if (!positioned_obj) {
+    return nullptr;
+  }
+
+  // Check for cases where adding an aria-details relationship between the
+  // anchor and the positioned elements would add extra noise.
+  // https://github.com/w3c/html-aam/issues/545
+  if (positioned_obj->RoleValue() == ax::mojom::blink::Role::kTooltip) {
+    return nullptr;
+  }
+
+  // Elements are direct DOM siblings.
+  if (ElementTraversal::NextSkippingChildren(*GetNode()) ==
+      positioned_obj->GetElement()) {
+    return nullptr;
+  }
+
+  // Check for existing labelledby/describedby/controls relationships.
+  for (auto attr : {ax::mojom::blink::IntListAttribute::kLabelledbyIds,
+                    ax::mojom::blink::IntListAttribute::kDescribedbyIds,
+                    ax::mojom::blink::IntListAttribute::kControlsIds}) {
+    auto attr_ids = data->GetIntListAttribute(attr);
+    if (std::find(attr_ids.begin(), attr_ids.end(),
+                  positioned_obj->AXObjectID()) != attr_ids.end()) {
+      return nullptr;
+    }
+  }
+
+  // Check for existing parent/child relationship (includes case where the
+  // anchor has an aria-owns relationship with the positioned element).
+  if (positioned_obj->ParentObject() == this) {
+    return nullptr;
+  }
+
+  return positioned_obj;
 }
 
 // Try to get an aria-controls for an <input role="combobox">, because it

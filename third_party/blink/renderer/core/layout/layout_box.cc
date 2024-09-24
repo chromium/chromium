@@ -4339,6 +4339,14 @@ const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
 }
 
+Element* LayoutBox::AccessibilityAnchor() const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return nullptr;
+  }
+  return layout_results.front()->AccessibilityAnchor();
+}
+
 const HeapHashSet<Member<Element>>* LayoutBox::DisplayLocksAffectedByAnchors()
     const {
   const auto& layout_results = GetLayoutResults();

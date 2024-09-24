@@ -341,4 +341,62 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
       AXObjectCacheImpl::IsRelevantPseudoElement(*outgoing_image_pseudo));
 }
 
+class AccessibilityEnabledLaterTest : public AccessibilityTest {
+  USING_FAST_MALLOC(AccessibilityEnabledLaterTest);
+
+ public:
+  AccessibilityEnabledLaterTest(LocalFrameClient* local_frame_client = nullptr)
+      : AccessibilityTest(local_frame_client) {}
+
+  void SetUp() override { RenderingTest::SetUp(); }
+
+  void EnableAccessibility() {
+    ax_context_ =
+        std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  }
+};
+
+TEST_F(AccessibilityEnabledLaterTest, CSSAnchorPositioning) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .anchor {
+        anchor-name: --anchor-el;
+       }
+      .anchored-notice {
+        position: absolute;
+        position-anchor: --anchor-el;
+        bottom: anchor(top);
+        right: anchor(right);
+      }
+    </style>
+    <body>
+      <button id="1" class="anchor">
+        <p>anchor</p>
+      </button>
+      <div id="2" class="anchored-notice">
+        <p>positioned element tethered to the top-right of the anchor at bottom-right</p>
+      </div>
+    </body>
+  )HTML");
+
+  // Turning on a11y later should still set anchor relationships correctly.
+  UpdateAllLifecyclePhasesForTest();
+  DCHECK(!GetDocument().ExistingAXObjectCache());
+  DCHECK(GetElementById("1")
+             ->GetComputedStyle()
+             ->AnchorName()
+             ->GetNames()[0]
+             ->GetName() == "--anchor-el");
+  DCHECK(GetElementById("2")->GetComputedStyle()->PositionAnchor()->GetName() ==
+         "--anchor-el");
+
+  EnableAccessibility();
+  AXObject* anchor = GetAXObjectByElementId("1");
+  AXObject* positioned_object = GetAXObjectByElementId("2");
+  EXPECT_EQ(GetAXObjectCache().GetPositionedObjectForAnchor(anchor),
+            positioned_object);
+  EXPECT_EQ(GetAXObjectCache().GetAnchorForPositionedObject(positioned_object),
+            anchor);
+}
+
 }  // namespace blink

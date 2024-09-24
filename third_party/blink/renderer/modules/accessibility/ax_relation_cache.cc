@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "ui/accessibility/ax_common.h"
 
 namespace blink {
@@ -1096,6 +1097,57 @@ void AXRelationCache::MarkOldAndNewRelationSourcesDirty(
   for (AXObject* related : related_sources) {
     object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
   }
+}
+
+void AXRelationCache::UpdateCSSAnchorFor(Node* positioned_node) {
+  // Remove existing mapping.
+  AXID positioned_id = positioned_node->GetDomNodeId();
+  if (positioned_obj_to_anchor_mapping_.Contains(positioned_id)) {
+    AXID prev_anchor = positioned_obj_to_anchor_mapping_.at(positioned_id);
+    anchor_to_positioned_obj_mapping_.erase(prev_anchor);
+    positioned_obj_to_anchor_mapping_.erase(positioned_id);
+    object_cache_->MarkAXObjectDirtyWithCleanLayout(
+        ObjectFromAXID(prev_anchor));
+  }
+
+  LayoutBox* layout_box =
+      DynamicTo<LayoutBox>(positioned_node->GetLayoutObject());
+  if (!layout_box) {
+    return;
+  }
+
+  Element* anchor = layout_box->AccessibilityAnchor();
+  if (!anchor) {
+    return;
+  }
+
+  // AccessibilityAnchor() only returns an anchor if there is one anchor, so
+  // the map is only updated when there is a 1:1 anchor to positioned element
+  // mapping.
+  AXID anchor_id = anchor->GetDomNodeId();
+  anchor_to_positioned_obj_mapping_.Set(anchor_id, positioned_id);
+  positioned_obj_to_anchor_mapping_.Set(positioned_id, anchor_id);
+  object_cache_->MarkElementDirtyWithCleanLayout(anchor);
+}
+
+AXObject* AXRelationCache::GetPositionedObjectForAnchor(
+    const AXObject* anchor) {
+  HashMap<AXID, AXID>::const_iterator iter =
+      anchor_to_positioned_obj_mapping_.find(anchor->AXObjectID());
+  if (iter == anchor_to_positioned_obj_mapping_.end()) {
+    return nullptr;
+  }
+  return ObjectFromAXID(iter->value);
+}
+
+AXObject* AXRelationCache::GetAnchorForPositionedObject(
+    const AXObject* positioned_obj) {
+  HashMap<AXID, AXID>::const_iterator iter =
+      positioned_obj_to_anchor_mapping_.find(positioned_obj->AXObjectID());
+  if (iter == positioned_obj_to_anchor_mapping_.end()) {
+    return nullptr;
+  }
+  return ObjectFromAXID(iter->value);
 }
 
 void AXRelationCache::RemoveAXID(AXID obj_id) {

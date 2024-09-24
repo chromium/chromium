@@ -750,6 +750,7 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kAriaOwnsChanged);
     DEBUG_STRING_CASE(kAriaPressedChanged);
     DEBUG_STRING_CASE(kAriaSelectedChanged);
+    DEBUG_STRING_CASE(kCSSAnchorChanged);
     DEBUG_STRING_CASE(kDelayEventFromPostNotification);
     DEBUG_STRING_CASE(kDidShowMenuListPopup);
     DEBUG_STRING_CASE(kEditableTextContentChanged);
@@ -1143,6 +1144,14 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
       << " Node=" << accessible_node->element();
 #endif
   return result;
+}
+
+AXObject* AXObjectCacheImpl::GetPositionedObjectForAnchor(const AXObject* obj) {
+  return relation_cache_->GetPositionedObjectForAnchor(obj);
+}
+
+AXObject* AXObjectCacheImpl::GetAnchorForPositionedObject(const AXObject* obj) {
+  return relation_cache_->GetAnchorForPositionedObject(obj);
 }
 
 AXObject* AXObjectCacheImpl::GetAXImageForMap(const HTMLMapElement& map) {
@@ -2185,6 +2194,12 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
     ChildrenChanged(ax_object->ParentObject());
   }
   MarkAXObjectDirty(ax_object);
+}
+
+void AXObjectCacheImpl::CSSAnchorChanged(const LayoutObject* positioned_obj) {
+  if (Node* node = positioned_obj->GetNode()) {
+    DeferTreeUpdate(TreeUpdateReason::kCSSAnchorChanged, node);
+  }
 }
 
 void AXObjectCacheImpl::TextChanged(Node* node) {
@@ -3708,6 +3723,9 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kAriaSelectedChanged:
       HandleAriaSelectedChangedWithCleanLayout(node);
       break;
+    case TreeUpdateReason::kCSSAnchorChanged:
+      CSSAnchorChangedWithCleanLayout(node);
+      break;
     case TreeUpdateReason::kDidShowMenuListPopup:
       HandleUpdateMenuListPopupWithCleanLayout(node, /*did_show*/ true);
       break;
@@ -4160,6 +4178,12 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     AXObject* parent = obj->ParentObjectIncludedInTree();
     ChildrenChangedOnAncestorOf(obj);
 
+    // The positioned object may have changed to/from a tooltip so a details
+    // relationship may need to be added/removed from the anchor.
+    if (AXObject* anchor = relation_cache_->GetAnchorForPositionedObject(obj)) {
+      MarkElementDirtyWithCleanLayout(anchor->GetElement());
+    }
+
     if (!obj->IsDetached()) {
       // Remove and rebuild the subtree, because some descendant computations
       // rely on the role of ancestors.
@@ -4552,6 +4576,10 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   }
 }
 
+void AXObjectCacheImpl::CSSAnchorChangedWithCleanLayout(Node* positioned_node) {
+  relation_cache_->UpdateCSSAnchorFor(positioned_node);
+}
+
 void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
   CHECK(relation_cache_);
   if (AXObject* obj = Get(node)) {
@@ -4750,6 +4778,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
       return true;
 
     case TreeUpdateReason::kAriaOwnsChanged:
+    case TreeUpdateReason::kCSSAnchorChanged:
     case TreeUpdateReason::kDelayEventFromPostNotification:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:

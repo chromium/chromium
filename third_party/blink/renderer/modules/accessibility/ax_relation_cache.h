@@ -75,6 +75,18 @@ class AXRelationCache {
       Element& element,
       HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_id_map);
 
+  // Update the related maps with the css anchor that |positioned_node| is
+  // anchored to. If there are multiple anchors, we assume the anchors are used
+  // for layout purposes and do not update the map. One anchor is mapped to one
+  // positioned element to reduce noise for AT.
+  void UpdateCSSAnchorFor(Node* positioned_node);
+
+  // Return the positioned object anchored to |anchor|.
+  AXObject* GetPositionedObjectForAnchor(const AXObject* anchor);
+
+  // Return the anchor for |positioned_obj|.
+  AXObject* GetAnchorForPositionedObject(const AXObject* positioned_obj);
+
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
 
@@ -216,6 +228,10 @@ class AXRelationCache {
 
   // Map from the AXID of a child to the AXID of the parent that owns it.
   HashMap<AXID, AXID> aria_owned_child_to_owner_mapping_;
+
+  // Maps for AXID of CSS anchors and AXID of the related positioned item.
+  HashMap<AXID, AXID> anchor_to_positioned_obj_mapping_;
+  HashMap<AXID, AXID> positioned_obj_to_anchor_mapping_;
 
   // Reverse relation maps from an ID (the ID attribute of a DOM element) to the
   // set of elements that at some time pointed to that ID via a relation.

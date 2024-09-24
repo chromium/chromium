@@ -10,6 +10,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/not_fatal_until.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -110,7 +111,7 @@ class OOFCandidateStyleIterator {
 
  public:
   explicit OOFCandidateStyleIterator(const LayoutObject& object,
-                                     AnchorEvaluator& anchor_evaluator)
+                                     AnchorEvaluatorImpl& anchor_evaluator)
       : element_(DynamicTo<Element>(object.GetNode())),
         style_(object.Style()),
         anchor_evaluator_(anchor_evaluator) {
@@ -300,6 +301,9 @@ class OOFCandidateStyleIterator {
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
   const ComputedStyle* UpdateStyle(wtf_size_t try_fallback_index) {
+    // Previously evaluated anchor is not relevant if another position fallback
+    // is applied.
+    anchor_evaluator_.ClearAccessibilityAnchor();
     CHECK(position_try_fallbacks_);
     CHECK_LE(try_fallback_index,
              position_try_fallbacks_->GetFallbacks().size());
@@ -334,7 +338,7 @@ class OOFCandidateStyleIterator {
 
   // This evaluator is passed to StyleEngine::UpdateStyleForOutOfFlow to
   // evaluate anchor queries on the computed style.
-  AnchorEvaluator& anchor_evaluator_;
+  AnchorEvaluatorImpl& anchor_evaluator_;
 
   // If the current style is applying a `position-try-fallbacks` fallback, this
   // holds the list of fallbacks. Otherwise nullptr.
@@ -2079,6 +2083,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     DCHECK(offset_info->non_overflowing_scroll_ranges.empty());
   }
 
+  offset_info->accessibility_anchor = anchor_evaluator.AccessibilityAnchor();
   offset_info->display_locks_affected_by_anchors =
       anchor_evaluator.GetDisplayLocksAffectedByAnchors();
 
@@ -2409,12 +2414,20 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);
 
+  layout_result->GetMutableForOutOfFlow().SetAccessibilityAnchor(
+      offset_info.accessibility_anchor);
+
   layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
       offset_info.display_locks_affected_by_anchors);
 
-  UpdatePositionVisibilityAfterLayout(offset_info,
-                                      oof_node_to_layout.node_info.node,
+  const BlockNode& node = oof_node_to_layout.node_info.node;
+
+  UpdatePositionVisibilityAfterLayout(offset_info, node,
                                       container_builder_->AnchorQuery());
+
+  if (AXObjectCache* cache = node.GetDocument().ExistingAXObjectCache()) {
+    cache->CSSAnchorChanged(node.GetLayoutBox());
+  }
 
   return layout_result;
 }
@@ -2982,6 +2995,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
   visitor->Trace(non_overflowing_scroll_ranges);
+  visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }
 

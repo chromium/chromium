@@ -118,7 +118,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Called when aspects of the style (e.g. color, alignment) change.
   virtual void StyleChanged(const LayoutObject*,
                             bool visibility_or_inertness_changed = false) = 0;
-
+  // Called when the anchor(s) of |positioned_obj| changes.
+  virtual void CSSAnchorChanged(const LayoutObject* positioned_obj) = 0;
   // Called by a node when text or a text equivalent (e.g. alt) attribute is
   // changed.
   virtual void TextChanged(const LayoutObject*) = 0;

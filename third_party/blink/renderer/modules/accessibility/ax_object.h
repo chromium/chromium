@@ -931,6 +931,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Heuristic to get the target popover for an invoking element.
   AXObject* GetTargetPopoverForInvoker() const;
 
+  // Elements can be positioned relative to other elements with CSS anchor
+  // positioning. This function returns the positioned element that should be
+  // added to the aria-details list.
+  AXObject* GetPositionedObjectForAnchor(ui::AXNodeData* node_data) const;
+
   // Heuristic to get the listbox for an <input role="combobox">.
   AXObject* GetControlsListboxForTextfieldCombobox() const;
 
