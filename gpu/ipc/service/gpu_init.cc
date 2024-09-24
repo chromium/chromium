@@ -1162,6 +1162,12 @@ bool GpuInit::InitializeDawn() {
       if (!CheckVulkanCompatibilities(device_properties, gpu_info_)) {
         return false;
       }
+
+      // Limit the use of Vulkan's vendorID and deviceID to Android. This is
+      // because other platforms, for example, Linux, collect such information
+      // somewhere else and we don't want to overwrite it.
+      gpu_info_.gpu.vendor_id = device_properties.vendor_id;
+      gpu_info_.gpu.device_id = device_properties.device_id;
     }
     return true;
   };
