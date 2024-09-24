@@ -102,10 +102,10 @@ bool CreateTestFile(const base::FilePath& path) {
 }
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
-    base::FilePath profile_path,
     content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
   auto service = std::make_unique<history::HistoryService>();
-  service->Init(history::TestHistoryDatabaseParamsForPath(profile_path));
+  service->Init(history::TestHistoryDatabaseParamsForPath(profile->GetPath()));
   return std::move(service);
 }
 
@@ -128,13 +128,12 @@ std::unique_ptr<KeyedService> BuildTestRecentModelFactory(
 }
 
 std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
-    const base::FilePath& profile_path,
     std::unique_ptr<drive::FakeDriveFsHelper>& fake_drivefs_helper,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath mount_path = profile_path.Append("drivefs");
+  base::FilePath mount_path = profile->GetPath().Append("drivefs");
   static_cast<ash::disks::FakeDiskMountManager*>(
       ash::disks::DiskMountManager::GetInstance())
       ->RegisterMountPointForNetworkStorageScheme("drivefs",
@@ -194,7 +193,6 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
   PickerClientImplTest() = default;
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ash::CrosDisksClient::InitializeFake();
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::FakeDiskMountManager());
@@ -228,7 +226,7 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
     return {
         TestingProfile::TestingFactory{
             HistoryServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildTestHistoryService, temp_dir_.GetPath())},
+            base::BindRepeating(&BuildTestHistoryService)},
         TestingProfile::TestingFactory{
             BookmarkModelFactory::GetInstance(),
             BookmarkModelFactory::GetDefaultFactory()},
@@ -242,7 +240,6 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
         TestingProfile::TestingFactory{
             drive::DriveIntegrationServiceFactory::GetInstance(),
             base::BindRepeating(&BuildTestDriveIntegrationService,
-                                temp_dir_.GetPath(),
                                 std::ref(fake_drivefs_helper_))},
         TestingProfile::TestingFactory{
             ash::input_method::EditorMediatorFactory::GetInstance(),
@@ -264,7 +261,6 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  base::ScopedTempDir temp_dir_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
