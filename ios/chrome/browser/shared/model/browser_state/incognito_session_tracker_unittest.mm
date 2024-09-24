@@ -19,14 +19,14 @@
 
 namespace {
 
-// Names of the created ChromeBrowserState.
+// Names of the created Profiles.
 constexpr char kProfile1[] = "Profile1";
 constexpr char kProfile2[] = "Profile2";
 constexpr char kProfile3[] = "Profile3";
 
-// Wrapper over a Browser that registers it with the ChromeBrowserState's
+// Wrapper over a Browser that registers it with the Profile's
 // BrowserList on construction and unregister it on destruction. It must
-// not outlive the ChromeBrowserState.
+// not outlive the Profile.
 class ScopedBrowser {
  public:
   explicit ScopedBrowser(std::unique_ptr<Browser> browser);
@@ -49,14 +49,14 @@ class ScopedBrowser {
 ScopedBrowser::ScopedBrowser(std::unique_ptr<Browser> browser)
     : browser_(std::move(browser)) {
   DCHECK(browser_);
-  BrowserListFactory::GetForBrowserState(
-      browser_->GetBrowserState()->GetOriginalChromeBrowserState())
+  BrowserListFactory::GetForProfile(
+      browser_->GetProfile()->GetOriginalProfile())
       ->AddBrowser(browser_.get());
 }
 
 ScopedBrowser::~ScopedBrowser() {
-  BrowserListFactory::GetForBrowserState(
-      browser_->GetBrowserState()->GetOriginalChromeBrowserState())
+  BrowserListFactory::GetForProfile(
+      browser_->GetProfile()->GetOriginalProfile())
       ->RemoveBrowser(browser_.get());
 }
 
@@ -110,14 +110,14 @@ void InsertNewTab(Browser* browser) {
 class IncognitoSessionTrackerTest : public PlatformTest {
  public:
   IncognitoSessionTrackerTest() {
-    AddBrowserStateWithName(kProfile1);
-    AddBrowserStateWithName(kProfile2);
+    AddProfileWithName(kProfile1);
+    AddProfileWithName(kProfile2);
   }
 
-  // Adds a new ChromeBrowserState with the given name.
-  void AddBrowserStateWithName(const char* name) {
+  // Adds a new Profile with the given name.
+  void AddProfileWithName(const char* name) {
     profile_manager_.AddProfileWithBuilder(
-        std::move(TestChromeBrowserState::Builder().SetName(name)));
+        std::move(TestProfileIOS::Builder().SetName(name)));
   }
 
   ProfileManagerIOS* profile_manager() { return &profile_manager_; }
@@ -159,7 +159,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   ScopedBrowser otr_scoped_browser_for_profile1(
       std::make_unique<TestBrowser>(profile_manager()
                                         ->GetProfileWithName(kProfile1)
-                                        ->GetOffTheRecordChromeBrowserState()));
+                                        ->GetOffTheRecordProfile()));
 
   // ... and HasIncognitoSessionTabs() should still return false and the
   // callbacks must not have been notified.
@@ -211,7 +211,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   ScopedBrowser otr_scoped_browser_for_profile2(
       std::make_unique<TestBrowser>(profile_manager()
                                         ->GetProfileWithName(kProfile2)
-                                        ->GetOffTheRecordChromeBrowserState()));
+                                        ->GetOffTheRecordProfile()));
 
   // ... and create a few tabs and check that this change the value of
   // HasIncognitoSessionTabs() and has notified the callbacks.
@@ -221,24 +221,22 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(3, true));
 
-  // Dynamically create a new ChromeBrowserState kProfile3, insert some
+  // Dynamically create a new Profile kProfile3, insert some
   // off-the-record tabs there, and check that even after closing all
   // the tabs in otr_scoped_browser_for_profile2, there value returned
   // by HasIncognitoSessionTabs().
-  AddBrowserStateWithName(kProfile3);
+  AddProfileWithName(kProfile3);
 
   {
     ScopedBrowser otr_scoped_browser_for_profile3_1(
-        std::make_unique<TestBrowser>(
-            profile_manager()
-                ->GetProfileWithName(kProfile3)
-                ->GetOffTheRecordChromeBrowserState()));
+        std::make_unique<TestBrowser>(profile_manager()
+                                          ->GetProfileWithName(kProfile3)
+                                          ->GetOffTheRecordProfile()));
 
     ScopedBrowser otr_scoped_browser_for_profile3_2(
-        std::make_unique<TestBrowser>(
-            profile_manager()
-                ->GetProfileWithName(kProfile3)
-                ->GetOffTheRecordChromeBrowserState()));
+        std::make_unique<TestBrowser>(profile_manager()
+                                          ->GetProfileWithName(kProfile3)
+                                          ->GetOffTheRecordProfile()));
 
     InsertNewTab(otr_scoped_browser_for_profile3_1.get());
     InsertNewTab(otr_scoped_browser_for_profile3_1.get());
