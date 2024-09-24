@@ -24,6 +24,7 @@
         <include name="IDR_ACTION_CUSTOM_BINDINGS_JS" file="extensions\action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS" file="extensions\browser_action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_JS" file="controlled_frame\controlled_frame.js" type="BINDATA" />
+        <include name="IDR_CONTROLLED_FRAME_EVENTS_JS" file="controlled_frame\controlled_frame_events.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS" file="controlled_frame\controlled_frame_internal_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_IMPL_JS" file="controlled_frame\controlled_frame_impl.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_API_METHODS_JS" file="controlled_frame\controlled_frame_api_methods.js" type="BINDATA" />

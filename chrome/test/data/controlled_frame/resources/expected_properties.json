@@ -36,7 +36,6 @@
     "oncontentresize",
     "ondialog",
     "onexit",
-    "onfindupdate",
     "onloadabort",
     "onloadcommit",
     "onloadprogress",

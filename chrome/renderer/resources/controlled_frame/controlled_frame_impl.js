@@ -5,6 +5,8 @@
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var WebViewContextMenusImpl = require('chromeWebView').WebViewContextMenusImpl;
 var ControlledFrame = getInternalApi('controlledFrameInternal');
+var ControlledFrameEvents =
+    require('controlledFrameEvents').ControlledFrameEvents;
 var utils = require('utils');
 
 function ControlledFrameContextMenusImpl(viewInstanceId) {
@@ -39,6 +41,10 @@ utils.expose(ControlledFrameContextMenus, ControlledFrameContextMenusImpl, {
 class ControlledFrameImpl extends ChromeWebViewImpl {
   constructor(webviewElement) {
     super(webviewElement);
+  }
+
+  setupEvents() {
+    new ControlledFrameEvents(this);
   }
 
   createWebViewContextMenus() {

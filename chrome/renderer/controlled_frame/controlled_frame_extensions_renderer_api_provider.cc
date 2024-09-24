@@ -25,12 +25,14 @@ void ControlledFrameExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) const {
   source_map->RegisterSource("controlledFrame", IDR_CONTROLLED_FRAME_JS);
+  source_map->RegisterSource("controlledFrameApiMethods",
+                             IDR_CONTROLLED_FRAME_API_METHODS_JS);
+  source_map->RegisterSource("controlledFrameEvents",
+                             IDR_CONTROLLED_FRAME_EVENTS_JS);
   source_map->RegisterSource("controlledFrameImpl",
                              IDR_CONTROLLED_FRAME_IMPL_JS);
   source_map->RegisterSource("controlledFrameInternal",
                              IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("controlledFrameApiMethods",
-                             IDR_CONTROLLED_FRAME_API_METHODS_JS);
 }
 
 void ControlledFrameExtensionsRendererAPIProvider::
