@@ -20,7 +20,7 @@ void FakePushNotificationClient::OnMessageReceived(
 }
 
 const base::flat_map<std::string, std::string>&
-FakePushNotificationClient::GetMostRecentMessageDataRecieved() {
+FakePushNotificationClient::GetMostRecentMessageDataReceived() {
   return last_received_message_data_;
 }
 
