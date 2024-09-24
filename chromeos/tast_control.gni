@@ -93,9 +93,6 @@ tast_disabled_tests_from_chrome_all = [
   "shimlessrma.WelcomeNextCancel.critical@brya",
   "shimlessrma.WelcomeCancel.critical@brya",
 
-  # b/362457684: test is failing on betty, blocking LKGM.
-  "cryptohome.UssMigrationChallengeCredential.rsassa_all@betty",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
