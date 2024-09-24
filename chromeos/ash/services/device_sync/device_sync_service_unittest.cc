@@ -210,9 +210,11 @@ class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
 class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
  public:
   FakeCryptAuthGCMManagerFactory(
+      gcm::FakeGCMDriver* fake_gcm_driver,
       instance_id::InstanceIDDriver* fake_instance_id_driver,
       TestingPrefServiceSimple* test_pref_service)
-      : fake_instance_id_driver_(fake_instance_id_driver),
+      : fake_gcm_driver_(fake_gcm_driver),
+        fake_instance_id_driver_(fake_instance_id_driver),
         test_pref_service_(test_pref_service) {}
 
   ~FakeCryptAuthGCMManagerFactory() override = default;
@@ -226,8 +228,10 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
  private:
   // CryptAuthGCMManagerImpl::Factory:
   std::unique_ptr<CryptAuthGCMManager> CreateInstance(
+      gcm::GCMDriver* fake_gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* pref_service) override {
+    EXPECT_EQ(fake_gcm_driver_, fake_gcm_driver);
     EXPECT_EQ(fake_instance_id_driver_, instance_id_driver);
     EXPECT_EQ(test_pref_service_, pref_service);
 
@@ -241,6 +245,7 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
     return instance;
   }
 
+  raw_ptr<gcm::FakeGCMDriver, DanglingUntriaged> fake_gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver, DanglingUntriaged>
       fake_instance_id_driver_;
   raw_ptr<TestingPrefServiceSimple> test_pref_service_;
@@ -592,6 +597,7 @@ class DeviceSyncServiceTest : public ::testing::Test {
     // DeviceSyncImpl::Factory:
     std::unique_ptr<DeviceSyncBase> CreateInstance(
         signin::IdentityManager* identity_manager,
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -601,7 +607,7 @@ class DeviceSyncServiceTest : public ::testing::Test {
         AttestationCertificatesSyncer::GetAttestationCertificatesFunction
             get_attestation_certificates_function) override {
       return base::WrapUnique(new DeviceSyncImpl(
-          identity_manager, instance_id_driver, profile_prefs,
+          identity_manager, gcm_driver, instance_id_driver, profile_prefs,
           gcm_device_info_provider, client_app_metadata_provider,
           std::move(url_loader_factory), simple_test_clock_,
           std::move(mock_timer_), get_attestation_certificates_function));
@@ -627,6 +633,8 @@ class DeviceSyncServiceTest : public ::testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     base::RunLoop().RunUntilIdle();
 
+    fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
+
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterProfilePrefs(test_pref_service_->registry());
 
@@ -637,7 +645,8 @@ class DeviceSyncServiceTest : public ::testing::Test {
 
     fake_cryptauth_gcm_manager_factory_ =
         std::make_unique<FakeCryptAuthGCMManagerFactory>(
-            &fake_instance_id_driver_, test_pref_service_.get());
+            fake_gcm_driver_.get(), &fake_instance_id_driver_,
+            test_pref_service_.get());
     CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(
         fake_cryptauth_gcm_manager_factory_.get());
 
@@ -749,7 +758,7 @@ class DeviceSyncServiceTest : public ::testing::Test {
             }));
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
-        identity_test_environment_->identity_manager(),
+        identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
         &fake_instance_id_driver_, test_pref_service_.get(),
         fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
@@ -1456,6 +1465,7 @@ class DeviceSyncServiceTest : public ::testing::Test {
       fake_remote_device_provider_factory_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
   testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
 

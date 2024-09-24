@@ -87,6 +87,7 @@ class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
   // DeviceSyncImpl::Factory:
   std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -176,6 +177,7 @@ class DeviceSyncClientImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
     fake_gcm_device_info_provider_ =
         std::make_unique<FakeGcmDeviceInfoProvider>(GetTestGcmDeviceInfo());
     fake_client_app_metadata_provider_ =
@@ -207,7 +209,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     RegisterProfilePrefs(test_pref_service_->registry());
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
-        identity_test_environment_->identity_manager(),
+        identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
         &fake_instance_id_driver_, test_pref_service_.get(),
         fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
@@ -580,6 +582,7 @@ class DeviceSyncClientImplTest : public testing::Test {
   const base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
   testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
   std::unique_ptr<FakeClientAppMetadataProvider>

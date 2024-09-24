@@ -43,7 +43,14 @@ void RemoteDeviceCache::SetRemoteDevices(
 
     std::shared_ptr<RemoteDevice> cached_device = GetRemoteDeviceFromCache(
         remote_device.instance_id, remote_device.GetDeviceId());
-    if (cached_device) {
+    // In b/365603789 there is an issue that multiple instance_ids are generated
+    // for same device because of GCM registration. Although the issue is being
+    // fixed, some users already encounter the issue and had multiple instance
+    // id generated and stroed. Only update entries if instance_ids are the same
+    // to prevent cached device being replaced and caused chromebook marked as
+    // unsupported for MultiDeviceFeatureSuite.
+    if (cached_device &&
+        cached_device->instance_id == remote_device.instance_id) {
       // Keep the same shared remote device pointer, and simply update the
       // RemoteDevice it references. This transparently updates the
       // RemoteDeviceRefs used by clients.
