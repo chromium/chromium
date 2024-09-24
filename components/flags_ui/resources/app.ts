@@ -17,7 +17,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {getTemplate} from './app.html.js';
-import type {FlagsExperimentElement} from './experiment.js';
+import type {ExperimentElement as FlagsExperimentElement} from './experiment.js';
 import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
@@ -439,13 +439,12 @@ export class FlagsAppElement extends CustomElement {
 
   private renderExperiments(
       features: Feature[], container: HTMLElement, unsupported = false) {
-    const fragment = document.createDocumentFragment();
     for (const feature of features) {
       const experiment = document.createElement('flags-experiment');
-
       experiment.toggleAttribute('unsupported', unsupported);
       experiment.data = feature;
       experiment.id = feature.internal_name;
+      container.appendChild(experiment);
 
       const select = experiment.getSelect();
       if (select) {
@@ -471,9 +470,7 @@ export class FlagsAppElement extends CustomElement {
           this.showRestartToast(true);
         });
       }
-      fragment.appendChild(experiment);
     }
-    container.replaceChildren(fragment);
   }
 
   /**

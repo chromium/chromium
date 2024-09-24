@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './experiment.html.js';
+import {getCss} from './experiment.css.js';
+import {getHtml} from './experiment.html.js';
 import type {Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
@@ -59,16 +61,51 @@ function resetHighlights(element: HTMLElement) {
 }
 
 
-export class FlagsExperimentElement extends CustomElement {
+export class ExperimentElement extends CrLitElement {
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      feature_: {type: Object},
+    };
+  }
+
   private feature_: Feature|null = null;
 
-  static override get template() {
-    return getTemplate();
+  getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K];
+  getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
+  getRequiredElement(query: string) {
+    const el = this.shadowRoot!.querySelector(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('feature_')) {
+      this.onFeatureChanged_();
+    }
   }
 
   set data(feature: Feature) {
     this.feature_ = feature;
+  }
 
+  private onFeatureChanged_() {
+    const feature = this.feature_;
+    assert(feature);
     const container = this.getRequiredElement('.experiment');
     container.id = feature.internal_name;
 
@@ -215,15 +252,15 @@ export class FlagsExperimentElement extends CustomElement {
   }
 
   getSelect(): HTMLSelectElement|null {
-    return this.$('select');
+    return this.shadowRoot!.querySelector('select');
   }
 
   getTextarea(): HTMLTextAreaElement|null {
-    return this.$('textarea');
+    return this.shadowRoot!.querySelector('textarea');
   }
 
   getTextbox(): HTMLInputElement|null {
-    return this.$('input');
+    return this.shadowRoot!.querySelector('input');
   }
 
   /**
@@ -325,8 +362,8 @@ export class FlagsExperimentElement extends CustomElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'flags-experiment': FlagsExperimentElement;
+    'flags-experiment': ExperimentElement;
   }
 }
 
-customElements.define('flags-experiment', FlagsExperimentElement);
+customElements.define('flags-experiment', ExperimentElement);

@@ -23,6 +23,7 @@ ts_library("build_ts") {
     # dependency to CrOS-only UIs (to reduce coupling between Desktop and CrOS
     # and reduce the maintenance burden for the Desktop WebUI team).
 
+    "//components/flags_ui/resources:build_ts",
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",

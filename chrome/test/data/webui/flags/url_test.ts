@@ -15,7 +15,7 @@
 import 'chrome://flags/app.js';
 
 import type {FlagsAppElement} from 'chrome://flags/app.js';
-import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
+import type {ExperimentElement} from 'chrome://flags/experiment.js';
 import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -86,7 +86,7 @@ suite('UrlWithSupportedFeatureTest', function() {
                    .classList.contains('selected'));
 
     const referencedExperiment =
-        app.getRequiredElement<FlagsExperimentElement>(window.location.hash);
+        app.getRequiredElement<ExperimentElement>(window.location.hash);
     assertTrue(!!referencedExperiment);
     assertEquals(referencedFlagName, referencedExperiment.id);
 
@@ -118,7 +118,7 @@ suite('UrlWithUnsupportedFeatureTest', function() {
                    .classList.contains('selected'));
 
     const referencedExperiment =
-        app.getRequiredElement<FlagsExperimentElement>(window.location.hash);
+        app.getRequiredElement<ExperimentElement>(window.location.hash);
     assertTrue(!!referencedExperiment);
     assertEquals(referencedFlagName, referencedExperiment.id);
 

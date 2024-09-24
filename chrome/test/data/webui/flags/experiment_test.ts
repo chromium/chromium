@@ -4,18 +4,17 @@
 
 import 'chrome://flags/experiment.js';
 
-import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
+import type {ExperimentElement} from 'chrome://flags/experiment.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ExperimentTest', function() {
-  let experiment: FlagsExperimentElement;
+  let experiment: ExperimentElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     experiment = document.createElement('flags-experiment');
-    document.body.appendChild(experiment);
   });
 
   test('check available experiments with default option', function() {
@@ -44,6 +43,7 @@ suite('ExperimentTest', function() {
       ],
       'supported_platforms': ['Windows'],
     };
+    document.body.appendChild(experiment);
 
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
@@ -86,6 +86,7 @@ suite('ExperimentTest', function() {
       ],
       'supported_platforms': ['Windows'],
     };
+    document.body.appendChild(experiment);
 
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
@@ -120,6 +121,7 @@ suite('ExperimentTest', function() {
       'enabled': false,
       'supported_platforms': ['Windows'],
     };
+    document.body.appendChild(experiment);
 
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
@@ -162,11 +164,13 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
       'links': ['https://a.com'],
     };
+    document.body.appendChild(experiment);
 
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.links-container')));
 
-    const links = experiment.$all<HTMLAnchorElement>('.links-container a');
+    const links = experiment.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+        '.links-container a');
     assertEquals(1, links.length);
     const linkElement = links[0]!;
     assertEquals('https://a.com/', linkElement.href);
