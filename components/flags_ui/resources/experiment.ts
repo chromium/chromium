@@ -73,10 +73,24 @@ export class ExperimentElement extends CrLitElement {
   static override get properties() {
     return {
       feature_: {type: Object},
+
+      unsupported: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
-  private feature_: Feature|null = null;
+  protected feature_: Feature = {
+    internal_name: '',
+    name: '',
+    description: '',
+    enabled: false,
+    is_default: false,
+    supported_platforms: [],
+  };
+
+  unsupported: boolean = false;
 
   getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
       HTMLElementTagNameMap[K];
@@ -103,75 +117,52 @@ export class ExperimentElement extends CrLitElement {
     this.feature_ = feature;
   }
 
+  protected getExperimentCssClass_(): string {
+    return this.feature_.is_default ? 'experiment-default' :
+                                      'experiment-switched';
+  }
+
+  protected getExperimentTitle_(): string {
+    return this.feature_.is_default ?
+        '' :
+        loadTimeData.getString('experiment-enabled');
+  }
+
+  protected getPlatforms_(): string {
+    return this.feature_.supported_platforms.join(', ');
+  }
+
+  protected showEnableDisableSelect_(): boolean {
+    return !this.unsupported &&
+        (!this.feature_.options || !this.feature_.options.length);
+  }
+
+  protected showMultiValueSelect_(): boolean {
+    return !this.unsupported && !!this.feature_.options &&
+        !!this.feature_.options.length;
+  }
+
+  protected onTextareaChange_(e: Event) {
+    e.stopPropagation();
+    const textarea = e.target as HTMLTextAreaElement;
+    this.handleSetOriginListFlag_(textarea.value);
+    textarea.dispatchEvent(new Event('textarea-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  protected onTextInputChange_(e: Event) {
+    e.stopPropagation();
+    const textbox = e.target as HTMLInputElement;
+    this.handleSetStringFlag_(textbox.value);
+    textbox.dispatchEvent(new Event('input-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onFeatureChanged_() {
-    const feature = this.feature_;
-    assert(feature);
-    const container = this.getRequiredElement('.experiment');
-    container.id = feature.internal_name;
-
-    const experimentDefault = this.getRequiredElement('.experiment-default');
-    experimentDefault.classList.toggle(
-        'experiment-default', feature.is_default);
-    experimentDefault.classList.toggle(
-        'experiment-switched', !feature.is_default);
-
-    const experimentName = this.getRequiredElement('.experiment-name');
-    experimentName.id = `${feature.internal_name}_name`;
-    experimentName.title =
-        feature.is_default ? '' : loadTimeData.getString('experiment-enabled');
-    experimentName.textContent = feature.name;
-
-    const description = this.getRequiredElement('.description');
-    description.textContent = feature.description;
-    const platforms = this.getRequiredElement('.platforms');
-    platforms.textContent = feature.supported_platforms.join(', ');
-
-    if (feature.links) {
-      for (const link of feature.links) {
-        const linkElement = document.createElement('a');
-        linkElement.href = link;
-        linkElement.textContent = link;
-        this.getRequiredElement('.links-container').appendChild(linkElement);
-      }
-    }
-
-    if (feature.origin_list_value !== undefined) {
-      const textarea = document.createElement('textarea');
-      textarea.dataset['internalName'] = feature.internal_name;
-      textarea.classList.add('experiment-origin-list-value');
-      textarea.value = feature.origin_list_value;
-      textarea.setAttribute('aria-labelledby', `${feature.internal_name}_name`);
-      textarea.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSetOriginListFlag_(textarea.value);
-        textarea.dispatchEvent(new Event('textarea-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-      this.getRequiredElement('.textarea-container').appendChild(textarea);
-    }
-
-    if (feature.string_value !== undefined) {
-      const textbox = document.createElement('input');
-      textbox.dataset['internalName'] = feature.internal_name;
-      textbox.value = feature.string_value;
-      textbox.setAttribute('aria-labelledby', `${feature.internal_name}_name`);
-      textbox.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSetStringFlag_(textbox.value);
-        textbox.dispatchEvent(new Event('input-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-      this.getRequiredElement('.input-container').appendChild(textbox);
-    }
-
-    const permalink = this.getRequiredElement<HTMLAnchorElement>('.permalink');
-    permalink.href = `#${feature.internal_name}`;
-    permalink.textContent = `#${feature.internal_name}`;
-
     const smallScreenCheck = window.matchMedia('(max-width: 480px)');
     // Toggling of experiment description overflow content on smaller screens.
     const expandContainer = this.getRequiredElement('.flex:first-child');
@@ -179,76 +170,6 @@ export class ExperimentElement extends CrLitElement {
       expandContainer.onclick = () =>
           expandContainer.classList.toggle('expand');
     }
-
-    if (this.hasAttribute('unsupported')) {
-      this.getRequiredElement('.experiment-actions').textContent =
-          loadTimeData.getString('not-available-platform');
-      return;
-    }
-
-    if (feature.options && feature.options.length > 0) {
-      const experimentSelect = document.createElement('select');
-      experimentSelect.dataset['internalName'] = feature.internal_name;
-      experimentSelect.classList.add('experiment-select');
-      experimentSelect.disabled = feature.enabled === false;
-      experimentSelect.setAttribute(
-          'aria-labelledby', `${feature.internal_name}_name`);
-
-      for (let i = 0; i < feature.options.length; i++) {
-        const option = feature.options[i]!;
-        const optionEl = document.createElement('option');
-        optionEl.selected = option.selected;
-        optionEl.textContent = option.description;
-        experimentSelect.appendChild(optionEl);
-      }
-
-      experimentSelect.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSelectExperimentalFeatureChoice_(
-            experimentSelect.selectedIndex);
-        experimentSelect.dispatchEvent(new Event('select-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-
-      this.getRequiredElement('.experiment-actions')
-          .appendChild(experimentSelect);
-      return;
-    }
-
-    assert(feature.options === undefined || feature.options.length === 0);
-    const experimentEnableDisable = document.createElement('select');
-    experimentEnableDisable.dataset['internalName'] = feature.internal_name;
-    experimentEnableDisable.classList.add('experiment-enable-disable');
-    experimentEnableDisable.setAttribute(
-        'aria-labelledby', `${feature.internal_name}_name`);
-
-    const disabledOptionEl = document.createElement('option');
-    disabledOptionEl.value = 'disabled';
-    disabledOptionEl.selected = !feature.enabled;
-    disabledOptionEl.textContent = loadTimeData.getString('disabled');
-    experimentEnableDisable.appendChild(disabledOptionEl);
-
-    const enabledOptionEl = document.createElement('option');
-    enabledOptionEl.value = 'enabled';
-    enabledOptionEl.selected = feature.enabled;
-    enabledOptionEl.textContent = loadTimeData.getString('enabled');
-    experimentEnableDisable.appendChild(enabledOptionEl);
-
-    experimentEnableDisable.onchange = (e) => {
-      e.stopPropagation();
-      const selectedIndex = experimentEnableDisable.selectedIndex;
-      const selectedOption = experimentEnableDisable.options[selectedIndex]!;
-      this.handleEnableExperimentalFeature_(selectedOption.value === 'enabled');
-      experimentEnableDisable.dispatchEvent(new Event('select-change', {
-        bubbles: true,
-        composed: true,
-      }));
-    };
-
-    this.getRequiredElement('.experiment-actions')
-        .appendChild(experimentEnableDisable);
   }
 
   getSelect(): HTMLSelectElement|null {
@@ -297,15 +218,18 @@ export class ExperimentElement extends CrLitElement {
   }
 
   /**
-   * Handles a 'enable' or 'disable' button getting clicked.
-   * @param enable Whether to enable or disable the experiment.
+   * Invoked when the selection of an enable/disable choice is changed.
    */
-  private handleEnableExperimentalFeature_(enable: boolean) {
+  protected onExperimentEnableDisableChange_(e: Event) {
+    e.stopPropagation();
+
     /* This function is an onchange handler, which can be invoked during page
      * restore - see https://crbug.com/1038638. */
     assert(this.feature_);
     assert(!this.feature_.options || this.feature_.options.length === 0);
 
+    const experimentEnableDisable = e.target as HTMLSelectElement;
+    const enable = experimentEnableDisable.value === 'enabled';
     FlagsBrowserProxyImpl.getInstance().enableExperimentalFeature(
         this.feature_.internal_name, enable);
 
@@ -314,22 +238,35 @@ export class ExperimentElement extends CrLitElement {
         (this.feature_.is_default !== this.feature_.enabled);
 
     this.updateDefaultStyle_(isDefault);
+
+    experimentEnableDisable.dispatchEvent(new Event('select-change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
-   * Invoked when the selection of a multi-value choice is changed to the
-   * specified index.
-   * @param index The index of the option that was selected.
+   * Invoked when the selection of a multi-value choice is changed.
    */
-  private handleSelectExperimentalFeatureChoice_(index: number) {
+  protected onExperimentSelectChange_(e: Event) {
+    e.stopPropagation();
+
     /* This function is an onchange handler, which can be invoked during page
      * restore - see https://crbug.com/1038638. */
     assert(this.feature_);
     assert(this.feature_.options && this.feature_.options.length > 0);
 
+    const experimentSelect = e.target as HTMLSelectElement;
+    const index = experimentSelect.selectedIndex;
+
     FlagsBrowserProxyImpl.getInstance().selectExperimentalFeature(
         this.feature_.internal_name, index);
     this.updateDefaultStyle_(index === 0);
+
+    experimentSelect.dispatchEvent(new Event('select-change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**

@@ -441,7 +441,7 @@ export class FlagsAppElement extends CustomElement {
       features: Feature[], container: HTMLElement, unsupported = false) {
     for (const feature of features) {
       const experiment = document.createElement('flags-experiment');
-      experiment.toggleAttribute('unsupported', unsupported);
+      experiment.unsupported = unsupported;
       experiment.data = feature;
       experiment.id = feature.internal_name;
       container.appendChild(experiment);
