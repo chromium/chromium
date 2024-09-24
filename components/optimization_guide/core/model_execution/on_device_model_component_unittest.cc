@@ -53,9 +53,11 @@ class OnDeviceModelComponentTest : public testing::Test {
             ModelBasedCapabilityKey::kCompose),
         base::Time::Now());
 
-    feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
-                                    features::kOptimizationGuideOnDeviceModel},
-                                   {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationGuideModelExecution, {}},
+         {features::kOptimizationGuideOnDeviceModel,
+          {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+        /*disabled_features=*/{});
   }
 
   void TearDown() override {

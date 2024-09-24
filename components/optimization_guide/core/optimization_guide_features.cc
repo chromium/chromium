@@ -699,7 +699,7 @@ bool IsPerformanceClassCompatibleWithOnDeviceModel(
       kOptimizationGuideOnDeviceModel,
       "compatible_on_device_performance_classes");
   if (perf_classes_string.empty()) {
-    perf_classes_string = "3,4,5,6";
+    perf_classes_string = "5,6";
   }
   if (perf_classes_string == "*") {
     return true;

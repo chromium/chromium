@@ -132,7 +132,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     // Fake the requirements to install the model.
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kLow));
+        base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
     pref_service_.SetTime(
         model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
             ModelBasedCapabilityKey::kCompose),
