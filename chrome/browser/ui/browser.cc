@@ -1175,8 +1175,8 @@ BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }
 
-user_education::FeaturePromoController* Browser::GetFeaturePromoController() {
-  return window()->GetFeaturePromoController();
+BrowserUserEducationInterface* Browser::GetUserEducationInterface() {
+  return window();
 }
 
 void Browser::DidBecomeActive() {

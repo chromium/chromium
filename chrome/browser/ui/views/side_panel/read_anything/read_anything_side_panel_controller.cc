@@ -217,17 +217,14 @@ void ReadAnythingSidePanelController::UpdateIphVisibility() {
   bool should_show_iph = loading_ ? previous_page_distillable_ : distillable_;
 
   // Promo controller does not exist for incognito windows.
-  auto* promo_controller =
-      tab_->GetBrowserWindowInterface()->GetFeaturePromoController();
-  if (!promo_controller) {
-    return;
-  }
+  auto* const user_ed =
+      tab_->GetBrowserWindowInterface()->GetUserEducationInterface();
 
   if (should_show_iph) {
-    promo_controller->MaybeShowPromo(
+    user_ed->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
   } else {
-    promo_controller->EndPromo(
+    user_ed->CloseFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature,
         user_education::EndFeaturePromoReason::kAbortPromo);
   }

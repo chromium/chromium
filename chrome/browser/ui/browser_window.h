@@ -27,15 +27,13 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -136,9 +134,10 @@ enum class BrowserThemeChangeType {
 //
 // NOTE: All getters may return NULL.
 //
-class BrowserWindow : public ui::BaseWindow {
+class BrowserWindow : public ui::BaseWindow,
+                      public BrowserUserEducationInterface {
  public:
-  virtual ~BrowserWindow() {}
+  ~BrowserWindow() override = default;
 
   //////////////////////////////////////////////////////////////////////////////
   // ui::BaseWindow interface notes:
@@ -598,97 +597,6 @@ class BrowserWindow : public ui::BaseWindow {
       tab_search::mojom::TabOrganizationFeature organization_feature) = 0;
   // Closes the tab search bubble if open for the given browser instance.
   virtual void CloseTabSearchBubble() = 0;
-
-  // Gets the windows's FeaturePromoController which manages display of
-  // in-product help. Will return null in incognito and guest profiles.
-  virtual user_education::FeaturePromoController*
-  GetFeaturePromoController() = 0;
-
-  // Returns whether the promo associated with `iph_feature` is running.
-  //
-  // Includes promos with visible bubbles and those which have been continued
-  // with CloseFeaturePromoAndContinue() and are still running in the
-  // background.
-  virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
-
-  // Returns whether `MaybeShowFeaturePromo()` would succeed if called now.
-  //
-  // USAGE NOTE: Only call this method if figuring out whether to try to show an
-  // IPH would involve significant expense. This method may itself have
-  // non-trivial cost.
-  virtual user_education::FeaturePromoResult CanShowFeaturePromo(
-      const base::Feature& iph_feature) const = 0;
-
-  // Maybe shows an in-product help promo. Returns true if the promo is shown.
-  // In cases where there is no promo controller, immediately returns false.
-  //
-  // If this feature promo is likely to be shown at browser startup, prefer
-  // calling `MaybeShowStartupFeaturePromo()` instead.
-  //
-  // If determining whether to call this method would involve significant
-  // expense, you *may* first call `CanShowFeaturePromo()` before doing the
-  // required computation; otherwise just call this method.
-  virtual user_education::FeaturePromoResult MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams params) = 0;
-
-  // Maybe shows an in-product help promo at startup, whenever the Feature
-  // Engagement system is fully initialized. If the promo cannot be queued for
-  // whatever reason, fails and returns false. The promo may still not run if it
-  // is excluded for other reasons (e.g. another promo starts first; its Feature
-  // Engagement conditions are not satisfied).
-  //
-  // On success, when the FE system is initialized (which might be immediately),
-  // `promo_callback` is called with the result of whether the promo was
-  // actually shown. Since `promo_callback` could be called any time, make sure
-  // that you will not experience any race conditions or UAFs if the calling
-  // object goes out of scope.
-  //
-  // If your promo is not likely to be shown at browser startup, prefer using
-  // MaybeShowFeaturePromo() - which always runs synchronously - instead.
-  virtual bool MaybeShowStartupFeaturePromo(
-      user_education::FeaturePromoParams params) = 0;
-
-  // Closes the in-product help promo for `iph_feature` if it is showing or
-  // cancels a pending startup promo; returns true if a promo bubble was
-  // actually closed.
-  virtual bool CloseFeaturePromo(
-      const base::Feature& iph_feature,
-      user_education::EndFeaturePromoReason end_promo_reason =
-          user_education::EndFeaturePromoReason::kFeatureEngaged) = 0;
-
-  // Closes the bubble for a feature promo but continues the promo; returns a
-  // handle that can be used to end the promo when it is destructed. The handle
-  // will be valid (i.e. have a true boolean value) if the promo was showing,
-  // invalid otherwise.
-  virtual user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
-      const base::Feature& iph_feature) = 0;
-
-  // Records that the user has performed an action that is relevant to a feature
-  // promo, but is not the "feature used" event. (For those, use
-  // `NotifyPromoFeatureUsed()` instead.)
-  //
-  // If you have access to a profile but not a browser window,
-  // `UserEducationService::MaybeNotifyPromoFeatureUsed()` does the same thing.
-  //
-  // Use this for events specified in
-  // `FeaturePromoSpecification::SetAdditionalConditions()`.
-  virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
-
-  // Records that the user has engaged the specific `feature` associated with an
-  // IPH promo or "New" Badge; this information is used to determine whether to
-  // show the promo or badge in the future.
-  //
-  // Prefer this to `NotifyFeatureEngagementEvent()` whenever possible; that
-  // method should only be used for additional events specified when calling
-  // `FeaturePromoSpecification::SetAdditionalConditions()`.
-  virtual void NotifyPromoFeatureUsed(const base::Feature& feature) = 0;
-
-  // Returns whether a "New" Badge should be shown on the entry point for
-  // `feature`; the badge must be registered for the feature in
-  // browser_user_education_service.cc. Call exactly once per time the surface
-  // containing the badge will be shown to the user.
-  virtual user_education::DisplayNewBadge MaybeShowNewBadgeFor(
-      const base::Feature& feature) = 0;
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;
