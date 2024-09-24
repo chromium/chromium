@@ -1497,7 +1497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Cache.HashPrefixCount" units="entries"
-    expires_after="2024-11-03">
+    expires_after="2025-05-03">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
