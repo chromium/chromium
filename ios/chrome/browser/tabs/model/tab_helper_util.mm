@@ -174,7 +174,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
 
-  HistoryTabHelper::CreateForWebState(web_state);
+  if (!for_bottom_sheet) {
+    HistoryTabHelper::CreateForWebState(web_state);
+  }
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
