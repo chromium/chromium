@@ -1088,22 +1088,6 @@ void X11Window::SetOpacity(float opacity) {
 }
 
 bool X11Window::CanSetDecorationInsets() const {
-  // Xfwm handles _GTK_FRAME_EXTENTS a bit unexpected way.  That is a known bug
-  // that will be eventually fixed, but for now we have to disable the function
-  // for Xfce.  The block below should be removed when Xfwm is updated with the
-  // fix and is known to work properly.
-  // See https://crbug.com/1260821.
-  {
-    static WindowManagerName wm_name = WM_OTHER;
-    static bool checked_for_wm = false;
-    if (!checked_for_wm) {
-      wm_name = GuessWindowManager();
-      checked_for_wm = true;
-    }
-    if (wm_name == WM_XFWM4) {
-      return false;
-    }
-  }
   return connection_->WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
 }
 
