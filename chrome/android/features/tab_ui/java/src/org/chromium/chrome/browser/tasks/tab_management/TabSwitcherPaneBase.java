@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -88,6 +89,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     protected final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
     protected final UserEducationHelper mUserEducationHelper;
+    protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
@@ -154,6 +156,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      * @param isIncognito Whether the pane is incognito.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param userEducationHelper Used for showing IPHs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
@@ -161,7 +164,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull UserEducationHelper userEducationHelper) {
+            @NonNull UserEducationHelper userEducationHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mProfileProviderSupplier = profileProviderSupplier;
         mFactory = factory;
         mIsIncognito = isIncognito;
@@ -172,6 +176,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mIsAnimatingSupplier.set(false);
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mUserEducationHelper = userEducationHelper;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
     @Override
@@ -568,7 +573,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         this::onTabClick,
                         mHairlineVisibilitySupplier::set,
                         mIsIncognito,
-                        getOnTabGroupCreationRunnable());
+                        getOnTabGroupCreationRunnable(),
+                        mEdgeToEdgeSupplier);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         mTabSwitcherCustomViewManager.setDelegate(
                 coordinator.getTabSwitcherCustomViewManagerDelegate());

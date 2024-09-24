@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 
@@ -103,6 +105,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * @param incognitoReauthControllerSupplier Supplier for the incognito reauth controller.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param userEducationHelper Used for showing IPHs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
@@ -112,14 +115,16 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull OnClickListener newTabButtonClickListener,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull UserEducationHelper userEducationHelper) {
+            @NonNull UserEducationHelper userEducationHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
                 profileProviderSupplier,
                 factory,
                 /* isIncognito= */ true,
                 onToolbarAlphaChange,
-                userEducationHelper);
+                userEducationHelper,
+                edgeToEdgeSupplier);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
 

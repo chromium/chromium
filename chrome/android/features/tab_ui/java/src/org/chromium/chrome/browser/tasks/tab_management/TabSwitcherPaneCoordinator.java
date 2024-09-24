@@ -55,6 +55,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -127,6 +131,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final TabSwitcherMessageManager mMessageManager;
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnDestroyed;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
     private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplier =
             new OneshotSupplierImpl<>();
@@ -137,6 +142,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private @Nullable DataSharingInvitationDialogCoordinator mDataSharingDialogCoordinator;
     private @Nullable Function<Integer, View> mFetchViewByIndex;
     private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
+
+    /** Not null when drawing the hub edge to edge. */
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -161,6 +169,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param supportsEmptyState Whether empty state UI should be shown when the model is empty.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param onDestroyed A {@link Runnable} to execute when {@link #destroy()} is invoked.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
@@ -183,7 +192,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @TabListMode int mode,
             boolean supportsEmptyState,
             @Nullable Runnable onTabGroupCreation,
-            @NonNull Runnable onDestroyed) {
+            @NonNull Runnable onDestroyed,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -192,6 +202,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mModalDialogManager = modalDialogManager;
             mParentView = parentView;
             mOnDestroyed = onDestroyed;
+            mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
             ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
@@ -310,6 +321,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             containerViewModel, recyclerView, TabListContainerViewBinder::bind);
+
+            if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+                // TODO(crbug.com/368072594): Use a custom pad adjuster to set the bottom padding to
+                // avoid conflicts with the model.
+                mEdgeToEdgePadAdjuster =
+                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                recyclerView, mEdgeToEdgeSupplier);
+            }
 
             RecordHistogram.recordTimesHistogram(
                     "Android.TabSwitcher.SetupRecyclerView.Time",
@@ -581,6 +600,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     @NonNull
     DialogController getTabGridDialogControllerForTesting() {
         return mDialogControllerSupplier.get();
+    }
+
+    /** Return the Edge to edge pad adjuster. */
+    @Nullable
+    EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+        return mEdgeToEdgePadAdjuster;
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {

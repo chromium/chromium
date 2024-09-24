@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
@@ -89,7 +90,9 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
     private void maybeSetViewClipToPadding(boolean clipToPadding) {
         if (!(mViewToPad instanceof ViewGroup)) return;
 
-        if (mViewToPad instanceof ScrollView || mViewToPad instanceof RecyclerView) {
+        if (mViewToPad instanceof ScrollView
+                || mViewToPad instanceof RecyclerView
+                || mViewToPad instanceof ListView) {
             ((ViewGroup) mViewToPad).setClipToPadding(clipToPadding);
         }
     }

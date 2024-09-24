@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -97,6 +99,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
 
     private Context mContext;
     private IncognitoTabSwitcherPane mIncognitoTabSwitcherPane;
@@ -124,6 +128,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mOnTabClickedCallbackCaptor.capture(),
                         any(),
                         anyBoolean(),
+                        any(),
                         any());
 
         when(mTabModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
@@ -138,7 +143,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mNewTabButtonClickListener,
                         mIncognitoReauthControllerSupplier,
                         mOnAlphaChange,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        mEdgeToEdgeSupplier);
     }
 
     @After
@@ -220,7 +226,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mNewTabButtonClickListener,
                         mIncognitoReauthControllerSupplier,
                         mOnAlphaChange,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        mEdgeToEdgeSupplier);
 
         checkNewTabButton(/* enabled= */ null);
 

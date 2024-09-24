@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -123,6 +124,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     private TabSwitcherPaneCoordinatorFactory mFactory;
     private ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -186,7 +189,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -211,7 +215,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator1);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -227,7 +232,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator2);
         assertEquals(messageManager, mFactory.getMessageManagerForTesting());
 
@@ -251,7 +257,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();

@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -172,6 +173,8 @@ public class TabSwitcherPaneUnitTest {
     private ObservableSupplierImpl<Boolean> mIsScrollingSupplier = new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplierSupplier =
             new OneshotSupplierImpl<>();
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
     private TabSwitcherPane mTabSwitcherPane;
     private MockTabModel mTabModel;
     private int mTimesCreated;
@@ -219,6 +222,7 @@ public class TabSwitcherPaneUnitTest {
                         mOnTabClickedCallbackCaptor.capture(),
                         mHairlineVisibilityCallbackCaptor.capture(),
                         anyBoolean(),
+                        any(),
                         any());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
@@ -248,7 +252,8 @@ public class TabSwitcherPaneUnitTest {
                         mNewTabButtonClickListener,
                         mTabSwitcherPaneDrawableCoordinator,
                         mOnAlphaChange,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        mEdgeToEdgeSupplier);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
                 .registerOnSharedPreferenceChangeListener(

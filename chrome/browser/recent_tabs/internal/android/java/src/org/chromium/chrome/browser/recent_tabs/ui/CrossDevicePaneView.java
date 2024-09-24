@@ -45,6 +45,11 @@ public class CrossDevicePaneView extends FrameLayout {
         mListView.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
     }
 
+    /** Return the cross device list view. */
+    public ListView getListView() {
+        return mListView;
+    }
+
     private void setupEmptyState(Context context) {
         ImageView emptyStateIllustration = findViewById(R.id.empty_state_icon);
         int emptyViewImageResId =

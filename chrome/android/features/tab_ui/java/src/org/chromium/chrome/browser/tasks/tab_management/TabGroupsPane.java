@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -58,6 +59,7 @@ public class TabGroupsPane implements Pane {
             new ObservableSupplierImpl<>();
 
     private TabGroupListCoordinator mTabGroupListCoordinator;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     /**
      * @param context Used to inflate UI.
@@ -67,6 +69,7 @@ public class TabGroupsPane implements Pane {
      * @param paneManagerSupplier Used to switch and communicate with other panes.
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      * @param modalDialogManagerSupplier Used to create confirmation dialogs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     TabGroupsPane(
             @NonNull Context context,
@@ -75,7 +78,8 @@ public class TabGroupsPane implements Pane {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mContext = context;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
@@ -83,6 +87,7 @@ public class TabGroupsPane implements Pane {
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,
@@ -142,7 +147,8 @@ public class TabGroupsPane implements Pane {
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),
                             mModalDialogManagerSupplier.get(),
-                            mHairlineVisibilitySupplier::set);
+                            mHairlineVisibilitySupplier::set,
+                            mEdgeToEdgeSupplier);
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();

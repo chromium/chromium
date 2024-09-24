@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.verify;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -17,13 +21,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
 import java.util.function.DoubleConsumer;
 
@@ -35,8 +44,10 @@ public class CrossDevicePaneUnitTest {
 
     @Mock private HubContainerView mHubContainerView;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
-
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     private CrossDevicePane mCrossDevicePane;
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -44,7 +55,9 @@ public class CrossDevicePaneUnitTest {
 
         mCrossDevicePane =
                 new CrossDevicePaneImpl(
-                        ApplicationProvider.getApplicationContext(), mOnToolbarAlphaChange);
+                        ApplicationProvider.getApplicationContext(),
+                        mOnToolbarAlphaChange,
+                        mEdgeToEdgeSupplier);
     }
 
     @Test
@@ -105,5 +118,33 @@ public class CrossDevicePaneUnitTest {
                 mCrossDevicePane
                         .createShowHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testSetEdgeToEdgeSupplier_BeforeNotifyLoadHint() {
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        assertFalse(mEdgeToEdgeSupplier.hasObservers());
+
+        mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
+        assertTrue(mEdgeToEdgeSupplier.hasObservers());
+        ShadowLooper.idleMainLooper();
+        verify(mEdgeToEdgeController).registerAdjuster(notNull());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testSetEdgeToEdgeSupplier_AfterNotifyLoadHint() {
+        mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
+        assertTrue(mEdgeToEdgeSupplier.hasObservers());
+
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(notNull());
     }
 }

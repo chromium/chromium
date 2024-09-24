@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -98,7 +99,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -137,7 +139,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             newTabButtonOnClickListener,
                             incognitoReauthControllerSupplier,
                             onToolbarAlphaChange,
-                            userEducationHelper);
+                            userEducationHelper,
+                            edgeToEdgeSupplier);
         } else {
             Supplier<TabModelFilter> tabModelFilterSupplier =
                     () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
@@ -151,7 +154,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             newTabButtonOnClickListener,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector),
                             onToolbarAlphaChange,
-                            userEducationHelper);
+                            userEducationHelper,
+                            edgeToEdgeSupplier);
         }
         return Pair.create(pane, pane);
     }
@@ -164,7 +168,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
@@ -178,6 +183,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 profileProviderSupplier,
                 () -> hubManagerSupplier.get().getPaneManager(),
                 tabGroupUiActionHandlerSupplier,
-                modalDialogManagerSupplier);
+                modalDialogManagerSupplier,
+                edgeToEdgeSupplier);
     }
 }

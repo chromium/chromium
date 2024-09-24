@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -129,6 +130,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param setHairlineVisibilityCallback Callback to be invoked to show or hide the hairline.
      * @param isIncognito Whether this is for the incognito tab switcher.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
     TabSwitcherPaneCoordinator create(
@@ -139,7 +141,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull Callback<Integer> onTabClickCallback,
             @NonNull Callback<Boolean> setHairlineVisibilityCallback,
             boolean isIncognito,
-            @Nullable Runnable onTabGroupCreation) {
+            @Nullable Runnable onTabGroupCreation,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         int token = mMessageManagerTokenHolder.acquireToken();
         assert mMessageManager != null;
         return new TabSwitcherPaneCoordinator(
@@ -163,7 +166,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mMode,
                 /* supportsEmptyState= */ !isIncognito,
                 onTabGroupCreation,
-                () -> mMessageManagerTokenHolder.releaseToken(token));
+                () -> mMessageManagerTokenHolder.releaseToken(token),
+                edgeToEdgeSupplier);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */

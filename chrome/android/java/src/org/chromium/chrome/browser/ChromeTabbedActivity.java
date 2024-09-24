@@ -936,7 +936,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 mNewTabButtonClickListener,
                                 isIncognito,
                                 adaptOnToolbarAlphaChange(),
-                                mBackPressManager);
+                                mBackPressManager,
+                                mEdgeToEdgeControllerSupplier);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -959,11 +960,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),
-                        getModalDialogManagerSupplier());
+                        getModalDialogManagerSupplier(),
+                        mEdgeToEdgeControllerSupplier);
     }
 
     private Pane createCrossDevicePane() {
-        return CrossDevicePaneFactory.create(this, adaptOnToolbarAlphaChange());
+        return CrossDevicePaneFactory.create(
+                this, adaptOnToolbarAlphaChange(), mEdgeToEdgeControllerSupplier);
     }
 
     private void setupCompositorContent() {

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
@@ -16,10 +18,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link CrossDeviceListCoordinator}. */
@@ -33,6 +43,10 @@ public class CrossDeviceListCoordinatorUnitTest {
 
     private Activity mActivity;
     private CrossDeviceListCoordinator mCoordinator;
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     @Before
     public void setUp() {
@@ -41,7 +55,8 @@ public class CrossDeviceListCoordinatorUnitTest {
                 .onActivity(
                         (activity -> {
                             mActivity = activity;
-                            mCoordinator = new CrossDeviceListCoordinator(mActivity);
+                            mCoordinator =
+                                    new CrossDeviceListCoordinator(mActivity, mEdgeToEdgeSupplier);
                         }));
     }
 
@@ -54,5 +69,18 @@ public class CrossDeviceListCoordinatorUnitTest {
     @SmallTest
     public void testGetView() {
         assertNotNull(mCoordinator.getView());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testPadAdjuster() {
+        assertTrue(mEdgeToEdgeSupplier.hasObservers());
+
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        assertNotNull(mPadAdjusterCaptor.getValue());
     }
 }

@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.tab_ui.R;
@@ -121,6 +122,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -129,6 +131,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     private MockTabModel mTabModel;
@@ -208,7 +212,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         /* onTabGroupCreation= */ null,
                         () -> {
                             mDestroyed = true;
-                        });
+                        },
+                        mEdgeToEdgeSupplier);
         watcher.assertExpected();
 
         mCoordinator.initWithNative();
@@ -400,5 +405,29 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mCoordinator.openInvitationModal("");
         assertFalse(controller.isVisible());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgePadAdjuster() {
+        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
+        assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
+
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(eq(padAdjuster));
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
+        assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
     }
 }

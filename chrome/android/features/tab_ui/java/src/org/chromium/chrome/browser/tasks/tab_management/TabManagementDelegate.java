@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -100,6 +101,7 @@ public interface TabManagementDelegate {
      * @param isIncognito Whether this is an incognito pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param backPressManager Manages different back press handlers throughout the app.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -119,7 +121,8 @@ public interface TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull BackPressManager backPressManager);
+            @NonNull BackPressManager backPressManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
@@ -132,6 +135,7 @@ public interface TabManagementDelegate {
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
      *     groups.
      * @param modalDialogManagerSupplier Used to show confirmation dialogs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
@@ -141,5 +145,6 @@ public interface TabManagementDelegate {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
 }

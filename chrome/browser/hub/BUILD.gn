@@ -52,6 +52,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
