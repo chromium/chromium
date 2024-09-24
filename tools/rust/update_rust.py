@@ -31,17 +31,8 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
-#
-# In the case that a Rust roll fails and you want to roll Clang alone, reset
-# this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
-# to the `CLANG_REVISION` that was in place before the roll.
 RUST_REVISION = '009e73825af0e59ad4fc603562e038b3dbd6593a'
 RUST_SUB_REVISION = 2
-
-# If not None, this overrides the `CLANG_REVISION` in
-# //tools/clang/scripts/update.py in order to download a Rust toolchain that
-# was built against a different LLVM than the latest Clang package.
-OVERRIDE_CLANG_REVISION = None
 
 # Trunk on 2022-10-15.
 #
@@ -69,8 +60,7 @@ VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 def GetRustClangRevision():
     from update import CLANG_REVISION
-    c = OVERRIDE_CLANG_REVISION if OVERRIDE_CLANG_REVISION else CLANG_REVISION
-    return (f'{RUST_REVISION}-{RUST_SUB_REVISION}' f'-{c}')
+    return f'{RUST_REVISION}-{RUST_SUB_REVISION}-{CLANG_REVISION}'
 
 
 # Get the version of the toolchain package we already have.
