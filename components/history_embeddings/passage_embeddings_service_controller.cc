@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "components/history_embeddings/cpu_histogram_logger.h"
 #include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
@@ -191,6 +192,7 @@ bool PassageEmbeddingsServiceController::EmbedderReady() {
 void PassageEmbeddingsServiceController::ResetRemotes() {
   service_remote_.reset();
   embedder_remote_.reset();
+  cpu_logger_.reset();
 }
 
 void PassageEmbeddingsServiceController::OnDisconnected() {
