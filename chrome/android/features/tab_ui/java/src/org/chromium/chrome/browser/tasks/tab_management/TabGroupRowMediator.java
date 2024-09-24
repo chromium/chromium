@@ -135,6 +135,10 @@ class TabGroupRowMediator {
         }
     }
 
+    /**
+     * Note that this model may contain a {@link TabGroupRowProperties.DESTROYABLE} that needs to be
+     * cleaned up.
+     */
     public PropertyModel getModel() {
         return mPropertyModel;
     }
@@ -197,6 +201,7 @@ class TabGroupRowMediator {
         sharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
         TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
                 sharedImageTilesCoordinator, container);
+        mPropertyModel.set(TabGroupRowProperties.DESTROYABLE, sharedImageTilesCoordinator::destroy);
     }
 
     private void openGroup() {

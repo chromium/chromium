@@ -77,6 +77,9 @@ public class SharedImageTilesCoordinator {
         mMediator = new SharedImageTilesMediator(mModel);
     }
 
+    /** Cleans up any resources or observers this class used. */
+    public void destroy() {}
+
     /**
      * Update the collaborationId for a SharedImageTiles component.
      *
@@ -114,8 +117,8 @@ public class SharedImageTilesCoordinator {
         updateTilesCount(emails.size());
 
         // Let the UI delegate draw the icon tiles.
-        DataSharingUIDelegate dataSharingUIDelegate = mDataSharingService.getUIDelegate();
-        assert dataSharingUIDelegate != null;
+        DataSharingUIDelegate dataSharingUiDelegate = mDataSharingService.getUIDelegate();
+        assert dataSharingUiDelegate != null;
 
         Callback<Boolean> successCallback =
                 (success) -> {
@@ -124,7 +127,7 @@ public class SharedImageTilesCoordinator {
                     }
                 };
 
-        dataSharingUIDelegate.showAvatars(
+        dataSharingUiDelegate.showAvatars(
                 mContext,
                 getAllIconViews(),
                 emails,

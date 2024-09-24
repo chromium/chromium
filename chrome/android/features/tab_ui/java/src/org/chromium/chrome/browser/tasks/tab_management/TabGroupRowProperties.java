@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -40,6 +41,9 @@ public class TabGroupRowProperties {
     public static final WritableObjectPropertyKey<Callback<FrameLayout>>
             GET_IMAGE_TILE_CONTAINER_CALLBACK = new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<Destroyable> DESTROYABLE =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
         CLUSTER_DATA,
         DISPLAY_AS_SHARED,
@@ -49,6 +53,7 @@ public class TabGroupRowProperties {
         OPEN_RUNNABLE,
         DELETE_RUNNABLE,
         LEAVE_RUNNABLE,
-        GET_IMAGE_TILE_CONTAINER_CALLBACK
+        GET_IMAGE_TILE_CONTAINER_CALLBACK,
+        DESTROYABLE
     };
 }

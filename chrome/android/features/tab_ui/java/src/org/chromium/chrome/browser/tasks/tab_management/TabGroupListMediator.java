@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
@@ -194,6 +195,7 @@ public class TabGroupListMediator {
 
     /** Clean up observers used by this class. */
     public void destroy() {
+        destroyAndClearAllRows();
         mFilter.removeObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
@@ -245,7 +247,7 @@ public class TabGroupListMediator {
     }
 
     private void repopulateModelList() {
-        mModelList.clear();
+        destroyAndClearAllRows();
         LazyOneshotSupplier<CoreAccountInfo> accountInfoSupplier =
                 LazyOneshotSupplier.fromSupplier(this::getAccountInfo);
 
@@ -269,6 +271,16 @@ public class TabGroupListMediator {
         }
         boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
+    }
+
+    private void destroyAndClearAllRows() {
+        for (ListItem listItem : mModelList) {
+            Destroyable destroyable = listItem.model.get(TabGroupRowProperties.DESTROYABLE);
+            if (destroyable != null) {
+                destroyable.destroy();
+            }
+        }
+        mModelList.clear();
     }
 
     private CoreAccountInfo getAccountInfo() {
