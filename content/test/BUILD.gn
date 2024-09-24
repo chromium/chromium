@@ -2158,7 +2158,6 @@ test("content_browsertests") {
       "//testing/android/native_test:native_test_support",
       "//ui/accessibility:ax_base_android",
       "//ui/android:android",
-      "//ui/android:test_support",
       "//ui/touch_selection:touch_selection",
     ]
     android_manifest =

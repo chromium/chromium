@@ -40,7 +40,6 @@ class WindowAndroidObserver;
 // WindowAndroid is also the root of a ViewAndroid tree.
 class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
  public:
-  // Intended for unittests only.
   class ScopedWindowAndroidForTesting {
    public:
     ScopedWindowAndroidForTesting(WindowAndroid* window);
@@ -120,10 +119,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   ProgressBarConfig GetProgressBarConfig();
 
   ModalDialogManagerBridge* GetModalDialogManagerBridge();
-
-  // Intended for native browser tests.
-  void SetModalDialogManagerForTesting(
-      base::android::ScopedJavaLocalRef<jobject> java_modal_dialog_manager);
 
   float mouse_wheel_scroll_factor() const { return mouse_wheel_scroll_factor_; }
 

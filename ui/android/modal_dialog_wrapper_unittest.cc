@@ -12,9 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/fake_modal_dialog_manager_bridge.h"
 #include "ui/android/window_android.h"
 #include "ui/base/models/dialog_model.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_javatest_jni_headers/FakeModalDialogManager_jni.h"
 
 namespace ui {
 
@@ -31,11 +33,14 @@ TEST(ModalDialogWrapperTest, ShowTabModal) {
       .SetCloseActionCallback(base::DoNothing());
 
   auto window = ui::WindowAndroid::CreateForTesting();
-  auto fake_dialog_manager = FakeModalDialogManagerBridge::CreateForTab(
-      window->get(), /*use_empty_java_presenter=*/false);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> fake_modal_dialog_manager =
+      Java_FakeModalDialogManager_createForTab(env);
+  window->SetModalDialogManager(fake_modal_dialog_manager);
 
   ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
-  fake_dialog_manager->ClickPositiveButton();
+  Java_FakeModalDialogManager_clickPositiveButton(env,
+                                                  fake_modal_dialog_manager);
   EXPECT_TRUE(ok_called);
 }
 
@@ -52,8 +57,10 @@ TEST(ModalDialogWrapperTest, CloseDialogFromNative) {
           base::BindLambdaForTesting([&closed]() { closed = true; }));
 
   auto window = ui::WindowAndroid::CreateForTesting();
-  auto fake_dialog_manager = FakeModalDialogManagerBridge::CreateForTab(
-      window->get(), /*use_empty_java_presenter=*/false);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> fake_modal_dialog_manager =
+      Java_FakeModalDialogManager_createForTab(env);
+  window->SetModalDialogManager(fake_modal_dialog_manager);
 
   ModalDialogWrapper::ShowTabModal(dialog_builder.Build(), window->get());
   ModalDialogWrapper::GetDialogForTesting()->Close();

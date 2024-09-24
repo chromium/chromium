@@ -106,12 +106,9 @@ static_library("test_support") {
   sources = [
     "dummy_screen_android.cc",
     "dummy_screen_android.h",
-    "fake_modal_dialog_manager_bridge.cc",
-    "fake_modal_dialog_manager_bridge.h",
   ]
 
   deps = [
-    ":ui_javatest_jni_headers",
     "//ui/android",
     "//ui/display",
   ]
@@ -558,7 +555,6 @@ android_library("ui_java_test_support") {
     # For androidx.test.espresso.ViewInteraction
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -687,7 +683,6 @@ test("ui_android_unittests") {
   deps = [
     ":android",
     ":java_enums_srcjar",
-    ":test_support",
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_jni_headers",
