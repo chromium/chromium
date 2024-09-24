@@ -54,6 +54,21 @@ class ReconcilingTemplateURLDataHolder {
   //   engine's Search URL.
   std::pair<std::u16string, bool> GetOrComputeKeyword() const;
 
+  // Find Chrome built-in Search Engine definitions matching supplied |keyword|.
+  // Use sparingly: this method may be moderately expensive to call:
+  // - iterates lengthy, unsorted PrepopulatedEngine list,
+  // - creates TemplateURLData equivalents from PrepopulatedEngine definitions,
+  std::unique_ptr<TemplateURLData> FindMatchingBuiltInDefinitionsByKeyword(
+      const std::u16string& keyword) const;
+
+  // Find Chrome built-in Search Engine definitions matching supplied
+  // |prepopulate_id|.
+  // Use sparingly: this method may be moderately expensive to call:
+  // - iterates lengthy, unsorted PrepopulatedEngine list,
+  // - creates TemplateURLData equivalents from PrepopulatedEngine definitions,
+  std::unique_ptr<TemplateURLData> FindMatchingBuiltInDefinitionsById(
+      int prepopulate_id) const;
+
  private:
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<search_engines::SearchEngineChoiceService>

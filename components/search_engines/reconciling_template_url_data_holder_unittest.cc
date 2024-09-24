@@ -75,3 +75,50 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   ASSERT_EQ(keyword, u"de.yahoo.com");
   ASSERT_TRUE(is_generated);
 }
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       FindMatchingBuiltInDefinitionsById_UnknownID) {
+  auto engine = holder_.FindMatchingBuiltInDefinitionsById(~0);
+  // Expect to see no definitions.
+  ASSERT_FALSE(engine);
+}
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       FindMatchingBuiltInDefinitionsById_ValidID_CountryAppropriate) {
+  auto engine = holder_.FindMatchingBuiltInDefinitionsById(/* duckduckgo */ 92);
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(u"duckduckgo.com", engine->keyword());
+}
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines) {
+  auto engine =
+      holder_.FindMatchingBuiltInDefinitionsById(/* search.brave.com */ 109);
+  // Currently not implemented.
+  ASSERT_FALSE(engine);
+}
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       FindMatchingBuiltInDefinitionsByKeyword_UnknownKeyword) {
+  auto engine = holder_.FindMatchingBuiltInDefinitionsByKeyword(u"bazzinga");
+  // Expect to see no definitions.
+  ASSERT_FALSE(engine);
+}
+
+TEST_F(
+    ReconcilingTemplateURLDataHolderTest,
+    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_CountryAppropriate) {
+  auto engine =
+      holder_.FindMatchingBuiltInDefinitionsByKeyword(u"duckduckgo.com");
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(u"duckduckgo.com", engine->keyword());
+}
+
+TEST_F(
+    ReconcilingTemplateURLDataHolderTest,
+    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines) {
+  auto engine =
+      holder_.FindMatchingBuiltInDefinitionsByKeyword(u"search.brave.com");
+  // Currently not implemented.
+  ASSERT_FALSE(engine);
+}

@@ -41,6 +41,46 @@ ReconcilingTemplateURLDataHolder::GetOrComputeKeyword() const {
   return {std::move(keyword), true};
 }
 
+std::unique_ptr<TemplateURLData>
+ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
+    const std::u16string& keyword) const {
+  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          pref_service_, search_engine_choice_service_);
+
+  auto engine_iter =
+      base::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
+
+  std::unique_ptr<TemplateURLData> result;
+  // TODO(b/358683018): look directly into kAllEngines for matching entries if
+  // we couldn't find them in country-specific list.
+  if (engine_iter != prepopulated_urls.end()) {
+    result = std::move(*engine_iter);
+  }
+
+  return result;
+}
+
+std::unique_ptr<TemplateURLData>
+ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
+    int prepopulate_id) const {
+  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          pref_service_, search_engine_choice_service_);
+
+  auto engine_iter = base::ranges::find(prepopulated_urls, prepopulate_id,
+                                        &TemplateURLData::prepopulate_id);
+
+  std::unique_ptr<TemplateURLData> result;
+  // TODO(b/358683018): look directly into kAllEngines for matching entries if
+  // we couldn't find them in country-specific list.
+  if (engine_iter != prepopulated_urls.end()) {
+    result = std::move(*engine_iter);
+  }
+
+  return result;
+}
+
 void ReconcilingTemplateURLDataHolder::SetAndReconcile(
     std::unique_ptr<TemplateURLData> data) {
   enum class ReconciliationType {
@@ -73,43 +113,31 @@ void ReconcilingTemplateURLDataHolder::SetAndReconcile(
     return;
   }
 
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service_, search_engine_choice_service_);
-  auto matching_engine = prepopulated_urls.end();
-
+  std::unique_ptr<TemplateURLData> engine;
   if (reconcile_by_keyword) {
     auto [keyword, is_by_domain_based_keyword] = GetOrComputeKeyword();
-
-    // Match by keyword.
-    matching_engine = base::ranges::find(prepopulated_urls, keyword,
-                                         &TemplateURLData::keyword);
+    engine = FindMatchingBuiltInDefinitionsByKeyword(keyword);
 
     base::UmaHistogramBoolean(
         is_by_domain_based_keyword
             ? "Omnibox.TemplateUrl.Reconciliation.ByDomainBasedKeyword.Result"
             : "Omnibox.TemplateUrl.Reconciliation.ByKeyword.Result",
-        matching_engine != prepopulated_urls.end());
+        !!engine);
     base::UmaHistogramEnumeration(
         "Omnibox.TemplateUrl.Reconciliation.Type",
         is_by_domain_based_keyword ? ReconciliationType::kByDomainBasedKeyword
                                    : ReconciliationType::kByKeyword);
   } else if (reconcile_by_id) {
-    // Match by prepopulate_id.
-    matching_engine =
-        base::ranges::find(prepopulated_urls, search_engine_->prepopulate_id,
-                           &TemplateURLData::prepopulate_id);
+    engine = FindMatchingBuiltInDefinitionsById(search_engine_->prepopulate_id);
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.Reconciliation.ByID.Result",
-                              matching_engine != prepopulated_urls.end());
+                              !!engine);
     base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
                                   ReconciliationType::kByID);
   }
 
-  if (matching_engine == prepopulated_urls.end()) {
+  if (!engine) {
     return;
   }
-
-  auto& engine = *matching_engine;
 
   if (!search_engine_->safe_for_autoreplace) {
     engine->safe_for_autoreplace = false;
