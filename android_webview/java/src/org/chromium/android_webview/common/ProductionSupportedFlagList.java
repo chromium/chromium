@@ -452,6 +452,9 @@ public final class ProductionSupportedFlagList {
                 "If enabled, the HTMLDocumentParser will use a budget based on elapsed time"
                         + " rather than token count."),
         Flag.baseFeature(
+                BlinkFeatures.CHECK_HTML_PARSER_BUDGET_LESS_OFTEN,
+                "If enabled, avoids calling the clock for every token in the HTML parser."),
+        Flag.baseFeature(
                 BlinkFeatures.DETAILS_STYLING,
                 "Enables support for improved styling of HTML details element."),
         Flag.baseFeature(
