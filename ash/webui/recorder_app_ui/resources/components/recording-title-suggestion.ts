@@ -86,6 +86,10 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       flex-flow: column;
       gap: 8px;
       padding: 16px 16px 24px;
+
+      & > cros-chip {
+        max-width: 100%;
+      }
     }
 
     #footer {
@@ -192,11 +196,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   }
 
   private renderSuggestion(suggestion: string, index: number) {
-    // TODO: b/336963138 - Handle when the suggestion is too long to fit in one
-    // line. Currently the cros-chip (and underlying md-chip) can't handle
-    // either multiline or setting width / text-overflow: ellipsis, so we might
-    // need to change to use our own component.
     return html`<cros-chip
+      show-tooltip-when-truncated
       type="input"
       label=${suggestion}
       class="suggestion"
