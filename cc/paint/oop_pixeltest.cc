@@ -1070,6 +1070,45 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
                comparator);
 }
 
+TEST_F(OopPixelTest, DrawImageReinterpretedAsSRGB) {
+  constexpr gfx::Rect rect(100, 100);
+
+  auto image_color_space = gfx::ColorSpace::CreateHDR10().ToSkColorSpace();
+  sk_sp<SkImage> image = MakeSkImage(rect.size());
+  image = image->reinterpretColorSpace(image_color_space);
+  const PaintImage::Id kSomeId = 32;
+  auto builder = PaintImageBuilder::WithDefault()
+                     .set_image(image, 0)
+                     .set_id(kSomeId)
+                     .set_reinterpret_as_srgb(true);
+  auto paint_image = builder.TakePaintImage();
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+  PaintFlags flags;
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, &flags);
+  display_item_list->EndPaintOfUnpaired(rect);
+  display_item_list->Finalize();
+
+  RasterOptions options(rect.size());
+  options.target_color_params.color_space =
+      gfx::ColorSpace::CreateDisplayP3D65();
+
+  auto actual = Raster(display_item_list, options);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Android has slight differences in color.
+  FuzzyPixelOffByOneComparator comparator;
+#else
+  ExactPixelComparator comparator;
+#endif
+
+  ExpectEquals(actual, FILE_PATH_LITERAL("oop_image_target_color_space.png"),
+               comparator);
+}
+
 TEST_F(OopPixelTest, DrawImageWithSetMatrix) {
   constexpr gfx::Rect rect(100, 100);
 

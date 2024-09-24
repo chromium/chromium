@@ -325,6 +325,7 @@ class CC_PAINT_EXPORT PaintImage {
   SkISize GetSkISize(AuxImage aux_image) const {
     return GetSkImageInfo(aux_image).dimensions();
   }
+  bool GetReinterpretAsSRGB() const { return reinterpret_as_srgb_; }
 
   gfx::ContentColorUsage GetContentColorUsage(bool* is_hlg = nullptr) const;
 
@@ -436,6 +437,10 @@ class CC_PAINT_EXPORT PaintImage {
   ContentId content_id_ = kInvalidContentId;
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
+
+  // If true, then this images will be reinterpreted as being sRGB during paint.
+  // This is used by createImageBitmap's colorSpaceConversion:"none".
+  bool reinterpret_as_srgb_ = false;
 
   // The target HDR headroom for gainmap and global tone map application.
   float target_hdr_headroom_ = 1.f;

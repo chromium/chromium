@@ -87,6 +87,8 @@ class CC_PAINT_EXPORT DrawImage {
   }
 
  private:
+  void SetTargetColorParams(const TargetColorParams& target_color_params);
+
   PaintImage paint_image_;
   bool use_dark_mode_;
   SkIRect src_rect_;

@@ -367,6 +367,10 @@ void PaintOpReader::Read(
   if (serialized_type == PaintOp::SerializedImageType::kNoImage)
     return;
 
+  // Compute the HDR headroom for tone mapping.
+  const float hdr_headroom =
+      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
+
   if (enable_security_constraints_) {
     switch (serialized_type) {
       case PaintOp::SerializedImageType::kNoImage:
@@ -411,6 +415,7 @@ void PaintOpReader::Read(
                      .set_id(PaintImage::GetNextId())
                      .set_texture_image(SkImages::RasterFromPixmapCopy(pixmap),
                                         PaintImage::kNonLazyStableId)
+                     .set_target_hdr_headroom(hdr_headroom)
                      .TakePaintImage();
       }
         return;
@@ -424,10 +429,6 @@ void PaintOpReader::Read(
     return;
   }
 
-  // Compute the HDR headroom for tone mapping.
-  const float hdr_headroom =
-      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
-
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
     if (!options_.shared_image_provider) {
       SetInvalid(DeserializationError::kMissingSharedImageProvider);
@@ -440,6 +441,9 @@ void PaintOpReader::Read(
       SetInvalid(DeserializationError::kZeroMailbox);
       return;
     }
+
+    bool reinterpret_as_srgb = 0;
+    Read(&reinterpret_as_srgb);
 
     SharedImageProvider::Error error;
     sk_sp<SkImage> sk_image =
@@ -470,6 +474,7 @@ void PaintOpReader::Read(
                  .set_texture_image(std::move(sk_image),
                                     PaintImage::kNonLazyStableId)
                  .set_target_hdr_headroom(hdr_headroom)
+                 .set_reinterpret_as_srgb(reinterpret_as_srgb)
                  .TakePaintImage();
     return;
   }
