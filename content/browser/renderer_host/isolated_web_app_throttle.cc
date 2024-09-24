@@ -184,7 +184,8 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
       network::mojom::WebSandboxFlags::kNone, transition,
       navigation_request->HasUserGesture(),
       /*initiating_origin=*/std::nullopt,
-      /*initiator_document=*/nullptr, &loader_factory);
+      /*initiator_document=*/nullptr, navigation_request->GetIsolationInfo(),
+      &loader_factory);
 #endif
 }
 

@@ -874,7 +874,7 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                 request_info.initiator_process_id,
                 *request_info.initiator_document_token)
           : nullptr,
-      &terminal_external_protocol);
+      request_info.isolation_info, &terminal_external_protocol);
   if (terminal_external_protocol) {
     return std::make_pair(
         /*is_cacheable=*/false,

@@ -892,6 +892,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     bool has_user_gesture,
     const std::optional<url::Origin>& initiating_origin,
     content::RenderFrameHost* initiator_document,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   // Sandbox flags
   // =============
@@ -922,8 +923,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     // Manages its own lifetime.
     new android_webview::AwProxyingURLLoaderFactory(
         std::nullopt /* cookie_manager */, nullptr /* cookie_access_policy */,
-        std::nullopt /* isolation_info*/, frame_tree_node_id,
-        std::move(receiver), mojo::NullRemote(), true /* intercept_only */,
+        isolation_info, frame_tree_node_id, std::move(receiver),
+        mojo::NullRemote(), true /* intercept_only */,
         std::nullopt /* security_options */,
         nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
         std::nullopt /* navigation_id */);
@@ -934,13 +935,13 @@ bool AwContentBrowserClient::HandleExternalProtocol(
             [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
                content::FrameTreeNodeId frame_tree_node_id,
                scoped_refptr<AwBrowserContextIoThreadHandle>
-                   browser_context_handle) {
+                   browser_context_handle,
+               const net::IsolationInfo& isolation_info) {
               // Manages its own lifetime.
               new android_webview::AwProxyingURLLoaderFactory(
                   std::nullopt /* cookie_manager */,
-                  nullptr /* cookie_access_policy */,
-                  std::nullopt /* isolation_info*/, frame_tree_node_id,
-                  std::move(receiver), mojo::NullRemote(),
+                  nullptr /* cookie_access_policy */, isolation_info,
+                  frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
                   true /* intercept_only */,
                   std::nullopt /* security_options */,
                   nullptr /* xrw_allowlist_matcher */,
@@ -948,7 +949,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                   std::nullopt /* navigation_id */);
             },
             std::move(receiver), frame_tree_node_id,
-            std::move(browser_context_handle)));
+            std::move(browser_context_handle), isolation_info));
   }
   return false;
 }
