@@ -29,6 +29,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.TransportState;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -144,6 +145,14 @@ public class BatchUploadCardPreference extends Preference
     }
 
     private void update() {
+        // Calling getLocalDataDescriptions() API when sync is in configuring state should be
+        // avoided. Since it will return an empty map, which could be inconsistent with the actual
+        // local data. Also update() will be triggered again after the state changes from
+        // CONFIGURING to ACTIVE.
+        if (mSyncService.getTransportState() == TransportState.CONFIGURING) {
+            return;
+        }
+
         mSyncService.getLocalDataDescriptions(
                 mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
                         ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS)

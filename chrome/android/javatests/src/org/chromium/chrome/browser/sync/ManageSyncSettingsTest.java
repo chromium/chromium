@@ -112,6 +112,7 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -884,6 +885,48 @@ public class ManageSyncSettingsTest {
                         .isVisible());
         Assert.assertNotNull(fragment.getView().findViewById(R.id.bottom_bar_shadow));
         Assert.assertNotNull(fragment.getView().findViewById(R.id.bottom_bar_button_container));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
+    })
+    public void testSigninSettingsBatchUploadCardVisibilityWhenSyncIsConfiguring()
+            throws Exception {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.CONFIGURING);
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        Assert.assertFalse(
+                fragment.findPreference(ManageSyncSettings.PREF_BATCH_UPLOAD_CARD_PREFERENCE)
+                        .isVisible());
+        Assert.assertNull(fragment.getView().findViewById(R.id.signin_settings_card));
     }
 
     @Test
