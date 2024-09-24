@@ -337,6 +337,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   return _lastSeenParams.field_type == autofill::kObfuscatedFieldType;
 }
 
+- (autofill::FillingProduct)currentProviderMainFillingProduct {
+  return self.currentProvider ? self.currentProvider.mainFillingProduct
+                              : autofill::FillingProduct::kNone;
+}
+
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
