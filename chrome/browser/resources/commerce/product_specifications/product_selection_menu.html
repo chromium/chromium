@@ -66,7 +66,7 @@
 
 <cr-lazy-render id="menu">
   <template>
-    <cr-action-menu on-close="onClose_">
+    <cr-action-menu on-close="onClose_" auto-reposition="true">
       <div id="selectionContainer">
         <template is="dom-repeat" items="[[sections]]" as="section">
           <cr-expand-button expanded="{{section.expanded}}" no-hover
