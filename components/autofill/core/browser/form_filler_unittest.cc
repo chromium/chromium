@@ -377,8 +377,10 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
 }
 
 TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
-  base::test::ScopedFeatureList placeholders_feature{
-      features::kAutofillOverwritePlaceholdersOnly};
+  base::test::ScopedFeatureList placeholders_feature;
+  placeholders_feature.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillOverwritePlaceholdersOnly},
+      /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
 
   const FieldType kSkippedType = ADDRESS_HOME_LINE1;
   FormData form = test::GetFormData(
@@ -824,7 +826,6 @@ TEST_F(FormFillerTest, FillAddressForm_AutocompleteOffFillingBehavior) {
 
 // Test that fields with value equal to their placeholder attribute are filled.
 TEST_F(FormFillerTest, FillAddressForm_PlaceholderEqualsValue) {
-  // Create a form where the middle name field has autocomplete=off.
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FIRST,
                    .value = u"First Name",

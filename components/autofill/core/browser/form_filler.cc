@@ -111,29 +111,48 @@ std::string_view ActionPersistenceToString(
   }
 }
 
-// Returns `true` if `autofill_field`'s pre-filled value is classified as
-// meaningful (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
-// Autofill's behavior for filling pre-filled fields is overwriting them by
-// default.
-bool IsMeaningfullyPreFilled(const autofill::AutofillField& autofill_field) {
-  return autofill_field.may_use_prefilled_placeholder().has_value() &&
-         !autofill_field.may_use_prefilled_placeholder().value() &&
-         !base::FeatureList::IsEnabled(
-             features::kAutofillSkipPreFilledFields) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillOverwritePlaceholdersOnly);
-}
+// Returns true iff `field` should be skipped during filling because its
+// non-empty initial value is considered to be meaningful.
+bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(
+    const autofill::AutofillField& field,
+    bool is_trigger_field) {
+  // Assume that the trigger field can always be overwritten.
+  if (is_trigger_field) {
+    return false;
+  }
+  // Select (list) elements are currently not supported.
+  if (field.IsSelectOrSelectListElement()) {
+    return false;
+  }
+  // By default, empty initial values are not considered to be meaningful.
+  if (field.value(ValueSemantics::kInitial).empty()) {
+    return false;
+  }
+  // If the field's initial value coincides with the value of its placeholder
+  // attribute, don't consider the initial value to be meaningful.
+  if (field.value(ValueSemantics::kInitial) == field.placeholder()) {
+    return false;
+  }
 
-// Returns `true` if `autofill_field`'s pre-filled value is classified as a
-// placeholder (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
-// Autofill's behavior for filling pre-filled fields is skipping them by
-// default.
-bool IsNotAPlaceholder(const autofill::AutofillField& autofill_field) {
-  return (!autofill_field.may_use_prefilled_placeholder().has_value() ||
-          !autofill_field.may_use_prefilled_placeholder().value() ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillOverwritePlaceholdersOnly)) &&
-         base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
+  // If kAutofillOverwritePlaceholdersOnly is enabled:
+  // Fields that are non-empty on page load are only overwritten if
+  // crowdsourcing classified them as "placeholder" fields (meaning that users
+  // typically modify the value).
+  //
+  // At this point the field is known to contain a non-empty initial value at
+  // page load.
+  if (field.may_use_prefilled_placeholder().has_value() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillOverwritePlaceholdersOnly)) {
+    return !field.may_use_prefilled_placeholder().value();
+  }
+
+  // If kAutofillSkipPreFilledFields is enabled:
+  // Fields that are non-empty on page load are not meant to be overwritten.
+  //
+  // At this point the field is known to contain a non-empty initial value at
+  // page load.
+  return base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
 }
 
 bool AllowPaymentSwapping(const AutofillField& trigger_field,
@@ -284,10 +303,8 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // that this check happens after the `kFieldTypeUnrelated` check.
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-  if (!is_trigger_field && !autofill_field.IsSelectOrSelectListElement() &&
-      !autofill_field.value(ValueSemantics::kInitial).empty() &&
-      (IsNotAPlaceholder(autofill_field) ||
-       IsMeaningfullyPreFilled(autofill_field))) {
+  if (ShouldSkipFieldBecauseOfMeaningfulInitialValue(autofill_field,
+                                                     is_trigger_field)) {
     return FieldFillingSkipReason::kValuePrefilled;
   }
 

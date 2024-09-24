@@ -1487,9 +1487,13 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
 // Verify that `WillFillCreditCardNumberOrCvc` return true on a form where the
 // credit card number field is present and not empty but was not typed by the
-// user.
+// user if `features::kAutofillSkipPreFilledFields` is disabled.
 TEST_F(FieldFillingPaymentsUtilTest,
        WillFillCreditCardNumberOrCvc_CCNumberFieldNotEmpty_NotUserTyped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
   FormData form_data = test::GetFormData(
       {.fields = {
            {.role = CREDIT_CARD_NAME_FULL, .label = u"First Name on Card"},
