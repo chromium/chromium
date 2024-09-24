@@ -1987,6 +1987,7 @@ if (!is_android) {
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:browser_tests",
       "//chrome/browser/ui/customize_chrome",
+      "//chrome/browser/ui/download",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:browser_tests",
       "//chrome/browser/ui/find_bar:browser_tests",
@@ -6417,9 +6418,6 @@ test("unit_tests") {
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
-      "../browser/ui/download/download_bubble_row_list_view_info_unittest.cc",
-      "../browser/ui/download/download_bubble_row_view_info_unittest.cc",
-      "../browser/ui/download/download_bubble_security_view_info_unittest.cc",
       "../browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "../browser/ui/plus_addresses/plus_address_creation_controller_desktop_unittest.cc",
       "../browser/ui/safety_hub/card_data_helper_unittest.cc",
@@ -8273,6 +8271,8 @@ test("unit_tests") {
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:unit_tests",
       "//chrome/browser/ui/cookie_controls:unit_tests",
+      "//chrome/browser/ui/download",
+      "//chrome/browser/ui/download:unit_tests",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:unit_tests",
       "//chrome/browser/ui/hats:test_support",
@@ -11209,6 +11209,7 @@ if (!is_android && !is_chromeos_device) {
 
       deps += [
         "//chrome/browser/controlled_frame:test_support",
+        "//chrome/browser/ui/download",
         "//chrome/browser/ui/exclusive_access:test_support",
       ]
 

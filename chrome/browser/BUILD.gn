@@ -4250,6 +4250,8 @@ static_library("browser") {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/content_settings:impl",
+      "//chrome/browser/ui/download",
+      "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/page_action:icon_type",
@@ -4376,6 +4378,11 @@ static_library("browser") {
       # - //c/b/file_system_access/file_system_access_permission_request_manager.h
       # ... and more. Remove circular include entry when these directories get modularized.
       "//chrome/browser/ui/apps:impl",
+
+      # TODO(crbug.com/368831367): //c/b/ui/download/download_bubble_security_view_info.cc includes
+      # //c/b/signin/identity_manager_factory.h.
+      # Remove circular include entry when this directory gets modularized.
+      "//chrome/browser/ui/download:impl",
 
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",
