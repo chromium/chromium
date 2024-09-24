@@ -449,7 +449,10 @@ bool ShouldSendDangerousDownloadReport(
       danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
     // Report downloads that are known to be dangerous or was dangerous but
     // was validated by the user.
-    return has_token && has_unsafe_verdict;
+    // DANGEROUS_URL doesn't have token or unsafe verdict since this is flagged
+    // by blocklist check.
+    return (has_token && has_unsafe_verdict) ||
+           danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL;
   } else if (danger_type ==
              download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING) {
     // Async scanning may be triggered when the verdict is safe. Still send the

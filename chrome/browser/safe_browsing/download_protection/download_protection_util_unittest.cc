@@ -471,6 +471,21 @@ TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
         &download_item,
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING));
   }
+  {
+    // Report should be sent because DANGEROUS_URL doesn't have token or unsafe
+    // verdict.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    ON_CALL(download_item, GetDangerType)
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL));
+    DownloadProtectionService::SetDownloadProtectionData(
+        &download_item, "", ClientDownloadResponse::SAFE,
+        ClientDownloadResponse::TailoredVerdict());
+    EXPECT_TRUE(ShouldSendDangerousDownloadReport(
+        &download_item,
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_WARNING));
+  }
 }
 #endif
 
