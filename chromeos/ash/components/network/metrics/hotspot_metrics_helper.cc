@@ -146,6 +146,12 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
       return HotspotMetricsSetEnabledResult::kAborted;
     case HotspotControlResult::kInvalid:
       return HotspotMetricsSetEnabledResult::kInvalid;
+    case HotspotControlResult::kBusy:
+      return HotspotMetricsSetEnabledResult::kBusy;
+    case HotspotControlResult::kConcurrencyNotSupported:
+      return HotspotMetricsSetEnabledResult::kConcurrencyNotSupported;
+    case HotspotControlResult::kOperationFailure:
+      return HotspotMetricsSetEnabledResult::kOperationFailure;
     default:
       return HotspotMetricsSetEnabledResult::kUnknownFailure;
   }
@@ -243,6 +249,8 @@ HotspotMetricsHelper::GetMetricsDisableReason(
       return HotspotMetricsDisableReason::kStartTimeout;
     case DisableReason::kUpstreamNotAvailable:
       return HotspotMetricsDisableReason::kUpstreamNotAvailable;
+    case DisableReason::kResourceBusy:
+      return HotspotMetricsDisableReason::kResourceBusy;
     case DisableReason::kUnknownError:
       return HotspotMetricsDisableReason::kUnknownError;
   }

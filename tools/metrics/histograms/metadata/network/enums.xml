@@ -524,6 +524,9 @@ chromium-metrics-reviews@google.com.
              not available."/>
   <int value="13"
       label="kUnknownError: Hotspot disabled due to an unknown error."/>
+  <int value="14"
+      label="kResourceBusy: Hotspot disabled due to concurrency resource
+             conflict."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
@@ -580,6 +583,15 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="kInvalid: The enable hotspot operation is invalid due to an
              ongoing disable operation."/>
+  <int value="14"
+      label="kBusy: The enable hotspot operation failed due to an ongoing
+             request."/>
+  <int value="15"
+      label="kConcurrencyNotSupported: The enable hotspot operation failed
+             due to concurrency conflict."/>
+  <int value="16"
+      label="kOperationFailure: The enable hotspot operation failed
+             internally."/>
 </enum>
 
 <enum name="HotspotSupport">
