@@ -5560,7 +5560,6 @@ crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/sel
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-pseudo-open-closed.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-rtl.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-selected-value-behavior.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-value-selectedOption.tentative.html [ Failure ]
 # Shape of the disclosure:
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-text-only.tentative.html [ Failure ]
@@ -8099,3 +8098,7 @@ crbug.com/364948306 external/wpt/fullscreen/api/element-request-fullscreen-witho
 
 # Gardener 2024-09-20
 crbug.com/368549362 external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started_initial_navigation_tentative.py [ Failure Pass ]
+
+# Gardener 2024-09-24
+crbug.com/369241615 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Failure Crash ]
+crbug.com/369241615 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Failure Crash ]
