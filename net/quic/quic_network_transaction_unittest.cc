@@ -8700,8 +8700,18 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   socket_data->Resume();
-  base::RunLoop().RunUntilIdle();
-  CheckResponseData(&trans, kQuicRespData);
+  rv = callback.WaitForResult();
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // This test depends heavily on the internal behavior of
+    // HttpStreamFactory's JobController and Jobs, which aren't used when
+    // the HappyEyeballsV3 is enabled, and when the HappyEyeballsV3 is enabled
+    // we create an HttpStream on HTTP/1.1 for the request. Just check we get
+    // an appropriate error.
+    EXPECT_THAT(rv, IsError(ERR_H2_OR_QUIC_REQUIRED));
+  } else {
+    EXPECT_THAT(rv, IsOk());
+    CheckResponseData(&trans, kQuicRespData);
+  }
 }
 
 TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
