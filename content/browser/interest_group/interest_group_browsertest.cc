@@ -20887,8 +20887,7 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
   InterestGroupBiddingAndAuctionServerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFledgeBiddingAndAuctionServer,
-          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-         {blink::features::kFledgeBiddingAndAuctionServerAPI, {}}},
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}}},
         {});
   }
 

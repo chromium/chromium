@@ -10987,7 +10987,6 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFledgeBiddingAndAuctionServer,
           {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-         {blink::features::kFledgeBiddingAndAuctionServerAPI, {}},
          {blink::features::kPrivateAggregationApi,
           {{"enabled_in_fledge", "true"}}}},
         {});
