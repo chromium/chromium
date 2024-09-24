@@ -39,6 +39,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -193,6 +194,7 @@ public class PostPasswordMigrationSheetViewTest {
     @Test
     @MediumTest
     @EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    @DisabledTest(message = "crbug.com/369371078")
     public void sheetSetsTheTitleAndSubtitleAboutLocalPasswords() {
         // The sheet is shown.
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
