@@ -42,8 +42,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
-
-#include "base/process/launch.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -139,28 +137,34 @@ SettingValue GetWinOSFirewall() {
 
 #if BUILDFLAG(IS_MAC)
 SettingValue GetMacOSFirewall() {
-  // Based on this recommendation from Apple:
-  // https://developer.apple.com/documentation/macos-release-notes/macos-15-release-notes/#Application-Firewall
-  base::FilePath fw_util("/usr/libexec/ApplicationFirewall/socketfilterfw");
-  if (!base::PathExists(fw_util)) {
+  // There is no official Apple documentation on how to obtain the enabled
+  // status of the firewall (System Preferences> Security & Privacy> Firewall).
+  // Reading globalstate from com.apple.alf is the closest way to get such an
+  // API in Chrome without delegating to potentially unstable commands.
+  // Values of "globalstate":
+  //   0 = de-activated
+  //   1 = on for specific services
+  //   2 = on for essential services
+  // You can get 2 by, e.g., enabling the "Block all incoming connections"
+  // firewall functionality.
+
+  Boolean key_exists_with_valid_format = false;
+  CFIndex globalstate = CFPreferencesGetAppIntegerValue(
+      CFSTR("globalstate"), CFSTR("com.apple.alf"),
+      &key_exists_with_valid_format);
+
+  if (!key_exists_with_valid_format)
     return SettingValue::UNKNOWN;
-  }
 
-  base::CommandLine command(fw_util);
-  command.AppendSwitch("getglobalstate");
-  std::string output;
-  if (!base::GetAppOutput(command, &output)) {
-    return SettingValue::UNKNOWN;
+  switch (globalstate) {
+    case 0:
+      return SettingValue::DISABLED;
+    case 1:
+    case 2:
+      return SettingValue::ENABLED;
+    default:
+      return SettingValue::UNKNOWN;
   }
-
-  if (output.find("(State = 1)") != std::string::npos) {
-    return SettingValue::ENABLED;
-  }
-  if (output.find("(State = 0)") != std::string::npos) {
-    return SettingValue::DISABLED;
-  }
-
-  return SettingValue::UNKNOWN;
 }
 #endif
 
