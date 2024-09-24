@@ -454,6 +454,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kTaskControllerSetPriority, WebDXFeature::kScheduler},
           {WebFeature::kTaskSignalPriority, WebDXFeature::kScheduler},
           {WebFeature::kKeyboardApiLock, WebDXFeature::kKeyboardLock},
+          {WebFeature::kAsyncClipboardAPIRead, WebDXFeature::kAsyncClipboard},
+          {WebFeature::kAsyncClipboardAPIWrite, WebDXFeature::kAsyncClipboard},
+          {WebFeature::kAsyncClipboardAPIReadText,
+           WebDXFeature::kAsyncClipboard},
+          {WebFeature::kAsyncClipboardAPIWriteText,
+           WebDXFeature::kAsyncClipboard},
       }};
 
   return *kMap;

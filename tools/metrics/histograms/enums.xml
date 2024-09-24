@@ -33942,6 +33942,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="118" label="Scheduler"/>
   <int value="119" label="KeyboardLock"/>
   <int value="120" label="HTMLSearchElement"/>
+  <int value="121" label="AsyncClipboard"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
