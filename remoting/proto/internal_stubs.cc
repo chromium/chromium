@@ -67,7 +67,7 @@ std::unique_ptr<ProvisionCorpMachineRequest> GetMachineProvisioningRequest(
     const std::string& fqdn,
     const std::string& public_key,
     const std::string& version,
-    const std::optional<std::string>& existing_host_id) {
+    const std::optional<std::string>& existing_directory_id) {
   return std::make_unique<ProvisionCorpMachineRequest>();
 }
 
@@ -91,7 +91,7 @@ std::string GetReportProvisioningErrorRequestPath() {
 }
 
 std::unique_ptr<ReportProvisioningErrorRequest>
-GetReportProvisioningErrorRequest(const std::string& host_id,
+GetReportProvisioningErrorRequest(const std::string& directory_id,
                                   const std::string& error_message,
                                   const std::string& version) {
   return std::make_unique<ReportProvisioningErrorRequest>();
@@ -104,7 +104,7 @@ std::string GetSendHeartbeatRequestPath() {
 }
 
 std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
-    const std::string& host_id) {
+    const std::string& directory_id) {
   return std::make_unique<SendHeartbeatRequest>();
 }
 
@@ -115,7 +115,12 @@ std::string GetUpdateRemoteAccessHostRequestPath() {
 }
 
 std::unique_ptr<UpdateRemoteAccessHostRequest> GetUpdateRemoteAccessHostRequest(
-    const std::string& host_id) {
+    const std::string& directory_id,
+    std::optional<std::string> host_version,
+    std::optional<std::string> signaling_id,
+    std::optional<std::string> offline_reason,
+    std::optional<std::string> os_name,
+    std::optional<std::string> os_version) {
   return std::make_unique<UpdateRemoteAccessHostRequest>();
 }
 

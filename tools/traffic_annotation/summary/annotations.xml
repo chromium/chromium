@@ -488,4 +488,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_cloud_update_remote_access_host" added_in_milestone="131" content_hash_code="0628eb6e" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_directory_legacy_heartbeat" added_in_milestone="131" content_hash_code="00a4acfc" os_list="linux,windows,android,chromeos" file_path="remoting/base/directory_service_client.cc" />
  <item id="remoting_directory_send_heartbeat" added_in_milestone="131" content_hash_code="02120f68" os_list="linux,windows,android,chromeos" file_path="remoting/base/directory_service_client.cc" />
+ <item id="remoting_corp_send_heartbeat" added_in_milestone="131" content_hash_code="05ecd5dc" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
+ <item id="remoting_corp_update_remote_access_host" added_in_milestone="131" content_hash_code="04ec92e8" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
 </annotations>
