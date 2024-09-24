@@ -28,8 +28,8 @@ mojom("mojom") {
   if (enable_oop_printing) {
     enabled_features += [ "enable_oop_printing" ]
   }
-  if (enable_ppapi) {
-    enabled_features += [ "enable_ppapi" ]
+  if (enable_ppapi && !is_win) {
+    enabled_features += [ "enable_ppapi_sandbox" ]
   }
   if (is_linux || is_mac) {
     enabled_features += [ "is_linux_or_mac" ]

@@ -3277,9 +3277,6 @@ test("content_unittests") {
       "../renderer/pepper/mock_resource.h",
       "../renderer/pepper/v8_var_converter_unittest.cc",
     ]
-    if (is_win) {
-      sources += [ "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc" ]
-    }
     deps += [
       "//ppapi/c",
       "//ppapi/host",

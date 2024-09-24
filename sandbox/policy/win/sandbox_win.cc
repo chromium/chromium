@@ -1062,10 +1062,6 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Utility";
     case Sandbox::kGpu:
       return "GPU";
-#if BUILDFLAG(ENABLE_PPAPI)
-    case Sandbox::kPpapi:
-      return "PPAPI";
-#endif
     case Sandbox::kNetwork:
       return "Network";
     case Sandbox::kOnDeviceModelExecution:

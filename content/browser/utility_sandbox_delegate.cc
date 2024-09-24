@@ -70,7 +70,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor ||
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kPpapi ||
 #endif
 #if BUILDFLAG(IS_FUCHSIA)

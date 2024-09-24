@@ -61,7 +61,7 @@ TEST(SandboxTypeTest, Utility) {
   SetCommandLineFlagsForSandboxType(&command_line4, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line4));
 
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
   base::CommandLine command_line5(command_line);
   SetCommandLineFlagsForSandboxType(&command_line5, Sandbox::kPpapi);
   EXPECT_EQ(Sandbox::kPpapi, SandboxTypeFromCommandLine(command_line5));
@@ -154,7 +154,7 @@ TEST(SandboxTypeTest, GPU) {
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
 
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
 TEST(SandboxTypeTest, PPAPIPlugin) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kProcessType,
