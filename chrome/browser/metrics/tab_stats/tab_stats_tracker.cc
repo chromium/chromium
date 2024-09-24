@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/daily_event.h"
@@ -115,6 +117,19 @@ const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsProactiveHistogramName[] = "Discarding.DailyReloads.Proactive";
 const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsSuggestedHistogramName[] = "Discarding.DailyReloads.Suggested";
+
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateCountSingleWindowHistogramName[] =
+        "Tabs.Duplicates.Count.SingleWindow";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicateCountAllProfileWindowsHistogramName[] =
+        "Tabs.Duplicates.Count.AllProfileWindows";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicatePercentageSingleWindowHistogramName[] =
+        "Tabs.Duplicates.Percentage.SingleWindow";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabDuplicatePercentageAllProfileWindowsHistogramName[] =
+        "Tabs.Duplicates.Percentage.AllProfileWindows";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -541,6 +556,9 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
                                                  tab_stats.total_tab_count);
   UmaHistogramCounts10000WithBatteryStateVariant(kWindowCountHistogramName,
                                                  tab_stats.window_count);
+  if (base::FeatureList::IsEnabled(features::kTabDuplicateMetrics)) {
+    ReportTabDuplicateMetrics();
+  }
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::TYPE_NORMAL)
@@ -569,6 +587,67 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
   }
 }
 
+void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics() {
+  std::map<Profile*, DuplicateData> duplicate_data_per_profile;
+  for (Browser* const browser : *BrowserList::GetInstance()) {
+    if (browser->type() != Browser::TYPE_NORMAL) {
+      continue;
+    }
+
+    Profile* const profile = browser->profile();
+    DuplicateData duplicate_data_multi_window =
+        duplicate_data_per_profile[profile];
+    DuplicateData duplicate_data_single_window = DuplicateData();
+
+    const int tab_count = browser->tab_strip_model()->count();
+    duplicate_data_multi_window.tab_count += tab_count;
+    duplicate_data_single_window.tab_count = tab_count;
+
+    for (int index = 0; index < tab_count; index++) {
+      content::WebContents* const web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(index);
+      const GURL url = web_contents->GetURL();
+      auto seen_urls_single_window_result =
+          duplicate_data_single_window.seen_urls.insert(url);
+      if (!seen_urls_single_window_result.second) {
+        duplicate_data_single_window.duplicate_count++;
+      }
+      // Guest mode and incognito should not count for the per-profile metrics
+      if (profile->IsOffTheRecord()) {
+        continue;
+      }
+      auto seen_urls_multi_window_result =
+          duplicate_data_multi_window.seen_urls.insert(url);
+      if (!seen_urls_multi_window_result.second) {
+        duplicate_data_multi_window.duplicate_count++;
+      }
+    }
+    duplicate_data_per_profile[profile] = duplicate_data_multi_window;
+
+    base::UmaHistogramCounts100(kTabDuplicateCountSingleWindowHistogramName,
+                                duplicate_data_single_window.duplicate_count);
+    base::UmaHistogramPercentage(
+        kTabDuplicatePercentageSingleWindowHistogramName,
+        duplicate_data_single_window.duplicate_count * 100 /
+            duplicate_data_single_window.tab_count);
+  }
+  for (const auto& duplicate_data : duplicate_data_per_profile) {
+    // Guest mode and incognito should not count for the per-profile metrics
+    Profile* const profile = duplicate_data.first;
+    if (profile->IsOffTheRecord()) {
+      continue;
+    }
+
+    base::UmaHistogramCounts100(
+        kTabDuplicateCountAllProfileWindowsHistogramName,
+        duplicate_data.second.duplicate_count);
+    base::UmaHistogramPercentage(
+        kTabDuplicatePercentageAllProfileWindowsHistogramName,
+        duplicate_data.second.duplicate_count * 100 /
+            duplicate_data.second.tab_count);
+  }
+}
+
 bool TabStatsTracker::UmaStatsReportingDelegate::
     IsChromeBackgroundedWithoutWindows() {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -579,5 +658,21 @@ bool TabStatsTracker::UmaStatsReportingDelegate::
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
   return false;
 }
+
+TabStatsTracker::UmaStatsReportingDelegate::DuplicateData::DuplicateData() {
+  duplicate_count = 0;
+  tab_count = 0;
+  seen_urls = {};
+}
+
+TabStatsTracker::UmaStatsReportingDelegate::DuplicateData::DuplicateData(
+    const DuplicateData& other) {
+  duplicate_count = other.duplicate_count;
+  tab_count = other.tab_count;
+  seen_urls = std::set(other.seen_urls);
+}
+
+TabStatsTracker::UmaStatsReportingDelegate::DuplicateData::~DuplicateData() =
+    default;
 
 }  // namespace metrics

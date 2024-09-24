@@ -87,6 +87,18 @@ void EnsureTabStatsMatchExpectations(const TabsStats& expected,
 
 class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
  public:
+  struct HistogramStats {
+    std::string name;
+    std::map<int, int> buckets;
+  };
+
+  struct DuplicateHistogramStats {
+    HistogramStats count_single_window;
+    HistogramStats percentage_single_window;
+    HistogramStats count_multi_window;
+    HistogramStats percentage_multi_window;
+  };
+
   TabStatsTrackerBrowserTest() = default;
 
   TabStatsTrackerBrowserTest(const TabStatsTrackerBrowserTest&) = delete;
@@ -108,6 +120,26 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void EnsureTabDuplicateHistogramsMatchExpectations(
+      DuplicateHistogramStats expected) {
+    for (auto const& bucket : expected.count_multi_window.buckets) {
+      histogram_tester_.ExpectBucketCount(expected.count_multi_window.name,
+                                          bucket.first, bucket.second);
+    }
+    for (auto const& bucket : expected.percentage_multi_window.buckets) {
+      histogram_tester_.ExpectBucketCount(expected.percentage_multi_window.name,
+                                          bucket.first, bucket.second);
+    }
+    for (auto const& bucket : expected.count_single_window.buckets) {
+      histogram_tester_.ExpectBucketCount(expected.count_single_window.name,
+                                          bucket.first, bucket.second);
+    }
+    for (auto const& bucket : expected.percentage_single_window.buckets) {
+      histogram_tester_.ExpectBucketCount(
+          expected.percentage_single_window.name, bucket.first, bucket.second);
+    }
   }
 
  protected:
@@ -133,41 +165,99 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   expected_stats.window_count = 1;
   expected_stats.window_count_max = 1;
 
+  DuplicateHistogramStats expected_histograms = {};
+
+  expected_histograms.count_multi_window.name =
+      TabStatsTracker::UmaStatsReportingDelegate::
+          kTabDuplicateCountAllProfileWindowsHistogramName;
+  expected_histograms.percentage_multi_window.name =
+      TabStatsTracker::UmaStatsReportingDelegate::
+          kTabDuplicatePercentageAllProfileWindowsHistogramName;
+  expected_histograms.count_single_window.name = TabStatsTracker::
+      UmaStatsReportingDelegate::kTabDuplicateCountSingleWindowHistogramName;
+  expected_histograms.percentage_single_window.name =
+      TabStatsTracker::UmaStatsReportingDelegate::
+          kTabDuplicatePercentageSingleWindowHistogramName;
+  expected_histograms.count_multi_window.buckets[0] = 1;
+  expected_histograms.percentage_multi_window.buckets[0] = 1;
+  expected_histograms.count_single_window.buckets[0] = 1;
+  expected_histograms.percentage_single_window.buckets[0] = 1;
+
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   // Add a tab and make sure that the counters get updated.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   ++expected_stats.max_tab_per_window;
+  expected_histograms.count_multi_window.buckets[1] = 1;
+  expected_histograms.percentage_multi_window.buckets[50] = 1;
+  expected_histograms.count_single_window.buckets[1] = 1;
+  expected_histograms.percentage_single_window.buckets[50] = 1;
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   browser()->tab_strip_model()->CloseWebContentsAt(1, 0);
   --expected_stats.total_tab_count;
+  ++expected_histograms.count_multi_window.buckets[0];
+  ++expected_histograms.percentage_multi_window.buckets[0];
+  ++expected_histograms.count_single_window.buckets[0];
+  ++expected_histograms.percentage_single_window.buckets[0];
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   Browser* new_browser = CreateBrowser(browser()->profile());
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
   ++expected_stats.window_count_max;
+  ++expected_histograms.count_multi_window.buckets[1];
+  ++expected_histograms.percentage_multi_window.buckets[50];
+  expected_histograms.count_single_window.buckets[0] += 2;
+  expected_histograms.percentage_single_window.buckets[0] += 2;
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 1, GURL("about:blank"),
                                      ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
+  expected_histograms.count_multi_window.buckets[2] = 1;
+  expected_histograms.percentage_multi_window.buckets[66] = 1;
+  ++expected_histograms.count_single_window.buckets[1];
+  ++expected_histograms.count_single_window.buckets[0];
+  ++expected_histograms.percentage_single_window.buckets[0];
+  ++expected_histograms.percentage_single_window.buckets[50];
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   CloseBrowserSynchronously(new_browser);
   expected_stats.total_tab_count = 1;
   expected_stats.window_count = 1;
+  ++expected_histograms.count_multi_window.buckets[0];
+  ++expected_histograms.percentage_multi_window.buckets[0];
+  ++expected_histograms.count_single_window.buckets[0];
+  ++expected_histograms.percentage_single_window.buckets[0];
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+  tab_stats_tracker_->reporting_delegate_for_testing()
+      ->ReportTabDuplicateMetrics();
+  EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,

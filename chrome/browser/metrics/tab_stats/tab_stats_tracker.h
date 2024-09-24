@@ -77,6 +77,8 @@ class TabStatsTracker : public TabStripModelObserver,
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabDeletionGetsHandledProperly);
+  FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
+                           TabsAndWindowsAreCountedAccurately);
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
@@ -243,6 +245,12 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   static const char kDailyReloadsProactiveHistogramName[];
   static const char kDailyReloadsSuggestedHistogramName[];
 
+  // The names of the histograms that record duplicate tab data.
+  static const char kTabDuplicateCountSingleWindowHistogramName[];
+  static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
+  static const char kTabDuplicatePercentageSingleWindowHistogramName[];
+  static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
+
   UmaStatsReportingDelegate() = default;
 
   UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
@@ -260,10 +268,26 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // Report the tab heartbeat metrics.
   void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
 
+  // Calculate and report the metrics related to tab duplicates, which are
+  // re-calculated each time rather than cached like the other metrics due to
+  // their complexity.
+  void ReportTabDuplicateMetrics();
+
  protected:
   // Checks if Chrome is running in background with no visible windows, virtual
   // for unittesting.
   virtual bool IsChromeBackgroundedWithoutWindows();
+
+ private:
+  struct DuplicateData {
+    DuplicateData();
+    DuplicateData(const DuplicateData&);
+    ~DuplicateData();
+
+    int duplicate_count;
+    int tab_count;
+    std::set<GURL> seen_urls;
+  };
 };
 
 }  // namespace metrics

@@ -148,6 +148,8 @@ BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
 
+BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
+
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 extern const char kTabScrollingButtonPositionParameterName[];
 

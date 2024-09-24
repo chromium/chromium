@@ -1639,6 +1639,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.Duplicates.Count.AllProfileWindows" units="tabs"
+    expires_after="2025-01-26">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Every 5 minutes, for each profile with at least one open window, records the
+    number of duplicate tabs across all tab strips for that profile. E.g. if
+    there are 3 tabs with the same URL, 2 are duplicates and a value of 2 will
+    be logged. If a tab in a different window has the same URL, it will count as
+    a duplicate.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Duplicates.Count.SingleWindow" units="tabs"
+    expires_after="2025-01-26">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Every 5 minutes, records the number of duplicate tabs in each open tab
+    strip. Logs once per browser window. E.g. if in one window there are 3 tabs
+    with the same URL, and in another window there are 2 tabs with that URL, a
+    value of 2 and a value of 1 will be logged.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Duplicates.Percentage.AllProfileWindows" units="%"
+    expires_after="2025-01-26">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Every 5 minutes, for each profile with at least one open window, records the
+    percentage of all tabs across all windows for that profile that are
+    duplicates of other tabs. If there are 3 tabs with the same URL, 2 are
+    considered duplicates.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Duplicates.Percentage.SingleWindow" units="%"
+    expires_after="2025-01-26">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Every 5 minutes, records the percentage of all tabs in each window that are
+    duplicates of other tabs in that window. Logs once per browser window. If
+    there are 3 tabs with the same URL, 2 are considered duplicates.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
     expires_after="2025-02-10">
   <owner>ewannpv@chromium.org</owner>
