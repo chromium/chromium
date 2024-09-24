@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 .throbber {
-  background: url(../images/throbber_small.svg) no-repeat;
+  background: url(chrome://resources/images/throbber_small.svg) no-repeat;
   display: inline-block;
   height: 16px;
   width: 16px;

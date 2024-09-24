@@ -224,7 +224,7 @@
     "structures": [2900],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/resources.grd": {
-    "META": {"sizes": {"includes": [300],}},
+    "META": {"sizes": {"includes": [320],}},
     "includes": [2920],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/lock_screen_reauth/resources.grd": {

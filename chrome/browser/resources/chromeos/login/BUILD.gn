@@ -48,6 +48,8 @@ build_webui("build") {
     "oobe.html",
     "oobe_popup_overlay.css",
     "oobe_screen.css",
+
+    "screens/common/throbber.css",
   ]
 
   mojo_files_deps = [

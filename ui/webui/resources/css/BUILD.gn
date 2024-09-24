@@ -28,7 +28,6 @@ preprocess_if_expr("preprocess") {
     "spinner.css",
     "text_defaults.css",
     "text_defaults_md.css",
-    "throbber.css",
     "widgets.css",
   ]
 
