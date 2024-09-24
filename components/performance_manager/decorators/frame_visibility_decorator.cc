@@ -30,22 +30,14 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kNotVisible;
   }
 
-  // The main frame is always visible if its page is visible. Fenced frames are
-  // an exception, as `IsMainFrame()` returns true for them, but they aren't
-  // really the outermost frame of the frame tree.
-  if (!frame_node->parent_or_outer_document_or_embedder()) {
-    return FrameNode::Visibility::kVisible;
-  }
-
   // Too early in the frame's lifecycle, don't know yet if it intersects with
   // the viewport. Can't determine the visibility.
-  if (!frame_node->GetViewportIntersectionState().has_value()) {
+  if (!frame_node->GetViewportIntersection().has_value()) {
     return FrameNode::Visibility::kUnknown;
   }
 
   // The frame intersects with the viewport and is thus visible.
-  if (frame_node->GetViewportIntersectionState().value() !=
-      ViewportIntersectionState::kNotIntersecting) {
+  if (frame_node->GetViewportIntersection()->is_intersecting()) {
     return FrameNode::Visibility::kVisible;
   }
 
@@ -142,10 +134,10 @@ void FrameVisibilityDecorator::OnCurrentFrameChanged(
   }
 }
 
-void FrameVisibilityDecorator::OnViewportIntersectionStateChanged(
+void FrameVisibilityDecorator::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
   CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
-  CHECK(frame_node->GetViewportIntersectionState().has_value());
+  CHECK(frame_node->GetViewportIntersection().has_value());
   OnFramePropertyChanged(frame_node);
 }
 
@@ -177,6 +169,7 @@ void FrameVisibilityDecorator::OnFramePropertyChanged(
   frame_node_impl->SetVisibility(new_visibility);
 }
 
+// static
 bool FrameVisibilityDecorator::IsPageUserVisible(const PageNode* page_node) {
   return page_node->IsVisible() || IsBeingMirrored(page_node);
 }

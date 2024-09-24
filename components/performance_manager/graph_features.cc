@@ -56,6 +56,8 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<PageLoadTrackerDecorator>(graph);
   }
   if (flags_.priority_tracking) {
+    // The ExecutionContextPriorityDecorator depends on FrameVisibilityDecorator
+    // and so must be installed after.
     Install<execution_context_priority::ExecutionContextPriorityDecorator>(
         graph);
     Install<ProcessPriorityAggregator>(graph);

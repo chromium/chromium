@@ -121,14 +121,14 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   // Create a child frame node that intersect with the viewport.
   auto intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
-  intersecting_child_frame_node->SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState::kIntersecting);
+  intersecting_child_frame_node->SetViewportIntersectionForTesting(
+      /*is_intersecting_viewport=*/true);
 
   // Create a child frame node that doesn't intersect with the viewport.
   auto non_intersecting_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
-  non_intersecting_child_frame_node->SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState::kNotIntersecting);
+  non_intersecting_child_frame_node->SetViewportIntersectionForTesting(
+      /*is_intersecting_viewport=*/false);
 
   // They all starts not visible because the page is not visible.
   EXPECT_EQ(unknown_intersection_child_frame_node->GetVisibility(),
@@ -175,27 +175,27 @@ TEST_F(FrameVisibilityDecoratorTest, SetFrameIntersectsViewport) {
   // unknown.
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get(),
                                           main_frame_node.get());
-  EXPECT_FALSE(frame_node->GetViewportIntersectionState().has_value());
+  EXPECT_FALSE(frame_node->GetViewportIntersection().has_value());
 
   // Create a child frame node whose intersection with the viewport is still
   // unknown.
   auto child_frame_node =
       CreateFrameNodeAutoId(process_node(), page_node.get(), frame_node.get());
-  EXPECT_FALSE(child_frame_node->GetViewportIntersectionState().has_value());
+  EXPECT_FALSE(child_frame_node->GetViewportIntersection().has_value());
 
   // Both frames starts with an unknown visibility.
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
   EXPECT_EQ(child_frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
 
   // Make it so that the test frame intersects with the view port.
-  frame_node->SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState::kIntersecting);
+  frame_node->SetViewportIntersectionForTesting(
+      /*is_intersecting_viewport=*/true);
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(child_frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
 
   // Make it so that the child frame intersects with the view port.
-  child_frame_node->SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState::kIntersecting);
+  child_frame_node->SetViewportIntersectionForTesting(
+      /*is_intersecting_viewport=*/true);
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(child_frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
 }
@@ -218,13 +218,13 @@ TEST_F(FrameVisibilityDecoratorTest, FencedFrame) {
       /*parent_frame_node=*/nullptr,
       /*outer_document_for_fenced_frame=*/main_frame_node.get(),
       /*render_frame_id=*/2);
-  EXPECT_FALSE(fenced_frame_node->GetViewportIntersectionState().has_value());
+  EXPECT_FALSE(fenced_frame_node->GetViewportIntersection().has_value());
   EXPECT_EQ(fenced_frame_node->GetVisibility(),
             FrameNode::Visibility::kUnknown);
 
   // Make it so that the fenced frame intersects with the view port.
-  fenced_frame_node->SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState::kIntersecting);
+  fenced_frame_node->SetViewportIntersectionForTesting(
+      /*is_intersecting_viewport=*/true);
   EXPECT_EQ(fenced_frame_node->GetVisibility(),
             FrameNode::Visibility::kVisible);
 }

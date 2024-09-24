@@ -109,8 +109,7 @@ class FrameNodeImpl
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
-  std::optional<ViewportIntersectionState> GetViewportIntersectionState()
-      const override;
+  std::optional<ViewportIntersection> GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   uint64_t GetResidentSetKbEstimate() const override;
@@ -141,11 +140,9 @@ class FrameNodeImpl
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
-  void SetViewportIntersectionState(
-      const blink::mojom::ViewportIntersectionState&
-          viewport_intersection_state);
-  void SetViewportIntersectionState(
-      blink::mojom::FrameVisibility frame_visibility);
+  void SetViewportIntersection(const blink::mojom::ViewportIntersectionState&
+                                   viewport_intersection_state);
+  void SetViewportIntersection(blink::mojom::FrameVisibility frame_visibility);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
@@ -186,10 +183,11 @@ class FrameNodeImpl
   void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
                           PageNodeImpl* page_node);
 
-  void SetViewportIntersectionStateForTesting(
-      ViewportIntersectionState viewport_intersection_state) {
-    SetViewportIntersectionStateImpl(viewport_intersection_state);
-  }
+  // Testing-only functions that allows setting the ViewportIntersection
+  // directly.
+  void SetViewportIntersectionForTesting(bool is_intersecting_viewport);
+  void SetViewportIntersectionForTesting(
+      ViewportIntersection viewport_intersection);
 
  private:
   friend class FrameNodeImplDescriber;
@@ -280,8 +278,18 @@ class FrameNodeImpl
   // Sets the `is_current_` property. Returns true if its value changed as a
   // result of this call.
   bool SetIsCurrent(bool is_current);
-  void SetViewportIntersectionStateImpl(
-      ViewportIntersectionState viewport_intersection_state);
+
+  // Sets the viewport intersection on a non-local root frame. In this case, the
+  // area size of the viewport intersection is not known, and must be inherited
+  // from its parent.
+  void SetViewportIntersectionImpl(bool is_intersecting_viewport);
+
+  // Sets the ViewportIntersection for this frame.
+  void SetViewportIntersectionImpl(ViewportIntersection viewport_intersection);
+
+  // Updates the inherited `is_intersecting_large_area` bit of the
+  // ViewportIntersection of this frame.
+  void SetInheritedIsIntersectingLargeArea(bool is_intersecting_large_area);
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -393,9 +401,9 @@ class FrameNodeImpl
   // point in tracking it. To avoid programming mistakes, it is forbidden to
   // query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      std::optional<ViewportIntersectionState>,
-      &FrameNodeObserver::OnViewportIntersectionStateChanged>
-      viewport_intersection_state_;
+      std::optional<ViewportIntersection>,
+      &FrameNodeObserver::OnViewportIntersectionChanged>
+      viewport_intersection_;
 
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.
@@ -405,10 +413,10 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};
 
-  // Indicates that SetViewportIntersectionState() was called with a
+  // Indicates that SetViewportIntersection() was called with a
   // blink::mojom::ViewportIntersectionState instance. This is only called for
-  // remote frames and take precedence over frame visibility updates. When true,
-  // frame visibility updates are ignored.
+  // local root frames and take precedence over frame visibility updates. When
+  // true, frame visibility updates are ignored.
   bool has_viewport_intersection_updates_ = false;
 
   base::WeakPtr<FrameNodeImpl> weak_this_;

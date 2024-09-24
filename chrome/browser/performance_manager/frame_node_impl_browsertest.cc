@@ -86,15 +86,12 @@ class ViewportIntersectionStateChangedObserver
   }
 
   // FrameNodeObserver:
-  void OnViewportIntersectionStateChanged(
-      const FrameNode* frame_node) override {
+  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {
     if (!frame_node_matcher_.Run(frame_node))
       return;
 
-    const ViewportIntersectionState new_state =
-        frame_node->GetViewportIntersectionState().value();
     const bool is_intersecting =
-        new_state == ViewportIntersectionState::kIntersecting;
+        frame_node->GetViewportIntersection()->is_intersecting();
     EXPECT_EQ(expected_intersects_viewport_, is_intersecting);
     std::move(quit_closure_).Run();
   }

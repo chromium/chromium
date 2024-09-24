@@ -343,15 +343,15 @@ void PerformanceManagerTabHelper::
   CHECK(render_frame_host->IsRenderFrameLive());
 
   // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
+  void (FrameNodeImpl::*set_viewport_intersection_fn)(
       const blink::mojom::ViewportIntersectionState&) =
-      &FrameNodeImpl::SetViewportIntersectionState;
+      &FrameNodeImpl::SetViewportIntersection;
 
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
-                                base::Unretained(frame_node),
-                                viewport_intersection_state));
+      FROM_HERE,
+      base::BindOnce(set_viewport_intersection_fn, base::Unretained(frame_node),
+                     viewport_intersection_state));
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
@@ -368,13 +368,12 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   CHECK(render_frame_host->IsRenderFrameLive());
 
   // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
-      blink::mojom::FrameVisibility) =
-      &FrameNodeImpl::SetViewportIntersectionState;
+  void (FrameNodeImpl::*set_viewport_intersection_fn)(
+      blink::mojom::FrameVisibility) = &FrameNodeImpl::SetViewportIntersection;
 
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
+      FROM_HERE, base::BindOnce(set_viewport_intersection_fn,
                                 base::Unretained(frame_node), visibility));
 }
 
