@@ -78,7 +78,7 @@ const int64_t kOffscreenCallbackDelayMs = 1000 / 30;  // 30 fps
 // Convert SharedBitmap to SharedImage for pepper.
 BASE_FEATURE(kPepperSharedBitmapToSharedImage,
              "PepperSharedBitmapToSharedImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Converts a rect inside an image of the given dimensions. The rect may be
 // NULL to indicate it should be the entire image. If the rect is outside of
