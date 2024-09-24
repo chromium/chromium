@@ -76,7 +76,7 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
 }
 
 PhishingClassifierDelegate::~PhishingClassifierDelegate() {
-  CancelPendingClassification(SHUTDOWN);
+  CancelPendingClassification();
 }
 
 // static
@@ -115,7 +115,7 @@ void PhishingClassifierDelegate::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // A new page is starting to load, so cancel classificaiton.
-  CancelPendingClassification(NAVIGATE_AWAY);
+  CancelPendingClassification();
   if (!frame->Parent())
     last_main_frame_transition_ = transition;
 }
@@ -127,7 +127,7 @@ void PhishingClassifierDelegate::DidFinishSameDocumentNavigation() {
   // be called again for the same-document navigation.  We need to be sure not
   // to swap out the page text while the term feature extractor is still
   // running.
-  CancelPendingClassification(NAVIGATE_WITHIN_PAGE);
+  CancelPendingClassification();
 }
 
 bool PhishingClassifierDelegate::is_ready() {
@@ -147,7 +147,7 @@ void PhishingClassifierDelegate::PageCaptured(
   //
   // Note: Currently, if the url hasn't changed, we won't restart
   // classification in this case.  We may want to adjust this.
-  CancelPendingClassification(PAGE_RECAPTURED);
+  CancelPendingClassification();
   last_finished_load_url_ = render_frame()->GetWebFrame()->GetDocument().Url();
   classifier_page_text_ = std::move(page_text);
 
@@ -160,11 +160,8 @@ void PhishingClassifierDelegate::PageCaptured(
   MaybeStartClassification();
 }
 
-void PhishingClassifierDelegate::CancelPendingClassification(
-    CancelClassificationReason reason) {
+void PhishingClassifierDelegate::CancelPendingClassification() {
   if (is_classifying_) {
-    UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.CancelClassificationReason",
-                              reason, CANCEL_CLASSIFICATION_MAX);
     is_classifying_ = false;
   }
   if (classifier_->is_ready()) {
@@ -331,14 +328,14 @@ void PhishingClassifierDelegate::OnScorerChanged() {
   if (!scorer) {
     // If the scorer is reset, we should clear pending classification if there
     // is one going on, which is checked by the function below.
-    CancelPendingClassification(SCORER_CLEARED);
+    CancelPendingClassification();
     return;
   }
 
   // We check |is_classifying_| here because |CancelPendingClassification|
   // clears the page text, and we do not want that if we are awaiting retry.
   if (is_classifying_) {
-    CancelPendingClassification(NEW_PHISHING_SCORER);
+    CancelPendingClassification();
   } else if (awaiting_retry_) {
     // If a classificiation is not going on right now, a retry has been
     // attempted, and we're still within the timeout, call the classification

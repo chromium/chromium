@@ -544,17 +544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.CancelClassificationReason"
-    enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2024-11-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The counts for various reasons why an in-progress phishing classification
-    was canceled.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.CancelImageEmbeddingReason"
     enum="SBClientPhishingCancelImageEmbeddingReason"
     expires_after="2025-07-05">

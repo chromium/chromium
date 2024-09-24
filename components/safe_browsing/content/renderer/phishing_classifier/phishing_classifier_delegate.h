@@ -89,21 +89,11 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   PhishingClassifierDelegate(content::RenderFrame* render_frame,
                              PhishingClassifier* classifier);
 
-  enum CancelClassificationReason {
-    NAVIGATE_AWAY,
-    NAVIGATE_WITHIN_PAGE,
-    PAGE_RECAPTURED,
-    SHUTDOWN,
-    NEW_PHISHING_SCORER,
-    SCORER_CLEARED,
-    CANCEL_CLASSIFICATION_MAX  // Always add new values before this one.
-  };
-
   void PhishingDetectorReceiver(
       mojo::PendingAssociatedReceiver<mojom::PhishingDetector> receiver);
 
   // Cancels any pending classification and frees the page text.
-  void CancelPendingClassification(CancelClassificationReason reason);
+  void CancelPendingClassification();
 
   // Records in UMA of a specific event that happens in the phishing classifier.
   void RecordEvent(SBPhishingClassifierEvent event);
