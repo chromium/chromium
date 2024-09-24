@@ -55,11 +55,11 @@ virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html
 virtual/threaded/printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
-virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
+crbug.com/369270133 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
+crbug.com/369270133 virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
+crbug.com/369270133 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
+crbug.com/369270133 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
+crbug.com/369270133 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
 external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]
 crbug.com/360246808 virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
 crbug.com/359618513 virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
