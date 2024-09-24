@@ -385,13 +385,11 @@ void PasswordStoreAndroidBackend::Init(
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));
-  // TODO(crbug.com/40778507): Create subscription before completion.
 }
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   lifecycle_helper_->UnregisterObserver();
-  // TODO(crbug.com/40190023): Implement (e.g. unsubscribe from GMS).
   std::move(shutdown_completed).Run();
 }
 
