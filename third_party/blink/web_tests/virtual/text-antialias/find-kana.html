@@ -1,9 +1,179 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<title>Tests find for strings with kana letters in them.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="script-tests/find-kana.js"></script>
+<script>
+function canFind(query, specimen) {
+  getSelection().empty();
+  const textNode = document.createTextNode(specimen);
+  document.body.appendChild(textNode);
+  document.execCommand("FindString", false, query);
+  const result = getSelection().rangeCount != 0;
+  getSelection().empty();
+  textNode.remove();
+  return result;
+}
+
+const combiningGraveAccent = String.fromCharCode(0x0300);
+const combiningKatakanaHiraganaSemiVoicedSoundMark = String.fromCharCode(0x309A);
+const combiningKatakanaHiraganaVoicedSoundMark = String.fromCharCode(0x3099);
+
+const halfwidthKatakanaLetterA = String.fromCharCode(0xFF71);
+const halfwidthKatakanaLetterHa = String.fromCharCode(0xFF76);
+const halfwidthKatakanaLetterKa = String.fromCharCode(0xFF76);
+const halfwidthKatakanaLetterSmallA = String.fromCharCode(0xFF67);
+const hiraganaLetterA = String.fromCharCode(0x3042);
+const hiraganaLetterBa = String.fromCharCode(0x3070);
+const hiraganaLetterGa = String.fromCharCode(0x304C);
+const hiraganaLetterHa = String.fromCharCode(0x306F);
+const hiraganaLetterKa = String.fromCharCode(0x304B);
+const hiraganaLetterPa = String.fromCharCode(0x3071);
+const hiraganaLetterSmallA = String.fromCharCode(0x3041);
+const katakanaLetterA = String.fromCharCode(0x30A2);
+const katakanaLetterGa = String.fromCharCode(0x30AC);
+const katakanaLetterKa = String.fromCharCode(0x30AB);
+const katakanaLetterSmallA = String.fromCharCode(0x30A1);
+const latinCapitalLetterAWithGrave = String.fromCharCode(0x00C0);
+
+const decomposedHalfwidthKatakanaLetterBa = halfwidthKatakanaLetterHa + combiningKatakanaHiraganaVoicedSoundMark;
+const decomposedHalfwidthKatakanaLetterPa = halfwidthKatakanaLetterHa + combiningKatakanaHiraganaSemiVoicedSoundMark;
+const decomposedHiraganaLetterBa = hiraganaLetterHa + combiningKatakanaHiraganaVoicedSoundMark;
+const decomposedHiraganaLetterGa = hiraganaLetterKa + combiningKatakanaHiraganaVoicedSoundMark;
+const decomposedHiraganaLetterPa = hiraganaLetterHa + combiningKatakanaHiraganaSemiVoicedSoundMark;
+const decomposedKatakanaLetterGa = katakanaLetterKa + combiningKatakanaHiraganaVoicedSoundMark;
+const decomposedLatinCapitalLetterAWithGrave = 'A' + combiningGraveAccent;
+
+test(() => {
+  assert_true(canFind(decomposedHalfwidthKatakanaLetterBa, decomposedHalfwidthKatakanaLetterBa));
+  assert_true(canFind(decomposedHalfwidthKatakanaLetterPa, decomposedHalfwidthKatakanaLetterPa));
+  assert_true(canFind(decomposedHiraganaLetterBa, decomposedHiraganaLetterBa));
+  assert_true(canFind(decomposedHiraganaLetterGa, decomposedHiraganaLetterGa));
+  assert_true(canFind(decomposedHiraganaLetterPa, decomposedHiraganaLetterPa));
+  assert_true(canFind(decomposedKatakanaLetterGa, decomposedKatakanaLetterGa));
+  assert_true(canFind(decomposedLatinCapitalLetterAWithGrave, decomposedLatinCapitalLetterAWithGrave));
+  assert_true(canFind(halfwidthKatakanaLetterA, halfwidthKatakanaLetterA));
+  assert_true(canFind(halfwidthKatakanaLetterHa, halfwidthKatakanaLetterHa));
+  assert_true(canFind(halfwidthKatakanaLetterKa, halfwidthKatakanaLetterKa));
+  assert_true(canFind(halfwidthKatakanaLetterSmallA, halfwidthKatakanaLetterSmallA));
+  assert_true(canFind(hiraganaLetterA, hiraganaLetterA));
+  assert_true(canFind(hiraganaLetterBa, hiraganaLetterBa));
+  assert_true(canFind(hiraganaLetterGa, hiraganaLetterGa));
+  assert_true(canFind(hiraganaLetterHa, hiraganaLetterHa));
+  assert_true(canFind(hiraganaLetterKa, hiraganaLetterKa));
+  assert_true(canFind(hiraganaLetterPa, hiraganaLetterPa));
+  assert_true(canFind(hiraganaLetterSmallA, hiraganaLetterSmallA));
+  assert_true(canFind(katakanaLetterA, katakanaLetterA));
+  assert_true(canFind(katakanaLetterGa, katakanaLetterGa));
+  assert_true(canFind(katakanaLetterKa, katakanaLetterKa));
+  assert_true(canFind(katakanaLetterSmallA, katakanaLetterSmallA));
+  assert_true(canFind(latinCapitalLetterAWithGrave, latinCapitalLetterAWithGrave));
+}, 'Exact matches');
+
+test(() => {
+  assert_true(canFind(decomposedHiraganaLetterGa, decomposedKatakanaLetterGa));
+  assert_true(canFind(decomposedKatakanaLetterGa, decomposedHiraganaLetterGa));
+  assert_true(canFind(hiraganaLetterA, halfwidthKatakanaLetterA));
+  assert_true(canFind(hiraganaLetterA, katakanaLetterA));
+  assert_true(canFind(katakanaLetterSmallA, hiraganaLetterSmallA));
+}, 'Hiragana, katakana, and half width katakana: Must be treated as equal');
+
+test(() => {
+  assert_true(canFind(decomposedHiraganaLetterBa, hiraganaLetterBa));
+  assert_true(canFind(decomposedHiraganaLetterGa, decomposedKatakanaLetterGa));
+  assert_true(canFind(decomposedHiraganaLetterGa, hiraganaLetterGa));
+  assert_true(canFind(decomposedHiraganaLetterGa, katakanaLetterGa));
+  assert_true(canFind(decomposedHiraganaLetterPa, hiraganaLetterPa));
+  assert_true(canFind(decomposedKatakanaLetterGa, decomposedHiraganaLetterGa));
+  assert_true(canFind(decomposedLatinCapitalLetterAWithGrave, latinCapitalLetterAWithGrave));
+  assert_true(canFind(hiraganaLetterBa, decomposedHiraganaLetterBa));
+  assert_true(canFind(hiraganaLetterGa, decomposedHiraganaLetterGa));
+  assert_true(canFind(hiraganaLetterPa, decomposedHiraganaLetterPa));
+  assert_true(canFind(katakanaLetterGa, decomposedHiraganaLetterGa));
+  assert_true(canFind(latinCapitalLetterAWithGrave, decomposedLatinCapitalLetterAWithGrave));
+}, 'Composed and decomposed forms: Must be treated as equal');
+
+test(() => {
+  assert_false(canFind(halfwidthKatakanaLetterA, hiraganaLetterSmallA));
+  assert_false(canFind(halfwidthKatakanaLetterSmallA, halfwidthKatakanaLetterA));
+  assert_false(canFind(hiraganaLetterA, hiraganaLetterSmallA));
+  assert_false(canFind(hiraganaLetterSmallA, katakanaLetterA));
+  assert_false(canFind(katakanaLetterA, halfwidthKatakanaLetterSmallA));
+  assert_false(canFind(katakanaLetterSmallA, katakanaLetterA));
+}, 'Small and non-small kana letters: Must *not* be treated as equal');
+
+test(() => {
+  assert_false(canFind(decomposedHalfwidthKatakanaLetterBa, halfwidthKatakanaLetterHa));
+  assert_false(canFind(decomposedHalfwidthKatakanaLetterPa, halfwidthKatakanaLetterHa));
+  assert_false(canFind(decomposedHiraganaLetterBa, hiraganaLetterHa));
+  assert_false(canFind(decomposedHiraganaLetterBa, hiraganaLetterPa));
+  assert_false(canFind(decomposedHiraganaLetterGa, halfwidthKatakanaLetterKa));
+  assert_false(canFind(decomposedHiraganaLetterGa, hiraganaLetterKa));
+  assert_false(canFind(decomposedHiraganaLetterPa, hiraganaLetterBa));
+  assert_false(canFind(decomposedHiraganaLetterPa, hiraganaLetterHa));
+  assert_false(canFind(decomposedKatakanaLetterGa, halfwidthKatakanaLetterKa));
+  assert_false(canFind(decomposedKatakanaLetterGa, hiraganaLetterKa));
+  assert_false(canFind(halfwidthKatakanaLetterHa, decomposedHalfwidthKatakanaLetterBa));
+  assert_false(canFind(halfwidthKatakanaLetterHa, decomposedHalfwidthKatakanaLetterPa));
+  assert_false(canFind(halfwidthKatakanaLetterKa, decomposedHiraganaLetterGa));
+  assert_false(canFind(halfwidthKatakanaLetterKa, decomposedKatakanaLetterGa));
+  assert_false(canFind(hiraganaLetterBa, decomposedHiraganaLetterPa));
+  assert_false(canFind(hiraganaLetterBa, hiraganaLetterHa));
+  assert_false(canFind(hiraganaLetterBa, hiraganaLetterPa));
+  assert_false(canFind(hiraganaLetterGa, hiraganaLetterKa));
+  assert_false(canFind(hiraganaLetterHa, decomposedHiraganaLetterBa));
+  assert_false(canFind(hiraganaLetterHa, decomposedHiraganaLetterPa));
+  assert_false(canFind(hiraganaLetterHa, hiraganaLetterBa));
+  assert_false(canFind(hiraganaLetterHa, hiraganaLetterPa));
+  assert_false(canFind(hiraganaLetterKa, decomposedHiraganaLetterGa));
+  assert_false(canFind(hiraganaLetterKa, decomposedKatakanaLetterGa));
+  assert_false(canFind(hiraganaLetterKa, hiraganaLetterGa));
+  assert_false(canFind(hiraganaLetterPa, decomposedHiraganaLetterBa));
+  assert_false(canFind(hiraganaLetterPa, hiraganaLetterBa));
+  assert_false(canFind(hiraganaLetterPa, hiraganaLetterHa));
+}, 'Kana letters where the only difference is in voiced sound marks: Must *not* be treated as equal');
+
+test(() => {
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + halfwidthKatakanaLetterA,
+                       latinCapitalLetterAWithGrave + hiraganaLetterSmallA));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + halfwidthKatakanaLetterSmallA,
+                       latinCapitalLetterAWithGrave + halfwidthKatakanaLetterA));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + hiraganaLetterA,
+                       latinCapitalLetterAWithGrave + hiraganaLetterSmallA));
+  assert_true(canFind(decomposedLatinCapitalLetterAWithGrave + hiraganaLetterGa,
+                      latinCapitalLetterAWithGrave + hiraganaLetterGa));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + hiraganaLetterGa,
+                       latinCapitalLetterAWithGrave + hiraganaLetterKa));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + hiraganaLetterKa,
+                       latinCapitalLetterAWithGrave + hiraganaLetterGa));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + hiraganaLetterSmallA,
+                       latinCapitalLetterAWithGrave + katakanaLetterA));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + katakanaLetterA,
+                       latinCapitalLetterAWithGrave + halfwidthKatakanaLetterSmallA));
+  assert_false(canFind(decomposedLatinCapitalLetterAWithGrave + katakanaLetterSmallA,
+                       latinCapitalLetterAWithGrave + katakanaLetterA));
+  assert_false(canFind(latinCapitalLetterAWithGrave + halfwidthKatakanaLetterA,
+                       decomposedLatinCapitalLetterAWithGrave + hiraganaLetterSmallA));
+  assert_false(canFind(latinCapitalLetterAWithGrave + halfwidthKatakanaLetterSmallA,
+                       decomposedLatinCapitalLetterAWithGrave + halfwidthKatakanaLetterA));
+  assert_false(canFind(latinCapitalLetterAWithGrave + hiraganaLetterA,
+                       decomposedLatinCapitalLetterAWithGrave + hiraganaLetterSmallA));
+  assert_true(canFind(latinCapitalLetterAWithGrave + hiraganaLetterGa,
+                      decomposedLatinCapitalLetterAWithGrave + hiraganaLetterGa));
+  assert_false(canFind(latinCapitalLetterAWithGrave + hiraganaLetterGa,
+                       decomposedLatinCapitalLetterAWithGrave + hiraganaLetterKa));
+  assert_false(canFind(latinCapitalLetterAWithGrave + hiraganaLetterKa,
+                       decomposedLatinCapitalLetterAWithGrave + hiraganaLetterGa));
+  assert_false(canFind(latinCapitalLetterAWithGrave + hiraganaLetterSmallA,
+                       decomposedLatinCapitalLetterAWithGrave + katakanaLetterA));
+  assert_false(canFind(latinCapitalLetterAWithGrave + katakanaLetterA,
+                       decomposedLatinCapitalLetterAWithGrave + halfwidthKatakanaLetterSmallA));
+  assert_false(canFind(latinCapitalLetterAWithGrave + katakanaLetterSmallA,
+                       decomposedLatinCapitalLetterAWithGrave + katakanaLetterA));
+}, 'Composed/decomposed form differences before kana characters must have no effect');
+</script>
 </body>
 </html>
