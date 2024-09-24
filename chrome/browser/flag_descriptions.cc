@@ -1536,8 +1536,8 @@ const char kExperimentalRgbKeyboardPatternsDescription[] =
 
 const char kClayBlockingDialogName[] = "Clay blocking dialog";
 const char kClayBlockingDialogDescription[] =
-    "Enables the blocking dialog that directs users to complete their choice of"
-    "default apps (for Browser & Search) in Android.";
+    "Enables the blocking dialog that directs users to complete their choice "
+    "of default apps (for Browser & Search) in Android.";
 
 const char kTemplateUrlReconciliationName[] = "Merge TemplateUrl definitions";
 const char kTemplateUrlReconciliationDialogDescription[] =

@@ -16,8 +16,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 
 /** Fake delegate that can be triggered in the app as a debug flag option, or used in tests. */
 public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
-
-    private static final String TAG = "FakeChoiceDelegate";
+    private static final String TAG = "SearchEngineDelefake";
 
     private final Boolean mEnableLogging;
     private @Nullable ObservableSupplierImpl<Boolean> mIsChoiceRequired;

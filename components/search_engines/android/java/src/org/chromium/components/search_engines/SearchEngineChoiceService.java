@@ -221,7 +221,10 @@ public class SearchEngineChoiceService {
 
         assert !SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch();
         assert mDelegate != null;
-        Log.i(TAG, "launchChoiceScreens()");
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "launchChoiceScreens()");
+        }
         mDelegate.launchDeviceChoiceScreens();
     }
 
@@ -251,7 +254,10 @@ public class SearchEngineChoiceService {
         }
 
         assert mDelegate != null;
-        Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        }
         mDelegate.notifyDeviceChoiceEvent(eventType);
     }
 
@@ -268,7 +274,19 @@ public class SearchEngineChoiceService {
                 // We want to call into the backend to be able to verify it's working,
                 // but we intercept its returned values to prevent it from affecting the
                 // user experience.
-                ? new TransitiveObservableSupplier<>(supplier, ignored -> alwaysFalseSupplier)
+                ? new TransitiveObservableSupplier<>(
+                        supplier,
+                        isDeviceChoiceRequired -> {
+                            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                                // TODO(b/355186707): Temp log to be removed after e2e validation.
+                                Log.i(
+                                        TAG,
+                                        "[DarkLaunch] delegate event (isDeviceChoiceRequired=%s)"
+                                                + " suppressed",
+                                        isDeviceChoiceRequired);
+                            }
+                            return alwaysFalseSupplier;
+                        })
                 : supplier;
     }
 

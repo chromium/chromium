@@ -16,10 +16,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -34,6 +37,7 @@ import java.util.function.Function;
  * engine choice in Android settings.
  */
 public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
+    private static final String TAG = "ChoiceDialogCoordntr";
 
     // TODO(b/365100489): Refactor this coordinator to implement the dialog's custom view fully
     // using the standard chromium MVC patterns. This class is a temporary shortcut.
@@ -91,8 +95,16 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     static boolean maybeShowInternal(
             Function<SearchEngineChoiceService, ChoiceDialogCoordinator> coordinatorFactory) {
         var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
-        if (searchEngineChoiceService == null
-                || !searchEngineChoiceService.isDeviceChoiceDialogEligible()) {
+        final boolean canShow =
+                searchEngineChoiceService != null
+                        && searchEngineChoiceService.isDeviceChoiceDialogEligible();
+
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "maybeShow() - Client eligible for the device choice dialog: %b", canShow);
+        }
+
+        if (!canShow) {
             return false;
         }
 
@@ -130,6 +142,11 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void updateDialogType(@DialogType int dialogType) {
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "updateDialogType(%d)", dialogType);
+        }
+
         mViewHolder.updateViewForType(
                 dialogType,
                 dialogType == DialogType.LOADING ? null : mMediator::onActionButtonClick);
@@ -153,6 +170,15 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void showDialog() {
+        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING);
+        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                Log.i(TAG, "[DarkLaunch] showDialog() suppressed");
+            }
+            return; // Ensure that we never show the dialog when the feature is in dark launch mode.
+        }
+
         mModalDialogManager.addObserver(mDialogAddedObserver);
         mModalDialogManager.showDialog(
                 mModel,
