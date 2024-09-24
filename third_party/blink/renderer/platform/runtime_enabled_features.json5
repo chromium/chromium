@@ -2126,11 +2126,11 @@
     },
     {
       name: "FontVariantEmoji",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontVariationSequences",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/1231644): This flag is being kept (even though the
@@ -4085,7 +4085,7 @@
       // is shipped with Chrome or when system emoji fonts will have
       // cmap format 14 subtable.
       name: "SystemFallbackEmojiVSSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SystemWakeLock",
