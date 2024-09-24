@@ -214,12 +214,16 @@ void HeartbeatSender::SendFullHeartbeat() {
 
   std::optional<std::string> offline_reason;
   if (!host_offline_reason_.empty()) {
-    offline_reason = std::make_optional(host_offline_reason_);
+    offline_reason = host_offline_reason_;
+  }
+  std::optional<std::string> signaling_id;
+  auto signaling_id_str = signal_strategy_->GetLocalAddress().id();
+  if (!signaling_id_str.empty()) {
+    signaling_id = signaling_id_str;
   }
   service_client_->SendFullHeartbeat(
-      !initial_heartbeat_sent_,
-      std::make_optional(signal_strategy_->GetLocalAddress().id()),
-      offline_reason,
+      !initial_heartbeat_sent_, std::move(signaling_id),
+      std::move(offline_reason),
       base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                      base::Unretained(this)));
 
@@ -245,12 +249,16 @@ void HeartbeatSender::SendLiteHeartbeat(bool useLiteHeartbeat) {
   } else {
     std::optional<std::string> offline_reason;
     if (!host_offline_reason_.empty()) {
-      offline_reason = std::make_optional(host_offline_reason_);
+      offline_reason = host_offline_reason_;
+    }
+    std::optional<std::string> signaling_id;
+    auto signaling_id_str = signal_strategy_->GetLocalAddress().id();
+    if (!signaling_id_str.empty()) {
+      signaling_id = signaling_id_str;
     }
     service_client_->SendFullHeartbeat(
-        !initial_heartbeat_sent_,
-        std::make_optional(signal_strategy_->GetLocalAddress().id()),
-        offline_reason,
+        !initial_heartbeat_sent_, std::move(signaling_id),
+        std::move(offline_reason),
         base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                        base::Unretained(this)));
   }
