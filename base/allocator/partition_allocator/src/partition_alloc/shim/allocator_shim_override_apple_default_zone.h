@@ -28,6 +28,13 @@
 
 namespace allocator_shim {
 
+// This ".h" file is not a header, but a source file meant to be included only
+// once, exclusively from allocator_shim.cc. See the top-level check.
+//
+// A possible alternative: rename this file to .inc, at the expense of losing
+// syntax highlighting in text editors.
+//
+// NOLINTNEXTLINE(google-build-namespaces)
 namespace {
 
 // malloc_introspection_t's callback functions for our own zone
@@ -319,6 +326,14 @@ void InitializeZone() {
 #endif
 }
 
+// This ".h" file is not a header, but a source file meant to be included only
+// once, exclusively from allocator_shim_win_static.cc or
+// allocator_shim_win_component.cc. See the top-level check.
+//
+// A possible alternative: rename this file to .inc, at the expense of losing
+// syntax highlighting in text editors.
+//
+// NOLINTNEXTLINE(google-build-namespaces)
 namespace {
 static std::atomic<bool> g_initialization_is_done;
 }

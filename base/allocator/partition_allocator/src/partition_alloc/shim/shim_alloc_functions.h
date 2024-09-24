@@ -18,6 +18,14 @@
 #include "partition_alloc/partition_alloc_base/memory/page_size.h"
 #include "partition_alloc/partition_alloc_check.h"
 
+// This ".h" file is not a header, but a source file meant to be included only
+// once, exclusively from one of the allocator_shim*.cc files. See the top-level
+// check.
+//
+// A possible alternative: rename this file to .inc, at the expense of losing
+// syntax highlighting in text editors.
+//
+// NOLINTNEXTLINE(google-build-namespaces)
 namespace {
 
 PA_ALWAYS_INLINE size_t GetCachedPageSize() {

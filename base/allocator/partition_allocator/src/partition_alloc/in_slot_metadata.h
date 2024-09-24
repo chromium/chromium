@@ -46,7 +46,6 @@ PA_ALWAYS_INLINE constexpr size_t AlignUpInSlotMetadataSizeForApple(
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-namespace {
 // Utility functions to define a bit field.
 template <typename CountType>
 static constexpr CountType SafeShift(CountType lhs, int rhs) {
@@ -64,7 +63,6 @@ struct BitField {
            ~(SafeShift<CountType>(1, lo) - 1);
   }
 };
-}  // namespace
 
 // Special-purpose atomic bit field class mainly used by RawPtrBackupRefImpl.
 // Formerly known as `PartitionRefCount`, but renamed to support usage that is

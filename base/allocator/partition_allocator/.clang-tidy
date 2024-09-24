@@ -1,0 +1,5 @@
+---
+  Checks: 'google-build-namespaces'
+  InheritParentConfig: true
+  HeaderFilterRegex: 'partition_alloc/*'
+...

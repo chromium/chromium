@@ -28,8 +28,6 @@
 
 namespace partition_alloc::internal {
 
-namespace {
-
 zx::resource GetVmexResource() {
   auto vmex_resource_client =
       component::Connect<fuchsia_kernel::VmexResource>();
@@ -93,8 +91,6 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
   };
   PA_NOTREACHED();
 }
-
-}  // namespace
 
 // zx_vmar_map() will fail if the VMO cannot be mapped at |vmar_offset|, i.e.
 // |hint| is not advisory.
