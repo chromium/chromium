@@ -254,14 +254,6 @@ String ConvertFromDawn(const char* s) {
 }
 
 String ConvertFromDawn(wgpu::StringView view) {
-  DCHECK(!(view.data == nullptr && view.length == WGPU_STRLEN));
-
-  // The handling for nullable view is a superset of the handling of non-null.
-  wgpu::NullableStringView nullable_view = {view.data, view.length};
-  return ConvertFromDawn(nullable_view);
-}
-
-String ConvertFromDawn(wgpu::NullableStringView view) {
   if (view.data == nullptr) {
     return {};
   }

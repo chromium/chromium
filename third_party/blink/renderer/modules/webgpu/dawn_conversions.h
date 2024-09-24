@@ -58,7 +58,6 @@ const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
 // Dawn strings are converted to [Nullable]StringView.
 String ConvertFromDawn(const char* s);
 String ConvertFromDawn(wgpu::StringView view);
-String ConvertFromDawn(wgpu::NullableStringView view);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.
