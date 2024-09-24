@@ -177,9 +177,10 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   }
 
   if (gpu_direct_) {
-    gpu_direct_->CopyGpuMemoryBuffer(std::move(buffer_handle),
-                                     std::move(memory_region),
-                                     std::move(callback));
+    gpu_direct_->CopyGpuMemoryBuffer(
+        std::move(buffer_handle), std::move(memory_region),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                    /*result=*/false));
   }
 }
 
@@ -197,14 +198,12 @@ bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   CopyGpuMemoryBufferAsync(
       std::move(buffer_handle), std::move(memory_region),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              [](base::WaitableEvent* event, bool* result_ptr, bool result) {
-                *result_ptr = result;
-                event->Signal();
-              },
-              &event, &mapping_result),
-          /*result=*/false));
+      base::BindOnce(
+          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+            *result_ptr = result;
+            event->Signal();
+          },
+          &event, &mapping_result));
   event.Wait();
   return mapping_result;
 }
