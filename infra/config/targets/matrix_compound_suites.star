@@ -1499,14 +1499,14 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_quality_tests_suite": targets.legacy_matrix_config(
+            # TODO(b:369156264): Add Intel variant once bots are revived.
             variants = [
-                "INTEL_UHD_630_OR_770",
                 "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(
+            # TODO(b:369156264): Add Intel variant once bots are revived.
             variants = [
-                "INTEL_UHD_630_OR_770",
                 "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),

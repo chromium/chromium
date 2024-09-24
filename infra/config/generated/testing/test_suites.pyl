@@ -7723,13 +7723,11 @@
       },
       'ondevice_quality_tests_suite': {
         'variants': [
-          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {
         'variants': [
-          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
