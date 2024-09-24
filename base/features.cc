@@ -25,7 +25,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/threading/platform_thread_win.h"
 #endif
 
@@ -135,8 +134,6 @@ void Init(EmitThreadControllerProfilerMetadata
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  sequence_manager::internal::ThreadControllerPowerMonitor::
-      InitializeFeatures();
   InitializePlatformThreadFeatures();
 #endif
 }

@@ -234,12 +234,6 @@ class ThreadControllerWithMessagePumpTestBase : public testing::Test {
     thread_controller_.SetSequencedTaskSource(&task_source_);
   }
 
-  void SetUp() override {
-    ThreadControllerPowerMonitor::OverrideUsePowerMonitorForTesting(true);
-  }
-
-  void TearDown() override { ThreadControllerPowerMonitor::ResetForTesting(); }
-
   TimeTicks FromNow(TimeDelta delta) { return clock_.NowTicks() + delta; }
 
  protected:

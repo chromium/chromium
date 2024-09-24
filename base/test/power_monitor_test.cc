@@ -108,6 +108,20 @@ ScopedPowerMonitorTestSource::ScopedPowerMonitorTestSource() {
 }
 
 ScopedPowerMonitorTestSource::~ScopedPowerMonitorTestSource() {
+  if (is_suspended_) {
+    // Generate a resume here because there are global, leaky disk cache
+    // threads that lives throughout a long portion of some test targets.
+    // This thread is created the first time the disk cache is created, which
+    // instantiates a disk cache backend, which in turn creates a CacheThread as
+    // a global LazyInstance<>::Lazy. This thread gets its own
+    // ThreadControllerPowerMonitor, so if this test case doesn't simulate a
+    // resume, the next test will hit a DCHECK when it tries to generate its
+    // first suspend event. The "correct" solution to this problem would be to
+    // refactor the offending disk caches to support passing a thread through to
+    // the disk cache backend in tests, and avoid having a global/leaky instance
+    // around but this is a significant undertaking.
+    GenerateResumeEvent();
+  }
   base::PowerMonitor::GetInstance()->ShutdownForTesting();
 }
 
@@ -122,11 +136,13 @@ ScopedPowerMonitorTestSource::GetBatteryPowerStatus() const {
 }
 
 void ScopedPowerMonitorTestSource::Suspend() {
+  is_suspended_ = true;
   power_monitor_test_source_->Suspend();
 }
 
 void ScopedPowerMonitorTestSource::Resume() {
   power_monitor_test_source_->Resume();
+  is_suspended_ = false;
 }
 
 void ScopedPowerMonitorTestSource::SetBatteryPowerStatus(
@@ -135,11 +151,13 @@ void ScopedPowerMonitorTestSource::SetBatteryPowerStatus(
 }
 
 void ScopedPowerMonitorTestSource::GenerateSuspendEvent() {
+  is_suspended_ = true;
   power_monitor_test_source_->GenerateSuspendEvent();
 }
 
 void ScopedPowerMonitorTestSource::GenerateResumeEvent() {
   power_monitor_test_source_->GenerateResumeEvent();
+  is_suspended_ = false;
 }
 
 void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(
