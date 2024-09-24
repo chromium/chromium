@@ -18320,6 +18320,26 @@
             ]
         }
     ],
+    "PrivacySandboxPrivacyPolicy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxPrivacyPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxV4": [
         {
             "platforms": [
