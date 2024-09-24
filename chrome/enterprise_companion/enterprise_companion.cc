@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/crash_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/ipc_support.h"
@@ -35,7 +36,6 @@ const char kCrashMeSwitch[] = "crash-me";
 const char kShutdownSwitch[] = "shutdown";
 const char kFetchPoliciesSwitch[] = "fetch-policies";
 const char kInstallSwitch[] = "install";
-const char kInstallIfNeededSwitch[] = "install-if-needed";
 const char kUninstallSwitch[] = "uninstall";
 
 #if BUILDFLAG(IS_MAC)

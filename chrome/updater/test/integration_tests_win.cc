@@ -797,6 +797,10 @@ void Clean(UpdaterScope scope) {
   for (const auto& file : GetUpdaterLogFilesInTmp()) {
     ASSERT_TRUE(base::DeleteFile(file));
   }
+
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
+  }
 }
 
 void EnterTestMode(const GURL& update_url,
@@ -847,6 +851,7 @@ void ExpectClean(UpdaterScope scope) {
                return files;
              }(),
              FILE_PATH_LITERAL(","));
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {

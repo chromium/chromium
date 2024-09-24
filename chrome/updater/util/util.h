@@ -248,6 +248,11 @@ template <typename T>
 [[nodiscard]] int GetDownloadProgress(int64_t downloaded_bytes,
                                       int64_t total_bytes);
 
+// Returns the absolute path to the enterprise companion app executable bundled
+// with the updater.
+[[nodiscard]] std::optional<base::FilePath>
+GetBundledEnterpriseCompanionExecutablePath(UpdaterScope scope);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UTIL_H_

@@ -1470,4 +1470,19 @@ std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file) {
        file.Extension()}));
 }
 
+std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
+    UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir =
+      GetVersionedInstallDirectory(scope);
+  if (!install_dir) {
+    return std::nullopt;
+  }
+
+  return install_dir->AppendASCII(
+      base::StrCat({base::FilePath::FromASCII(kCompanionAppExecutableName)
+                        .RemoveExtension()
+                        .MaybeAsASCII(),
+                    kExecutableSuffix, ".exe"}));
+}
+
 }  // namespace updater

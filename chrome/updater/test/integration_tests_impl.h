@@ -481,11 +481,45 @@ void DMDeregisterDevice(UpdaterScope scope);
 
 void DMCleanup(UpdaterScope scope);
 
-// Installs the enterprise companion app, always at the system scope.
-void InstallEnterpriseCompanionApp(const base::Value::Dict& external_overrides);
+// Installs the enterprise companion app from the test's data deps, always at
+// the system scope.
+void InstallEnterpriseCompanionApp();
+
+// Manually uninstalls the enterprise companion app installed via
+// `InstallBrokenEnterpriseCompanionApp`. This should be done before the updater
+// uninstalls, as the broken companion app is unable to uninstall itself which
+// will cause the updater's uninstaller to return an error.
+void UninstallBrokenEnterpriseCompanionApp();
+
+// Installs a stub enterprise companion app which will fail to launch, always at
+// the system scope.
+void InstallBrokenEnterpriseCompanionApp();
+
+// Installs the constants overrides for the enterprise companion app, always at
+// the system scope.
+void InstallEnterpriseCompanionAppOverrides(
+    const base::Value::Dict& external_overrides);
+
+// Expects that the enterprise companion app is not installed, always at system
+// scope.
+void ExpectEnterpriseCompanionAppNotInstalled();
 
 // Uninstalls the enterprise companion app, always at the system scope.
 void UninstallEnterpriseCompanionApp();
+
+// Expects device management requests from either the Enterprise Companion App
+// or the updater, depending on the build configuration.
+#ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
+#define ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent \
+  ExpectDeviceManagementRegistrationRequestViaCompanionApp
+#define ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent \
+  ExpectDeviceManagementPolicyFetchRequestViaCompanionApp
+#else
+#define ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent \
+  ExpectDeviceManagementRegistrationRequest
+#define ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent \
+  ExpectDeviceManagementPolicyFetchRequest
+#endif
 
 void ExpectDeviceManagementRegistrationRequest(
     ScopedServer* test_server,
