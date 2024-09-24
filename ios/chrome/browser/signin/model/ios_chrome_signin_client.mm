@@ -8,8 +8,13 @@
 #import "components/metrics/metrics_service.h"
 #import "components/signin/core/browser/cookie_settings_util.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -89,4 +94,34 @@ version_info::Channel IOSChromeSigninClient::GetClientChannel() {
 }
 
 void IOSChromeSigninClient::OnPrimaryAccountChanged(
-    signin::PrimaryAccountChangeEvent event_details) {}
+    signin::PrimaryAccountChangeEvent event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
+      signin_metrics::AccessPoint access_point =
+          event_details.GetSetPrimaryAccountAccessPoint().value();
+
+      size_t tabs_count = 0;
+      size_t groups_count = 0;
+      size_t grouped_tabs_count = 0;
+
+      BrowserList* browser_list =
+          BrowserListFactory::GetForProfile(browser_state_);
+      for (Browser* browser : browser_list->BrowsersOfType(
+               BrowserList::BrowserType::kRegularAndInactive)) {
+        WebStateList* web_state_list = browser->GetWebStateList();
+        tabs_count += web_state_list->count();
+        for (const TabGroup* group : web_state_list->GetGroups()) {
+          ++groups_count;
+          grouped_tabs_count += group->range().count();
+        }
+      }
+
+      signin_metrics::RecordTabAndGroupCountsOnSignin(
+          access_point, signin::ConsentLevel::kSignin, tabs_count, groups_count,
+          grouped_tabs_count);
+  }
+}

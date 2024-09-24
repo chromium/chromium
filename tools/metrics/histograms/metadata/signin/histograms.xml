@@ -2677,6 +2677,28 @@ name="TransactionalReauthEntryPoint" -->
   </token>
 </histogram>
 
+<histogram name="Signin.{GroupOrTab}.{ConsentLevel}" units="count"
+    expires_after="2025-01-19">
+  <owner>treib@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recording the count of {GroupOrTab}, at the moment when the user is
+    {ConsentLevel} Chrome.
+  </summary>
+  <token key="GroupOrTab">
+    <variant name="OpenTabsCount" summary="open tabs"/>
+    <variant name="TabGroupsCount" summary="tab groups"/>
+    <variant name="TabGroupsTabsCount"
+        summary="tabs that are part of a tab group"/>
+  </token>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

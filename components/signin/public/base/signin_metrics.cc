@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -293,6 +294,27 @@ void RecordSignoutForceClearDataChoice(bool force_clear_data) {
                             force_clear_data);
 }
 #endif  // BUILDFLAG(IS_IOS)
+
+void RecordTabAndGroupCountsOnSignin(signin_metrics::AccessPoint access_point,
+                                     signin::ConsentLevel consent_level,
+                                     size_t tabs_count,
+                                     size_t groups_count,
+                                     size_t grouped_tabs_count) {
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+
+  std::string tabs_histogram_name =
+      base::StrCat({"Signin.OpenTabsCount", consent_level_token});
+  base::UmaHistogramCounts1000(tabs_histogram_name, tabs_count);
+
+  std::string groups_histogram_name =
+      base::StrCat({"Signin.TabGroupsCount", consent_level_token});
+  base::UmaHistogramCounts100(groups_histogram_name, groups_count);
+
+  std::string grouped_tabs_histogram_name =
+      base::StrCat({"Signin.TabGroupsTabsCount", consent_level_token});
+  base::UmaHistogramCounts1000(grouped_tabs_histogram_name, grouped_tabs_count);
+}
 
 // --------------------------------------------------------------
 // User actions
