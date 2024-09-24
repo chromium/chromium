@@ -66,7 +66,6 @@ extern const base::FeatureParam<double>
     kDevToolsExplainThisResourceDogfoodTemperature;
 
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
-BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 

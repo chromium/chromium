@@ -510,8 +510,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
   if (result >= 0) {
     ParseBrowserInfo(browser, response, is_chrome);
   }
-  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget) &&
-      is_chrome) {
+  if (is_chrome) {
     url += "?for_tab";
   }
   device->SendJsonRequest(

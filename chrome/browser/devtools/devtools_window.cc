@@ -807,9 +807,7 @@ namespace {
 
 scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
     WebContents* wc) {
-  return base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
-             ? DevToolsAgentHost::GetOrCreateForTab(wc)
-             : DevToolsAgentHost::GetOrCreateFor(wc);
+  return DevToolsAgentHost::GetOrCreateForTab(wc);
 }
 
 }  // namespace
@@ -1268,14 +1266,11 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                             : "&remoteFrontend=true");
   switch (frontend_type) {
     case kFrontendDefault:
-      url = kDefaultFrontendURL + remote_base;
+      url = kDefaultFrontendURL + remote_base + "&targetType=tab";
       if (can_dock)
         url += "&can_dock=true";
       if (!panel.empty())
         url += "&panel=" + panel;
-      if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
-        url += "&targetType=tab";
-      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;
