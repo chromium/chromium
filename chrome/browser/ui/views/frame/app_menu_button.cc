@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -64,7 +65,8 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_.reset();
   menu_model_ = std::move(menu_model);
   if (BrowserWindow* browser_window = browser->window()) {
-    if (auto* controller = browser_window->GetFeaturePromoController()) {
+    if (auto* controller = browser_window->GetFeaturePromoController(
+            base::PassKey<AppMenuButton>())) {
       if (auto* promo_specification =
               controller->GetCurrentPromoSpecificationForAnchor(
                   GetProperty(views::kElementIdentifierKey))) {

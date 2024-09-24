@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -59,10 +60,8 @@ class BrowserFeaturePromoController
       user_education::ProductMessagingController* messaging_controller);
   ~BrowserFeaturePromoController() override;
 
-  // Get the appropriate instance for |view|. This finds the BrowserView
-  // that contains |view| and returns its instance. May return nullptr,
-  // but if |view| is in a BrowserView's hierarchy it shouldn't.
-  static BrowserFeaturePromoController* GetForView(views::View* view);
+  // Close lower-priority promos that overlap with `view`.
+  static void MaybeCloseOverlappingHelpBubbles(const views::View* view);
 
   // Returns true if IPH are allowed to show in an inactive window or app.
   // False by default, but unit tests may modify this behavior via
@@ -88,8 +87,7 @@ class BrowserFeaturePromoController
   std::u16string GetTutorialScreenReaderHint() const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element,
-      bool is_critical_promo) const override;
+      ui::TrackedElement* anchor_element) const override;
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;
@@ -103,7 +101,6 @@ class BrowserFeaturePromoController
 std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
     user_education::FeaturePromoSpecification::PromoType promo_type,
     const ui::AcceleratorProvider* accelerator_provider,
-    ui::TrackedElement* anchor_element,
-    bool is_critical_promo);
+    ui::TrackedElement* anchor_element);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_FEATURE_PROMO_CONTROLLER_H_

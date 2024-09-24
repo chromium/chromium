@@ -49,7 +49,7 @@ class BatterySaverHelpPromoTest
 
   BrowserFeaturePromoController* GetFeaturePromoController() {
     return static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
+        browser()->window()->GetFeaturePromoControllerForTesting());
   }
 };
 

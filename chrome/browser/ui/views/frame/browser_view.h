@@ -626,7 +626,6 @@ class BrowserView : public BrowserWindow,
   BookmarkBarView* GetBookmarkBarView() const;
   LocationBarView* GetLocationBarView() const;
 
-  BrowserFeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const override;
@@ -867,6 +866,9 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
+
+  // BrowserUserEducationInterface private methods:
+  BrowserFeaturePromoController* GetFeaturePromoControllerImpl() override;
 
   // Shared implementation by cut, copy and paste.
   void CutCopyPaste(int command_id);

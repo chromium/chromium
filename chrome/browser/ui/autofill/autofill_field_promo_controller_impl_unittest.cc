@@ -91,7 +91,8 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
 
   MockFeaturePromoController* feature_promo_controller() {
     return static_cast<MockFeaturePromoController*>(
-        static_cast<TestBrowserWindow*>(window())->GetFeaturePromoController());
+        static_cast<TestBrowserWindow*>(window())
+            ->GetFeaturePromoControllerForTesting());
   }
 
   AutofillFieldPromoControllerImpl* autofill_field_promo_controller() {

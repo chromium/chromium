@@ -21,6 +21,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -838,7 +839,8 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
   }
 
   const auto* const feature_promo_controller =
-      browser->window()->GetFeaturePromoController();
+      browser->window()->GetFeaturePromoController(
+          base::PassKey<WebAppUiManagerImpl>());
   if (!feature_promo_controller) {
     return;
   }

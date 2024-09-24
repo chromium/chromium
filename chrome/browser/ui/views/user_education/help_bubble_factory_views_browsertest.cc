@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/user_education/views/help_bubble_factory_views.h"
+
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
@@ -13,10 +15,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -47,9 +50,9 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
   }
 
   user_education::HelpBubbleFactoryRegistry* registry() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetFeaturePromoController()
-        ->bubble_factory_registry();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->help_bubble_factory_registry();
   }
 
   views::TrackedElementViews* GetAnchorElement() {

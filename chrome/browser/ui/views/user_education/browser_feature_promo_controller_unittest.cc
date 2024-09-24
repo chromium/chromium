@@ -154,7 +154,8 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
-    controller_ = browser_view()->GetFeaturePromoController();
+    controller_ = static_cast<BrowserFeaturePromoController*>(
+        browser_view()->GetFeaturePromoControllerForTesting());
     lock_ = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
 
     mock_tracker_ =
@@ -393,10 +394,6 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     return GetPromoBubble(controller_->promo_bubble());
   }
 
-  HelpBubbleView* GetCriticalPromoBubble() {
-    return GetPromoBubble(controller_->critical_promo_bubble());
-  }
-
   views::View* GetAnchorView() {
     return browser_view()->toolbar()->app_menu_button();
   }
@@ -458,15 +455,6 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
 };
 
 using BubbleCloseCallback = BrowserFeaturePromoController::BubbleCloseCallback;
-
-TEST_F(BrowserFeaturePromoControllerTest, GetForView) {
-  EXPECT_EQ(controller_,
-            BrowserFeaturePromoController::GetForView(GetAnchorView()));
-
-  // For a view not in the BrowserView's hierarchy, it should return null.
-  views::View orphan_view;
-  EXPECT_EQ(nullptr, BrowserFeaturePromoController::GetForView(&orphan_view));
-}
 
 TEST_F(BrowserFeaturePromoControllerTest, NotifyFeatureUsedIfValidIsValid) {
   EXPECT_CALL(*mock_tracker_, NotifyUsedEvent(testing::Ref(kTestIPHFeature)))
@@ -824,21 +812,6 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
-TEST_F(BrowserFeaturePromoControllerTest,
-       DismissNonCriticalBubbleInRegion_CriticalPromo) {
-  const auto bubble = controller_->ShowCriticalPromo(
-      DefaultPromoSpecification(), GetAnchorElement());
-  ASSERT_TRUE(bubble);
-  const gfx::Rect bounds =
-      GetPromoBubble(bubble.get())->GetWidget()->GetWindowBoundsInScreen();
-  EXPECT_FALSE(bounds.IsEmpty());
-  gfx::Rect overlapping_region(bounds.x() + 1, bounds.y() + 1, 10, 10);
-  const bool result =
-      controller_->DismissNonCriticalBubbleInRegion(overlapping_region);
-  EXPECT_FALSE(result);
-  EXPECT_TRUE(bubble->is_open());
-}
-
 TEST_F(BrowserFeaturePromoControllerTest, RequiredNoticeBlocksPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
@@ -1153,100 +1126,6 @@ TEST_F(BrowserFeaturePromoControllerTest,
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 }
 
-TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoBlocksNormalPromo) {
-  auto bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                               GetAnchorElement());
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(GetCriticalPromoBubble());
-
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .Times(0);
-  auto result = controller_->MaybeShowPromo(kTestIPHFeature);
-  EXPECT_FALSE(result);
-  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/1);
-
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_TRUE(GetCriticalPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoPreemptsNormalPromo) {
-  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .WillOnce(Return(true));
-
-  UNCALLED_MOCK_CALLBACK(BubbleCloseCallback, close_callback);
-  EXPECT_TRUE(controller_->MaybeShowPromo(
-      MakeParams(kTestIPHFeature, close_callback.Get())));
-  EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_TRUE(GetPromoBubble());
-
-  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
-
-  std::unique_ptr<user_education::HelpBubble> bubble;
-  EXPECT_CALL_IN_SCOPE(close_callback, Run,
-                       bubble = controller_->ShowCriticalPromo(
-                           DefaultPromoSpecification(), GetAnchorElement()));
-  EXPECT_TRUE(bubble);
-  EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_TRUE(GetCriticalPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, FirstCriticalPromoHasPrecedence) {
-  auto bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                               GetAnchorElement());
-  EXPECT_TRUE(bubble);
-
-  EXPECT_EQ(GetPromoBubble(bubble.get()), GetCriticalPromoBubble());
-
-  auto bubble2 = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                                GetAnchorElement());
-  EXPECT_FALSE(bubble2);
-  EXPECT_EQ(GetPromoBubble(bubble.get()), GetCriticalPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, CloseBubbleForCriticalPromo) {
-  auto bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                               GetAnchorElement());
-  ASSERT_TRUE(bubble);
-
-  EXPECT_EQ(GetPromoBubble(bubble.get()), GetCriticalPromoBubble());
-  bubble->Close();
-  EXPECT_FALSE(GetCriticalPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest,
-       CloseBubbleForCriticalPromoDoesNothingAfterClose) {
-  auto bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                               GetAnchorElement());
-  ASSERT_TRUE(bubble);
-  ASSERT_EQ(GetPromoBubble(bubble.get()), GetCriticalPromoBubble());
-  auto* widget = GetPromoBubble(bubble.get())->GetWidget();
-  views::test::WidgetDestroyedWaiter waiter(widget);
-  widget->Close();
-  waiter.Wait();
-
-  EXPECT_FALSE(GetCriticalPromoBubble());
-
-  bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                          GetAnchorElement());
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(GetCriticalPromoBubble());
-}
-
-TEST_F(BrowserFeaturePromoControllerTest, ShowNewCriticalPromoAfterClose) {
-  auto bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                               GetAnchorElement());
-  ASSERT_TRUE(bubble);
-
-  EXPECT_TRUE(GetCriticalPromoBubble());
-  bubble->Close();
-  EXPECT_FALSE(GetCriticalPromoBubble());
-
-  bubble = controller_->ShowCriticalPromo(DefaultPromoSpecification(),
-                                          GetAnchorElement());
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(GetCriticalPromoBubble());
-}
-
 TEST_F(BrowserFeaturePromoControllerTest, FailsIfBubbleIsShowing) {
   HelpBubbleParams bubble_params;
   bubble_params.body_text = l10n_util::GetStringUTF16(IDS_CHROME_TIP);
@@ -1416,23 +1295,16 @@ TEST_F(BrowserFeaturePromoControllerTest, GetAcceleratorProvider) {
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, GetFocusHelpBubbleScreenReaderHint) {
-  EXPECT_TRUE(controller_
-                  ->GetFocusHelpBubbleScreenReaderHint(
-                      FeaturePromoSpecification::PromoType::kToast,
-                      GetAnchorElement(), false)
-                  .empty());
-  EXPECT_FALSE(controller_
-                   ->GetFocusHelpBubbleScreenReaderHint(
-                       FeaturePromoSpecification::PromoType::kSnooze,
-                       GetAnchorElement(), false)
-                   .empty());
-
-  // Target element is focusable so critical promo should also have a hint.
-  EXPECT_FALSE(controller_
-                   ->GetFocusHelpBubbleScreenReaderHint(
-                       FeaturePromoSpecification::PromoType::kLegacy,
-                       GetAnchorElement(), true)
-                   .empty());
+  EXPECT_TRUE(
+      controller_
+          ->GetFocusHelpBubbleScreenReaderHint(
+              FeaturePromoSpecification::PromoType::kToast, GetAnchorElement())
+          .empty());
+  EXPECT_FALSE(
+      controller_
+          ->GetFocusHelpBubbleScreenReaderHint(
+              FeaturePromoSpecification::PromoType::kSnooze, GetAnchorElement())
+          .empty());
 }
 
 namespace {

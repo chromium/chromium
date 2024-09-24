@@ -137,7 +137,7 @@ class WebAppNavigationCapturingIPHPromoTest
 
   BrowserFeaturePromoController* GetFeaturePromoController(Browser* browser) {
     auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser->window()->GetFeaturePromoController());
+        browser->window()->GetFeaturePromoControllerForTesting());
     return promo_controller;
   }
 

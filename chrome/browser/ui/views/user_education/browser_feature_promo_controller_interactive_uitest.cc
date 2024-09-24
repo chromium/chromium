@@ -184,7 +184,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveFeaturePromoTest {
 
   user_education::FeaturePromoController* promo_controller() const {
     return static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
+        browser()->window()->GetFeaturePromoControllerForTesting());
   }
 
  private:
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerActivationUiTest,
 
   auto can_show_promo = [this](ui::TrackedElement* anchor) {
     return static_cast<BrowserFeaturePromoController*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->CanShowPromoForElement(anchor);
   };
 

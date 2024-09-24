@@ -157,7 +157,8 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
 
   user_education::test::MockFeaturePromoController* mock_promo_controller() {
     return static_cast<user_education::test::MockFeaturePromoController*>(
-        static_cast<TestBrowserWindow*>(window())->GetFeaturePromoController());
+        static_cast<TestBrowserWindow*>(window())
+            ->GetFeaturePromoControllerForTesting());
   }
 
  protected:

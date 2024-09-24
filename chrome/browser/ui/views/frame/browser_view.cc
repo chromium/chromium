@@ -216,6 +216,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
@@ -5306,7 +5307,7 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-BrowserFeaturePromoController* BrowserView::GetFeaturePromoController() {
+BrowserFeaturePromoController* BrowserView::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 

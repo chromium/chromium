@@ -2207,14 +2207,6 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
     return;
   }
 
-  // Attempting to queue up an IPH that should show at startup, this requires
-  // the BrowserFeaturePromoController.
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserFeaturePromoController::GetForView(saved_tab_group_bar_);
-  if (!promo_controller) {
-    return;
-  }
-
   // Check whether to show the synced, or unsyned version of the promo.
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
@@ -2262,7 +2254,7 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
     }
   }
 
-  promo_controller->MaybeShowStartupPromo(std::move(params));
+  browser_view_->MaybeShowStartupFeaturePromo(std::move(params));
 }
 
 BEGIN_METADATA(BookmarkBarView)

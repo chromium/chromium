@@ -2000,10 +2000,7 @@ void OmniboxViewViews::OnPopupOpened() {
   // drop-down after showing the promo. This especially causes issues on Mac and
   // Linux due to z-order/rendering issues, see crbug.com/1225046 and
   // crbug.com/332769403 for examples.
-  if (auto* const promo_controller =
-          BrowserFeaturePromoController::GetForView(this)) {
-    promo_controller->DismissNonCriticalBubbleInRegion(GetBoundsInScreen());
-  }
+  BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(this);
 #endif
 }
 

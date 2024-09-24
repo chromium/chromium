@@ -220,20 +220,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       ProductMessagingController* messaging_controller);
   ~FeaturePromoControllerCommon() override;
 
-  // Only for security or privacy critical promos. Immediately shows a
-  // promo with |params|, cancelling any normal promo and blocking any
-  // further promos until it's done.
-  //
-  // Returns an ID that can be passed to CloseBubbleForCriticalPromo()
-  // if successful. This can fail if another critical promo is showing.
-  std::unique_ptr<HelpBubble> ShowCriticalPromo(
-      const FeaturePromoSpecification& spec,
-      ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::FormatParameters body_params =
-          FeaturePromoSpecification::NoSubstitution(),
-      FeaturePromoSpecification::FormatParameters title_params =
-          FeaturePromoSpecification::NoSubstitution());
-
   // For systems where there are rendering issues of e.g. displaying the
   // omnibox and a bubble in the same region on the screen, dismisses a non-
   // critical promo bubble which overlaps a given screen region. Returns true
@@ -276,9 +262,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
   HelpBubble* promo_bubble_for_testing() { return promo_bubble(); }
-  HelpBubble* critical_promo_bubble_for_testing() {
-    return critical_promo_bubble();
-  }
 
   TutorialService* tutorial_service_for_testing() { return tutorial_service_; }
 
@@ -317,10 +300,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
   const HelpBubble* promo_bubble() const {
     return current_promo_ ? current_promo_->help_bubble() : nullptr;
-  }
-  HelpBubble* critical_promo_bubble() { return critical_promo_bubble_; }
-  const HelpBubble* critical_promo_bubble() const {
-    return critical_promo_bubble_;
   }
 
   // Gets the context in which to locate the anchor view.
@@ -361,8 +340,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // accelerator to focus the help bubble.
   virtual std::u16string GetFocusHelpBubbleScreenReaderHint(
       FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element,
-      bool is_critical_promo) const = 0;
+      ui::TrackedElement* anchor_element) const = 0;
 
   const FeaturePromoRegistry* registry() const { return registry_; }
   FeaturePromoRegistry* registry() { return registry_; }
@@ -532,13 +510,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Non-null as long as a promo is showing.
   std::unique_ptr<FeaturePromoLifecycle> current_promo_;
-
-  // Has a value if a critical promo is showing. If this has a value,
-  // |current_iph_feature_| will usually be null. There is one edge case
-  // where this may not be true: when a critical promo is requested
-  // between a normal promo's CloseBubbleAndContinuePromo() call and its
-  // end.
-  raw_ptr<HelpBubble> critical_promo_bubble_ = nullptr;
 
   // Policy info about the most recent promo that was shown.
   // Updated when a new promo is shown.

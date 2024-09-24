@@ -138,12 +138,8 @@ void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
   if (browser->tab_strip_model()->group_model()->ListTabGroups().size() > 1) {
     return;
   }
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserFeaturePromoController::GetForView(button_);
-  if (promo_controller) {
-    promo_controller->MaybeShowPromo(
-        feature_engagement::kIPHTabOrganizationSuccessFeature);
-  }
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHTabOrganizationSuccessFeature);
 }
 
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
@@ -215,12 +211,11 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   }
 
   // Close the Tab Search IPH if it is showing.
-  BrowserFeaturePromoController* controller =
-      BrowserFeaturePromoController::GetForView(button_);
-  if (controller)
-    controller->EndPromo(
+  if (auto* const browser = GetBrowser()) {
+    browser->window()->EndFeaturePromo(
         feature_engagement::kIPHTabSearchFeature,
         user_education::EndFeaturePromoReason::kFeatureEngaged);
+  }
 
   std::optional<gfx::Rect> anchor;
   if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {

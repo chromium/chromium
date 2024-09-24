@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -28,22 +30,21 @@ class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
  protected:
   auto CreateHelpBubble(ui::ElementIdentifier anchor,
                         user_education::HelpBubbleParams params) {
-    auto create_step = base::BindOnce(
-        [](HelpBubbleFactoryViewsUiTest* test,
-           user_education::HelpBubbleParams params,
-           ui::TrackedElement* anchor) {
-          BrowserView* const browser_view =
-              BrowserView::GetBrowserViewForBrowser(test->browser());
-          test->browser_native_view_ =
-              browser_view->GetWidget()->GetNativeView();
-          auto* const registry = browser_view->GetFeaturePromoController()
-                                     ->bubble_factory_registry();
-          test->help_bubble_ =
-              registry->CreateHelpBubble(anchor, std::move(params));
-        },
-        base::Unretained(this), std::move(params));
     return Steps(
-        WithElement(anchor, std::move(create_step)),
+        WithElement(anchor,
+                    [this, params = std::move(params)](
+                        ui::TrackedElement* anchor) mutable {
+                      BrowserView* const browser_view =
+                          BrowserView::GetBrowserViewForBrowser(browser());
+                      browser_native_view_ =
+                          browser_view->GetWidget()->GetNativeView();
+                      auto& registry =
+                          UserEducationServiceFactory::GetForBrowserContext(
+                              browser()->profile())
+                              ->help_bubble_factory_registry();
+                      help_bubble_ =
+                          registry.CreateHelpBubble(anchor, std::move(params));
+                    }),
         WaitForShow(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
         WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,

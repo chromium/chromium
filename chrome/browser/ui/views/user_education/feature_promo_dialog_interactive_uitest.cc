@@ -122,7 +122,7 @@ class FeaturePromoDialogTest : public TestBase {
   void ShowUi(const std::string& name) override {
     auto* const promo_controller =
         BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
+            ->GetFeaturePromoControllerForTesting();
     ASSERT_TRUE(promo_controller);
 
     // The browser may have already queued a promo for startup. Since the test

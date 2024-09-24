@@ -79,7 +79,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 
@@ -210,7 +210,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 

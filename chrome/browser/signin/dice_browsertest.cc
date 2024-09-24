@@ -87,7 +87,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_user_events/user_event_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1827,7 +1826,7 @@ class DiceBrowserTestWithChromeSigninIPH
   }
 
   void CloseIPH() {
-    EXPECT_TRUE(browser()->window()->GetFeaturePromoController()->EndPromo(
+    EXPECT_TRUE(browser()->GetUserEducationInterface()->EndFeaturePromo(
         feature_engagement::
             kIPHExplicitBrowserSigninPreferenceRememberedFeature,
         user_education::EndFeaturePromoReason::kFeatureEngaged));

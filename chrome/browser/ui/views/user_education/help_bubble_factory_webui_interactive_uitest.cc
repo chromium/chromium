@@ -170,7 +170,8 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   user_education::HelpBubbleFactoryRegistry* GetHelpBubbleFactory() {
-    auto* const controller = browser()->window()->GetFeaturePromoController();
+    auto* const controller =
+        browser()->window()->GetFeaturePromoControllerForTesting();
     return static_cast<BrowserFeaturePromoController*>(controller)
         ->bubble_factory_registry();
   }

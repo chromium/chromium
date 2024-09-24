@@ -35,8 +35,7 @@ class ProfilePickerFeaturePromoController
   std::u16string GetTutorialScreenReaderHint() const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element,
-      bool is_critical_promo) const override;
+      ui::TrackedElement* anchor_element) const override;
 
   const raw_ptr<ProfilePickerView> profile_picker_view_;
 };

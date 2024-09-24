@@ -69,8 +69,7 @@ ProfilePickerFeaturePromoController::GetTutorialScreenReaderHint() const {
 std::u16string
 ProfilePickerFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element,
-    bool is_critical_promo) const {
+    ui::TrackedElement* anchor_element) const {
   return GetFocusHelpBubbleScreenReaderHintCommon(
-      promo_type, profile_picker_view_, anchor_element, is_critical_promo);
+      promo_type, profile_picker_view_, anchor_element);
 }

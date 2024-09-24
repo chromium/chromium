@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -50,9 +52,9 @@ class HelpBubbleFactoryRegistryInteractiveUitest
   }
 
   user_education::HelpBubbleFactoryRegistry* GetRegistry() {
-    return GetBrowserView()
-        ->GetFeaturePromoController()
-        ->bubble_factory_registry();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->help_bubble_factory_registry();
   }
 };
 

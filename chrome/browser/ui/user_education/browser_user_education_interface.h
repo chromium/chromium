@@ -5,14 +5,25 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_USER_EDUCATION_INTERFACE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_USER_EDUCATION_INTERFACE_H_
 
+#include <concepts>
+
 #include "base/feature_list.h"
+#include "base/types/pass_key.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/new_badge_controller.h"
 
+class AppMenuButton;
+class BrowserFeaturePromoController;
+class UserEducationInternalsPageHandlerImpl;
+
 namespace content {
 class WebContents;
+}
+
+namespace web_app {
+class WebAppUiManagerImpl;
 }
 
 // Provides the interface for common User Education actions.
@@ -25,8 +36,22 @@ class BrowserUserEducationInterface {
 
   // Gets the windows's FeaturePromoController which manages display of
   // in-product help. Will return null in incognito and guest profiles.
-  virtual user_education::FeaturePromoController*
-  GetFeaturePromoController() = 0;
+  user_education::FeaturePromoController*
+  GetFeaturePromoControllerForTesting() {
+    return GetFeaturePromoControllerImpl();
+  }
+
+  // Only a limited number of non-test classes are allowed direct access to the
+  // feature promo controller.
+  template <typename T>
+    requires std::same_as<T, AppMenuButton> ||
+             std::same_as<T, BrowserFeaturePromoController> ||
+             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
+             std::same_as<T, web_app::WebAppUiManagerImpl>
+  user_education::FeaturePromoController* GetFeaturePromoController(
+      base::PassKey<T>) {
+    return GetFeaturePromoControllerImpl();
+  }
 
   // Returns whether the promo associated with `iph_feature` is running.
   //
@@ -121,6 +146,10 @@ class BrowserUserEducationInterface {
   // for that window.
   static BrowserUserEducationInterface* MaybeGetForWebContentsInTab(
       content::WebContents* contents);
+
+ protected:
+  virtual user_education::FeaturePromoController*
+  GetFeaturePromoControllerImpl() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_USER_EDUCATION_INTERFACE_H_

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -52,23 +53,27 @@ BrowserFeaturePromoController::BrowserFeaturePromoController(
 BrowserFeaturePromoController::~BrowserFeaturePromoController() = default;
 
 // static
-BrowserFeaturePromoController* BrowserFeaturePromoController::GetForView(
-    views::View* view) {
+void BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(
+    const views::View* view) {
   if (!view) {
-    return nullptr;
+    return;
   }
-  views::Widget* widget = view->GetWidget();
+  const views::Widget* widget = view->GetWidget();
   if (!widget) {
-    return nullptr;
+    return;
   }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       widget->GetPrimaryWindowWidget()->GetNativeWindow());
   if (!browser_view) {
-    return nullptr;
+    return;
   }
 
-  return browser_view->GetFeaturePromoController();
+  if (auto* const controller = static_cast<BrowserFeaturePromoController*>(
+          browser_view->GetFeaturePromoController(
+              base::PassKey<BrowserFeaturePromoController>()))) {
+    controller->DismissNonCriticalBubbleInRegion(view->GetBoundsInScreen());
+  }
 }
 
 ui::ElementContext BrowserFeaturePromoController::GetAnchorContext() const {
@@ -174,17 +179,15 @@ std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
 std::u16string
 BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element,
-    bool is_critical_promo) const {
-  return GetFocusHelpBubbleScreenReaderHintCommon(
-      promo_type, browser_view_, anchor_element, is_critical_promo);
+    ui::TrackedElement* anchor_element) const {
+  return GetFocusHelpBubbleScreenReaderHintCommon(promo_type, browser_view_,
+                                                  anchor_element);
 }
 
 std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
     user_education::FeaturePromoSpecification::PromoType promo_type,
     const ui::AcceleratorProvider* accelerator_provider,
-    ui::TrackedElement* anchor_element,
-    bool is_critical_promo) {
+    ui::TrackedElement* anchor_element) {
   // No message is required as this is a background bubble with a
   // screen reader-specific prompt and will dismiss itself.
   if (promo_type ==
@@ -209,12 +212,6 @@ std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
         views::IsViewClass<views::AccessiblePaneView>(anchor_view->view())))) {
     return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
                                       accelerator_text);
-  }
-
-  // If the bubble starts focused and focus cannot traverse to the anchor view,
-  // do not use a promo.
-  if (is_critical_promo) {
-    return std::u16string();
   }
 
   // Present the user with an abridged help bubble navigation shortcut.

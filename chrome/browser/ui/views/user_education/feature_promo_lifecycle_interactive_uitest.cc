@@ -243,7 +243,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
 
   static BrowserFeaturePromoController* GetPromoController(Browser* browser) {
     return static_cast<BrowserFeaturePromoController*>(
-        browser->window()->GetFeaturePromoController());
+        browser->window()->GetFeaturePromoControllerForTesting());
   }
 
   static user_education::FeaturePromoStorageService* GetStorageService(
@@ -524,12 +524,12 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        DismissInRegionRecordsHistogram) {
   RunTestSequence(
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
-      WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-               [](user_education::HelpBubbleView* bubble) {
-                 BrowserFeaturePromoController::GetForView(bubble)
-                     ->DismissNonCriticalBubbleInRegion(
-                         bubble->GetBoundsInScreen());
-               }),
+      WithView(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          [](user_education::HelpBubbleView* bubble) {
+            BrowserFeaturePromoController::MaybeCloseOverlappingHelpBubbles(
+                bubble);
+          }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckMessageActionHistogram(
@@ -688,12 +688,6 @@ class FeaturePromoLifecycleCriticalUiTest : public FeaturePromoLifecycleUiTest {
                         kActionableAlert)));
   }
 };
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, ShowCriticalPromo) {
-  RunTestSequence(CheckDismissed(false),
-                  MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
-                  CheckDismissed(true));
-}
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CannotRepeatDismissedPromo) {

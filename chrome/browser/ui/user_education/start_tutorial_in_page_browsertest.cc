@@ -85,7 +85,7 @@ class StartTutorialInPageBrowserTest : public InteractiveBrowserTest {
 
   user_education::TutorialService* GetTutorialService() {
     return static_cast<user_education::FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 

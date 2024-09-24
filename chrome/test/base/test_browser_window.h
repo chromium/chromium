@@ -253,7 +253,6 @@ class TestBrowserWindow : public BrowserWindow {
           tab_search::mojom::TabOrganizationFeature::kNone) override {}
   void CloseTabSearchBubble() override {}
 
-  user_education::FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const override;
@@ -315,6 +314,9 @@ class TestBrowserWindow : public BrowserWindow {
     void OnPopupVisibilityChanged() override {}
     void UpdateWithoutTabRestore() override {}
   };
+
+  user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
+      override;
 
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestDownloadShelf download_shelf_{nullptr};

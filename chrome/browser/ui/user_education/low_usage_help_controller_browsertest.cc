@@ -44,8 +44,10 @@ class LowUsageHelpControllerBrowsertest : public InteractiveFeaturePromoTest {
   }
 
   user_education::FeaturePromoStatus GetFeaturePromoStatus() const {
-    return browser()->window()->GetFeaturePromoController()->GetPromoStatus(
-        feature_engagement::kIPHDesktopReEngagementFeature);
+    return browser()
+        ->window()
+        ->GetFeaturePromoControllerForTesting()
+        ->GetPromoStatus(feature_engagement::kIPHDesktopReEngagementFeature);
   }
 
   auto WaitForStartupSession() {

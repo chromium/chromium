@@ -163,7 +163,7 @@ class DownloadBubbleInteractiveUiTest
         [](DownloadToolbarButtonView* download_toolbar_button, Browser* browser,
            bool active, const base::Feature& feature) {
           return active == BrowserView::GetBrowserViewForBrowser(browser)
-                               ->GetFeaturePromoController()
+                               ->GetFeaturePromoControllerForTesting()
                                ->IsPromoActive(feature);
         },
         download_toolbar_button(), browser(), active, std::cref(feature));

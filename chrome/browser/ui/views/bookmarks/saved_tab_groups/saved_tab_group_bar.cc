@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/saved_tab_groups/features.h"
@@ -1052,15 +1053,9 @@ void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
     return;
   }
 
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserFeaturePromoController::GetForView(this);
-  if (!promo_controller) {
-    return;
-  }
-
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature);
-  promo_controller->MaybeShowPromo(std::move(params));
+  browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
 BEGIN_METADATA(SavedTabGroupBar)

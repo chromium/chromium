@@ -17,11 +17,16 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -315,14 +320,27 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   // directly after the animation is shown.
   if (web_contents &&
       content_setting_image_model_->ShouldShowPromo(web_contents)) {
+    // TODO(https://crbug.com/369386219): This isn't a true promo; it was a
+    // "legacy critical promo" previously - a category that no longer exists.
+    // This should either be changed to an actual promo, or removed.
+    //
+    // DO NOT COPY THIS PATTERN ELSEWHERE; DIRECTLY CREATING A HELP BUBBLE IS
+    // GENERALLY PROHIBITED AND SHOULD BE AVOIDED IN ALL NEW CODE.
+    auto* const service = UserEducationServiceFactory::GetForBrowserContext(
+        web_contents->GetBrowserContext());
+    auto* const anchor =
+        views::ElementTrackerViews::GetInstance()->GetElementForView(this,
+                                                                     true);
+    user_education::HelpBubbleParams params;
+    params.body_text = l10n_util::GetStringUTF16(
+        IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO);
+    params.close_button_alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
     critical_promo_bubble_ =
-        BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
-            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-                /* feature =*/nullptr, ui::ElementIdentifier(),
-                IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
-            views::ElementTrackerViews::GetInstance()->GetElementForView(this,
-                                                                         true));
-    content_setting_image_model_->SetPromoWasShown(web_contents);
+        service->help_bubble_factory_registry().CreateHelpBubble(
+            anchor, std::move(params));
+    if (critical_promo_bubble_) {
+      content_setting_image_model_->SetPromoWasShown(web_contents);
+    }
   }
 }
 

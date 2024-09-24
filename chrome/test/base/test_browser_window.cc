@@ -366,7 +366,7 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
 }
 
 user_education::FeaturePromoController*
-TestBrowserWindow::GetFeaturePromoController() {
+TestBrowserWindow::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 

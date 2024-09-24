@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/global_features.h"
@@ -23,12 +24,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-forward.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -93,13 +96,6 @@ user_education::FeaturePromoStorageService* GetStorageService(
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(profile);
   return service ? &service->feature_promo_storage_service() : nullptr;
-}
-
-user_education::FeaturePromoController* GetFeaturePromoController(
-    content::WebUI* web_ui) {
-  return chrome::FindBrowserWithTab(web_ui->GetWebContents())
-      ->window()
-      ->GetFeaturePromoController();
 }
 
 std::string GetPromoTypeString(
@@ -581,10 +577,16 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
     return;
   }
 
-  auto* const feature_promo_controller = GetFeaturePromoController(web_ui_);
-
+  auto* const interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_ui_->GetWebContents());
+  auto* const controller =
+      interface ? interface->GetFeaturePromoController(
+                      base::PassKey<UserEducationInternalsPageHandlerImpl>())
+                : nullptr;
   const auto showed_promo =
-      feature_promo_controller->MaybeShowPromoForDemoPage(*feature);
+      controller ? controller->MaybeShowPromoForDemoPage(*feature)
+                 : user_education::FeaturePromoResult::kError;
 
   std::string reason;
   if (!showed_promo) {

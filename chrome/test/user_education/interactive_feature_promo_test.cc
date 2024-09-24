@@ -150,11 +150,11 @@ InteractiveFeaturePromoTestApi::WaitForPromo(const base::Feature& iph_feature) {
       WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
 
-      CheckView(
-          kBrowserViewElementId, [&iph_feature](BrowserView* browser_view) {
-            return browser_view->GetFeaturePromoController()->IsPromoActive(
-                iph_feature);
-          }));
+      CheckView(kBrowserViewElementId,
+                [&iph_feature](BrowserView* browser_view) {
+                  return browser_view->GetFeaturePromoControllerForTesting()
+                      ->IsPromoActive(iph_feature);
+                }));
 
   std::ostringstream desc;
   desc << "WaitForPromo(" << iph_feature.name << ") - %s";
