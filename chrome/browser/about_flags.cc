@@ -2469,7 +2469,19 @@ const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam
-    kTabResumptionModule_enable_v2_ml_show_default_decorator[] = {
+    kTabResumptionModule_enable_v2_ml_show_decorator_default_reason[] = {
+        {"enable_v2", "true"},
+        {"fetch_history_backend", "true"},
+        {"fetch_local_tabs_backend", "true"},
+        {"max_tiles_number", "1"},
+        {"show_default_reason", "true"},
+        {"show_see_more", "true"},
+        {"show_tabs_in_one_module", "true"},
+        {"use_default_app_filter", "true"},
+        {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago[] = {
         {"enable_v2", "true"},
         {"fetch_history_backend", "true"},
         {"fetch_local_tabs_backend", "true"},
@@ -2556,9 +2568,13 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
      kTabResumptionModule_enable_v2_arm3_show_default_reason,
      std::size(kTabResumptionModule_enable_v2_arm3_show_default_reason),
      nullptr},
+    {"V2 ML: with default reason",
+     kTabResumptionModule_enable_v2_ml_show_decorator_default_reason,
+     std::size(kTabResumptionModule_enable_v2_ml_show_decorator_default_reason),
+     nullptr},
     {"V2 ML: visited x ago decorator",
-     kTabResumptionModule_enable_v2_ml_show_default_decorator,
-     std::size(kTabResumptionModule_enable_v2_ml_show_default_decorator),
+     kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago,
+     std::size(kTabResumptionModule_enable_v2_ml_show_decorator_visited_x_ago),
      nullptr},
     {"V2 ML: most visited decorator",
      kTabResumptionModule_enable_v2_ml_show_decorator_most_visited,
