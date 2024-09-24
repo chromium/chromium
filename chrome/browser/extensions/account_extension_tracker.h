@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -18,7 +19,8 @@ namespace extensions {
 // This service manages each extension's AccountExtensionType, which describes
 // whether the extension is associated with a signed in user's account data.
 class AccountExtensionTracker : public KeyedService,
-                                public ExtensionRegistryObserver {
+                                public ExtensionRegistryObserver,
+                                public signin::IdentityManager::Observer {
  public:
   enum AccountExtensionType {
     // The extension is only associated with the current device. This is used
@@ -55,6 +57,10 @@ class AccountExtensionTracker : public KeyedService,
                             const Extension* extension,
                             bool is_update) override;
 
+  // IdentityManagerObserver implementation.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
   // Called when sync data is applied for the given `extension_id`.
   void OnExtensionSyncDataApplied(const ExtensionId& extension_id);
 
@@ -77,6 +83,11 @@ class AccountExtensionTracker : public KeyedService,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  // IdentityManager observer.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 }  // namespace extensions

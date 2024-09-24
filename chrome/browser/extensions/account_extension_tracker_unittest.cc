@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
@@ -135,5 +136,44 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(external_extension->id()));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(AccountExtensionTrackerUnitTest,
+       AccountExtensionTypeResetWhenSignedOut) {
+  // Enable extension syncing in transport mode.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kSyncEnableExtensionsInTransportMode);
+
+  InitializeEmptyExtensionService();
+
+  service()->Init();
+  ASSERT_TRUE(extension_system()->is_ready());
+
+  // Use a test identity environment to mimic signing a user in with sync
+  // disabled (transport mode).
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  auto account_info =
+      identity_test_env_profile_adaptor->identity_test_env()
+          ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                        signin::ConsentLevel::kSignin);
+
+  // Pretend the user has now explcitly signed in.
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Sign the user out and verify that `kGoodCrx` is now treated as a local
+  // extension again.
+  identity_test_env_profile_adaptor->identity_test_env()->ClearPrimaryAccount();
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

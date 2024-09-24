@@ -14,12 +14,14 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 namespace extensions {
@@ -87,6 +89,11 @@ AccountExtensionTracker::AccountExtensionTracker(
     : browser_context_(context) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
   extension_registry_observation_.Observe(extension_registry);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  identity_manager_observation_.Observe(identity_manager);
 }
 
 // static
@@ -129,6 +136,24 @@ void AccountExtensionTracker::OnExtensionInstalled(
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
   SetAccountExtensionType(extension->id(), type);
+}
+
+void AccountExtensionTracker::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  // TODO(crbug.com/366474682): If extension syncing is enabled in transport
+  // mode, only set the pref if the user chooses to keep extensions when signing
+  // out.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    ExtensionRegistry* extension_registry =
+        ExtensionRegistry::Get(browser_context_);
+    const ExtensionSet extensions =
+        extension_registry->GenerateInstalledExtensionsSet();
+
+    for (const auto& extension : extensions) {
+      SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+    }
+  }
 }
 
 void AccountExtensionTracker::OnExtensionSyncDataApplied(
