@@ -70,10 +70,11 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                   color_provider, is_in_web_app_scope)) {
     return ColorParseResult::kColor;
   }
-  if (auto* color_mix_value =
-          DynamicTo<cssvalue::CSSColorMixValue>(CSSParser::ParseSingleValue(
-              CSSPropertyID::kColor, color_string,
-              StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
+  const CSSValue* parsed_value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kColor, color_string,
+      StrictCSSParserContext(SecureContextMode::kInsecureContext));
+  if (parsed_value && (parsed_value->IsColorMixValue() ||
+                       parsed_value->IsRelativeColorValue())) {
     static const TextLinkColors kDefaultTextLinkColors{};
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{
@@ -82,9 +83,9 @@ static ColorParseResult ParseColor(Color& parsed_color,
         .used_color_scheme = color_scheme,
         .color_provider = color_provider,
         .is_in_web_app_scope = is_in_web_app_scope};
-    const StyleColor style_color = ResolveColorValue(*color_mix_value, context);
+    const StyleColor style_color = ResolveColorValue(*parsed_value, context);
     parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
-    return ColorParseResult::kColorMix;
+    return ColorParseResult::kColorFunction;
   }
   return ColorParseResult::kParseFailed;
 }
@@ -105,7 +106,7 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
       /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
   switch (parse_result) {
     case ColorParseResult::kColor:
-    case ColorParseResult::kColorMix:
+    case ColorParseResult::kColorFunction:
       return true;
     case ColorParseResult::kCurrentColor:
       parsed_color = Color::kBlack;
