@@ -96,6 +96,11 @@ class BackgroundFileTest : public ::testing::Test {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   SequenceCheckerWrapper main_sequence_checker_;
   std::unique_ptr<SequenceCheckerWrapper> background_sequence_checker_;
+
+  // There should be no blocking on the main thread during any of these tests
+  // except to wait for things to happen.
+  base::ScopedDisallowBlocking disallow_blocking;
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync;
 };
 
 TEST_F(BackgroundFileTest, StartsInvalid) {
@@ -125,5 +130,36 @@ TEST_F(BackgroundFileTest, InvalidateFileIsImmediate) {
   // previous file is being closed in the background.
   file.InvalidateFile();
   ASSERT_FALSE(file.GetFile().IsValid());
+}
+
+// Test that if the `BackgroundFile` is destroyed mid-replace, that the
+// `base::File` returned by the file opener is closed off the main thread.
+TEST_F(BackgroundFileTest, DestroyWhileReplacing) {
+  InitBackgroundSequenceChecker();
+  bool replaced_callback_was_called = false;
+  {
+    BackgroundFile file(background_task_runner());
+    file.ReplaceFile(
+        /*file_opener=*/base::BindOnce([]() {
+          base::File file = GetValidModelFile();
+          return file;
+        }),
+        /*replaced_callback=*/base::BindOnce(
+            [](bool* replaced_callback_was_called_ptr) {
+              *replaced_callback_was_called_ptr = true;
+            },
+            base::Unretained(&replaced_callback_was_called)));
+  }
+
+  // Since the replaced callback should not be called, we cannot wait for that.
+  // Instead we post a do-nothing task to the background task runner. This will
+  // be blocked by the file loading and we wait for the reply.
+  bool queue_flushed = false;
+  background_task_runner()->PostTaskAndReply(
+      FROM_HERE, base::BindOnce([]() {}),
+      base::BindOnce([](bool* queue_flushed_ptr) { *queue_flushed_ptr = true; },
+                     base::Unretained(&queue_flushed)));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return queue_flushed; }));
+  ASSERT_FALSE(replaced_callback_was_called);
 }
 }  // namespace language_detection
