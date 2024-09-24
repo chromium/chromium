@@ -68,15 +68,6 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
           net::features::kForceThirdPartyCookieBlocking)) {
     return ServiceState::kPermanentlyEnabled;
   }
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (tracking_protection_settings &&
-      tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
-    return tracking_protection_settings->AreAllThirdPartyCookiesBlocked()
-               ? ServiceState::kDisabled
-               : ServiceState::kEnabled;
-  }
-
   return pref_enabled ? ServiceState::kEnabled : ServiceState::kDisabled;
 }
 
@@ -111,9 +102,7 @@ void FirstPartySetsPolicyService::Init() {
   CHECK(profile);
 
   service_state_ = GetServiceState(
-      profile, profile->GetPrefs() &&
-                   profile->GetPrefs()->GetBoolean(
-                       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
+      profile, privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled());
 
   if (service_state_ == ServiceState::kPermanentlyDisabled) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
@@ -311,8 +300,9 @@ std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
 bool FirstPartySetsPolicyService::IsSiteInManagedSet(
     const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value() || !is_enabled())
+  if (!config_.has_value() || !is_enabled()) {
     return false;
+  }
 
   std::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);

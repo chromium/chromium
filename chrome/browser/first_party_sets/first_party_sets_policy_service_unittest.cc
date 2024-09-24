@@ -260,28 +260,28 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
-       OnFirstPartySetsEnabledChanged_EnabledByBlock3pcToggle) {
+       FirstPartySetsEnabledWhenIn3pcdWith3pcsLimited) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
+
   profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
                                     true);
   profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
-  EXPECT_TRUE(service()->is_enabled());
-
-  service()->OnFirstPartySetsEnabledChanged(true);
+  service()->InitForTesting();
   EXPECT_TRUE(service()->is_enabled());
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
-       OnFirstPartySetsEnabledChanged_DisabledByBlock3pcToggle) {
+       FirstPartySetsDisabledWhenIn3pcdWithAll3pcsBlocked) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+
   profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
                                     true);
   profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
-  EXPECT_FALSE(service()->is_enabled());
-
-  service()->OnFirstPartySetsEnabledChanged(true);
+  service()->InitForTesting();
   EXPECT_FALSE(service()->is_enabled());
 }
 
