@@ -151,7 +151,7 @@
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
 <translation id="1708602061922134366">Көк (Google)</translation>
 <translation id="1710499924611012470">Атайын мүмкүнчүлүктөрдө өтүү</translation>
-<translation id="1715359911173058521">Сканерге туташа албай койду. Тармакка же USB туташууңузду текшерип, кайра аракет кылыңыз.</translation>
+<translation id="1715359911173058521">Сканерге туташа албай койду. Тармакка же USB туташууңузду текшерип, кайталап көрүңүз.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> менен <ph name="SECOND_MANAGER" /> башкарат</translation>
 <translation id="1718553040985966377">көл</translation>
 <translation id="1720424726586960395">жаркырак токой</translation>
@@ -261,7 +261,7 @@
 <translation id="2208388655216963643">импрессионизм</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
-<translation id="2215920961700443347">Интернет жок. Интернетке туташып, кайра аракет кылыңыз.</translation>
+<translation id="2215920961700443347">Интернет жок. Интернетке туташып, кайталап көрүңүз.</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
 <translation id="222447520299472966">Кеминде бир Көркөм галерея альбомун тандашыңыз керек</translation>
@@ -484,7 +484,7 @@
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Cигнал начар. Wi-Fi сигналынын булагына жакыныраак жылып көрүңүз.</translation>
-<translation id="3588034708467091142">Интернет байланышыңызды текшерип, кайра аракет кылыңыз.</translation>
+<translation id="3588034708467091142">Интернет байланышыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> – <ph name="APN_NAME" /> байланыш түйүнүнүн колдонуучуга ыңгайлуу аталышы.</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
 <translation id="3600339377155080675">Экранды күзгүдөй чагылдыруу</translation>
@@ -748,7 +748,7 @@
 <translation id="4969079779290789265">Бөлүү</translation>
 <translation id="4972592110715526173">режимди өзгөртүү</translation>
 <translation id="4981003703840817201">көк жана кызгылтым</translation>
-<translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
+<translation id="498186245079027698">Сканерди текшерип, кайталап көрүңүз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
 <translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="4983216687482551672">Chromebook аудиосу</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
@@ -940,7 +940,7 @@
 <translation id="6017514345406065928">Жашыл</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Ай сайын автоматтык түрдө баштапкы абалга келтирүүнү иштетүү</translation>
-<translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайра аракет кылыңыз.</translation>
+<translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайталап көрүңүз.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6040852767465482106">Аноним</translation>
 <translation id="604124094241169006">Автоматтык</translation>
@@ -1017,7 +1017,7 @@
 <translation id="6379086450106841622">Сенсордук экран</translation>
 <translation id="6381741036071372448">Баскычтопту колдонуп көрүңүз</translation>
 <translation id="6382182670717268353">Көшөгөнү алдын ала көрүү</translation>
-<translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайра аракет кылыңыз.</translation>
+<translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайталап көрүңүз.</translation>
 <translation id="6394634179843537518">Файл кошуу</translation>
 <translation id="6396719002784938593">кургатылган мамык чөп</translation>
 <translation id="639964859328803943">түштөн кийинки чай</translation>
@@ -1119,7 +1119,7 @@
 <translation id="6902359863093437070">Фонду ЖИ менен түзүү</translation>
 <translation id="6905163627763043954">Сынап көрүү</translation>
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
-<translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
+<translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайталап көрүңүз.</translation>
 <translation id="6910845598686542904">Аудио жаздыруудагы үндөрдүн үлгүлөрүн талдоо</translation>
 <translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
 <translation id="6930242544192836755">Узактыгы</translation>

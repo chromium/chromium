@@ -499,7 +499,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3445580184527779479">Fanegruppe. Udvidet.</translation>
 <translation id="3448016392200048164">Opdelt visning</translation>
 <translation id="345565170154308620">Administrer adgangskoder...</translation>
-<translation id="3464194322481586217">Prisovervågning mislykkedes.</translation>
+<translation id="3464194322481586217">Prissporing mislykkedes.</translation>
 <translation id="3469166899695866866">Vil du stoppe downloaden?</translation>
 <translation id="3470502288861289375">Kopierer...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{til {COUNT} website eller app}one{til {COUNT} website og app}other{til {COUNT} websites og apps}}</translation>
@@ -743,7 +743,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4631335160486397366"><ph name="COUNT" /> genbrugte adgangskoder</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
-<translation id="4642472735733036929">Prisovervågning er stoppet</translation>
+<translation id="4642472735733036929">Prissporing er stoppet</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -1150,7 +1150,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6464397691496239022">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
 Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer.</translation>
-<translation id="6476253015009698798">Prisovervågning er ikke tilgængelig for denne side.</translation>
+<translation id="6476253015009698798">Prissporing er ikke tilgængelig for denne side.</translation>
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
 <translation id="6477585407014744043">Navnegruppe</translation>
 <translation id="648164694371393720">Godkendelsesfejl</translation>
@@ -1541,7 +1541,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8289930144142009940">Notifikationer for <ph name="FEATURE_NAME" /> er deaktiveret</translation>
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>
 <translation id="8299613349954694191">Åbn en inkognitofane for at bruge nettet privat.</translation>
-<translation id="8311853334103696030">Skjul prisovervågning</translation>
+<translation id="8311853334103696030">Skjul prissporing</translation>
 <translation id="8313645224014086262">Gem fil</translation>
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8328777765163860529">Luk alt</translation>
