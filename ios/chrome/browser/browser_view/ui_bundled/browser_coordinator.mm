@@ -10,6 +10,7 @@
 #import <optional>
 
 #import "base/check_deref.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -598,6 +599,12 @@ enum class ToolbarKind {
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   SafeAreaProvider* _safeAreaProvider;
+  // Number of time `showActivityOverlay` was called and its callback not
+  // called.
+  int _numberOfActivityOverly;
+  // Callback to remove the activity overlay started by the browser coordinator
+  // itself.
+  base::ScopedClosureRunner _activityOverlayCallback;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -670,6 +677,7 @@ enum class ToolbarKind {
   [self destroyViewController];
   [self destroyViewControllerDependencies];
   _webUsageEnablerObserver.reset();
+  _activityOverlayCallback.RunAndReset();
 }
 
 - (void)dealloc {
@@ -692,9 +700,9 @@ enum class ToolbarKind {
   // If not active, display an activity indicator overlay over the view to
   // prevent interaction with the web page.
   if (active) {
-    [self hideActivityOverlay];
-  } else if (!self.activityOverlayCoordinator) {
-    [self showActivityOverlay];
+    _activityOverlayCallback.RunAndReset();
+  } else if (!_activityOverlayCallback) {
+    _activityOverlayCallback = [self showActivityOverlay];
   }
 
   ProfileIOS* profile = self.browser->GetProfile();
@@ -862,17 +870,26 @@ enum class ToolbarKind {
 }
 
 // Displays activity overlay.
-- (void)showActivityOverlay {
+- (base::ScopedClosureRunner)showActivityOverlay {
+  _numberOfActivityOverly++;
   self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.activityOverlayCoordinator start];
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](BrowserCoordinator* strongSelf) {
+        [strongSelf decreaseActivityOverlay];
+      },
+      self));
 }
 
-// Hides activity overlay.
-- (void)hideActivityOverlay {
-  [self.activityOverlayCoordinator stop];
-  self.activityOverlayCoordinator = nil;
+// Hides activity overlay number. Remove it if the number becomes 0..
+- (void)decreaseActivityOverlay {
+  _numberOfActivityOverly--;
+  if (_numberOfActivityOverly == 0) {
+    [self.activityOverlayCoordinator stop];
+    self.activityOverlayCoordinator = nil;
+  }
 }
 
 // Instantiates a BrowserViewController.

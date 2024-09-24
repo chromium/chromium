@@ -399,7 +399,7 @@ void BrowsingDataRemoverImpl::PrepareForRemoval(BrowsingDataRemoveMask mask,
             dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
       id<BrowserCoordinatorCommands> handler =
           HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-      [handler showActivityOverlay];
+      _activityOverlayCallback = [handler showActivityOverlay];
     }
   }
 }
@@ -433,9 +433,7 @@ void BrowsingDataRemoverImpl::CleanupAfterRemoval(BrowsingDataRemoveMask mask,
       // BrowserCoordinatorCommands.
       if ([dispatcher
               dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
-        id<BrowserCoordinatorCommands> handler =
-            HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-        [handler hideActivityOverlay];
+        _activityOverlayCallback.RunAndReset();
       }
     }
 

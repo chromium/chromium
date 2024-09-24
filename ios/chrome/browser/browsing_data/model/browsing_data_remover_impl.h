@@ -22,7 +22,9 @@
 @class WKWebView;
 
 class Browser;
-
+namespace base {
+class ScopedClosureRunner;
+}
 namespace net {
 class URLRequestContextGetter;
 }
@@ -163,6 +165,10 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
 
   // Removal tasks to be processed.
   base::queue<RemovalTask> removal_queue_;
+
+  // Callback to remove the activity overlay started by the browser coordinator
+  // itself.
+  base::ScopedClosureRunner _activityOverlayCallback;
 
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
