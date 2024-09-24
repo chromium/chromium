@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -207,3 +208,6 @@ void PasswordAddUsernameView::OnUsernameChanged() {
   SetButtonEnabled(ui::mojom::DialogButton::kOk,
                    !username_dropdown_->GetText().empty());
 }
+
+BEGIN_METADATA(PasswordAddUsernameView)
+END_METADATA

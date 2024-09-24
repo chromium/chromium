@@ -8,11 +8,14 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // A view confirming to the user that a generated password was saved and
 // offering a link to the Google account manager.
 class PasswordGenerationConfirmationView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasswordGenerationConfirmationView, PasswordBubbleViewBase)
+
  public:
   explicit PasswordGenerationConfirmationView(
       content::WebContents* web_contents,

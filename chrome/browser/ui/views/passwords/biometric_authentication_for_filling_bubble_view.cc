@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -72,3 +73,6 @@ void BiometricAuthenticationForFillingBubbleView::AddedToWidget() {
   SetBubbleHeader(controller_.GetImageID(/*dark=*/false),
                   controller_.GetImageID(/*dark=*/true));
 }
+
+BEGIN_METADATA(BiometricAuthenticationForFillingBubbleView)
+END_METADATA

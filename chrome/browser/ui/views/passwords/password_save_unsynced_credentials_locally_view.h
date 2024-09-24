@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/view.h"
 
@@ -21,6 +22,9 @@
 // passwords locally.
 class PasswordSaveUnsyncedCredentialsLocallyView
     : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasswordSaveUnsyncedCredentialsLocallyView,
+                  PasswordBubbleViewBase)
+
  public:
   PasswordSaveUnsyncedCredentialsLocallyView(content::WebContents* web_contents,
                                              views::View* anchor_view);

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -140,6 +141,9 @@ bool PasswordCrossDomainConfirmationPopupViewViews::
 void PasswordCrossDomainConfirmationPopupViewViews::Show() {
   DoShow();
 }
+
+BEGIN_METADATA(PasswordCrossDomainConfirmationPopupViewViews)
+END_METADATA
 
 // static
 base::WeakPtr<PasswordCrossDomainConfirmationPopupView>

@@ -7,10 +7,13 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/post_save_compromised_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Bubble notifying the user about remaining compromised credentials in the
 // store.
 class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PostSaveCompromisedBubbleView, PasswordBubbleViewBase)
+
  public:
   explicit PostSaveCompromisedBubbleView(content::WebContents* web_contents,
                                          views::View* anchor_view);
