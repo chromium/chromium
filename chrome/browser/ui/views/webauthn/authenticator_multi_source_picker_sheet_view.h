@@ -9,11 +9,15 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Web Authentication request dialog sheet view for selecting between multiple
 // accounts and mechanisms.
 class AuthenticatorMultiSourcePickerSheetView
     : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorMultiSourcePickerSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorMultiSourcePickerSheetView(
       std::unique_ptr<AuthenticatorMultiSourcePickerSheetModel> model);

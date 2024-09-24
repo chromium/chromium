@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
+
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -56,3 +58,6 @@ void AuthenticatorPaaskSheetView::OnLinkClicked(const ui::Event&) {
       ->dialog_model()
       ->ShowCableUsbFallback();
 }
+
+BEGIN_METADATA(AuthenticatorPaaskSheetView)
+END_METADATA

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/range/range.h"
@@ -80,3 +81,6 @@ void PasskeyNotAcceptedBubbleView::OnGooglePasswordManagerLinkClicked() {
   controller_.OnGooglePasswordManagerLinkClicked();
   CloseBubble();
 }
+
+BEGIN_METADATA(PasskeyNotAcceptedBubbleView)
+END_METADATA

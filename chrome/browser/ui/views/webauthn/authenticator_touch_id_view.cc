@@ -21,6 +21,7 @@
 #include "device/fido/mac/util.h"
 #include "device/fido/strings/grit/fido_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -84,3 +85,6 @@ void AuthenticatorTouchIdView::OnTouchIDComplete(
   static_cast<AuthenticatorTouchIdSheetModel*>(model())->OnTouchIDSensorTapped(
       std::move(lacontext));
 }
+
+BEGIN_METADATA(AuthenticatorTouchIdView)
+END_METADATA

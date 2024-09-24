@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
+
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 AuthenticatorSelectAccountSheetView::AuthenticatorSelectAccountSheetView(
     std::unique_ptr<AuthenticatorSelectAccountSheetModel> sheet_model)
@@ -39,3 +41,6 @@ void AuthenticatorSelectAccountSheetView::CredentialSelected(size_t index) {
   sheet_model->SetCurrentSelection(index);
   sheet_model->OnAccept();
 }
+
+BEGIN_METADATA(AuthenticatorSelectAccountSheetView)
+END_METADATA

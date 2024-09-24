@@ -12,11 +12,14 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "crypto/scoped_lacontext.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Displays a sheet prompting the user to tap their Touch ID sensor to complete
 // a passkey flow.
 class API_AVAILABLE(macos(12.0)) AuthenticatorTouchIdView
     : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorTouchIdView, AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorTouchIdView(
       std::unique_ptr<AuthenticatorTouchIdSheetModel> sheet_model);

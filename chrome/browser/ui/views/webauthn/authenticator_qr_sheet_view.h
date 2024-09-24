@@ -9,8 +9,11 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorQRSheetView, AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorQRSheetView(
       std::unique_ptr<AuthenticatorQRSheetModel> model);

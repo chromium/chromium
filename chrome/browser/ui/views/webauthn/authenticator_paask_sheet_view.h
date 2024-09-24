@@ -9,10 +9,13 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // AuthenticatorPaaskSheetView adds a clickable link to the PaaSK dialog if
 // AOA transport is enabled.
 class AuthenticatorPaaskSheetView : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorPaaskSheetView, AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorPaaskSheetView(
       std::unique_ptr<AuthenticatorPaaskSheetModel> model);

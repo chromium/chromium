@@ -171,3 +171,6 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
   }
   return std::make_pair(std::move(container), AutoFocus::kNo);
 }
+
+BEGIN_METADATA(AuthenticatorQRSheetView)
+END_METADATA

@@ -7,10 +7,14 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Represents a sheet in the Web Authentication request dialog that displays the
 // username.
 class AuthenticatorCreateUserSheetView : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorCreateUserSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorCreateUserSheetView(
       std::unique_ptr<AuthenticatorSheetModelBase> sheet_model);

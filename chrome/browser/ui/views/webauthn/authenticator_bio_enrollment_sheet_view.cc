@@ -4,14 +4,15 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 
+#include <utility>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/webauthn/ring_progress_bar.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
-
-#include <utility>
 
 namespace {
 static constexpr int kFingerprintSize = 120;
@@ -74,3 +75,6 @@ bool AuthenticatorBioEnrollmentSheetView::AcceleratorPressed(
   model()->OnCancel();
   return true;
 }
+
+BEGIN_METADATA(AuthenticatorBioEnrollmentSheetView)
+END_METADATA

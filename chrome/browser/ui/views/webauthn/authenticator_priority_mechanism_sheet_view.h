@@ -9,11 +9,15 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Web Authentication request dialog sheet view for confirming selection of a
 // "priority" mechanism.
 class AuthenticatorPriorityMechanismSheetView
     : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorPriorityMechanismSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorPriorityMechanismSheetView(
       std::unique_ptr<AuthenticatorPriorityMechanismSheetModel> model);
