@@ -431,9 +431,8 @@ bool KURL::HasFragmentIdentifier() const {
   return parsed_.ref.is_valid();
 }
 
-String KURL::BaseAsString() const {
-  // FIXME: There is probably a more efficient way to do this?
-  return string_.GetString().Left(PathAfterLastSlash());
+StringView KURL::BaseAsString() const {
+  return StringView(string_.GetString(), 0, PathAfterLastSlash());
 }
 
 String KURL::Query() const {

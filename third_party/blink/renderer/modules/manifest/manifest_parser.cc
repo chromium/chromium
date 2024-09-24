@@ -688,14 +688,14 @@ KURL ManifestParser::ParseScope(const JSONObject* object,
   DCHECK(default_value.IsValid());
 
   if (scope.IsEmpty()) {
-    return KURL(default_value.BaseAsString());
+    return KURL(default_value.BaseAsString().ToString());
   }
 
   if (!URLIsWithinScope(default_value, scope)) {
     AddErrorInfo(
         "property 'scope' ignored. Start url should be within scope "
         "of scope URL.");
-    return KURL(default_value.BaseAsString());
+    return KURL(default_value.BaseAsString().ToString());
   }
 
   scope.RemoveFragmentIdentifier();

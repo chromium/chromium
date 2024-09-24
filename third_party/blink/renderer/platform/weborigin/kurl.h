@@ -187,7 +187,7 @@ class PLATFORM_EXPORT KURL {
   String FragmentIdentifier() const;
   bool HasFragmentIdentifier() const;
 
-  String BaseAsString() const;
+  StringView BaseAsString() const LIFETIME_BOUND;
 
   // Returns true if the current URL's protocol is the same as the StringView
   // argument. The argument must be lower-case.

@@ -84,7 +84,7 @@ class ManifestParserTest : public testing::Test {
     expected_manifest->start_url = document_url;
     expected_manifest->id = document_url;
     expected_manifest->id.RemoveFragmentIdentifier();
-    expected_manifest->scope = KURL(document_url.BaseAsString());
+    expected_manifest->scope = KURL(document_url.BaseAsString().ToString());
     return manifest == expected_manifest;
   }
 
