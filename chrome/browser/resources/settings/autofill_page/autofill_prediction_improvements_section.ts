@@ -74,7 +74,7 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
   }
 
   prefs: {[key: string]: any};
-  private userAnnotationsEntries_: UserAnnotationsEntry[];
+  private userAnnotationsEntries_: UserAnnotationsEntry[] = [];
   private userAnnotationsManager_: UserAnnotationsManagerProxy =
       UserAnnotationsManagerProxyImpl.getInstance();
   private entryToDelete_?: UserAnnotationsEntry;

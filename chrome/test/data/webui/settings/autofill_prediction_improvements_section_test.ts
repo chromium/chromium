@@ -227,7 +227,11 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
 
     assertEquals(1, userAnnotationManager.getCallCount('deleteAllEntries'));
     assertEquals(
-        entries.querySelectorAll('.list-item').length, 0,
-        'All entries should be removed');
+        entries.querySelectorAll('.list-item').length, 1,
+        'All entries should be removed (-2), the "no entries" message shows ' +
+            'up instead (+1).');
+    assertTrue(
+        isVisible(entries.querySelector('#entriesNone')),
+        'The "no entries" messages shows up when the list is empty');
   });
 });

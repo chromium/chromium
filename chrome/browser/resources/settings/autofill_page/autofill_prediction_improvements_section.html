@@ -6,6 +6,10 @@
     font-size: 11px;
     line-height: 11px;
   }
+  #entries {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
 </style>
 <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
 <settings-toggle-button
@@ -77,6 +81,11 @@
             on-click="onDeleteEntryCick_"
             title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
         </cr-icon-button>
+      </li>
+    </template>
+    <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
+      <li id="entriesNone" class="list-item">
+        $i18n{autofillPredictionImprovementsUserAnnotationsNone}
       </li>
     </template>
   </ul>
