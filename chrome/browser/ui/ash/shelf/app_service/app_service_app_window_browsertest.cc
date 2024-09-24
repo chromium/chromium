@@ -46,7 +46,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
@@ -361,78 +360,6 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, AshBrowserWindow) {
   EXPECT_EQ(1u, instances.size());
   auto* instance = (*instances.begin()).get();
   EXPECT_EQ(instance->Window(), instance->Window()->GetToplevelWindow());
-}
-
-class AppServiceAppWindowLacrosBrowserTest
-    : public AppServiceAppWindowBrowserTest {
- public:
-  AppServiceAppWindowLacrosBrowserTest() = default;
-  ~AppServiceAppWindowLacrosBrowserTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    AppServiceAppWindowBrowserTest::SetUpInProcessBrowserTestFixture();
-    if (lacros_starter_.HasLacrosArgument()) {
-      ASSERT_TRUE(lacros_starter_.PrepareEnvironmentForLacros());
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    AppServiceAppWindowBrowserTest::SetUpOnMainThread();
-    if (!lacros_starter_.HasLacrosArgument()) {
-      GTEST_SKIP() << "This test needs to run together with Lacros but the "
-                      "--lacros-chrome-path switch is missing.";
-    }
-    lacros_starter_.StartLacros(this);
-  }
-
-  void WaitForLacrosInstanceState(apps::InstanceState state) {
-    apps::AppInstanceWaiter(app_service_proxy_->InstanceRegistry(),
-                            app_constants::kLacrosAppId, state)
-        .Await();
-  }
-
-  std::set<raw_ptr<const apps::Instance, SetExperimental>>
-  GetLacrosInstances() {
-    return app_service_proxy_->InstanceRegistry().GetInstances(
-        app_constants::kLacrosAppId);
-  }
-
-  void SelectLacrosShelfItem() {
-    int lacros_index =
-        shelf_model()->ItemIndexByAppID(app_constants::kLacrosAppId);
-    ASSERT_NE(-1, lacros_index);
-    const ash::ShelfItem& item = shelf_model()->items()[lacros_index];
-    SelectItem(item.id);
-  }
-
- protected:
-  test::AshBrowserTestStarter lacros_starter_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
-  // Wait for the initial Lacros window.
-  WaitForLacrosInstanceState(apps::InstanceState(
-      apps::kStarted | apps::kRunning | apps::kActive | apps::kVisible));
-  {
-    auto instances = GetLacrosInstances();
-    ASSERT_EQ(1u, instances.size());
-    auto* instance = (*instances.begin()).get();
-    EXPECT_EQ(instance->Window(), instance->Window()->GetToplevelWindow());
-  }
-
-  // Since it is already active, clicking it should minimize.
-  SelectLacrosShelfItem();
-  WaitForLacrosInstanceState(
-      apps::InstanceState(apps::kStarted | apps::kRunning));
-
-  // Click the item again to activate the window.
-  SelectLacrosShelfItem();
-  WaitForLacrosInstanceState(apps::InstanceState(
-      apps::kStarted | apps::kRunning | apps::kActive | apps::kVisible));
-
-  views::Widget::GetWidgetForNativeView(lacros_starter_.initial_lacros_window())
-      ->CloseNow();
-  EXPECT_TRUE(GetLacrosInstances().empty());
 }
 
 class AppServiceAppWindowBorealisBrowserTest

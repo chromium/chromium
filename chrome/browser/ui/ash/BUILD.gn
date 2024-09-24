@@ -366,7 +366,6 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/boca:browser_tests",
     "//chrome/browser/ui/ash/capture_mode:browser_tests",
     "//chrome/browser/ui/ash/clipboard:browser_tests",
-    "//chrome/browser/ui/ash/desks:browser_tests",
     "//chrome/browser/ui/ash/device_scheduled_reboot:browser_tests",
     "//chrome/browser/ui/ash/download_status:browser_tests",
     "//chrome/browser/ui/ash/focus_mode:browser_tests",

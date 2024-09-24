@@ -89,7 +89,6 @@ source_set("browser_tests") {
     "auto_launched_kiosk_browsertest.cc",
     "chome_app_kiosk_lacros_browsertest.cc",
     "kiosk_accelerator_browsertest.cc",
-    "kiosk_accelerator_lacros_browsertest.cc",
     "kiosk_block_tablet_mode_browsertest.cc",
     "kiosk_device_owned_browsertest.cc",
     "kiosk_enterprise_browsertest.cc",

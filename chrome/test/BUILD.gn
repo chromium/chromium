@@ -5292,10 +5292,6 @@ if (!is_android) {
             [ "../browser/printing/system_access_process_print_browsertest.cc" ]
       }
 
-      if (is_chromeos_ash) {
-        sources += [ "../browser/ui/webui/print_preview/extension_printer_handler_adapter_ash_browsertest.cc" ]
-      }
-
       if (is_chromeos_lacros) {
         sources += [ "../browser/ui/webui/print_preview/extension_printer_service_provider_lacros_browsertest.cc" ]
       }

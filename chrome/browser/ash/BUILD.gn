@@ -894,7 +894,6 @@ group("browser_tests") {
     "//chrome/browser/ash/scalable_iph:browser_tests",
     "//chrome/browser/ash/smb_client:browser_tests",
     "//chrome/browser/ash/system:browser_tests",
-    "//chrome/browser/ash/system_logs:browser_tests",
     "//chrome/browser/ash/system_web_apps:browser_tests",
     "//chrome/browser/ash/test:browser_tests",
     "//chrome/browser/ash/video_conference:browser_tests",

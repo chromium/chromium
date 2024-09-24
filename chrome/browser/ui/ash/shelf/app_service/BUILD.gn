@@ -83,7 +83,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "app_service_app_window_browsertest.cc",
     "app_service_promise_app_shelf_context_menu_browsertest.cc",
     "app_service_shelf_context_menu_browsertest.cc",
     "web_app_shelf_browsertest.cc",
