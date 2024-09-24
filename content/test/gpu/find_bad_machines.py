@@ -7,6 +7,7 @@
 import argparse
 
 from bad_machine_finder import bigquery
+from bad_machine_finder import detection
 from bad_machine_finder import swarming
 from bad_machine_finder import test_specs
 
@@ -21,6 +22,23 @@ def ParseArgs() -> argparse.Namespace:
                       type=int,
                       default=7,
                       help='The number of days to sample data from')
+  parser.add_argument('--billing-project',
+                      default='chrome-unexpected-pass-data',
+                      help='The billing project to use for queries')
+  parser.add_argument('--stddev-multiplier',
+                      type=float,
+                      default=3,
+                      help=('Used with the stddev outlier detection method. '
+                            "Sets how many standard deviations a bot's failure "
+                            'rate has to be over the fleet-wide mean for it '
+                            'to be considered bad.'))
+  parser.add_argument('--random-chance-probability-threshold',
+                      type=float,
+                      default=0.005,
+                      help=('Used with the random chance detection method. '
+                            'Sets how unlikely it has to be that a bot '
+                            'randomly got at least as many failures as it did '
+                            'in order for it to be considered bad.'))
 
   args = parser.parse_args()
 
@@ -39,21 +57,25 @@ def main() -> None:
   args = ParseArgs()
   dimensions = test_specs.GetMixinDimensions(args.mixin)
   dimensions_by_mixin = {args.mixin: dimensions}
-  querier = bigquery.Querier('chrome-unexpected-pass-data')
+  querier = bigquery.Querier(args.billing_project)
   task_stats = swarming.GetTaskStatsForMixins(querier, dimensions_by_mixin,
                                               args.sample_period)
   # We currently only support one mixin at a time.
-  task_stats = task_stats[args.mixin]
+  mixin_stats = task_stats[args.mixin]
 
-  bot_failure_rate_pairs = []
-  for bot_id, bot_stats in task_stats.IterBots():
-    failed_task_rate = (float(bot_stats.failed_tasks) / bot_stats.total_tasks)
-    bot_failure_rate_pairs.append((bot_id, failed_task_rate))
+  bad_machine_list = detection.BadMachineList()
+  bad_machine_list.Merge(
+      detection.DetectViaStdDevOutlier(mixin_stats, args.stddev_multiplier))
+  bad_machine_list.Merge(
+      detection.DetectViaRandomChance(mixin_stats,
+                                      args.random_chance_probability_threshold))
 
-  bot_failure_rate_pairs.sort(key=lambda kv: kv[1], reverse=True)
-  print('Task failure rates:')
-  for bot_id, failure_rate in bot_failure_rate_pairs:
-    print(f'{bot_id}: {failure_rate}')
+  print('Bad machines:')
+  bot_ids = sorted(list(bad_machine_list.bad_machines.keys()))
+  for b in bot_ids:
+    print(f'  {b}')
+    for reason in bad_machine_list.bad_machines[b]:
+      print(f'    * {reason}')
 
 
 if __name__ == '__main__':
