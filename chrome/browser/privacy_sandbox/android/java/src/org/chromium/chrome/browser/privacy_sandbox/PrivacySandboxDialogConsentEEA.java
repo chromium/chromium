@@ -28,6 +28,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -240,6 +241,10 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                                             getContext(), this::onPrivacyPolicyClicked))));
             mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
             if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
+                String privacyPolicyUrl =
+                        ColorUtils.inNightMode(mActivityWindowAndroid.getContext().get())
+                                ? UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE
+                                : UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY;
                 mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
                 mWebContentsObserver =
                         new WebContentsObserver(mWebContents) {
@@ -268,10 +273,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                 // TODO(crbug.com/366010532): Add in functionality to add language code to the url
                 mThinWebView =
                         PrivacySandboxDialogController.createThinWebView(
-                                mWebContents,
-                                mProfile,
-                                mActivityWindowAndroid,
-                                UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY);
+                                mWebContents, mProfile, mActivityWindowAndroid, privacyPolicyUrl);
             }
         }
     }
