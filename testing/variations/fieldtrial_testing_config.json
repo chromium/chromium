@@ -2841,26 +2841,6 @@
             ]
         }
     ],
-    "AvoidResourceRequestCopies": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidResourceRequestCopies"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvoidScheduleWorkDuringNativeEventProcessing": [
         {
             "platforms": [
@@ -5877,38 +5857,6 @@
                     "enable_features": [
                         "UtilWinProcessUsesUiPump",
                         "UtilityWithUiPumpInitializesCom"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CombinedWebViewOptimizations": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240729",
-                    "params": {
-                        "compile-in-parallel": "false",
-                        "compile-strategy": "lazy",
-                        "inline-script-timeout": "0ms",
-                        "precompile-main-frame-only": "true",
-                        "scan-main-frame-only": "true"
-                    },
-                    "enable_features": [
-                        "AvoidResourceRequestCopies",
-                        "CreateSpareRendererOnBrowserContextCreation",
-                        "EnsureExistingRendererAlive",
-                        "InputStreamOptimizations",
-                        "LazyBindJsInjection",
-                        "PrecompileInlineScripts",
-                        "SkipUnnecessaryThreadHopsForParseHeaders",
-                        "ThreadedBodyLoader",
-                        "ThreadedPreloadScanner",
-                        "WebViewOptimizeXrwNavigationFlow",
-                        "WebViewPreloadClasses"
                     ]
                 }
             ]
@@ -9422,26 +9370,6 @@
                     },
                     "enable_features": [
                         "EolIncentive"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnsureExistingRendererAlive": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnsureExistingRendererAlive"
                     ]
                 }
             ]
@@ -22443,26 +22371,6 @@
             ]
         }
     ],
-    "SkipUnnecessaryThreadHopsForParseHeaders": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipUnnecessaryThreadHopsForParseHeaders"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkyVaultGA": [
         {
             "platforms": [
@@ -23418,36 +23326,6 @@
                     },
                     "enable_features": [
                         "EnableConfigurableThreadCachePurgeInterval"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ThreadedBodyLoader": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PrecompileMainFrameNoWait_20240520",
-                    "params": {
-                        "compile-in-parallel": "false",
-                        "compile-strategy": "lazy",
-                        "inline-script-timeout": "0ms",
-                        "precompile-main-frame-only": "true"
-                    },
-                    "enable_features": [
-                        "PrecompileInlineScripts"
-                    ],
-                    "disable_features": [
-                        "ThreadedBodyLoader",
-                        "ThreadedPreloadScanner"
                     ]
                 }
             ]
