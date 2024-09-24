@@ -347,11 +347,15 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Starts the expanded manual fill coordinator and displays its view controller.
 - (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
           invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+  manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
+      manualFillDataTypeFromFillingProduct:
+          [self.formInputAccessoryMediator currentProviderMainFillingProduct]];
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                          forDataType:dataType
+                focusedFieldDataType:focusedFieldDataType
               reauthenticationModule:self.reauthenticationModule];
 
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
