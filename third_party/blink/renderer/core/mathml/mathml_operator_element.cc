@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -31,8 +26,8 @@ struct MathMLOperatorDictionaryProperties {
   unsigned trailing_space_in_math_unit : 3;
   unsigned flags : 4;
 };
-static const MathMLOperatorDictionaryProperties
-    MathMLOperatorDictionaryCategories[] = {
+static const auto MathMLOperatorDictionaryCategories =
+    std::to_array<MathMLOperatorDictionaryProperties>({
         {5, 5, kOperatorPropertyFlagsNone},        // None (default values)
         {5, 5, kOperatorPropertyFlagsNone},        // ForceDefault
         {5, 5, MathMLOperatorElement::kStretchy},  // Category A
@@ -51,7 +46,7 @@ static const MathMLOperatorDictionaryProperties
              MathMLOperatorElement::kMovableLimits},  // Category J
         {3, 0, kOperatorPropertyFlagsNone},           // Category L
         {0, 3, kOperatorPropertyFlagsNone},           // Category M
-};
+    });
 
 static const QualifiedName& OperatorPropertyFlagToAttributeName(
     MathMLOperatorElement::OperatorPropertyFlag flag) {
