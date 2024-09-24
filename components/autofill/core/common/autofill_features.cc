@@ -345,7 +345,7 @@ BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,
 // AutofillAgent and fixes inconsistencies in this tracking.
 BASE_FEATURE(kAutofillUnifyAndFixFormTracking,
              "AutofillUnifyAndFixFormTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission

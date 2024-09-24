@@ -646,8 +646,12 @@ TEST_F(AndroidAutofillProviderTest, OnFormSubmittedWithKnownSuccess) {
 // DOM_MUTATION_AFTER_AUTOFILL is propagated to Java for password forms.
 TEST_F(AndroidAutofillProviderTest,
        DomMutationAfterAutofillFormSubmission_PasswordForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAcceptDomMutationAfterAutofillSubmission};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
   FormData form =
       CreateFormDataForFrame(CreateTestPasswordFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -669,8 +673,12 @@ TEST_F(AndroidAutofillProviderTest,
 // DOM_MUTATION_AFTER_AUTOFILL is not propagated to Java for non-password forms.
 TEST_F(AndroidAutofillProviderTest,
        DomMutationAfterAutofillFormSubmission_NonPasswordForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAcceptDomMutationAfterAutofillSubmission};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});

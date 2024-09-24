@@ -523,8 +523,9 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
                                        public testing::WithParamInterface<int> {
  public:
   FormAutocompleteSubmissionTest() {
-    EXPECT_LE(GetParam(), 2);
+    EXPECT_LE(GetParam(), 3);
     std::vector<base::test::FeatureRef> features = {
+        features::kAutofillUnifyAndFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -541,7 +542,7 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          FormAutocompleteSubmissionTest,
-                         ::testing::Values(0, 1, 2));
+                         ::testing::Values(0, 1, 2, 3));
 
 // Tests that submitting a form generates FormSubmitted message with the form
 // fields.
@@ -587,8 +588,12 @@ TEST_P(FormAutocompleteSubmissionTest, SubmitEventPrevented) {
 // Tests that having the form disappear after autofilling triggers submission
 // from Autofill's point of view.
 TEST_P(FormAutocompleteSubmissionTest, DomMutationAfterAutofill) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAcceptDomMutationAfterAutofillSubmission};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillUnifyAndFixFormTracking,
+       features::kAutofillAcceptDomMutationAfterAutofillSubmission},
+      /*disabled_features=*/{});
   LoadHTML(
       "<html><form id='myForm' action='http://example.com/blade.php'>"
       "<input name='fname' id='fname'/>"
