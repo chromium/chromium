@@ -1,6 +1,5 @@
 include_rules = [
   "+chromeos/dbus",
-  "+components/ml/mojom",
   "+mojo/core/embedder",
   "+mojo/public",
 ]

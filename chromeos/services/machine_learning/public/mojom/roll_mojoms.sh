@@ -72,7 +72,6 @@ sed --in-place --regexp-extended \
   -e 's~^import "ml/mojom/geometry.mojom~import "ui/gfx/geometry/mojom/geometry.mojom~g' \
   -e 's~^import "ml/mojom/shared_memory.mojom~import "mojo/public/mojom/base/shared_memory.mojom~g' \
   -e 's~^import "ml/mojom/time.mojom~import "mojo/public/mojom/base/time.mojom~g' \
-  -e 's~^import "ml/mojom/web_platform_model.mojom~import "components/ml/mojom/web_platform_model.mojom~g' \
   -e 's~^import "ml~import "chromeos/services/machine_learning/public~g' \
   *.mojom
 
