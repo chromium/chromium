@@ -156,7 +156,8 @@ FieldType FirstNonCapturedType(const FormStructure& form,
       // possible_type was determined by a valid email address found within the
       // field's content. The kAutofillUploadVotesForFieldsWithEmail feature
       // handles this scenario.
-      if (type == EMAIL_ADDRESS && IsValidEmailAddress(field->value()) &&
+      if (type == EMAIL_ADDRESS &&
+          IsValidEmailAddress(field->value(ValueSemantics::kCurrent)) &&
           base::FeatureList::IsEnabled(
               features::kAutofillUploadVotesForFieldsWithEmail)) {
         continue;

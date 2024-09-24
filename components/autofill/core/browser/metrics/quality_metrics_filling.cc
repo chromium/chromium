@@ -54,7 +54,7 @@ void LogAutomationRate(const FormStructure& form) {
     if (!field->initial_value_changed().value_or(true)) {
       continue;
     }
-    size_t field_size = field->value().size();
+    size_t field_size = field->value(ValueSemantics::kCurrent).size();
     // Skip fields containing too many characters to reduce distortion by
     // fields that are likely not autofillable.
     if (field_size > kAutomationRateFieldSizeThreshold) {

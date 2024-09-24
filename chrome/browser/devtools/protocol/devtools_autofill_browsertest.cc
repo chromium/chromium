@@ -470,18 +470,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // Create a profile to read information from and send to devtools.
   AutofillProfile profile = CreateTestProfile();
 
-  // Create fake filled fields.
   // TODO(crbug.com/40227496): Get rid of FormFieldData.
   FormData form;
   form.set_host_frame(LocalFrameToken(*main_frame()->GetFrameToken()));
   form.set_renderer_id(form_id().renderer_id);
   std::vector<FormFieldData> fields;
   fields.push_back(test::CreateTestFormField(
-      /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
+      /*label=*/"", "name_1", /*value=*/"", FormControlType::kInputText));
   fields.back().set_id_attribute(u"id_1");
   fields.back().set_host_frame(form.host_frame());
   fields.push_back(test::CreateTestFormField(
-      /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
+      /*label=*/"", "name_2", /*value=*/"", FormControlType::kInputText));
   fields.back().set_id_attribute(u"id_2");
   fields.back().set_host_frame(form.host_frame());
   form.set_fields(std::move(fields));
@@ -490,12 +489,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type
   // predictions.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->field(0)->set_value(u"");
   form_structure->field(0)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
   form_structure->field(0)->SetHtmlType(HtmlFieldType::kName,
                                         HtmlFieldMode::kShipping);
-  form_structure->field(1)->set_value(u"");
   form_structure->field(1)->set_server_predictions(
       {test::CreateFieldPrediction(NAME_FULL)});
   form_structure->field(1)->SetHtmlType(HtmlFieldType::kUnspecified,
@@ -503,6 +500,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   (*test_api(main_autofill_manager()).mutable_form_structures())[form_id()] =
       std::move(form_structure);
 
+  // Fake a that the fields were filled.
+  test_api(form).field(0).set_value(u"value_1");
+  test_api(form).field(1).set_value(u"value_2");
   const std::vector<const FormFieldData*> filled_fields_by_autofill = {
       {&form.fields()[0], &form.fields()[1]}};
 
@@ -561,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                         base::UTF8ToUTF16(
                             main_frame()->GetDevToolsFrameToken().ToString())));
     EXPECT_THAT(ff,
-                Not(FilledFieldHasAttributeWithValue16("value", af->value())));
+                Not(FilledFieldHasAttributeWithValue16(
+                    "value", af->value(autofill::ValueSemantics::kCurrent))));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(
