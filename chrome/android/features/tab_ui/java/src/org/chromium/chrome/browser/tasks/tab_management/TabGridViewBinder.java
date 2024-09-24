@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
@@ -84,6 +85,23 @@ class TabGridViewBinder {
     }
 
     /**
+     * Handles any cleanup for recycled views that might be expensive to keep around in the pool.
+     *
+     * @param model The property model to possibly cleanup.
+     * @param view The view to possibly cleanup.
+     */
+    public static void onViewRecycled(PropertyModel model, View view) {
+        if (view instanceof TabGridView tabGridView) {
+            TabThumbnailView thumbnail =
+                    (TabThumbnailView) tabGridView.fastFindViewById(R.id.tab_thumbnail);
+            thumbnail.setImageDrawable(null);
+
+            ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
+            if (fetcher != null) fetcher.cancel();
+        }
+    }
+
+    /**
      * Rebind all properties on a model to the view.
      *
      * @param view The view to bind to.
@@ -131,15 +149,29 @@ class TabGridViewBinder {
             view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
         } else if (TabProperties.GRID_CARD_SIZE == propertyKey) {
             final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-            view.setMinimumHeight(cardSize.getHeight());
-            view.setMinimumWidth(cardSize.getWidth());
+            int height = cardSize.getHeight();
+            int width = cardSize.getWidth();
             var layoutParams = view.getLayoutParams();
-            layoutParams.height = cardSize.getHeight();
-            layoutParams.width = cardSize.getWidth();
-            view.setLayoutParams(layoutParams);
-            updateThumbnail(view, model);
+            boolean sizeChanged =
+                    view.getMinimumHeight() != height
+                            || view.getMinimumWidth() != width
+                            || layoutParams.height != height
+                            || layoutParams.width != width;
+            if (sizeChanged) {
+                // Only update if the size changed to avoid needless layout requests which are
+                // expensive. A noop is likely to happen if the view gets recycled and re-bound as
+                // all the tab cards have the same size.
+                view.setMinimumHeight(height);
+                view.setMinimumWidth(width);
+                layoutParams.height = height;
+                layoutParams.width = width;
+                view.setLayoutParams(layoutParams);
+            }
+            // If the size changed we always need to update. Otherwise we only need to update if the
+            // current thumbnail is a placeholder and we were waiting on a thumbnail.
+            updateThumbnail(view, model, /* onlyUpdateIfPlaceholder= */ !sizeChanged);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
-            updateThumbnail(view, model);
+            updateThumbnail(view, model, /* onlyUpdateIfPlaceholder= */ false);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
             @Nullable
@@ -252,23 +284,23 @@ class TabGridViewBinder {
             PropertyModel model,
             Callback<ShoppingPersistedTabData.PriceDrop> callback,
             boolean shouldLog) {
-        if (model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) == null) {
+        ShoppingPersistedTabDataFetcher fetcher =
+                model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER);
+        if (fetcher == null) {
             callback.onResult(null);
             return;
         }
-        model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
-                .fetch(
-                        (shoppingPersistedTabData) -> {
-                            if (shoppingPersistedTabData == null) {
-                                callback.onResult(null);
-                                return;
-                            }
-                            if (shouldLog) {
-                                shoppingPersistedTabData.logPriceDropMetrics(
-                                        SHOPPING_METRICS_IDENTIFIER);
-                            }
-                            callback.onResult(shoppingPersistedTabData.getPriceDrop());
-                        });
+        fetcher.fetch(
+                (shoppingPersistedTabData) -> {
+                    if (shoppingPersistedTabData == null) {
+                        callback.onResult(null);
+                        return;
+                    }
+                    if (shouldLog) {
+                        shoppingPersistedTabData.logPriceDropMetrics(SHOPPING_METRICS_IDENTIFIER);
+                    }
+                    callback.onResult(shoppingPersistedTabData.getPriceDrop());
+                });
     }
 
     private static void onPriceDropFetched(
@@ -320,7 +352,10 @@ class TabGridViewBinder {
         }
     }
 
-    private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
+    private static void updateThumbnail(
+            ViewLookupCachingFrameLayout view,
+            PropertyModel model,
+            boolean onlyUpdateIfPlaceholder) {
         TabThumbnailView thumbnail = (TabThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
 
         // To GC on hide set a background color and remove the thumbnail.
@@ -333,6 +368,8 @@ class TabGridViewBinder {
             thumbnail.setImageDrawable(null);
             return;
         }
+
+        if (onlyUpdateIfPlaceholder && !thumbnail.isPlaceholder()) return;
 
         // TODO(crbug.com/40882123): Consider unsetting the bitmap early to allow memory reuse if
         // needed.

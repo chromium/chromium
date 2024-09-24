@@ -182,7 +182,17 @@ public class TabListCoordinator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mModel = new TabListModel();
-        mAdapter = new SimpleRecyclerViewAdapter(mModel);
+        mAdapter =
+                new SimpleRecyclerViewAdapter(mModel) {
+                    @Override
+                    public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder viewHolder) {
+                        PropertyModel model = viewHolder.model;
+                        if (mMode == TabListMode.GRID) {
+                            TabGridViewBinder.onViewRecycled(model, viewHolder.itemView);
+                        }
+                        super.onViewRecycled(viewHolder);
+                    }
+                };
         mAllowDragAndDrop = allowDragAndDrop;
 
         RecyclerView.RecyclerListener recyclerListener = null;
