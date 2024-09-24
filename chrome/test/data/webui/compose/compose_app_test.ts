@@ -439,8 +439,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'initial input',
-        selectedLength: Number(StyleModifier.kUnset),
-        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -598,8 +596,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'my old input',
-        selectedLength: Number(StyleModifier.kUnset),
-        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -651,8 +647,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'some future input',
-        selectedLength: Number(StyleModifier.kUnset),
-        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });

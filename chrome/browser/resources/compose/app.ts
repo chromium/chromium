@@ -45,8 +45,6 @@ export interface ComposeAppState {
   editedInput?: string;
   input: string;
   isEditingSubmittedInput?: boolean;
-  selectedLength?: StyleModifier;
-  selectedTone?: StyleModifier;
 }
 
 export interface ComposeAppElement {
@@ -69,7 +67,6 @@ export interface ComposeAppElement {
     loading: HTMLElement,
     undoButton: CrButtonElement,
     redoButton: CrButtonElement,
-    refreshButton: HTMLElement,
     resultContainer: HTMLElement,
     resultTextContainer: HTMLElement,
     resultFooter: HTMLElement,
@@ -78,8 +75,6 @@ export interface ComposeAppElement {
     submitFooter: HTMLElement,
     onDeviceUsedFooter: HTMLElement,
     textarea: ComposeTextareaElement,
-    lengthMenu: HTMLSelectElement,
-    toneMenu: HTMLSelectElement,
     modifierMenu: HTMLSelectElement,
     resultText: ComposeResultTextElement,
     feedbackButtons: CrFeedbackButtonsElement,
@@ -99,10 +94,7 @@ const ComposeAppElementBase = I18nMixin(CrScrollObserverMixin(PolymerElement));
 // can be restored to the respective element afterwards.
 enum TriggerElement {
   SUBMIT_INPUT,  // For initial input or editing input.
-  TONE,
-  LENGTH,
   MODIFIER,
-  REFRESH,
   UNDO,
   REDO,
 }
@@ -172,14 +164,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Object,
         value: null,
       },
-      selectedLength_: {
-        type: Number,
-        value: StyleModifier.kUnset,
-      },
-      selectedTone_: {
-        type: Number,
-        value: StyleModifier.kUnset,
-      },
       showMainAppDialog_: {
         type: Boolean,
         value: false,
@@ -213,46 +197,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       },
       displayedText_: {
         type: String,
-      },
-      lengthOptions_: {
-        type: Array,
-        value: () => {
-          return [
-            {
-              value: StyleModifier.kUnset,
-              label: loadTimeData.getString('lengthMenuTitle'),
-              isDefault: true,
-            },
-            {
-              value: StyleModifier.kShorter,
-              label: loadTimeData.getString('shorterOption'),
-            },
-            {
-              value: StyleModifier.kLonger,
-              label: loadTimeData.getString('longerOption'),
-            },
-          ];
-        },
-      },
-      toneOptions_: {
-        type: Array,
-        value: () => {
-          return [
-            {
-              value: StyleModifier.kUnset,
-              label: loadTimeData.getString('toneMenuTitle'),
-              isDefault: true,
-            },
-            {
-              value: StyleModifier.kCasual,
-              label: loadTimeData.getString('casualToneOption'),
-            },
-            {
-              value: StyleModifier.kFormal,
-              label: loadTimeData.getString('formalToneOption'),
-            },
-          ];
-        },
       },
       modifierOptions_: {
         type: Array,
@@ -322,8 +266,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
-  private selectedLength_: StyleModifier;
-  private selectedTone_: StyleModifier;
   private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
@@ -440,8 +382,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
-        this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
-        this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
         if (appState.isEditingSubmittedInput) {
           this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
           this.editedInput_ = appState.editedInput!;
@@ -548,11 +488,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onRefresh_() {
-    this.rewrite_(StyleModifier.kRetry);
-    this.lastTriggerElement_ = TriggerElement.REFRESH;
-  }
-
   private onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
@@ -581,8 +516,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const editTextareaHeight = this.$.editTextarea.offsetHeight;
     this.isEditingSubmittedInput_ = false;
     this.input_ = this.editedInput_;
-    this.selectedLength_ = StyleModifier.kUnset;
-    this.selectedTone_ = StyleModifier.kUnset;
     this.animator_.transitionFromEditingToLoading(bodyHeight);
     this.$.textarea.transitionToReadonly(editTextareaHeight);
     this.$.editTextarea.transitionToReadonly(editTextareaHeight);
@@ -603,18 +536,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     if (!this.isSubmitEnabled_) {
       this.isSubmitEnabled_ = this.$.textarea.validate();
     }
-  }
-
-  private onLengthChanged_() {
-    this.selectedLength_ = Number(this.$.lengthMenu.value) as StyleModifier;
-    this.rewrite_(this.selectedLength_);
-    this.lastTriggerElement_ = TriggerElement.LENGTH;
-  }
-
-  private onToneChanged_() {
-    this.selectedTone_ = Number(this.$.toneMenu.value) as StyleModifier;
-    this.rewrite_(this.selectedTone_);
-    this.lastTriggerElement_ = TriggerElement.TONE;
   }
 
   private onModifierChanged_() {
@@ -752,15 +673,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     switch (this.lastTriggerElement_) {
       case TriggerElement.SUBMIT_INPUT:
         this.$.textarea.focusEditButton();
-        break;
-      case TriggerElement.REFRESH:
-        this.$.refreshButton.focus({preventScroll: true});
-        break;
-      case TriggerElement.LENGTH:
-        this.$.lengthMenu.focus({preventScroll: true});
-        break;
-      case TriggerElement.TONE:
-        this.$.toneMenu.focus({preventScroll: true});
         break;
       case TriggerElement.MODIFIER:
         this.$.modifierMenu.focus({ preventScroll: true });
@@ -916,12 +828,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     const state: ComposeAppState = {input: this.input_};
-    if (this.selectedLength_ !== StyleModifier.kUnset) {
-      state.selectedLength = this.selectedLength_;
-    }
-    if (this.selectedTone_ !== StyleModifier.kUnset) {
-      state.selectedTone = this.selectedTone_;
-    }
     if (this.isEditingSubmittedInput_) {
       state.isEditingSubmittedInput = this.isEditingSubmittedInput_;
       state.editedInput = this.editedInput_;
@@ -1015,10 +921,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     if (state.webuiState) {
       const appState: ComposeAppState = JSON.parse(state.webuiState);
       this.input_ = appState.input;
-      // TODO(b/333985071): Remove modifier tracking when ComposeUiRefinement
-      // flag is removed.
-      this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
-      this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
     }
   }
 
