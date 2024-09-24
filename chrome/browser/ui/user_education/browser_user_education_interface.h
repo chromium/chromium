@@ -11,6 +11,10 @@
 #include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/new_badge_controller.h"
 
+namespace content {
+class WebContents;
+}
+
 // Provides the interface for common User Education actions.
 class BrowserUserEducationInterface {
  public:
@@ -108,6 +112,15 @@ class BrowserUserEducationInterface {
   // containing the badge will be shown to the user.
   virtual user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) = 0;
+
+  // Returns the interface associated with the browser containing `contents` in
+  // its tabstrip, or null if `contents` is not a tab in any known browser.
+  //
+  // For WebUI embedded in a specific browser window or secondary UI of a
+  // browser window, instead just use the appropriate BrowserWindow[Interface]
+  // for that window.
+  static BrowserUserEducationInterface* MaybeGetForWebContentsInTab(
+      content::WebContents* contents);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_USER_EDUCATION_INTERFACE_H_

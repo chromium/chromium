@@ -12,3 +12,12 @@ source_set("user_education") {
     "//components/user_education/common",
   ]
 }
+
+source_set("impl") {
+  sources = [ "browser_user_education_interface.cc" ]
+  deps = [
+    ":user_education",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+  ]
+}
