@@ -351,6 +351,12 @@
             deep-link-focus-id$="[[Setting.kShowOrca]]"
             learn-more-url="$i18n{orcaLearnMoreUrl}">
         </settings-toggle-button>
+        <template is="dom-if" if="[[showOrcaReviewTermsBanner_]]">
+          <magic-boost-review-terms-banner
+            button-label="$i18n{orcaReviewTermsButtonLabel}"
+            description="$i18n{orcaReviewTermsBannerDescription}">
+          </magic-boost-review-terms-banner>
+      </template>
       </template>
 
       <settings-toggle-button id="emojiSuggestionToggle"

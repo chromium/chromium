@@ -112,6 +112,9 @@ class EditorMediator : public EditorContext::Observer,
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
 
+  // Checks if the review notice banner can be shown in the settings page.
+  bool CanShowNoticeBanner() const;
+
   EditorPanelManager* panel_manager() { return &panel_manager_; }
 
   MakoBubbleCoordinator& mako_bubble_coordinator_for_testing() {

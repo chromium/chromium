@@ -77,6 +77,11 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // and if mahi is not available.
   virtual bool IsMagicBoostAvailable() = 0;
 
+  // Check if HMR requires the notice banner to appear in the settings page.
+  // It will be false in lacros and if the HMR consent status is anything other
+  // than Declined.
+  virtual bool CanShowNoticeBannerForHMR() = 0;
+
   // Increments HMRWindowDismissCount count and returns an incremented value.
   // Note that this method is not thread safe, i.e., this increment does NOT
   // operate as an atomic operation. Reading HMRWindowDismissCount immediately

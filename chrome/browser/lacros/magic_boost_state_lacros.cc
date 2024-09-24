@@ -43,6 +43,11 @@ bool MagicBoostStateLacros::IsMagicBoostAvailable() {
   return false;
 }
 
+bool MagicBoostStateLacros::CanShowNoticeBannerForHMR() {
+  // Magic Boost does not work in Lacros.
+  return false;
+}
+
 int32_t MagicBoostStateLacros::AsyncIncrementHMRConsentWindowDismissCount() {
   int count = hmr_consent_window_dismiss_count() + 1;
   SetPref(crosapi::mojom::PrefPath::kHMRConsentWindowDismissCount,

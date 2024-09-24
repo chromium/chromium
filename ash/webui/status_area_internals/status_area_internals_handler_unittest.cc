@@ -67,6 +67,7 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
   }
 
   bool IsMagicBoostAvailable() override { return true; }
+  bool CanShowNoticeBannerForHMR() override { return false; }
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
   void AsyncWriteHMREnabled(bool enabled) override {}
   void DisableOrcaFeature() override {}

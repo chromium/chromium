@@ -346,6 +346,7 @@ build_webui("build") {
     "os_reset_page/os_sanitize_dialog.ts",
     "os_reset_page/reset_settings_card.ts",
     "os_search_page/google_assistant_subpage.ts",
+    "os_search_page/magic_boost_review_terms_banner.ts",
     "os_search_page/os_search_page.ts",
     "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",

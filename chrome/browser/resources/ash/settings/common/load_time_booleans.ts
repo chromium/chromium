@@ -112,6 +112,10 @@ export function isMagicBoostFeatureEnabled(): boolean {
   return loadTimeData.getBoolean('isMagicBoostFeatureEnabled');
 }
 
+export function isMagicBoostNoticeBannerVisible(): boolean {
+  return loadTimeData.getBoolean('isMagicBoostNoticeBannerVisible');
+}
+
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');

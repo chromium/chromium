@@ -49,6 +49,18 @@ bool MagicBoostStateAsh::IsMagicBoostAvailable() {
   return mahi_availability::IsMahiAvailable();
 }
 
+bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
+  PrefService* pref = pref_change_registrar_->prefs();
+
+  // Only show the notice when:
+  //  1. HMR is forced ON by the admin, and
+  //  2. The consent status is currently disabled.
+  return pref->IsManagedPreference(ash::prefs::kHmrEnabled) &&
+         pref->GetBoolean(ash::prefs::kHmrEnabled) &&
+         hmr_consent_status().has_value() &&
+         hmr_consent_status().value() == chromeos::HMRConsentStatus::kDeclined;
+}
+
 int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {
   int32_t incremented_count = hmr_consent_window_dismiss_count() + 1;
   pref_change_registrar_->prefs()->SetInteger(
