@@ -706,6 +706,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 -1);
   registry->RegisterIntegerPref(
       prefs::kIosSafetyCheckNotificationsLastTriggered, -1);
+
+  // List pref that stores the positions of the Safety Check module (with
+  // notifications opt-in) within the Magic Stack.
+  registry->RegisterListPref(prefs::kMagicStackSafetyCheckNotificationsShown);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

@@ -56,6 +56,12 @@ BASE_FEATURE(kOmahaServiceRefactor,
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
+const char kSafetyCheckNotificationsImpressionTrigger[] =
+    "SafetyCheckNotificationsImpressionTrigger";
+
+const char kSafetyCheckNotificationsImpressionLimit[] =
+    "SafetyCheckNotificationsImpressionLimit";
+
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
 
@@ -336,6 +342,22 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
           (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
+}
+
+SafetyCheckNotificationsImpressionTrigger
+SafetyCheckNotificationsImpressionTriggerEnabled() {
+  return static_cast<SafetyCheckNotificationsImpressionTrigger>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionTrigger,
+          /*default_value=*/
+          (int)SafetyCheckNotificationsImpressionTrigger::kAlways));
+}
+
+int SafetyCheckNotificationsImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionLimit,
+      /*default_value=*/
+      3);
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,
