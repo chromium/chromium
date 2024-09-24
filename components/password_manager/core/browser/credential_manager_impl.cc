@@ -149,6 +149,10 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
       GetSynthesizedFormForOrigin());
 }
 
+void CredentialManagerImpl::ResetPendingRequest() {
+  pending_request_.reset();
+}
+
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
   return client_->IsAutoSignInEnabled() && !client_->IsOffTheRecord();
 }
@@ -166,8 +170,6 @@ url::Origin CredentialManagerImpl::GetOrigin() const {
 
 void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
                                            const CredentialInfo& info) {
-  DCHECK(pending_request_);
-
   if (password_manager_util::IsLoggingActive(client_)) {
     CredentialManagerLogger(client_->GetLogManager())
         .LogSendCredential(GetOrigin(), info.type);

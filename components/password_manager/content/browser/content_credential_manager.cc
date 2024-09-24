@@ -43,6 +43,7 @@ bool ContentCredentialManager::HasBinding() const {
 
 void ContentCredentialManager::DisconnectBinding() {
   receiver_.reset();
+  impl_.ResetPendingRequest();
 }
 
 void ContentCredentialManager::Store(const CredentialInfo& credential,

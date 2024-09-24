@@ -48,6 +48,8 @@ class CredentialManagerImpl
            const std::vector<GURL>& federations,
            GetCallback callback);
 
+  void ResetPendingRequest();
+
   // CredentialManagerPendingRequestTaskDelegate:
   // Exposed publicly for testing.
   bool IsZeroClickAllowed() const override;
