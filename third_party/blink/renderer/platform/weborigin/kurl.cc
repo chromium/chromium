@@ -355,9 +355,10 @@ bool KURL::HasPath() const {
   return parsed_.path.is_valid();
 }
 
-String KURL::LastPathComponent() const {
-  if (!is_valid_)
-    return StringViewForInvalidComponent().ToString();
+StringView KURL::LastPathComponent() const {
+  if (!is_valid_) {
+    return StringViewForInvalidComponent();
+  }
   DCHECK(!string_.IsNull());
 
   // When the output ends in a slash, WebCore has different expectations than
@@ -376,9 +377,10 @@ String KURL::LastPathComponent() const {
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
   // a null string when the path is empty, which we duplicate here.
-  if (file.is_empty())
-    return String();
-  return ComponentString(file);
+  if (file.is_empty()) {
+    return StringView();
+  }
+  return ComponentStringView(file);
 }
 
 String KURL::Protocol() const {

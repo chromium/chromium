@@ -158,10 +158,13 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
                                         const ResourceResponse& response,
                                         MimeTypeCheck mime_type_check_mode) {
   // The content type is really only meaningful for `http:`-family schemes.
-  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
-      (response.CurrentRequestUrl().LastPathComponent().EndsWith(".js") ||
-       response.CurrentRequestUrl().LastPathComponent().EndsWith(".mjs"))) {
-    return true;
+  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
+    String last_path_component =
+        response.CurrentRequestUrl().LastPathComponent().ToString();
+    if (last_path_component.EndsWith(".js") ||
+        last_path_component.EndsWith(".mjs")) {
+      return true;
+    }
   }
 
   // Exclude `data:`, `blob:` and `filesystem:` URLs from MIME checks.

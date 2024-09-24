@@ -72,7 +72,7 @@ namespace blink {
 namespace {
 
 String GetMIMETypeFromURL(const KURL& url) {
-  String filename = url.LastPathComponent();
+  String filename = url.LastPathComponent().ToString();
   int extension_pos = filename.ReverseFind('.');
   if (extension_pos >= 0) {
     String extension = filename.Substring(extension_pos + 1);

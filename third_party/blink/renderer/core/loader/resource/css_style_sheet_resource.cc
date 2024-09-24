@@ -193,9 +193,11 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
     // Grab |sheet_url|'s filename's extension (if present), and check whether
     // or not it maps to a `text/css` MIME type:
     String extension;
-    int last_dot = sheet_url.LastPathComponent().ReverseFind('.');
-    if (last_dot != -1)
-      extension = sheet_url.LastPathComponent().Substring(last_dot + 1);
+    String last_path_component = sheet_url.LastPathComponent().ToString();
+    int last_dot = last_path_component.ReverseFind('.');
+    if (last_dot != -1) {
+      extension = last_path_component.Substring(last_dot + 1);
+    }
     if (!EqualIgnoringASCIICase(
             MIMETypeRegistry::GetMIMETypeForExtension(extension), "text/css")) {
       if (parser_context) {
