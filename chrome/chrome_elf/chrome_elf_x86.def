@@ -23,6 +23,7 @@ EXPORTS
   ; From chrome/chrome_elf/chrome_elf_main.cc
   DumpProcessWithoutCrash
   GetUserDataDirectoryThunk
+  IsTemporaryUserDataDirectoryCreatedForHeadless
   SignalChromeElf
   SignalInitializeCrashReporting
   IsExtensionPointDisableSet
