@@ -5553,7 +5553,7 @@ crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/sel
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-explicit-size.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-font-size.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-keyboard.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Failure ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Failure Crash ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-visible-overflow.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-label-rendering.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-overflow-x.tentative.html [ Failure ]
