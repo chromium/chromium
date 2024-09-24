@@ -31,7 +31,6 @@ function addSearchTextMarker(element, start, end, current = false) {
   if (typeof internals !== 'undefined') {
     // To run this test from content_shell you can use
     // "--expose-internals-for-testing" command flag.
-    internals.setMarkedTextMatchesAreHighlighted(document, true);
     internals.addTextMatchMarker(range, current ? 'kActive' : 'kInactive');
   }
 }

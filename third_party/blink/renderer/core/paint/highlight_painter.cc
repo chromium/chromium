@@ -552,8 +552,6 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
           break;
         }
         const Document& document = node_->GetDocument();
-        if (!document.GetFrame()->GetEditor().MarkedTextMatchesAreHighlighted())
-          break;
         const auto& text_match_marker = To<TextMatchMarker>(*marker);
         if (phase == kBackground) {
           Color color =

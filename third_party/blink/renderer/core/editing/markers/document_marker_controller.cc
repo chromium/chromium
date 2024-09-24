@@ -1237,24 +1237,6 @@ void DocumentMarkerController::RemoveMarkersFromList(
   DidRemoveNodeFromMap(marker_type);
 }
 
-void DocumentMarkerController::RepaintMarkers(
-    DocumentMarker::MarkerTypes marker_types) {
-  if (!PossiblyHasMarkers(marker_types)) {
-    return;
-  }
-  DCHECK(!markers_.empty());
-
-  for (auto type : marker_types) {
-    const MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(type)];
-    if (!marker_map) {
-      continue;
-    }
-    for (auto& iterator : *marker_map) {
-      InvalidatePaintForNode(*iterator.key);
-    }
-  }
-}
-
 bool DocumentMarkerController::SetTextMatchMarkersActive(
     const EphemeralRange& range,
     bool active) {

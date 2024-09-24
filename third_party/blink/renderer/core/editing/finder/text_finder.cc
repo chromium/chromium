@@ -456,8 +456,6 @@ void TextFinder::StopFindingAndClearSelection() {
   // Remove all markers for matches found and turn off the highlighting.
   OwnerFrame().GetFrame()->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextMatch());
-  OwnerFrame().GetFrame()->GetEditor().SetMarkedTextMatchesAreHighlighted(
-      false);
   ClearFindMatchesCache();
   ResetActiveMatch();
 
@@ -587,8 +585,6 @@ void TextFinder::DidFindMatch(int identifier,
 void TextFinder::UpdateMatches(int identifier,
                                int found_match_count,
                                bool finished_whole_request) {
-  GetFrame()->GetEditor().SetMarkedTextMatchesAreHighlighted(true);
-
   // Let the frame know how many matches we found during this pass.
   IncreaseMatchCount(identifier, found_match_count);
 
@@ -856,8 +852,7 @@ bool TextFinder::SetMarkerActive(Range* range, bool active) {
 
 void TextFinder::UnmarkAllTextMatches() {
   LocalFrame* frame = OwnerFrame().GetFrame();
-  if (frame && frame->GetPage() &&
-      frame->GetEditor().MarkedTextMatchesAreHighlighted()) {
+  if (frame && frame->GetPage()) {
     frame->GetDocument()->Markers().RemoveMarkersOfTypes(
         DocumentMarker::MarkerTypes::TextMatch());
   }

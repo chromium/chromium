@@ -493,7 +493,6 @@ void SpellChecker::RemoveSpellingMarkersUnderWords(
   DocumentMarkerController& marker_controller =
       GetFrame().GetDocument()->Markers();
   marker_controller.RemoveSpellingMarkersUnderWords(words);
-  marker_controller.RepaintMarkers();
 }
 
 static Node* FindFirstMarkable(Node* node) {

@@ -236,8 +236,6 @@ class Internals final : public ScriptWrappable {
                                  unsigned start_offset,
                                  unsigned end_offset,
                                  bool);
-  void setMarkedTextMatchesAreHighlighted(Document*, bool);
-
   String viewportAsText(Document*,
                         float device_pixel_ratio,
                         int available_width,

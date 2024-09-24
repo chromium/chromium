@@ -1722,15 +1722,6 @@ void Internals::setTextMatchMarkersActive(Node* node,
       To<Text>(*node), start_offset, end_offset, active);
 }
 
-void Internals::setMarkedTextMatchesAreHighlighted(Document* document,
-                                                   bool highlight) {
-  if (!document || !document->GetFrame())
-    return;
-
-  document->GetFrame()->GetEditor().SetMarkedTextMatchesAreHighlighted(
-      highlight);
-}
-
 String Internals::viewportAsText(Document* document,
                                  float,
                                  int available_width,

@@ -479,7 +479,6 @@ Editor::Editor(LocalFrame& frame)
       // matches IE but not FF).
       should_style_with_css_(false),
       kill_ring_(std::make_unique<KillRing>()),
-      are_marked_text_matches_highlighted_(false),
       default_paragraph_separator_(EditorParagraphSeparator::kIsDiv) {}
 
 Editor::~Editor() = default;
@@ -936,15 +935,6 @@ Range* Editor::FindRangeOfString(
   }
 
   return result_range;
-}
-
-void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
-  if (flag == are_marked_text_matches_highlighted_)
-    return;
-
-  are_marked_text_matches_highlighted_ = flag;
-  GetFrame().GetDocument()->Markers().RepaintMarkers(
-      DocumentMarker::MarkerTypes::TextMatch());
 }
 
 void Editor::RespondToChangedSelection() {

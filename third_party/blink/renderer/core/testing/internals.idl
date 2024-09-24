@@ -119,7 +119,6 @@ interface Internals {
     [RaisesException] void addActiveSuggestionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     [RaisesException] void addSuggestionMarker(Range range, sequence<DOMString> suggestions, DOMString suggestionHighlightColorValue, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     void setTextMatchMarkersActive(Node node, unsigned long startOffset, unsigned long endOffset, boolean active);
-    void setMarkedTextMatchesAreHighlighted(Document document, boolean highlight);
 
     [RaisesException] DOMString viewportAsText(Document document,
                                                float devicePixelRatio,
