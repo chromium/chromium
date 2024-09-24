@@ -65,8 +65,18 @@ const char kSafetyCheckNotificationsImpressionLimit[] =
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
 
+const char kSafetyCheckNotificationsProvisionalEnabled[] =
+    "SafetyCheckNotificationsProvisionalEnabled";
+
 const char kSafetyCheckNotificationsUserInactiveThreshold[] =
     "SafetyCheckNotificationsUserInactiveThreshold";
+
+bool ProvisionalSafetyCheckNotificationsEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSafetyCheckNotifications, kSafetyCheckNotificationsProvisionalEnabled,
+      /*default_value=*/
+      true);
+}
 
 const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(

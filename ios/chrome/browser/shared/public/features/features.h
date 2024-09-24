@@ -42,6 +42,15 @@ BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 // Feature to enable Safety Check Push Notifications.
 BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
 
+// A parameter defining whether to enable provisional Safety Check
+// notifications. If enabled, Safety Check notifications may be shown to the
+// user even if the criteria for sending a notification are not definitively
+// met.
+extern const char kSafetyCheckNotificationsProvisionalEnabled[];
+
+// Returns true if provisional Safety Check notifications are enabled.
+bool ProvisionalSafetyCheckNotificationsEnabled();
+
 // A parameter defining the duration of user inactivity required before
 // displaying Safety Check push notifications.
 extern const char kSafetyCheckNotificationsUserInactiveThreshold[];
