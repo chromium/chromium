@@ -297,9 +297,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testIpProtectionFragment() throws IOException {
         setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -363,21 +360,51 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    public void testTrackingProtectionWithSandboxV4() throws IOException {
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
+    public void testTrackingProtection() throws IOException {
         setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
-        // Verify that the Tracking Protection row is shown and 3PC/DNT is not.
+
+        // Verify that the Tracking Protection row is shown and 3PC/DNT are not.
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference trackingProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
+        assertTrue(trackingProtectionPreference.isVisible());
         onView(withText(R.string.tracking_protection_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.third_party_cookies_link_row_label)).check(doesNotExist());
-        onView(withText(R.string.do_not_track_title)).check(doesNotExist());
+
+        Preference thirdPartyCookiesPreference =
+                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
+        assertFalse(thirdPartyCookiesPreference.isVisible());
+
+        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
+        assertFalse(dntPreference.isVisible());
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
+    public void testTrackingProtectionRewind() throws IOException {
+        setShowTrackingProtection(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the 3PC and DNT rows are shown instead of Tracking Protection.
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference trackingProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
+        assertTrue(trackingProtectionPreference.isVisible());
+        onView(withText(R.string.third_party_cookies_link_row_label)).check(matches(isDisplayed()));
+
+        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
+        assertTrue(dntPreference.isVisible());
+
+        Preference thirdPartyCookiesPreference =
+                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
+        assertFalse(thirdPartyCookiesPreference.isVisible());
     }
 
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testIpProtectionSettingsE2E() throws ExecutionException {
         setIpProtection(false);
         setShowTrackingProtection(false);
@@ -394,9 +421,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testFingerprintingProtectionSettingsE2E() throws ExecutionException {
         setFpProtection(false);
         setShowTrackingProtection(false);
@@ -414,12 +438,10 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_UX,
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
     public void testIpProtectionSettingsWithTrackingProtectionEnabled() {
         setIpProtection(false);
+        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
 
@@ -432,12 +454,10 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
+    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
     public void testFingerprintingProtectionSettingsWithTrackingProtectionEnabled() {
         setFpProtection(false);
+        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
 

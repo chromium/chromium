@@ -24,6 +24,11 @@ public interface TrackingProtectionDelegate {
     void setDoNotTrack(boolean enabled);
 
     /**
+     * @return whether the Tracking Protection branded UI should be shown.
+     */
+    boolean shouldShowTrackingProtectionBrandedUi();
+
+    /**
      * @return whether the IP protection preference should be shown.
      */
     boolean shouldDisplayIpProtection();

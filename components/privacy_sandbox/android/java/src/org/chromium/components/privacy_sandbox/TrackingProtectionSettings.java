@@ -16,6 +16,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
@@ -63,10 +64,10 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
             "fingerprinting_protection_toggle";
     private static final String PREF_FINGERPRINTING_PROTECTION_LEARN_MORE =
             "fingerprinting_protection_learn_more";
-    private static final String PREF_DNT_TOGGLE = "dnt_toggle";
     private static final String PREF_BULLET_TWO = "bullet_point_two";
     private static final String ALLOWED_GROUP = "allowed_group";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
+    @VisibleForTesting static final String PREF_DNT_TOGGLE = "dnt_toggle";
 
     public static final String LEARN_MORE_URL =
             "https://support.google.com/chrome/?p=tracking_protection";
@@ -86,7 +87,11 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
-        mPageTitle.set(getString(R.string.privacy_sandbox_tracking_protection_title));
+        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
+            mPageTitle.set(getString(R.string.privacy_sandbox_tracking_protection_title));
+        } else {
+            mPageTitle.set(getString(R.string.third_party_cookies_page_title));
+        }
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
@@ -172,12 +177,15 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         }
 
         // Do not track switch.
-        doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());
-        doNotTrackSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    mDelegate.setDoNotTrack((boolean) newValue);
-                    return true;
-                });
+        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
+            doNotTrackSwitch.setVisible(true);
+            doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());
+            doNotTrackSwitch.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        mDelegate.setDoNotTrack((boolean) newValue);
+                        return true;
+                    });
+        }
 
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;
