@@ -80,7 +80,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Reason for a PausePlayback call, for better diagnostic messages.
   enum class PauseReason {
     kUnknown,
-    kBackgroundVideoOptimization,
+    kPageHidden,
     kSuspendedPlayerIdleTimeout,
     kRemotePlayStateChange,
     kFrameHidden,

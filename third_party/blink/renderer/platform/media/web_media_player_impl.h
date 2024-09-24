@@ -50,6 +50,7 @@
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -102,7 +103,6 @@ class WatchTimeReporter;
 class WebAudioSourceProviderImpl;
 class WebContentDecryptionModule;
 class WebLocalFrame;
-class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 
 // The set of split histograms that are supported. Keeping them in an enum
@@ -234,8 +234,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Shared between the WebMediaPlayer and DemuxerManager::Client interfaces.
   double CurrentTime() const override;
-
-  bool PausedWhenHidden() const override;
 
   // Internal states of loading and network.
   // TODO(hclam): Ask the pipeline about the state rather than having reading
@@ -591,12 +589,15 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   void CreateVideoDecodeStatsReporter();
 
-  // // Returns true if the player's hosting page (WebView) is hidden or closed.
+  // Returns true if the player's hosting page (WebView) is hidden or closed.
   bool IsPageHidden() const;
 
   // Returns true if the player's host frame is hidden or closed in the host
   // page.
   bool IsFrameHidden() const;
+
+  bool IsPausedBecausePageHidden() const;
+  bool IsPausedBecauseFrameHidden() const;
 
   // Returns true if the player is in streaming mode, meaning that the source
   // or the demuxer doesn't support timeline or seeking.
@@ -806,9 +807,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool paused_ = true;
   base::TimeDelta paused_time_;
 
-  // Set if paused automatically when hidden and need to resume when visible.
-  // Reset if paused for any other reason.
-  bool paused_when_hidden_ = false;
+  // Set if paused automatically when hidden. Reset if paused for any other
+  // reason. If set to PauseReason::kPageHidden, playback should be resumed when
+  // the page becomes visible.
+  std::optional<WebMediaPlayerClient::PauseReason> visibility_pause_reason_;
 
   // Set when starting, seeking, and resuming (all of which require a Pipeline
   // seek). |seek_time_| is only valid when |seeking_| is true.

@@ -1716,10 +1716,6 @@ WebMediaPlayer::LoadType HTMLMediaElement::GetLoadType() const {
   return WebMediaPlayer::kLoadTypeURL;
 }
 
-bool HTMLMediaElement::PausedWhenVisible() const {
-  return paused_ && web_media_player_ && !web_media_player_->PausedWhenHidden();
-}
-
 void HTMLMediaElement::DidAudioOutputSinkChanged(
     const String& hashed_device_id) {
   for (auto& observer : media_player_observer_remote_set_->Value())
@@ -4561,7 +4557,7 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
     case PlayPromiseError::kPaused_AutoplayAutoPause:
       reason = " because autoplaying background media was paused to save power";
       break;
-    case PlayPromiseError::kPaused_BackgroundVideoOptimization:
+    case PlayPromiseError::kPaused_PageHidden:
       reason = " because video-only background media was paused to save power";
       break;
     case PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout:
@@ -4713,9 +4709,8 @@ void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
   switch (pause_reason) {
     case PauseReason::kUnknown:
       return PauseInternal(PlayPromiseError::kPaused_Unknown);
-    case PauseReason::kBackgroundVideoOptimization:
-      return PauseInternal(
-          PlayPromiseError::kPaused_BackgroundVideoOptimization);
+    case PauseReason::kPageHidden:
+      return PauseInternal(PlayPromiseError::kPaused_PageHidden);
     case PauseReason::kSuspendedPlayerIdleTimeout:
       return PauseInternal(
           PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout);

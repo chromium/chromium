@@ -217,8 +217,6 @@ class WebMediaPlayer {
   virtual double CurrentTime() const = 0;
   virtual bool IsEnded() const = 0;
 
-  virtual bool PausedWhenHidden() const { return false; }
-
   // Internal states of loading and network.
   virtual NetworkState GetNetworkState() const = 0;
   virtual ReadyState GetReadyState() const = 0;
