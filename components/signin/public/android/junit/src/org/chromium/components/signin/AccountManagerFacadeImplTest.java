@@ -133,7 +133,7 @@ public class AccountManagerFacadeImplTest {
         mShadowAccountManager = shadowOf(AccountManager.get(mContext));
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
         mFacade.resetAccountsForTesting();

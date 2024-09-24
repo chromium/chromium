@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.base.ThreadUtils.setThreadAssertsDisabledForTesting;
+import static org.chromium.base.ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting;
 
 import android.accounts.Account;
 
@@ -47,7 +47,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
     public void setUp() {
         // Dispatcher bridge checks it is used on the background thread. Disable this check for this
         // test.
-        setThreadAssertsDisabledForTesting(true);
+        hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         MockitoAnnotations.initMocks(this);
         mDispatcherBridge =
                 new PasswordSettingsUpdaterDispatcherBridge(mReceiverBridgeMock, mAccessorMock);

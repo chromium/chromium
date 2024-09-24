@@ -737,7 +737,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .thenReturn(false);
 
         // Test specific setup
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         AccessibilityState.setIsScreenReaderEnabledForTesting(true);
 
         Menu menu = createTestMenu();

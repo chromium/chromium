@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 public class LanguageProfileControllerUnitTest {
     @Before
     public void setUp() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @Test

@@ -46,7 +46,7 @@ public class SimpleHttpClientUnitTest {
 
     @Before
     public void setUp() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mMocker.mock(SimpleHttpClientJni.TEST_HOOKS, mNativeMock);
         Mockito.when(mNativeMock.init(mMockProfile)).thenReturn(FAKE_NATIVE_POINTER);
 

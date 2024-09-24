@@ -93,7 +93,7 @@ public class SurveyClientUnitTest {
                         task.run();
                     }
                 });
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @Test

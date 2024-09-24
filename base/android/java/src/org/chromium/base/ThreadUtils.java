@@ -284,10 +284,26 @@ public class ThreadUtils {
     /**
      * Disables thread asserts.
      *
-     * Can be used by tests where code that normally runs multi-threaded is going to run
+     * <p>Can be used by tests where code that normally runs multi-threaded is going to run
+     * single-threaded for the test (otherwise asserts that are valid in production would fail in
+     * those tests). Avoid to use this in ui tests, especially under the batch unit tests
+     * environment, because any ThreadChecker instances created on the wrong thread will likely fail
+     * on subsequent tests when run on their correct threads. Prefer to use `runOnUiThread()` or
+     * `PostTask.runSynchronously()`.
+     */
+    public static void hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(boolean disabled) {
+        sThreadAssertsDisabledForTesting = disabled;
+        ResettersForTesting.register(() -> sThreadAssertsDisabledForTesting = false);
+    }
+
+    /**
+     * Disables thread asserts.
+     *
+     * <p>Can be used by tests where code that normally runs multi-threaded is going to run
      * single-threaded for the test (otherwise asserts that are valid in production would fail in
      * those tests).
      */
+    @Deprecated
     public static void setThreadAssertsDisabledForTesting(boolean disabled) {
         sThreadAssertsDisabledForTesting = disabled;
         ResettersForTesting.register(() -> sThreadAssertsDisabledForTesting = false);

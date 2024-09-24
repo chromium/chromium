@@ -63,7 +63,7 @@ public class SafetyHubHatsBridgeTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
 
         mJniMocker.mock(SafetyHubHatsBridgeJni.TEST_HOOKS, mSafetyHubHatsBridgeNatives);
         doReturn(true)

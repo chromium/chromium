@@ -126,7 +126,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         disableLifecycleThreadAssertion();
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mBackgroundThread = new BackgroundThread("background");
         mBackgroundThread.start();
