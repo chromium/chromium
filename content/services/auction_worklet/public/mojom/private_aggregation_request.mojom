@@ -22,6 +22,7 @@ enum BaseValue {
   kAverageCodeFetchTime = 6,
   kPercentScriptsTimeout = 7,
   kPercentInterestGroupsCumulativeTimeout = 8,
+  kCumulativeBuyerTime = 9,
 };
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`

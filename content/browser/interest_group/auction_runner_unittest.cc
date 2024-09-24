@@ -13124,7 +13124,8 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
 
 // Test the case where two out of three bids for a bidder timeout due to the
 // perBuyerCumulativeTimeouts, how it interacts with reserved.once, and the
-// corresponding PA metric.
+// corresponding PA metric. This is also an opportunity to test
+// kCumulativeBuyerTime when things time out.
 TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
   interest_group_buyers_ = {{kBidder1}};
   UseMockWorkletService();
@@ -13170,6 +13171,9 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
   bidder_pa_requests.push_back(BuildPrivateAggregationForEventRequest(
       /*bucket=*/101,
       /*value=*/1,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+  bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/102, auction_worklet::mojom::BaseValue::kCumulativeBuyerTime,
       Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
   bidder1_worklet->InvokeGenerateBidCallback(
       /*bid=*/2, /*bid_currency=*/std::nullopt,
@@ -13242,11 +13246,17 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
       testing::UnorderedElementsAre(
           testing::Pair(
               kBidder1,
-              // 66% of bids timed out.
-              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
-                                                                 /*value=*/66),
-                                  BuildPrivateAggregationRequest(/*bucket=*/101,
-                                                                 /*value=*/1))),
+              // 66% of bids timed out. This also means that bidder time is
+              // cumulative timeout + 1000.
+              ElementsAreRequests(
+                  BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                 /*value=*/66),
+                  BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                 /*value=*/1),
+                  BuildPrivateAggregationRequest(
+                      /*bucket=*/102,
+                      /*value=*/kBidder1CumulativeTimeout.InMilliseconds() +
+                          1000))),
           testing::Pair(kSeller,
                         ElementsAreRequests(
                             BuildPrivateAggregationRequest(/*bucket=*/201,
@@ -13264,7 +13274,8 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
 }
 
 // Test the case where the perBuyerCumulativeTimeout expires during the
-// scoreAd() call. The bid should not be timed out.
+// scoreAd() call. The bid should not be timed out. This is also a convenient
+// time to check the measured bidder time.
 TEST_F(AuctionRunnerTest,
        PerBuyerCumulativeTimeoutsTimeoutPassesDuringScoreAd) {
   interest_group_buyers_ = {{kBidder1}};
@@ -13277,7 +13288,8 @@ TEST_F(AuctionRunnerTest,
   ASSERT_TRUE(bidder1_worklet);
 
   // The timeout isn't quite hit.
-  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  base::TimeDelta buyer_time = kBidder1CumulativeTimeout - kTinyTime;
+  task_environment()->FastForwardBy(buyer_time);
   EXPECT_FALSE(auction_complete_);
 
   // Bid generation completes.
@@ -13287,6 +13299,9 @@ TEST_F(AuctionRunnerTest,
       /*bucket=*/100,
       auction_worklet::mojom::BaseValue::
           kPercentInterestGroupsCumulativeTimeout,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+  bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/101, auction_worklet::mojom::BaseValue::kCumulativeBuyerTime,
       Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
   bidder1_worklet->InvokeGenerateBidCallback(
       /*bid=*/2, /*bid_currency=*/std::nullopt,
@@ -13352,7 +13367,10 @@ TEST_F(AuctionRunnerTest,
           kBidder1,
           // 0% of bids timed out.
           ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
-                                                             /*value=*/0)))));
+                                                             /*value=*/0),
+                              BuildPrivateAggregationRequest(
+                                  /*bucket=*/101,
+                                  /*value=*/buyer_time.InMilliseconds())))));
 
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)

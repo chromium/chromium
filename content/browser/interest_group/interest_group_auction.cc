@@ -1534,6 +1534,7 @@ class InterestGroupAuction::BuyerHelper
     // errors. Don't want the timer to trigger anything after there's been a
     // failure already.
     cumulative_buyer_timeout_timer_.Stop();
+    stop_measuring_cumulative_time_ = base::TimeTicks::Now();
   }
 
   // Returns true if this buyer has any interest groups that will potentially
@@ -1562,6 +1563,26 @@ class InterestGroupAuction::BuyerHelper
       buyer_metrics_.percent_igs_cumulative_timeout =
           100.0 * num_bids_affected_by_cumulative_timeout_ /
           buyer_metrics_.participating_interest_group_count;
+    }
+
+    // We compute `cumulative-buyer-time` based on when we start the timer;
+    // `cumulative_buyer_timeout_` and `start_measuring_cumulative_time_` will
+    // be set then.
+    if (cumulative_buyer_timeout_triggered_) {
+      // If the timeout has triggered, its timer must have been started, so
+      // `cumulative_buyer_timeout_` has been set. We report the timeout
+      // value + 1000ms to make it clear in the metrics that a timeout happened.
+      buyer_metrics_.cumulative_buyer_time =
+          *cumulative_buyer_timeout_ + base::Milliseconds(1000);
+    } else if (cumulative_buyer_timeout_.has_value() &&
+               stop_measuring_cumulative_time_ >=
+                   start_measuring_cumulative_time_) {
+      // Here, the timer been started and stopped w/o it firing. We report the
+      // elapsed time capped to the timeout. The cap makes this case numerically
+      // distinct from the timeout case even with somewhat coarse buckets.
+      buyer_metrics_.cumulative_buyer_time = std::min(
+          stop_measuring_cumulative_time_ - start_measuring_cumulative_time_,
+          *cumulative_buyer_timeout_);
     }
   }
 
@@ -2438,16 +2459,17 @@ class InterestGroupAuction::BuyerHelper
 
     // Get cumulative buyer timeout. Note that this must be done after the
     // `config_promises_resolved_` check above.
-    std::optional<base::TimeDelta> cumulative_buyer_timeout =
+    cumulative_buyer_timeout_ =
         PerBuyerCumulativeTimeout(owner_, *auction_->config_);
 
     // Nothing to do if there's no cumulative timeout.
-    if (!cumulative_buyer_timeout) {
+    if (!cumulative_buyer_timeout_) {
       return;
     }
+    start_measuring_cumulative_time_ = base::TimeTicks::Now();
 
     cumulative_buyer_timeout_timer_.Start(
-        FROM_HERE, *cumulative_buyer_timeout,
+        FROM_HERE, *cumulative_buyer_timeout_,
         base::BindOnce(&BuyerHelper::OnTimeout, base::Unretained(this)));
   }
 
@@ -2456,6 +2478,8 @@ class InterestGroupAuction::BuyerHelper
     // If there are no outstanding bids, then the timer should not still be
     // running.
     DCHECK_GT(num_outstanding_bids_, 0);
+
+    cumulative_buyer_timeout_triggered_ = true;
 
     // Assemble a list of interest groups that haven't bid yet - have to do
     // this, since calling OnGenerateBidCompleteInternal() on the last
@@ -2674,6 +2698,10 @@ class InterestGroupAuction::BuyerHelper
   PrivateAggregationParticipantData buyer_metrics_;
   AuctionMetricsRecorder::LatencyAggregator code_fetch_time_;
   int bidder_scripts_timed_out_ = 0;
+  base::TimeTicks start_measuring_cumulative_time_;
+  base::TimeTicks stop_measuring_cumulative_time_;
+  std::optional<base::TimeDelta> cumulative_buyer_timeout_;
+  bool cumulative_buyer_timeout_triggered_ = false;
 
   // True if any interest group owned by `owner_` participating in this auction
   // has `use_biddings_signals_prioritization` set to true. When this is true,

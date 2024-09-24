@@ -54,8 +54,8 @@ struct CONTENT_EXPORT PrivateAggregationParticipantData {
   // Number of interest groups that got selected to make bids (after filtering,
   // capabilities checks, discarding those w/o ads, etc).
   int participating_interest_group_count = 0;
-
   double percent_igs_cumulative_timeout = 0;
+  base::TimeDelta cumulative_buyer_time;
 
   // These metrics are set for both bidders and sellers.
   base::TimeDelta average_code_fetch_time;

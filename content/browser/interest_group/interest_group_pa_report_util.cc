@@ -77,6 +77,8 @@ std::optional<double> GetBaseValue(
     case auction_worklet::mojom::BaseValue::
         kPercentInterestGroupsCumulativeTimeout:
       return participant_data.percent_igs_cumulative_timeout;
+    case auction_worklet::mojom::BaseValue::kCumulativeBuyerTime:
+      return participant_data.cumulative_buyer_time.InMillisecondsF();
   }
   NOTREACHED();
 }

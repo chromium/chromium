@@ -114,6 +114,7 @@ constexpr auto kBaseValueNames =
         {"percent-scripts-timeout", mojom::BaseValue::kPercentScriptsTimeout},
         {"percent-igs-cumulative-timeout",
          mojom::BaseValue::kPercentInterestGroupsCumulativeTimeout},
+        {"cumulative-buyer-time", mojom::BaseValue::kCumulativeBuyerTime},
     });
 
 // Converts base value string to corresponding mojom enum.
