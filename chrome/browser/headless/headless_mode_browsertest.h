@@ -51,14 +51,7 @@ class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
   HeadlessModeBrowserTestWithUserDataDir() = default;
   ~HeadlessModeBrowserTestWithUserDataDir() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  const base::FilePath& user_data_dir() const {
-    return user_data_dir_.GetPath();
-  }
-
- private:
-  base::ScopedTempDir user_data_dir_;
+  base::FilePath GetUserDataDir() const;
 };
 
 enum StartWindowMode {
