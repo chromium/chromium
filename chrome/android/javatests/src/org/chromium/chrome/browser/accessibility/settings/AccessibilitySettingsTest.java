@@ -68,9 +68,12 @@ import java.text.NumberFormat;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM
 })
-@Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
+@Features.EnableFeatures({
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+})
 public class AccessibilitySettingsTest {
     private AccessibilitySettings mAccessibilitySettings;
     private PageZoomPreference mPageZoomPref;
@@ -334,7 +337,7 @@ public class AccessibilitySettingsTest {
         Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
     }
 
-    // Tests related to Page Zoom Enhancements (v2) feature.
+    // Tests related to Page Zoom Enhancements (fast-follow) feature.
 
     @Test
     @SmallTest
@@ -369,13 +372,61 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS})
-    public void testPageZoomPreference_savedZoomLevelsPreference_hiddenWhenDisables() {
+    public void testPageZoomPreference_savedZoomLevelsPreference_hiddenWhenDisabled() {
         Preference zoomInfoPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
         Assert.assertNotNull(zoomInfoPref);
         Assert.assertFalse(
                 "Saved Zoom Levels link should not be visible when disabled",
                 zoomInfoPref.isVisible());
+    }
+
+    // Tests related to Page Zoom V2 feature (OS-level adjustment experiments).
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
+        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2
+    })
+    public void testPageZoomPreference_osLevelAdjustmentPreference_visibleWhenEnabled() {
+        ChromeSwitchPreference osLevelAdjustmentPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
+        Assert.assertNotNull(osLevelAdjustmentPref);
+        Assert.assertNotNull(osLevelAdjustmentPref.getOnPreferenceChangeListener());
+
+        // Current state of the preference (on/off).
+        boolean initialSettingState = osLevelAdjustmentPref.isChecked();
+
+        // First scroll to the "Match Android font size" preference, then click.
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(
+                                        withText(R.string.page_zoom_include_os_adjustment_title))));
+        onView(withText(R.string.page_zoom_include_os_adjustment_title)).perform(click());
+
+        Assert.assertTrue(
+                "OS-Level adjustment setting did not change on click",
+                initialSettingState != osLevelAdjustmentPref.isChecked());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
+    public void testPageZoomPreference_osLevelAdjustmentPreference_hiddenWhenDisabled() {
+        Preference osLevelAdjustmentPref =
+                mAccessibilitySettings.findPreference(
+                        AccessibilitySettings.PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
+        Assert.assertNotNull(osLevelAdjustmentPref);
+        Assert.assertFalse(
+                "OS-Level adjustment settings should not be visible when disabled",
+                osLevelAdjustmentPref.isVisible());
     }
 
     // Tests related to the Smart Zoom feature.

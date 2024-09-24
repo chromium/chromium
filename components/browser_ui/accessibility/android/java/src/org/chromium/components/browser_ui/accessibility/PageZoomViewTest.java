@@ -55,8 +55,9 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @RunWith(BaseJUnit4ClassRunner.class)
 @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
 @DisableFeatures({
-    ContentFeatureList.SMART_ZOOM,
-    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
+    ContentFeatureList.SMART_ZOOM
 })
 @Batch(Batch.PER_CLASS)
 public class PageZoomViewTest {

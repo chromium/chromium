@@ -119,11 +119,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
 
-            // When enhancements (v2) are also enabled, show additional controls.
-            mPageZoomIncludeOSAdjustment.setVisible(
-                    ContentFeatureMap.isEnabled(
-                            ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS));
-
             // When Smart Zoom feature is enabled, set the required delegate.
             if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
                 mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
@@ -132,7 +127,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         } else {
             mPageZoomDefaultZoomPref.setVisible(false);
             mPageZoomAlwaysShowPref.setVisible(false);
-            mPageZoomIncludeOSAdjustment.setVisible(false);
             mTextScalePref.setOnPreferenceChangeListener(this);
             mTextScalePref.updateFontScaleFactors(
                     mFontSizePrefs.getFontScaleFactor(),
@@ -182,8 +176,14 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                                 initialArguments);
                         return true;
                     });
+
+            // When Accessibility Page Zoom v2 is also enabled, show additional controls.
+            mPageZoomIncludeOSAdjustment.setVisible(
+                    ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2));
+            mPageZoomIncludeOSAdjustment.setOnPreferenceChangeListener(this);
         } else {
             zoomInfo.setVisible(false);
+            mPageZoomIncludeOSAdjustment.setVisible(false);
         }
 
         Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
