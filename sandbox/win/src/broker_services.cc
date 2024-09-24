@@ -207,8 +207,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
         }
 
         default: {
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         }
       }
     } else if (THREAD_CTRL_NEW_JOB_TRACKER == key) {
@@ -239,12 +238,11 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
       return 0;
     } else {
       // We have not implemented more commands.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -327,8 +325,7 @@ BrokerServicesBase::~BrokerServicesBase() {
   if (job_thread_.is_valid() &&
       WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.get(), 5000)) {
     // Cannot clean broker services.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 }
 

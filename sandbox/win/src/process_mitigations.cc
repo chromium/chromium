@@ -65,7 +65,7 @@ const ULONG64* GetSupportedMitigations() {
     if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                       ProcessMitigationOptionsMask,
                                       &mitigations, mits_size)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

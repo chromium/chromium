@@ -276,7 +276,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
   void OnChannelConnected(int32_t peer_pid) override {}
 
-  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
+  void OnChannelError() override { NOTREACHED(); }
 
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
@@ -289,7 +289,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
  private:
   // IPC::mojom::TestStructPasser:
-  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED_IN_MIGRATION(); }
+  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED(); }
 
   mojo::AssociatedReceiver<IPC::mojom::TestStructPasser> receiver_{this};
 };
@@ -314,7 +314,7 @@ class ListenerThatExpectsNoError : public IPC::Listener {
     std::move(connect_closure_).Run();
   }
 
-  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
+  void OnChannelError() override { NOTREACHED(); }
 
  private:
   base::OnceClosure connect_closure_;
@@ -797,9 +797,7 @@ class ListenerWithSimpleProxyAssociatedInterface
     std::move(callback).Run(next_expected_value_);
   }
 
-  void RequestValue(RequestValueCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void RequestValue(RequestValueCallback callback) override { NOTREACHED(); }
 
   void RequestQuit(RequestQuitCallback callback) override {
     std::move(callback).Run();
@@ -1176,7 +1174,7 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void BindSync(
       mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient> receiver,
       BindSyncCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetReceiverWithQueuedSyncMessage(
@@ -1810,10 +1808,7 @@ class ListenerThatVerifiesPeerPid : public TestListenerBase {
     RunQuitClosure();
   }
 
-  bool OnMessageReceived(const IPC::Message& message) override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
-  }
+  bool OnMessageReceived(const IPC::Message& message) override { NOTREACHED(); }
 };
 
 // The global PID is only used on systems that use the zygote. Hence, this

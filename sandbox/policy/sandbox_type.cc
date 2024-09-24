@@ -228,11 +228,9 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
   }
 #endif
 
-  CHECK(false)
+  NOTREACHED()
       << "Command line does not provide a valid sandbox configuration: "
       << command_line.GetCommandLineString();
-  NOTREACHED_IN_MIGRATION();
-  return Sandbox::kNoSandbox;
 }
 
 std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
@@ -323,8 +321,7 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
 #endif
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -422,11 +419,9 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kLibassistant;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(false)
+  NOTREACHED()
       << "Command line does not provide a valid sandbox configuration: "
       << sandbox_string;
-  NOTREACHED_IN_MIGRATION();
-  return Sandbox::kUtility;
 }
 
 }  // namespace policy

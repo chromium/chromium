@@ -146,8 +146,7 @@ bool SandboxBPF::SupportsSeccompSandbox(SeccompLevel level) {
     case SeccompLevel::MULTI_THREADED:
       return KernelSupportsSeccompTsync();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level, bool enable_ibpb) {

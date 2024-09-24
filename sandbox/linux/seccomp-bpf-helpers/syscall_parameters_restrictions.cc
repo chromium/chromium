@@ -335,8 +335,7 @@ ResultExpr RestrictKillTarget(pid_t target_pid, int sysno) {
     case __NR_tkill:
       return CrashSIGSYSKill();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CrashSIGSYS();
+      NOTREACHED();
   }
 }
 
@@ -384,8 +383,7 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
           .Default(RewriteSchedSIGSYS());
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CrashSIGSYS();
+      NOTREACHED();
   }
 }
 

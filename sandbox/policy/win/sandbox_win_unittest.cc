@@ -421,8 +421,7 @@ class TestSandboxDelegate : public SandboxDelegate {
   sandbox::mojom::Sandbox GetSandboxType() override { return sandbox_type_; }
   bool DisableDefaultPolicy() override { return false; }
   bool GetAppContainerId(std::string* appcontainer_id) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   MOCK_METHOD1(InitializeConfig, bool(TargetConfig* config));

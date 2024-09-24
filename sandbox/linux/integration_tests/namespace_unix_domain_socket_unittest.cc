@@ -227,7 +227,7 @@ SANDBOX_TEST(UnixDomainSocketTest, DoubleNamespace) {
         CHECK_EQ(pid, sender_pid);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

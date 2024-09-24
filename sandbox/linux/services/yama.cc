@@ -97,8 +97,7 @@ int Yama::GetStatus() {
       return STATUS_KNOWN | STATUS_PRESENT | STATUS_ENFORCING |
              STATUS_STRICT_ENFORCING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
