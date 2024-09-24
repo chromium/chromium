@@ -629,7 +629,7 @@ function testHasSubtleCryptoMethods(subtleCrypto) {
 // https://www.w3.org/TR/WebCryptoAPI/#RsaHashedKeyGenParams-dictionary
 const RSA_GEN_ALGORITHM = {
   name: 'RSASSA-PKCS1-v1_5',
-  modulusLength: 512,
+  modulusLength: 2048,
   // Equivalent to 65537.
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: {
@@ -784,7 +784,7 @@ async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
 async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 1024,
     hash: {
       name: 'SHA-1',
     }
@@ -804,7 +804,7 @@ async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
 async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 1024,
     // Equivalent to 65537.
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   };
@@ -824,7 +824,7 @@ async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
 async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 2048,
     // Different from 65537.
     publicExponent: new Uint8Array([0x01, 0x01]),
   };
