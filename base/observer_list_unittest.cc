@@ -1126,4 +1126,20 @@ TEST_F(CheckedObserverListTest, NotifyWithImplicitlyConvertibleArgs) {
   EXPECT_TRUE(observer.string_seen_);
 }
 
+TEST_F(CheckedObserverListTest, NotifyWithConstRefArg) {
+  struct TestObserverWithConstRefArg : public base::CheckedObserver {
+    void ObserveConstRefArg(const std::unique_ptr<int>&) {}
+  };
+
+  ObserverList<TestObserverWithConstRefArg> list;
+  TestObserverWithConstRefArg observer;
+  list.AddObserver(&observer);
+
+  auto arg = std::make_unique<int>(0);
+  const auto& const_ref_arg = arg;
+
+  // Passing const reference argument should compile.
+  list.Notify(&TestObserverWithConstRefArg::ObserveConstRefArg, const_ref_arg);
+}
+
 }  // namespace base

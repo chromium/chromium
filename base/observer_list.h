@@ -371,8 +371,8 @@ class ObserverList {
   //   observers_.Notify(&Observer::OnFooChanged, x, y);
   //
   // Requirements:
-  //  - The notification method's arguments must be copyable or implicitly
-  //    convertible from each argument type passed to `Notify()`.
+  //  - The observer method's arguments cannot be rvalue (T&&) or non-const
+  //    reference (T&).
   //
   // TODO(crbug.com/40727208): Consider handling return values from observer
   // methods, which are currently ignored.
@@ -381,8 +381,7 @@ class ObserverList {
   // move-only arguments by requiring `args` to be callable objects that
   // returns a value of the desired type.
   template <typename Method, typename... Args>
-    requires std::invocable<Method, ObserverType*, Args...> &&
-             (... && !internal::IsMoveOnly<Args>)
+    requires std::invocable<Method, ObserverType*, const Args&...>
   void Notify(Method method, const Args&... args) {
     for (auto& observer : *this) {
       std::invoke(method, observer, args...);
