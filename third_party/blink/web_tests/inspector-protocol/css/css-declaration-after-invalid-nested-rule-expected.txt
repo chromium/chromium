@@ -7,13 +7,17 @@ address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr
 }
 *#target* {    regular
     width: 42px; @[1:2-1:14]
+    height: 100px; @[2:7-2:21]
     color: green; @[3:2-3:15]
     width: 42px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
     color: green; @[undefined-undefined]
 }
 *#target* {    regular
     z-index: 42; @[7:2-7:14]
+    height: 100px; @[8:7-8:21]
     background-color: green; @[9:2-9:32]
     z-index: 42; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
 }
 

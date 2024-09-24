@@ -95,6 +95,29 @@ class TestCSSParserObserver : public CSSParserObserver {
   unsigned nested_declarations_insert_rule_index = 0;
 };
 
+// Exists solely to access private parts of CSSParserImpl.
+class TestCSSParserImpl {
+  STACK_ALLOCATED();
+
+ public:
+  TestCSSParserImpl()
+      : impl_(MakeGarbageCollected<CSSParserContext>(
+            kHTMLStandardMode,
+            SecureContextMode::kInsecureContext)) {}
+
+  StyleRule* ConsumeStyleRule(CSSParserTokenStream& stream,
+                              CSSNestingType nesting_type,
+                              StyleRule* parent_rule_for_nesting,
+                              bool nested,
+                              bool& invalid_rule_error) {
+    return impl_.ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
+                                  nested, invalid_rule_error);
+  }
+
+ private:
+  CSSParserImpl impl_;
+};
+
 TEST(CSSParserImplTest, AtImportOffsets) {
   test::TaskEnvironment task_environment;
   String sheet_text = "@import 'test.css';";
@@ -1395,6 +1418,71 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeatureDisabledFeature) {
             To<StyleRule>(child_rules[0].Get())->SelectorsText());
   ASSERT_EQ(String("span"),
             To<StyleRule>(child_rules[1].Get())->SelectorsText());
+}
+
+// Test that we behave correctly for rules that look like custom properties.
+//
+// https://drafts.csswg.org/css-syntax/#consume-qualified-rule
+
+TEST(CSSParserImplTest, CustomPropertyAmbiguityTopLevel) {
+  test::TaskEnvironment task_environment;
+
+  String text = "--x:hover { } foo; bar";
+  CSSParserTokenStream stream(text);
+
+  bool invalid_rule_error = false;
+
+  TestCSSParserImpl parser;
+  const StyleRule* rule = parser.ConsumeStyleRule(
+      stream, CSSNestingType::kNone, /* parent_rule_for_nesting */ nullptr,
+      /* nested */ false, invalid_rule_error);
+
+  // "If nested is false, consume a block from input, and return nothing."
+  EXPECT_EQ(nullptr, rule);
+  EXPECT_FALSE(invalid_rule_error);
+  EXPECT_EQ(" foo; bar", stream.RemainingText());
+}
+
+TEST(CSSParserImplTest, CustomPropertyAmbiguityNested) {
+  test::TaskEnvironment task_environment;
+
+  String text = "--x:hover { } foo; bar";
+  CSSParserTokenStream stream(text);
+
+  bool invalid_rule_error = false;
+
+  TestCSSParserImpl parser;
+  const StyleRule* rule = parser.ConsumeStyleRule(
+      stream, CSSNestingType::kNesting, /* parent_rule_for_nesting */ nullptr,
+      /* nested */ true, invalid_rule_error);
+
+  // "If nested is true, consume the remnants of a bad declaration from input,
+  //  with nested set to true, and return nothing."
+  EXPECT_EQ(nullptr, rule);
+  EXPECT_FALSE(invalid_rule_error);
+  // "Consume the remnants of a bad declaration" should consume everything
+  // until the next semicolon, but we leave that to the caller.
+  EXPECT_EQ("{ } foo; bar", stream.RemainingText());
+}
+
+// https://drafts.csswg.org/css-syntax/#invalid-rule-error
+
+TEST(CSSParserImplTest, InvalidRuleError) {
+  test::TaskEnvironment task_environment;
+
+  String text = "<<::any-invalid-selector::>> { } foo; bar";
+  CSSParserTokenStream stream(text);
+
+  bool invalid_rule_error = false;
+
+  TestCSSParserImpl parser;
+  const StyleRule* rule = parser.ConsumeStyleRule(
+      stream, CSSNestingType::kNone, /* parent_rule_for_nesting */ nullptr,
+      /* nested */ false, invalid_rule_error);
+
+  EXPECT_EQ(nullptr, rule);
+  EXPECT_TRUE(invalid_rule_error);
+  EXPECT_EQ(" foo; bar", stream.RemainingText());
 }
 
 }  // namespace blink

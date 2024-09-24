@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "css_at_rule_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -178,6 +179,8 @@ class CORE_EXPORT CSSParserImpl {
   CSSParserMode GetMode() const;
 
  private:
+  friend class TestCSSParserImpl;
+
   enum RuleListType {
     kTopLevelRuleList,
     kRegularRuleList,
@@ -259,10 +262,21 @@ class CORE_EXPORT CSSParserImpl {
       std::unique_ptr<Vector<KeyframeOffset>> key_list,
       const RangeOffset& prelude_offset,
       CSSParserTokenStream& block);
+
+  // https://drafts.csswg.org/css-syntax/#consume-a-qualified-rule
+  //
+  // - CSSNestingType determines which implicit selector to insert for relative
+  //   selectors ('&' for kNesting, and ':scope' for kScope).
+  // - `parent_rule_for_nesting` determines what '&' points to.
+  // - `nested` refers to the "nested" flag referenced by the linked
+  //    parser algorithm.
+  // - `invalid_rule_error` (output parameter) is set when the selector list
+  //   didn't parse, but we have a valid rule otherwise.
   StyleRule* ConsumeStyleRule(CSSParserTokenStream&,
                               CSSNestingType,
                               StyleRule* parent_rule_for_nesting,
-                              bool semicolon_aborts_nested_selector);
+                              bool nested,
+                              bool& invalid_rule_error);
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream);
 
@@ -287,7 +301,8 @@ class CORE_EXPORT CSSParserImpl {
                                    StyleRule::RuleType parent_rule_type,
                                    CSSParserTokenStream& stream,
                                    CSSNestingType,
-                                   StyleRule* parent_rule_for_nesting);
+                                   StyleRule* parent_rule_for_nesting,
+                                   bool& invalid_rule_error);
 
   // Returns true if a declaration was parsed and added to parsed_properties_,
   // and false otherwise.
