@@ -173,7 +173,13 @@ public class BatchUploadCardPreference extends Preference
     }
 
     private void setupBatchUploadCardView(View card) {
-        if (mLocalDataDescriptionsMap == null) {
+        // It does not make sense to set the card text when there are no local data. An early return
+        // here would also avoid showing the card with a wrong text before it hides.
+        if (mLocalDataDescriptionsMap == null
+                || mLocalDataDescriptionsMap.values().stream()
+                                .map(LocalDataDescription::itemCount)
+                                .reduce(0, Integer::sum)
+                        == 0) {
             return;
         }
 
