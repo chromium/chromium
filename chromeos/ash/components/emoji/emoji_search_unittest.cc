@@ -14,9 +14,9 @@
 namespace emoji {
 namespace {
 
-using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::FieldsAre;
+using ::testing::FloatNear;
 using ::testing::Gt;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -560,8 +560,8 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
   EmojiSearchResult result = search.SearchEmoji(u"grinning face", {{"en"}});
 
   EXPECT_THAT(result.emojis,
-              ElementsAre(FieldsAre(DoubleNear(0.0029, 0.00005), "😀"),
-                          FieldsAre(DoubleNear(0.0021, 0.00005), "😀a")));
+              ElementsAre(FieldsAre(FloatNear(0.0029f, 0.00005f), "😀"),
+                          FieldsAre(FloatNear(0.0021f, 0.00005f), "😀a")));
   EXPECT_THAT(result.symbols, IsEmpty());
   EXPECT_THAT(result.emoticons, IsEmpty());
 }

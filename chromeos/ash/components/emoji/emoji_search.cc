@@ -55,15 +55,15 @@ struct EmojiScore {
   // Scores are compared by the language score first (the higher the better).
   // The relevance score is only used when the language scores are equal.
   int language_score;
-  double relevance_score;
+  float relevance_score;
 
   auto operator<=>(const EmojiScore& other) const = default;
 };
 
 // Map from keyword -> sum of position weightings
-std::map<std::u16string, double, std::less<>> CombineSearchTerms(
+std::map<std::u16string, float, std::less<>> CombineSearchTerms(
     base::span<const std::string_view> long_search_terms) {
-  std::map<std::u16string, double, std::less<>> ret;
+  std::map<std::u16string, float, std::less<>> ret;
   for (std::string_view long_string : long_search_terms) {
     std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
         long_string, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -114,7 +114,7 @@ void AddDataFromFileToMap(
       for (const auto& search_term : CombineSearchTerms(search_terms)) {
         // Keywords have less weighting (0.25)
         map[search_term.first].push_back(
-            EmojiSearchEntry{.weighting = 0.25 * search_term.second,
+            EmojiSearchEntry{.weighting = 0.25f * search_term.second,
                              .emoji_string = *emoji_string});
       }
       const std::string* name = base->FindString("name");
@@ -122,7 +122,7 @@ void AddDataFromFileToMap(
         for (const auto& search_term : CombineSearchTerms({{*name}})) {
           map[search_term.first].push_back(
               // Name has full weighting (1.0)
-              EmojiSearchEntry{.weighting = 1 * search_term.second,
+              EmojiSearchEntry{.weighting = 1.0f * search_term.second,
                                .emoji_string = *emoji_string});
         }
         names.emplace(*emoji_string, *name);
@@ -141,7 +141,7 @@ std::map<std::string_view, EmojiScore> GetResultsFromMap(
     for (auto [matches, end] = map.equal_range(PrefixMatcher{lowercase_word});
          matches != end; ++matches) {
       for (const auto& match : matches->second) {
-        double previous_score;
+        float previous_score;
         if (scored_emoji.empty()) {
           // First word.
           previous_score = 1;
