@@ -56,6 +56,15 @@ constexpr char kSparkyHashKey[] =
     "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
     "\x44\x77";
 
+// The hash value for the secret key of the Scanner feature update.
+constexpr std::string_view kScannerUpdateHashKey(
+    "\xF0\xC9\xFD\x45\x31\x92\x95\xAC\xBB\xD8\xD4\xB3\x5F\xF8\x98\x3B\x3B\x4F"
+    "\x02\xF1",
+    base::kSHA1Length);
+
+// Whether checking the Scanner update secret key is ignored.
+bool g_ignore_scanner_update_secret_key = false;
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -1548,6 +1557,30 @@ std::optional<std::string> ObtainSparkyServerUrl() {
             kSparkyServerUrl));
   }
   return std::nullopt;
+}
+
+bool IsScannerUpdateSecretKeyMatched() {
+  if (g_ignore_scanner_update_secret_key) {
+    return true;
+  }
+
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --scanner-update-key="INSERT KEY HERE" --enable-features=ScannerUpdate
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kScannerUpdateKey));
+
+  const bool scanner_key_matched = (provided_key_hash == kScannerUpdateHashKey);
+  if (!scanner_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return scanner_key_matched;
+}
+
+base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest() {
+  return {&g_ignore_scanner_update_secret_key, true};
 }
 
 }  // namespace ash::switches

@@ -556,6 +556,12 @@ bool IsModifierSplitSecretKeyMatched();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 base::AutoReset<bool> SetIgnoreModifierSplitSecretKeyForTest();
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsScannerUpdateSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest();
+
 }  // namespace ash::switches
 
 #endif  // ASH_CONSTANTS_ASH_SWITCHES_H_
