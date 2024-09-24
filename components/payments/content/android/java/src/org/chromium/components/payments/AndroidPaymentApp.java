@@ -276,21 +276,35 @@ public class AndroidPaymentApp extends PaymentApp
     }
 
     private static String buildReadyToPayDebugInfoString(
-            String serviceName, String packageName, Map<String, PaymentMethodData> methodDataMap) {
+            String serviceName,
+            String packageName,
+            String origin,
+            String iframeOrigin,
+            Map<String, PaymentMethodData> methodDataMap) {
         StringBuilder sb = new StringBuilder();
         sb.append("IS_READY_TO_PAY sent to ");
         sb.append(serviceName);
         sb.append(" in ");
         sb.append(packageName);
-        sb.append(" with [");
+        sb.append(" with {\"topLevelOrigin\": \"");
+        sb.append(origin);
+        sb.append("\", \"paymentRequestOrigin\": \"");
+        sb.append(iframeOrigin);
+        sb.append("\", \"methodNames\": [");
+        for (String methodName : methodDataMap.keySet()) {
+            sb.append("\"");
+            sb.append(methodName);
+            sb.append("\"");
+        }
+        sb.append("], \"methodData\": [");
         for (Map.Entry<String, PaymentMethodData> entry : methodDataMap.entrySet()) {
-            sb.append("{");
+            sb.append("{\"");
             sb.append(entry.getKey());
-            sb.append(": ");
+            sb.append("\": ");
             sb.append(entry.getValue().stringifiedData);
             sb.append("}");
         }
-        sb.append("]");
+        sb.append("]}");
         return sb.toString();
     }
 
@@ -318,7 +332,11 @@ public class AndroidPaymentApp extends PaymentApp
         if (mShowReadyToPayDebugInfo) {
             mLauncher.showReadyToPayDebugInfo(
                     buildReadyToPayDebugInfoString(
-                            mIsReadyToPayServiceName, mPackageName, methodDataMap));
+                            mIsReadyToPayServiceName,
+                            mPackageName,
+                            origin,
+                            iframeOrigin,
+                            methodDataMap));
         }
 
         Intent isReadyToPayIntent =

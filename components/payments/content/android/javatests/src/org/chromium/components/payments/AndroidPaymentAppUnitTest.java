@@ -13,11 +13,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -38,6 +40,7 @@ import java.util.Map;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AndroidPaymentApp.Launcher mLauncherMock;
 
     private String mErrorMessage;
@@ -51,7 +54,6 @@ public class AndroidPaymentAppUnitTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        MockitoAnnotations.initMocks(this);
         // Reset test results.
         mErrorMessage = null;
         mPaymentMethodName = null;
@@ -82,7 +84,11 @@ public class AndroidPaymentAppUnitTest {
                 .showReadyToPayDebugInfo(
                         Mockito.eq(
                                 "IS_READY_TO_PAY sent to com.company.app.IsReadyToPayService in"
-                                    + " com.company.app with [{https://company.com/pay: null}]"));
+                                        + " com.company.app with {\"topLevelOrigin\":"
+                                        + " \"https://merchant.com\", \"paymentRequestOrigin\":"
+                                        + " \"https://psp.com\", \"methodNames\":"
+                                        + " [\"https://company.com/pay\"], \"methodData\":"
+                                        + " [{\"https://company.com/pay\": null}]}"));
     }
 
     @SmallTest
