@@ -71,9 +71,6 @@ namespace {
 
 DesksClient* g_desks_client_instance = nullptr;
 
-// Used to generate unique IDs for desk template launches.
-int32_t g_launch_id = 0;
-
 // Timeout time used in LaunchPerformanceTracker.
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
 
@@ -552,11 +549,10 @@ DesksClient::GetAllDesks() {
 void DesksClient::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template) {
   DCHECK(desk_template);
-  DCHECK_EQ(desk_template->launch_id(), 0);
 
   // Generate a unique ID for this launch. It is used to tell different template
   // launches apart.
-  desk_template->set_launch_id(++g_launch_id);
+  const int32_t launch_id = DesksTemplatesAppLaunchHandler::GetNextLaunchId();
 
   app_restore::RestoreData* restore_data =
       desk_template->mutable_desk_restore_data();
@@ -584,16 +580,16 @@ void DesksClient::LaunchAppsFromTemplate(
           desk_template->uuid(), this);
 
   DCHECK(active_profile_);
-  const int32_t launch_id = desk_template->launch_id();
 
   auto& handler = app_launch_handlers_[launch_id];
   // Some tests reach into this class and install a handler ahead of time. In
   // all other cases, we create a handler for the launch here.
   if (!handler) {
-    handler = std::make_unique<DesksTemplatesAppLaunchHandler>(active_profile_);
+    handler = std::make_unique<DesksTemplatesAppLaunchHandler>(
+        active_profile_, DesksTemplatesAppLaunchHandler::Type::kTemplate);
   }
 
-  handler->LaunchTemplate(*desk_template);
+  handler->LaunchTemplate(*desk_template, launch_id);
 
   // Install a timer that will clear the launch handler after a given duration.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

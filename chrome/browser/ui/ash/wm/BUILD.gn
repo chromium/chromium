@@ -22,6 +22,9 @@ static_library("wm") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/desks",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//content/public/browser",
   ]
 }
@@ -44,6 +47,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/app_restore:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/birch:test_support",

@@ -408,7 +408,9 @@ class MockDesksTemplatesAppLaunchHandler
     : public DesksTemplatesAppLaunchHandler {
  public:
   explicit MockDesksTemplatesAppLaunchHandler(Profile* profile)
-      : DesksTemplatesAppLaunchHandler(profile) {}
+      : DesksTemplatesAppLaunchHandler(
+            profile,
+            DesksTemplatesAppLaunchHandler::Type::kTemplate) {}
   MockDesksTemplatesAppLaunchHandler(
       const MockDesksTemplatesAppLaunchHandler&) = delete;
   MockDesksTemplatesAppLaunchHandler& operator=(

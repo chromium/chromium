@@ -108,9 +108,6 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
     desk_restore_data_ = std::move(restore_data);
   }
 
-  void set_launch_id(int32_t launch_id) { launch_id_ = launch_id; }
-  int32_t launch_id() const { return launch_id_; }
-
   void set_client_cache_guid(std::string client_cache_guid) {
     client_cache_guid_ = client_cache_guid;
   }
@@ -196,10 +193,6 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // If this is an admin template, determines if it should be launched on
   // startup.
   bool should_launch_on_startup_ = false;
-
-  // The id associated with a particular launch of this template. Must be
-  // positive when launching.
-  int32_t launch_id_ = 0;
 
   // The device sync id associated with this desk template. This is only set
   // for templates saved via `DeskSyncBridge`.
