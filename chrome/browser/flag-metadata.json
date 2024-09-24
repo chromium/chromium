@@ -520,7 +520,7 @@
       "dpad@google.com",
       "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 140
   },
   {
     "name": "assistant-iph",
@@ -3728,7 +3728,7 @@
       "dpad@google.com",
       "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-peripheral-notification",
@@ -3736,7 +3736,7 @@
       "dpad@google.com",
       "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-peripherals-logging",
@@ -3913,7 +3913,7 @@
   {
     "name": "enable-search-customizable-shortcuts-in-launcher",
     "owners": [ "xiangdongkong@chromium.org", "cros-peripherals@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-search-resumption-module",
@@ -4342,7 +4342,7 @@
       "michaelcheco@google.com",
       "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {
     "name": "enable-welcome-experience-test-unsupported-devices",
@@ -4793,7 +4793,7 @@
       "//ash/webui/firmware_update_ui/OWNERS",
       "cros-peripherals@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
     {
     "name": "flex-firmware-update",
