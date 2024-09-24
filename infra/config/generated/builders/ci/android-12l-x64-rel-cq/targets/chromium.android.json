@@ -3,7 +3,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--annotation=Restriction=Tablet",
+          "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_rel.chrome_public_test_apk.filter",
@@ -49,7 +49,8 @@
               "caches": "android_32_google_apis_x64_foldable"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"

@@ -2170,7 +2170,7 @@ targets.tests.gtest_test(
         "skia_gold_test",
     ],
     args = [
-        "--annotation=Restriction=Tablet",
+        "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
     ],
     binary = "chrome_public_test_apk",
 )

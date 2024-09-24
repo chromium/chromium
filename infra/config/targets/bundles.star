@@ -50,6 +50,13 @@ targets.bundle(
     targets = [
         "tablet_sensitive_chrome_public_test_apk",
     ],
+    per_test_modifications = {
+        "tablet_sensitive_chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
