@@ -80,9 +80,10 @@ void PushVideoStreamSubscriptionImpl::Activate() {
 }
 
 void PushVideoStreamSubscriptionImpl::Suspend(SuspendCallback callback) {
-  if (status_ != Status::kActive)
+  if (status_ != Status::kActive) {
+    std::move(callback).Run();
     return;
-
+  }
   broadcaster_->SuspendClient(broadcaster_client_id_);
   status_ = Status::kSuspended;
   std::move(callback).Run();
