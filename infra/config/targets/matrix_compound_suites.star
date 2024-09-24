@@ -33,32 +33,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "android_12_emulator_gtests",
-    basic_suites = {
-        "android_ci_only_fieldtrial_webview_tests": None,
-        "android_emulator_specific_chrome_public_tests": None,
-        "android_trichrome_smoke_tests": None,
-        "android_smoke_tests": None,
-        "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
-        "chrome_profile_generator_tests": None,
-        "chromium_gtests": None,
-        "chromium_gtests_for_devices_with_graphical_output": None,
-        "fieldtrial_android_tests": None,
-        "jni_zero_sample_apk_test_suite": None,
-        "linux_flavor_specific_chromium_gtests": None,
-        "minidump_uploader_tests": None,
-        "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
-        "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
-                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
-            ],
-        ),
-        "webview_ui_instrumentation_tests": None,
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "android_12l_emulator_gtests",
     basic_suites = {
         "android_emulator_specific_chrome_public_tests": None,

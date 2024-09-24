@@ -18,6 +18,34 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_12_emulator_gtests",
+    targets = [
+        "android_ci_only_fieldtrial_webview_tests",
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        # Already includes gl_gtests.
+        "android_specific_chromium_gtests",
+        "chrome_profile_generator_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "fieldtrial_android_tests",
+        "jni_zero_sample_apk_test_suite",
+        "linux_flavor_specific_chromium_gtests",
+        "minidump_uploader_tests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_12l_rel_cq_gtests",
     targets = [
         "tablet_sensitive_chrome_public_test_apk",

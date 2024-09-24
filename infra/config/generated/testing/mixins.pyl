@@ -44,24 +44,6 @@
       ],
     },
   },
-  '12-google-atd-x64-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_31_google_atd_x64',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_31_google_atd_x64',
-          'path': '.android_emulator/android_31_google_atd_x64',
-        },
-      ],
-    },
-  },
   '12-x64-emulator': {
     'description': 'Run with android_31_google_apis_x64',
     'args': [

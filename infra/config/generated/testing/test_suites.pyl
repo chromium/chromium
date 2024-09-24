@@ -6457,29 +6457,6 @@
       'webview_ui_instrumentation_tests': {},
     },
 
-    'android_12_emulator_gtests': {
-      'android_ci_only_fieldtrial_webview_tests': {},
-      'android_emulator_specific_chrome_public_tests': {},
-      'android_smoke_tests': {},
-      'android_specific_chromium_gtests': {},
-      'android_trichrome_smoke_tests': {},
-      'chrome_profile_generator_tests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'fieldtrial_android_tests': {},
-      'jni_zero_sample_apk_test_suite': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'minidump_uploader_tests': {},
-      'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests_suite': {
-        'variants': [
-          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
-          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
-        ],
-      },
-      'webview_ui_instrumentation_tests': {},
-    },
-
     'android_12l_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
       'android_smoke_tests': {},

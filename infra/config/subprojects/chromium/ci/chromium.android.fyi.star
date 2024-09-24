@@ -4,11 +4,12 @@
 """Definitions of builders in the chromium.android.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -24,6 +25,10 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+targets.builder_defaults.set(
+    mixins = ["chromium-tester-service-account"],
 )
 
 consoles.console_view(
@@ -267,6 +272,21 @@ ci.builder(
             config = "x64_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_12_emulator_gtests",
+        ],
+        mixins = [
+            "12-google-atd-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",

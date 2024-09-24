@@ -48,6 +48,7 @@ targets.mixin(
 
 targets.mixin(
     name = "12-google-atd-x64-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
     ],
