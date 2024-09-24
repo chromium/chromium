@@ -119,9 +119,30 @@ public abstract class Station extends ConditionalState {
     public <F extends Facility<?>> F enterFacilitySync(
             F facility, TransitionOptions options, Trigger trigger) {
         registerFacility(facility);
-        FacilityCheckIn checkIn = new FacilityCheckIn(facility, options, trigger);
+        FacilityCheckIn checkIn = new FacilityCheckIn(List.of(facility), options, trigger);
         checkIn.transitionSync();
         return facility;
+    }
+
+    /**
+     * Starts a transition into multiple {@link Facility}s, runs the transition |trigger| and blocks
+     * until the facilities are considered ACTIVE (enter Conditions are fulfilled).
+     *
+     * @param facilities the {@link Facility}s to enter.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     */
+    public void enterFacilitiesSync(List<Facility<?>> facilities, Trigger trigger) {
+        enterFacilitiesSync(facilities, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #enterFacilitiesSync(List, Trigger)} with extra TransitionOptions. */
+    public void enterFacilitiesSync(
+            List<Facility<?>> facilities, TransitionOptions options, Trigger trigger) {
+        for (Facility<?> f : facilities) {
+            registerFacility(f);
+        }
+        FacilityCheckIn checkIn = new FacilityCheckIn(facilities, options, trigger);
+        checkIn.transitionSync();
     }
 
     /**

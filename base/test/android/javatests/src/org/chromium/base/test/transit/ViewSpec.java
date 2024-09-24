@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
 
@@ -20,6 +18,7 @@ import androidx.test.espresso.action.ViewActions;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.base.test.util.ViewPrinter;
 
 /** A spec to generate ViewElements representing a view characteristic of a ConditionalState. */
@@ -65,8 +64,7 @@ public class ViewSpec {
 
     /** Start an Espresso interaction with a displayed View that matches this ViewSpec's Matcher. */
     public ViewInteraction onView() {
-        return Espresso.onView(
-                allOf(mViewMatcher, isDisplayingAtLeast(ViewElement.MIN_DISPLAYED_PERCENT)));
+        return Espresso.onView(mViewMatcher);
     }
 
     /** Perform an Espresso ViewAction on a displayed View that matches this ViewSpec's Matcher. */
@@ -77,6 +75,11 @@ public class ViewSpec {
     /** Perform an Espresso click() on a displayed View that matches this ViewSpec's Matcher. */
     public ViewInteraction click() {
         return onView().perform(ViewActions.click());
+    }
+
+    /** Perform an Espresso click() on a View that matches this ViewSpec's Matcher. */
+    public ViewInteraction forgivingClick() {
+        return onView().perform(ForgivingClickAction.forgivingClick());
     }
 
     /**

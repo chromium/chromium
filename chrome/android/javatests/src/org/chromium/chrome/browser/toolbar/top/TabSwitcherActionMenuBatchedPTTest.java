@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -32,6 +33,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Instrumentation tests for tab switcher long-press menu popup.
@@ -41,6 +43,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@ImportantFormFactors(DeviceFormFactor.TABLET)
 public class TabSwitcherActionMenuBatchedPTTest {
 
     @Rule

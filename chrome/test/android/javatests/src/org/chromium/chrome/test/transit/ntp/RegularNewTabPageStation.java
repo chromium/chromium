@@ -8,10 +8,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import android.util.Pair;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.PageStation;
 
 import java.util.List;
@@ -38,6 +43,16 @@ public class RegularNewTabPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
+        elements.declareElementFactory(
+                mActivityElement,
+                delayedElements -> {
+                    if (mActivityElement.get().isTablet()) {
+                        delayedElements.declareView(URL_BAR);
+                    } else {
+                        delayedElements.declareNoView(URL_BAR);
+                    }
+                });
+
         elements.declareView(SEARCH_LOGO);
         elements.declareView(SEARCH_BOX);
         elements.declareView(MOST_VISITED_TILES_CONTAINER);
@@ -60,5 +75,15 @@ public class RegularNewTabPageStation extends PageStation {
     public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
         return enterFacilitySync(new MvtsFacility(siteSuggestions), /* trigger= */ null);
+    }
+
+    /** Click the URL bar to enter the Omnibox. */
+    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
+            FakeOmniboxSuggestions fakeSuggestions) {
+        OmniboxFacility omniboxFacility =
+                new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility(mActivityElement);
+        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), SEARCH_BOX::click);
+        return Pair.create(omniboxFacility, softKeyboard);
     }
 }

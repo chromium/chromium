@@ -147,6 +147,7 @@ public class PageStation extends Station {
     protected final String mExpectedTitle;
 
     public static final ViewSpec HOME_BUTTON = viewSpec(withId(R.id.home_button));
+    public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
     public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
     public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
 
