@@ -542,6 +542,10 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name,
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
 }
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {

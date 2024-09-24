@@ -105,6 +105,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         subtitleLink = 'https://chromewebstore.google.com/category/extensions';
         break;
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
         headerVar = 'mv2DeprecationPanelDisabledHeader';
         subtitleVar = 'mv2DeprecationPanelDisabledSubtitle';
         subtitleLink = 'https://support.google.com/chrome_webstore?' +
@@ -141,9 +142,20 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
       extension: chrome.developerPrivate.ExtensionInfo): boolean {
     // Button is only visible for the disabled stage iff extension doesn't need
     // to remain installed.
+    // TODO(crbug.com/339061151): Button should also be visible for the
+    // unsupported stage.
     return this.mv2ExperimentStage ===
         Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
         !extension.mustRemainInstalled;
+  }
+
+  /**
+   * Returns whether the extension's action menu button should be displayed.
+   */
+  private showActionMenu_(): boolean {
+    // TODO(crbug.com/339061151): Action menu should be visible for unsupported
+    // stage if there is a recommendationsUrl for the extension.
+    return this.mv2ExperimentStage !== Mv2ExperimentStage.UNSUPPORTED;
   }
 
   /**
@@ -153,6 +165,8 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   private showExtensionFindAlternativeAction_(): boolean {
     // Button is only visible for the disabled stage iff extension has a
     // recommendations url.
+    // TODO(crbug.com/339061151): Action should also be visible for the
+    // unsupported stage.
     return this.mv2ExperimentStage ===
         Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
         this.extensionWithActionMenuOpened_ &&
@@ -218,6 +232,10 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
       case Mv2ExperimentStage.WARNING:
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Disabled.Dismissed');
+        break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Unsupported.Dismissed');
         break;
     }
 
@@ -308,6 +326,9 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Disabled.DismissedForExtension');
         break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        // TODO(crbug.com/339061151): Handle button for this stage.
+        assertNotReached();
     }
 
     this.$.actionMenu.close();

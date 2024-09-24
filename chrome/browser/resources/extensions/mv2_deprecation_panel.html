@@ -66,7 +66,8 @@
               class="icon-more-vert header-aligned-button"
               on-click="onExtensionActionMenuClick_"
               title="$i18n{moreOptions}"
-              aria-label="[[getActionMenuButtonLabelFor_(item.name)]]">
+              aria-label="[[getActionMenuButtonLabelFor_(item.name)]]"
+              hidden$="[[!showActionMenu_(mv2ExperimentStage)]]">
           </cr-icon-button>
         </div>
       </div>

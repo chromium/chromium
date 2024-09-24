@@ -337,6 +337,51 @@ suite('ExtensionItemListTest', function() {
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
 
+  test('ManifestV2DeprecationPanel_Unsupported', async function() {
+    // Panel is hidden for experiment on stage 3 (unsupported) when
+    // it has no extensions affected by the MV2 deprecation.
+    loadTimeData.overrideValues({MV2ExperimentStage: 3});
+    setupElement();
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+
+    // Panel is hidden for experiment on stage 3 (unsupported) when extension is
+    // affected by the MV2 deprecation but it's not disabled due to unsupported
+    // manifest version.
+    itemList.set('extensions.0.isAffectedByMV2Deprecation', true);
+    itemList.set(
+        'extensions.0.disableReasons.unsupportedManifestVersion', false);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+
+    // Panel is visible for experiment on stage 3 (unsupported) when extension
+    // is affected by the MV2 deprecation and extension is disabled due to
+    // unsupported manifest version.
+    itemList.set(
+        'extensions.0.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    const mv2DeprecationPanel =
+        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+    assertTrue(!!mv2DeprecationPanel);
+    assertEquals(1, mv2DeprecationPanel.extensions.length);
+
+    // Panel is visible for experiment on stage 3 (unsupported) and has multiple
+    // extensions affected by the MV2 deprecation that are disabled due to
+    // unsupported manifest version.
+    itemList.set('extensions.1.isAffectedByMV2Deprecation', true);
+    itemList.set(
+        'extensions.1.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    assertEquals(2, mv2DeprecationPanel.extensions.length);
+
+    // Panel is hidden if notice has been dismissed for this stage.
+    itemList.set('isMv2DeprecationNoticeDismissed', true);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+  });
+
   test('ManifestV2DeprecationPanel_TitleVisibility', function() {
     // Enable feature for both panels (mv2 panel is enabled for stage 1). Their
     // visibility will be determined whether they have extensions to show.

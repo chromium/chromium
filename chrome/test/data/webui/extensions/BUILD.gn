@@ -33,6 +33,7 @@ build_webui_tests("build") {
     "manager_unit_test_with_activity_log_flag.ts",
     "mv2_deprecation_panel_warning_test.ts",
     "mv2_deprecation_panel_disabled_test.ts",
+    "mv2_deprecation_panel_unsupported_test.ts",
     "navigation_helper_test.ts",
     "options_dialog_test.ts",
     "pack_dialog_test.ts",

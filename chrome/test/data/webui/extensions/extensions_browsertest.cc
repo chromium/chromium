@@ -64,6 +64,12 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
   RunTest("extensions/mv2_deprecation_panel_disabled_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
+                       ExtensionsMV2DeprecationPanelUnsupportedStage) {
+  RunTest("extensions/mv2_deprecation_panel_unsupported_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SafetyCheckReviewPanel) {
   RunTest("extensions/review_panel_test.js", "mocha.run()");
 }
@@ -368,6 +374,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        ManifestV2DeprecationPanel_DisableWithReEnable) {
   RunTestCase("ManifestV2DeprecationPanel_DisableWithReEnable");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       ManifestV2DeprecationPanel_Unsupported) {
+  RunTestCase("ManifestV2DeprecationPanel_Unsupported");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
