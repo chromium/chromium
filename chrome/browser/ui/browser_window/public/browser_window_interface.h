@@ -26,6 +26,10 @@ class WebView;
 class View;
 }  // namespace views
 
+namespace web_app {
+class AppBrowserController;
+}  // namespace web_app
+
 namespace web_modal {
 class WebContentsModalDialogHost;
 }  // namespace web_modal
@@ -172,6 +176,8 @@ class BrowserWindowInterface : public content::PageNavigator {
   // user education. The remainder of functionality is provided directly by the
   // UserEducationService, which can be retrieved directly from the profile.
   virtual BrowserUserEducationInterface* GetUserEducationInterface() = 0;
+
+  virtual web_app::AppBrowserController* GetAppBrowserController() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

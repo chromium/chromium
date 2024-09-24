@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_ui_state_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -218,9 +219,19 @@ void WebAppTabHelper::InitForTabFeatures(tabs::TabInterface* tab) {
       &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
 }
 
-void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {}
+void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {
+  if (app_id_.has_value()) {
+    provider_->ui_state_manager().NotifyWebAppWindowDidEnterForeground(
+        app_id_.value());
+  }
+}
 
-void WebAppTabHelper::TabWillEnterBackground(tabs::TabInterface* tab) {}
+void WebAppTabHelper::TabWillEnterBackground(tabs::TabInterface* tab) {
+  if (app_id_.has_value()) {
+    provider_->ui_state_manager().NotifyWebAppWindowWillEnterBackground(
+        app_id_.value());
+  }
+}
 
 void WebAppTabHelper::WillDetach(tabs::TabInterface* tab,
                                  tabs::TabInterface::DetachReason reason) {

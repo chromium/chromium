@@ -10,4 +10,16 @@ WebAppUiStateManager::WebAppUiStateManager() = default;
 
 WebAppUiStateManager::~WebAppUiStateManager() = default;
 
+void WebAppUiStateManager::NotifyWebAppWindowDidEnterForeground(
+    const webapps::AppId app_id) {}
+
+void WebAppUiStateManager::NotifyWebAppWindowWillEnterBackground(
+    const webapps::AppId app_id) {}
+
+void WebAppUiStateManager::NotifyWebAppWindowDidBecomeActive(
+    const webapps::AppId app_id) {}
+
+void WebAppUiStateManager::NotifyWebAppWindowDidBecomeInactive(
+    const webapps::AppId app_id) {}
+
 }  // namespace web_app

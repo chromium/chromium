@@ -485,6 +485,7 @@ source_set("web_applications") {
     "//chrome/browser/shortcuts",
     "//chrome/browser/sync:factories",
     "//chrome/browser/task_manager",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
@@ -1204,6 +1205,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "isolated_web_apps/isolated_web_app_interactive_uitest.cc",
     "web_app_notifications_interactive_uitest.cc",
+    "web_app_ui_state_manager_interactive_uitest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

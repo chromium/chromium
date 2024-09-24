@@ -164,6 +164,7 @@ class WebAppProvider : public KeyedService {
 #endif
 
   WebAppUiManager& ui_manager();
+  WebAppUiStateManager& ui_state_manager();
 
   WebAppAudioFocusIdMap& audio_focus_id_map();
 

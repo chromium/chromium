@@ -863,6 +863,7 @@ class Browser : public TabStripModelObserver,
   BrowserActions* GetActions() override;
   Type GetType() const override;
   BrowserUserEducationInterface* GetUserEducationInterface() override;
+  web_app::AppBrowserController* GetAppBrowserController() override;
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();

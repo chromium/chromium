@@ -1184,6 +1184,10 @@ BrowserUserEducationInterface* Browser::GetUserEducationInterface() {
   return window();
 }
 
+web_app::AppBrowserController* Browser::GetAppBrowserController() {
+  return app_controller_.get();
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);

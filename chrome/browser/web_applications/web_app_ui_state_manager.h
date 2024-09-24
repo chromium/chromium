@@ -17,6 +17,14 @@ class WebAppUiStateManager {
   WebAppUiStateManager(const WebAppUiStateManager&) = delete;
   ~WebAppUiStateManager();
 
+  // Events forwarded from WebAppTabHelper
+  void NotifyWebAppWindowDidEnterForeground(const webapps::AppId);
+  void NotifyWebAppWindowWillEnterBackground(const webapps::AppId);
+
+  // Events forwarded from WebAppWindowController
+  void NotifyWebAppWindowDidBecomeActive(const webapps::AppId);
+  void NotifyWebAppWindowDidBecomeInactive(const webapps::AppId);
+
  private:
   struct WebAppUiState {};
   base::flat_map<webapps::AppId, WebAppUiState> ids_;

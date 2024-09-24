@@ -244,6 +244,11 @@ WebAppUiManager& WebAppProvider::ui_manager() {
   return *ui_manager_;
 }
 
+WebAppUiStateManager& WebAppProvider::ui_state_manager() {
+  CheckIsConnected();
+  return *ui_state_manager_;
+}
+
 WebAppAudioFocusIdMap& WebAppProvider::audio_focus_id_map() {
   CheckIsConnected();
   return *audio_focus_id_map_;
