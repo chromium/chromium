@@ -7,7 +7,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 ReconcilingTemplateURLDataHolder::ReconcilingTemplateURLDataHolder(
@@ -52,10 +54,16 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
       base::ranges::find(prepopulated_urls, keyword, &TemplateURLData::keyword);
 
   std::unique_ptr<TemplateURLData> result;
-  // TODO(b/358683018): look directly into kAllEngines for matching entries if
-  // we couldn't find them in country-specific list.
   if (engine_iter != prepopulated_urls.end()) {
     result = std::move(*engine_iter);
+  } else if (switches::kReconcileWithAllKnownEngines.Get()) {
+    auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
+    for (auto engine : all_engines) {
+      if (engine->keyword == keyword) {
+        result = TemplateURLDataFromPrepopulatedEngine(*engine);
+        break;
+      }
+    }
   }
 
   return result;
@@ -72,10 +80,16 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
                                         &TemplateURLData::prepopulate_id);
 
   std::unique_ptr<TemplateURLData> result;
-  // TODO(b/358683018): look directly into kAllEngines for matching entries if
-  // we couldn't find them in country-specific list.
   if (engine_iter != prepopulated_urls.end()) {
     result = std::move(*engine_iter);
+  } else if (switches::kReconcileWithAllKnownEngines.Get()) {
+    auto all_engines = TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
+    for (auto engine : all_engines) {
+      if (engine->id == prepopulate_id) {
+        result = TemplateURLDataFromPrepopulatedEngine(*engine);
+        break;
+      }
+    }
   }
 
   return result;

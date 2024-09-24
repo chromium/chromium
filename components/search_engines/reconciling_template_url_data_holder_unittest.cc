@@ -90,12 +90,33 @@ TEST_F(ReconcilingTemplateURLDataHolderTest,
   ASSERT_EQ(u"duckduckgo.com", engine->keyword());
 }
 
-TEST_F(ReconcilingTemplateURLDataHolderTest,
-       FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines) {
+TEST_F(
+    ReconcilingTemplateURLDataHolderTest,
+    FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines_GlobalReonciliationDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      switches::kTemplateUrlReconciliation,
+      {{switches::kReconcileWithAllKnownEngines.name, "false"}});
+
   auto engine =
       holder_.FindMatchingBuiltInDefinitionsById(/* search.brave.com */ 109);
-  // Currently not implemented.
+
   ASSERT_FALSE(engine);
+}
+
+TEST_F(ReconcilingTemplateURLDataHolderTest,
+       FindMatchingBuiltInDefinitionsById_ValidID_FromPrepopulatedEngines) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      switches::kTemplateUrlReconciliation,
+      {{switches::kReconcileWithAllKnownEngines.name, "true"}});
+
+  auto engine =
+      holder_.FindMatchingBuiltInDefinitionsById(/* search.brave.com */ 109);
+
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(u"search.brave.com", engine->keyword());
+  ASSERT_EQ(109, engine->prepopulate_id);
 }
 
 TEST_F(ReconcilingTemplateURLDataHolderTest,
@@ -116,9 +137,30 @@ TEST_F(
 
 TEST_F(
     ReconcilingTemplateURLDataHolderTest,
-    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines) {
+    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines_GlobalReonciliationDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      switches::kTemplateUrlReconciliation,
+      {{switches::kReconcileWithAllKnownEngines.name, "false"}});
+
   auto engine =
       holder_.FindMatchingBuiltInDefinitionsByKeyword(u"search.brave.com");
-  // Currently not implemented.
+
   ASSERT_FALSE(engine);
+}
+
+TEST_F(
+    ReconcilingTemplateURLDataHolderTest,
+    FindMatchingBuiltInDefinitionsByKeyword_ValidKeyword_FromPrepopulatedEngines) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      switches::kTemplateUrlReconciliation,
+      {{switches::kReconcileWithAllKnownEngines.name, "true"}});
+
+  auto engine =
+      holder_.FindMatchingBuiltInDefinitionsByKeyword(u"search.brave.com");
+
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(u"search.brave.com", engine->keyword());
+  ASSERT_EQ(109, engine->prepopulate_id);
 }

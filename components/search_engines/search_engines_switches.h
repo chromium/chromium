@@ -97,6 +97,12 @@ BASE_DECLARE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kTemplateUrlReconciliation);
 
+// Parameter associated with kTemplateUrlReconciliation flag.
+// When set to <true>, reconciliation is performed with all known Search Engine
+// definitions.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const base::FeatureParam<bool> kReconcileWithAllKnownEngines;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
