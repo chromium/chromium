@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
@@ -159,13 +160,25 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // unified_side_panel_.
   side_panel_coordinator_ =
       std::make_unique<SidePanelCoordinator>(browser_view);
+
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
           browser_view->browser(),
           side_panel_coordinator_->GetWindowRegistry());
+
+  // Memory Saver mode is default off but is available to turn on.
+  // The controller relies on performance manager which isn't initialized in
+  // some unit tests without browser view.
+  if (browser_view->GetIsNormalType()) {
+    memory_saver_opt_in_iph_controller_ =
+        std::make_unique<MemorySaverOptInIPHController>(
+            browser_view->browser());
+  }
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
+  memory_saver_opt_in_iph_controller_.reset();
+
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
   if (side_panel_coordinator_) {

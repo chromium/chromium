@@ -80,7 +80,6 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -1065,10 +1064,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                        weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
-
-  // Memory Saver mode is default off but is available to turn on
-  memory_saver_opt_in_iph_controller_ =
-      std::make_unique<MemorySaverOptInIPHController>(browser_.get());
 
   registrar_.Init(GetProfile()->GetPrefs());
   registrar_.Add(

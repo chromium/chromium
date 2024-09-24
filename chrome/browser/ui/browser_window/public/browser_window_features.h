@@ -13,6 +13,7 @@ class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
+class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
 class TabStripModel;
@@ -158,6 +159,9 @@ class BrowserWindowFeatures {
       mv2_disabled_dialog_controller_;
 
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
+
+  std::unique_ptr<MemorySaverOptInIPHController>
+      memory_saver_opt_in_iph_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
