@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Reason"
-    enum="ComposeRequestReason" expires_after="2025-01-05">
+    enum="ComposeRequestReason" expires_after="2025-03-23">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

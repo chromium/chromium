@@ -351,7 +351,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2025-01-12">
+    enum="DIPSRedirectCategory" expires_after="2025-03-23">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -1024,7 +1024,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStartWithInterruption"
-    units="ms" expires_after="2025-01-19">
+    units="ms" expires_after="2025-03-23">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1242,7 +1242,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
-    enum="Boolean" expires_after="2025-01-12">
+    enum="Boolean" expires_after="2025-03-23">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1253,7 +1253,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationServiceReady"
-    enum="Boolean" expires_after="2025-01-12">
+    enum="Boolean" expires_after="2025-03-23">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Shortcuts.Creation.Result" enum="ShortcutCreatorResult"
-    expires_after="2025-01-12">
+    expires_after="2025-03-23">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Shortcuts.CreationTask.Result"
-    enum="ShortcutCreationTaskResult" expires_after="2025-01-12">
+    enum="ShortcutCreationTaskResult" expires_after="2025-03-23">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

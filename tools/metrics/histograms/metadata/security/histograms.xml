@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
-    enum="JsonParserExtension" expires_after="2025-01-12">
+    enum="JsonParserExtension" expires_after="2025-03-23">
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
