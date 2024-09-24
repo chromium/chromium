@@ -21,8 +21,7 @@ namespace cc {
 // InputPriorityMode in the next 250ms(kInputPriorityDelay) if
 // NotifyInputEvent() is called and exit after the delay. Throttling is
 // disabled in InputPriorityMode despite other conditions.
-// 1. In video conference mode(features::kReducedFrameRateEstimation, enabled by
-// default):
+// 1. In video conference mode:
 // The frame rate will be throttled to half of the default when：
 //   Video conference mode is set and
 //   the last drawn consecutive_frames_with_min_delta_ <

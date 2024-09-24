@@ -106,10 +106,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
 // Enabled 03/2024, kept to run a holdback experiment.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
 
-// Allow CC FrameRateEstimater to reduce the frame rate to half of the default
-// if the condition meets the requirement.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
-
 // Use 4x MSAA (vs 8) on High DPI screens.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
 

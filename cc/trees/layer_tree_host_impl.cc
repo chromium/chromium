@@ -2917,13 +2917,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       frame->damage_reasons.empty();
 
   base::TimeDelta preferred_frame_interval;
-  static const bool feature_allowed =
-      base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);
   constexpr auto kFudgeDelta = base::Milliseconds(1);
   constexpr auto kTwiceOfDefaultInterval =
       viz::BeginFrameArgs::DefaultInterval() * 2;
   constexpr auto kMinDelta = kTwiceOfDefaultInterval - kFudgeDelta;
-  if (feature_allowed && mutator_host_->MainThreadAnimationsCount() == 0 &&
+  if (mutator_host_->MainThreadAnimationsCount() == 0 &&
       !mutator_host_->HasSmilAnimation() &&
       mutator_host_->NeedsTickAnimations() &&
       !frame_rate_estimator_.input_priority_mode() &&
