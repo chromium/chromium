@@ -59,12 +59,19 @@ void FaceGazeBubbleController::Update(const std::u16string& text) {
 
   facegaze_bubble_view_->Update(text);
 
-  // The bubble should be centered at the top of the screen.
-  gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
-  gfx::Size bubble_size = facegaze_bubble_view_->size();
-  int center = (display_size.width() / 2) - (bubble_size.width() / 2);
-  facegaze_bubble_view_->SetAnchorRect(gfx::Rect(center, 0, 1, 1));
+  const gfx::Rect primary_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Size work_area_size = primary_work_area.size();
+  const gfx::Size bubble_size = facegaze_bubble_view_->size();
+
+  // The bubble should be centered at the top of the screen, factoring in other
+  // UI elements such as the ChromeVox panel. Note that the work area may not
+  // always start at (0, 0) so we need to factor in the starting point of the
+  // work area.
+  int center = (work_area_size.width() / 2) - (bubble_size.width() / 2) +
+               primary_work_area.x();
+  int top = primary_work_area.y();
+  facegaze_bubble_view_->SetAnchorRect(gfx::Rect(center, top, 0, 0));
 }
 
 }  // namespace ash

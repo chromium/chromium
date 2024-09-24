@@ -30,7 +30,7 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
     Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
   }
 
-  FaceGazeBubbleController* GetController() const {
+  FaceGazeBubbleController* GetController() {
     return Shell::Get()
         ->accessibility_controller()
         ->GetFaceGazeBubbleControllerForTest();
@@ -40,11 +40,11 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
     GetController()->UpdateBubble(text);
   }
 
-  FaceGazeBubbleView* GetView() const {
+  FaceGazeBubbleView* GetView() {
     return GetController()->facegaze_bubble_view_;
   }
 
-  const std::u16string& GetBubbleText() const {
+  const std::u16string& GetBubbleText() {
     return GetView()->GetTextForTesting();
   }
 
