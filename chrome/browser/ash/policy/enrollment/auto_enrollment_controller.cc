@@ -235,8 +235,6 @@ AutoEnrollmentController::AutoEnrollmentController(
 AutoEnrollmentController::~AutoEnrollmentController() = default;
 
 void AutoEnrollmentController::Start() {
-  LOG(WARNING) << "Starting auto-enrollment controller.";
-
   if (state_.has_value() && IsFinalAutoEnrollmentState(state_.value())) {
     return;
   }
@@ -272,6 +270,7 @@ void AutoEnrollmentController::Start() {
     auto_enrollment_check_type_ = AutoEnrollmentTypeChecker::CheckType::
         kForcedReEnrollmentExplicitlyRequired;
 
+    LOG(WARNING) << "Starting state determination";
     device_management_service_->ScheduleInitialization(0);
     enrollment_state_fetcher_ = enrollment_state_fetcher_factory_.Run(
         base::BindRepeating(&AutoEnrollmentController::UpdateState,
@@ -291,6 +290,7 @@ void AutoEnrollmentController::Start() {
   // `AutoEnrollmentController` could wait for it if requested.
   system_clock_sync_state_ = SystemClockSyncState::kCanWaitForSync;
 
+  LOG(WARNING) << "Starting legacy state determination";
   enrollment_fwmp_helper_->DetermineDevDisableBoot(
       base::BindOnce(&AutoEnrollmentController::OnDevDisableBootDetermined,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -676,7 +676,7 @@ bool AutoEnrollmentController::IsInProgress() const {
   if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
     if (enrollment_state_fetcher_) {
       // If a fetcher has already been created, bail out.
-      LOG(ERROR) << "Enrollment state fetcher is already running.";
+      VLOG(1) << "Enrollment state fetcher is already running.";
       return true;
     }
 
@@ -685,7 +685,7 @@ bool AutoEnrollmentController::IsInProgress() const {
 
   // If a client is being created or already existing, bail out.
   if (client_start_weak_factory_.HasWeakPtrs() || client_) {
-    LOG(ERROR) << "Enrollment state client is already running.";
+    VLOG(1) << "Enrollment state client is already running.";
     return true;
   }
 
@@ -696,7 +696,7 @@ bool AutoEnrollmentController::IsInProgress() const {
   // the timing, or the timer is extended to some other steps, the check will
   // become wrong.
   if (safeguard_timer_.IsRunning()) {
-    LOG(ERROR) << "State determination is already running.";
+    VLOG(1) << "State determination is already running.";
     return true;
   }
 
