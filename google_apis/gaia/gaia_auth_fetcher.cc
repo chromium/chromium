@@ -875,7 +875,7 @@ void GaiaAuthFetcher::OnURLLoadCompleteInternal(net::Error net_error,
   // Some of the GAIA requests perform redirects, which results in the final URL
   // of the fetcher not being the original URL requested.  Therefore use the
   // original URL when determining which OnXXX function to call.
-  GURL url = original_url_;
+  GURL url = std::move(original_url_);
   original_url_ = GURL();
   DispatchFetchedRequest(url, data, net_error, response_code);
 }

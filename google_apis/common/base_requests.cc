@@ -169,7 +169,7 @@ void UrlFetchRequestBase::StartAfterPrepare(
   DCHECK(callback);
   DCHECK(re_authenticate_callback_.is_null());
 
-  const GURL url = GetURL();
+  GURL url = GetURL();
   ApiErrorCode error_code;
   if (IsSuccessfulErrorCode(code))
     error_code = code;
@@ -195,7 +195,7 @@ void UrlFetchRequestBase::StartAfterPrepare(
   DVLOG(1) << "URL: " << url.spec();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = std::move(url);
   request->method = HttpRequestMethodToString(GetRequestType());
   request->load_flags = net::LOAD_DISABLE_CACHE;
   request->credentials_mode = GetOmitCredentialsModeForGaiaRequests();
