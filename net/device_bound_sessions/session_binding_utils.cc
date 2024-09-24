@@ -108,7 +108,8 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey_spki,
-    base::Time timestamp) {
+    base::Time timestamp,
+    std::optional<std::string> authorization) {
   base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
   if (jwk.empty()) {
     DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
@@ -125,6 +126,10 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
           .Set("iat", static_cast<double>(
                           (timestamp - base::Time::UnixEpoch()).InSeconds()))
           .Set("key", std::move(jwk));
+
+  if (authorization.has_value()) {
+    payload.Set("authorization", authorization.value());
+  }
   return CreateHeaderAndPayloadWithCustomPayload(algorithm, /*schema=*/"",
                                                  payload);
 }

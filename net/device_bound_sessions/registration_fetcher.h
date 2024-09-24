@@ -68,6 +68,7 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       std::string challenge,
       const GURL& registration_url,
+      std::optional<std::string> authorization,
       base::OnceCallback<
           void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
           callback);

@@ -93,7 +93,7 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge");
+      "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
@@ -116,7 +116,7 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge");
+      "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
@@ -135,7 +135,7 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge");
+      "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
@@ -156,7 +156,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge");
+      "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 

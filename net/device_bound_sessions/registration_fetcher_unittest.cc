@@ -90,7 +90,8 @@ class RegistrationTest : public TestWithTaskEnvironment {
     }
 
     return RegistrationFetcherParam::CreateInstanceForTesting(
-        *url, CreateAlgArray(), std::string(kChallenge));
+        *url, CreateAlgArray(), std::string(kChallenge),
+        /*authorization=*/std::nullopt);
   }
 
   test_server::EmbeddedTestServer server_;
@@ -767,7 +768,8 @@ TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
       future;
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
-      GURL("https://accounts.example.test.com/Register"), future.GetCallback());
+      GURL("https://accounts.example.test.com/Register"),
+      /*authorization=*/std::nullopt, future.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
 }
@@ -780,7 +782,7 @@ TEST_F(RegistrationTokenHelperTest, CreateFail) {
   RegistrationFetcher::CreateTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
       GURL("https://https://accounts.example.test/Register"),
-      future.GetCallback());
+      /*authorization=*/std::nullopt, future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
 }

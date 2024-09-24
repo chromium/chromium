@@ -20,6 +20,7 @@ namespace {
 constexpr char kRegistrationHeaderName[] = "Sec-Session-Registration";
 constexpr char kChallengeParamKey[] = "challenge";
 constexpr char kPathParamKey[] = "path";
+constexpr char kAuthCodeParamKey[] = "authorization";
 
 constexpr char kES256[] = "ES256";
 constexpr char kRS256[] = "RS256";
@@ -51,10 +52,12 @@ RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 RegistrationFetcherParam::RegistrationFetcherParam(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge)
+    std::string challenge,
+    std::optional<std::string> authorization)
     : registration_endpoint_(std::move(registration_endpoint)),
       supported_algos_(std::move(supported_algos)),
-      challenge_(std::move(challenge)) {}
+      challenge_(std::move(challenge)),
+      authorization_(std::move(authorization)) {}
 
 std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     const GURL& request_url,
@@ -75,16 +78,16 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
 
   GURL registration_endpoint;
   std::string challenge;
-  for (const auto& param : session_registration.params) {
+  std::optional<std::string> authorization;
+  for (const auto& [key, value] : session_registration.params) {
     // The keys for the parameters are unique and must be lower case.
     // Quiche (https://quiche.googlesource.com/quiche), used here,
     // will currently pick the last if there is more than one.
-    // TODO(kristianm): Add authorization parameter as well
-    if (param.first == kPathParamKey) {
-      if (!param.second.is_string()) {
+    if (key == kPathParamKey) {
+      if (!value.is_string()) {
         continue;
       }
-      std::string path = param.second.GetString();
+      std::string path = value.GetString();
       // TODO(kristianm): Update this as same site requirements are solidified
       std::string unescaped = base::UnescapeURLComponent(
           path,
@@ -96,15 +99,12 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
               net::SchemefulSite(request_url)) {
         registration_endpoint = std::move(candidate_endpoint);
       }
-      continue;
+    } else if (key == kChallengeParamKey && value.is_string()) {
+      challenge = value.GetString();
+    } else if (key == kAuthCodeParamKey && value.is_string()) {
+      authorization = value.GetString();
     }
 
-    if (param.first == kChallengeParamKey) {
-      if (!param.second.is_string()) {
-        continue;
-      }
-      challenge = param.second.GetString();
-    }
     // Other params are ignored
   }
 
@@ -112,9 +112,9 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     return std::nullopt;
   }
 
-  return RegistrationFetcherParam(std::move(registration_endpoint),
-                                  std::move(supported_algos),
-                                  std::move(challenge));
+  return RegistrationFetcherParam(
+      std::move(registration_endpoint), std::move(supported_algos),
+      std::move(challenge), std::move(authorization));
 }
 
 std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
@@ -154,10 +154,11 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
 RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge) {
-  return RegistrationFetcherParam(std::move(registration_endpoint),
-                                  std::move(supported_algos),
-                                  std::move(challenge));
+    std::string challenge,
+    std::optional<std::string> authorization) {
+  return RegistrationFetcherParam(
+      std::move(registration_endpoint), std::move(supported_algos),
+      std::move(challenge), std::move(authorization));
 }
 
 }  // namespace net::device_bound_sessions

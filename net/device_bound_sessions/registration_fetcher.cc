@@ -93,6 +93,7 @@ void OnKeyGenerated(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string_view challenge,
     const GURL& registration_url,
+    std::optional<std::string> authorization,
     base::OnceCallback<void(
         std::optional<RegistrationFetcher::RegistrationTokenResult>)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
@@ -101,7 +102,7 @@ void OnKeyGenerated(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  unexportable_keys::UnexportableKeyId key_id = result.value();
+  const unexportable_keys::UnexportableKeyId& key_id = result.value();
 
   auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
   auto expected_public_key =
@@ -114,7 +115,8 @@ void OnKeyGenerated(
   std::optional<std::string> optional_header_and_payload =
       CreateKeyRegistrationHeaderAndPayload(
           challenge, registration_url, expected_algorithm.value(),
-          expected_public_key.value(), base::Time::Now());
+          expected_public_key.value(), base::Time::Now(),
+          std::move(authorization));
 
   if (!optional_header_and_payload.has_value()) {
     std::move(callback).Run(std::nullopt);
@@ -134,13 +136,15 @@ void CreateTokenAsync(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
     const GURL& registration_url,
+    std::optional<std::string> authorization,
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
         callback) {
   unexportable_key_service.GenerateSigningKeySlowlyAsync(
       kAcceptableAlgorithms, kTaskPriority,
       base::BindOnce(&OnKeyGenerated, std::ref(unexportable_key_service),
-                     challenge, registration_url, std::move(callback)));
+                     std::move(challenge), registration_url,
+                     std::move(authorization), std::move(callback)));
 }
 
 class RegistrationFetcherImpl : public URLRequest::Delegate {
@@ -316,6 +320,8 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
 
   GURL registration_endpoint = registration_params.registration_endpoint();
   std::string challenge = registration_params.challenge();
+  std::string authorization =
+      registration_params.authorization().value_or(std::string());
 
   RegistrationFetcherImpl* fetcher =
       new RegistrationFetcherImpl(std::move(registration_params), key_service,
@@ -325,6 +331,7 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
   // after this callback is run, as it controls its own lifetime.
   CreateTokenAsync(
       key_service, std::move(challenge), registration_endpoint,
+      std::move(authorization),
       base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                      base::Unretained(fetcher)));
 }
@@ -342,10 +349,12 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
     const GURL& registration_url,
+    std::optional<std::string> authorization,
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
         callback) {
-  CreateTokenAsync(unexportable_key_service, challenge, registration_url,
+  CreateTokenAsync(unexportable_key_service, std::move(challenge),
+                   registration_url, std::move(authorization),
                    std::move(callback));
 }
 
