@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_DELEGATE_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_DELEGATE_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_
 
 #include <deque>
 
@@ -20,14 +20,11 @@ class HttpRequestHeaders;
 class ProxyResolutionService;
 }  // namespace net
 
-namespace network {
-
-using ip_protection::MaskedDomainListManager;
+namespace ip_protection {
 
 // IpProtectionProxyDelegate is used to support IP protection, by injecting
 // proxies for requests where IP should be protected.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
-    : public net::ProxyDelegate {
+class IpProtectionProxyDelegate : public net::ProxyDelegate {
  public:
   // Both masked_domain_list_manager and ipp_core must be
   // non-null. The masked_domain_list_manager (MaskedDomainList) feature
@@ -87,6 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   base::WeakPtrFactory<IpProtectionProxyDelegate> weak_factory_{this};
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_DELEGATE_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_DELEGATE_H_

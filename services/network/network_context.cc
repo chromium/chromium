@@ -48,6 +48,7 @@
 #include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
 #include "components/ip_protection/common/ip_protection_control_mojo.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
+#include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -106,7 +107,6 @@
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
-#include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
@@ -2547,8 +2547,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     ip_protection_control_mojo =
         std::make_unique<ip_protection::IpProtectionControlMojo>(
             std::move(params_->ip_protection_control), ipp_core.get());
-    builder.set_proxy_delegate(std::make_unique<IpProtectionProxyDelegate>(
-        nspal, std::move(ipp_core)));
+    builder.set_proxy_delegate(
+        std::make_unique<ip_protection::IpProtectionProxyDelegate>(
+            nspal, std::move(ipp_core)));
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {
     builder.set_proxy_delegate(std::make_unique<NetworkServiceProxyDelegate>(

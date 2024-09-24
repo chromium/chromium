@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_proxy_delegate.h"
+#include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 
 #include <map>
 #include <memory>
@@ -40,7 +40,7 @@
 using net::test::IsError;
 using net::test::IsOk;
 
-namespace network {
+namespace ip_protection {
 namespace {
 
 using ::ip_protection::MaskedDomainListManager;
@@ -139,7 +139,7 @@ struct HeadersReceived {
 };
 
 class TestCustomProxyConnectionObserver
-    : public mojom::CustomProxyConnectionObserver {
+    : public network::mojom::CustomProxyConnectionObserver {
  public:
   TestCustomProxyConnectionObserver() = default;
   ~TestCustomProxyConnectionObserver() override = default;
@@ -820,4 +820,4 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
   EXPECT_EQ(result.AllChains(), expected);
 }
 
-}  // namespace network
+}  // namespace ip_protection

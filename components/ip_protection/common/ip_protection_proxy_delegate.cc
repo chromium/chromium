@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_proxy_delegate.h"
+#include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 
 #include <memory>
 
@@ -26,16 +26,9 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
-namespace network {
-
-namespace {
-
-using ip_protection::MaskedDomainListManager;
-
-}  // namespace
+namespace ip_protection {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     MaskedDomainListManager* masked_domain_list_manager,
@@ -314,4 +307,4 @@ net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
   return merged_proxy_list;
 }
 
-}  // namespace network
+}  // namespace ip_protection
