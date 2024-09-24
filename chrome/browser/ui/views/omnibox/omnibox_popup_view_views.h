@@ -75,12 +75,12 @@ class OmniboxPopupViewViews : public views::View,
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
@@ -114,7 +114,7 @@ class OmniboxPopupViewViews : public views::View,
   size_t GetIndexForPoint(const gfx::Point& point);
 
  private:
-  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateAccessibleStates() const;
 
   void UpdateAccessibleActiveDescendantForInvokingView();
 

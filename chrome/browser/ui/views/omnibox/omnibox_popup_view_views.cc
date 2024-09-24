@@ -182,7 +182,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
       views::BoxLayout::Orientation::kVertical));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
-  UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleStates();
   UpdateAccessibleActiveDescendantForInvokingView();
 }
 
@@ -263,8 +263,9 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
         return;
       }
       popup_->CloseAnimated();  // This will eventually delete the popup.
+      popup_->RemoveObserver(this);
       popup_.reset();
-      UpdateExpandedCollapsedAccessibleState();
+      UpdateAccessibleStates();
       // The active descendant should be cleared when the popup closes.
       UpdateAccessibleActiveDescendantForInvokingView();
       FireAXEventsForNewActiveDescendant(nullptr);
@@ -357,7 +358,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     popup_->ShowAnimated();
 
     // Popup is now expanded and first item will be selected.
-    UpdateExpandedCollapsedAccessibleState();
+    UpdateAccessibleStates();
     UpdateAccessibleActiveDescendantForInvokingView();
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
@@ -516,6 +517,15 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
+void OmniboxPopupViewViews::OnWidgetDestroying(views::Widget* widget) {
+  CHECK_EQ(widget, popup_.get());
+  if (popup_) {
+    popup_->RemoveObserver(this);
+    popup_ = nullptr;
+  }
+  UpdateAccessibleStates();
+}
+
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
   int popup_height = 0;
   const auto* autocomplete_controller = controller()->autocomplete_controller();
@@ -614,17 +624,13 @@ void OmniboxPopupViewViews::SetSuggestionGroupVisibility(
   InvalidateLayout();
 }
 
-void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!IsOpen()) {
-    node_data->AddState(ax::mojom::State::kInvisible);
-  }
-}
-
-void OmniboxPopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
+void OmniboxPopupViewViews::UpdateAccessibleStates() const {
   if (IsOpen()) {
     GetViewAccessibility().SetIsExpanded();
+    GetViewAccessibility().SetIsInvisible(false);
   } else {
     GetViewAccessibility().SetIsCollapsed();
+    GetViewAccessibility().SetIsInvisible(true);
   }
 }
 

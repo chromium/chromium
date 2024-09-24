@@ -47,6 +47,7 @@
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -615,6 +616,35 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       popup_node_data_while_open.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(
       popup_node_data_while_open.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(
+      popup_node_data_while_open.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       AccessibilityStatesOnWidgetDestroyed) {
+  // Create a popup for the matches.
+  views::Widget* widget = CreatePopupForTestQuery();
+  views::test::WidgetDestroyedWaiter waiter(widget);
+
+  // Check accessibility of list box while it's open.
+  ui::AXNodeData popup_node_data;
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_EQ(popup_node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(
+      popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
+
+  // Check accessibility of list box while it's closed.
+  widget->Close();
+  waiter.Wait();
+  EXPECT_FALSE(popup_view()->IsOpen());
+  popup_node_data = ui::AXNodeData();
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
