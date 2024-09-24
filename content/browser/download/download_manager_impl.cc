@@ -766,6 +766,7 @@ void DownloadManagerImpl::CreateNewDownloadItemToStart(
   if (delegate_ && info->save_info) {
     info->save_info->needs_obfuscation =
         delegate_->ShouldObfuscateDownload(download);
+    info->save_info->total_bytes = info->total_bytes;
   }
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
   std::move(callback).Run(

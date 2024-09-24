@@ -1,6 +1,8 @@
 include_rules = [
   "+chromeos/crosapi/mojom/download_controller.mojom-forward.h",
   "+chromeos/crosapi/mojom/download_controller.mojom.h",
+  "+components/enterprise/buildflags",
+  "+components/enterprise/obfuscation/core/download_obfuscator.h",
   "+components/keyed_service/core",
   "+components/services/quarantine/public/mojom/quarantine.mojom.h",
   "+crypto",
