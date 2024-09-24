@@ -290,9 +290,6 @@ extern const char kUseMessagesStagingUrlDescription[];
 extern const char kUseCustomMessagesDomainName[];
 extern const char kUseCustomMessagesDomainDescription[];
 
-extern const char kEnableFileBackedBlobFactoryName[];
-extern const char kEnableFileBackedBlobFactoryDescription[];
-
 extern const char kEnableAutoDisableAccessibilityName[];
 extern const char kEnableAutoDisableAccessibilityDescription[];
 

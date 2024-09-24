@@ -10336,11 +10336,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kIOSPromoPaymentBubble)},
 #endif
 
-    {"enable-file-backed-blob-factory",
-     flag_descriptions::kEnableFileBackedBlobFactoryName,
-     flag_descriptions::kEnableFileBackedBlobFactoryDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableFileBackedBlobFactory)},
-
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,

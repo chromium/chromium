@@ -445,14 +445,6 @@ const char kUseCustomMessagesDomainDescription[] =
     "Use a custom URL as part of the \"Messages\" feature under "
     "\"Connected Devices\" settings.";
 
-const char kEnableFileBackedBlobFactoryName[] =
-    "Enable registration of file backed blobs through the "
-    "FileBackedBlobFactory interface";
-const char kEnableFileBackedBlobFactoryDescription[] =
-    "Use the FileBackedBlobFactory interface to register file backed blobs. "
-    "This allows to identify the URL where the blob is uploaded and it enables "
-    "Data Leak Prevention checks for managed users having file restrictions.";
-
 const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
 const char kUseDMSAAForTilesDescription[] =
     "Switches skia to use DMSAA instead of MSAA for tile raster";

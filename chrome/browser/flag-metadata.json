@@ -3229,11 +3229,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-file-backed-blob-factory",
-    "owners": [ "chromeos-dlp@google.com", "accorsi@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-fingerprinting-protection-blocklist",
     "owners": [
       "rizvis@google.com",

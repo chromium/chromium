@@ -336,12 +336,9 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           &RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver,
           base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kEnableFileBackedBlobFactory)) {
-    associated_registry_->AddInterface<blink::mojom::FileBackedBlobFactory>(
-        base::BindRepeating(&RenderFrameHostImpl::BindFileBackedBlobFactory,
-                            base::Unretained(this)));
-  }
+  associated_registry_->AddInterface<blink::mojom::FileBackedBlobFactory>(
+      base::BindRepeating(&RenderFrameHostImpl::BindFileBackedBlobFactory,
+                          base::Unretained(this)));
 
   // Allow embedders to register their binders.
   GetContentClient()
