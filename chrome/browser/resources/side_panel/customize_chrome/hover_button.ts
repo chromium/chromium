@@ -30,11 +30,13 @@ export class HoverButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ariaButtonLabel: {type: String},
       label: {type: String},
       labelDescription: {type: String},
     };
   }
 
+  ariaButtonLabel: string|null = null;
   label: string = '';
   labelDescription: string|null = null;
 
