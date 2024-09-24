@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_FLAGS_IOS_CHROME_FLAG_DESCRIPTIONS_H_
 #define IOS_CHROME_BROWSER_FLAGS_IOS_CHROME_FLAG_DESCRIPTIONS_H_
 
-#include "Availability.h"
-
 #include "base/debug/debugging_buildflags.h"
 
 // Please add names and descriptions in alphabetical order.

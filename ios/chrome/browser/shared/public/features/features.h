@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "Availability.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
