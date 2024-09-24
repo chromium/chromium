@@ -1178,7 +1178,7 @@
     {
       // crbug.com/325309578
       name: "CSSRelativeColorSupportsCurrentcolor",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
