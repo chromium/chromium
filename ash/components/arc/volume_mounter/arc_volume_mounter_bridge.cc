@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -130,7 +131,7 @@ void ArcVolumeMounterBridge::Initialize(Delegate* delegate) {
 // Sends MountEvents of all existing MountPoints in cros-disks.
 void ArcVolumeMounterBridge::SendAllMountEvents() {
   if (!IsReadyToSendMountingEvents()) {
-    DVLOG(1) << "Skipping SendAllMountEvents because it is not ready to send "
+    DVLOG(1) << "Skipped SendAllMountEvents because it is not ready to send "
              << "mounting events to Android";
     return;
   }
@@ -150,8 +151,9 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
                                   OnMountEvent);
 
-  if (!volume_mounter_instance)
+  if (!volume_mounter_instance) {
     return;
+  }
 
   std::string device_label =
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
@@ -172,8 +174,9 @@ bool ArcVolumeMounterBridge::IsVisibleToAndroidApps(
   const base::Value::List& uuid_list =
       pref_service_->GetList(prefs::kArcVisibleExternalStorages);
   for (auto& value : uuid_list) {
-    if (value.is_string() && value.GetString() == uuid)
+    if (value.is_string() && value.GetString() == uuid) {
       return true;
+    }
   }
   return false;
 }
@@ -202,34 +205,35 @@ void ArcVolumeMounterBridge::OnMountEvent(
   // mounted on /media/archive) by allowlisting the removable media mount paths.
   if (!base::StartsWith(mount_info.mount_path, kRemovableMediaMountPathPrefix,
                         base::CompareCase::SENSITIVE)) {
-    DVLOG(1) << "Ignoring mount event for mount_path: "
-             << mount_info.mount_path;
+    DVLOG(1) << "Ignored mount event for mount path '" << mount_info.mount_path
+             << "'";
     return;
   }
   if (error_code != ash::MountError::kSuccess) {
-    DVLOG(1) << "Error " << error_code << "occurs during MountEvent " << event;
+    DVLOG(1) << "Error " << error_code << " occurred during MountEvent "
+             << event;
     return;
   }
 
   // Skip mount events if removable media is forbidden by the policy.
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       pref_service_->GetBoolean(disks::prefs::kExternalStorageDisabled)) {
-    DVLOG(1) << "Ignoring mount event since policy disallows removable media";
+    DVLOG(1) << "Ignored mount event since policy disallows removable media";
     return;
   }
 
   // Skip mount events if removable media access is disabled by a feature.
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       !base::FeatureList::IsEnabled(kExternalStorageAccess)) {
-    DVLOG(1) << "Ignoring mount event since removable media is disabled by "
-                "feature";
+    DVLOG(1)
+        << "Ignored mount event since removable media is disabled by feature";
     return;
   }
 
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       !IsReadyToSendMountingEvents()) {
-    DVLOG(1) << "Skipping OnMountEvent because it is not ready to send "
-             << "mounting events to Android";
+    DVLOG(1) << "Skipped OnMountEvent because it is not ready to send mounting "
+                "events to Android";
     return;
   }
 
@@ -307,8 +311,9 @@ void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
                                   OnMountEvent);
 
-  if (!volume_mounter_instance)
+  if (!volume_mounter_instance) {
     return;
+  }
   volume_mounter_instance->OnMountEvent(
       mojom::MountPointInfo::New(event, source_path, mount_path, fs_uuid,
                                  device_label, device_type, visible));
@@ -400,11 +405,13 @@ void ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints(
         error_name.value() == ash::UpstartClient::kAlreadyStartedError) {
       DVLOG(1) << job_name << " is already running";
     } else {
-      LOG(ERROR) << "Failed to start " << job_name << ": "
-                 << (error_name.has_value() ? error_name.value()
-                                            : "unknown error")
-                 << ": "
-                 << (error_message.has_value() ? error_message.value() : "");
+      LOG(ERROR) << "Failed to start " << job_name
+                 << (error_name.has_value()
+                         ? base::StrCat({": ", error_name.value()})
+                         : "")
+                 << (error_message.has_value()
+                         ? base::StrCat({": ", error_message.value()})
+                         : "");
       std::move(callback).Run(false);
       return;
     }
