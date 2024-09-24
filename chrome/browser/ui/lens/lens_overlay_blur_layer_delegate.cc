@@ -130,7 +130,7 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
 
 void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
     const SkBitmap& bitmap) {
-  if (bitmap.drawsNothing() ||
+  if (bitmap.drawsNothing() || layer_->size().IsEmpty() ||
       AreBitmapsEqual(background_screenshot_, bitmap)) {
     return;
   }
