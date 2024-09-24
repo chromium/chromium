@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -51,13 +50,9 @@ public class PackageUtils {
         return -1;
     }
 
-    // TODO(agrieve): Delete downstream references.
-    public static int getPackageVersion(Context unused, String packageName) {
-        return getPackageVersion(packageName);
-    }
-
     /**
      * Checks if the app has been installed on the system.
+     *
      * @return true if the PackageManager reports that the app is installed, false otherwise.
      * @param packageName Name of the package to check.
      */

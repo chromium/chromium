@@ -10,11 +10,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Interface to get language profile data for device. */
 public interface LanguageProfileDelegate {
-    // TODO(agrieve): Delete once unused internally.
-    default boolean isULPSupported() {
-        return true;
-    }
-
     /**
      * @param accountName Account to get profile or null if the default profile should be returned.
      * @param timeoutInSeconds Seconds to wait before timing out on call to device.

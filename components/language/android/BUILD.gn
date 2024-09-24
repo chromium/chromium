@@ -33,7 +33,6 @@ android_library("java") {
     "java/src/org/chromium/components/language/LanguageProfileController.java",
     "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
     "java/src/org/chromium/components/language/LanguageProfileMetricsLogger.java",
-    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
   ]
 
   deps = [
@@ -43,11 +42,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-}
-
-# TODO(agrieve): Delete once unused internally.
-java_group("ulp_delegate_java") {
-  public_deps = [ ":java" ]
 }
 
 robolectric_library("junit") {
