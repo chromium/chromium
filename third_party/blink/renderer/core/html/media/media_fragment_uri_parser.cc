@@ -87,9 +87,10 @@ double MediaFragmentURIParser::EndTime() {
 }
 
 void MediaFragmentURIParser::ParseFragments() {
-  if (!url_.HasFragmentIdentifier())
+  if (!url_.HasFragmentIdentifier()) {
     return;
-  String fragment_string = url_.FragmentIdentifier();
+  }
+  String fragment_string = url_.FragmentIdentifier().ToString();
   if (fragment_string.empty())
     return;
 

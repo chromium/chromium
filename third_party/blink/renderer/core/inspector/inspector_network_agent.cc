@@ -965,8 +965,9 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
           .setInitialPriority(ResourcePriorityJSON(request.Priority()))
           .setReferrerPolicy(GetReferrerPolicy(request.GetReferrerPolicy()))
           .build();
-  if (url.FragmentIdentifier())
-    result->setUrlFragment("#" + url.FragmentIdentifier());
+  if (url.HasFragmentIdentifier()) {
+    result->setUrlFragment("#" + url.FragmentIdentifier().ToString());
+  }
   if (!data_string.empty())
     result->setPostData(data_string);
   if (data_entries->size())

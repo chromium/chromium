@@ -2476,7 +2476,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     String default_hash;
     if (!init.IsAbsolute() && !init.pathname.has_value() &&
         !init.search.has_value()) {
-      default_hash = base_url.FragmentIdentifier();
+      default_hash = base_url.FragmentIdentifier().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.hash, default_hash);

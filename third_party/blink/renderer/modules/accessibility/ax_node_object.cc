@@ -3345,7 +3345,7 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
     return AXObject::InPageLinkTarget();
   }
 
-  String fragment = link_url.FragmentIdentifier();
+  String fragment = link_url.FragmentIdentifier().ToString();
   TreeScope& tree_scope = anchor->GetTreeScope();
   Node* target = tree_scope.FindAnchor(fragment);
   AXObject* ax_target = AXObjectCache().Get(target);

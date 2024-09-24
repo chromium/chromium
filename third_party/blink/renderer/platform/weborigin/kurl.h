@@ -185,7 +185,8 @@ class PLATFORM_EXPORT KURL {
   StringView LastPathComponent() const LIFETIME_BOUND;
   StringView Query() const LIFETIME_BOUND;
   StringView QueryWithLeadingQuestionMark() const LIFETIME_BOUND;
-  String FragmentIdentifier() const;
+  StringView FragmentIdentifier() const LIFETIME_BOUND;
+  StringView FragmentIdentifierWithLeadingNumberSign() const LIFETIME_BOUND;
   bool HasFragmentIdentifier() const;
 
   StringView BaseAsString() const LIFETIME_BOUND;

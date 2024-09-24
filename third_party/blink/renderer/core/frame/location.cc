@@ -213,7 +213,7 @@ void Location::setHash(v8::Isolate* isolate,
                        const String& hash,
                        ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
-  String old_fragment_identifier = url.FragmentIdentifier();
+  String old_fragment_identifier = url.FragmentIdentifier().ToString();
   String new_fragment_identifier = hash;
   if (hash[0] == '#')
     new_fragment_identifier = hash.Substring(1);
@@ -221,8 +221,10 @@ void Location::setHash(v8::Isolate* isolate,
   // Note that by parsing the URL and *then* comparing fragments, we are
   // comparing fragments post-canonicalization, and so this handles the
   // cases where fragment identifiers are ignored or invalid.
-  if (EqualIgnoringNullity(old_fragment_identifier, url.FragmentIdentifier()))
+  if (EqualIgnoringNullity(old_fragment_identifier,
+                           url.FragmentIdentifier().ToString())) {
     return;
+  }
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
 }

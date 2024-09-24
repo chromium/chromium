@@ -1139,8 +1139,9 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     // within the page that the user wishes to point the recipient to. Canonical URLs generally
     // don't and can't contain this state, so try to match user expectations a little more closely
     // here by splicing the fragment identifier (if there is one) into the shared URL.
-    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
-      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
+    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier()) {
+      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier().ToString());
+    }
   }
   std::move(callback).Run(canon_url.IsNull() ? std::nullopt
                                              : std::make_optional(canon_url));

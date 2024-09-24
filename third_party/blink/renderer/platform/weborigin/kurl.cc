@@ -420,13 +420,24 @@ StringView KURL::User() const {
   return ComponentStringView(parsed_.username);
 }
 
-String KURL::FragmentIdentifier() const {
+StringView KURL::FragmentIdentifier() const {
   // Empty but present refs ("foo.com/bar#") should result in the empty
-  // string, which componentString will produce. Nonexistent refs
+  // string, which ComponentStringView will produce. Nonexistent refs
   // should be the null string.
-  if (!parsed_.ref.is_valid())
-    return String();
-  return ComponentString(parsed_.ref);
+  if (!parsed_.ref.is_valid()) {
+    return StringView();
+  }
+  return ComponentStringView(parsed_.ref);
+}
+
+StringView KURL::FragmentIdentifierWithLeadingNumberSign() const {
+  if (!parsed_.ref.is_valid()) {
+    return StringView();
+  }
+  if (!is_valid_ || parsed_.ref.is_empty()) {
+    return StringViewForInvalidComponent();
+  }
+  return StringView(GetString(), parsed_.ref.begin - 1, parsed_.ref.len + 1);
 }
 
 bool KURL::HasFragmentIdentifier() const {

@@ -92,7 +92,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   String fragment_name;
   if (url.HasFragmentIdentifier() &&
       EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
-    fragment_name = url.FragmentIdentifier();
+    fragment_name = url.FragmentIdentifier().ToString();
     if (!document.FindAnchor(fragment_name)) {
       return;
     }

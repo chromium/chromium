@@ -121,12 +121,22 @@ TEST(KURLTest, Getters) {
                 kurl.QueryWithLeadingQuestionMark())
           << url;
     }
-    if (c.has_fragment_identifier)
+    if (c.has_fragment_identifier) {
       EXPECT_EQ(String::FromUTF8(c.fragment_identifier),
                 kurl.FragmentIdentifier())
           << url;
-    else
+      if (strlen(c.fragment_identifier) > 0) {
+        EXPECT_EQ(String(StringView("#") + c.fragment_identifier),
+                  kurl.FragmentIdentifierWithLeadingNumberSign())
+            << url;
+      } else {
+        EXPECT_EQ(g_empty_string,
+                  kurl.FragmentIdentifierWithLeadingNumberSign())
+            << url;
+      }
+    } else {
       EXPECT_TRUE(kurl.FragmentIdentifier().IsNull()) << url;
+    }
   }
 }
 

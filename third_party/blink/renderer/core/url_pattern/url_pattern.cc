@@ -933,8 +933,9 @@ bool URLPattern::Match(ScriptState* script_state,
       if (!url.Query().empty()) {
         search = url.Query().ToString();
       }
-      if (url.FragmentIdentifier())
-        hash = url.FragmentIdentifier();
+      if (url.HasFragmentIdentifier()) {
+        hash = url.FragmentIdentifier().ToString();
+      }
       break;
     }
   }
