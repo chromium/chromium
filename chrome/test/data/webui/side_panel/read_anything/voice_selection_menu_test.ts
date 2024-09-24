@@ -400,9 +400,20 @@ suite('VoiceSelectionMenu', () => {
   });
 
   suite('with installing voices', () => {
-    function setVoiceStatus(lang: string, status: VoiceClientSideStatusCode) {
-      VoiceNotificationManager.getInstance().onVoiceStatusChange(
-          lang, status, voiceSelectionMenu.availableVoices);
+    function setVoiceStatus(
+        status: VoiceClientSideStatusCode, ...langs: string[]): Promise<void> {
+      langs.forEach(
+          lang => VoiceNotificationManager.getInstance().onVoiceStatusChange(
+              lang, status, voiceSelectionMenu.availableVoices, true));
+      return microtasksFinished();
+    }
+
+    function setOfflineError(...langs: string[]): Promise<void> {
+      langs.forEach(
+          lang => VoiceNotificationManager.getInstance().onVoiceStatusChange(
+              lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+              voiceSelectionMenu.availableVoices, false));
+      return microtasksFinished();
     }
 
     function getDownloadMessages(): HTMLElement[] {
@@ -411,45 +422,89 @@ suite('VoiceSelectionMenu', () => {
               .querySelectorAll<HTMLElement>('.download-message'));
     }
 
+    function getErrorMessages(): HTMLElement[] {
+      return Array.from(voiceSelectionMenu!.$.voiceSelectionMenu.get()
+                            .querySelectorAll<HTMLElement>('.error-message'));
+    }
+
     setup(() => {
       VoiceNotificationManager.getInstance().clear();
       voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+      return microtasksFinished();
     });
 
-    test('no downloading messages by default', () => {
+    test('no messages by default', () => {
       assertEquals(0, getDownloadMessages().length);
-    });
-
-    test('no downloading messages after close', async () => {
-      voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-      await microtasksFinished();
-      setVoiceStatus('fr', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-      await microtasksFinished();
-
-      assertEquals(0, getDownloadMessages().length);
+      assertEquals(0, getErrorMessages().length);
     });
 
     suite('with one language', () => {
       const lang = 'fr';
 
       setup(() => {
-        setVoiceStatus(lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        return microtasksFinished();
+        return setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
       });
 
       test('shows downloading message while installing', () => {
         const msgs = getDownloadMessages();
 
         assertEquals(1, msgs.length);
+        assertEquals(0, getErrorMessages().length);
         assertStringContains(
             msgs[0]!.textContent!.trim(), 'Downloading Français voices');
       });
 
       test('hides downloading message when done', async () => {
-        setVoiceStatus(lang, VoiceClientSideStatusCode.AVAILABLE);
+        await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang);
+        assertEquals(0, getDownloadMessages().length);
+      });
+
+      test('shows error message when fail', async () => {
+        await setOfflineError(lang);
+        const msgs = getErrorMessages();
+
+        assertEquals(0, getDownloadMessages().length);
+        assertEquals(1, msgs.length);
+        assertStringContains(msgs[0]!.textContent!, 'Connect to the internet');
+      });
+
+      test('no messages after close', async () => {
+        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+        await microtasksFinished();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
+        await setOfflineError(lang);
+
+        assertEquals(0, getDownloadMessages().length);
+        assertEquals(0, getErrorMessages().length);
+      });
+
+      test('shows downloading messages again after open', async () => {
+        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+        await microtasksFinished();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
+
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+        await microtasksFinished();
+
+        assertEquals(1, getDownloadMessages().length);
+        assertEquals(0, getErrorMessages().length);
+      });
+
+      test('does not show error messages again after open', async () => {
+        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+        await microtasksFinished();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
+        await setOfflineError(lang);
+
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
         await microtasksFinished();
 
         assertEquals(0, getDownloadMessages().length);
+        assertEquals(0, getErrorMessages().length);
       });
     });
 
@@ -460,11 +515,9 @@ suite('VoiceSelectionMenu', () => {
       const lang4 = 'hi-HI';
 
       setup(() => {
-        setVoiceStatus(lang1, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        setVoiceStatus(lang2, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        setVoiceStatus(lang3, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        setVoiceStatus(lang4, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-        return microtasksFinished();
+        return setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2, lang3,
+            lang4);
       });
 
       test('shows downloading messages while installing', () => {
@@ -472,34 +525,70 @@ suite('VoiceSelectionMenu', () => {
 
         assertEquals(4, msgs.length);
         assertStringContains(
-            msgs[0]!.textContent!.trim(),
+            msgs[0]!.textContent!,
             'Downloading English (United States) voices');
         assertStringContains(
-            msgs[1]!.textContent!.trim(), 'Downloading 日本語 voices');
+            msgs[1]!.textContent!, 'Downloading 日本語 voices');
         assertStringContains(
-            msgs[2]!.textContent!.trim(),
-            'Downloading Español (España) voices');
-        assertStringContains(
-            msgs[3]!.textContent!.trim(),
-            'Downloading हिन्दी voices');
+            msgs[2]!.textContent!, 'Downloading Español (España) voices');
+        assertStringContains(msgs[3]!.textContent!, 'Downloading हिन्दी voices');
       });
 
       test('hides downloading messages when done', async () => {
-        setVoiceStatus(lang1, VoiceClientSideStatusCode.AVAILABLE);
-        await microtasksFinished();
+        await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang1);
         assertEquals(3, getDownloadMessages().length);
 
-        setVoiceStatus(lang2, VoiceClientSideStatusCode.AVAILABLE);
-        await microtasksFinished();
+        await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang2);
         assertEquals(2, getDownloadMessages().length);
 
-        setVoiceStatus(lang3, VoiceClientSideStatusCode.AVAILABLE);
-        await microtasksFinished();
+        await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang3);
         assertEquals(1, getDownloadMessages().length);
 
-        setVoiceStatus(lang4, VoiceClientSideStatusCode.AVAILABLE);
-        await microtasksFinished();
+        await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang4);
         assertEquals(0, getDownloadMessages().length);
+      });
+
+      test('shows error message when fail', async () => {
+        await setOfflineError(lang1, lang2, lang3, lang4);
+        const msgs = getErrorMessages();
+
+        assertEquals(0, getDownloadMessages().length);
+        assertEquals(4, msgs.length);
+        assertStringContains(
+            msgs[0]!.textContent!,
+            'There are no English (United States) voices');
+        assertStringContains(
+            msgs[1]!.textContent!, 'There are no 日本語 voices');
+        assertStringContains(
+            msgs[2]!.textContent!, 'There are no Español (España) voices');
+        assertStringContains(
+            msgs[3]!.textContent!, 'There are no हिन्दी voices');
+      });
+
+      test('no messages after close', async () => {
+        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+        await microtasksFinished();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2, lang3,
+            lang4);
+        await setOfflineError(lang1, lang2, lang3, lang4);
+
+        assertEquals(0, getDownloadMessages().length);
+        assertEquals(0, getErrorMessages().length);
+      });
+
+      test('shows only downloading messages again after open', async () => {
+        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+        await microtasksFinished();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2);
+        await setOfflineError(lang3, lang4);
+
+        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+        await microtasksFinished();
+
+        assertEquals(2, getDownloadMessages().length);
+        assertEquals(0, getErrorMessages().length);
       });
     });
   });

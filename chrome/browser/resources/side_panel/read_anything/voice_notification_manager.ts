@@ -36,8 +36,10 @@ export class VoiceNotificationManager {
 
   onVoiceStatusChange(
       language: string, status: VoiceClientSideStatusCode,
-      availableVoices: SpeechSynthesisVoice[]) {
-    const notification = getNotification(language, status, availableVoices);
+      availableVoices: SpeechSynthesisVoice[],
+      onLine: boolean = window.navigator.onLine) {
+    const notification =
+        getNotification(language, status, availableVoices, onLine);
     this.listeners_.forEach(
         listener => listener.notify(language, notification));
     if (notification === NotificationType.DOWNLOADING) {

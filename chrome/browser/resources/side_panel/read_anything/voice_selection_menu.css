@@ -57,12 +57,17 @@ cr-action-menu::part(dialog) {
   margin: 0;
 }
 
-.lang-group-title, .download-message {
+.lang-group-title,
+.notification {
   color: var(--color-sys-on-surface-subtle);
   display: grid;
   font-size: 12px;
   font-weight: 400;
   padding-left: 20px;
+}
+
+.error-message {
+  white-space: normal;
 }
 
 .voice-name {

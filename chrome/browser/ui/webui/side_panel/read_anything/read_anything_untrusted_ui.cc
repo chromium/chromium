@@ -120,6 +120,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_VOICES_UNAVAILABLE},
       {"readingModeLanguageMenuNoInternet",
        IDS_READING_MODE_LANGUAGE_MENU_NO_INTERNET},
+      {"readingModeVoiceMenuNoInternet",
+       IDS_READING_MODE_VOICE_MENU_NO_INTERNET},
       {"readingModeLanguageMenuNoSpace",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"readingModeLanguageMenuNoSpaceButVoicesExist",

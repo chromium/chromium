@@ -7,8 +7,11 @@
         accessibility-label="$i18n{voiceSelectionLabel}"
         role-description="$i18n{menu}"
     >
+      ${this.errorMessages_.map((item) => html`
+        <p class="dropdown-line notification error-message">${item}</p>
+      `)}
       ${this.downloadingMessages_.map((item) => html`
-        <span class="dropdown-line download-message">${item}</span>
+        <span class="dropdown-line notification download-message">${item}</span>
       `)}
 
       ${this.voiceGroups_.map((voiceGroup, groupIndex) => html`

@@ -93,6 +93,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   // The current notifications that should be used in the voice menu.
   private currentNotifications_: {[language: string]: NotificationType} = {};
 
+  protected errorMessages_: string[] = [];
   protected downloadingMessages_: string[] = [];
   protected voiceGroups_: VoiceDropdownGroup[] = [];
   protected showLanguageMenuDialog_: boolean = false;
@@ -119,6 +120,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('currentNotifications_')) {
+      this.errorMessages_ = this.computeErrorMessages_();
       this.downloadingMessages_ = this.computeDownloadingMessages_();
     }
   }
@@ -252,6 +254,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
   protected onClose_() {
     this.notificationManager_.removeListener(this);
+    this.currentNotifications_ = {};
     this.dispatchEvent(new CustomEvent('voice-menu-close', {
       bubbles: true,
       composed: true,
@@ -341,16 +344,30 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     return this.voiceGroups_[groupIndex].voices[voiceIndex];
   }
 
+  // TODO(crbug.com/352070610): Add allocation error messages here too.
+  private computeErrorMessages_(): string[] {
+    return this.computeMessages_(
+        ([_, notification]) => notification === NotificationType.NO_INTERNET,
+        'readingModeVoiceMenuNoInternet');
+  }
+
   private computeDownloadingMessages_(): string[] {
-    return Object.entries(this.currentNotifications_)
-        .filter(
-            ([_, notification]) =>
-                notification === NotificationType.DOWNLOADING)
+    return this.computeMessages_(
+        ([_, notification]) => notification === NotificationType.DOWNLOADING,
+        'readingModeVoiceMenuDownloading');
+  }
+
+  private computeMessages_(
+      filterFn: (value: [string, NotificationType]) => boolean,
+      message: string) {
+    // We need to redeclare the type here otherwise the filterFn type
+    // declaration doesn't work.
+    const entries: Array<[string, NotificationType]> =
+        Object.entries(this.currentNotifications_);
+    return entries.filter(filterFn)
         .map(([lang, _]) => this.getDisplayNameForLocale(lang))
         .filter(possibleName => possibleName.length > 0)
-        .map(
-            displayName => loadTimeData.getStringF(
-                'readingModeVoiceMenuDownloading', displayName));
+        .map(displayName => loadTimeData.getStringF(message, displayName));
   }
 
   private getDisplayNameForLocale(language: string): string {

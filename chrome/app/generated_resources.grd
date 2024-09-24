@@ -9452,6 +9452,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_INTERNET" desc="Label for status text when no internet prevents a voice from downloading from the Read Aloud language menu.">
         No internet
       </message>
+      <message name="IDS_READING_MODE_VOICE_MENU_NO_INTERNET" desc="Label for status text when no internet prevents a voice from downloading any voices from the Read Aloud language menu.">
+        There are no <ph name="LANGUAGE">$1<ex>English</ex></ph> voices on your device. Connect to the internet, and try again.
+      </message>
       <message name="IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED" desc="Label for generic status text when there was an error when downloading a voice from the Read Aloud language menu and there's no more details on the error.">
         Download failed
       </message>
