@@ -2077,7 +2077,7 @@ class OopTextBlobPixelTest
           context_state->gpu_main_graphite_recorder(), image_info,
           skgpu::Mipmapped::kNo, &surface_props);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     SkCanvas* canvas = surface->getCanvas();

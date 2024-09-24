@@ -31,8 +31,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool NeedsRaster() const {
     switch (mode_) {
@@ -43,8 +42,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   viz::ResourceId resource_id_for_export() const {

@@ -57,8 +57,7 @@ ManagedMemoryPolicy::PriorityCutoffToTileMemoryLimitPolicy(
     case MemoryAllocation::CUTOFF_ALLOW_EVERYTHING:
       return ALLOW_ANYTHING;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ALLOW_NOTHING;
+  NOTREACHED();
 }
 
 }  // namespace cc

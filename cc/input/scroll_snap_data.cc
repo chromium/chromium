@@ -125,7 +125,7 @@ std::optional<SnapSearchResult> SearchResultForDodgingRange(
       offset = max_offset;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   min_offset = area_range.start() - scroll_padding;
@@ -654,7 +654,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
         result.set_snap_offset(area.rect.right() - rect.right());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     result.Clip(max_position_.x());
     result.set_snapport_max_visible(max_position_.y());
@@ -672,7 +672,7 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
         result.set_snap_offset(area.rect.bottom() - rect.bottom());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     result.Clip(max_position_.y());
     result.set_snapport_max_visible(max_position_.x());

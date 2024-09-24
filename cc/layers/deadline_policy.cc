@@ -23,8 +23,7 @@ const char* PolicyToString(DeadlinePolicy::Type type) {
     case DeadlinePolicy::Type::kUseInfiniteDeadline:
       return "UseInfiniteDeadline";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

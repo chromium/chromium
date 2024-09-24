@@ -376,8 +376,7 @@ SkColor4f DebugColors::NonLCDTextHighlightColor(
     case LCDTextDisallowedReason::kPixelOrColorEffect:
       return {0.0f, 0.5f, 0.0f, 96.0f / 255.0f};
   }
-  NOTREACHED_IN_MIGRATION();
-  return SkColors::kTransparent;
+  NOTREACHED();
 }
 
 }  // namespace cc

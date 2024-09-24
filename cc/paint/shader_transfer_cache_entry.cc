@@ -27,8 +27,7 @@ bool ServiceShaderTransferCacheEntry::Deserialize(
     skgpu::graphite::Recorder* graphite_recorder,
     base::span<const uint8_t> data) {
   // These entries must be created directly via CreateLocalEntry.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace cc

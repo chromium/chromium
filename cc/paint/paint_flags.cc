@@ -174,7 +174,7 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

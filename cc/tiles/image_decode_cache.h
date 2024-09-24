@@ -70,8 +70,7 @@ class CC_EXPORT ImageDecodeCache {
       case TaskType::kOutOfRaster:
         return ScopedTaskType::kOutOfRaster;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ScopedTaskType::kInRaster;
+    NOTREACHED();
   }
 
   static devtools_instrumentation::ScopedImageDecodeTask::ImageType

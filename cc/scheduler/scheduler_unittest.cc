@@ -859,10 +859,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
     return FakeSchedulerClient::ScheduledActionDrawIfPossible();
   }
 
-  DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED_IN_MIGRATION();
-    return DrawResult::kSuccess;
-  }
+  DrawResult ScheduledActionDrawForced() override { NOTREACHED(); }
 
  private:
   bool request_redraws_;
@@ -966,10 +963,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
     return FakeSchedulerClient::ScheduledActionDrawIfPossible();
   }
 
-  DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED_IN_MIGRATION();
-    return DrawResult::kSuccess;
-  }
+  DrawResult ScheduledActionDrawForced() override { NOTREACHED(); }
 
   void SetNeedsBeginMainFrameOnNextDraw() {
     set_needs_commit_on_next_draw_ = true;

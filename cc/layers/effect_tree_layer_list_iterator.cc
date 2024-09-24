@@ -118,7 +118,7 @@ void EffectTreeLayerListIterator::operator++() {
       }
       break;
     case State::kEnd:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

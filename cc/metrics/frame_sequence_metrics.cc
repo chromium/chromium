@@ -70,8 +70,7 @@ const char* GetThreadTypeName(SmoothEffectDrivingThread type) {
     case SmoothEffectDrivingThread::kMain:
       return "MainThread";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -219,7 +218,7 @@ SmoothEffectDrivingThread FrameSequenceMetrics::GetEffectiveThread() const {
       return SmoothEffectDrivingThread::kMain;
 
     case FrameSequenceTrackerType::kMaxType:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return SmoothEffectDrivingThread::kUnknown;
 }
@@ -550,8 +549,7 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       }
       break;
     case SmoothEffectDrivingThread::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (should_calculate_jank_and_checkerboarding) {
     auto final_state = frame_info.GetFinalStateForThread(effective_thread);

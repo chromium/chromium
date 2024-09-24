@@ -384,7 +384,7 @@ class LayerTreeHostScrollTestScrollAbortedCommit
       impl->SetNeedsCommit();
     } else if (impl->active_tree()->source_frame_number() == 1) {
       // Commit for source frame 1 is aborted.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     } else if (impl->active_tree()->source_frame_number() == 2 &&
                impl->SourceAnimationFrameNumberForTesting() == 3) {
       // Third draw after the second full commit.
@@ -406,7 +406,7 @@ class LayerTreeHostScrollTestScrollAbortedCommit
       EndTest();
     } else {
       // Commit for source frame 3 is aborted.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -2214,7 +2214,7 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
             break;
           }
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
@@ -2409,7 +2409,7 @@ class LayerTreeHostScrollTestElasticOverscroll
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2555,7 +2555,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
         // Let the commit abort for the second set of deltas.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2620,7 +2620,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
         host_impl->RequestImplSideInvalidationForCheckerImagedTiles();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2684,7 +2684,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

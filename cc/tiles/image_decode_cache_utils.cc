@@ -62,8 +62,7 @@ bool ImageDecodeCacheUtils::ShouldEvictCaches(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

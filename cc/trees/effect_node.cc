@@ -71,8 +71,7 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
     case RenderSurfaceReason::kTest:
       return "test";
     default:
-      NOTREACHED_IN_MIGRATION() << static_cast<int>(reason);
-      return "";
+      NOTREACHED() << static_cast<int>(reason);
   }
 }
 

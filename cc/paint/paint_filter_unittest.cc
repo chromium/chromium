@@ -49,8 +49,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
 
   switch (filter_type) {
     case PaintFilter::Type::kNullFilter:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case PaintFilter::Type::kColorFilter:
       return sk_make_sp<ColorFilterPaintFilter>(ColorFilter::MakeLuma(),
                                                 image_filter, &crop_rect);
@@ -134,8 +133,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
           SkPoint3::Make(0.4f, 0.5f, 0.6f), 0.1f, 0.2f, SkColors::kWhite, 0.4f,
           0.5f, 0.6f, image_filter, &crop_rect);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

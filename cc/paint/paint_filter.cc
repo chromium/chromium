@@ -140,8 +140,7 @@ std::string PaintFilter::TypeToString(Type type) {
     case Type::kLightingSpot:
       return "kLightingSpot";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 SkIRect PaintFilter::MapRect(const SkIRect& src,
@@ -240,8 +239,7 @@ bool PaintFilter::EqualsForTesting(const PaintFilter& other) const {
     case Type::kLightingSpot:
       return AreEqualForTesting<LightingSpotPaintFilter>(*this, other);
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 std::vector<sk_sp<SkImageFilter>> PaintFilter::ToSkImageFilters(

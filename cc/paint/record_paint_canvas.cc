@@ -203,23 +203,19 @@ void RecordPaintCanvas::clipPathInternal(const SkPath& path,
 }
 
 SkImageInfo RecordPaintCanvas::imageInfo() const {
-  NOTREACHED_IN_MIGRATION();
-  return SkImageInfo();
+  NOTREACHED();
 }
 
 bool RecordPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 SkM44 RecordPaintCanvas::getLocalToDevice() const {
-  NOTREACHED_IN_MIGRATION();
-  return SkM44();
+  NOTREACHED();
 }
 
 void RecordPaintCanvas::drawColor(SkColor4f color, SkBlendMode mode) {

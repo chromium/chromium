@@ -94,8 +94,7 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
         case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
           return "GenerationToRendererCompositor";
         default:
-          NOTREACHED_IN_MIGRATION() << static_cast<int>(end_stage);
-          return "";
+          NOTREACHED() << static_cast<int>(end_stage);
       }
     case EventMetrics::DispatchStage::kScrollsBlockingTouchDispatchedToRenderer:
       switch (end_stage) {
@@ -106,8 +105,7 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
           // a more detailed breakdown of this stage.
           return "TouchRendererHandlingToBrowserMain";
         default:
-          NOTREACHED_IN_MIGRATION() << static_cast<int>(end_stage);
-          return "";
+          NOTREACHED() << static_cast<int>(end_stage);
       }
     case EventMetrics::DispatchStage::kArrivedInBrowserMain:
       DCHECK_EQ(end_stage,
@@ -120,8 +118,7 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
         case EventMetrics::DispatchStage::kRendererMainStarted:
           return "RendererCompositorToMain";
         default:
-          NOTREACHED_IN_MIGRATION() << static_cast<int>(end_stage);
-          return "";
+          NOTREACHED() << static_cast<int>(end_stage);
       }
     case EventMetrics::DispatchStage::kRendererCompositorStarted:
       DCHECK_EQ(end_stage,
@@ -134,8 +131,7 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
       DCHECK_EQ(end_stage, EventMetrics::DispatchStage::kRendererMainFinished);
       return "RendererMainProcessing";
     case EventMetrics::DispatchStage::kRendererMainFinished:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -164,12 +160,8 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererCompositorFinishedToSubmitCompositorFrame";
         default:
-          // TODO(crbug.com/40866824): Logs are added to debug NOTREACHED()
-          // begin hit in crbug/1366253. Remove after investigation is finished.
-          NOTREACHED_IN_MIGRATION()
-              << "Invalid CC stage after compositor thread: "
-              << static_cast<int>(compositor_stage);
-          return "";
+          NOTREACHED() << "Invalid CC stage after compositor thread: "
+                       << static_cast<int>(compositor_stage);
       }
     case EventMetrics::DispatchStage::kRendererMainFinished:
       switch (compositor_stage) {
@@ -191,15 +183,11 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererMainFinishedToSubmitCompositorFrame";
         default:
-          // TODO(crbug.com/40866824): Logs are added to debug NOTREACHED()
-          // begin hit in crbug/1366253. Remove after investigation is finished.
-          NOTREACHED_IN_MIGRATION() << "Invalid CC stage after main thread: "
-                                    << static_cast<int>(compositor_stage);
-          return "";
+          NOTREACHED() << "Invalid CC stage after main thread: "
+                       << static_cast<int>(compositor_stage);
       }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -218,8 +206,7 @@ const char* EventLatencyTracingRecorder::GetDispatchToTerminationBreakdownName(
     case EventMetrics::DispatchStage::kRendererMainFinished:
       return "RendererMainFinishedToTermination";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

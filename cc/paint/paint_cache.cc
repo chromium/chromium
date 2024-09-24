@@ -117,7 +117,7 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServicePaintCache::PurgeAll() {

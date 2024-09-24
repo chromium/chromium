@@ -374,8 +374,7 @@ void PaintOpReader::Read(
   if (enable_security_constraints_) {
     switch (serialized_type) {
       case PaintOp::SerializedImageType::kNoImage:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case PaintOp::SerializedImageType::kImageData: {
         SkColorType color_type;
         Read(&color_type);
@@ -425,8 +424,7 @@ void PaintOpReader::Read(
         return;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
@@ -461,8 +459,7 @@ void PaintOpReader::Read(
           SetInvalid(DeserializationError::kSharedImageProviderUnknownMailbox);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       SetInvalid(DeserializationError::kSharedImageOpenFailure);
       return;
@@ -1014,8 +1011,7 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
   AssertFieldAlignment();
   switch (type) {
     case PaintFilter::Type::kNullFilter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case PaintFilter::Type::kColorFilter:
       ReadColorFilterPaintFilter(filter, crop_rect);
       break;

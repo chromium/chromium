@@ -35,9 +35,7 @@ UIResourceBitmap::UIResourceFormat SkColorTypeToUIResourceFormat(
       format = UIResourceBitmap::ALPHA_8;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
-      break;
+      NOTREACHED() << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
   }
   return format;
 }

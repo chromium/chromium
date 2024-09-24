@@ -60,8 +60,7 @@ std::string TaskState::ToString() const {
     case Value::kCanceled:
       return "CANCELED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void TaskState::DidSchedule() {
