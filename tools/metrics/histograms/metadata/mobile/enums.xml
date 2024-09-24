@@ -262,6 +262,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Select Drive Identity Entry"/>
   <int value="30" label="Tab Group Indicator Entry"/>
   <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
+  <int value="32" label="Tab Group Indicator on NTP Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

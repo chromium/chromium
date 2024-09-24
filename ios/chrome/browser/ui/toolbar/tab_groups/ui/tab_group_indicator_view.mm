@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -135,14 +137,28 @@
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.showsMenuAsPrimaryAction = YES;
+  [button addTarget:self
+                action:@selector(menuButtonTapped:)
+      forControlEvents:UIControlEventMenuActionTriggered];
   return button;
 }
 
-// Sets the menu of `menuButton`.
-- (void)setMenuButton {
+// Handles taps on the menu button.
+- (void)menuButtonTapped:(id)sender {
+  base::RecordAction(base::UserMetricsAction(
+      _displayedOnNTP ? "MobileTabGroupIndicatorShowNTPMenu"
+                      : "MobileTabGroupIndicatorShowMenu"));
+}
+
+// Configures the menu of `menuButton`.
+- (void)configureMenuButton {
   __weak __typeof(self) weakSelf = self;
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:kMenuScenarioHistogramTabGroupIndicatorEntry];
+  MenuScenarioHistogram scenario =
+      _displayedOnNTP ? kMenuScenarioHistogramTabGroupIndicatorNTPEntry
+                      : kMenuScenarioHistogramTabGroupIndicatorEntry;
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithScenario:scenario];
+
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf.mutator showTabGroupEdition];
@@ -216,7 +232,7 @@
 
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
-  [self setMenuButton];
+  [self configureMenuButton];
 }
 
 - (void)setShowSeparator:(BOOL)showSeparator {

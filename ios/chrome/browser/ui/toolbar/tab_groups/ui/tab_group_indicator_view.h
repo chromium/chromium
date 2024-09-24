@@ -27,6 +27,9 @@
 // Whether the view is displayed in Incognito mode.
 @property(nonatomic, assign) BOOL incognito;
 
+// Whether the view is displayed on the NTP.
+@property(nonatomic, assign) BOOL displayedOnNTP;
+
 // Whether or not to display the separator at the bottom.
 @property(nonatomic, assign) BOOL showSeparator;
 

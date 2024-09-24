@@ -25580,6 +25580,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGroupIndicatorShowMenu">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Logged on iOS when the user triggered action menu by tapping the tab group
+    indicator view.
+  </description>
+</action>
+
+<action name="MobileTabGroupIndicatorShowNTPMenu">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    Logged on iOS when the user triggered action menu by tapping the tab group
+    indicator view on NTP.
+  </description>
+</action>
+
 <action name="MobileTabGroupUserCanceledGroupEdition">
   <owner>alionadangla@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
