@@ -50,8 +50,6 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
 static_library("ui") {
   sources = [
     "accelerator_utils.h",
-    "app_list/app_list_util.cc",
-    "app_list/app_list_util.h",
 
     # All other app_list/ files go under is_chromeos_ash below.
     "bluetooth/bluetooth_dialogs.h",

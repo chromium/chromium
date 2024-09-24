@@ -32,6 +32,8 @@ static_library("app_list") {
     "app_list_syncable_service.h",
     "app_list_syncable_service_factory.cc",
     "app_list_syncable_service_factory.h",
+    "app_list_util.cc",
+    "app_list_util.h",
     "app_sync_ui_state.cc",
     "app_sync_ui_state.h",
     "app_sync_ui_state_factory.cc",
