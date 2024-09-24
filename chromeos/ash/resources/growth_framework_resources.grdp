@@ -7,4 +7,5 @@
   <include name="IDR_GROWTH_FRAMEWORK_SPARK_1P_APP_PNG" file="../resources/internal/spark_1p_app_2x.png" type="BINDATA" />
   <include name="IDR_GROWTH_FRAMEWORK_SPARK_V2_PNG" file="../resources/internal/spark_v2_1x.png" type="BINDATA" />
   <include name="IDR_GROWTH_FRAMEWORK_G1_NOTIFICATION_PNG" file="../resources/internal/g1_notification_1x.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_MALL_PNG" file="../components/growth/resources/mall_nudge_2x_96dp.png" type="BINDATA" />
 </grit-part>

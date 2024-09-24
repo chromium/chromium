@@ -212,6 +212,8 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_GROWTH_FRAMEWORK_SPARK_V2_PNG;
     case BuiltInImage::kG1Notification:
       return IDR_GROWTH_FRAMEWORK_G1_NOTIFICATION_PNG;
+    case BuiltInImage::kMall:
+      return IDR_GROWTH_FRAMEWORK_MALL_PNG;
   }
 }
 
