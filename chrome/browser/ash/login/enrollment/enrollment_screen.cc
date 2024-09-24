@@ -243,8 +243,7 @@ void EnrollmentScreen::CreateEnrollmentLauncher() {
   }
 }
 
-void EnrollmentScreen::ClearAuth(base::OnceClosure callback,
-                                 bool revoke_oauth2_tokens) {
+void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
   if (switches::IsTpmDynamic()) {
     wait_state_timer_.Stop();
     install_state_retries_ = 0;
@@ -254,6 +253,9 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback,
     return;
   }
 
+  const bool revoke_oauth2_tokens =
+      !(features::IsOobeAddUserDuringEnrollmentEnabled() &&
+        context()->add_user_from_cached_credentials);
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -606,18 +608,10 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";
 
-  bool revoke_oauth2_tokens = true;
-
-  if (MaybeStoreUserContextInWizardContext()) {
-    // Prevents the oauth2 tokens from being revoked.
-    revoke_oauth2_tokens = false;
-  }
-
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
-  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED),
-            revoke_oauth2_tokens);
+  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
 }
 
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
@@ -673,6 +667,8 @@ void EnrollmentScreen::OnDeviceEnrolled() {
     view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
                                    ui::GetChromeOSDeviceName());
   }
+
+  MaybeStoreUserContextInWizardContext();
 
   enrollment_launcher_->GetDeviceAttributeUpdatePermission();
 
@@ -989,16 +985,16 @@ void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
   histogram_helper_.OnErrorHide();
 }
 
-bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
+void EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
       effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
-    return false;
+    return;
   }
   // Technically this should be an invariant, but this feature is not crucial
   // and allows for an easy fallback to the normal flow. Because of this we use
   // soft checks in case of unforeseen flows that would cause a crash otherwise.
   if (!signin_artifacts_ || !enrollment_launcher_ || !enrollment_succeeded_) {
-    return false;
+    return;
   }
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
@@ -1027,7 +1023,7 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   wizard_context->user_context = std::move(user_context);
   wizard_context->add_user_from_cached_credentials = true;
 
-  return true;
+  return;
 }
 
 }  // namespace ash
