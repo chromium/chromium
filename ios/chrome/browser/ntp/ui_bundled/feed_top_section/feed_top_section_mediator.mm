@@ -342,6 +342,7 @@ using base::UserMetricsAction;
       enrollUserToProvisionalNotificationsForClientIds:
           {PushNotificationClientId::kContent,
            PushNotificationClientId::kSports}
+                           clientEnabledForProvisional:YES
                                        withAuthService:
                                            self.authenticationService
                                  deviceInfoSyncService:nil];
