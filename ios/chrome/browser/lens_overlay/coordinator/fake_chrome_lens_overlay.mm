@@ -89,6 +89,15 @@
   [self sendNewResult];
 }
 
+- (void)simulateSuggestSignalsUpdate:(NSData*)signals {
+  TestChromeLensOverlayResult* mutableResult =
+      base::apple::ObjCCastStrict<TestChromeLensOverlayResult>(self.lastResult);
+
+  mutableResult.suggestSignals = signals;
+  [self.lensOverlayDelegate lensOverlay:self
+        suggestSignalsAvailableOnResult:self.lastResult];
+}
+
 #pragma mark - Private
 
 - (void)sendNewResult {

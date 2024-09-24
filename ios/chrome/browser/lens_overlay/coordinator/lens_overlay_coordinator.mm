@@ -582,6 +582,7 @@ const CGFloat kMenuSymbolSize = 18;
       feature_engagement::TrackerFactory::GetForBrowserState(browserState),
       /*web_provider=*/_resultMediator,
       /*omnibox_delegate=*/_mediator);
+  _mediator.omniboxClient = omniboxClient.get();
 
   _omniboxCoordinator = [[OmniboxCoordinator alloc]
       initWithBaseViewController:nil
@@ -636,6 +637,7 @@ const CGFloat kMenuSymbolSize = 18;
   [_resultMediator disconnect];
   _resultMediator = nil;
   _mediator.resultConsumer = self;
+  _mediator.omniboxClient = nil;
   [_omniboxCoordinator stop];
   _omniboxCoordinator = nil;
 }

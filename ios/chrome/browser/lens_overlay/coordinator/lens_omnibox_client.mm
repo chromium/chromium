@@ -183,6 +183,11 @@ const gfx::VectorIcon& LensOmniboxClient::GetVectorIcon() const {
   return kEmptyVectorIcon;
 }
 
+std::optional<lens::proto::LensOverlayInteractionResponse>
+LensOmniboxClient::GetLensOverlayInteractionResponse() const {
+  return lens_overlay_interaction_response_;
+}
+
 bool LensOmniboxClient::ProcessExtensionKeyword(
     const std::u16string& text,
     const TemplateURL* template_url,

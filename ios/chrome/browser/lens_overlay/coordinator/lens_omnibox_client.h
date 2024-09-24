@@ -34,6 +34,11 @@ class LensOmniboxClient final : public OmniboxClient {
 
   ~LensOmniboxClient() override;
 
+  void SetLensOverlayInteractionResponse(
+      std::optional<lens::proto::LensOverlayInteractionResponse> response) {
+    lens_overlay_interaction_response_ = response;
+  }
+
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
@@ -63,6 +68,9 @@ class LensOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  std::optional<lens::proto::LensOverlayInteractionResponse>
+  GetLensOverlayInteractionResponse() const override;
+
   bool ProcessExtensionKeyword(const std::u16string& text,
                                const TemplateURL* template_url,
                                const AutocompleteMatch& match,
@@ -95,6 +103,8 @@ class LensOmniboxClient final : public OmniboxClient {
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
   BOOL thumbnail_removed_in_session_;
+  std::optional<lens::proto::LensOverlayInteractionResponse>
+      lens_overlay_interaction_response_;
 
   base::WeakPtrFactory<LensOmniboxClient> weak_factory_{this};
 };

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
+class LensOmniboxClient;
 @protocol ChromeLensOverlay;
 @protocol LensOverlayCommands;
 @protocol LensToolbarConsumer;
@@ -48,6 +49,8 @@ class WebState;
 
 /// TemplateURLService to observe default search engine change.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+
+@property(nonatomic, assign) LensOmniboxClient* omniboxClient;
 
 /// Releases managed objects.
 - (void)disconnect;

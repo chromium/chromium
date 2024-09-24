@@ -7,9 +7,12 @@
 #import <memory>
 #import <stack>
 
+#import "base/base64url.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/proto/server/lens_overlay_response.pb.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -217,6 +220,9 @@
   } else {
     [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
   }
+  if (self.omniboxClient) {
+    self.omniboxClient->SetLensOverlayInteractionResponse(std::nullopt);
+  }
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -225,7 +231,33 @@
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
-  // TODO(crbug.com/366156296): Implement.
+  if (result != _currentLensResult) {
+    return;
+  }
+
+  // Push the suggest signals to the client.
+  if (!self.omniboxClient) {
+    return;
+  }
+
+  NSData* data = result.suggestSignals;
+  if (!data.length) {
+    self.omniboxClient->SetLensOverlayInteractionResponse(std::nullopt);
+    return;
+  }
+  std::string encodedString;
+  base::span<const uint8_t> signals = base::span<const uint8_t>(
+      static_cast<const uint8_t*>(result.suggestSignals.bytes),
+      result.suggestSignals.length);
+
+  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                  &encodedString);
+
+  if (encodedString.size() > 0) {
+    lens::proto::LensOverlayInteractionResponse response;
+    response.set_suggest_signals(encodedString);
+    self.omniboxClient->SetLensOverlayInteractionResponse(response);
+  }
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
