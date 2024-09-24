@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_metrics.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -1452,6 +1453,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     if (is_conditional_ui_request) {
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
+      CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
     }
 
     auto mojo_options =

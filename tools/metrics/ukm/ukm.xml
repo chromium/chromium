@@ -24512,6 +24512,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebAuthn.ConditionalUiGetCall">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Information about a WebAuthn Get Assertion API call with conditional
+    mediation enabled.
+  </summary>
+  <metric name="TimeSinceDomContentLoaded">
+    <summary>
+      The amount of time (ms) that has elapsed between a page's DOMContentLoaded
+      event and the API call being handled. This is only recorded for the first
+      conditional request on the page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="WebAuthn.RegisterCompletion">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
