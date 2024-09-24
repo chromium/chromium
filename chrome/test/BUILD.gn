@@ -11336,7 +11336,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/permissions/permission_bubble_interactive_uitest.cc",
         "../browser/ui/views/permissions/permission_indicators_interactive_uitest.cc",
         "../browser/ui/views/permissions/permission_metrics_ui_test.cc",
-        "../browser/ui/views/permissions/quiet_prompt_interactive_uitest.cc",
         "../browser/ui/views/sad_tab_view_interactive_uitest.cc",
         "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.cc",
