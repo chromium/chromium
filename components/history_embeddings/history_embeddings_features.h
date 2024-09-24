@@ -130,6 +130,7 @@ extern const base::FeatureParam<double> kWordMatchMinEmbeddingScore;
 extern const base::FeatureParam<int> kWordMatchMinTermLength;
 extern const base::FeatureParam<double> kWordMatchScoreBoostFactor;
 extern const base::FeatureParam<int> kWordMatchLimit;
+extern const base::FeatureParam<int> kWordMatchSmoothingFactor;
 
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.

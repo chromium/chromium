@@ -57,6 +57,9 @@ struct SearchParams {
   // Divides and caps a word match boost. Finding the word more than this many
   // times won't increase the boost for the word.
   size_t word_match_limit = 5;
+
+  // Used as a term in final score boost divide to normalize for long queries.
+  size_t word_match_smoothing_factor = 1;
 };
 
 struct SearchInfo {

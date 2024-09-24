@@ -91,6 +91,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   search_params.query_terms = {
       "some",
       "passage",
+      "absent",
   };
   float boosted_score = url_data.url_embeddings.BestScoreWith(
       search_info, search_params, query_embedding,
@@ -98,10 +99,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   EXPECT_LT(score, boosted_score);
 
   search_params.query_terms = {
-      "some",
-      "passage",
-      "more",
-      "another",
+      "some", "passage", "more", "another", "absent",
   };
   float across_score = url_data.url_embeddings.BestScoreWith(
       search_info, search_params, query_embedding,
@@ -184,8 +182,12 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   // Additional unmatched terms provide no boost. N occurrences of a matching
   // term will independently yield an extra (0.1 * N / 4) with N
   // capped at denominator so that each term's max boost is the boost_factor.
+  // But there's an overall normalizing divide with smoothing factor, so
+  // the final value will be slightly less.
 
   // Here we have (0.1 * 1 / 4) * 3 terms, for a total boost of 0.075.
+  // Normalized by dividing by (smooth + query-terms-length)
+  //  -> 0.075 / (1 + 8) = 0.008333333
   search_params.query_terms = {"some",  "deterministic", "passage", "and",
                                "other", "nonboosting",   "query",   "terms"};
   scored_urls = database.FindNearest({}, 3, search_params, query_embedding, no)
@@ -193,19 +195,20 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   EXPECT_EQ(scored_urls[0].url_id, 1);
   EXPECT_EQ(scored_urls[1].url_id, 2);
   EXPECT_EQ(scored_urls[2].url_id, 3);
-  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.075f);
+  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.008333333f);
   EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
 
   // Here we have (0.1 * 2 / 4) + (0.1 * 4 / 4) even though "world" appears 5
   // times in passage, because the occurrence count is capped by denominator.
+  // And then also divided to normalize with smoothing: 0.15 / (1 + 2) = 0.05
   search_params.query_terms = {"hello", "world"};
   scored_urls = database.FindNearest({}, 3, search_params, query_embedding, no)
                     .scored_urls;
   EXPECT_EQ(scored_urls[0].url_id, 2);
   EXPECT_EQ(scored_urls[1].url_id, 1);
   EXPECT_EQ(scored_urls[2].url_id, 3);
-  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.15f);
+  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.05f);
   EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
 }

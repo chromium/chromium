@@ -200,6 +200,10 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
     // Boost factor is applied per term such that longer queries boost more.
     word_match_boost += term_boost;
   }
+  // Normalize to avoid over-boosting long queries with many words.
+  word_match_boost /=
+      std::max<size_t>(1, search_params.query_terms.size() +
+                              search_params.word_match_smoothing_factor);
 
   return best + word_match_boost;
 }

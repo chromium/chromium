@@ -409,6 +409,7 @@ SearchResult HistoryEmbeddingsService::Search(
   search_params.word_match_score_boost_factor =
       kWordMatchScoreBoostFactor.Get();
   search_params.word_match_limit = kWordMatchLimit.Get();
+  search_params.word_match_smoothing_factor = kWordMatchSmoothingFactor.Get();
 
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
