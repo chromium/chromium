@@ -13819,7 +13819,7 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
       std::move(expected_real_time_contributions));
 }
 
-// A platform contribution is added when trusted scoring signals server returned
+// A platform contribution is added when trusted bidding signals server returned
 // a non-2xx HTTP response code, even though generateBid() failed.
 TEST_F(BidderWorkletRealTimeReportingEnabledTest,
        TrustedBiddingSignalNetworkErrorGenerateBidFailed) {
@@ -13866,6 +13866,54 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest,
        "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
        "status = 404 Not Found."},
       std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
+// No platform contribution for trusted bidding signals failure when getting the
+// signal succeeded.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest,
+       TrustedBiddingSignalSucceedsNoContributionAdded) {
+  const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_keys_.emplace();
+  interest_group_trusted_bidding_signals_keys_->push_back("key1");
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL("https://signals.test/"
+           "?hostname=top.window.test&keys=key1&interestGroupNames=Fred"),
+      R"({"keys":{"key1":1}})");
+
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
+)";
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+
+  // Only expects the API call's contribution. No platform contribution is
+  // added.
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: trustedBiddingSignals, bid: 1, render:"https://response.test/"})",
+          kExtraCode),
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"({"key1":1})", 1,
+          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{}, std::nullopt, std::nullopt,
       /*expected_set_priority=*/std::nullopt,
       /*expected_update_priority_signals_overrides=*/{},
       /*expected_pa_requests=*/{},

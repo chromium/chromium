@@ -2119,8 +2119,8 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
         result->GetPerGroupData(task->bidder_worklet_non_shared_params->name);
   }
 
-  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
   task->trusted_bidding_signals_request.reset();
 
