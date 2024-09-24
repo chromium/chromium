@@ -509,8 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
-    units="number of boot attempts" expires_after="2024-10-06">
-  <owner>iby@google.com</owner>
+    units="number of boot attempts" expires_after="2025-10-06">
   <owner>shraash@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
