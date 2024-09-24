@@ -238,7 +238,6 @@
       "matches": [
         "chrome://add-supervision/*",
         "chrome://assistant-optin/*",
-        "chrome://discards/*",
         "chrome://extensions/*",
         "chrome://graduation/*",
         "chrome://home/*",
