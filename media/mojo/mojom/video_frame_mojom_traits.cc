@@ -177,8 +177,6 @@ media::mojom::SharedImageFormatType EnumTraits<
     media::mojom::SharedImageFormatType,
     media::SharedImageFormatType>::ToMojom(media::SharedImageFormatType type) {
   switch (type) {
-    case media::SharedImageFormatType::kLegacy:
-      return media::mojom::SharedImageFormatType::kLegacy;
     case media::SharedImageFormatType::kSharedImageFormat:
       return media::mojom::SharedImageFormatType::kSharedImageFormat;
     case media::SharedImageFormatType::kSharedImageFormatExternalSampler:
@@ -193,9 +191,6 @@ bool EnumTraits<media::mojom::SharedImageFormatType,
     FromMojom(media::mojom::SharedImageFormatType input,
               media::SharedImageFormatType* out) {
   switch (input) {
-    case media::mojom::SharedImageFormatType::kLegacy:
-      *out = media::SharedImageFormatType::kLegacy;
-      return true;
     case media::mojom::SharedImageFormatType::kSharedImageFormat:
       *out = media::SharedImageFormatType::kSharedImageFormat;
       return true;

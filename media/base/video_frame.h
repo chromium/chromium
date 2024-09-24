@@ -63,21 +63,14 @@ namespace media {
 
 // Specifies the type of shared image format used by media video
 // encoder/decoder. Currently, we have (1) one shared image (and texture)
-// created for single planar formats eg. RGBA (2) multiple shared images created
-// for multiplanar formats eg. P010, NV12 with one shared image for each plane
-// eg. Y and UV passing singleplanar SharedImageFormats (kR_8, kRG_88, kR_16,
-// etc.) and (3) one shared image created for multiplanar formats passing in
-// legacy multiplanar SharedImageFormats that are used with external sampler.
-// As we roll out usage of MultiPlaneFormat, this enum helps with
-// differentiating between 3 cases: (1) SinglePlaneFormat/LegacyMultiPlaneFormat
-// (2) MultiPlaneFormat without external sampler, and (3) MultiPlaneFormat with
-// external sampler. NOTE: This enum is interim until all clients are converted
-// to use MultiPlaneFormat for all multiplanar use cases; then it will be
-// replaced with bool for external sampler usage.
+// created for single planar and multi planar formats and (2) one shared image
+// created for multiplanar formats that are used with external sampler. This
+// enum helps with differentiating between 2 cases: (1)
+// SinglePlaneFormat/MultiPlaneFormat without external sampler, and (2)
+// MultiPlaneFormat with external sampler. NOTE: This enum will be removed soon
+// once ClientSharedImage is always present.
 enum class SharedImageFormatType : uint8_t {
-  // SinglePlaneFormat/LegacyMultiPlaneFormat
-  kLegacy,
-  // MultiPlaneFormat without external sampler
+  // SinglePlaneFormat, MultiPlaneFormat without external sampler
   kSharedImageFormat,
   // MultiPlaneFormat with external sampler
   kSharedImageFormatExternalSampler,

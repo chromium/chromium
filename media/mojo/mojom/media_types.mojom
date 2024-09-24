@@ -253,7 +253,6 @@ enum CdmSessionClosedReason {
 // This defines a mojo transport format for media::SharedImageFormatType.
 // See media/base/video_frame.h for descriptions.
 enum SharedImageFormatType {
-  kLegacy,
   kSharedImageFormat,
   kSharedImageFormatExternalSampler,
 };
