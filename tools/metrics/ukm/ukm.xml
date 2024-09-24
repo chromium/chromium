@@ -20197,6 +20197,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that data is available. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20210,6 +20217,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that message is clicked. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20223,6 +20237,13 @@ be describing additional metrics about the same event.
     <summary>
       A boolean signaling that message is displayed. Only records true values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20237,6 +20258,13 @@ be describing additional metrics about the same event.
       A boolean signaling that store info row is clicked. Only records true
       values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -20251,6 +20279,13 @@ be describing additional metrics about the same event.
       A boolean signaling that store info row is displayed. Only records true
       values.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
