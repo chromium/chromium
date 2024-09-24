@@ -25,10 +25,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 class CredentialProviderPromoCoordinatorTest : public PlatformTest {
  public:
   CredentialProviderPromoCoordinatorTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         histogram_tester_(std::make_unique<base::HistogramTester>()) {
-
     coordinator_ = [[CredentialProviderPromoCoordinator alloc]
         initWithBaseViewController:nil
                            browser:browser_.get()];
@@ -53,7 +52,7 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
