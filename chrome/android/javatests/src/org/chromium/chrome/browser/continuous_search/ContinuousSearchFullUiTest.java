@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -89,7 +89,7 @@ public class ContinuousSearchFullUiTest {
     /** Assert that all the critical views are shown using mock data to trigger the UI. */
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testDisplaysFullUi() throws TimeoutException {
         List<PageItem> results = new ArrayList<PageItem>();
         results.add(new PageItem(new GURL("https://www.foo.com/"), "Foo Result"));

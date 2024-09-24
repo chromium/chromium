@@ -41,10 +41,9 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -69,7 +68,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testInitialState() throws Exception {
@@ -83,7 +82,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip", "Main"})
     public void testNewTabButtonWithOneTab() throws Exception {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -113,7 +112,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testNewTabButtonWithManyTabs() throws Exception {
         ChromeTabUtils.newTabsFromMenu(
@@ -156,7 +155,7 @@ public class TabStripTest {
     /** Tests that creating a new tab from the menu properly updates the TabStrip. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testNewTabFromMenu() throws Exception {
@@ -178,7 +177,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testNewIncognitoTabFromMenuAtNormalStrip() throws Exception {
@@ -205,7 +204,7 @@ public class TabStripTest {
     /** Tests that selecting a tab properly selects the new tab. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testSelectWithTwoTabs() throws Exception {
         ChromeTabUtils.newTabFromMenu(
@@ -230,7 +229,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testSelectWithManyTabs() throws Exception {
         ChromeTabUtils.newTabsFromMenu(
@@ -257,7 +256,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/1348310")
     public void testCloseTabWithTwoTabs() throws Exception {
@@ -296,7 +295,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/1348310")
     public void testCloseTabWithManyTabs() throws Exception {
@@ -337,7 +336,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testCloseSelectedTab() throws Exception {
         ChromeTabUtils.newTabFromMenu(
@@ -376,7 +375,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/1348310")
     public void testCloseAllTabsFromTabMenuClosesAllTabs() {
@@ -428,10 +427,7 @@ public class TabStripTest {
     /** Tests that the tab menu is dismissed when the orientation changes and no tabs are closed. */
     @Test
     @LargeTest
-    @Restriction({
-        UiRestriction.RESTRICTION_TYPE_TABLET,
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
-    })
+    @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testTabMenuDismissedOnOrientationChange() {
@@ -473,7 +469,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testToggleIncognitoMode() throws Exception {
@@ -507,7 +503,7 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testCloseLastIncognitoTab() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse(
@@ -543,7 +539,7 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testCloseAllIncognitoTabsFromTabMenu() {
         // 1. Create two incognito tabs
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -600,7 +596,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testTabSelectionViewDoesNotBreakModelSwitch() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -628,7 +624,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "https://crbug.com/328302523")
     public void testScrollingStripStackersWithIncognito() throws Exception {
@@ -677,7 +673,7 @@ public class TabStripTest {
     /** This verifies that the strip scrolls correctly when last tab is selected. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testScrollingStripStackersWithLastTabSelected() throws Exception {
         // Open enough regular tabs to cause the strip to scroll
@@ -691,7 +687,7 @@ public class TabStripTest {
     /** Verifies that the strip scrolls correctly and the correct index is selected. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest
     // Disable due to flakiness in scrolling to hide the first tab.
@@ -748,7 +744,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/1348310")
     public void testScrollingStripStackersWithMiddleTabSelected() throws Exception {
@@ -770,8 +766,8 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338966108
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338966108
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     public void testScrollingStripStackerFadeOpacity() throws Exception {
         // Check scrolling tab strip
@@ -820,7 +816,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testScrollingStripStackerScrollsToSelectedTab() throws Exception {
@@ -867,7 +863,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/1348310")
     public void testScrollingStripStackerTabOffsets() throws Exception {
@@ -949,7 +945,7 @@ public class TabStripTest {
     /** Tests that switching tabs hides keyboard. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"TabStrip", "IME"})
     @DisabledTest(message = "crbug.com/342984901")
     public void testSwitchingTabsHidesKeyboard() throws Throwable {
@@ -981,7 +977,7 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testHoverOnTabStrip() throws Exception {
         // Open a few regular tabs.
         ChromeTabUtils.newTabsFromMenu(
@@ -1072,7 +1068,7 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testHoverOnTabStrip_switchTabModel() throws Exception {
         // Open regular tabs.
         ChromeTabUtils.newTabsFromMenu(
@@ -1147,7 +1143,7 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @DisabledTest(message = "crbug.com/342984901")
     public void testTabHoverStateClearedOnActivityPause() throws Exception {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);

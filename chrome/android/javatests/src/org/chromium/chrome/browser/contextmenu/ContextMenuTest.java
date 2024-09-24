@@ -87,8 +87,8 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.MenuSourceType;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -654,7 +654,7 @@ public class ContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338969612
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338969612
     @Feature({"Browser", "ContextMenu"})
     public void testContextMenuRetrievesLinkOptions() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
@@ -748,7 +748,7 @@ public class ContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338969612
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338969612
     @Feature({"Browser", "ContextMenu"})
     public void testContextMenuRetrievesImageLinkOptions() throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);

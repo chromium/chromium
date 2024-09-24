@@ -57,8 +57,8 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -396,7 +396,7 @@ public class TabSuspensionTest {
     @Test
     @MediumTest
     // TODO(crbug.com/339003346): Failing on tablets, fix and re-enable.
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSuspendNullCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);

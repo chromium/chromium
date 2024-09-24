@@ -37,14 +37,14 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link TabbedRootUiCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/40112282): Enable for tablets once we support them.
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@Restriction({DeviceFormFactor.PHONE})
 public class TabbedRootUiCoordinatorTest {
     @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 

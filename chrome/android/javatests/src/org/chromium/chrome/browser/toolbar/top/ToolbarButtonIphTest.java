@@ -46,7 +46,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Integration tests for showing IPH bubbles on the toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -83,7 +83,7 @@ public class ToolbarButtonIphTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testPriceDropIph() throws InterruptedException {
         setPriceTrackingFeatures();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.PRICE_DROP_NTP_FEATURE))
@@ -107,7 +107,7 @@ public class ToolbarButtonIphTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testTabSwitcherEventEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -121,7 +121,7 @@ public class ToolbarButtonIphTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "https://crbug.com/1142979")
     public void testTabSwitcherButtonIph() throws InterruptedException {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))

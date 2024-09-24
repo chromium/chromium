@@ -113,8 +113,8 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -309,7 +309,7 @@ public class WebContentsAccessibilityTest {
     /** Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
@@ -346,7 +346,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");

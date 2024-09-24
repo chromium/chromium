@@ -34,7 +34,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -97,7 +97,7 @@ public class WebappDisplayModeTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMinimalUi() {
         WebappActivity activity = startActivity(DisplayMode.MINIMAL_UI, "");
 

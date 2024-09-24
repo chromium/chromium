@@ -52,12 +52,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -866,7 +866,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     @DisabledTest(message = "crbug.com/1186468")
     public void testDragHelper_ClickItem() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =

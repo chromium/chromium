@@ -33,8 +33,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Tests overview mode app menu popup.
@@ -42,10 +42,7 @@ import org.chromium.ui.test.util.UiRestriction;
  * <p>TODO(crbug.com/40662624): Add more required tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OverviewAppMenuTest {
     @Rule

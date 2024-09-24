@@ -163,7 +163,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -833,7 +832,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338998202
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338998202
     public void testDialogSelectionEditor_PostLongPressClickNoSelectionEditor()
             throws ExecutionException {
         TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
@@ -1492,7 +1491,7 @@ public class TabGridDialogTest {
             sdk_is_greater_than = VERSION_CODES.N_MR1,
             message = "https://crbug.com/1124336")
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
-    @DisableIf.Device(type = UiDisableIf.TABLET)
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 2, 0, "about:blank");
@@ -1799,7 +1798,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = UiDisableIf.TABLET)
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
@@ -1846,7 +1845,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = UiDisableIf.TABLET)
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
@@ -1902,7 +1901,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = UiDisableIf.TABLET)
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     @RequiresRestart
     public void testDialogSetup_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.

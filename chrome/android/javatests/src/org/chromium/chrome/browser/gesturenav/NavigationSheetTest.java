@@ -41,8 +41,8 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.mock.MockNavigationController;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
@@ -231,7 +231,7 @@ public class NavigationSheetTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testLongPressBackTriggering() {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -247,7 +247,7 @@ public class NavigationSheetTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testLongPressBackAfterActivityDestroy() {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -263,7 +263,7 @@ public class NavigationSheetTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testLongPressBackTriggering_Cancellation() throws ExecutionException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(

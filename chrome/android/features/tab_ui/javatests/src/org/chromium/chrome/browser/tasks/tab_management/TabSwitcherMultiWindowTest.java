@@ -21,13 +21,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
 import android.os.Build;
-
 import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.chromium.base.test.util.DisableIf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -38,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -49,7 +49,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -57,7 +57,7 @@ import org.chromium.ui.test.util.UiRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
 })
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
 // TODO(crbug.com/344669867): Failing when batched, batch this again.

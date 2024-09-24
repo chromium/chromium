@@ -71,9 +71,9 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -134,7 +134,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testRegularLinkOffOriginNoWebappThemeColor() throws Exception {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
         assertEquals(
@@ -155,7 +155,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testRegularLinkOffOriginThemeColor() throws Exception {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(
@@ -179,7 +179,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testRegularLinkOffOriginTwa() throws Exception {
         Intent launchIntent =
                 mActivityTestRule
@@ -208,7 +208,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "Flaky - crbug.com/359629160")
     public void testFormSubmitOffOrigin() throws Exception {
         Intent launchIntent =
@@ -287,7 +287,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testInScopeNavigationStaysInWebapp() throws Exception {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
         String otherPageUrl =

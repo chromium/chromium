@@ -58,7 +58,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for showing IPH bubbles for read later. */
@@ -101,7 +101,7 @@ public class ReadLaterContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShowIPHOnContextMenuLinkCopied() throws Throwable {
         when(mTracker.shouldTriggerHelpUI(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
@@ -127,7 +127,7 @@ public class ReadLaterContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testContextMenuAddToOfflinePage() throws Throwable {
         String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);

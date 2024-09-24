@@ -29,7 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -156,7 +156,7 @@ public class TemplateUrlServiceTest {
     @Test
     @SmallTest
     @Feature({"SearchEngines"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // see crbug.com/581268
+    @Restriction(DeviceFormFactor.PHONE) // see crbug.com/581268
     public void testLoadUrlService() {
         waitForTemplateUrlServiceToLoad();
 

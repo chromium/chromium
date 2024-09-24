@@ -76,7 +76,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelD
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -228,7 +228,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testCreation() {
         initializeLayoutManagerPhone(0, 0);
     }
@@ -347,7 +347,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void testHubTabSwitcherLayout_Enabled() throws Exception {

@@ -35,7 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Tests for the thumbnail view in Grid Tab Switcher. */
@@ -44,10 +44,7 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

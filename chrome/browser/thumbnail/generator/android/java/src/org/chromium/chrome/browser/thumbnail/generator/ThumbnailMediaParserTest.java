@@ -21,7 +21,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.File;
 
@@ -90,7 +90,7 @@ public class ThumbnailMediaParserTest {
     @Test
     @LargeTest
     @Feature({"MediaParser"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     /**
      * Verify metadata and thumbnail can be retrieved correctly from h264 video file.
      *

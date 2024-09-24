@@ -96,7 +96,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -525,7 +524,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testConfigureToolbarMenuItems() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1206,7 +1205,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testSelectionAction_IndividualTabSelection() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1251,7 +1250,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testGridViewAppearance() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1290,7 +1289,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testGridViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1331,7 +1330,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testSelectionAction_Toggle() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1393,7 +1392,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance() throws IOException {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1421,7 +1420,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewV2Shows() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1434,7 +1433,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1463,7 +1462,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListView_select() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1529,7 +1528,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testToolbarMenuItem_SelectAllMenu() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1570,7 +1569,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testToolbarActionViewAndMenuItemContentDescription() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();

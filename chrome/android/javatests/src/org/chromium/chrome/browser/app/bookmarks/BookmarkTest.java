@@ -126,10 +126,10 @@ import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -340,7 +340,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShowBookmarkManager_Phone() throws InterruptedException {
         BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -374,7 +374,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testFolderNavigation_Phone() throws InterruptedException, ExecutionException {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
@@ -448,7 +448,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testOpenFromReadingListAndNavigateBack() throws Exception {
         openBookmarkManager();
         runOnUiThreadBlocking(
@@ -522,7 +522,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testSearchBookmarks_pressBack() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(
                 SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
@@ -670,7 +670,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Tablets don't have a close button.
+    @Restriction({DeviceFormFactor.PHONE}) // Tablets don't have a close button.
     public void testCloseBookmarksWhileStillLoading() throws Exception {
         BookmarkManagerCoordinator.preventLoadingForTesting(true);
 
@@ -685,7 +685,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // see crbug.com/1429025
+    @Restriction({DeviceFormFactor.PHONE}) // see crbug.com/1429025
     public void testEditHiddenWhileStillLoading() throws Exception {
         BookmarkManagerCoordinator.preventLoadingForTesting(true);
 
@@ -1685,7 +1685,7 @@ public class BookmarkTest {
      */
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         assertEquals(
                 0,
@@ -1719,7 +1719,7 @@ public class BookmarkTest {
      */
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
         assertEquals(
                 0,
@@ -1745,7 +1745,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
         doReturn(true).when(mShoppingService).isShoppingListEligible();
@@ -1786,7 +1786,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingDataPresentButFeatureDisabled()
             throws InterruptedException, ExecutionException {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);

@@ -63,7 +63,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -312,7 +312,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testMvtAndSingleTabCardVerticalMargin() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -436,7 +436,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testFakeSearchBoxWidth() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -456,7 +456,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testMvtLayoutHorizontalMargin() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);

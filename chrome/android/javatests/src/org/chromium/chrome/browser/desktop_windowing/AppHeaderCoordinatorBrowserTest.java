@@ -68,13 +68,13 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetsRectProvider;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
 /** Browser test for {@link AppHeaderCoordinator} */
 @RequiresApi(Build.VERSION_CODES.R)
-@Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+@Restriction(DeviceFormFactor.TABLET)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)

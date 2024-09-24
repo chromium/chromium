@@ -59,8 +59,8 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -95,7 +95,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     @DisabledTest(message = "crbug.com/353460498")
     public void testColorToggleIncognitoInTabSwitcher() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
@@ -131,7 +131,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredInTabSwitcher() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
@@ -156,7 +156,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     @DisabledTest(message = "https://issues.chromium.org/issues/341157444")
     public void testStatusBarColorNtp() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
@@ -176,7 +176,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
@@ -236,7 +236,7 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @DisabledTest(message = "b/352622267")
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testFocusAndScrollColors() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
@@ -281,7 +281,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final @ColorInt int expectedFocusedColor =
@@ -305,7 +305,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
@@ -336,7 +336,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator_FeatureMatchToolbarColorEnabled() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
@@ -395,10 +395,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({
-        UiRestriction.RESTRICTION_TYPE_TABLET,
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
-    })
+    @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStatusBarColorForTabStripRedesignFolioTablet() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
@@ -417,10 +414,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Restriction({
-        UiRestriction.RESTRICTION_TYPE_TABLET,
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
-    })
+    @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStatusBarColorOnTabletDuringTabStripTransition() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =

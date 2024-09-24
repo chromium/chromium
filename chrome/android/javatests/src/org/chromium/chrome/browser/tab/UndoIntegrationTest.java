@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.ui.test.util.UiRestriction.RESTRICTION_TYPE_TABLET;
 
 import android.os.SystemClock;
 
@@ -37,6 +36,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -126,7 +126,7 @@ public class UndoIntegrationTest {
     // Regression test for crbug/1465745.
     @Test
     @LargeTest
-    @Restriction(RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testTabletCloseTabAndCommitDoesNotCrash() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         sActivityTestRule.loadUrlInNewTab("about:blank");

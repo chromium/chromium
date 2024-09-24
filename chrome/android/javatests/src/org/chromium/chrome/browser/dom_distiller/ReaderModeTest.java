@@ -71,7 +71,7 @@ import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.Objects;
@@ -81,7 +81,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** End-to-end tests for Reader Mode (Simplified view). */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
 public class ReaderModeTest implements CustomMainActivityStart {

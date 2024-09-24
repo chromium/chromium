@@ -68,7 +68,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 /** End-to-end test for ArchivedTabsDialogCoordinator. */
@@ -664,7 +664,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     // Scrolling all the way down on tablets is flaky.
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBottomShadowView_DisappersWhenFullyScrolled() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");

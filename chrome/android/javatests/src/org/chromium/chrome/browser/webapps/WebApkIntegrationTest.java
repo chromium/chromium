@@ -45,7 +45,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 
@@ -166,7 +166,7 @@ public class WebApkIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362218524
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/362218524
     public void testWebApkServiceIntegration() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 

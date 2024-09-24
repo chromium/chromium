@@ -47,7 +47,7 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -110,7 +110,7 @@ public class AccountBookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisabledTest(
             message =

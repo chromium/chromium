@@ -55,15 +55,15 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Testing startup behavior")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+@Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,

@@ -71,9 +71,9 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 
@@ -92,7 +92,7 @@ import java.io.IOException;
             + "name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365/"
             + "session_rate/<1"
 })
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 // Remove the ANDROID_HUB_FLOATING_ACTION_BUTTON restriction and regenerate goldens when launching.
 @DisableFeatures({
     ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,

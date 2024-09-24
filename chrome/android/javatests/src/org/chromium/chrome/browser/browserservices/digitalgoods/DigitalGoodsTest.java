@@ -44,7 +44,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.payments.mojom.ItemDetails;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -98,7 +98,7 @@ public class DigitalGoodsTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void javaImplConnected() throws TimeoutException {
         FakeDigitalGoods fake = new FakeDigitalGoods();
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(fake);

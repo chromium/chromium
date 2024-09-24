@@ -31,8 +31,8 @@ import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule
 import org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for edge to edge using public transit. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -49,7 +49,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @Batch(Batch.PER_CLASS)
 // Bots <= VERSION_CODES.S use 3-bottom nav bar. See crbug.com/352402600
 @MinAndroidSdkLevel(VERSION_CODES.S_V2)
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+@Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 public class EdgeToEdgePTTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

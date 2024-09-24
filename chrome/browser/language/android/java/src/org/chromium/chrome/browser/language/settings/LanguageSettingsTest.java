@@ -44,8 +44,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the "Languages" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,7 +53,7 @@ import org.chromium.ui.test.util.UiRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=" + ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 public class LanguageSettingsTest {
     @Rule
     public final SettingsActivityTestRule<LanguageSettings> mSettingsActivityTestRule =

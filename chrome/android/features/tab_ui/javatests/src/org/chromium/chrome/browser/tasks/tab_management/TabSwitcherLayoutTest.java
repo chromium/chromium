@@ -106,10 +106,10 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -130,10 +130,7 @@ import java.util.concurrent.ExecutionException;
     "force-fieldtrials=Study/Group"
 })
 @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherLayoutTest {
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 

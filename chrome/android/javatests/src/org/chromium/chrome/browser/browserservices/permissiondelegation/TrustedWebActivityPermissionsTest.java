@@ -38,7 +38,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // See: https://crbug.com/1120707
-@DisableIf.Device(type = {UiDisableIf.TABLET})
+@DisableIf.Device(DeviceFormFactor.TABLET)
 @Batch(PER_CLASS)
 public class TrustedWebActivityPermissionsTest {
     @Rule

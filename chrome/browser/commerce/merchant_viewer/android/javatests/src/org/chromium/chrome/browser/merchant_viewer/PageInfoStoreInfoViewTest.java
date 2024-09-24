@@ -56,7 +56,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfoCallback;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -65,7 +65,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.COMMERCE_MERCHANT_VIEWER})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@Restriction({DeviceFormFactor.PHONE})
 @Batch(Batch.PER_CLASS)
 public class PageInfoStoreInfoViewTest {
     @ClassRule

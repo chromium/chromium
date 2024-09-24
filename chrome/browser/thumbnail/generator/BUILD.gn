@@ -144,6 +144,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
+      "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
     ]
 

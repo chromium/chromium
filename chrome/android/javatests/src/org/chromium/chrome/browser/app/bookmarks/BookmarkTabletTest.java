@@ -43,12 +43,12 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the bookmark manager on tablet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+@Restriction({DeviceFormFactor.TABLET})
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "Test has side-effects (bookmarks, pageloads) and thus can't be batched.")
 public class BookmarkTabletTest {

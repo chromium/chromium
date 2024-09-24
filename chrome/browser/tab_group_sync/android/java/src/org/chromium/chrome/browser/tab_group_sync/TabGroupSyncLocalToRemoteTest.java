@@ -39,7 +39,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
@@ -55,10 +55,7 @@ import java.util.List;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_GROUP_PANE_ANDROID
 })
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncLocalToRemoteTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 

@@ -60,10 +60,9 @@ import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.UiAndroidFeatures;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -355,7 +354,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972492
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
@@ -399,7 +398,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972492
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
     public void testSwipeNavigateOnNativePage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -552,7 +551,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testEdgeSwipeIsNoopInTabSwitcher() throws TimeoutException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
@@ -570,7 +569,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSwipeAndHoldOnNtp_EnterTabSwitcher() throws TimeoutException {
         // Clicking tab switcher button while swiping and holding the gesture navigation
         // bubble should reset the state and dismiss the UI.

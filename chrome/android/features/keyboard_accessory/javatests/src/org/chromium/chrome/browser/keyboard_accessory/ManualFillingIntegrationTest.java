@@ -57,8 +57,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -268,7 +267,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testInvokingTabSwitcherHidesAccessory() throws TimeoutException {
         mHelper.loadTestPage(false);
 
@@ -377,7 +376,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362214348
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/362214348
     public void testInfobarStaysHiddenWhileChangingFieldsWithOpenKeyboard()
             throws TimeoutException {
         mHelper.loadTestPage(false);

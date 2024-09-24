@@ -52,8 +52,8 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ import java.util.List;
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
 })
-@Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+@Restriction(DeviceFormFactor.TABLET)
 public class TabStripGroupContextMenuTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

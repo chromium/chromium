@@ -144,10 +144,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -2535,7 +2535,7 @@ public class SiteSettingsTest {
     @DisableIf.Build(
             message = "https://crbug.com/1269556,https://crbug.com/1414569",
             sdk_is_greater_than = Build.VERSION_CODES.N_MR1)
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1234530
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1234530
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionRule.runNoPromptTest(

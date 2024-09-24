@@ -70,7 +70,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -359,7 +359,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_buttonVisibilityPhone() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -408,7 +408,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensDisabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -452,7 +452,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensEnabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -496,7 +496,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_lenButtonVisibilityOnNtpPhone_updatedOnceWhenNtpScrolled() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
@@ -524,7 +524,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnIncognitoStateChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -571,7 +571,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnDefaultSearchEngineChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -620,10 +620,9 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({
-        "disable-features="
-                + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testFocusLogic_buttonVisibilityTablet() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -693,7 +692,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_backPress() {
         startActivityNormally();
 
@@ -707,7 +706,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testFocusLogic_backPress_Refactored() {
         startActivityNormally();
 
@@ -722,7 +721,7 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
@@ -733,7 +732,7 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_nonGoogleSearchEngine() {
         setupSearchEngineLogo(NON_GOOGLE_URL);
         startActivityNormally();
@@ -744,7 +743,7 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_incognito() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
@@ -766,7 +765,7 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOmniboxSearchEngineLogo_ntpToSite() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();

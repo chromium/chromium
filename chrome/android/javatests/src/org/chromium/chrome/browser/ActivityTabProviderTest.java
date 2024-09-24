@@ -32,7 +32,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -141,7 +141,7 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTriggerWithTabSwitcher() throws TimeoutException {
         assertEquals(
                 "The activity tab should be the model's selected tab.",

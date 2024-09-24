@@ -46,9 +46,9 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.UiDisableIf;
 
 /** Integration test for accessing credential manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -111,7 +111,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339278945
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/339278945
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testUseCredentialManagerFromSafetyCheckForLocal() {
         mSettingsActivityTestRule.startSettingsActivity();
@@ -131,7 +131,7 @@ public class CredentialManagerIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339278945
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/339278945
     @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testUseCredentialManagerFromSafetyCheckForAccount() {
         mSettingsActivityTestRule.startSettingsActivity();

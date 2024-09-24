@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -136,7 +136,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1111770
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1111770
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();

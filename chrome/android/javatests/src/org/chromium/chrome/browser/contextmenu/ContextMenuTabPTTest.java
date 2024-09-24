@@ -27,7 +27,7 @@ import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Public transit test for opening new tabs using context menu, and test the interactions around the
@@ -41,7 +41,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @Batch(Batch.PER_CLASS)
 // On tablets, the context is showing using a popup window. This currently doesn't work well with
 // the espresso matching in the public transit framework. See https://crbug.com/363047177.
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 public class ContextMenuTabPTTest {
 
     @ClassRule

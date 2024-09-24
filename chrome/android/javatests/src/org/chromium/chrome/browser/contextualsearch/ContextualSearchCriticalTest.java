@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -158,7 +158,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testResolveContentVisibility() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
@@ -180,7 +180,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "Flaky, see crbug.com/40821849")
     public void testNonResolveContentVisibility() throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
@@ -204,7 +204,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testResolveMultipleSwipeOnlyLoadsContentOnce() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch("search");
@@ -239,7 +239,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testNonResolveMultipleSwipeOnlyLoadsContentOnce() throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
@@ -317,7 +317,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @DisabledTest(message = "crbug.com/549805")
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testChainedSearchLoadsCorrectSearchTerm() throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch("search");
@@ -456,7 +456,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTapExpandNotRemovedFromHistory() throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch();

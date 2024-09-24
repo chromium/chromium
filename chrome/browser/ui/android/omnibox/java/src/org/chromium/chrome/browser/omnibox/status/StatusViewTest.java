@@ -45,10 +45,10 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
@@ -169,7 +169,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Omnibox"})
     public void statusView_goneWhenIncognitoBadgeVisible() {
         // Set location_bar_status_icon is VISIBLE in the beginning.
@@ -209,7 +209,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Omnibox"})
     public void testSearchEngineLogo_incognito_noMarginEnd() {
         // Set incognito badge visible.

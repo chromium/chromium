@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.keyboard_accessory.button_group_component.Key
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -92,7 +92,7 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1182626
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/1182626
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
         mHelper.loadTestPage(false);
 

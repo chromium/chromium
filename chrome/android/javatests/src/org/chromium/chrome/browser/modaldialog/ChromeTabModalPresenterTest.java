@@ -67,12 +67,12 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for {@link ChromeTabModalPresenter}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -195,7 +195,7 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "https://crbug.com/1420186")
     public void testSuspend_ToggleOverview() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -283,7 +283,7 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_LastTabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
@@ -324,7 +324,7 @@ public class ChromeTabModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     @DisabledTest(message = "https://crbug.com/1382221")
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_TabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);

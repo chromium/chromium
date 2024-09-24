@@ -74,7 +74,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 
@@ -85,7 +85,7 @@ import java.io.IOException;
     "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
     "force-fieldtrials=Study/Group"
 })
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class PriceAlertsMessageCardTest {
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:implicit_subscriptions_enabled/true";

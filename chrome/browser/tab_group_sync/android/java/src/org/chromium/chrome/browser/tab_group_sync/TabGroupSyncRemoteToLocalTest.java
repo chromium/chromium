@@ -35,7 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** On-device sync integration tests for tab group sync from remote to local. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -46,10 +46,7 @@ import org.chromium.ui.test.util.UiRestriction;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_GROUP_PANE_ANDROID
 })
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncRemoteToLocalTest {
     private static final String TEST_URL1 = "/chrome/test/data/simple.html";
     private static final String TEST_URL2 = "/chrome/test/data/title2.html";

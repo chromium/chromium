@@ -45,7 +45,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Integration tests for status indicator covering related code in {@link
@@ -54,7 +54,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/40112282): Enable for tablets once we support them.
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@Restriction({DeviceFormFactor.PHONE})
 public class StatusIndicatorTest {
 
     @Rule

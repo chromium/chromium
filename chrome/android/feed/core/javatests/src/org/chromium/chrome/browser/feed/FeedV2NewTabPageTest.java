@@ -100,7 +100,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -399,7 +399,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testLoadFeedContent_Landscape() throws IOException {
         ChromeTabbedActivity chromeActivity = mActivityTestRule.getActivity();
@@ -432,7 +432,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "crbug.com/1467377")
     public void testFakeOmniboxOnNtp() throws IOException {
         openNewTabPage();

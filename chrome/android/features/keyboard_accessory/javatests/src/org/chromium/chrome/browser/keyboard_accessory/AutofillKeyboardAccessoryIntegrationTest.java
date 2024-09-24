@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -149,7 +149,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
      */
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testSelectSuggestionHidesKeyboardAccessory()
             throws ExecutionException, TimeoutException {
         loadTestPage(FakeKeyboard::new);
