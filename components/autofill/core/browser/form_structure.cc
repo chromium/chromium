@@ -490,12 +490,16 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     // kAutofillFixValueSemantics is launched.
     // TODO: crbug.com/40227496 - Remove the IsSelectOrSelectListElement()
     // checks once kAutofillFixValueSemantics is launched.
+    // TODO: crbug.com/40227496 - Update the comments when the experiments are
+    // launched.
     switch (reason) {
       case RetrieveFromCacheReason::kFormParsing:
-        // During form parsing (as in "assigning field types to fields")
-        // the `value` represents the initial value found at page load and needs
-        // to be preserved.
-        if (!field->IsSelectOrSelectListElement()) {
+        // If kAutofillFixValueSemantics is disabled: During form parsing (as in
+        // "assigning field types to fields") the `value` represents the initial
+        // value found at page load and needs to be preserved.
+        if (!field->IsSelectOrSelectListElement() ||
+            base::FeatureList::IsEnabled(
+                features::kAutofillFixInitialValueOfSelect)) {
           field->set_initial_value(
               cached_field->value(ValueSemantics::kInitial), /*pass_key=*/{});
         }
@@ -503,7 +507,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       case RetrieveFromCacheReason::kFormImport:
         // TODO: crbug.com/40227496 - Group IsSelectOrSelectListElement()
         // checks.
-        if (!field->IsSelectOrSelectListElement() &&
+        if ((!field->IsSelectOrSelectListElement() ||
+             base::FeatureList::IsEnabled(
+                 features::kAutofillFixInitialValueOfSelect)) &&
             base::FeatureList::IsEnabled(
                 features::kAutofillFixValueSemantics)) {
           field->set_initial_value(
@@ -522,7 +528,10 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
             !cached_field->possible_types().empty();
         if (!cached_field->value(ValueSemantics::kInitial).empty() &&
-            !field->IsSelectOrSelectListElement() && had_type) {
+            (!field->IsSelectOrSelectListElement() ||
+             base::FeatureList::IsEnabled(
+                 features::kAutofillFixInitialValueOfSelect)) &&
+            had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
         }
         const bool field_is_neither_state_nor_country =

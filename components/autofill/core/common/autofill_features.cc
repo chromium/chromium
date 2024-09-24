@@ -255,6 +255,14 @@ BASE_FEATURE(kAutofillFixValueSemantics,
              "AutofillFixValueSemantics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AutofillField::value(kInitial) for <select> fields returns the
+// initial values. Otherwise, it is identical to AutofillField::value(kCurrent).
+// Should only be enabled if kAutofillFixValueSemantics is enabled.
+// TODO: crbug.com/40227496 - Clean up when launched.
+BASE_FEATURE(kAutofillFixInitialValueOfSelect,
+             "AutofillFixInitialValueOfSelect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Killswitch for not running logic in `form_util::ClearPreviewedElements` that
 // force-sets the selectionrange of the focused element.
 BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,

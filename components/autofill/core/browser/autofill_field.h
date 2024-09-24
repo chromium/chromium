@@ -470,7 +470,8 @@ class AutofillField : public FormFieldData {
   // it was changed between page load and form submission. Set to `false` if the
   // pre-filled value wasn't changed. Not set if the field didn't have a
   // pre-filled value.
-  // Currently not implemented for <select> fields.
+  // Set for <select> fields only if kAutofillFixInitialValueOfSelect is
+  // enabled. Always set for <textarea> and <input>.
   std::optional<bool> initial_value_changed_;
 
   // Indicates if the value contained in the field was identified to potentially
