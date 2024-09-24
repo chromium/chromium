@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +27,7 @@ class AffectedByPseudoTest : public PageTestBase {
   };
 
   void SetHtmlInnerHTML(const char* html_content);
-  void CheckElementsForFocus(ElementResult expected[],
-                             unsigned expected_count) const;
+  void CheckElementsForFocus(const base::span<ElementResult> expected) const;
 
   enum AffectedByFlagName {
     kAffectedBySubjectHas,
@@ -57,21 +51,17 @@ void AffectedByPseudoTest::SetHtmlInnerHTML(const char* html_content) {
 }
 
 void AffectedByPseudoTest::CheckElementsForFocus(
-    ElementResult expected[],
-    unsigned expected_count) const {
-  unsigned i = 0;
+    const base::span<ElementResult> expected) const {
   HTMLElement* element = GetDocument().body();
 
-  for (; element && i < expected_count;
-       element = Traversal<HTMLElement>::Next(*element), ++i) {
-    ASSERT_TRUE(element->HasTagName(expected[i].tag));
-    DCHECK(element->GetComputedStyle());
-    ASSERT_EQ(expected[i].children_or_siblings_affected_by,
+  for (const ElementResult& result : expected) {
+    ASSERT_TRUE(element);
+    EXPECT_TRUE(element->HasTagName(result.tag));
+    EXPECT_TRUE(element->GetComputedStyle());
+    EXPECT_EQ(result.children_or_siblings_affected_by,
               element->ChildrenOrSiblingsAffectedByFocus());
+    element = Traversal<HTMLElement>::Next(*element);
   }
-
-  DCHECK(!element);
-  DCHECK_EQ(i, expected_count);
 }
 
 void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
@@ -157,7 +147,7 @@ TEST_F(AffectedByPseudoTest, FocusedAscendant) {
     </body>
   )HTML");
 
-  CheckElementsForFocus(expected, sizeof(expected) / sizeof(ElementResult));
+  CheckElementsForFocus(expected);
 }
 
 // "body:focus div" will mark the body element with
@@ -179,7 +169,7 @@ TEST_F(AffectedByPseudoTest, FocusedAscendantWithType) {
     </body>
   )HTML");
 
-  CheckElementsForFocus(expected, sizeof(expected) / sizeof(ElementResult));
+  CheckElementsForFocus(expected);
 }
 
 // ":not(body):focus div" should not mark the body element with
@@ -204,7 +194,7 @@ TEST_F(AffectedByPseudoTest, FocusedAscendantWithNegatedType) {
     </body>
   )HTML");
 
-  CheckElementsForFocus(expected, sizeof(expected) / sizeof(ElementResult));
+  CheckElementsForFocus(expected);
 }
 
 // Checking current behavior for ":focus + div", but this is a BUG or at best
@@ -231,7 +221,7 @@ TEST_F(AffectedByPseudoTest, FocusedSibling) {
     </body>
   )HTML");
 
-  CheckElementsForFocus(expected, sizeof(expected) / sizeof(ElementResult));
+  CheckElementsForFocus(expected);
 }
 
 TEST_F(AffectedByPseudoTest, AffectedByFocusUpdate) {
