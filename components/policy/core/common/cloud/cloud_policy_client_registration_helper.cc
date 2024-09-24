@@ -141,11 +141,12 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
     const std::string& client_id,
     const std::string& state,
     const base::TimeDelta& timeout_duration,
-    base::OnceClosure callback) {
+    CloudPolicyClient::ResultCallback callback) {
   DVLOG_POLICY(1, POLICY_AUTH)
       << "Starting profile registration with Oidc tokens";
   CHECK(!client_->is_registered());
-  callback_ = std::move(callback);
+  // Oidc enrollment will pass the callback into the client itself in order to
+  // extract net error code.
   client_->AddObserver(this);
 
   CloudPolicyClient::RegistrationParameters register_user(
@@ -156,7 +157,8 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
   }
 
   client_->RegisterWithOidcResponse(register_user, oauth_token, id_token,
-                                    client_id, timeout_duration);
+                                    client_id, timeout_duration,
+                                    std::move(callback));
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(
@@ -244,7 +246,9 @@ void CloudPolicyClientRegistrationHelper::RequestCompleted() {
     client_->RemoveObserver(this);
     // |client_| may be freed by the callback so clear it now.
     client_ = nullptr;
-    std::move(callback_).Run();
+    if (callback_) {
+      std::move(callback_).Run();
+    }
   }
 }
 

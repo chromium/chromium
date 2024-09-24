@@ -68,12 +68,15 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   // is randomized if an empty string is provided. `state` contains details
   // relevant for OIDC profile enrollment. `callback` is invoked when
   // the registration is complete.
-  void StartRegistrationWithOidcTokens(const std::string& oauth_token,
-                                       const std::string& id_token,
-                                       const std::string& client_id,
-                                       const std::string& state,
-                                       const base::TimeDelta& timeout_duration,
-                                       base::OnceClosure callback);
+  // Slightly different from other methods, the callback is invoked inside the
+  // policy client rather than in this class.
+  void StartRegistrationWithOidcTokens(
+      const std::string& oauth_token,
+      const std::string& id_token,
+      const std::string& client_id,
+      const std::string& state,
+      const base::TimeDelta& timeout_duration,
+      CloudPolicyClient::ResultCallback callback);
 
  private:
   class IdentityManagerHelper;

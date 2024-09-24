@@ -119,7 +119,8 @@ class OidcAuthenticationSigninInterceptor
   // importantly, if the 3P user identity is sync-ed to Google or not.
   void OnClientRegistered(std::unique_ptr<CloudPolicyClient> client,
                           std::string preset_profile_guid,
-                          base::TimeTicks registration_start_time);
+                          base::TimeTicks registration_start_time,
+                          CloudPolicyClient::Result result);
 
   // Called when user makes a decision on the profile creation dialog.
   void OnProfileCreationChoice(

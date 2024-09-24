@@ -924,9 +924,13 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
   CloudPolicyClient::RegistrationParameters register_user(
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
-  client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/,
-                                    kDefaultOidcRegistrationTimeout);
+  client_->RegisterWithOidcResponse(
+      register_user, kOAuthToken, kIdToken, std::string() /* no client_id*/,
+      kDefaultOidcRegistrationTimeout,
+      base::BindOnce([](CloudPolicyClient::Result result) {
+        EXPECT_TRUE(result.IsSuccess());
+        EXPECT_EQ(result.GetNetError(), net::OK);
+      }));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -970,9 +974,13 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   register_parameters.oidc_state = kOidcState;
 
-  client_->RegisterWithOidcResponse(register_parameters, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/,
-                                    kDefaultOidcRegistrationTimeout);
+  client_->RegisterWithOidcResponse(
+      register_parameters, kOAuthToken, kIdToken,
+      std::string() /* no client_id*/, kDefaultOidcRegistrationTimeout,
+      base::BindOnce([](CloudPolicyClient::Result result) {
+        EXPECT_TRUE(result.IsSuccess());
+        EXPECT_EQ(result.GetNetError(), net::OK);
+      }));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -1010,9 +1018,13 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
   CloudPolicyClient::RegistrationParameters register_user(
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
-  client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/,
-                                    kDefaultOidcRegistrationTimeout);
+  client_->RegisterWithOidcResponse(
+      register_user, kOAuthToken, kIdToken, std::string() /* no client_id*/,
+      kDefaultOidcRegistrationTimeout,
+      base::BindOnce([](CloudPolicyClient::Result result) {
+        EXPECT_FALSE(result.IsSuccess());
+        EXPECT_EQ(result.GetNetError(), net::ERR_FAILED);
+      }));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type);
