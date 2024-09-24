@@ -538,12 +538,6 @@ const base::FeatureParam<std::string>
         &kServiceWorkerBypassFetchHandlerHashStrings,
         "script_checksum_to_bypass", ""};
 
-// When enabled, ensures that an unlocked process cannot access data for
-// sites that require a dedicated process.
-BASE_FEATURE(kSiteIsolationCitadelEnforcement,
-             "kSiteIsolationCitadelEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

@@ -5831,14 +5831,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Now that the process only contains a BrowsingInstance where bar.com is
   // considered isolated and cannot reuse the old process, it should lose access
   // to bar.com's data due to citadel enforcement in CanAccessDataForOrigin.
-  if (base::FeatureList::IsEnabled(
-          features::kSiteIsolationCitadelEnforcement)) {
-    EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
-                                                url::Origin::Create(bar_url)));
-  } else {
-    EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
-                                               url::Origin::Create(bar_url)));
-  }
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
+                                              url::Origin::Create(bar_url)));
 }
 
 // Verify that a process locked to foo.com is not reused for a navigation to

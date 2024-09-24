@@ -2128,12 +2128,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
           // Citadel-style enforcement - an unlocked process should not be
           // able to access data from origins that require a lock.
 
-          // Allow the corresponding base::Feature to turn off enforcement.
-          if (!base::FeatureList::IsEnabled(
-                  features::kSiteIsolationCitadelEnforcement)) {
-            return true;
-          }
-
           // Skip these checks on the IO thread, since we can't use
           // RenderProcessHost or ShouldLockProcessToSite() there.
           //
