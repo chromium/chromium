@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -119,6 +121,13 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
         expected_id);
   }
 
+  auto AdvanceKeyboardFocus(bool reverse) {
+    return Do([this, reverse]() {
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+          browser(), ui::VKEY_TAB, false, reverse, false, false));
+    });
+  }
+
   void RemoveOmniboxFocus() {
     ui_test_utils::ClickOnView(
         BrowserView::GetBrowserViewForBrowser(browser())->contents_web_view());
@@ -214,7 +223,59 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, FocusNextPane) {
       }));
 }
 
-// TODO(crbug.com/358664193): Add tests for focus traversal using tab/shift-tab.
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ReverseFocusTraversal) {
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      ShowToast(ToastParams(ToastId::kAddedToReadingList)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      ActivateSurface(toasts::ToastView::kToastViewId),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      CheckView(toasts::ToastView::kToastViewId,
+                [](toasts::ToastView* toast) {
+                  return toast->GetFocusManager()->GetFocusedView() ==
+                         toast->action_button_for_testing();
+                }),
+      AdvanceKeyboardFocus(true),
+#if BUILDFLAG(IS_MAC)
+      // Mac focus traversal order is slightly different from other platforms
+      CheckView(kToolbarAppMenuButtonElementId,
+                [](AppMenuButton* button) { return button->HasFocus(); })
+#else
+        CheckView(kBookmarkStarViewElementId,
+                [](StarView* star_view) { return star_view->HasFocus(); })
+#endif
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ForwardFocusTraversal) {
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      ShowToast(ToastParams(ToastId::kAddedToReadingList)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      ActivateSurface(toasts::ToastView::kToastViewId),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      // Advancing focus should move into the toast close button
+      AdvanceKeyboardFocus(false),
+      CheckView(toasts::ToastView::kToastViewId,
+                [](toasts::ToastView* toast) {
+                  return toast->close_button_for_testing()->HasFocus();
+                }),
+      // Advancing focus again should move out of the toast and into the WebView
+      AdvanceKeyboardFocus(false),
+      CheckView(toasts::ToastView::kToastViewId,
+                [](toasts::ToastView* toast) {
+                  return !toast->close_button_for_testing()->HasFocus();
+                }),
+      CheckView(kBrowserViewElementId, [](BrowserView* browser_view) {
+        return browser_view->GetContentsWebView()->HasFocus();
+      }));
+}
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        HideTabScopedToastOnTabChange) {

@@ -115,15 +115,17 @@ void ToastController::ClosePersistentToast(ToastId id) {
 void ToastController::OnWidgetActivationChanged(views::Widget* widget,
                                                 bool active) {
   if (active) {
-    // On Mac, traversing out of the widget into the browser causes the browser
-    // to restore its focus to the wrong place. Thus, when entering the toast
-    // widget, make sure to clear out the browser's native focus. This causes
-    // the toast widget to lose activation, so reactivate it manually.
+    // Clears the stored focus view so that after widget activation occurs,
+    // focus will not advance out of the widget and into the ContentsWebView.
+    toast_widget_->GetFocusManager()->SetStoredFocusView(nullptr);
+  } else {
+    // On Mac, traversing out of the toast widget and into the browser causes
+    // the browser to advance focus twice so we clear the focus to achieve the
+    // expected focus behavior.
     browser_window_interface_->TopContainer()
         ->GetWidget()
         ->GetFocusManager()
-        ->ClearNativeFocus();
-    toast_widget_->Activate();
+        ->ClearFocus();
   }
 }
 #endif
@@ -298,14 +300,15 @@ void ToastController::CreateToast(const ToastParams& params,
       browser_window_interface_->GetExclusiveAccessManager()
           ->fullscreen_controller());
   toast_widget_->SetVisibilityChangedAnimationsEnabled(false);
-  // Set the the focus traversable parent of the toast widget to be the anchor
-  // view, so that when focus leaves the toast, the search for the next
-  // focusable view will start from the right place. However, does not set the
-  // anchor view's focus traversable to be the toast widget, because when focus
-  // leaves the toast widget it will go into the anchor view's focus traversable
-  // if it exists, so doing that would trap focus inside of the toast widget.
+  // Set the the focus traversable parent of the toast widget to be the parent
+  // of the anchor view, so that when focus leaves the toast, the search for the
+  // next focusable view will start from the right place. However, does not set
+  // the anchor view's focus traversable to be the toast widget, because when
+  // focus leaves the toast widget it will go into the anchor view's focus
+  // traversable if it exists, so doing that would trap focus inside of the
+  // toast widget.
   toast_widget_->SetFocusTraversableParent(
-      anchor_view->GetWidget()->GetFocusTraversable());
+      anchor_view->parent()->GetWidget()->GetFocusTraversable());
   toast_widget_->SetFocusTraversableParentView(anchor_view);
 
   if (!is_omnibox_popup_showing_) {
