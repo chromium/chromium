@@ -11,7 +11,7 @@ import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 
 /**
@@ -24,8 +24,7 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
     private final int mDefaultBottomPadding;
     private final boolean mEnableClipToPadding;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private Callback<EdgeToEdgeController> mControllerCallback;
-    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private @Nullable ValueChangedCallback<EdgeToEdgeController> mControllerChangedCallback;
 
     SimpleEdgeToEdgePadAdjuster(View view, boolean enableClipToPadding) {
         this(view, null, enableClipToPadding);
@@ -47,28 +46,30 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         if (mEdgeToEdgeControllerSupplier != null) {
-            mControllerCallback =
-                    controller -> {
-                        if (mEdgeToEdgeController != null) {
-                            mEdgeToEdgeController.unregisterAdjuster(this);
-                        }
-                        mEdgeToEdgeController = controller;
-                        if (mEdgeToEdgeController != null) {
-                            mEdgeToEdgeController.registerAdjuster(this);
-                        }
-                    };
-            mEdgeToEdgeControllerSupplier.addObserver(mControllerCallback);
+            mControllerChangedCallback =
+                    new ValueChangedCallback<>(
+                            (newController, oldController) -> {
+                                if (oldController != null) {
+                                    oldController.unregisterAdjuster(this);
+                                }
+                                if (newController != null) {
+                                    newController.registerAdjuster(this);
+                                }
+                            });
+            mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
         }
     }
 
     @Override
     public void destroy() {
+        // Reset the bottom insets for the view.
+        overrideBottomInset(0);
+
         if (mEdgeToEdgeControllerSupplier == null) return;
 
-        mEdgeToEdgeControllerSupplier.removeObserver(mControllerCallback);
-        if (mEdgeToEdgeController != null) {
-            mEdgeToEdgeController.unregisterAdjuster(this);
-            mEdgeToEdgeController = null;
+        mEdgeToEdgeControllerSupplier.removeObserver(mControllerChangedCallback);
+        if (mEdgeToEdgeControllerSupplier.get() != null) {
+            mEdgeToEdgeControllerSupplier.get().unregisterAdjuster(this);
         }
     }
 
@@ -77,7 +78,6 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         if (mEnableClipToPadding) {
             maybeSetViewClipToPadding(inset == 0);
         }
-
         mViewToPad.setPadding(
                 mViewToPad.getPaddingLeft(),
                 mViewToPad.getPaddingTop(),
