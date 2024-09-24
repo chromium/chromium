@@ -103,6 +103,31 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
                                 selector, /*verified*/ false);
 }
 
++ (id<GREYAction>)longPressOnHiddenElement {
+  GREYPerformBlock longPress = ^BOOL(id element, __strong NSError** error) {
+    grey_dispatch_sync_on_main_thread(^{
+      UIView* view = base::apple::ObjCCast<UIView>(element);
+      if (!view) {
+        *error = [NSError
+            errorWithDomain:kChromeActionsErrorDomain
+                       code:0
+                   userInfo:@{
+                     NSLocalizedDescriptionKey : @"View is not a UIView"
+                   }];
+        return;
+      }
+
+      [GREYTapper longPressOnElement:element
+                            location:view.center
+                            duration:0.7
+                               error:error];
+    });
+    return YES;
+  };
+  return [GREYActionBlock actionWithName:@"Long press on hidden element"
+                            performBlock:longPress];
+}
+
 + (id<GREYAction>)scrollToTop {
   GREYPerformBlock scrollToTopBlock = ^BOOL(id element,
                                             __strong NSError** error) {

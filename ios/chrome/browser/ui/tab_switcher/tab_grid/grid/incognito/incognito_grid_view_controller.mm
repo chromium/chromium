@@ -33,10 +33,9 @@
 }
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
-    contextMenuConfigurationForItemAtIndexPaths:
+    contextMenuConfigurationForItemsAtIndexPaths:
         (NSArray<NSIndexPath*>*)indexPaths
-                                          point:(CGPoint)point
-    API_AVAILABLE(ios(16)) {
+                                           point:(CGPoint)point {
   // Don't allow long-press previews when the incognito reauth view is blocking
   // the content.
   if (self.contentNeedsAuthentication) {
@@ -47,24 +46,6 @@
       contextMenuConfigurationForItemsAtIndexPaths:indexPaths
                                              point:point];
 }
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-
-- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
-    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
-                                         point:(CGPoint)point {
-  // Don't allow long-press previews when the incognito reauth view is blocking
-  // the content.
-  if (self.contentNeedsAuthentication) {
-    return nil;
-  }
-
-  return [super collectionView:collectionView
-      contextMenuConfigurationForItemAtIndexPath:indexPath
-                                           point:point];
-}
-
-#endif
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
