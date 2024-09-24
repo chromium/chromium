@@ -870,10 +870,19 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   bool IsContentRenderingTimeoutRunning() const;
 
+  enum class RendererIsUnresponsiveReason {
+    kOnInputEventAckTimeout = 0,
+    kNavigationRequestCommitTimeout = 1,
+    kRendererCancellationThrottleTimeout = 2,
+    kMaxValue = kRendererCancellationThrottleTimeout,
+  };
+
   // Called on delayed response from the renderer by either
   // 1) |hang_monitor_timeout_| (slow to ack input events) or
-  // 2) NavigationHandle::OnCommitTimeout (slow to commit).
+  // 2) NavigationHandle::OnCommitTimeout (slow to commit) or
+  // 3) RendererCancellationThrottle::OnTimeout (slow cancelling navigation).
   void RendererIsUnresponsive(
+      RendererIsUnresponsiveReason reason,
       base::RepeatingClosure restart_hang_monitor_timeout);
 
   // Called if we know the renderer is responsive. When we currently think the

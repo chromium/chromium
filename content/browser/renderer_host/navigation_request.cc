@@ -8487,7 +8487,10 @@ void NavigationRequest::RestartCommitTimeout() {
 void NavigationRequest::OnCommitTimeout() {
   DCHECK_EQ(READY_TO_COMMIT, state_);
   render_process_blocked_state_changed_subscription_ = {};
+
   GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsUnresponsive(
+      RenderWidgetHostImpl::RendererIsUnresponsiveReason::
+          kNavigationRequestCommitTimeout,
       base::BindRepeating(&NavigationRequest::RestartCommitTimeout,
                           weak_factory_.GetWeakPtr()));
 }

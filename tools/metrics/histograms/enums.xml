@@ -30026,6 +30026,20 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Cast button in the HTML media element"/>
 </enum>
 
+<enum name="RendererIsUnresponsiveReason">
+  <int value="0" label="OnInputEventAckTimeout"/>
+  <int value="1" label="NavigationRequestCommitTimeout"/>
+  <int value="2" label="RendererCancellationThrottleTimeout"/>
+</enum>
+
+<enum name="RenderProcessHostPriority">
+  <summary>The different possible priorities for a RenderProcessHost.</summary>
+  <int value="0" label="Best effort"/>
+  <int value="1" label="User visible"/>
+  <int value="2" label="User blocking"/>
+  <int value="3" label="Missing RenderProcessHost"/>
+</enum>
+
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
   <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>

@@ -668,6 +668,61 @@ void RunCallback(RenderWidgetHostAtPointCallback callback,
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RenderProcessHostPriority {
+  kBestEffort = 0,
+  kUserVisible = 1,
+  kUserBlocking = 2,
+  kMissingRenderProcessHost = 3,
+  kMaxValue = kMissingRenderProcessHost,
+};
+
+RenderProcessHostPriority GetRenderProcessHostPriority(
+    RenderProcessHost* render_process_host) {
+  if (!render_process_host) {
+    return RenderProcessHostPriority::kMissingRenderProcessHost;
+  }
+  switch (render_process_host->GetPriority()) {
+    case base::Process::Priority::kBestEffort:
+      return RenderProcessHostPriority::kBestEffort;
+    case base::Process::Priority::kUserVisible:
+      return RenderProcessHostPriority::kUserVisible;
+    case base::Process::Priority::kUserBlocking:
+      return RenderProcessHostPriority::kUserBlocking;
+  }
+  NOTREACHED();
+}
+
+void RecordRendererUnresponsiveMetrics(
+    bool web_contents_visible,
+    RenderWidgetHostImpl* render_widget_host) {
+  base::UmaHistogramBoolean("Renderer.Unresponsive.Visibility",
+                            web_contents_visible);
+
+  if (!web_contents_visible) {
+    return;
+  }
+
+  RenderProcessHostPriority rph_priority =
+      GetRenderProcessHostPriority(render_widget_host->GetProcess());
+  base::UmaHistogramEnumeration(
+      "Renderer.Unresponsive.PageVisible.RenderProcessHostPriority",
+      rph_priority);
+
+  bool widget_visible = !render_widget_host->is_hidden();
+  base::UmaHistogramBoolean(
+      "Renderer.Unresponsive.PageVisible.WidgetVisibility", widget_visible);
+
+  if (!widget_visible) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Renderer.Unresponsive.WidgetVisible.RenderProcessHostPriority",
+      rph_priority);
+}
+
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -9413,7 +9468,7 @@ void WebContentsImpl::RendererUnresponsive(
   }
 
   bool visible = GetVisibility() == Visibility::VISIBLE;
-  base::UmaHistogramBoolean("Renderer.Unresponsive.Visibility", visible);
+  RecordRendererUnresponsiveMetrics(visible, render_widget_host);
 
   // Do not report hangs (to task manager, to hang renderer dialog, etc.) for
   // invisible tabs (like extension background page, background tabs).  See
@@ -9422,10 +9477,6 @@ void WebContentsImpl::RendererUnresponsive(
   if (!visible) {
     return;
   }
-
-  base::UmaHistogramBoolean(
-      "Renderer.Unresponsive.PageVisible.WidgetVisibility",
-      !render_widget_host->is_hidden());
 
   if (!render_widget_host->renderer_initialized()) {
     return;

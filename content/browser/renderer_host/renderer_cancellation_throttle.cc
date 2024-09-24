@@ -109,6 +109,8 @@ void RendererCancellationThrottle::OnTimeout() {
   }
 
   previous_rfh->GetRenderWidgetHost()->RendererIsUnresponsive(
+      RenderWidgetHostImpl::RendererIsUnresponsiveReason::
+          kRendererCancellationThrottleTimeout,
       base::BindRepeating(&RendererCancellationThrottle::RestartTimeout,
                           weak_factory_.GetWeakPtr()));
 }

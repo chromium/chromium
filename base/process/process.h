@@ -213,6 +213,8 @@ class BASE_EXPORT Process {
     // the user, like producing audible content, or visible content in the
     // main frame. High priority.
     kUserBlocking,
+
+    kMaxValue = kUserBlocking,
   };
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))

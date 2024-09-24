@@ -496,15 +496,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.Unresponsive.PageVisible.WidgetVisibility"
-    enum="BooleanVisible" expires_after="2024-11-30">
+<histogram name="Renderer.Unresponsive.Reason{WidgetVisibility}"
+    enum="RendererIsUnresponsiveReason" expires_after="2024-11-30">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Records the visibility of the RenderWidgetHost when a renderer is deemed
-    unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
-    recorded if the WebContents is visible.
+    Records the reason for which RenderWidgetHostImpl::RendererIsUnresponsive()
+    was called.
   </summary>
+  <token key="WidgetVisibility">
+    <variant name="" summary="Either visibility"/>
+    <variant name=".NotVisible" summary="The RenderWidgetHostImpl is hidden"/>
+    <variant name=".Visible" summary="The RenderWidgetHostImpl is visible"/>
+  </token>
 </histogram>
 
 <histogram name="Renderer.Unresponsive.Visibility" enum="BooleanVisible"
@@ -515,6 +519,22 @@ chromium-metrics-reviews@google.com.
     Records the visibility of the WebContents when a renderer is deemed
     unresponsive (WebContentsImpl::RendererUnresponsive is called).
   </summary>
+</histogram>
+
+<histogram
+    name="Renderer.Unresponsive.{UIElementVisible}.RenderProcessHostPriority"
+    enum="RenderProcessHostPriority" expires_after="2024-11-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the priority of the RenderProcessHost at the time a renderer is is
+    deemed unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
+    recorded if the UI element is visible.
+  </summary>
+  <token key="UIElementVisible">
+    <variant name="PageVisible" summary="The WebContents is visible"/>
+    <variant name="WidgetVisible" summary="The RenderWidgetHost is visible"/>
+  </token>
 </histogram>
 
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"

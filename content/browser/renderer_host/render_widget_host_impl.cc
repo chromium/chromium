@@ -2355,14 +2355,26 @@ void RenderWidgetHostImpl::OnInputEventAckTimeout() {
   // Since input has timed out, let the BrowserUiThreadScheduler know we are
   // done with input currently.
   user_input_active_handle_.reset();
-  RendererIsUnresponsive(base::BindRepeating(
-      &RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary,
-      weak_factory_.GetWeakPtr()));
+  RendererIsUnresponsive(
+      RendererIsUnresponsiveReason::kOnInputEventAckTimeout,
+      base::BindRepeating(
+          &RenderWidgetHostImpl::RestartInputEventAckTimeoutIfNecessary,
+          weak_factory_.GetWeakPtr()));
 }
 
 void RenderWidgetHostImpl::RendererIsUnresponsive(
+    RendererIsUnresponsiveReason reason,
     base::RepeatingClosure restart_hang_monitor_timeout) {
   is_unresponsive_ = true;
+
+  base::UmaHistogramEnumeration("Renderer.Unresponsive.Reason", reason);
+  if (is_hidden()) {
+    base::UmaHistogramEnumeration("Renderer.Unresponsive.Reason.NotVisible",
+                                  reason);
+  } else {
+    base::UmaHistogramEnumeration("Renderer.Unresponsive.Reason.Visible",
+                                  reason);
+  }
 
   if (delegate_) {
     delegate_->RendererUnresponsive(this,
