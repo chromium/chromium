@@ -1136,6 +1136,11 @@ views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
 }
 
+base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
+    ActiveTabChangeCallback callback) {
+  return did_active_tab_change_callback_list_.Add(std::move(callback));
+}
+
 tabs::TabInterface* Browser::GetActiveTabInterface() {
   return tab_strip_model_->GetActiveTab();
 }
@@ -2821,6 +2826,7 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   }
 
   SearchTabHelper::FromWebContents(new_contents)->OnTabActivated();
+  did_active_tab_change_callback_list_.Notify(this);
 }
 
 void Browser::OnTabMoved(int from_index, int to_index) {
@@ -2833,6 +2839,9 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
                               WebContents* new_contents,
                               int index) {
   bool was_active = index == tab_strip_model_->active_index();
+  if (was_active) {
+    did_active_tab_change_callback_list_.Notify(this);
+  }
   TabDetachedAtImpl(old_contents, was_active, DETACH_TYPE_REPLACE);
   exclusive_access_manager_->OnTabClosing(old_contents);
   SessionServiceBase* session_service =

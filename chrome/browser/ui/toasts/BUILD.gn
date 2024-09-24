@@ -15,7 +15,6 @@ source_set("toasts") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox:omnibox",

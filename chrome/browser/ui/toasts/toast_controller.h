@@ -9,20 +9,17 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
 class BrowserWindowInterface;
-class TabStripModel;
 class ToastRegistry;
 class ToastSpecification;
 enum class ToastId;
@@ -52,9 +49,7 @@ struct ToastParams {
 };
 
 class ToastController : public views::WidgetObserver,
-                        public BrowserListObserver,
                         public FullscreenObserver,
-                        public TabStripModelObserver,
                         public OmniboxTabHelper::Observer,
                         public content::WebContentsObserver {
  public:
@@ -62,6 +57,7 @@ class ToastController : public views::WidgetObserver,
                            const ToastRegistry* toast_registry);
   ~ToastController() override;
 
+  void Init();
   bool IsShowingToast() const;
   bool CanShowToast(ToastId id) const;
   std::optional<ToastId> GetCurrentToastId() const;
@@ -79,15 +75,6 @@ class ToastController : public views::WidgetObserver,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 #endif
   void OnWidgetDestroyed(views::Widget* widget) override;
-
-  // BrowserListObserver:
-  void OnBrowserClosing(Browser* browser) override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -107,6 +94,7 @@ class ToastController : public views::WidgetObserver,
   base::OneShotTimer* GetToastCloseTimerForTesting();
 
  private:
+  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void QueueToast(ToastParams params);
   void ShowToast(ToastParams params);
   virtual void CreateToast(const ToastParams& params,
@@ -141,7 +129,8 @@ class ToastController : public views::WidgetObserver,
 
   raw_ptr<toasts::ToastView> toast_view_;
   raw_ptr<views::Widget> toast_widget_;
-  raw_ptr<TabStripModel> tab_strip_model_;
+
+  std::vector<base::CallbackListSubscription> browser_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_

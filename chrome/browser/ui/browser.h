@@ -644,7 +644,7 @@ class Browser : public TabStripModelObserver,
   // but that is done before any of these steps.
   // TODO(crbug.com/40064092): See about unifying IsBrowserClosing() and
   // is_delete_scheduled().
-  bool IsAttemptingToCloseBrowser() const;
+  bool IsAttemptingToCloseBrowser() const override;
   bool IsBrowserClosing() const;
   bool is_delete_scheduled() const { return is_delete_scheduled_; }
 
@@ -848,6 +848,8 @@ class Browser : public TabStripModelObserver,
   bool IsTabStripVisible() override;
   bool ShouldHideUIForFullscreen() const override;
   views::View* TopContainer() override;
+  base::CallbackListSubscription RegisterActiveTabDidChange(
+      ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
   web_modal::WebContentsModalDialogHost*
@@ -1457,6 +1459,10 @@ class Browser : public TabStripModelObserver,
 #endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
+
+  using DidActiveTabChangeCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  DidActiveTabChangeCallbackList did_active_tab_change_callback_list_;
 
   using DidBecomeActiveCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;

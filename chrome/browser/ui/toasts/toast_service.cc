@@ -26,6 +26,7 @@ ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
   toast_controller_ = std::make_unique<ToastController>(
       browser_window_interface, toast_registry_.get());
+  toast_controller_->Init();
   RegisterToasts(browser_window_interface);
 }
 

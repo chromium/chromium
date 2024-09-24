@@ -17,13 +17,11 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
@@ -47,20 +45,16 @@ ToastController::ToastController(
     const ToastRegistry* toast_registry)
     : browser_window_interface_(browser_window_interface),
       toast_registry_(toast_registry) {
-  BrowserList::AddObserver(this);
-  if (browser_window_interface) {
-    tab_strip_model_ =
-        browser_window_interface->GetFeatures().tab_strip_model();
-    tab_strip_model_->AddObserver(this);
-  }
 }
 
-ToastController::~ToastController() {
-  BrowserList::RemoveObserver(this);
-  if (tab_strip_model_) {
-    omnibox_helper_observer_.Reset();
-    tab_strip_model_->RemoveObserver(this);
-  }
+ToastController::~ToastController() = default;
+
+void ToastController::Init() {
+  CHECK(browser_window_interface_);
+  CHECK(browser_subscriptions_.empty());
+  browser_subscriptions_.push_back(
+      browser_window_interface_->RegisterActiveTabDidChange(base::BindRepeating(
+          &ToastController::OnActiveTabChanged, base::Unretained(this))));
 }
 
 bool ToastController::IsShowingToast() const {
@@ -143,35 +137,21 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   fullscreen_observation_.Reset();
   toast_close_timer_.Stop();
 
+  if (browser_window_interface_ &&
+      browser_window_interface_->IsAttemptingToCloseBrowser()) {
+    // Clear any queued toasts to prevent them from showing
+    // after an existing toast is destroyed while the browser is trying to
+    // close.
+    next_ephemeral_params_ = std::nullopt;
+    persistent_params_ = std::nullopt;
+    omnibox_helper_observer_.Reset();
+  }
+
   if (next_ephemeral_params_.has_value()) {
     ShowToast(std::move(next_ephemeral_params_.value()));
     next_ephemeral_params_ = std::nullopt;
   } else if (persistent_params_.has_value()) {
     ShowToast(std::move(persistent_params_.value()));
-  }
-}
-
-void ToastController::OnBrowserClosing(Browser* browser) {
-  // Clear any queued toasts to prevent them from showing
-  // after an existing toast is destroyed.
-  if (browser_window_interface_ == browser) {
-    next_ephemeral_params_ = std::nullopt;
-    persistent_params_ = std::nullopt;
-  }
-}
-
-void ToastController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed() && selection.new_contents) {
-    OmniboxTabHelper* const tab_helper =
-        OmniboxTabHelper::FromWebContents(selection.new_contents);
-    CHECK(tab_helper);
-    omnibox_helper_observer_.Reset();
-    omnibox_helper_observer_.Observe(tab_helper);
-    Observe(selection.new_contents);
-    ClearTabScopedToasts();
   }
 }
 
@@ -181,6 +161,20 @@ void ToastController::PrimaryPageChanged(content::Page& page) {
 
 base::OneShotTimer* ToastController::GetToastCloseTimerForTesting() {
   return &toast_close_timer_;
+}
+
+void ToastController::OnActiveTabChanged(
+    BrowserWindowInterface* browser_interface) {
+  tabs::TabInterface* const tab_interface =
+      browser_interface->GetActiveTabInterface();
+  content::WebContents* const web_contents = tab_interface->GetContents();
+  OmniboxTabHelper* const tab_helper =
+      OmniboxTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  omnibox_helper_observer_.Reset();
+  omnibox_helper_observer_.Observe(tab_helper);
+  Observe(web_contents);
+  ClearTabScopedToasts();
 }
 
 void ToastController::QueueToast(ToastParams params) {

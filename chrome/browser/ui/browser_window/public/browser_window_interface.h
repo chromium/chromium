@@ -70,8 +70,16 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the browser controls are hidden due to being in fullscreen.
   virtual bool ShouldHideUIForFullscreen() const = 0;
 
+  // See Browser::IsAttemptingToCloseBrowser() for more details.
+  virtual bool IsAttemptingToCloseBrowser() const = 0;
+
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
+
+  using ActiveTabChangeCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterActiveTabDidChange(
+      ActiveTabChangeCallback callback) = 0;
 
   // Returns the foreground tab. This can be nullptr very early during
   // BrowserWindow initialization, and very late during BrowserWindow teardown.
