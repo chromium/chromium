@@ -314,6 +314,7 @@ source_set("eg2_tests") {
     "//components/autofill/ios/common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
+    "//components/plus_addresses:features",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",

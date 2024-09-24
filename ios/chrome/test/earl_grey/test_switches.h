@@ -37,10 +37,6 @@ extern const char kFamilyStatus[];
 // feature to enable. Leave blank/empty value to enable all IPH in testing.
 extern const char kEnableIPH[];
 
-// Switch used to enable `FakePlusAddressService` for testing.
-// TODO(crbug.com/327838014): Adapt tests and get rid of the switch.
-extern const char kAddFakePlusAddressService[];
-
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_

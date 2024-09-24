@@ -16,6 +16,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
@@ -190,10 +191,14 @@ void LoginOnUff() {
     config.features_enabled.push_back(
         password_manager::features::kIosDetectUsernameInUff);
   }
+
   // The proactive password suggestion bottom sheet isn't tested here, it
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(
       password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
+  // The tests are incompatible with the feature.
+  config.features_disabled.push_back(
+      plus_addresses::features::kPlusAddressesEnabled);
   return config;
 }
 

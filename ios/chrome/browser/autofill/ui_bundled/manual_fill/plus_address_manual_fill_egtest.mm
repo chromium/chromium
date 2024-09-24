@@ -22,7 +22,6 @@
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -124,8 +123,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       {kIOSKeyboardAccessoryUpgrade, {}});
   config.features_enabled_and_params.push_back(
       {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kAddFakePlusAddressService);
 
   return config;
 }

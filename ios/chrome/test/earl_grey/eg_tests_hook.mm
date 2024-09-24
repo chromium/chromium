@@ -197,11 +197,6 @@ GetOverriddenBulkLeakCheckService() {
 
 std::unique_ptr<plus_addresses::PlusAddressService>
 GetOverriddenPlusAddressService(ProfileIOS* profile) {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          test_switches::kAddFakePlusAddressService)) {
-    return nullptr;
-  }
-
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<plus_addresses::FakePlusAddressService>(

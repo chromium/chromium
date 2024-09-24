@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
@@ -212,6 +213,8 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  config.features_disabled.push_back(
+      plus_addresses::features::kPlusAddressesEnabled);
 
   return config;
 }

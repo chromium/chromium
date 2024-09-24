@@ -24,7 +24,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -115,9 +114,6 @@ void ExpectModalTimeSample(
     config.iph_feature_enabled =
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
-
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kAddFakePlusAddressService);
 
   return config;
 }

@@ -26,7 +26,4 @@ const char kFamilyStatus[] = "family-status";
 // Enables the provided IPH.
 const char kEnableIPH[] = "enable-iph";
 
-// Enables FakePlusAddressService.
-const char kAddFakePlusAddressService[] = "enable-fake-plus-address-service";
-
 }  // namespace test_switches
