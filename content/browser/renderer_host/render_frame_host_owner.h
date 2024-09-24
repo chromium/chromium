@@ -120,6 +120,14 @@ class RenderFrameHostOwner {
   // speculative RenderFrameHosts.
   virtual void CancelNavigation(NavigationDiscardReason reason) = 0;
 
+  // Reset every non-speculative navigation in this frame, and its descendants.
+  // This is called after outermost main frame has been discarded.
+  //
+  // This takes into account:
+  // - Non-pending commit NavigationRequest owned by the FrameTreeNode
+  // - Pending commit NavigationRequest owned by the current RenderFrameHost
+  virtual void ResetNavigationsForDiscard() = 0;
+
   // Return the iframe.credentialless attribute value.
   virtual bool Credentialless() const = 0;
 

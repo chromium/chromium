@@ -1056,6 +1056,15 @@ void FrameTree::FocusOuterFrameTrees() {
 }
 
 void FrameTree::Discard() {
+  // A speculative pending-commit rfh should not be cancelled or deleted. In
+  // this case ignore the discard request and allow the navigation to complete
+  // as normal.
+  if (const auto* speculative_rfh =
+          root()->render_manager()->speculative_frame_host();
+      speculative_rfh && speculative_rfh->HasPendingCommitNavigation()) {
+    return;
+  }
+
   root()->set_was_discarded();
   root()->current_frame_host()->DiscardFrame();
   NavigationControllerImpl& navigation_controller = controller();

@@ -1248,6 +1248,16 @@ void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {
   ResetNavigationRequest(reason);
 }
 
+void FrameTreeNode::ResetNavigationsForDiscard() {
+  for (FrameTreeNode* frame : frame_tree().SubtreeNodes(this)) {
+    // TODO(crbug.com/365481515): Consider adding a separate discard reason for
+    // frame tree discarding.
+    frame->ResetNavigationRequest(NavigationDiscardReason::kWillRemoveFrame);
+    frame->current_frame_host()->ResetOwnedNavigationRequests(
+        NavigationDiscardReason::kWillRemoveFrame);
+  }
+}
+
 bool FrameTreeNode::Credentialless() const {
   return attributes_->credentialless;
 }
