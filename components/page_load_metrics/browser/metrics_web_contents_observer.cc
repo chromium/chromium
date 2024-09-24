@@ -73,11 +73,6 @@ UserInitiatedInfo CreateUserInitiatedInfo(
       !navigation_handle->NavigationInputStart().is_null());
 }
 
-bool IsUrlSchemeSupported(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
-         url.SchemeIs(url::kFileScheme);
-}
-
 }  // namespace
 
 // static
@@ -486,9 +481,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  // Ignore non-HTTP schemes (e.g. chrome://) for non-webUI surfaces.
-  if (!resource_load_info.final_url.SchemeIsHTTPOrHTTPS() &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackURL(resource_load_info.final_url)) {
     return;
   }
 
@@ -1225,8 +1218,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!IsUrlSchemeSupported(tracker->GetUrl()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackURL(tracker->GetUrl())) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
   }
@@ -1286,15 +1278,7 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   CHECK(!navigation_handle->HasCommitted() ||
         !navigation_handle->IsSameDocument());
-  // For non-webUI surfaces, only track http/https/data/file schemes.
-  // For webUI surfaces, track all schemes.
-  if (!IsUrlSchemeSupported(navigation_handle->GetURL()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
-    return false;
-  }
-
-  // Ignore NTP loads.
-  if (embedder_interface_->IsNewTabPageUrl(navigation_handle->GetURL())) {
+  if (!ShouldTrackURL(navigation_handle->GetURL())) {
     return false;
   }
 
@@ -1325,6 +1309,19 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   }
 
   return true;
+}
+
+bool MetricsWebContentsObserver::ShouldTrackURL(const GURL& url) const {
+  if (embedder_interface_->IsNonTabWebUI()) {
+    return true;
+  }
+
+  if (embedder_interface_->IsNewTabPageUrl(url)) {
+    return true;
+  }
+
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
+         url.SchemeIs(url::kFileScheme);
 }
 
 void MetricsWebContentsObserver::OnBrowserFeatureUsage(

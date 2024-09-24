@@ -310,6 +310,13 @@ class MetricsWebContentsObserver
   bool ShouldTrackMainFrameNavigation(
       content::NavigationHandle* navigation_handle) const;
 
+  // Determines if metrics should be collected for a given URL.
+  // This is used for both navigation and resource timing updates.
+  // If this returns false, the navigation to the URL will not be tracked, and
+  // timing updates for resources loaded from the URL will not be propagated to
+  // metrics observers.
+  bool ShouldTrackURL(const GURL& url) const;
+
   void OnBrowserFeatureUsage(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::UseCounterFeature>& new_features);

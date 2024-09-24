@@ -2035,6 +2035,8 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageTimings" separator=".">
+  <suffix name="FirstContentfulPaint" label="First contentful paint."/>
+  <suffix name="LargestContentfulPaint" label="Largest contentful paint."/>
   <suffix name="MostVisited" label="Loaded client-side suggestions."/>
   <suffix name="NewTab" label="NTP loaded on a new tab."/>
   <suffix name="Startup" label="NTP loaded during browser startup."/>
