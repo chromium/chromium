@@ -358,15 +358,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
             base::Unretained(this)));
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
-    server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        profile->GetPath());
-  }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;

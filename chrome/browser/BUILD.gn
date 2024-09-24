@@ -8266,6 +8266,10 @@ static_library("browser") {
     sources += [
       "net/server_certificate_database.cc",
       "net/server_certificate_database.h",
+      "net/server_certificate_database_service.cc",
+      "net/server_certificate_database_service.h",
+      "net/server_certificate_database_service_factory.cc",
+      "net/server_certificate_database_service_factory.h",
     ]
   }
 

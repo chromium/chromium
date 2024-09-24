@@ -33,10 +33,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-#include "chrome/browser/net/server_certificate_database.h"
-#endif
-
 class PrefRegistrySimple;
 class Profile;
 
@@ -235,9 +231,6 @@ class ProfileNetworkContextService
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
       client_cert_store_factory_;
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  base::SequenceBound<net::ServerCertificateDatabase> server_cert_database_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_H_
