@@ -184,14 +184,6 @@ class NtpBackgroundService : public KeyedService {
       base::TimeTicks request_start,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
-  // Callback that refreshes the contents of collection_images_ with images
-  // whose resources could be reached.
-  void OnCollectionImageURLHeadersReceived(
-      ntp::background::Image image,
-      const GURL& thumbnail_image_url,
-      base::OnceClosure collection_urls_verification_complete_closure,
-      int headers_response_code);
-
   // Callback that processes the response of a FetchImageInfo request made by a
   // collection image whose preview image's URL is broken. The images in the
   // collection are fetched and then verified using VerifyImageUrl.

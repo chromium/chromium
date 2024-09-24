@@ -334,14 +334,6 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   response.SerializeToString(&response_string);
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkError(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-    histogram_tester_.ExpectTotalCount(
-        "NewTabPage.BackgroundService.URLHeaders.RequestLatency", 0);
-    histogram_tester_.ExpectTotalCount(
-        "NewTabPage.BackgroundService.URLHeadersHttpResponseCode", 0);
-  }
 
   ASSERT_TRUE(service()->collection_images().empty());
 
@@ -359,23 +351,10 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
-  if (BackgroundImageErrorDetectionEnabled()) {
-    EXPECT_TRUE(service()->collection_images().empty());
-    histogram_tester_.ExpectTotalCount(
-        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
-    ASSERT_EQ(1,
-              histogram_tester_.GetBucketCount(
-                  "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
-                  NtpImageType::kCollectionImages));
-    ASSERT_EQ(1, histogram_tester_.GetBucketCount(
-                     "NewTabPage.BackgroundService.Images.Headers.StatusCode",
-                     net::HTTP_NOT_FOUND));
-  } else {
     EXPECT_FALSE(service()->collection_images().empty());
     EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
     EXPECT_EQ(service()->collection_images_error_info().error_type,
               ErrorType::NONE);
-  }
 }
 
 TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
@@ -390,10 +369,6 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
   response.SerializeToString(&response_string);
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
 
   ASSERT_TRUE(service()->collection_images().empty());
 
@@ -445,10 +420,6 @@ TEST_P(NtpBackgroundServiceTest,
                         collection_response_string);
   SetUpResponseWithData(service()->GetImagesURLForTesting(),
                         image_response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
 
   ASSERT_TRUE(service()->collection_info().empty());
   ASSERT_TRUE(service()->collection_images().empty());
@@ -496,10 +467,6 @@ TEST_P(NtpBackgroundServiceTest,
   response.SerializeToString(&response_string);
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
 
   ASSERT_TRUE(service()->collection_images().empty());
 
@@ -625,10 +592,6 @@ TEST_P(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
   response.SerializeToString(&response_string);
 
   SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
-  if (BackgroundImageErrorDetectionEnabled()) {
-    SetUpResponseWithNetworkSuccess(
-        GURL(image.image_url() + GetThumbnailImageOptions()));
-  }
 
   ASSERT_TRUE(service()->collection_images().empty());
 

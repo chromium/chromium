@@ -11,13 +11,15 @@ import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-
 import type {ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {CHROME_THEME_BACK_ELEMENT_ID, CHROME_THEME_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 function createTestCollection(name: string): BackgroundCollection {
   const testCollection: BackgroundCollection = {
@@ -39,6 +41,7 @@ function createTestImages(length: number): CollectionImage[] {
       imageUrl: {url: `https://image_${i}.jpg`},
       previewImageUrl: {url: `https://preview_${i}.jpg`},
       collectionId: `collectionId_${i}`,
+      imageVerified: false,
     });
   }
   return testImages;
@@ -95,12 +98,13 @@ suite('ThemesTest', () => {
   });
 
   test('get collection images when collection changes', async () => {
-    await setCollection('test1', 3);
+    let numThemes = 3;
+    await setCollection('test1', numThemes);
 
     let header = themesElement.$.heading;
     assertEquals('test1', header.textContent!.trim());
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, 3);
+    assertEquals(themes.length, numThemes);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -111,12 +115,13 @@ suite('ThemesTest', () => {
         'https://preview_3.jpg',
         themes[2]!.querySelector('img')!.getAttribute('auto-src'));
 
-    await setCollection('test2', 5);
+    numThemes = 5;
+    await setCollection('test2', numThemes);
 
     header = themesElement.$.heading;
     assertEquals('test2', header.textContent!.trim());
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, 5);
+    assertEquals(themes.length, numThemes);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -334,5 +339,48 @@ suite('ThemesTest', () => {
         metrics.count(
             'NewTabPage.CustomizeChromeSidePanelAction',
             CustomizeChromeAction.FIRST_PARTY_COLLECTION_THEME_SELECTED));
+  });
+
+  [true, false].forEach((errorDetectionEnabled) => {
+    suite(`ImageErrorDetectionEnabled_${errorDetectionEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: errorDetectionEnabled,
+        });
+      });
+
+      test('theme visibility based on error detection', async () => {
+        const numThemes = 2;
+        await setCollection('test1', numThemes);
+
+        const themes = themesElement.shadowRoot!.querySelectorAll('.theme');
+        assertEquals(numThemes, themes.length);
+        if (!errorDetectionEnabled) {
+          assertTrue(isVisible(themes[0]!));
+          assertTrue(isVisible(themes[1]!));
+        } else {
+          assertFalse(isVisible(themes[0]!));
+          assertFalse(isVisible(themes[1]!));
+        }
+      });
+
+      test('themes show if they load successfully', async () => {
+        await setCollection('test1', 1);
+
+        const theme = $$(themesElement, '.theme');
+        assertTrue(!!theme);
+        const img1 = theme!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img1);
+
+        if (errorDetectionEnabled) {
+          assertFalse(isVisible(theme));
+        }
+
+        img1.dispatchEvent(new Event('load'));
+
+        await microtasksFinished();
+        assertTrue(isVisible(theme));
+      });
+    });
   });
 });

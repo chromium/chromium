@@ -76,6 +76,8 @@ struct CollectionImage {
   url.mojom.Url preview_image_url;
   // Collection id of the image;
   string collection_id;
+  // True if the theme's preview image is valid (loads correctly).
+  bool image_verified;
 };
 
 // Settings associated with a given module.

@@ -255,37 +255,16 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpBackgroundImageErrorDetection)) {
-    const auto collection_urls_verification_complete_closure =
-        base::BarrierClosure(
-            images_response.images_size(),
-            base::BindOnce(&NtpBackgroundService::NotifyObservers,
-                           base::Unretained(this),
-                           FetchComplete::COLLECTION_IMAGE_INFO));
-    for (int i = 0; i < images_response.images_size(); ++i) {
-      const ntp::background::Image image = images_response.images(i);
-      const GURL thumbnail_image_url =
-          AddOptionsToImageURL(image.image_url(), thumbnail_image_options_);
-      VerifyImageURL(
-          thumbnail_image_url,
-          base::BindOnce(
-              &NtpBackgroundService::OnCollectionImageURLHeadersReceived,
-              base::Unretained(this), image, thumbnail_image_url,
-              collection_urls_verification_complete_closure));
-    }
-  } else {
-    for (int i = 0; i < images_response.images_size(); ++i) {
-      const ntp::background::Image image = images_response.images(i);
-      collection_images_.push_back(CollectionImage::CreateFromProto(
-          requested_collection_id_, image,
-          /*default_image_url=*/
-          AddOptionsToImageURL(image.image_url(), default_image_options_),
-          /*thumbnail_image_url=*/
-          AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
-    }
-    NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
+  for (int i = 0; i < images_response.images_size(); ++i) {
+    const ntp::background::Image image = images_response.images(i);
+    collection_images_.push_back(CollectionImage::CreateFromProto(
+        requested_collection_id_, image,
+        /*default_image_url=*/
+        AddOptionsToImageURL(image.image_url(), default_image_options_),
+        /*thumbnail_image_url=*/
+        AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
   }
+  NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
 }
 
 void NtpBackgroundService::VerifyImageURL(
@@ -390,25 +369,6 @@ void NtpBackgroundService::OnImageURLHeadersFetchComplete(
   }
 
   std::move(image_url_headers_received_callback).Run(headers_response_code);
-}
-
-void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
-    ntp::background::Image image,
-    const GURL& thumbnail_image_url,
-    base::OnceClosure collection_urls_verification_complete_closure,
-    int headers_response_code) {
-  if (headers_response_code == net::HTTP_OK) {
-    collection_images_.push_back(CollectionImage::CreateFromProto(
-        requested_collection_id_, image,
-        /*default_image_url=*/
-        AddOptionsToImageURL(image.image_url(), default_image_options_),
-        thumbnail_image_url));
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
-        NtpImageType::kCollectionImages);
-  }
-  std::move(collection_urls_verification_complete_closure).Run();
 }
 
 void NtpBackgroundService::FetchReplacementCollectionPreviewImage(
