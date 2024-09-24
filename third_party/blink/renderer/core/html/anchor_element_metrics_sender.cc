@@ -86,6 +86,16 @@ float GetBrowserControlsHeight(Document& document) {
   return 0.f;
 }
 
+HTMLAnchorElement* ToHTMLAnchorElement(Node* node) {
+  return IsA<HTMLAreaElement>(node) ? To<HTMLAreaElement>(node)
+                                    : To<HTMLAnchorElement>(node);
+}
+
+const HTMLAnchorElement* ToHTMLAnchorElement(const Node* node) {
+  return IsA<HTMLAreaElement>(node) ? To<HTMLAreaElement>(node)
+                                    : To<HTMLAnchorElement>(node);
+}
+
 }  // namespace
 
 // static
@@ -250,9 +260,7 @@ void AnchorElementMetricsSender::DocumentDetached(Document& document) {
     return;
   }
   for (Element* element : *(document.links())) {
-    HTMLAnchorElement* anchor = IsA<HTMLAreaElement>(element)
-                                    ? To<HTMLAreaElement>(element)
-                                    : To<HTMLAnchorElement>(element);
+    HTMLAnchorElement* anchor = ToHTMLAnchorElement(element);
     RemoveAnchorElement(*anchor);
   }
 }
@@ -367,9 +375,7 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
   for (const auto& entry : entries) {
     const Element* element = entry->target();
-    const HTMLAnchorElement& anchor_element =
-        IsA<HTMLAreaElement>(*element) ? To<HTMLAreaElement>(*element)
-                                       : To<HTMLAnchorElement>(*element);
+    const HTMLAnchorElement& anchor_element = *ToHTMLAnchorElement(element);
     if (!entry->isIntersecting()) {
       // The anchor is leaving the viewport.
       anchors_in_viewport_.erase(&anchor_element);
@@ -680,8 +686,11 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       } else if (auto smallest_observed_anchor_it = observed_anchors_.begin();
                  smallest_observed_anchor_it->percent_area < percent_area) {
         should_observe = true;
-        intersection_observer_->unobserve(To<Element>(
-            DOMNodeIds::NodeForId(smallest_observed_anchor_it->dom_node_id)));
+        HTMLAnchorElement* smallest_observed_anchor = ToHTMLAnchorElement(
+            DOMNodeIds::NodeForId(smallest_observed_anchor_it->dom_node_id));
+        CHECK(smallest_observed_anchor);
+        intersection_observer_->unobserve(smallest_observed_anchor);
+        EnqueueLeftViewport(*smallest_observed_anchor);
         not_observed_anchors_.insert(
             observed_anchors_.extract(smallest_observed_anchor_it));
       }

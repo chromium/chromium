@@ -291,6 +291,17 @@ class AnchorElementMetricsSenderTest : public SimTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  HTMLAnchorElement* AddAnchor(String inner_text, int height) {
+    auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+    anchor->setInnerText(inner_text);
+    anchor->setHref("https://foo.com");
+    anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
+                                   String::Format("%dpx", height));
+    anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
+    GetDocument().body()->appendChild(anchor);
+    return anchor;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::vector<std::unique_ptr<MockAnchorElementMetricsHost>> hosts_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
@@ -1064,21 +1075,10 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
     <body></body>
   )html");
 
-  auto add_anchor = [&](String inner_text, int height) {
-    auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
-    anchor->setInnerText(inner_text);
-    anchor->setHref("https://foo.com");
-    anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
-                                   String::Format("%dpx", height));
-    anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
-    GetDocument().body()->appendChild(anchor);
-    return anchor;
-  };
-
   // Add 3 anchors; they should all be observed by the IntersectionObserver.
-  auto* anchor_1 = add_anchor("one", 100);
-  auto* anchor_2 = add_anchor("two", 200);
-  auto* anchor_3 = add_anchor("three", 300);
+  auto* anchor_1 = AddAnchor("one", 100);
+  auto* anchor_2 = AddAnchor("two", 200);
+  auto* anchor_3 = AddAnchor("three", 300);
 
   ProcessEvents(3);
   ASSERT_EQ(1u, hosts_.size());
@@ -1113,14 +1113,14 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
 
   // Add a fourth anchor (larger than all existing anchors). It should be
   // observed instead of anchor 1.
-  auto* anchor_4 = add_anchor("four", 400);
+  auto* anchor_4 = AddAnchor("four", 400);
   ProcessEvents(4);
   EXPECT_THAT(observations(),
               ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
 
   // Add a fifth anchor (smaller than all existing anchors). The observations
   // should not change (i.e. it should not be observed).
-  auto* anchor_5 = add_anchor("five", 50);
+  auto* anchor_5 = AddAnchor("five", 50);
   ProcessEvents(5);
   EXPECT_THAT(observations(),
               ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
@@ -1135,6 +1135,108 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
   anchor_5->remove();
   EXPECT_THAT(observations(),
               ::testing::UnorderedElementsAre(anchor_1, anchor_3, anchor_4));
+}
+
+TEST_F(AnchorElementMetricsSenderTest, AnchorUnobservedByIntersectionObserver) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"html(
+    <body></body>
+  )html");
+
+  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
+                                    ->GetIntersectionObserverForTesting();
+
+  auto* anchor_1 = AddAnchor("one", 100);
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* host = hosts_[0].get();
+
+  EXPECT_EQ(host->elements_.size(), 1u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 1u);
+
+  host->entered_viewport_.clear();
+  auto* anchor_2 = AddAnchor("two", 200);
+  ProcessEvents(2);
+
+  // `anchor_2` will now be observed by the intersection observer, `anchor_1`
+  // will be unobserved, and should be reported as leaving the viewport.
+  EXPECT_EQ(host->elements_.size(), 2u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 1u);
+  ASSERT_EQ(host->left_viewport_.size(), 1u);
+  EXPECT_EQ(AnchorElementId(*anchor_1), host->left_viewport_[0]->anchor_id);
+
+  host->entered_viewport_.clear();
+  host->left_viewport_.clear();
+  AddAnchor("three", 50);
+  ProcessEvents(3);
+
+  // `anchor_3` will not be observed immediately by the intersection observer
+  // (as it is smaller than anchor_2). No viewport messages should be
+  // dispatched.
+  EXPECT_EQ(host->elements_.size(), 3u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+
+  anchor_2->remove();
+  ProcessEvents(2);
+
+  // Note: We don't dispatch a "left viewport" message for anchor_2 here
+  // because it was removed from the document; we just report it as a
+  // removed anchor.
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  ASSERT_EQ(host->entered_viewport_.size(), 1u);
+  EXPECT_EQ(AnchorElementId(*anchor_1), host->entered_viewport_[0]->anchor_id);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+  EXPECT_EQ(host->removed_anchor_ids_.size(), 1u);
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       AnchorNotInViewportUnobservedByIntersectionObserver) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <div style="height: %dpx;"></div>
+    </body>
+  )html",
+                                        kViewportHeight + 100));
+
+  AddAnchor("one", 100);
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* host = hosts_[0].get();
+  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
+                                    ->GetIntersectionObserverForTesting();
+
+  EXPECT_EQ(host->elements_.size(), 1u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+
+  AddAnchor("two", 200);
+  ProcessEvents(2);
+
+  // We don't dispatch "left viewport" for anchor_1 here, because it was
+  // never reported to be in the viewport.
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
 }
 
 TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
