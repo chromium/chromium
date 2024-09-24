@@ -20,6 +20,27 @@
 
 namespace chrome_pdf {
 
+namespace {
+
+testing::AssertionResult MatchesPngFileImpl(
+    const SkImage* actual_image,
+    const base::FilePath& expected_png_file,
+    const cc::PixelComparator& comparitor) {
+  SkBitmap actual_bitmap;
+  if (!actual_image->asLegacyBitmap(&actual_bitmap)) {
+    return testing::AssertionFailure() << "Reference: " << expected_png_file;
+  }
+
+  if (!cc::MatchesPNGFile(actual_bitmap, GetTestDataFilePath(expected_png_file),
+                          comparitor)) {
+    return testing::AssertionFailure() << "Reference: " << expected_png_file;
+  }
+
+  return testing::AssertionSuccess();
+}
+
+}  // namespace
+
 base::FilePath GetTestDataFilePath(const base::FilePath& path) {
   return base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
       .Append(FILE_PATH_LITERAL("pdf"))
@@ -31,16 +52,18 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path) {
 testing::AssertionResult MatchesPngFile(
     const SkImage* actual_image,
     const base::FilePath& expected_png_file) {
-  SkBitmap actual_bitmap;
-  if (!actual_image->asLegacyBitmap(&actual_bitmap))
-    return testing::AssertionFailure() << "Reference: " << expected_png_file;
+  return MatchesPngFileImpl(actual_image, expected_png_file,
+                            cc::ExactPixelComparator());
+}
 
-  if (!cc::MatchesPNGFile(actual_bitmap, GetTestDataFilePath(expected_png_file),
-                          cc::ExactPixelComparator())) {
-    return testing::AssertionFailure() << "Reference: " << expected_png_file;
-  }
-
-  return testing::AssertionSuccess();
+testing::AssertionResult FuzzyMatchesPngFile(
+    const SkImage* actual_image,
+    const base::FilePath& expected_png_file) {
+  // Effectively a "FuzzyPixelOffByTwoComparator".
+  cc::FuzzyPixelComparator comparator;
+  comparator.SetErrorPixelsPercentageLimit(100.0f);
+  comparator.SetAbsErrorLimit(2);
+  return MatchesPngFileImpl(actual_image, expected_png_file, comparator);
 }
 
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
