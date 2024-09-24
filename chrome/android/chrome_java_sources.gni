@@ -467,6 +467,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabDownloadObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabFeatureOverridesManager.java",
+  "java/src/org/chromium/chrome/browser/customtabs/CustomTabFileUtils.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabIncognitoManager.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetrics.java",
