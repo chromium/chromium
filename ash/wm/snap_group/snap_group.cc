@@ -216,6 +216,10 @@ bool SnapGroup::IsSnapGroupLayoutHorizontal() const {
 }
 
 void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
+  if (is_shutting_down_) {
+    return;
+  }
+
   // `ToplevelWindowEventHandler` continues to process drag events in Overview
   // mode, potentially leading to group removal and crashes in
   // `OverviewGrid::RemoveItem()`. To prevent groups from being removed in
@@ -268,6 +272,10 @@ aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
 }
 
 void SnapGroup::RefreshSnapGroup() {
+  if (is_shutting_down_) {
+    return;
+  }
+
   // `RefreshSnapGroup()` may be called during a work area change triggered by
   // other pre-window state type change events, during which the windows may no
   // longer be snapped. No-op until we receive the state type change, upon which
@@ -294,6 +302,10 @@ void SnapGroup::RefreshSnapGroup() {
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
+  if (is_shutting_down_) {
+    return;
+  }
+
   DCHECK(window == window1_ || window == window2_);
   // `this` will be shut down and removed from the controller immediately, and
   // then destroyed asynchronously soon.
@@ -354,6 +366,10 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
                                            chromeos::WindowStateType old_type) {
+  if (is_shutting_down_) {
+    return;
+  }
+
   if (swapping_windows_) {
     return;
   }
