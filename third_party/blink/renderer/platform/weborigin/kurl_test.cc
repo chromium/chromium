@@ -116,6 +116,11 @@ TEST(KURLTest, Getters) {
     EXPECT_EQ(String(c.path), kurl.GetPath()) << url;
     EXPECT_EQ(String(c.last_path_component), kurl.LastPathComponent()) << url;
     EXPECT_EQ(String(c.query), kurl.Query()) << url;
+    if (c.query && strlen(c.query) > 0) {
+      EXPECT_EQ(String(StringView("?") + c.query),
+                kurl.QueryWithLeadingQuestionMark())
+          << url;
+    }
     if (c.has_fragment_identifier)
       EXPECT_EQ(String::FromUTF8(c.fragment_identifier),
                 kurl.FragmentIdentifier())

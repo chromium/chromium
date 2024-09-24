@@ -2456,7 +2456,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, port, or pathname.
     String default_search;
     if (!init.IsAbsolute() && !init.pathname.has_value()) {
-      default_search = base_url.Query();
+      default_search = base_url.Query().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.search, default_search);

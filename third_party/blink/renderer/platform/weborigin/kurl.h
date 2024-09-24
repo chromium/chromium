@@ -183,7 +183,8 @@ class PLATFORM_EXPORT KURL {
   StringView GetPath() const LIFETIME_BOUND;
   // This method handles "parameters" separated by a semicolon.
   String LastPathComponent() const;
-  String Query() const;
+  StringView Query() const LIFETIME_BOUND;
+  StringView QueryWithLeadingQuestionMark() const LIFETIME_BOUND;
   String FragmentIdentifier() const;
   bool HasFragmentIdentifier() const;
 

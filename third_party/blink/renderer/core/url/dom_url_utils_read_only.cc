@@ -60,8 +60,7 @@ String DOMURLUtilsReadOnly::port(const KURL& kurl) {
 }
 
 String DOMURLUtilsReadOnly::search(const KURL& kurl) {
-  String query = kurl.Query();
-  return query.empty() ? g_empty_string : "?" + query;
+  return kurl.QueryWithLeadingQuestionMark().ToString();
 }
 
 String DOMURLUtilsReadOnly::hash(const KURL& kurl) {

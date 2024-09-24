@@ -435,18 +435,22 @@ StringView KURL::BaseAsString() const {
   return StringView(string_.GetString(), 0, PathAfterLastSlash());
 }
 
-String KURL::Query() const {
-  if (parsed_.query.is_valid())
-    return ComponentString(parsed_.query);
+StringView KURL::Query() const {
+  if (!parsed_.query.is_valid()) {
+    return StringView();
+  }
+  return ComponentStringView(parsed_.query);
+}
 
-  // TODO(tsepez): not reachable?
-  // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
-  // an empty string when the query is empty rather than a null (not sure
-  // which is right).
-  // Returns a null if the query is not specified, instead of empty.
-  if (parsed_.query.is_valid())
-    return g_empty_string;
-  return String();
+StringView KURL::QueryWithLeadingQuestionMark() const {
+  if (!parsed_.query.is_valid()) {
+    return StringView();
+  }
+  if (!is_valid_ || parsed_.query.is_empty()) {
+    return StringViewForInvalidComponent();
+  }
+  return StringView(GetString(), parsed_.query.begin - 1,
+                    parsed_.query.len + 1);
 }
 
 StringView KURL::GetPath() const {
