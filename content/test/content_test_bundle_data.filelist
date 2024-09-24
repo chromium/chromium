@@ -7459,6 +7459,10 @@ data/page_with_touch_start_janking_main_thread.html
 data/page_with_webotp.html
 data/page_with_wheel_handler.html
 data/pagehide_handler_force_layout.html
+data/partitioned_popins/iframe_allow_popins.html
+data/partitioned_popins/iframe_allow_popins.html.mock-http-headers
+data/partitioned_popins/wildcard_policy.html
+data/partitioned_popins/wildcard_policy.html.mock-http-headers
 data/paste_listener.html
 data/pause_schedule_task.html
 data/payments/payment_app.js
