@@ -11814,8 +11814,14 @@ if (!is_android) {
 }
 
 if (is_android) {
+  generate_jni("sync_integration_test_support_jni_headers") {
+    testonly = true
+    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
+  }
+
   android_library("sync_integration_test_support_java") {
     testonly = true
+    srcjar_deps = [ ":sync_integration_test_support_jni_headers" ]
     deps = [
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
@@ -11829,11 +11835,6 @@ if (is_android) {
       "//third_party/junit",
     ]
 
-    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
-  }
-
-  generate_jni("sync_integration_test_support_jni_headers") {
-    testonly = true
     sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
   }
 }

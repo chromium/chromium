@@ -268,8 +268,14 @@ void SyncTest::PostRunTestOnMainThread() {
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::TearDownFakeAuthForTesting();
+  // TODO(crbug.com/368091420): Consider moving into SyncSigninDelegateAndroid.
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      sync_test_utils_android::ShutdownLiveAuthForTesting();
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      sync_test_utils_android::TearDownFakeAuthForTesting();
+      break;
   }
 #endif
 }

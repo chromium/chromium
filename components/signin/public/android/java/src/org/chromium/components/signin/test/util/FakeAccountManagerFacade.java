@@ -179,7 +179,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-
     public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
         AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
         return Promise.fulfilled(accountHolder.getAccountCapabilities());
@@ -203,6 +202,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public boolean didAccountFetchSucceed() {
         return true;
+    }
+
+    @Override
+    public void disallowTokenRequestsForTesting() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     /**

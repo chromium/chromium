@@ -49,6 +49,12 @@ void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
     const std::string& username,
     const std::string& password);
 
+// Shuts down the live authentication environment. Blocks until all pending
+// token requests are finished.
+//
+// Should be called from PostRunTestOnMainThread() method of the test fixture.
+void ShutdownLiveAuthForTesting();
+
 }  // namespace sync_test_utils_android
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
