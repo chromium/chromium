@@ -138,11 +138,18 @@ export class GestureHandler {
     return {macros, displayText};
   }
 
-  togglePaused(): void {
+  togglePaused(gesture: FacialGesture): void {
     const newPaused = !this.paused_;
-    // Run start/stop before assigning the new pause value, since start/stop
-    // will modify the pause value.
+    const lastToggledTime = this.gestureLastRecognized_.get(gesture);
+
+    // Run start/stop before assigning the new pause value and gesture last
+    // recognized time, since start/stop will modify these values.
     newPaused ? this.stop() : this.start();
+
+    if (lastToggledTime) {
+      this.gestureLastRecognized_.set(gesture, lastToggledTime);
+    }
+
     this.paused_ = newPaused;
   }
 
@@ -270,7 +277,7 @@ export class GestureHandler {
       case MacroName.TOGGLE_FACEGAZE:
         return new CustomCallbackMacro(MacroName.TOGGLE_FACEGAZE, () => {
           this.mouseController_.togglePaused();
-          this.togglePaused();
+          this.togglePaused(gesture);
         });
       case MacroName.TOGGLE_SCROLL_MODE:
         return new MouseScrollMacro(this.mouseController_);

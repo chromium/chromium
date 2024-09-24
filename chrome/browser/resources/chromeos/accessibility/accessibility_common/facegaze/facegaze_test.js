@@ -1498,3 +1498,49 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
           'Left-click the mouse (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
+
+AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeRecognizedTime', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(20 * 1000);
+  await this.configureFaceGaze(config);
+
+  const initialResult = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(initialResult);
+  const jawOpenTime =
+      this.getFaceGaze().gestureHandler_.gestureLastRecognized_.get(
+          MediapipeFacialGesture.JAW_OPEN);
+  assertTrue(!!jawOpenTime);
+  assertTrue(this.getFaceGaze().gestureHandler_.paused_);
+
+  for (let i = 0; i < 5; i++) {
+    const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+        MediapipeFacialGesture.JAW_OPEN, 0.9);
+    this.processFaceLandmarkerResult(result);
+
+    // 6 total times in quick succession still only generates one toggle event.
+    assertEquals(
+        jawOpenTime,
+        this.getFaceGaze().gestureHandler_.gestureLastRecognized_.get(
+            MediapipeFacialGesture.JAW_OPEN));
+    assertTrue(this.getFaceGaze().gestureHandler_.paused_);
+  }
+
+  // Check that we can resume after pausing.
+  this.getFaceGaze().gestureHandler_.repeatDelayMs_ = -1;
+  const resumeResult = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(
+      resumeResult, /*triggerMouseControllerInterval=*/ false);
+  assertNotEquals(
+      jawOpenTime,
+      this.getFaceGaze().gestureHandler_.gestureLastRecognized_.get(
+          MediapipeFacialGesture.JAW_OPEN));
+  assertFalse(this.getFaceGaze().gestureHandler_.paused_);
+});
