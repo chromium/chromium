@@ -393,9 +393,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // the memory-mapped file, and calls `model_loaded_callback`.
   void OnModelFileLoadedInMemory(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
-      std::pair<
-          ExecutionStatus,
-          std::unique_ptr<base::MemoryMappedFile, base::OnTaskRunnerDeleter>>
+      std::pair<ExecutionStatus, MemoryMappedFileDeleteOnTaskRunner>
           status_and_model_fb) {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
