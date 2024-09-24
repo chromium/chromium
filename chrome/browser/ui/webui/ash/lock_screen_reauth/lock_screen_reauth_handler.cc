@@ -112,10 +112,14 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
-void LockScreenReauthHandler::HandleInitialize(const base::Value::List& value) {
+void LockScreenReauthHandler::HandleStartOnlineAuth(
+    const base::Value::List& value) {
   AllowJavascript();
   OnReauthDialogReadyForTesting();
-  LoadAuthenticatorParam();
+
+  CHECK_EQ(1u, value.size());
+  const bool force_reauth_gaia_page = value[0].GetBool();
+  LoadAuthenticatorParam(force_reauth_gaia_page);
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
@@ -133,7 +137,8 @@ void LockScreenReauthHandler::HandleAuthenticatorLoaded(
       std::make_unique<LoginClientCertUsageObserver>();
 }
 
-void LockScreenReauthHandler::LoadAuthenticatorParam() {
+void LockScreenReauthHandler::LoadAuthenticatorParam(
+    const bool force_reauth_gaia_page) {
   if (authenticator_state_ == AuthenticatorState::LOADING) {
     VLOG(1) << "Skip loading the Authenticator as it's already being loaded ";
     return;
@@ -153,10 +158,11 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 
-  LoadGaia(context);
+  LoadGaia(context, force_reauth_gaia_page);
 }
 
-void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context) {
+void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context,
+                                       const bool force_reauth_gaia_page) {
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
              ProfileHelper::Get()->GetLockScreenProfile());
   // Start a new session with SigninPartitionManager, generating a unique
@@ -170,15 +176,18 @@ void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context) {
   signin_partition_manager->StartSigninSession(
       web_ui()->GetWebContents(),
       base::BindOnce(&LockScreenReauthHandler::LoadGaiaWithPartition,
-                     weak_factory_.GetWeakPtr(), context));
+                     weak_factory_.GetWeakPtr(), context,
+                     force_reauth_gaia_page));
 }
 
 void LockScreenReauthHandler::LoadGaiaWithPartition(
     const login::GaiaContext& context,
+    const bool force_reauth_gaia_page,
     const std::string& partition_name) {
   auto callback = base::BindOnce(
       &LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition,
-      weak_factory_.GetWeakPtr(), context, partition_name);
+      weak_factory_.GetWeakPtr(), context, force_reauth_gaia_page,
+      partition_name);
   if (context.gaps_cookie.empty()) {
     std::move(callback).Run(net::CookieAccessResult());
     return;
@@ -197,6 +206,7 @@ void LockScreenReauthHandler::LoadGaiaWithPartition(
 
 void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     const login::GaiaContext& context,
+    const bool force_reauth_gaia_page,
     const std::string& partition_name,
     net::CookieAccessResult result) {
   base::Value::Dict params;
@@ -208,7 +218,8 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
-  bool do_saml_redirect = ShouldDoSamlRedirect(context.email);
+  bool do_saml_redirect =
+      !force_reauth_gaia_page && ShouldDoSamlRedirect(context.email);
   params.Set("doSamlRedirect", do_saml_redirect);
 
   // Path without the leading slash, as expected by authenticator.js.
@@ -490,8 +501,8 @@ void LockScreenReauthHandler::ReloadGaia() {
 
 void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "initialize",
-      base::BindRepeating(&LockScreenReauthHandler::HandleInitialize,
+      "startOnlineAuth",
+      base::BindRepeating(&LockScreenReauthHandler::HandleStartOnlineAuth,
                           weak_factory_.GetWeakPtr()));
 
   web_ui()->RegisterMessageCallback(

@@ -38,7 +38,6 @@ const clearDataType: chrome.webviewTag.ClearDataTypeSet = {
 };
 
 interface LockReauthParams {
-  fallbackGaiaPath: string;
   webviewPartitionName: string;
   showVerificationNotice: boolean;
 }
@@ -176,14 +175,6 @@ class LockReauthElement extends LockReauthElementBase {
    */
   private signinFrame?: chrome.webviewTag.WebView;
 
-  /**
-   * Gaia path which can serve as a fallback in reloading scenarios. Expected
-   * to correspond to editable Gaia username page.
-   * TODO(b/259181755): this should no longer be needed once we change the
-   * implementation of the "Enter Google Account info" button to fully reload
-   * the flow through cpp code.
-   */
-  private fallbackGaiaPath?: string;
 
   override ready() {
     super.ready();
@@ -213,7 +204,7 @@ class LockReauthElement extends LockReauthElementBase {
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
-    chrome.send('initialize');
+    chrome.send('startOnlineAuth', /*force_reauth_gaia_page=*/[false]);
   }
 
   private resetState() {
@@ -258,7 +249,6 @@ class LockReauthElement extends LockReauthElementBase {
         'ERROR: missing webview partition name');
     assert(this.authenticator, 'ERROR: Authenticator not yet initialized');
     this.authenticator.setWebviewPartition(data.webviewPartitionName);
-    this.fallbackGaiaPath = data.fallbackGaiaPath;
 
     const params: AuthParams = {} as AuthParams;
     SUPPORTED_PARAMS.forEach((name: string) => {
@@ -439,21 +429,11 @@ class LockReauthElement extends LockReauthElementBase {
 
   /**
    * Invoked when "Enter Google Account info" button is pressed on SAML screen.
+   * Starts the reauth flow of GAIA.
    */
   private onChangeSigninProviderClicked() {
-    assert(
-        this.authenticatorParams,
-        'ERROR: authenticator parameters not yet loaded');
-    this.authenticatorParams.doSamlRedirect = false;
-    this.authenticatorParams.enableGaiaActionButtons = true;
-    this.isDefaultSsoProvider = false;
-    this.isSaml = false;
-    // Replace Gaia path with a fallback path to land on Gaia username page.
-    assert(
-        this.fallbackGaiaPath,
-        'fallback Gaia path needed when trying to switch from SAML to Gaia');
-    this.authenticatorParams.gaiaPath = this.fallbackGaiaPath;
-    this.authenticator!.load(AuthMode.DEFAULT, this.authenticatorParams);
+    this.resetState();
+    chrome.send('startOnlineAuth', /*force_reauth_gaia_page=*/[true]);
   }
 
   private policyProvidedTrustedAnchorsUsed() {

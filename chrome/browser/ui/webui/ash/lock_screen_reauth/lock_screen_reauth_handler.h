@@ -33,7 +33,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void ReloadGaia();
 
   // WebUI message handlers.
-  void HandleInitialize(const base::Value::List&);
+  void HandleStartOnlineAuth(const base::Value::List&);
   void HandleCompleteAuthentication(const base::Value::List&);
   void HandleAuthenticatorLoaded(const base::Value::List&);
   void HandleUpdateUserPassword(const base::Value::List&);
@@ -84,17 +84,20 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
                             std::unique_ptr<UserContext> user_context,
                             login::GaiaCookiesData gaia_cookies);
 
-  void LoadAuthenticatorParam();
+  void LoadAuthenticatorParam(bool force_reauth_gaia_page = false);
 
-  void LoadGaia(const login::GaiaContext& context);
+  void LoadGaia(const login::GaiaContext& context,
+                bool force_reauth_gaia_page = false);
 
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.
   void LoadGaiaWithPartition(const login::GaiaContext& context,
+                             bool force_reauth_gaia_page,
                              const std::string& partition_name);
 
   // Called after the GAPS cookie, if present, is added to the cookie store.
   void OnSetCookieForLoadGaiaWithPartition(const login::GaiaContext& context,
+                                           bool force_reauth_gaia_page,
                                            const std::string& partition_name,
                                            net::CookieAccessResult result);
 
