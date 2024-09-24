@@ -3678,7 +3678,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSearchButton_Dev_20240718",
+                    "name": "Enabled_AgaDogfood",
                     "params": {
                         "google_bottom_bar_button_list": "0,3,9,2"
                     },
