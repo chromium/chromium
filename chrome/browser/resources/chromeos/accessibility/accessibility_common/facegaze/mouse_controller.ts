@@ -55,7 +55,7 @@ export class MouseController {
   private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
   private velocityThreshold_ = 0;
-  private velocityThresholdFactor_ = 0.3;
+  private velocityThresholdFactor_ = MouseController.DEFAULT_VELOCITY_FACTOR;
   private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
@@ -761,9 +761,10 @@ export namespace MouseController {
       'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
-  export const DEFAULT_MOUSE_SPEED = 20;
+  export const DEFAULT_MOUSE_SPEED = 12;
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
-  export const DEFAULT_BUFFER_SIZE = 6;
+  export const DEFAULT_BUFFER_SIZE = 7;
+  export const DEFAULT_VELOCITY_FACTOR = 0.45;
 
   export const GRAVITY_INTERVAL_MS = 500;
   // How far the gravity reaches, relative to the size of the control.

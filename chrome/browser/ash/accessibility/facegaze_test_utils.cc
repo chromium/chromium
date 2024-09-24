@@ -52,6 +52,7 @@ FaceGazeTestUtils::Config::~Config() = default;
 FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
   forehead_location_ = gfx::PointF(0.1, 0.2);
   cursor_location_ = gfx::Point(600, 400);
+  cursor_speeds_ = {/*up=*/20, /*down=*/20, /*left=*/20, /*right=*/20};
   buffer_size_ = 1;
   use_cursor_acceleration_ = false;
   use_landmark_weights_ = false;
