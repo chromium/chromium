@@ -40,13 +40,6 @@
 #include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
 #endif
 
-bool UseUpdatedFileSystemPersistentPermissionUI() {
-  return base::FeatureList::IsEnabled(
-             features::kFileSystemAccessPersistentPermissions) &&
-         base::FeatureList::IsEnabled(
-             features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
-}
-
 PageInfoPermissionContentView::PageInfoPermissionContentView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
@@ -101,7 +94,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   }
 
   if (type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      UseUpdatedFileSystemPersistentPermissionUI()) {
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     std::vector<base::FilePath> granted_file_paths;
     auto* context =
         FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
@@ -208,7 +202,8 @@ void PageInfoPermissionContentView::SetPermissionInfo(
     // displayed on this view to meet UX requirements for the Persistent
     // Permissions feature.
     if (type_ != ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
-        !UseUpdatedFileSystemPersistentPermissionUI()) {
+        !base::FeatureList::IsEnabled(
+            features::kFileSystemAccessPersistentPermissions)) {
       state_label_->SetText(
           PageInfoUI::PermissionStateToUIString(ui_delegate_, permission_));
     }
@@ -224,7 +219,8 @@ void PageInfoPermissionContentView::SetPermissionInfo(
 #endif
 
   if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      UseUpdatedFileSystemPersistentPermissionUI()) {
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     if (web_contents_.MaybeValid()) {
       auto* context =
           FileSystemAccessPermissionContextFactory::GetForProfileIfExists(

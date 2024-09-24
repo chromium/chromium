@@ -4797,11 +4797,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "file-system-access-persistent-permission-updated-page-info",
-    "owners": [ "christinesm@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "file-system-observer",
     "owners": [ "dslee@chromium.org", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 134

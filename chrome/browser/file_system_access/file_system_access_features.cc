@@ -24,14 +24,6 @@ BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the updated Page Info UI for the persistent permissions feature.
-BASE_FEATURE(kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
-             "kFileSystemAccessPersistentPermissionsUpdatedPageInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(b/354661640): Temporarily disable this flag while investigating CrOS
-// file saving issue.
-//
 // Enables performing the blocklist check on a full absolute path, which
 // resolves any symbolic link.
 BASE_FEATURE(kFileSystemAccessSymbolicLinkCheck,

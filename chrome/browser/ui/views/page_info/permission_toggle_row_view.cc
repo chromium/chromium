@@ -195,37 +195,13 @@ void PermissionToggleRowView::InitForUserSource(
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  // TODO(crbug.com/40101962): Update below code to only display the updated
-  // Page Info UI for File System, once the updated UI is ready to be enabled
-  // by default.
-  if (permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      base::FeatureList::IsEnabled(
-          features::kFileSystemAccessPersistentPermissions) &&
-      !base::FeatureList::IsEnabled(
-          features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo)) {
-    auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(
-            [](PermissionToggleRowView* row) {
-              row->delegate_->OpenSiteSettingsFileSystem();
-            },
-            base::Unretained(this)),
-        vector_icons::kLaunchIcon);
-    subpage_button->SetTooltipText(
-        PageInfoUI::PermissionSubpageButtonTooltipString(permission_.type));
-    views::InstallCircleHighlightPathGenerator(subpage_button.get());
-    subpage_button->SetMinimumImageSize({icon_size, icon_size});
-    subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
-    row_view_->AddControl(std::move(subpage_button));
-  }
-  const bool show_updated_page_info_file_system =
-      permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      base::FeatureList::IsEnabled(
-          features::kFileSystemAccessPersistentPermissions) &&
-      base::FeatureList::IsEnabled(
-          features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
-  if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
+
+  if (permission_.is_one_time ||
+      permissions::PermissionUtil::DoesSupportTemporaryGrants(
           permission_.type) ||
-      permission_.is_one_time || show_updated_page_info_file_system) {
+      (permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+       base::FeatureList::IsEnabled(
+           features::kFileSystemAccessPersistentPermissions))) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
         base::BindRepeating(
             [=](PermissionToggleRowView* row) {
