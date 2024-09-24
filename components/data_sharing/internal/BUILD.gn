@@ -70,7 +70,7 @@ static_library("internal") {
 
     deps += [
       ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
+      "//components/data_sharing/public:android_utils",
     ]
   }
 }
@@ -132,10 +132,7 @@ if (is_android) {
       "//components:*",
       "//components/data_sharing/internal:native_test_helper_java",
     ]
-    srcjar_deps = [
-      ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
-    ]
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",

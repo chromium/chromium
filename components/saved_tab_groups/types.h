@@ -27,6 +27,9 @@ using LocalTabID = base::Token;
 using LocalTabGroupID = tab_groups::TabGroupId;
 #endif
 
+typedef std::variant<base::Uuid, LocalTabGroupID> EitherGroupID;
+typedef std::variant<base::Uuid, LocalTabID> EitherTabID;
+
 // Base context for tab group actions. Platforms can subclass this to pass
 // additional context such as a browser window.
 struct TabGroupActionContext {

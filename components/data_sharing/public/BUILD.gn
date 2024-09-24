@@ -83,6 +83,8 @@ if (is_android) {
   }
 
   generate_jni("jni_headers") {
+    visibility = [ ":*" ]
+
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
@@ -90,6 +92,19 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
       "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
+    ]
+  }
+
+  static_library("android_utils") {
+    sources = [
+      "android/conversion_utils.cc",
+      "android/conversion_utils.h",
+    ]
+
+    deps = [
+      ":jni_headers",
+      ":public",
+      "//base",
     ]
   }
 }

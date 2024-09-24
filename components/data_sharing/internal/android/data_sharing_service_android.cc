@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
+#include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "url/android/gurl_android.h"
 
@@ -116,7 +117,7 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupChanged(
     const GroupData& group_data) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_group =
-      DataSharingConversionBridge::CreateJavaGroupData(env, group_data);
+      data_sharing::conversion::CreateJavaGroupData(env, group_data);
   Java_ObserverBridge_onGroupChanged(env, java_obj_, j_group);
 }
 
@@ -124,7 +125,7 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupAdded(
     const GroupData& group_data) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_group =
-      DataSharingConversionBridge::CreateJavaGroupData(env, group_data);
+      data_sharing::conversion::CreateJavaGroupData(env, group_data);
   Java_ObserverBridge_onGroupAdded(env, java_obj_, j_group);
 }
 
@@ -318,7 +319,7 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetUIDelegate(
 
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetServiceStatus(
     JNIEnv* env) {
-  return DataSharingConversionBridge::CreateJavaServiceStatus(
+  return conversion::CreateJavaServiceStatus(
       env, data_sharing_service_->GetServiceStatus());
 }
 

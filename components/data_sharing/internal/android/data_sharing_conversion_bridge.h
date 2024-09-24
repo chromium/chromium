@@ -20,31 +20,6 @@ namespace data_sharing {
 // Utility for JNI conversion of the data types used by the service.
 class DataSharingConversionBridge {
  public:
-  // Creates an object of org.chromium.components.data_sharing.GroupMember.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupMember(
-      JNIEnv* env,
-      const GroupMember& member);
-
-  // Creates an object of org.chromium.components.data_sharing.GroupToken.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupToken(
-      JNIEnv* env,
-      const GroupToken& token);
-
-  // Creates an object of org.chromium.components.data_sharing.GroupData.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupData(
-      JNIEnv* env,
-      const GroupData& result);
-
-  // Creates an object of org.chromium.components.data_sharing.ServiceStatus.
-  static ScopedJavaLocalRef<jobject> CreateJavaServiceStatus(
-      JNIEnv* env,
-      const ServiceStatus& status);
-
-  // Creates an object of org.chromium.components.data_sharing.SharedEntity.
-  static ScopedJavaLocalRef<jobject> CreateJavaSharedEntity(
-      JNIEnv* env,
-      const SharedEntity& entity);
-
   // Creates an object of
   // org.chromium.components.data_sharing.DataSharingService.
   //   GroupDataOrFailureOutcome.

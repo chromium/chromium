@@ -6342,6 +6342,7 @@ test("unit_tests") {
     "../browser/sync/sessions/sync_sessions_web_contents_router_unittest.cc",
     "../browser/sync/sync_service_factory_unittest.cc",
     "../browser/sync/sync_startup_tracker_unittest.cc",
+    "../browser/tab_group_sync/messaging/messaging_backend_service_factory_unittest.cc",
     "../browser/tab_group_sync/tab_group_sync_service_factory_unittest.cc",
     "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
     "../browser/tracing/chrome_background_tracing_metrics_provider_unittest.cc",

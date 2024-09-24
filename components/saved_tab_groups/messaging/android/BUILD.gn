@@ -1,0 +1,59 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/data_sharing/public",
+    "//components/data_sharing/public:android_utils",
+    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups/messaging",
+  ]
+
+  sources = [
+    "conversion_utils.cc",
+    "conversion_utils.h",
+    "messaging_backend_service_bridge.cc",
+    "messaging_backend_service_bridge.h",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "java/src/org/chromium/components/tab_group_sync/messaging/MessagingBackendServiceBridge.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/bridge/ConversionUtils.java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/tab_group_sync/messaging/EitherId.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/InstantMessage.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/MessageAttribution.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/MessagingBackendService.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/MessagingBackendServiceBridge.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/PersistentMessage.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/bridge/ConversionUtils.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//components/data_sharing/public:public_java",
+    "//components/saved_tab_groups:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/saved_tab_groups/messaging:jni_enums",
+  ]
+}

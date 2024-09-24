@@ -76,6 +76,7 @@ if (is_android) {
       "//components/feature_engagement/public:public_java",
       "//components/prefs/android:java",
       "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/messaging/android:java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
