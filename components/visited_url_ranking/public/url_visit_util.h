@@ -72,6 +72,14 @@ const history::AnnotatedVisit* GetHistoryEntryVisitIfExists(
 const Decoration& GetMostRelevantDecoration(
     const URLVisitAggregate& url_visit_aggregate);
 
+// Returns the decoration string for the given `type`.
+std::u16string GetStringForDecoration(DecorationType type,
+                                      bool visited_recently = false);
+
+// Returns the decoration string for a recent visit at given `last_visit_time`.
+std::u16string GetStringForRecencyDecorationWithTime(
+    base::Time last_visit_time);
+
 }  // namespace visited_url_ranking
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_UTIL_H_

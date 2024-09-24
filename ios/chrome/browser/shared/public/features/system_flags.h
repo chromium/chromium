@@ -158,6 +158,10 @@ std::optional<int> DisplaySwitchProfile();
 // Returns `std::nullopt` if no override is specified.
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
 
+// Returns the override for Tab Resumption decoration.
+// Returns nil is not set.
+NSString* GetTabResumptionDecorationOverride();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

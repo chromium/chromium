@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -75,7 +76,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 // Helper function to extract tab data from url aggregate.
 // Try first the session tab data, then the tab model tab data.
 const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
-    visited_url_ranking::URLVisitAggregate& url_aggregate) {
+    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
   const auto& session_iterator = url_aggregate.fetcher_data_map.find(
       visited_url_ranking::Fetcher::kSession);
   if (session_iterator != url_aggregate.fetcher_data_map.end()) {
@@ -106,7 +107,7 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
 
 // Helper function to extract history data from url aggregate.
 const visited_url_ranking::URLVisitAggregate::HistoryData* ExtractHistoryData(
-    visited_url_ranking::URLVisitAggregate& url_aggregate) {
+    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
   const auto& history_iterator = url_aggregate.fetcher_data_map.find(
       visited_url_ranking::Fetcher::kHistory);
   if (history_iterator != url_aggregate.fetcher_data_map.end()) {
@@ -130,6 +131,38 @@ bool ShouldShowItemImmediately() {
 
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
+
+// Overrides the reason for testing purpose.
+NSString* GetOverridenReason(
+    const visited_url_ranking::URLVisitAggregate& url_aggregate) {
+  NSString* override_flag =
+      experimental_flags::GetTabResumptionDecorationOverride();
+  if (![override_flag length]) {
+    return nil;
+  }
+  if ([override_flag isEqualToString:@"MostRecent"]) {
+    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
+        visited_url_ranking::DecorationType::kMostRecent));
+  }
+  if ([override_flag isEqualToString:@"FrequentlyVisited"]) {
+    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
+        visited_url_ranking::DecorationType::kFrequentlyVisited));
+  }
+  if ([override_flag isEqualToString:@"FrequentlyVisitedAtTime"]) {
+    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
+        visited_url_ranking::DecorationType::kFrequentlyVisitedAtTime));
+  }
+  if ([override_flag isEqualToString:@"VisitedSomeTimeAgoRecent"]) {
+    return base::SysUTF16ToNSString(visited_url_ranking::GetStringForDecoration(
+        visited_url_ranking::DecorationType::kVisitedXAgo, true));
+  }
+  if ([override_flag isEqualToString:@"VisitedSomeTimeAgoOld"]) {
+    return base::SysUTF16ToNSString(
+        visited_url_ranking::GetStringForRecencyDecorationWithTime(
+            url_aggregate.GetLastVisitTime()));
+  }
+  return nil;
+}
 
 }  // namespace
 
@@ -827,7 +860,10 @@ const char kGStatic[] = ".gstatic.com";
   item.commandHandler = self;
   item.delegate = self;
   if (IsTabResumption2BubbleEnabled()) {
-    if (URLAggregate->decorations.size()) {
+    NSString* overridenReason = GetOverridenReason(*URLAggregate);
+    if (overridenReason) {
+      item.reason = overridenReason;
+    } else if (URLAggregate->decorations.size()) {
       item.reason = base::SysUTF16ToNSString(
           visited_url_ranking::GetMostRelevantDecoration(*URLAggregate)
               .GetDisplayString());
