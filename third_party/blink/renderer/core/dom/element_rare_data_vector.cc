@@ -105,7 +105,7 @@ ElementRareDataVector::GetPseudoElements() const {
   return data->GetPseudoElements();
 }
 void ElementRareDataVector::AddColumnPseudoElement(
-    PseudoElement& column_pseudo_element) {
+    ColumnPseudoElement& column_pseudo_element) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
@@ -114,7 +114,8 @@ void ElementRareDataVector::AddColumnPseudoElement(
   }
   data->AddColumnPseudoElement(column_pseudo_element);
 }
-const PseudoElementData::ColumnPseudoElementsVector*
+
+const ColumnPseudoElementsVector*
 ElementRareDataVector::GetColumnPseudoElements() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));

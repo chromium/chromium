@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -188,6 +189,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -1496,16 +1498,32 @@ void Element::ScrollIntoViewNoVisualUpdate(
     return;
   }
 
+  Element* originating_element = this;
+  LayoutObject* target = nullptr;
+  auto* pseudo_element = DynamicTo<PseudoElement>(this);
+  if (pseudo_element) {
+    originating_element = pseudo_element->OriginatingElement();
+    if (pseudo_element->parentNode()->IsColumnPseudoElement()) {
+      // The originating element of a ::column is a multicol container. See if
+      // it also is the scrollable container that is to be scrolled, or if it's
+      // a descendant (in the latter case `target` will remain nullptr here).
+      target = originating_element->GetLayoutBoxForScrolling();
+    }
+  }
+  if (!target) {
+    target = originating_element->GetLayoutObject();
+  }
+
   if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-          *this, DisplayLockActivationReason::kScrollIntoView)) {
+          *originating_element, DisplayLockActivationReason::kScrollIntoView)) {
     return;
   }
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
-  scroll_into_view_util::ScrollRectToVisible(*GetLayoutObject(), bounds,
+  scroll_into_view_util::ScrollRectToVisible(*target, bounds,
                                              std::move(params));
 
-  GetDocument().SetSequentialFocusNavigationStartingPoint(this);
+  GetDocument().SetSequentialFocusNavigationStartingPoint(originating_element);
 }
 
 void Element::scrollIntoViewIfNeeded(bool center_if_needed) {
@@ -3388,6 +3406,11 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
 void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
+
+  // Pseudo elements that may have child pseudo elements (such as ::column) must
+  // be cleared before clearing the rare data vector below.
+  ClearColumnPseudoElements();
+
   if (ElementRareDataVector* data = GetElementRareData()) {
     if (!performing_reattach) {
       data->ClearPseudoElements();
@@ -3819,7 +3842,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
   }
 
-  if (child_change.TraversePseudoElements(*this)) {
+  bool update_pseudo_elements =
+      child_change.TraversePseudoElements(*this) && !IsColumnPseudoElement();
+  if (update_pseudo_elements) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollPrevButton, child_change,
                         child_recalc_context);
@@ -3846,7 +3871,10 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
   }
 
-  if (child_change.TraversePseudoElements(*this)) {
+  DCHECK_EQ(
+      update_pseudo_elements,
+      child_change.TraversePseudoElements(*this) && !IsColumnPseudoElement());
+  if (update_pseudo_elements) {
     UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
                         child_recalc_context);
@@ -6947,13 +6975,14 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
 }
 
-PseudoElement* Element::CreateColumnPseudoElement() {
+ColumnPseudoElement* Element::CreateColumnPseudoElement(
+    const PhysicalRect& column_rect) {
   const ComputedStyle* style = CachedStyleForPseudoElement(kPseudoIdColumn);
   if (!style) {
     return nullptr;
   }
-  auto* column_pseudo_element =
-      MakeGarbageCollected<PseudoElement>(this, kPseudoIdColumn);
+  auto* column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
+      /*originating_element=*/this, column_rect);
   column_pseudo_element->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
   data.AddColumnPseudoElement(*column_pseudo_element);
@@ -6976,8 +7005,7 @@ PseudoElement* Element::CreateColumnPseudoElement() {
   return column_pseudo_element;
 }
 
-const PseudoElementData::ColumnPseudoElementsVector*
-Element::GetColumnPseudoElements() const {
+const ColumnPseudoElementsVector* Element::GetColumnPseudoElements() const {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return nullptr;
@@ -6990,8 +7018,8 @@ void Element::ClearColumnPseudoElements() {
   if (!data) {
     return;
   }
-  if (const PseudoElementData::ColumnPseudoElementsVector*
-          column_pseudo_elements = data->GetColumnPseudoElements()) {
+  if (const ColumnPseudoElementsVector* column_pseudo_elements =
+          data->GetColumnPseudoElements()) {
     for (PseudoElement* column_pseudo_element : *column_pseudo_elements) {
       if (ElementRareDataVector* column_data =
               column_pseudo_element->GetElementRareData()) {
@@ -8396,8 +8424,20 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
 
   const ComputedStyle* style = GetComputedStyle();
 
-  if (!style || (pseudo_id <= kLastTrackedPublicPseudoId &&
-                 !style->HasPseudoElementStyle(pseudo_id))) {
+  if (!style) {
+    return nullptr;
+  }
+  if (pseudo_id <= kLastTrackedPublicPseudoId &&
+      !style->HasPseudoElementStyle(pseudo_id)) {
+    if (pseudo_id == kPseudoIdColumn) {
+      if (CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker)) {
+        // If there is a ::column::scroll-marker, but no ::column declarations,
+        // we still want a ::column pseudo element. It doesn't really matter all
+        // that much what style it has, although one could argue that it should
+        // inherit from its originating element rather than using initial style.
+        return &GetDocument().GetStyleResolver().InitialStyle();
+      }
+    }
     return nullptr;
   }
 

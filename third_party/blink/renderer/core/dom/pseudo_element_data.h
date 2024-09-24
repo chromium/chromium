@@ -7,8 +7,8 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
-#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -31,11 +31,10 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
 
-  using ColumnPseudoElementsVector = HeapVector<Member<PseudoElement>>;
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
     return column_pseudo_elements_;
   }
-  void AddColumnPseudoElement(PseudoElement& column_pseudo_element) {
+  void AddColumnPseudoElement(ColumnPseudoElement& column_pseudo_element) {
     if (!column_pseudo_elements_) {
       column_pseudo_elements_ =
           MakeGarbageCollected<ColumnPseudoElementsVector>();

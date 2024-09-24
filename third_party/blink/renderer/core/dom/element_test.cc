@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -1193,8 +1194,9 @@ TEST_F(ElementTest, ColumnPseudoElements) {
 
   Element* element = GetElementById("test");
 
+  PhysicalRect dummy_column_rect;
   PseudoElement* first_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->CreateColumnPseudoElement(dummy_column_rect);
   ASSERT_TRUE(first_column_pseudo_element);
   EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1205,7 +1207,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
             0.3f);
 
   PseudoElement* second_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->CreateColumnPseudoElement(dummy_column_rect);
   ASSERT_TRUE(second_column_pseudo_element);
   EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1217,7 +1219,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
       0.3f);
 
   PseudoElement* third_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->CreateColumnPseudoElement(dummy_column_rect);
   ASSERT_TRUE(third_column_pseudo_element);
   EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(

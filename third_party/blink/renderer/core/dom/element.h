@@ -76,6 +76,7 @@ class AnchorPositionScrollData;
 class AriaNotificationOptions;
 class Attr;
 class Attribute;
+class ColumnPseudoElement;
 class ContainerQueryData;
 class ContainerQueryEvaluator;
 class CSSPropertyName;
@@ -149,6 +150,8 @@ struct AttributeToNameTransform {
 
 using AttributeNamesView =
     bindings::TransformedView<AttributeCollection, AttributeToNameTransform>;
+
+using ColumnPseudoElementsVector = HeapVector<Member<ColumnPseudoElement>>;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -1379,8 +1382,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ::scroll-marker per ::column pseudo element. ClearColumnPseudoElements()
   // needs to be called before each layout pass that generate these pseudo
   // elements.
-  PseudoElement* CreateColumnPseudoElement();
-  const HeapVector<Member<PseudoElement>>* GetColumnPseudoElements() const;
+  ColumnPseudoElement* CreateColumnPseudoElement(
+      const PhysicalRect& column_rect);
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   void ClearColumnPseudoElements();
 
   // True if a scroller has not been explicitly scrolled by a user or by a

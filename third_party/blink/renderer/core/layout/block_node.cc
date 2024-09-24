@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -356,6 +357,21 @@ void AttachScrollMarkers(LayoutObject& parent,
     if (!child->IsScrollMarkerGroup() && !child->GetScrollMarkerGroup()) {
       AttachScrollMarkers(*child, context, has_absolute_containment,
                           has_fixed_containment);
+    }
+  }
+
+  const LayoutBox* parent_box = DynamicTo<LayoutBox>(&parent);
+  // If this is a multicol container, look for ::column::scroll-marker pseudo
+  // elements, and attach them.
+  if (parent_box && parent_box->IsFragmentationContextRoot()) {
+    if (const ColumnPseudoElementsVector* column_pseudos =
+            To<Element>(parent.EnclosingNode())->GetColumnPseudoElements()) {
+      for (const auto& column_pseudo : *column_pseudos) {
+        if (PseudoElement* scroll_marker =
+                column_pseudo->GetPseudoElement(kPseudoIdScrollMarker)) {
+          scroll_marker->AttachLayoutTree(context);
+        }
+      }
     }
   }
 }

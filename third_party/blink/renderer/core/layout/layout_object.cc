@@ -43,8 +43,10 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -2000,6 +2002,25 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
           ? kIgnoreStickyOffset
           : 0;
 
+  if (const auto* scroll_marker =
+          DynamicTo<ScrollMarkerPseudoElement>(GetNode())) {
+    // Scroll markers are reparented into a scroll marker group. We want the
+    // rectangle of the originating element (or column).
+    const Element* originating_element = scroll_marker->OriginatingElement();
+    const auto* originating_object = originating_element->GetLayoutObject();
+    const auto* column_pseudo =
+        DynamicTo<ColumnPseudoElement>(scroll_marker->parentNode());
+    if (!column_pseudo) {
+      return originating_object->AbsoluteBoundingBoxRectForScrollIntoView();
+    }
+    // This is a ::column::scroll-marker
+    const auto* scroller = originating_element->GetLayoutBoxForScrolling();
+    PhysicalRect bounds = column_pseudo->ColumnRect();
+    bounds.offset -= PhysicalOffset::FromVector2dFRound(
+        scroller->GetScrollableArea()->GetScrollOffset());
+    return scroller->LocalToAbsoluteRect(bounds, flag);
+  }
+
   return AbsoluteBoundingBoxRectHandlingEmptyInline(flag);
 }
 
@@ -2659,6 +2680,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
+         pseudo_style->StyleType() == kPseudoIdColumnScrollMarker ||
          pseudo_style->StyleType() == kPseudoIdScrollNextButton ||
          pseudo_style->StyleType() == kPseudoIdScrollPrevButton);
 
@@ -3796,6 +3818,11 @@ bool LayoutObject::IsRooted() const {
   if (object->HasLayer())
     return To<LayoutBoxModelObject>(object)->Layer()->Root()->IsRootLayer();
   return false;
+}
+
+Node* LayoutObject::EnclosingNode() const {
+  Node* node = GetNode();
+  return node ? node : Parent()->EnclosingNode();
 }
 
 RespectImageOrientationEnum LayoutObject::GetImageOrientation(

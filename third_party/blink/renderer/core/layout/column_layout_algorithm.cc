@@ -258,6 +258,11 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   // legacy fragmentainer group machinery needs the count.
   if (!IsBreakInside(GetBreakToken())) {
     node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
+
+    StyleEngine& style_engine = Node().GetDocument().GetStyleEngine();
+    style_engine.SetInScrollMarkersAttachment(true);
+    To<Element>(Node().EnclosingDOMNode())->ClearColumnPseudoElements();
+    style_engine.SetInScrollMarkersAttachment(false);
   }
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
@@ -1049,11 +1054,26 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     *margin_strut = MarginStrut();
   }
 
+  Element* element = To<Element>(Node().EnclosingDOMNode());
+  bool create_column_pseudo =
+      element->CachedStyleForPseudoElement(kPseudoIdColumn);
+
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
+
+    if (create_column_pseudo) {
+      // Create a ::column pseudo element, and, if needed, also a
+      // ::column::scroll-marker pseudo element child of ::column.
+      LogicalRect column_logical_rect(result_with_offset.offset, column_size);
+      const WritingModeConverter converter(
+          GetConstraintSpace().GetWritingDirection(),
+          LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
+      element->CreateColumnPseudoElement(
+          converter.ToPhysical(column_logical_rect));
+    }
   }
 
   if (min_break_appeal)

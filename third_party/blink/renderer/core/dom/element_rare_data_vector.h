@@ -20,6 +20,7 @@
 namespace blink {
 
 class CSSStyleDeclaration;
+class ColumnPseudoElement;
 class ShadowRoot;
 class NamedNodeMap;
 class DOMTokenList;
@@ -159,9 +160,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
-  void AddColumnPseudoElement(PseudoElement&);
-  const PseudoElementData::ColumnPseudoElementsVector* GetColumnPseudoElements()
-      const;
+  void AddColumnPseudoElement(ColumnPseudoElement&);
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   void ClearColumnPseudoElements();
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);

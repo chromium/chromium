@@ -59,6 +59,7 @@ blink_core_sources_dom = [
   "class_collection.cc",
   "class_collection.h",
   "collection_index_cache.h",
+  "column_pseudo_element.h",
   "comment.cc",
   "comment.h",
   "create_element_flags.h",

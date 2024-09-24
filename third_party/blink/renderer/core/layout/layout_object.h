@@ -1748,6 +1748,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsPseudoElement() ? GetNode()->ParentOrShadowHostNode() : GetNode();
   }
 
+  // Return the Node of this object, or, if it has none (anonymous object),
+  // return that of the nearest ancestor that has one.
+  Node* EnclosingNode() const;
+
   Document& GetDocument() const {
     NOT_DESTROYED();
     DCHECK(node_ || Parent());  // crbug.com/402056
