@@ -871,7 +871,12 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point, int operations) {
   if (!drop_handler) {
     return;
   }
-  drop_handler->OnDragEnter(point, operations, kWaylandDndModifiers);
+  // Wayland sends locations in DIP and drag handler also expects DIP locations,
+  // though the Wayland compositor is not aware of chromium's internal UI scale,
+  // hence the translation below.
+  const gfx::PointF scaled_point_dip =
+      gfx::ScalePoint(point, 1.0f / applied_state().ui_scale);
+  drop_handler->OnDragEnter(scaled_point_dip, operations, kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
@@ -887,7 +892,13 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operations) {
   if (!drop_handler) {
     return 0;
   }
-  return drop_handler->OnDragMotion(point, operations, kWaylandDndModifiers);
+  // Wayland sends locations in DIP and drag handler also expects DIP locations,
+  // though the Wayland compositor is not aware of chromium's internal UI scale,
+  // hence the translation below.
+  const gfx::PointF scaled_point_dip =
+      gfx::ScalePoint(point, 1.0f / applied_state().ui_scale);
+  return drop_handler->OnDragMotion(scaled_point_dip, operations,
+                                    kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragDrop() {

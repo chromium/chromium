@@ -1518,11 +1518,86 @@ TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
 }
 
+class PerSurfaceScaleWaylandDataDragControllerTest
+    : public WaylandDataDragControllerTest {
+ public:
+  PerSurfaceScaleWaylandDataDragControllerTest() = default;
+  ~PerSurfaceScaleWaylandDataDragControllerTest() override = default;
+
+  PerSurfaceScaleWaylandDataDragControllerTest(
+      const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
+  PerSurfaceScaleWaylandDataDragControllerTest& operator=(
+      const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
+
+  void SetUp() override {
+    CHECK(
+        !base::Contains(enabled_features_, features::kWaylandPerSurfaceScale));
+    enabled_features_.push_back(features::kWaylandPerSurfaceScale);
+
+    WaylandDataDragControllerTest::SetUp();
+  }
+
+  void TearDown() override {
+    WaylandDataDragControllerTest::TearDown();
+
+    CHECK(enabled_features_.back() == features::kWaylandPerSurfaceScale);
+    enabled_features_.pop_back();
+  }
+};
+
+TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
+       ScaleEnterAndMotionEventsLocation) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  // Set font scale to 1.25.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(1);
+  ASSERT_TRUE(connection_->window_manager());
+  connection_->window_manager()->SetFontScale(1.25f);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_EQ(window_->applied_state().ui_scale, 1.25f);
+  EXPECT_EQ(window_->applied_state().window_scale, 1.0f);
+
+  // Emulate a incoming dnd entering `window_` with location (0, 100).
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  // As ui_scale is 1.25, the expected first drag motion location is (0, 80).
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(0, 80)), _, _));
+  PostToServerAndWait([surface_id, location = gfx::Point(0, 100),
+                       mime_type_text = std::string(kMimeTypeText),
+                       sample_text = std::string(kSampleTextForDragAndDrop)](
+                          wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    CHECK(data_offer);
+    // Emulate a new text dnd offer.
+    data_offer->OnOffer(mime_type_text, ToClipboardData(sample_text));
+    // Send wl_data_device.enter with dip location (10, 10)
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(location.x()),
+                         wl_fixed_from_int(location.y()), data_offer);
+  });
+  WaitForDragDropTasks();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  // Ensure a subsequent motion event location also gets properly scaled.
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(160, 160)), _, _));
+  SendMotionEvent(gfx::Point(200, 200));
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  SendDndLeave();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,
                          Values(wl::ServerConfig{}));
-
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         PerSurfaceScaleWaylandDataDragControllerTest,
+                         Values(wl::ServerConfig{
+                             .supports_viewporter_surface_scaling = true}));
 #else
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
