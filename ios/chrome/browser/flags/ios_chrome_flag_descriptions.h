@@ -467,14 +467,6 @@ extern const char kIOSDetectUsernameInUffDescription[];
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
-// Title and description for the flag to enable partial translate.
-extern const char kIOSEditMenuPartialTranslateName[];
-extern const char kIOSEditMenuPartialTranslateDescription[];
-
-// Title and description for the flag to enable Search With edit menu entry.
-extern const char kIOSEditMenuSearchWithName[];
-extern const char kIOSEditMenuSearchWithDescription[];
-
 // Title and description for the flag to hide Search Web edit menu entry.
 extern const char kIOSEditMenuHideSearchWebName[];
 extern const char kIOSEditMenuHideSearchWebDescription[];

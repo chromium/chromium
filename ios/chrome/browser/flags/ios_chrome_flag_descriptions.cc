@@ -557,17 +557,6 @@ const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
 
-const char kIOSEditMenuPartialTranslateName[] =
-    "Enable partial translate in edit menu";
-const char kIOSEditMenuPartialTranslateDescription[] =
-    "Replace the Apple translate entry in the web edit menu to use Google "
-    "Translate instead.";
-
-extern const char kIOSEditMenuSearchWithName[] =
-    "Enable Search with in edit menu";
-extern const char kIOSEditMenuSearchWithDescription[] =
-    "Add an entry to search the web selection with your default search engine.";
-
 extern const char kIOSEditMenuHideSearchWebName[] =
     "Hides Search Web in edit menu";
 extern const char kIOSEditMenuHideSearchWebDescription[] =

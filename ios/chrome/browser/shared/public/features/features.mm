@@ -163,45 +163,6 @@ constexpr base::FeatureParam<int>
         &kNonModalDefaultBrowserPromoCooldownRefactor,
         /*name=*/"cooldown-days", /*default_value=*/14};
 
-const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
-    "IOSEditMenuPartialTranslateNoIncognitoParam";
-
-BASE_FEATURE(kIOSEditMenuPartialTranslate,
-             "IOSEditMenuPartialTranslate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsPartialTranslateEnabled() {
-  if (@available(iOS 16, *)) {
-    return base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate);
-  }
-  return false;
-}
-
-bool ShouldShowPartialTranslateInIncognito() {
-  if (!IsPartialTranslateEnabled()) {
-    return false;
-  }
-  return !base::GetFieldTrialParamByFeatureAsBool(
-      kIOSEditMenuPartialTranslate,
-      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
-}
-
-const char kIOSEditMenuSearchWithTitleParamTitle[] =
-    "IOSEditMenuSearchWithTitleParam";
-const char kIOSEditMenuSearchWithTitleSearchParam[] = "Search";
-const char kIOSEditMenuSearchWithTitleSearchWithParam[] = "SearchWith";
-const char kIOSEditMenuSearchWithTitleWebSearchParam[] = "WebSearch";
-BASE_FEATURE(kIOSEditMenuSearchWith,
-             "IOSEditMenuSearchWith",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsSearchWithEnabled() {
-  if (@available(iOS 16, *)) {
-    return base::FeatureList::IsEnabled(kIOSEditMenuSearchWith);
-  }
-  return false;
-}
-
 BASE_FEATURE(kIOSEditMenuHideSearchWeb,
              "IOSEditMenuHideSearchWeb",
              base::FEATURE_ENABLED_BY_DEFAULT);

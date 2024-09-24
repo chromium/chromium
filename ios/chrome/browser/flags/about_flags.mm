@@ -445,33 +445,6 @@ const FeatureEntry::FeatureVariation kTabResumptionVariations[] = {
      kTabResumptionAllTabsOneDayThreshold,
      std::size(kTabResumptionAllTabsOneDayThreshold), nullptr}};
 
-const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateNoIncognito[] = {
-    {kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}};
-const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateWithIncognito[] = {
-    {kIOSEditMenuPartialTranslateNoIncognitoParam, "false"}};
-const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
-    {{"Disable on incognito", kIOSEditMenuPartialTranslateNoIncognito,
-      std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr},
-     {"Enable on incognito", kIOSEditMenuPartialTranslateWithIncognito,
-      std::size(kIOSEditMenuPartialTranslateWithIncognito), nullptr}};
-
-const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleSearchWith[] = {
-    {kIOSEditMenuSearchWithTitleParamTitle,
-     kIOSEditMenuSearchWithTitleSearchWithParam}};
-const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleSearch[] = {
-    {kIOSEditMenuSearchWithTitleParamTitle,
-     kIOSEditMenuSearchWithTitleSearchParam}};
-const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleWebSearch[] = {
-    {kIOSEditMenuSearchWithTitleParamTitle,
-     kIOSEditMenuSearchWithTitleWebSearchParam}};
-const FeatureEntry::FeatureVariation kIOSEditMenuSearchWithVariations[] = {
-    {"Search with DSE", kIOSEditMenuSearchWithTitleSearchWith,
-     std::size(kIOSEditMenuSearchWithTitleSearchWith), nullptr},
-    {"Search", kIOSEditMenuSearchWithTitleSearch,
-     std::size(kIOSEditMenuSearchWithTitleSearch), nullptr},
-    {"Web Search", kIOSEditMenuSearchWithTitleWebSearch,
-     std::size(kIOSEditMenuSearchWithTitleWebSearch), nullptr},
-};
 
 const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingTop[] = {
     {kBottomOmniboxDefaultSettingParam, kBottomOmniboxDefaultSettingParamTop}};
@@ -1409,13 +1382,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTabInactivityThreshold,
                                     kTabInactivityThresholdVariations,
                                     "TabInactivityThreshold")},
-    {"ios-edit-menu-partial-translate",
-     flag_descriptions::kIOSEditMenuPartialTranslateName,
-     flag_descriptions::kIOSEditMenuPartialTranslateDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSEditMenuPartialTranslate,
-                                    kIOSEditMenuPartialTranslateVariations,
-                                    "IOSEditMenuPartialTranslate")},
     {"notification-settings-menu-item",
      flag_descriptions::kNotificationSettingsMenuItemName,
      flag_descriptions::kNotificationSettingsMenuItemDescription,
@@ -1454,11 +1420,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnlyAccessClipboardAsyncName,
      flag_descriptions::kOnlyAccessClipboardAsyncDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOnlyAccessClipboardAsync)},
-    {"ios-edit-menu-search-with", flag_descriptions::kIOSEditMenuSearchWithName,
-     flag_descriptions::kIOSEditMenuSearchWithDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSEditMenuSearchWith,
-                                    kIOSEditMenuSearchWithVariations,
-                                    "IOSEditMenuSearchWith")},
     {"ios-edit-menu-hide-search-web",
      flag_descriptions::kIOSEditMenuHideSearchWebName,
      flag_descriptions::kIOSEditMenuHideSearchWebDescription, flags_ui::kOsIos,

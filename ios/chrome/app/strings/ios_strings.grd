@@ -4605,17 +4605,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_TITLE" desc="The title for Search Engine selection setting [iOS only]">
         Search Engine
       </message>
-      <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH" desc="Edit menu button title to open a tab with a Search query of the current selection [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
-        Search
-      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTINS_CELL_VOICE_OVER" desc="This string is used to add the search engine name and the search engine domain. It is only used by VoiceOver. [iOS only]">
         <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph>, <ph name="SEARCH_ENGINE_DOMAIN">$2<ex>google.com</ex></ph>
       </message>
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-      </message>
-      <message name="IDS_IOS_SEARCH_WITH_TITLE_WEB_SEARCH" desc="Edit menu button title to open a tab with a Search query of the current selection. Should be similar to the Android equivalent. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
-        Web Search
       </message>
       <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT" desc="Announcement for the tab grid button's in-product help, explaining that all open tabs can be accessed from the Tab Switcher. Read by Text To Speech. [iOS only]">
         You can access all your open tabs from the Tab Switcher.

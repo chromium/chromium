@@ -391,8 +391,6 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
     AddOpenInNewCanvas(expectedMenuDescription);
     AddPartialTranslate(expectedMenuDescription);
     AddLinkToText(expectedMenuDescription);
-    base::test::ScopedFeatureList feature_list_;
-    feature_list_.InitWithFeatures({kIOSEditMenuPartialTranslate}, {});
     SetupTranslateControllerFactory();
     PartialTranslateMediator* partial_translate_mediator =
         [[PartialTranslateMediator alloc]

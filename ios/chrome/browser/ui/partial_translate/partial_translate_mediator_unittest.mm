@@ -145,7 +145,6 @@ class PartialTranslateMediatorTest : public PlatformTest {
   PartialTranslateMediatorTest()
       : web_client_(std::make_unique<ChromeWebClient>()),
         web_state_list_(&web_state_list_delegate_) {
-    feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -211,7 +210,6 @@ class PartialTranslateMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
@@ -250,14 +248,6 @@ TEST_F(PartialTranslateMediatorTest, EnterpriseDisabled) {
 
 // Tests the behavior in incognito.
 TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // Partial translate not supported before iOS16.
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSEditMenuPartialTranslate,
-      {{kIOSEditMenuPartialTranslateNoIncognitoParam, "false"}});
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
         initWithWebStateList:&web_state_list_
       withBaseViewController:base_view_controller_

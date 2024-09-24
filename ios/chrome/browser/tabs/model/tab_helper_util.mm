@@ -306,9 +306,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     LinkToTextTabHelper::CreateForWebState(web_state);
   }
 
-  if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
-    WebSelectionTabHelper::CreateForWebState(web_state);
-  }
+  WebSelectionTabHelper::CreateForWebState(web_state);
 
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
 
