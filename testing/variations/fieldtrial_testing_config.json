@@ -7679,25 +7679,6 @@
             ]
         }
     ],
-    "DelayMediaSinkDiscovery": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayMediaSinkDiscovery"
-                    ]
-                }
-            ]
-        }
-    ],
     "DelayablePriorityThreshold": [
         {
             "platforms": [
@@ -17784,25 +17765,6 @@
                     "disable_features": [
                         "Prerender2WarmUpCompositor",
                         "WarmUpCompositor"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PressAndHoldEscToExitBrowserFullscreen0612": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PressAndHoldEscToExitBrowserFullscreen"
                     ]
                 }
             ]
