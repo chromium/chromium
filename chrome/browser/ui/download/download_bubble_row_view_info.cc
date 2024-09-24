@@ -365,3 +365,8 @@ void DownloadBubbleRowViewInfo::Reset() {
   primary_button_command_ = std::nullopt;
   progress_bar_ = DownloadBubbleProgressBar::NoProgressBar();
 }
+
+bool DownloadBubbleRowViewInfo::ShouldShowDeepScanNotice() const {
+  return ShouldShowDeepScanPromptNotice(model_->profile(),
+                                        model_->GetDangerType());
+}

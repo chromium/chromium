@@ -56,6 +56,9 @@ BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 // the current prompt which is a dialog/modal.
 BASE_DECLARE_FEATURE(kDangerousDownloadInterstitial);
 
+// Controls whether we prompt the user on unencrypted deep scans.
+BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
+
 // Controls whether we use new broader criteria for deep scans.
 BASE_DECLARE_FEATURE(kDeepScanningCriteria);
 

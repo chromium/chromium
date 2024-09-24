@@ -3522,6 +3522,14 @@ are declared in tools/grit/grit_rule.gni.
               desc="Text shown in the download bubble to allow users to bypass a deep scan">
         Download suspicious file
       </message>
+      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE"
+               desc="Notice shown in the download bubble when deep scanning is going to happen automatically">
+        The next time Google Safe Browsing finds a suspicious download, it will automatically scan it as part of the <ph name="LINK">$1<ex>enhanced protection</ex></ph> you chose
+      </message>
+      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE_LINK"
+               desc="Link text within the notice in the download bubble about deep scanning happening automatically. See IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE">
+        enhanced protection
+      </message>
 
       <!-- Local archive decryption in download bubble -->
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_LOCAL_DECRYPTION_STATUS"

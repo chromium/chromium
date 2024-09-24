@@ -88,3 +88,26 @@ void SendSafeBrowsingDownloadReport(
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+bool ShouldShowDeepScanPromptNotice(Profile* profile,
+                                    download::DownloadDangerType danger_type) {
+  if (danger_type != download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    return false;
+  }
+
+  if (!safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
+    return false;
+  }
+
+  return true;
+}
