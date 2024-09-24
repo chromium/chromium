@@ -520,28 +520,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
-    units="accounts" expires_after="2025-02-10">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded whenever a user opts in to the account-scoped password storage. The
-    recorded value is the total number of opted-in accounts in this profile,
-    including the new opt-in.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
-    units="accounts" expires_after="2025-02-23">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded whenever a user opts out of the account-scoped password storage.
-    The recorded value is the total number of opted-in accounts remaining in
-    this profile after the current opt-out.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
     units="passwords" expires_after="2025-03-09">

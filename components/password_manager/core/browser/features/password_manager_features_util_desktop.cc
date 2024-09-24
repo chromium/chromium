@@ -220,11 +220,6 @@ void OptInToAccountStorage(PrefService* pref_service,
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .SetDefaultStore(PasswordForm::Store::kAccountStore);
-
-  // Record the total number of (now) opted-in accounts.
-  base::UmaHistogramExactLinear(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn",
-      sync_user_settings->GetNumberOfAccountsWithPasswordsSelected(), 10);
 }
 
 void OptOutOfAccountStorage(PrefService* pref_service,
@@ -272,11 +267,6 @@ void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .ClearAllSettings();
-
-  // Record the total number of (still) opted-in accounts.
-  base::UmaHistogramExactLinear(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut",
-      sync_user_settings->GetNumberOfAccountsWithPasswordsSelected(), 10);
 }
 
 void SetDefaultPasswordStore(PrefService* pref_service,
