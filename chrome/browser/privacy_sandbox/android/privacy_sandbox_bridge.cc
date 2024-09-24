@@ -246,7 +246,10 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
           activity_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsConsentCountry(JNIEnv* env) {
-  PrivacySandboxCountriesImpl instance;
-  return instance.IsConsentCountry();
+static jboolean
+JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)
+      ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
 }

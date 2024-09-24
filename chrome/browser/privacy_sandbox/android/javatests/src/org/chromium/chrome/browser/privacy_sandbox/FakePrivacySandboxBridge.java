@@ -233,7 +233,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public void recordActivityType(Profile profile, int activityType) {}
 
     @Override
-    public boolean isConsentCountry() {
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile) {
         return false;
     }
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
+#include <tuple>
+
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
@@ -20,6 +22,9 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -321,6 +326,13 @@ struct NoticeTestingParameters {
 };
 }  // namespace
 
+// A mock implementation of the PrivacySandboxCountries interface for testing.
+class MockPrivacySandboxCountries : public PrivacySandboxCountries {
+ public:
+  MOCK_METHOD(bool, IsConsentCountry, (), (override));
+  MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
+};
+
 class PrivacySandboxServiceTest : public testing::Test {
  public:
   PrivacySandboxServiceTest()
@@ -358,6 +370,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   void CreateService() {
     auto mock_delegate = CreateMockDelegate();
     mock_delegate_ = mock_delegate.get();
+    mock_privacy_sandbox_countries_ =
+        std::make_unique<MockPrivacySandboxCountries>();
 
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
@@ -375,7 +389,8 @@ class PrivacySandboxServiceTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
         mock_sentiment_service(),
 #endif
-        mock_browsing_topics_service(), first_party_sets_policy_service());
+        mock_browsing_topics_service(), first_party_sets_policy_service(),
+        mock_privacy_sandbox_countries());
   }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
@@ -445,6 +460,11 @@ class PrivacySandboxServiceTest : public testing::Test {
   first_party_sets_policy_service() {
     return &first_party_sets_policy_service_;
   }
+
+  MockPrivacySandboxCountries* mock_privacy_sandbox_countries() {
+    return mock_privacy_sandbox_countries_.get();
+  }
+
   content::BrowserTaskEnvironment* browser_task_environment() {
     return &browser_task_environment_;
   }
@@ -476,6 +496,7 @@ class PrivacySandboxServiceTest : public testing::Test {
       first_party_sets_policy_service_ =
           first_party_sets::FirstPartySetsPolicyService(
               profile_.GetOriginalProfile());
+  std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 #endif
@@ -485,6 +506,39 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   std::unique_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_;
 };
+
+// Params correspond to (IsFeatureOn, IsConsentCountry, ExpectedResult).
+class PrivacySandboxPrivacyGuideShouldShowAdTopicsTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+
+TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+       ShownAccordingToConsentCountryAndFeature) {
+  bool is_feature_on = static_cast<bool>(std::get<0>(GetParam()));
+  bool is_consent_country = static_cast<bool>(std::get<1>(GetParam()));
+  bool result = static_cast<bool>(std::get<2>(GetParam()));
+
+  feature_list()->Reset();
+  if (is_feature_on) {
+    feature_list()->InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+  }
+
+  ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
+      .WillByDefault(testing::Return(is_consent_country));
+
+  bool should_show_card =
+      privacy_sandbox_service()
+          ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
+  ASSERT_EQ(should_show_card, result);
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+                         PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+                         testing::Values(std::tuple(true, true, true),
+                                         std::tuple(true, false, false),
+                                         std::tuple(false, true, false),
+                                         std::tuple(false, false, false)));
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
@@ -1048,7 +1102,8 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
 #if !BUILDFLAG(IS_ANDROID)
             mock_sentiment_service(),
 #endif
-            mock_browsing_topics_service(), first_party_sets_policy_service());
+            mock_browsing_topics_service(), first_party_sets_policy_service(),
+            mock_privacy_sandbox_countries());
       },
       "");
 }

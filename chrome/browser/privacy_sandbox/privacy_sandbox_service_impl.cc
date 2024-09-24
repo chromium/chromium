@@ -21,6 +21,7 @@
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -49,6 +50,8 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "privacy_sandbox_countries_impl.h"
+#include "privacy_sandbox_service_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -363,7 +366,8 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     TrustSafetySentimentService* sentiment_service,
 #endif
     browsing_topics::BrowsingTopicsService* browsing_topics_service,
-    first_party_sets::FirstPartySetsPolicyService* first_party_sets_service)
+    first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
+    PrivacySandboxCountries* privacy_sandbox_countries)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       tracking_protection_settings_(tracking_protection_settings),
       cookie_settings_(cookie_settings),
@@ -376,8 +380,8 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       sentiment_service_(sentiment_service),
 #endif
       browsing_topics_service_(browsing_topics_service),
-      first_party_sets_policy_service_(first_party_sets_service) {
-
+      first_party_sets_policy_service_(first_party_sets_service),
+      privacy_sandbox_countries_(privacy_sandbox_countries) {
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
@@ -1144,6 +1148,18 @@ void PrivacySandboxServiceImpl::SetTopicAllowed(
   }
 
   privacy_sandbox_settings_->SetTopicAllowed(topic, allowed);
+}
+
+PrivacySandboxCountries*
+PrivacySandboxServiceImpl::GetPrivacySandboxCountries() {
+  return privacy_sandbox_countries_;
+}
+
+bool PrivacySandboxServiceImpl::
+    PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() {
+  return GetPrivacySandboxCountries()->IsConsentCountry() &&
+         base::FeatureList::IsEnabled(
+             privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
 }
 
 void PrivacySandboxServiceImpl::TopicsToggleChanged(bool new_value) const {

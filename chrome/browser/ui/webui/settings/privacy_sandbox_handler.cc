@@ -209,9 +209,8 @@ void PrivacySandboxHandler::
         const base::Value::List& args) {
   AllowJavascript();
   bool should_show_ad_topics_card =
-      GetPrivacySandboxCountries()->IsConsentCountry() &&
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+      GetPrivacySandboxService()
+          ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
 }
 

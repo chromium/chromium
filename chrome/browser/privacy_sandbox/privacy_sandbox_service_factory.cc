@@ -9,6 +9,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -95,6 +97,7 @@ std::unique_ptr<KeyedService>
 PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  static PrivacySandboxCountriesImpl countries_instance;
   return std::make_unique<PrivacySandboxServiceImpl>(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
@@ -110,5 +113,6 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile),
       first_party_sets::FirstPartySetsPolicyServiceFactory::
-          GetForBrowserContext(context));
+          GetForBrowserContext(context),
+      &countries_instance);
 }

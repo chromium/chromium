@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -273,6 +274,10 @@ class PrivacySandboxService : public KeyedService {
   // in tests.
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed) = 0;
+
+  // Determines whether the Topics API step should be shown in the Privacy
+  // Guide.
+  virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
 
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.

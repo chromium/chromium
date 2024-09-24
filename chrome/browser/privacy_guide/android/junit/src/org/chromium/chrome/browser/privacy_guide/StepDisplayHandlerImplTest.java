@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
@@ -209,30 +210,16 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
-    public void testDisplayAdTopicsWhenCountryIsAllowedAndFlagIsOn() {
-        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
+    public void testDisplayAdTopicsWhenShouldShowAdTopicsIsOn() {
+        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
+                .thenReturn(true);
         assertTrue(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
-    public void testDontDisplayAdTopicsWhenCountryIsBlockedAndFlagIsOn() {
-        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(false);
-        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
-    public void testDontDisplayAdTopicsWhenCountryIsAllowedAndFlagIsOff() {
-        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
-        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
-    public void testDontDisplayAdTopicsWhenCountryIsBlockedAndFlagIsOff() {
-        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(false);
+    public void testDontDisplayAdTopicsWhenShouldShowAdTopicsIsOff() {
+        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
+                .thenReturn(false);
         assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 }

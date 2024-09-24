@@ -83,8 +83,6 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayAdTopics() {
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)
-                && mPrivacySandboxBridge.isConsentCountry();
+        return mPrivacySandboxBridge.privacySandboxPrivacyGuideShouldShowAdTopicsCard();
     }
 }

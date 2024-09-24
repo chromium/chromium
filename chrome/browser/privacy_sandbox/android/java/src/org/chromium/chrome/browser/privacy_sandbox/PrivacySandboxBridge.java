@@ -132,8 +132,9 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().recordActivityType(mProfile, activityType);
     }
 
-    public boolean isConsentCountry() {
-        return PrivacySandboxBridgeJni.get().isConsentCountry();
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
+        return PrivacySandboxBridgeJni.get()
+                .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
     }
 
     @NativeMethods
@@ -184,6 +185,6 @@ public class PrivacySandboxBridge {
 
         void recordActivityType(Profile profile, int activityType);
 
-        boolean isConsentCountry();
+        boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
     }
 }
