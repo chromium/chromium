@@ -236,4 +236,28 @@ suite('ExperimentTest', function() {
     assertEquals(data.internal_name, args[0]);
     assertEquals(textarea.value, args[1]);
   });
+
+  test('ExpandCollapseClick', function() {
+    const data = {
+      'description': 'Some Description',
+      'internal_name': 'some-description',
+      'is_default': true,
+      'name': 'some description',
+      'enabled': true,
+      'supported_platforms': ['Windows'],
+    };
+    experiment.data = data;
+    document.body.appendChild(experiment);
+
+    const experimentName = experiment.getRequiredElement('.experiment-name');
+    const parentElement = experimentName.parentElement;
+    assertTrue(!!parentElement);
+    assertFalse(parentElement.classList.contains('expand'));
+
+    experimentName.click();
+    assertTrue(parentElement.classList.contains('expand'));
+
+    experimentName.click();
+    assertFalse(parentElement.classList.contains('expand'));
+  });
 });

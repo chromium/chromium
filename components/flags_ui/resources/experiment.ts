@@ -5,7 +5,6 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './experiment.css.js';
 import {getHtml} from './experiment.html.js';
@@ -102,17 +101,6 @@ export class ExperimentElement extends CrLitElement {
     return el;
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('feature_')) {
-      this.onFeatureChanged_();
-    }
-  }
-
   set data(feature: Feature) {
     this.feature_ = feature;
   }
@@ -162,14 +150,10 @@ export class ExperimentElement extends CrLitElement {
     }));
   }
 
-  private onFeatureChanged_() {
-    const smallScreenCheck = window.matchMedia('(max-width: 480px)');
+  protected onExperimentNameClick_(e: Event) {
     // Toggling of experiment description overflow content on smaller screens.
-    const expandContainer = this.getRequiredElement('.flex:first-child');
-    if (smallScreenCheck.matches) {
-      expandContainer.onclick = () =>
-          expandContainer.classList.toggle('expand');
-    }
+    // Only has an effect on narrow widths (max-width: 480px).
+    (e.currentTarget as HTMLElement).parentElement!.classList.toggle('expand');
   }
 
   getSelect(): HTMLSelectElement|null {

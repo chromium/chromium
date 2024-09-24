@@ -2,7 +2,8 @@
   <div class="${this.getExperimentCssClass_()} flex-container">
     <div class="flex">
       <h2 class="experiment-name" id="${this.feature_.internal_name}_name"
-          .title="${this.getExperimentTitle_()}">
+          .title="${this.getExperimentTitle_()}"
+          @click="${this.onExperimentNameClick_}">
         ${this.feature_.name}
       </h2>
       <p class="body" part="body">
