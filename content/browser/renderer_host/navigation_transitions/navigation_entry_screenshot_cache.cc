@@ -76,6 +76,17 @@ void NavigationEntryScreenshotCache::OnNavigationFinished(
     const NavigationRequest& navigation_request) {
   auto it = pending_screenshots_.find(navigation_request.GetNavigationId());
   if (it == pending_screenshots_.end()) {
+    if (!navigation_request.HasCommitted()) {
+      // crbug.com/369200379: If the navigation fails to commit and the
+      // screenshot hasn't arrived at the browser yet, we need to increment the
+      // copy output request sequence on the screenshot destination entry to
+      // prevent the the screenshot eventually being stashed. Since the
+      // navigation never commits, it's erroneous to stash this screenshot into
+      // the last committed entry.
+      nav_controller_->GetLastCommittedEntry()
+          ->navigation_transition_data()
+          .increment_copy_output_request_sequence();
+    }
     return;
   }
 
