@@ -2557,7 +2557,6 @@ public class StripLayoutHelper
 
     @VisibleForTesting
     void updateScrollOffsetLimits() {
-        boolean shouldShowTrailingMargins = mInReorderMode || mTabGroupMarginAnimRunning;
         mScrollDelegate.updateScrollOffsetLimits(
                 mStripViews,
                 mWidth,
@@ -2565,9 +2564,7 @@ public class StripLayoutHelper
                 mRightMargin,
                 mCachedTabWidth,
                 mTabOverlapWidth,
-                mGroupTitleOverlapWidth,
-                mReorderDelegate.getReorderStartMargin(),
-                shouldShowTrailingMargins);
+                mGroupTitleOverlapWidth);
     }
 
     /**
@@ -3393,13 +3390,13 @@ public class StripLayoutHelper
         if (!LocalizationUtils.isLayoutRtl()) {
             return mScrollDelegate.getScrollOffset()
                     + mLeftMargin
-                    + mReorderDelegate.getReorderStartMargin();
+                    + mScrollDelegate.getReorderStartMargin();
         } else {
             return mWidth
                     - mCachedTabWidth
                     - mScrollDelegate.getScrollOffset()
                     - mRightMargin
-                    - mReorderDelegate.getReorderStartMargin();
+                    - mScrollDelegate.getReorderStartMargin();
         }
     }
 
@@ -3742,7 +3739,7 @@ public class StripLayoutHelper
     }
 
     public float getStripStartMarginForReorderForTesting() {
-        return mReorderDelegate.getReorderStartMargin();
+        return mScrollDelegate.getReorderStartMargin();
     }
 
     public void startReorderModeAtIndexForTesting(int index) {
@@ -3833,7 +3830,11 @@ public class StripLayoutHelper
         setCompositorButtonsVisible(false);
 
         // 3. Set edge margins.
-        computeAndUpdateStartAndEndMargins();
+        mReorderDelegate.setEdgeMarginsForReorder(
+                mStripTabs[0],
+                mStripTabs[mStripTabs.length - 1],
+                mTabMarginWidth,
+                mReorderingForTabDrop);
     }
 
     @VisibleForTesting
@@ -3912,13 +3913,6 @@ public class StripLayoutHelper
                 mUpdateHost.getAnimationHandler(), tab, groupTitle, trailingMargin, animationList);
     }
 
-    /** See {@link ReorderDelegate#computeAndUpdateStartAndEndMargins} */
-    private void computeAndUpdateStartAndEndMargins() {
-        boolean isVisibleAreaFilled = mCachedTabWidth != mMaxTabWidth;
-        mReorderDelegate.computeAndUpdateStartAndEndMargins(
-                mStripTabs, mTabMarginWidth, mReorderingForTabDrop, isVisibleAreaFilled);
-    }
-
     private void resetTabGroupMargins(@Nullable ArrayList<Animator> animationList) {
         assert !mInReorderMode;
 
@@ -3926,8 +3920,7 @@ public class StripLayoutHelper
             final StripLayoutTab stripTab = mStripTabs[i];
             setTrailingMarginForTab(stripTab, /* trailingMargin= */ 0f, animationList);
         }
-        boolean isVisibleAreaFilled = mCachedTabWidth != mMaxTabWidth;
-        mReorderDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f, isVisibleAreaFilled);
+        mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -4303,7 +4296,11 @@ public class StripLayoutHelper
             if ((curIndex == 0 || curIndex >= mStripTabs.length - 2)
                     && mTabGroupModelFilter.isTabInTabGroup(
                             getTabById(mInteractingTab.getTabId()))) {
-                computeAndUpdateStartAndEndMargins();
+                mReorderDelegate.setEdgeMarginsForReorder(
+                        mStripTabs[0],
+                        mStripTabs[mStripTabs.length - 1],
+                        mTabMarginWidth,
+                        mReorderingForTabDrop);
             }
             // 4.c. Manually reset last tab's trailing margin after the tab group is removed.
             if (mStripTabs.length > 1) {
@@ -4355,7 +4352,7 @@ public class StripLayoutHelper
             limit =
                     (mStripViews[0] instanceof StripLayoutGroupTitle)
                             ? calculateTabGroupThreshold(0, true, false)
-                            : mReorderDelegate.getReorderStartMargin();
+                            : mScrollDelegate.getReorderStartMargin();
             offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
         }
         if (curIndex == mStripTabs.length - 1) {
@@ -4512,8 +4509,7 @@ public class StripLayoutHelper
                         ? x > mStripTabs[0].getTouchTargetRight()
                         : x < mStripTabs[0].getTouchTargetLeft();
         if (inStartGap && mInteractingTab != null) {
-            boolean isVisibleAreaFilled = mCachedTabWidth != mMaxTabWidth;
-            mReorderDelegate.setReorderStartMargin(mTabMarginWidth, isVisibleAreaFilled);
+            mScrollDelegate.setReorderStartMargin(mTabMarginWidth);
 
             finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -4982,13 +4978,6 @@ public class StripLayoutHelper
      */
     float getMinimumScrollOffsetForTesting() {
         return mScrollDelegate.getMinScrollOffsetForTesting(); // IN-TEST
-    }
-
-    /**
-     * @return The strip's additional minimum scroll offset for reorder mode.
-     */
-    float getReorderExtraMinScrollOffsetForTesting() {
-        return mScrollDelegate.getReorderExtraMinScrollOffsetForTesting(); // IN-TEST
     }
 
     /**

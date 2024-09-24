@@ -2958,45 +2958,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Tab Groups on Tab Strip")
-    public void testReorder_NoExtraMinScroll() {
-        // Mock 2 tabs so each tab is at its maximum width.
-        initializeTest(false, false, true, 0, 2);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Start reorder mode on third tab.
-        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
-
-        // Verify extra scroll offset.
-        assertEquals(
-                "Extra min offset should not be set.",
-                0f,
-                mStripLayoutHelper.getReorderExtraMinScrollOffsetForTesting(),
-                EPSILON);
-    }
-
-    @Test
-    @Feature("Tab Groups on Tab Strip")
-    public void testReorder_ExtraMinScroll() {
-        // Mock 2 tabs so each tab is at its maximum width.
-        initializeTest(false, false, true, 0, 2);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-        groupTabs(0, 1);
-
-        // Start reorder mode on third tab.
-        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
-
-        // Verify extra scroll offset.
-        assertNotEquals(
-                "Extra min offset should be set.",
-                0f,
-                mStripLayoutHelper.getReorderExtraMinScrollOffsetForTesting(),
-                EPSILON);
-    }
-
-    @Test
     public void testTabClosed() {
         // Initialize with 10 tabs.
         int tabCount = 10;

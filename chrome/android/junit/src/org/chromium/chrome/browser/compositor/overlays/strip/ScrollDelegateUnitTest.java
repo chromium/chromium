@@ -138,6 +138,7 @@ public class ScrollDelegateUnitTest {
         // viewsWidth = 3*(viewWidth(110) - overlapWidth(10)) + overlapWidth(10) = 310
         // marginsWidth = trailingMarginWidth(10) + reorderStartMargin(10) = 20
         // expectedMinScrollOffset = viewsWidth(310) + marginsWidth(20) - stripWidth(140) = -190
+        mScrollDelegate.setReorderStartMargin(REORDER_START_MARGIN);
         mScrollDelegate.updateScrollOffsetLimits(
                 mViews,
                 STRIP_WIDTH,
@@ -145,9 +146,7 @@ public class ScrollDelegateUnitTest {
                 RIGHT_MARGIN,
                 VIEW_WIDTH,
                 VIEW_OVERLAP_WIDTH,
-                VIEW_OVERLAP_WIDTH,
-                REORDER_START_MARGIN,
-                /* shouldShowTrailingMargins= */ true);
+                VIEW_OVERLAP_WIDTH);
         float expectedMinScrollOffset = -190.f;
         assertEquals(
                 /* message= */ "minScrollOffset was not as calculated.",

@@ -29,7 +29,6 @@ public class ReorderDelegate {
 
     // Internal state.
     private boolean mInitialized;
-    private float mReorderStartMargin;
 
     /**
      * Passes the dependencies needed in this delegate. Passed here as they aren't ready on
@@ -47,52 +46,31 @@ public class ReorderDelegate {
     }
 
     /**
-     * Sets the new start margin and auto-scrolls to prevent any apparent movement.
-     *
-     * @param newStartMargin The new start margin.
-     * @param isVisibleAreaFilled Whether or not there are enough tabs to fill the visible area on
-     *     the strip.
-     */
-    void setReorderStartMargin(float newStartMargin, boolean isVisibleAreaFilled) {
-        float delta = newStartMargin - mReorderStartMargin;
-        mReorderStartMargin = newStartMargin;
-        mScrollDelegate.onReorderStartMarginChanged(isVisibleAreaFilled, newStartMargin, delta);
-    }
-
-    float getReorderStartMargin() {
-        return mReorderStartMargin;
-    }
-
-    /**
      * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
      * near the edge of the tab strip. 0 if the first/last tabs aren't grouped, respectively.
      *
-     * @param stripTabs The list of {@link StripLayoutTab}s.
+     * @param firstTab The first {@link StripLayoutTab}.
+     * @param lastTab The last {@link StripLayoutTab}.
      * @param tabMarginWidth The desired width for tab group margins.
      * @param reorderingForTabDrop Whether we're processing for a tab dropping into another window.
-     * @param isVisibleAreaFilled Whether or not there are enough tabs to fill the visible area on
-     *     the strip.
      */
-    void computeAndUpdateStartAndEndMargins(
-            StripLayoutTab[] stripTabs,
+    void setEdgeMarginsForReorder(
+            StripLayoutTab firstTab,
+            StripLayoutTab lastTab,
             float tabMarginWidth,
-            boolean reorderingForTabDrop,
-            boolean isVisibleAreaFilled) {
+            boolean reorderingForTabDrop) {
         if (!mInitialized) return;
         float marginWidth = tabMarginWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
-        // 1. Set the starting margin.
+        // 1. Set the start margin - margin is applied by updating scrollOffset.
         boolean firstTabIsInGroup =
-                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(stripTabs[0].getTabId()));
-        float newStartMargin = firstTabIsInGroup ? marginWidth : 0.f;
-        setReorderStartMargin(newStartMargin, isVisibleAreaFilled);
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
+        mScrollDelegate.setReorderStartMargin(firstTabIsInGroup ? marginWidth : 0.f);
 
         // 2. Set the trailing margin.
         boolean lastTabIsInGroup =
-                mTabGroupModelFilter.isTabInTabGroup(
-                        mModel.getTabById(stripTabs[stripTabs.length - 1].getTabId()));
-        stripTabs[stripTabs.length - 1].setTrailingMargin(
-                (lastTabIsInGroup || reorderingForTabDrop) ? marginWidth : 0.f);
+                mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(lastTab.getTabId()));
+        lastTab.setTrailingMargin((lastTabIsInGroup || reorderingForTabDrop) ? marginWidth : 0.f);
     }
 
     /**
