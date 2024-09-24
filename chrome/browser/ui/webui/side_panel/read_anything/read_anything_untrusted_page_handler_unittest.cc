@@ -29,6 +29,7 @@
 #include "ui/accessibility/mojom/ax_location_changes.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -92,6 +93,19 @@ class TestReadAnythingUntrustedPageHandler
             std::move(page),
             mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
             test_web_ui) {}
+
+  void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
+                            ui::AXNodeID target_node_id) override {
+    OnImageDataDownloaded(target_tree_id, target_node_id, /*id=*/0,
+                          /*http_status_code=*/0, GURL(),
+                          /*bitmaps=*/{test_bitmap_},
+                          /*sizes=*/{gfx::Size(10, 10)});
+  }
+
+  void SetTestBitmap(SkBitmap bitmap) { test_bitmap_ = bitmap; }
+
+ private:
+  SkBitmap test_bitmap_;
 };
 
 // TODO: b/40927698 - Add more tests.
@@ -130,6 +144,11 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
 
   void OnLanguagePrefChange(const std::string& lang, bool enabled) {
     handler_->OnLanguagePrefChange(lang, enabled);
+  }
+
+  void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
+                            ui::AXNodeID target_node_id) {
+    handler_->OnImageDataRequested(target_tree_id, target_node_id);
   }
 
  protected:
@@ -331,6 +350,20 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
               base::test::DictionaryHasValue(kLang1, base::Value(kVoice)));
   EXPECT_THAT(*voices,
               base::test::DictionaryHasValue(kLang2, base::Value(kVoice)));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, BadImageData) {
+  auto test_handler_u_ptr =
+      std::make_unique<TestReadAnythingUntrustedPageHandler>(
+          page_.BindAndGetRemote(), test_web_ui_.get());
+  auto* test_handler = test_handler_u_ptr.get();
+  handler_ = std::move(test_handler_u_ptr);
+  auto tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXNodeID node_id = 1;
+  SkBitmap bitmap;
+  test_handler->SetTestBitmap(bitmap);
+  OnImageDataRequested(tree_id, node_id);
+  EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
 }
 
 }  // namespace

@@ -557,6 +557,7 @@ export class AppElement extends AppElementBase {
       this.imageNodeIdsToFetch_.add(nodeId);
       const altText = chrome.readingMode.getAltText(nodeId);
       element.setAttribute('alt', altText);
+      element.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
       element.classList.add('downloaded-image');
     }
 

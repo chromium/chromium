@@ -589,17 +589,20 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-
   bool download_was_successful =
       network::IsSuccessfulStatus(http_status_code) || http_status_code == 0;
 
-  // There should be at least one image.
-  if (download_was_successful && !bitmaps.empty()) {
-    const auto& bitmap = bitmaps[0];
-    page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
-  } else {
-    page_->OnImageDataDownloaded(target_tree_id, node_id, SkBitmap());
+  if (!download_was_successful || bitmaps.empty()) {
+    // If there was a failure, leave the canvas empty.
+    return;
   }
+  // There should be at least one image.
+  const auto& bitmap = bitmaps[0];
+  if (bitmap.isNull()) {
+    // If there was a failure, leave the canvas empty.
+    return;
+  }
+  page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
 }
 
 void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
