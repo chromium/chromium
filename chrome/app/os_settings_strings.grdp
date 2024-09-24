@@ -3514,7 +3514,7 @@ Press an assigned switch or key to remove assignment.
     Studio-style mic
   </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
-    Apply noise cancellation and audio improvements.
+    Apply noise cancellation and audio improvements. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
     Front microphone

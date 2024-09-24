@@ -198,7 +198,11 @@
           class="settings-box-text start" aria-hidden="true">
         $i18n{audioInputStyleTransferTitle}
         <div class="secondary">
-          $i18n{audioInputStyleTransferDescription}
+          <localized-link
+              on-link-clicked="onStyleTransferLearnMoreLinkClicked_"
+              id="styleTransferSecondary"
+              localized-string="$i18n{audioInputStyleTransferDescription}">
+          </localized-link>
         </div>
       </div>
       <cr-toggle id="audioInputStyleTransferToggle"
