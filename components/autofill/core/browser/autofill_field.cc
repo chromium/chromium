@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 
 #include <stdint.h>
+
 #include <iterator>
 
 #include "base/containers/contains.h"
@@ -12,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -425,6 +427,28 @@ AutofillType AutofillField::Type() const {
   return ComputedType();
 }
 
+const std::u16string& AutofillField::value_for_import() const {
+  bool should_consider_value_for_import =
+      IsSelectOrSelectListElement() ||
+      value(ValueSemantics::kInitial) != value(ValueSemantics::kCurrent);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillFixCurrentValueInImport)) {
+    // If the feature is not enabled, legacy behavior applies:
+    // FormStructure::RetrieveFromCache() has already set the current value to
+    // the empty string for <input> elements whose value did not change. This
+    // special case only exists to ensure that kAutofillFixCurrentValueInImport
+    // is a refactoring w/o side effects.
+    should_consider_value_for_import = true;
+  }
+  if (!should_consider_value_for_import) {
+    return base::EmptyString16();
+  }
+  if (base::optional_ref<const SelectOption> o = selected_option()) {
+    return o->text;
+  }
+  return value(ValueSemantics::kCurrent);
+}
+
 const std::u16string& AutofillField::value(ValueSemantics s) const {
   if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
     return FormFieldData::value();
@@ -444,13 +468,6 @@ void AutofillField::set_initial_value(std::u16string initial_value,
     return;
   }
   initial_value_ = std::move(initial_value);
-}
-
-bool AutofillField::IsEmpty() const {
-  // TODO: crbug.com/40227496 - Called in both submission and non-submission
-  // contexts, so the semantics is ambiguous if `kAutofillFixValueSemantics` is
-  // disabled. The desired semantics appears to be `kCurrent` in all cases.
-  return value(ValueSemantics::kCurrent).empty();
 }
 
 FieldSignature AutofillField::GetFieldSignature() const {

@@ -256,7 +256,11 @@ void FormGroupFillingStats::AddFieldFillingStatus(FieldFillingStatus status) {
 }
 
 FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
-  const bool is_empty = field.IsEmpty();
+  // TODO: crbug.com/40227496 - This metric treats fields whose value didn't
+  // change since page load inconsistently. For example, consider an unchanged,
+  // non-empty <input>. If its type is ADDRESS_HOME_{STATE,COUNTRY}, the field
+  // is counted as `kManuallyFilled*`; otherwise it's counted as `kLeftEmpty`.
+  const bool is_empty = field.value_for_import().empty();
   const bool possible_types_empty =
       !FieldHasMeaningfulPossibleFieldTypes(field);
   const bool possible_types_contain_type = TypeOfFieldIsPossibleType(field);

@@ -60,7 +60,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
       "rankInHostFormSignatureGroup",
       base::NumberToString(field->rank_in_host_form_signature_group()));
 
-  field_data.Set("isEmpty", field->IsEmpty());
+  field_data.Set("isEmpty", field->value(ValueSemantics::kCurrent).empty());
   field_data.Set("isFocusable", field->IsFocusable());
   field_data.Set("isVisible", field->is_visible());
   return field_data;
