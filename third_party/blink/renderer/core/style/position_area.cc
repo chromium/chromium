@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/style/position_area.h"
 
 #include "base/check_op.h"
@@ -190,9 +185,9 @@ PositionArea PositionArea::ToPhysical(
   DCHECK_EQ(first_axis ^ second_axis, kPhysicalAxesBoth)
       << "Both axes should be defined and orthogonal";
 
-  PositionAreaRegion regions[4] = {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
-                                PositionAreaRegion::kLeft,
-                                PositionAreaRegion::kRight};
+  auto regions = std::to_array<PositionAreaRegion>(
+      {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
+       PositionAreaRegion::kLeft, PositionAreaRegion::kRight});
 
   // Adjust the index to always make the first span the vertical one in the
   // resulting PositionArea, regardless of the original ordering.
