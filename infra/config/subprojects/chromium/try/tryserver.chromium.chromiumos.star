@@ -218,7 +218,6 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    builderless = not settings.is_main,
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
@@ -226,7 +225,6 @@ try_.builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -247,9 +245,7 @@ try_.builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.builder(
