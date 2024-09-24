@@ -173,11 +173,10 @@
       <template is="dom-repeat" items="[[column.productDetails]]" as="detail"
           index-as="rowIndex">
         <div class="detail-container"
-            aria-label="[[detail.title]]"
             hidden$="[[!showRow_(detail.title, rowIndex)]]">
           <template is="dom-if" if="[[detail.title]]">
             <div class="detail-title">
-              <span aria-hidden="true">[[detail.title]]</span>
+              <span>[[detail.title]]</span>
             </div>
           </template>
           <template is="dom-if" if="[[contentIsString_(detail.content)]]">
