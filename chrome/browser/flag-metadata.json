@@ -3227,7 +3227,9 @@
   {
     "name": "enable-fake-mouse-heuristic",
     "owners": ["wmahon@chromium.org", "chromeos-tango@google.com"],
-    "expiry_milestone": 130
+    // This flag is used to enable automatic detection of devices pretending to
+    // be mice. It is also useful for debugging.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-family-link-extensions-permissions",
