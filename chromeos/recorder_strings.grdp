@@ -27,7 +27,7 @@
     Export recording
   </message>
   <message desc="Button to start exporting in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_SAVE_BUTTON">
-    Save…
+    Save
   </message>
   <message desc="Label of the menu item to choose txt as transcription format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_FORMAT_TXT_OPTION">
     TXT
