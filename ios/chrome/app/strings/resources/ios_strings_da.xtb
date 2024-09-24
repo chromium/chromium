@@ -495,7 +495,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="345348365500626747">Adressen blev fundet</translation>
-<translation id="3464194322481586217">Prisovervågning mislykkedes.</translation>
+<translation id="3464194322481586217">Prissporing mislykkedes.</translation>
 <translation id="3469117812148449995">Valgmuligheder for at gemme adgangskode</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{til {COUNT} website eller app}one{til {COUNT} website og app}other{til {COUNT} websites og apps}}</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
@@ -740,7 +740,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4632655012900268062">Tilpas kort</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
-<translation id="4642472735733036929">Prisovervågning er stoppet</translation>
+<translation id="4642472735733036929">Prissporing er stoppet</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4647758699119474035">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google-kontofejl. Åbn kontomenu.</translation>
 <translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
@@ -1104,7 +1104,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
 <translation id="6295751040240588413">Kortets kaldenavn er ugyldigt</translation>
 <translation id="629730747756840877">Konto</translation>
-<translation id="6301104306974789820">Få notifikationer om prisovervågning</translation>
+<translation id="6301104306974789820">Få notifikationer om prissporing</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6310451064941005489">Indstillinger til adgangskode</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
@@ -1144,7 +1144,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6464397691496239022">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
 Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer.</translation>
-<translation id="6476253015009698798">Prisovervågning er ikke tilgængelig for denne side.</translation>
+<translation id="6476253015009698798">Prissporing er ikke tilgængelig for denne side.</translation>
 <translation id="6476284679642588870">Administrer betalingsmetoder</translation>
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
 <translation id="647867789226964031">Skift dine adgangskoder</translation>

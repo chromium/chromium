@@ -81,7 +81,7 @@
 <translation id="1363028406613469049">Faixa</translation>
 <translation id="1364367057792633742">Novo separador</translation>
 <translation id="1365106417372288489">O seu iPhone foi restaurado recentemente, o que pode ter alterado o navegador predefinido.</translation>
-<translation id="1366297852155605523">Partilhados comigo</translation>
+<translation id="1366297852155605523">Partilhado comigo</translation>
 <translation id="136942498637440594">Pode pesquisar imagens e o que vê.</translation>
 <translation id="1377508275003315939">Palavras-passe</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} morada}other{{position} de {count} moradas}}</translation>
@@ -1292,7 +1292,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A câmara não está disponível</translation>
 <translation id="7141960840225504692">Os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
-<translation id="714291438898585119">Marcados com estrela</translation>
+<translation id="714291438898585119">Marcado com estrela</translation>
 <translation id="7146301801400584641">Ficheiro de calendário disponível</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="716059570521443369">Pesquisar o texto que copiou</translation>
