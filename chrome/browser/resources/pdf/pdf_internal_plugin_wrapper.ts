@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FormFieldFocusType} from './constants.js';
 import type {PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
 import type {SwipeDirection} from './swipe_detector.js';
@@ -25,14 +26,16 @@ if (parentOrigin === 'chrome-untrusted://print') {
 
 // Plugin-to-parent message handlers. All messages are passed through, but some
 // messages may affect this frame, too.
-let isFormFieldFocused = false;
+let isFormFieldFocused: boolean = false;
 plugin.addEventListener('message', e => {
   const message = (e as MessageEvent).data;
   switch (message.type) {
     case 'formFocusChange':
       // TODO(crbug.com/40810904): Ideally, the plugin would just consume
       // interesting keyboard events first.
-      isFormFieldFocused = (message as {focused: boolean}).focused;
+      isFormFieldFocused =
+          (message as {focused: FormFieldFocusType}).focused !==
+          FormFieldFocusType.NONE;
       break;
   }
 
