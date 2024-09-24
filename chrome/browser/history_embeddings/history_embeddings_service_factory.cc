@@ -47,6 +47,21 @@ bool IsEphemeralProfile(Profile* profile) {
   return entry && entry->IsEphemeral();
 }
 
+bool ShouldBuildServiceInstance(Profile* profile) {
+  // Do NOT construct the service if the feature flag is disabled.
+  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
+    return false;
+  }
+
+  // Embeddings don't last long enough to help users in kiosk or ephemeral
+  // profile mode, so simply never construct the service for those users.
+  if (IsRunningInAppMode() || IsEphemeralProfile(profile)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -71,29 +86,17 @@ std::unique_ptr<KeyedService> HistoryEmbeddingsServiceFactory::
         std::unique_ptr<history_embeddings::Answerer> answerer,
         std::unique_ptr<history_embeddings::IntentClassifier>
             intent_classifier) {
-  // Do NOT construct the service if the feature flag is disabled.
-  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!ShouldBuildServiceInstance(profile)) {
     return nullptr;
   }
-
-  auto* profile = Profile::FromBrowserContext(context);
-  // Embeddings don't last long enough to help users in kiosk or ephemeral
-  // profile mode, so simply never construct the service for those users.
-  if (IsRunningInAppMode() || IsEphemeralProfile(profile)) {
-    return nullptr;
-  }
-
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  auto* page_content_annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile);
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
-      history_service, page_content_annotations_service,
-      optimization_guide_keyed_service, std::move(embedder),
-      std::move(answerer), std::move(intent_classifier));
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      PageContentAnnotationsServiceFactory::GetForProfile(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      std::move(embedder), std::move(answerer), std::move(intent_classifier));
 }
 
 HistoryEmbeddingsServiceFactory::HistoryEmbeddingsServiceFactory()
@@ -115,23 +118,12 @@ HistoryEmbeddingsServiceFactory::~HistoryEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // Do NOT construct the service if the feature flag is disabled.
-  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!ShouldBuildServiceInstance(profile)) {
     return nullptr;
   }
 
-  auto* profile = Profile::FromBrowserContext(context);
-  // Embeddings don't last long enough to help users in kiosk or ephemeral
-  // profile mode, so simply never construct the service for those users.
-  if (IsRunningInAppMode() || IsEphemeralProfile(profile)) {
-    return nullptr;
-  }
-
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  auto* page_content_annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile);
-  auto* optimization_guide_keyed_service =
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   std::unique_ptr<history_embeddings::Answerer> answerer;
@@ -157,7 +149,9 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
-      history_service, page_content_annotations_service,
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      PageContentAnnotationsServiceFactory::GetForProfile(profile),
       optimization_guide_keyed_service,
       std::make_unique<history_embeddings::MlEmbedder>(
           optimization_guide_keyed_service,
