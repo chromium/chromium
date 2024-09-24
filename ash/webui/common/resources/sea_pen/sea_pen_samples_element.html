@@ -19,18 +19,9 @@
     width: calc(100% - 38px);
   }
 
-  .container iron-icon.add-icon[icon='personalization-shared:circular-add'] {
-    --iron-icon-fill-color: white;
-    display: none;
-    /* The icon icon is 20px. Subtract half of that to center the icon. */
-    left: calc(50% - 10px);
-    pointer-events: none;
-    position: absolute;
-    top: 22px;
-  }
-
-  .container:hover iron-icon.add-icon {
-    display: block;
+  wallpaper-grid-item::part(textShadow) {
+    background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 75%));
   }
 
   .container {
@@ -42,8 +33,11 @@
 
   #samplePrompt {
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     display: -webkit-box;
+    line-height: 18px;
+    position: relative;
+    top: 2px;
   }
 </style>
 <iron-list id="grid"
@@ -63,7 +57,6 @@
           [[sample.prompt]]
         </div>
       </wallpaper-grid-item>
-      <iron-icon class="add-icon" icon="personalization-shared:circular-add">
     </iron-icon>
     </div>
   </template>

@@ -8,6 +8,8 @@
 
 import '//resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import './personalization_shared_icons.html.js';
+import './common.css.js';
+import './wallpaper.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
