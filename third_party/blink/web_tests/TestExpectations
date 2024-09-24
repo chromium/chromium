@@ -2839,7 +2839,6 @@ crbug.com/345868499 [ Mac14 ] virtual/scalefactor200/external/wpt/css/filter-eff
 crbug.com/345868497 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/concat.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/345868497 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
-crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
 crbug.com/343515409 external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
 crbug.com/343263984 external/wpt/css/css-masking/mask-image/mask-mode-luminance-with-mask-size.html [ Failure ]
