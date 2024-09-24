@@ -13,8 +13,7 @@
 class SupervisedUserServicePlatformDelegate
     : public supervised_user::SupervisedUserService::PlatformDelegate {
  public:
-  explicit SupervisedUserServicePlatformDelegate(
-      ChromeBrowserState* browser_state);
+  explicit SupervisedUserServicePlatformDelegate(ProfileIOS* profile);
 
   // supervised_user::SupervisedUserService::PlatformDelegate
   std::string GetCountryCode() const override;
@@ -24,7 +23,7 @@ class SupervisedUserServicePlatformDelegate
   void CloseIncognitoTabs() override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_

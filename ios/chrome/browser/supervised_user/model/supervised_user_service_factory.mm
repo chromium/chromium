@@ -74,9 +74,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()),
-      CHECK_DEREF(
-          SupervisedUserSettingsServiceFactory::GetForBrowserState(profile)),
-      &CHECK_DEREF(SyncServiceFactory::GetForBrowserState(profile)),
+      CHECK_DEREF(SupervisedUserSettingsServiceFactory::GetForProfile(profile)),
+      &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<FilterDelegateImpl>(),
       std::make_unique<SupervisedUserServicePlatformDelegate>(profile),
       supervised_user::ShouldShowFirstTimeBanner(profile));

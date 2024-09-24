@@ -14,8 +14,8 @@
 #import "ios/chrome/common/channel_info.h"
 
 SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : profile_(profile) {}
 
 std::string SupervisedUserServicePlatformDelegate::GetCountryCode() const {
   std::string country;
@@ -36,8 +36,7 @@ version_info::Channel SupervisedUserServicePlatformDelegate::GetChannel()
 }
 
 void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   for (Browser* browser :
        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
     CloseAllWebStates(*browser->GetWebStateList(),

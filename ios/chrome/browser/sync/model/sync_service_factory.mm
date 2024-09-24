@@ -153,7 +153,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
           : nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetSupervisedUserSettingsService(
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state));
+      SupervisedUserSettingsServiceFactory::GetForProfile(browser_state));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetTabGroupSyncService(
       IsTabGroupSyncEnabled()

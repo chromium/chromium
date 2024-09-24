@@ -18,23 +18,23 @@
 
 namespace supervised_user {
 
-bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  CHECK(browserState);
-  if (browserState->IsOffTheRecord()) {
-    // An OTR browser state cannot be under parental controls.
+bool IsSubjectToParentalControls(ProfileIOS* profile) {
+  CHECK(profile);
+  if (profile->IsOffTheRecord()) {
+    // An OTR profile cannot be under parental controls.
     return false;
   }
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
-    // If the capability is kUnknown, the browser state should not be subjected
+    // If the capability is kUnknown, the profile should not be subjected
     // to parental controls. Additionally, the retiring prefs-based
     // `IsSubjectToParentalControls` will also return false.
     return IsPrimaryAccountSubjectToParentalControls(
-               IdentityManagerFactory::GetForProfile(browserState)) ==
+               IdentityManagerFactory::GetForProfile(profile)) ==
            signin::Tribool::kTrue;
   } else {
-    return IsSubjectToParentalControls(*browserState->GetPrefs());
+    return IsSubjectToParentalControls(*profile->GetPrefs());
   }
 }
 

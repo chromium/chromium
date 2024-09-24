@@ -117,8 +117,7 @@ syncer::SyncEngineFactory* IOSChromeSyncClient::GetSyncEngineFactory() {
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForBrowserState(
-              browser_state_);
+          SupervisedUserSettingsServiceFactory::GetForProfile(browser_state_);
   if (supervised_user_settings_service) {
     return supervised_user_settings_service->IsCustomPassphraseAllowed();
   }

@@ -13,12 +13,6 @@
 
 // static
 supervised_user::SupervisedUserMetricsService*
-SupervisedUserMetricsServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-supervised_user::SupervisedUserMetricsService*
 SupervisedUserMetricsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<supervised_user::SupervisedUserMetricsService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -41,14 +35,12 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
 std::unique_ptr<KeyedService>
 SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<supervised_user::SupervisedUserMetricsService ::
                       SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate = nullptr;
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
-      browser_state->GetPrefs(),
-      SupervisedUserServiceFactory::GetForProfile(browser_state)
-          ->GetURLFilter(),
+      profile->GetPrefs(),
+      SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter(),
       std::move(extensions_metrics_delegate));
 }

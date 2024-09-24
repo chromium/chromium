@@ -74,7 +74,7 @@ class TestUrlLoaderFactoryHelper {
 
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
 
   const base::Value::Dict& local_settings =
@@ -111,7 +111,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 + (void)setSupervisedUserURLFilterBehavior:
     (supervised_user::FilteringBehavior)behavior {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   settings_service->SetLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior,
@@ -124,7 +124,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 + (void)resetSupervisedUserURLFilterBehavior {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   settings_service->RemoveLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior);
@@ -132,7 +132,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 + (void)resetManualUrlFiltering {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   settings_service->RemoveLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts);
@@ -140,7 +140,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 + (void)setFakePermissionCreator {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   CHECK(settings_service);
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
@@ -162,7 +162,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 + (void)approveWebsiteDomain:(NSURL*)url {
   supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
+      SupervisedUserSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   settings_service->RecordLocalWebsiteApproval(net::GURLWithNSURL(url).host());
 }

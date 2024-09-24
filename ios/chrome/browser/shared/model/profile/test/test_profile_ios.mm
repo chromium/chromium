@@ -201,7 +201,7 @@ void TestChromeBrowserState::Init() {
   BrowserStateDependencyManager::GetInstance()
       ->CreateBrowserStateServicesForTest(this);
   // `SupervisedUserSettingsService` needs to be initialized for SyncService.
-  SupervisedUserSettingsServiceFactory::GetForBrowserState(this)->Init(
+  SupervisedUserSettingsServiceFactory::GetForProfile(this)->Init(
       GetStatePath(), GetIOTaskRunner().get(),
       /*load_synchronously=*/true);
 }

@@ -217,7 +217,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // BrowserStateKeyedService and is only available after the creation of
   // SupervisedUserPrefStore.
   supervised_user::SupervisedUserSettingsService* supervised_user_settings =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(this);
+      SupervisedUserSettingsServiceFactory::GetForProfile(this);
 
   // Initialize the settings service and have the pref store subscribe to it.
   supervised_user_settings->Init(state_path, GetIOTaskRunner(),

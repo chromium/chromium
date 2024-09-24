@@ -47,14 +47,14 @@ NSString* kExampleURL = @"http://example.com";
 class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
  protected:
   SupervisedUserURLFilterTabHelperTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
 
-    chrome_browser_state_ = std::move(builder).Build();
-    web_state_.SetBrowserState(chrome_browser_state_.get());
+    profile_ = std::move(builder).Build();
+    web_state_.SetBrowserState(profile_.get());
     SupervisedUserURLFilterTabHelper::CreateForWebState(&web_state_);
     SupervisedUserErrorContainer::CreateForWebState(&web_state_);
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
@@ -67,23 +67,20 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   // given parental control capabilities on this account.
   void SignIn(const std::string& email, bool is_subject_to_parental_controls) {
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         identity_manager, email, signin::ConsentLevel::kSignin);
     supervised_user::UpdateSupervisionStatusForAccount(
         account, identity_manager, is_subject_to_parental_controls);
 
     // Initialize supervised_user services.
-    ChildAccountServiceFactory::GetForProfile(chrome_browser_state_.get())
-        ->Init();
+    ChildAccountServiceFactory::GetForProfile(profile_.get())->Init();
 
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(
-            chrome_browser_state_.get());
+        SupervisedUserServiceFactory::GetForProfile(profile_.get());
     supervised_user_service->Init();
 
-    EXPECT_EQ(supervised_user::IsSubjectToParentalControls(
-                  chrome_browser_state_.get()),
+    EXPECT_EQ(supervised_user::IsSubjectToParentalControls(profile_.get()),
               is_subject_to_parental_controls);
   }
 
@@ -118,8 +115,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void AllowExampleSiteForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(
-            chrome_browser_state_.get());
+        SupervisedUserServiceFactory::GetForProfile(profile_.get());
 
     std::map<std::string, bool> hosts;
     hosts["example.com"] = true;
@@ -130,8 +126,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void RestrictAllSitesForSupervisedUser() {
     supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(
-            chrome_browser_state_.get());
+        SupervisedUserServiceFactory::GetForProfile(profile_.get());
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);
   }
@@ -139,7 +134,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

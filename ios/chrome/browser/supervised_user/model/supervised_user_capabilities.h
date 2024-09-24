@@ -9,9 +9,9 @@
 
 namespace supervised_user {
 
-// Returns true if the browser state is subjected to parental controls, based on
+// Returns true if the profile is subjected to parental controls, based on
 // AccountInfo capabilities or prefs.
-bool IsSubjectToParentalControls(ChromeBrowserState* browser_state);
+bool IsSubjectToParentalControls(ProfileIOS* profile);
 
 }  // namespace supervised_user
 

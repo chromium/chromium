@@ -13,16 +13,11 @@ namespace supervised_user {
 class SupervisedUserSettingsService;
 }  // namespace supervised_user
 
-
 // Singleton that owns SupervisedUserSettingsService object and associates
-// them with ChromeBrowserState.
+// them with ProfileIOS.
 class SupervisedUserSettingsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static supervised_user::SupervisedUserSettingsService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static supervised_user::SupervisedUserSettingsService* GetForProfile(
       ProfileIOS* profile);
   static SupervisedUserSettingsServiceFactory* GetInstance();

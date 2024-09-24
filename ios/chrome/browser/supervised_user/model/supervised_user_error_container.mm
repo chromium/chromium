@@ -51,10 +51,10 @@ const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
     : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))),
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
   CHECK(SupervisedUserServiceFactory::GetForProfile(
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())));
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
   supervised_user_service_->AddObserver(this);
 }
 
@@ -276,11 +276,11 @@ void SupervisedUserInterstitialBlockingPage::
     return;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  CHECK(chrome_browser_state);
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(profile);
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(chrome_browser_state);
+      SupervisedUserServiceFactory::GetForProfile(profile);
 
   CHECK(supervised_user_service);
   supervised_user_service->MarkFirstTimeInterstitialBannerShown();

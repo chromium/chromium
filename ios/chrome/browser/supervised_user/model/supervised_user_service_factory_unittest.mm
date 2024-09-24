@@ -58,7 +58,7 @@ class SupervisedUserServiceFactoryTest : public PlatformTest {
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return profile_->GetOffTheRecordChromeBrowserState();
+    return profile_->GetOffTheRecordProfile();
   }
 
  private:

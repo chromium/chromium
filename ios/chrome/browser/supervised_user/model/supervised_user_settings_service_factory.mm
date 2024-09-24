@@ -12,12 +12,6 @@
 
 // static
 supervised_user::SupervisedUserSettingsService*
-SupervisedUserSettingsServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-supervised_user::SupervisedUserSettingsService*
 SupervisedUserSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<supervised_user::SupervisedUserSettingsService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -38,7 +32,7 @@ SupervisedUserSettingsServiceFactory::SupervisedUserSettingsServiceFactory()
 bool SupervisedUserSettingsServiceFactory::
     ServiceIsRequiredForContextInitialization() const {
   // SupervisedUserSettingsService is required to initialize the PrefService
-  // of the ChromeBrowserState as it is part of the implementation of the
+  // of the ProfileIOS as it is part of the implementation of the
   // SupervisedUserPrefStore.
   return true;
 }
