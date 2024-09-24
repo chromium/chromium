@@ -40,7 +40,7 @@ void TabModalDialogViewIOS::CloseDialogWithoutCallback() {
 }
 
 std::u16string TabModalDialogViewIOS::GetUserInput() {
-  return std::u16string();
+  return [coordinator_ promptText];
 }
 
 void TabModalDialogViewIOS::Accept(const std::u16string& prompt_text) {

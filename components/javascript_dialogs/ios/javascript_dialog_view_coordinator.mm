@@ -19,7 +19,7 @@
                                      title:(NSString*)title
                                messageText:(NSString*)messageText
                          defaultPromptText:(NSString*)defaultPromptText {
-  UIAlertController* alertDialog =
+  _alertController =
       [UIAlertController alertControllerWithTitle:title
                                           message:messageText
                                    preferredStyle:UIAlertControllerStyleAlert];
@@ -29,7 +29,7 @@
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* _Nonnull action) {
                 UITextField* promptTextField =
-                    alertDialog.textFields.firstObject;
+                    self.alertController.textFields.firstObject;
                 std::u16string promptText =
                     promptTextField.text
                         ? base::SysNSStringToUTF16(promptTextField.text)
@@ -46,33 +46,38 @@
 
   switch (dialogType) {
     case content::JAVASCRIPT_DIALOG_TYPE_ALERT: {
-      [alertDialog addAction:okAction];
+      [_alertController addAction:okAction];
       break;
     }
     case content::JAVASCRIPT_DIALOG_TYPE_CONFIRM: {
-      [alertDialog addAction:cancelAction];
-      [alertDialog addAction:okAction];
+      [_alertController addAction:cancelAction];
+      [_alertController addAction:okAction];
       break;
     }
     case content::JAVASCRIPT_DIALOG_TYPE_PROMPT: {
-      [alertDialog addTextFieldWithConfigurationHandler:^(
-                       UITextField* _Nonnull textField) {
+      [_alertController addTextFieldWithConfigurationHandler:^(
+                            UITextField* _Nonnull textField) {
         textField.placeholder = defaultPromptText;
       }];
 
-      [alertDialog addAction:cancelAction];
-      [alertDialog addAction:okAction];
+      [_alertController addAction:cancelAction];
+      [_alertController addAction:okAction];
       break;
     }
     default:
       NOTREACHED_IN_MIGRATION();
   }
 
-  [baseViewController presentViewController:alertDialog
+  [baseViewController presentViewController:_alertController
                                    animated:YES
                                  completion:nil];
 
   return self;
+}
+
+- (std::u16string)promptText {
+  UITextField* promptTextField = self.alertController.textFields.firstObject;
+  return base::SysNSStringToUTF16(promptTextField.text);
 }
 
 @end
