@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -159,6 +160,21 @@ class ClientCertSourceAshUnitTest
     }
   }
 
+  bool GetCertificateInfosContainsCertWithHash(
+      std::string_view hash_hex) const {
+    base::test::TestFuture<
+        std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
+        get_certs_waiter;
+    cert_source_->GetCertificateInfos(get_certs_waiter.GetCallback());
+    const auto& certs = get_certs_waiter.Get();
+    for (const auto& cert : certs) {
+      if (cert->sha256hash_hex == hash_hex) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   AccountId account_{AccountId::FromUserEmail(kUsername)};
@@ -195,17 +211,7 @@ TEST_P(ClientCertSourceAshUnitTest,
   EXPECT_FALSE(SlotContainsCertWithHash(
       crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
       kTestClientCertHashHex));
-
-  {
-    base::test::TestFuture<
-        std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
-        get_certs_waiter;
-    cert_source_->GetCertificateInfos(get_certs_waiter.GetCallback());
-    const auto& certs = get_certs_waiter.Get();
-    for (const auto& cert : certs) {
-      EXPECT_NE(cert->sha256hash_hex, kTestClientCertHashHex);
-    }
-  }
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 
   {
     // The correct password for the client.p12 file.
@@ -240,26 +246,38 @@ TEST_P(ClientCertSourceAshUnitTest,
   EXPECT_TRUE(SlotContainsCertWithHash(
       crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
       kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 
+  // Try deleting the imported certificate while it is not allowed by
+  // enterprise policy and verify that the deletion failed and the certificate
+  // is still present.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kClientCertificateManagementAllowed,
+      static_cast<int>(ClientCertificateManagementPermission::kNone));
   {
-    base::test::TestFuture<
-        std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
-        get_certs_waiter;
-    cert_source_->GetCertificateInfos(get_certs_waiter.GetCallback());
-    const auto& certs = get_certs_waiter.Get();
-    bool found = false;
-    for (const auto& cert : certs) {
-      if (cert->sha256hash_hex == kTestClientCertHashHex) {
-        found = true;
-        break;
-      }
-    }
-    EXPECT_TRUE(found);
+    fake_page_->set_mocked_confirmation_result(true);
+    base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+        delete_waiter;
+    cert_source_->DeleteCertificate(kTestClientCertHashHex,
+                                    delete_waiter.GetCallback());
+
+    certificate_manager_v2::mojom::ActionResultPtr delete_result =
+        delete_waiter.Take();
+    ASSERT_TRUE(delete_result);
+    ASSERT_TRUE(delete_result->is_error());
+    EXPECT_EQ(delete_result->get_error(), "delete failed");
   }
 
-  // Now try deleting the imported certificate and verify that it is no longer
-  // present.
+  EXPECT_TRUE(SlotContainsCertWithHash(
+      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
+      kTestClientCertHashHex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 
+  // Now try changing the enterprise policy to allow it, delete the imported
+  // certificate, and verify that it is no longer present.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kClientCertificateManagementAllowed,
+      static_cast<int>(ClientCertificateManagementPermission::kUserOnly));
   {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
@@ -276,17 +294,21 @@ TEST_P(ClientCertSourceAshUnitTest,
   EXPECT_FALSE(SlotContainsCertWithHash(
       crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
       kTestClientCertHashHex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
+}
 
-  {
-    base::test::TestFuture<
-        std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
-        get_certs_waiter;
-    cert_source_->GetCertificateInfos(get_certs_waiter.GetCallback());
-    const auto& certs = get_certs_waiter.Get();
-    for (const auto& cert : certs) {
-      EXPECT_NE(cert->sha256hash_hex, kTestClientCertHashHex);
-    }
-  }
+TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12NotAllowedByPolicy) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kClientCertificateManagementAllowed,
+      static_cast<int>(ClientCertificateManagementPermission::kNone));
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+      import_waiter;
+  DoImport(import_waiter.GetCallback());
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
+      import_waiter.Take();
+  ASSERT_TRUE(import_result);
+  ASSERT_TRUE(import_result->is_error());
+  EXPECT_EQ(import_result->get_error(), "not allowed");
 }
 
 TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {

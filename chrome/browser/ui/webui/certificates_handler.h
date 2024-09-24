@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_manager_model.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cert/nss_cert_database.h"
@@ -26,30 +27,6 @@ class PrefRegistrySyncable;
 
 enum class Slot { kUser, kSystem };
 enum class CertificateSource { kBuiltIn, kImported };
-
-// Enumeration of certificate management permissions which corresponds to
-// values of policy ClientCertificateManagementAllowed.
-// Underlying type is int because values are casting to/from prefs values.
-enum class ClientCertificateManagementPermission : int {
-  // Allow users to manage all certificates
-  kAll = 0,
-  // Allow users to manage user certificates
-  kUserOnly = 1,
-  // Disallow users from managing certificates
-  kNone = 2
-};
-
-// Enumeration of certificate management permissions which corresponds to
-// values of policy CACertificateManagementAllowed.
-// Underlying type is int because values are casting to/from prefs values.
-enum class CACertificateManagementPermission : int {
-  // Allow users to manage all certificates
-  kAll = 0,
-  // Allow users to manage user certificates
-  kUserOnly = 1,
-  // Disallow users from managing certificates
-  kNone = 2
-};
 
 namespace certificate_manager {
 

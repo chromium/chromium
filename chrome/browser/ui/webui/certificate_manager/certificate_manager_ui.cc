@@ -18,6 +18,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -167,6 +171,17 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
     source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ClientCertManagementAccessControls client_cert_policy(profile);
+    source->AddBoolean(
+        "clientCertImportAllowed",
+        client_cert_policy.IsManagementAllowed(
+            ClientCertManagementAccessControls::kSoftwareBacked));
+    source->AddBoolean(
+        "clientCertImportAndBindAllowed",
+        client_cert_policy.IsManagementAllowed(
+            ClientCertManagementAccessControls::kHardwareBacked));
+#endif
 
     auto plural_string_handler = std::make_unique<PluralStringHandler>();
     plural_string_handler->AddLocalizedString(

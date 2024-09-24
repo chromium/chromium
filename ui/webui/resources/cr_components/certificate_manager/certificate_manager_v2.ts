@@ -158,7 +158,13 @@ export class CertificateManagerV2Element extends
 
       clientPlatformSubpageLists_: {
         type: Array<SubpageCertificateList>,
-        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_)',
+        // <if expr="chromeos_ash">
+        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_,' +
+            'showClientCertImportAndBind_)',
+        // </if>
+        // <if expr="not chromeos_ash">
+        computed: 'computeClientPlatformSubpageLists_()',
+        // </if>
       },
 
       toastMessage_: String,
@@ -176,7 +182,21 @@ export class CertificateManagerV2Element extends
         value: false,
       },
 
-      showClientCertImport_: Boolean,
+      // <if expr="chromeos_ash">
+      showClientCertImport_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('clientCertImportAllowed');
+        },
+      },
+
+      showClientCertImportAndBind_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('clientCertImportAndBindAllowed');
+        },
+      },
+      // </if>
 
       certificateSourceEnum_: {
         type: Object,
@@ -205,19 +225,9 @@ export class CertificateManagerV2Element extends
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
   private clientPlatformSubpageLists_: SubpageCertificateList[];
-  // <if expr="not chromeos_ash">
-  private showClientCertImport_: boolean = false;
-  // </if>
   // <if expr="chromeos_ash">
-  // TODO(crbug.com/40928765): Import should also be disabled in kiosk mode or
-  // when disabled by policy (if there is any policy that applies to client
-  // certs). (And these conditions should be re-checked by the import handler
-  // in C++ code rather than trusting the webui.)
-  // TODO(crbug.com/40928765): This controls both "import" and "import and
-  // bind". If we implement client cert import on Linux too we should make a
-  // separate bool for each so that "import and bind" is only enabled on
-  // chromeos.
-  private showClientCertImport_: boolean = true;
+  private showClientCertImport_: boolean;
+  private showClientCertImportAndBind_: boolean;
   // </if>
 
   override ready() {
@@ -405,12 +415,18 @@ export class CertificateManagerV2Element extends
             'certificateManagerV2ClientCertsFromPlatform'),
         certSource: CertificateSource.kPlatformClientCert,
         hideExport: true,
+        // <if expr="chromeos_ash">
         showImport: this.showClientCertImport_,
-        showImportAndBind: this.showClientCertImport_,
+        showImportAndBind: this.showClientCertImportAndBind_,
         // TODO(crbug.com/40928765): Figure out how we want to display the
         // import buttons/etc on this subpage. For now just show the header
         // when we need the import buttons to be visible.
-        hideHeader: !this.showClientCertImport_,
+        hideHeader:
+            !this.showClientCertImport_ && !this.showClientCertImportAndBind_,
+        // </if>
+        // <if expr="not chromeos_ash">
+        hideHeader: true,
+        // </if>
       },
     ];
   }

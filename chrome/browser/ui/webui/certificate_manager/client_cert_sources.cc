@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/common/net/x509_certificate_model.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/crypto_buildflags.h"
 #include "crypto/sha2.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "net/cert/nss_cert_database.h"
 #endif
 
@@ -347,14 +349,8 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
   void ReplyToGetCertificatesCallback(
       CertificateManagerPageHandler::GetCertificatesCallback callback) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/40928765): Double check if there are any conditions where
-    // this would be false. It doesn't seem like there are any - the user NSS
-    // slots should always be opened in readwrite mode, and the enterprise
-    // policy restricting cert management doesn't apply to client certs. There
-    // might be cases like kiosk mode, but in that case the user shouldn't have
-    // been able to import in the first place? (If there are cases, it should
-    // be double checked in the import callback too, not just assuming the data
-    // from the webui is reliable.)
+    // TODO(crbug.com/40928765): This should actually be set by checking
+    // ClientCertManagementAccessControls.IsChangeAllowed on a per-cert basis.
     const bool is_deletable = true;
 #else
     const bool is_deletable = false;
@@ -432,6 +428,17 @@ class CrosClientCertSource : public ClientCertSource,
     // is already open. Don't try to open the dialog.
     if (!web_contents || select_file_dialog_) {
       std::move(callback).Run(nullptr);
+      return;
+    }
+
+    if (!ClientCertManagementAccessControls(profile_).IsManagementAllowed(
+            hardware_backed
+                ? ClientCertManagementAccessControls::kHardwareBacked
+                : ClientCertManagementAccessControls::kSoftwareBacked)) {
+      // TODO(crbug.com/40928765): localize? This is an internal error that
+      // isn't expected to be displayed, so dunno if it needs to be localized.
+      std::move(callback).Run(
+          certificate_manager_v2::mojom::ActionResult::NewError("not allowed"));
       return;
     }
 
@@ -670,7 +677,7 @@ class CrosClientCertSource : public ClientCertSource,
                 ->CreateNSSCertDatabaseGetterForIOThread(),
             base::BindOnce(
                 &CrosClientCertSource::GotNSSCertDatabaseForDeleteOnIOThread,
-                cert,
+                cert, ClientCertManagementAccessControls(profile_),
                 base::BindOnce(&CrosClientCertSource::FinishedDelete,
                                weak_ptr_factory_.GetWeakPtr(),
                                std::move(callback)))));
@@ -678,6 +685,7 @@ class CrosClientCertSource : public ClientCertSource,
 
   static void GotNSSCertDatabaseForDeleteOnIOThread(
       scoped_refptr<net::X509Certificate> cert,
+      ClientCertManagementAccessControls client_cert_policy,
       base::OnceCallback<void(bool nss_delete_result)> finished_delete_callback,
       net::NSSCertDatabase* cert_db) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -686,6 +694,22 @@ class CrosClientCertSource : public ClientCertSource,
         net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
 
     if (!nss_cert) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(finished_delete_callback), false));
+      return;
+    }
+
+    const auto hardware_backed =
+        cert_db->IsHardwareBacked(nss_cert.get())
+            ? ClientCertManagementAccessControls::kHardwareBacked
+            : ClientCertManagementAccessControls::kSoftwareBacked;
+    const auto device_wide =
+        cert_db->IsCertificateOnSlot(nss_cert.get(),
+                                     cert_db->GetSystemSlot().get())
+            ? ClientCertManagementAccessControls::kDeviceWide
+            : ClientCertManagementAccessControls::kUser;
+    if (!client_cert_policy.IsChangeAllowed(hardware_backed, device_wide)) {
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(finished_delete_callback), false));
@@ -817,4 +841,39 @@ CreateExtensionsClientCertSource(Profile* profile) {
   return std::make_unique<ExtensionsClientCertSource>(
       certificate_provider_service->CreateCertificateProvider());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ClientCertManagementAccessControls::ClientCertManagementAccessControls(
+    Profile* profile)
+    : is_guest_(
+          user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()),
+      is_kiosk_(user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()),
+      client_cert_policy_(static_cast<ClientCertificateManagementPermission>(
+          profile->GetPrefs()->GetInteger(
+              prefs::kClientCertificateManagementAllowed))) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+bool ClientCertManagementAccessControls::IsManagementAllowed(
+    KeyStorage key_storage) const {
+  return !(key_storage == kHardwareBacked && is_guest_) && !is_kiosk_ &&
+         client_cert_policy_ != ClientCertificateManagementPermission::kNone;
+}
+
+bool ClientCertManagementAccessControls::IsChangeAllowed(
+    KeyStorage key_storage,
+    CertLocation cert_location) const {
+  if (!IsManagementAllowed(key_storage)) {
+    return false;
+  }
+
+  if (cert_location == kUser) {
+    return client_cert_policy_ != ClientCertificateManagementPermission::kNone;
+  }
+
+  return client_cert_policy_ == ClientCertificateManagementPermission::kAll;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #endif
