@@ -27,8 +27,10 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -137,6 +139,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock NavigationHandle mNavigationHandle;
     private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Mock WindowAndroid mWindowAndroid;
+    private @Mock Window mWindow;
+    private @Mock View mDecorView;
     private @Mock OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private @Mock InsetObserver mInsetObserver;
     private @Mock AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver
@@ -193,6 +197,8 @@ public class AutocompleteMediatorUnitTest {
 
         mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
+        doReturn(mWindow).when(mWindowAndroid).getWindow();
+        doReturn(mDecorView).when(mWindow).getDecorView();
 
         mMediator =
                 new AutocompleteMediator(
@@ -428,13 +434,22 @@ public class AutocompleteMediatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
     public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
+        SuggestionsListAnimationDriver animationDriver =
+                mMediator.initializeAnimationDriver(mWindow);
         mMediator.onNativeInitialized();
 
+        // Animation shouldn't run if IME insets are not yet controllable.
         mMediator.onOmniboxSessionStateChange(true);
-        verify(mInsetObserver).addWindowInsetsAnimationListener(mDriverCaptor.capture());
+        verify(mInsetObserver, never()).addWindowInsetsAnimationListener(animationDriver);
+        mMediator.onOmniboxSessionStateChange(false);
+
+        animationDriver.onControllableInsetsChanged(null, WindowInsetsCompat.Type.ime());
+        // Animation can run now that IME insets are controllable.
+        mMediator.onOmniboxSessionStateChange(true);
+        verify(mInsetObserver).addWindowInsetsAnimationListener(animationDriver);
 
         mMediator.onOmniboxSessionStateChange(false);
-        verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriverCaptor.getValue());
+        verify(mInsetObserver).removeWindowInsetsAnimationListener(animationDriver);
     }
 
     @Test

@@ -53,6 +53,9 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
 
+    public static final String HISTOGRAM_FOCUS_TO_IME_ANIMATION_START =
+            "Android.Omnibox.SuggestionList.FocusToImeAnimationStart";
+
     /**
      * The amount of time it takes to process a touch down event. A touch down event can send a
      * signal to native to start a prefetch for the suggestion.
@@ -386,6 +389,14 @@ public class OmniboxMetrics {
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT, result, PrefetchResult.COUNT);
+    }
+
+    /**
+     * Records the wall time elapsed between focusing the omnibox and the onPrepare event of the IME
+     * WindowInsets animation.
+     */
+    public static TimingMetric recordTimeFromFocusToImeAnimation() {
+        return TimingMetric.shortUptime(HISTOGRAM_FOCUS_TO_IME_ANIMATION_START);
     }
 
     /**

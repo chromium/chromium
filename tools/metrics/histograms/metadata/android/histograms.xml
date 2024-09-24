@@ -2887,6 +2887,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionList.FocusToImeAnimationStart"
+    units="ms" expires_after="2025-09-01">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the wall time elapsed between focusing the omnibox and invocation of
+    the onPrepare method signalling the start of an IME (soft keyboard)
+    animation.
+
+    Recorded once per omnibox focus on devices when suggestion list animation is
+    enabled, which requires API level 30+ and &quot;controllable&quot; IME
+    insets (which excludes, e.g. most devices with a hardware keyboard
+    attached). This metric is recorded even if the animation is cancelled due to
+    timeout, but is not recorded if the onPrepare method is never called.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
     expires_after="2025-09-01">
   <owner>ender@chromium.org</owner>
