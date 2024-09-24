@@ -4,6 +4,7 @@
 
 #include "ash/birch/birch_coral_provider.h"
 
+#include <unordered_set>
 #include <variant>
 
 #include "ash/birch/birch_item.h"
@@ -18,13 +19,29 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/wm/core/window_util.h"
+
+// Implement custom hash for TabPtr because GURL doesn't support hash.
+// We can dedup by possibly_invalid_spec() as it's how we transform GURL
+// back to strings.
+namespace std {
+template <>
+struct hash<coral::mojom::TabPtr> {
+  inline size_t operator()(const coral::mojom::TabPtr& tab) const {
+    std::size_t h1 = std::hash<std::string>{}(tab->title);
+    std::size_t h2 = std::hash<std::string>{}(tab->url.possibly_invalid_spec());
+    return h1 ^ (h2 << 1);
+  }
+};
+}  // namespace std
 
 namespace ash {
 namespace {
@@ -58,11 +75,12 @@ bool IsValidInSessionWindow(aura::Window* window) {
   return true;
 }
 
-// Gets the data of the tabs opening on the active desk.
-std::set<coral_util::TabData> GetInSessionTabData() {
+// Gets the data of the tabs opening on the active desk. Unordered set is used
+// because we need to dedup identical tabs, but we don't need to sort them.
+std::unordered_set<coral::mojom::TabPtr> GetInSessionTabData() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::set<coral_util::TabData> tab_data;
+  std::unordered_set<coral::mojom::TabPtr> tab_data;
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
     aura::Window* browser_window = tab->current_info().browser_window;
@@ -81,17 +99,19 @@ std::set<coral_util::TabData> GetInSessionTabData() {
     if (!IsValidInSessionWindow(browser_window)) {
       continue;
     }
-
-    tab_data.insert({.tab_title = tab->current_info().title,
-                     .source = tab->current_info().source});
+    auto tab_mojom = coral::mojom::Tab::New();
+    tab_mojom->title = tab->current_info().title;
+    tab_mojom->url = GURL(tab->current_info().source);
+    tab_data.insert(std::move(tab_mojom));
   }
 
   return tab_data;
 }
 
-// Gets the data of the apps opening on the active desk.
-std::set<coral_util::AppData> GetInSessionAppData() {
-  std::set<coral_util::AppData> app_data;
+// Gets the data of the apps opening on the active desk. Unordered set is used
+// because we need to dedup identical apps, but we don't need to sort them.
+std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
+  std::unordered_set<coral::mojom::AppPtr> app_data;
 
   auto* const shell = Shell::Get();
   auto mru_windows =
@@ -119,12 +139,13 @@ std::set<coral_util::AppData> GetInSessionAppData() {
     }
 
     const std::string* app_id_key = window->GetProperty(kAppIDKey);
-    app_data.insert(
-        {.app_id = app_id,
-         .app_name =
-             (!app_id_key || IsArcWindow(window))
-                 ? base::UTF16ToUTF8(window->GetTitle())
-                 : shell->saved_desk_delegate()->GetAppShortName(*app_id_key)});
+    auto app_mojom = coral::mojom::App::New();
+    app_mojom->title =
+        (!app_id_key || IsArcWindow(window))
+            ? base::UTF16ToUTF8(window->GetTitle())
+            : shell->saved_desk_delegate()->GetAppShortName(*app_id_key);
+    app_mojom->id = std::move(app_id);
+    app_data.insert(std::move(app_mojom));
   }
   return app_data;
 }
@@ -191,23 +212,33 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
 void BirchCoralProvider::HandleInSessionDataRequest() {
   // TODO(yulunwu, zxdan) add more tab metadata, app data,
   // and handle in-session use cases.
-  std::vector<coral_util::ContentItem> active_tab_app_data;
-  for (const auto& tab_data : GetInSessionTabData()) {
-    active_tab_app_data.push_back(tab_data);
+  std::vector<CoralRequest::ContentItem> active_tab_app_data;
+  std::unordered_set<coral::mojom::TabPtr> tabs = GetInSessionTabData();
+  while (!tabs.empty()) {
+    auto tab = std::move(tabs.extract(tabs.begin()).value());
+    active_tab_app_data.push_back(coral::mojom::Entity::NewTab(std::move(tab)));
   }
 
-  for (const auto& app_data : GetInSessionAppData()) {
-    active_tab_app_data.push_back(app_data);
+  std::unordered_set<coral::mojom::AppPtr> apps = GetInSessionAppData();
+  while (!apps.empty()) {
+    auto app = std::move(apps.extract(apps.begin()).value());
+    active_tab_app_data.push_back(coral::mojom::Entity::NewApp(std::move(app)));
   }
 
   request_.set_content(std::move(active_tab_app_data));
+  Shell::Get()->coral_controller()->GenerateContentGroups(
+      request_, base::BindOnce(&BirchCoralProvider::HandleCoralResponse,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BirchCoralProvider::HandleCoralResponse(
-    std::unique_ptr<coral_util::CoralResponse> response) {
+    std::unique_ptr<CoralResponse> response) {
+  if (!response) {
+    return;
+  }
   // TODO(yulunwu) update `birch_model_`
   response_ = std::move(response);
-  CHECK(HasValidClusterCount(response_->clusters().size()));
+  CHECK(HasValidClusterCount(response_->groups().size()));
   std::vector<BirchCoralItem> items;
   // TODO(owenzhang): Remove placeholder page_urls.
   std::vector<GURL> page_urls;
@@ -220,9 +251,9 @@ void BirchCoralProvider::HandleCoralResponse(
   app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
   app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
 
-  for (auto& cluster : response_->clusters()) {
-    items.emplace_back(cluster.title(), /*subtitle=*/std::u16string(),
-                       page_urls, app_ids);
+  for (const auto& group : response_->groups()) {
+    items.emplace_back(base::UTF8ToUTF16(group->title),
+                       /*subtitle=*/std::u16string(), page_urls, app_ids);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 }

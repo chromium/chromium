@@ -10,14 +10,14 @@ CoralItemRemover::CoralItemRemover() = default;
 
 CoralItemRemover::~CoralItemRemover() = default;
 
-void CoralItemRemover::RemoveItem(const coral_util::ContentItem& item) {
+void CoralItemRemover::RemoveItem(const coral::mojom::Entity& item) {
   removed_content_items_.insert(coral_util::GetIdentifier(item));
 }
 
 void CoralItemRemover::FilterRemovedItems(
-    std::vector<coral_util::ContentItem>* items) {
-  std::erase_if(*items, [this](const coral_util::ContentItem& item) {
-    return removed_content_items_.contains(coral_util::GetIdentifier(item));
+    std::vector<coral::mojom::EntityPtr>* items) {
+  std::erase_if(*items, [this](const coral::mojom::EntityPtr& item) {
+    return removed_content_items_.contains(coral_util::GetIdentifier(*item));
   });
 }
 

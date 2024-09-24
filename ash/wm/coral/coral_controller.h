@@ -5,36 +5,75 @@
 #ifndef ASH_WM_CORAL_CORAL_CONTROLLER_H_
 #define ASH_WM_CORAL_CORAL_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {
 
-class ASH_EXPORT CoralController : public message_center::NotificationObserver {
+class ASH_EXPORT CoralRequest {
+ public:
+  using ContentItem = coral::mojom::EntityPtr;
+
+  CoralRequest();
+  CoralRequest(const CoralRequest&) = delete;
+  CoralRequest& operator=(const CoralRequest&) = delete;
+  ~CoralRequest();
+
+  void set_content(std::vector<ContentItem>&& content) {
+    content_ = std::move(content);
+  }
+
+  const std::vector<ContentItem>& content() const { return content_; }
+
+ private:
+  // Tab/app content with arbitrary ordering.
+  std::vector<ContentItem> content_;
+};
+
+// `CoralResponse` contains 0-2 groups in order of relevance.
+class ASH_EXPORT CoralResponse {
+ public:
+  using Group = coral::mojom::GroupPtr;
+
+  CoralResponse();
+  CoralResponse(const CoralResponse&) = delete;
+  CoralResponse& operator=(const CoralResponse&) = delete;
+  ~CoralResponse();
+
+  void set_groups(std::vector<Group>&& groups) { groups_ = std::move(groups); }
+
+  const std::vector<Group>& groups() const { return groups_; }
+
+ private:
+  std::vector<Group> groups_;
+};
+
+// Controller interface of the coral feature.
+class ASH_EXPORT CoralController {
  public:
   CoralController();
   CoralController(const CoralController&) = delete;
   CoralController& operator=(const CoralController&) = delete;
-  virtual ~CoralController();
+  ~CoralController();
 
-  static const char kDataCollectionNotificationId[];
+  // GenerateContentGroups clusters the input ContentItems (which includes web
+  // tabs, apps, etc.) into suitable groups based on their topics, and gives
+  // each group a suitable title. If GenerateContentGroups request failed,
+  // nullptr will be returned.
+  using CoralResponseCallback =
+      base::OnceCallback<void(std::unique_ptr<CoralResponse>)>;
+  void GenerateContentGroups(const CoralRequest& request,
+                             CoralResponseCallback callback);
 
-  // Returns true if the provided secret key is the correct secret key. UI will
-  // only be shown when it's matched.
-  static bool IsSecretKeyMatched();
-
-  // message_center::NotificationObserver:
-  void Click(const std::optional<int>& button_index,
-             const std::optional<std::u16string>& reply) override;
+  // Callback returns whether the request was successful.
+  void CacheEmbeddings(const CoralRequest& request,
+                       base::OnceCallback<void(bool)> callback);
 
  private:
-  void CollectDataPeriodically();
-
-  // The repeating timer to collect data.
-  base::RepeatingTimer data_collection_timer_;
-
   base::WeakPtrFactory<CoralController> weak_factory_{this};
 };
 

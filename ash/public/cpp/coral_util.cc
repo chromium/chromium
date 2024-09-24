@@ -4,30 +4,16 @@
 
 #include "ash/public/cpp/coral_util.h"
 
-#include "base/notreached.h"
-
 namespace ash::coral_util {
 
-std::string GetIdentifier(const ContentItem& item) {
-  if (std::holds_alternative<AppData>(item)) {
-    return std::get<AppData>(item).app_id;
+std::string ASH_PUBLIC_EXPORT GetIdentifier(const coral::mojom::Entity& item) {
+  if (item.is_app()) {
+    return item.get_app()->id;
   }
-  if (std::holds_alternative<TabData>(item)) {
-    return std::get<TabData>(item).source;
+  if (item.is_tab()) {
+    return item.get_tab()->url.possibly_invalid_spec();
   }
   NOTREACHED();
 }
-
-CoralRequest::CoralRequest() = default;
-
-CoralRequest::~CoralRequest() = default;
-
-CoralCluster::CoralCluster() = default;
-
-CoralCluster::~CoralCluster() = default;
-
-CoralResponse::CoralResponse() = default;
-
-CoralResponse::~CoralResponse() = default;
 
 }  // namespace ash::coral_util

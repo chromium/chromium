@@ -23,6 +23,11 @@
 
 namespace ash {
 
+namespace {
+using coral::mojom::App;
+using coral::mojom::Tab;
+}  // namespace
+
 class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
  public:
   BirchCoralProviderTest() {
@@ -87,35 +92,31 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   const auto& content_data = coral_provider->request_for_test().content();
 
   // Extract tab data and app data from content data.
-  std::vector<coral_util::TabData> tab_data;
-  std::vector<coral_util::AppData> app_data;
+  std::vector<Tab> tab_data;
+  std::vector<App> app_data;
   for (const auto& data : content_data) {
-    if (std::holds_alternative<coral_util::TabData>(data)) {
-      tab_data.emplace_back(std::get<coral_util::TabData>(data));
+    if (data->is_tab()) {
+      tab_data.emplace_back(*data->get_tab());
     } else {
-      app_data.emplace_back(std::get<coral_util::AppData>(data));
+      app_data.emplace_back(*data->get_app());
     }
   }
 
   // Comparing the collected tab data with the expected tab data.
-  EXPECT_THAT(
-      tab_data,
-      testing::UnorderedElementsAreArray(std::vector<coral_util::TabData>{
-          {.tab_title = "examples1.com", .source = "examples1.com/"},
-          {.tab_title = "examples2.com", .source = "examples2.com/"},
-          {.tab_title = "examples3.com", .source = "examples3.com/"}}));
+  EXPECT_THAT(tab_data,
+              testing::UnorderedElementsAre(
+                  *Tab::New("examples1.com", GURL("examples1.com/")),
+                  *Tab::New("examples2.com", GURL("examples2.com/")),
+                  *Tab::New("examples3.com", GURL("examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
-  EXPECT_THAT(
-      app_data,
-      testing::UnorderedElementsAreArray(std::vector<coral_util::AppData>{
-          {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "Gmail"},
-          {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "YouTube"},
-          {.app_id = "nbljnnecbjbmifnoehiemkgefbnpoeak", .app_name = "Explore"},
-          {.app_id = "odknhmnlageboeamepcngndbggdpaobj",
-           .app_name = "Settings"},
-          {.app_id = "fkiggjmkendpmbegkagpmagjepfkpmeb",
-           .app_name = "Files"}}));
+  EXPECT_THAT(app_data,
+              testing::UnorderedElementsAre(
+                  *App::New("Gmail", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
+                  *App::New("YouTube", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
+                  *App::New("Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"),
+                  *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
+                  *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
 
 // Tests that the coral provider filters out duplicated tab and app data.
@@ -151,33 +152,29 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
   const auto& content_data = coral_provider->request_for_test().content();
 
   // Extract tab data and app data from content data.
-  std::vector<coral_util::TabData> tab_data;
-  std::vector<coral_util::AppData> app_data;
+  std::vector<Tab> tab_data;
+  std::vector<App> app_data;
   for (const auto& data : content_data) {
-    if (std::holds_alternative<coral_util::TabData>(data)) {
-      tab_data.emplace_back(std::get<coral_util::TabData>(data));
+    if (data->is_tab()) {
+      tab_data.emplace_back(*data->get_tab());
     } else {
-      app_data.emplace_back(std::get<coral_util::AppData>(data));
+      app_data.emplace_back(*data->get_app());
     }
   }
 
   // Comparing the collected tab data with the expected tab data.
-  EXPECT_THAT(
-      tab_data,
-      testing::UnorderedElementsAreArray(std::vector<coral_util::TabData>{
-          {.tab_title = "examples1.com", .source = "examples1.com/"},
-          {.tab_title = "examples2.com", .source = "examples2.com/"},
-          {.tab_title = "examples3.com", .source = "examples3.com/"}}));
+  EXPECT_THAT(tab_data,
+              testing::UnorderedElementsAre(
+                  *Tab::New("examples1.com", GURL("examples1.com/")),
+                  *Tab::New("examples2.com", GURL("examples2.com/")),
+                  *Tab::New("examples3.com", GURL("examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
-  EXPECT_THAT(
-      app_data,
-      testing::UnorderedElementsAreArray(std::vector<coral_util::AppData>{
-          {.app_id = "mgndgikekgjfcpckkfioiadnlibdjbkf", .app_name = "YouTube"},
-          {.app_id = "odknhmnlageboeamepcngndbggdpaobj",
-           .app_name = "Settings"},
-          {.app_id = "fkiggjmkendpmbegkagpmagjepfkpmeb",
-           .app_name = "Files"}}));
+  EXPECT_THAT(app_data,
+              testing::UnorderedElementsAre(
+                  *App::New("YouTube", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
+                  *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
+                  *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
 
 }  // namespace ash

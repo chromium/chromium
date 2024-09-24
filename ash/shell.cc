@@ -1816,8 +1816,7 @@ void Shell::Init(
         shell_delegate_->CreateUserEducationDelegate());
   }
 
-  if (features::IsCoralFeatureEnabled() &&
-      CoralController::IsSecretKeyMatched()) {
+  if (features::IsCoralFeatureEnabled()) {
     coral_controller_ = std::make_unique<CoralController>();
   }
   if (features::IsBirchCoralEnabled()) {

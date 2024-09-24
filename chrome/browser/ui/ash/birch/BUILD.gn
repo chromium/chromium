@@ -162,6 +162,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/main_extra_parts",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/services/coral/public/mojom",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",
