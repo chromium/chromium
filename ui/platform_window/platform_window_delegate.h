@@ -117,14 +117,14 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
                       fullscreen_type,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-                      bounds_dip, size_px, window_scale, raster_scale,
+                      bounds_dip, size_px, window_scale, raster_scale, ui_scale,
                       occlusion_state) ==
              std::tie(rhs.window_state,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
                       rhs.fullscreen_type,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
                       rhs.bounds_dip, rhs.size_px, rhs.window_scale,
-                      rhs.raster_scale, rhs.occlusion_state);
+                      rhs.raster_scale, rhs.ui_scale, rhs.occlusion_state);
     }
 
     // Current platform window state.
@@ -148,6 +148,16 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 
     // Scale to raster the window at.
     float raster_scale = 1.0;
+
+    // Scale of the window UI content. Used by platform window code to trigger
+    // the resize and relayout of UI elements when needed, e.g: in reaction to
+    // system's 'large text' setting. Which is done by downscaling the DIP size
+    // by the ui_scale, e.g: 1.25, while the pixel size is kept unchanged, which
+    // makes UI elements to look bigger while still sharp. OTOH, window_scale is
+    // used to scale the whole frame, affecting the buffers' size such that it
+    // matches the expected DPI used by the display server. Used only by the
+    // Wayland backend for now.
+    float ui_scale = 1.0;
 
     // Occlusion state
     PlatformWindowOcclusionState occlusion_state =

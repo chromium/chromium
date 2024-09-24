@@ -164,13 +164,6 @@ class WaylandWindow : public PlatformWindow,
 
   WaylandBubble* active_bubble() { return active_bubble_; }
 
-  // Sets the window_scale for this window with respect to a display this window
-  // is located at. This determines how events can be translated and how pixel
-  // size of the surface is treated. This is called as a result of the window
-  // moving to a new display (output), or if the scale factor of its current
-  // display changes. This is not sent via a configure.
-  void SetWindowScale(float new_scale);
-
   // Tentatively determines and returns the scale factor for this window based
   // on its currently entered wl_outputs, see GetPreferredEnteredOutputId()
   // description for more details. Returns null when the outputs are not ready.
@@ -421,7 +414,7 @@ class WaylandWindow : public PlatformWindow,
 
   // Triggers window UI resize and relayout in reaction to system-wide font
   // scale changes, eg: accessibility's "large text" setting.
-  void OnFontScaleFactorChanged(float new_font_scale);
+  void OnFontScaleFactorChanged();
 
   virtual void DumpState(std::ostream& out) const;
 
@@ -504,6 +497,17 @@ class WaylandWindow : public PlatformWindow,
   // if there are no later unapplied states. This is used when updating a single
   // property (e.g. window scale) without wanting to modify the others.
   PlatformWindowDelegate::State GetLatestRequestedState() const;
+
+  // Sets the scale used for this window, which is provided by the Wayland
+  // compositor and determines how the pixel size of the surface is treated and
+  // how events can be translated. This must be called when:
+  //
+  // 1. A new preferred scale value is received via fractional-scale-v1 protocol
+  // (when per-surface-scaling enabled); or
+  // 2. Either window is moving to a new display (output), or if the scale
+  // factor of its current display changes. This is not sent via a configure
+  // (legacy per-display scaling mode).
+  void SetWindowScale(float window_scale);
 
   // Sets given `window_state` to `applied_state_` so that it reflects the
   // client side window state change immediately, Not that

@@ -281,4 +281,14 @@ bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
   return false;
 }
 
+void WaylandWindowManager::SetFontScale(float new_font_scale) {
+  if (new_font_scale == font_scale_) {
+    return;
+  }
+  font_scale_ = new_font_scale;
+  for (WaylandWindow* window : GetAllWindows()) {
+    window->OnFontScaleFactorChanged();
+  }
+}
+
 }  // namespace ui

@@ -159,8 +159,6 @@ class WaylandScreen : public PlatformScreen
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-  float font_scale_ = 1.0f;
-
   base::ScopedObservation<ui::LinuxUi, DeviceScaleFactorObserver>
       display_scale_factor_observer_{this};
 #endif

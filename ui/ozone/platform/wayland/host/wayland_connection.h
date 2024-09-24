@@ -339,6 +339,11 @@ class WaylandConnection {
            UseViewporterSurfaceScaling();
   }
 
+  bool IsUiScaleEnabled() const {
+    return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
+           UsePerSurfaceScaling();
+  }
+
   bool ShouldUseOverlayDelegation() const;
 
   // True if the client has bound the either aura output manager globals. If

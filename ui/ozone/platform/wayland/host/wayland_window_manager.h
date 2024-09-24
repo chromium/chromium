@@ -115,6 +115,9 @@ class WaylandWindowManager {
   // Creates a new unique gfx::AcceleratedWidget.
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
+  float font_scale() const { return font_scale_; }
+  void SetFontScale(float new_font_scale);
+
   void DumpState(std::ostream& out) const;
 
  private:
@@ -137,6 +140,10 @@ class WaylandWindowManager {
   // Stores strictly monotonically increasing counter for allocating unique
   // AccelerateWidgets.
   gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
+
+  // Current system's text font scaling factor provided by WaylandScreen,
+  // through LinuxUi, when enabled.
+  float font_scale_ = 1.0f;
 };
 
 }  // namespace ui

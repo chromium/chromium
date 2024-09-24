@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -47,6 +48,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "ui/base/ui_base_features.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -134,9 +136,9 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-  if (auto* linux_ui = ui::LinuxUi::instance()) {
+  if (connection_->IsUiScaleEnabled() && LinuxUi::instance()) {
     OnDeviceScaleFactorChanged();
-    display_scale_factor_observer_.Observe(linux_ui);
+    display_scale_factor_observer_.Observe(LinuxUi::instance());
   }
 #endif
 }
@@ -563,8 +565,15 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
 
 std::optional<float> WaylandScreen::GetPreferredScaleFactorForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  if (auto* window = connection_->window_manager()->GetWindow(widget)) {
-    return window->GetPreferredScaleFactor();
+  if (const auto* window = connection_->window_manager()->GetWindow(widget)) {
+    // Returning null while the preferred surface scale has not been received
+    // yet could lead to bugs in bounds change handling code, so default to
+    // `ui_scale` in that case. Context: client code could produce a wrongly
+    // scaled new frame (and commit the corresponding window state), by
+    // disregarding ui scale as this is the API responsible for providing the
+    // final window scale (ie: ui_scale * window_scale) to upper layers.
+    return window->GetPreferredScaleFactor().value_or(1.0f) *
+           window->applied_state().ui_scale;
   }
   return std::nullopt;
 }
@@ -608,15 +617,11 @@ bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
 
 #if BUILDFLAG(IS_LINUX)
 void WaylandScreen::OnDeviceScaleFactorChanged() {
-  if (const auto* linux_ui = ui::LinuxUi::instance()) {
-    const float new_font_scale = linux_ui->display_config().font_scale;
-    if (new_font_scale != font_scale_) {
-      font_scale_ = new_font_scale;
-      for (auto* window : connection_->window_manager()->GetAllWindows()) {
-        window->OnFontScaleFactorChanged(new_font_scale);
-      }
-    }
-  }
+  CHECK(connection_->IsUiScaleEnabled());
+  CHECK(LinuxUi::instance());
+  const auto& linux_ui = *LinuxUi::instance();
+  connection_->window_manager()->SetFontScale(
+      linux_ui.display_config().font_scale);
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

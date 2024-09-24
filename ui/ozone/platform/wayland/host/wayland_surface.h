@@ -259,6 +259,8 @@ class WaylandSurface {
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
+  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
+                           UiScale_HandleFontScaleChange);
   // Holds information about each explicit synchronization buffer release.
   struct ExplicitReleaseInfo {
     ExplicitReleaseInfo(

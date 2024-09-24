@@ -168,9 +168,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   if (!icon_image_.isNull()) {
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
-      // Corresponds to actual scale factor of the origin surface. Use the
-      // latched state as that is what is currently displayed to the user and
-      // used as buffers in these surfaces.
+      // TODO(crbug.com/369219145): Revisit and double-check if latched state
+      // can be used here (as well as in UpdateDragImage) instead. Original
+      // reasoning: latched state is what is currently displayed to the user.
       icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
       icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
       // Icon surface do not need input.

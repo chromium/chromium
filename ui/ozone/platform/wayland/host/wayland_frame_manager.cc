@@ -386,11 +386,21 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     return true;
   }
 
+  // Besides the actual wayland surface scale, `config.surface_scale_factor`
+  // also contains chromium's ui scale, which is irrelevant to the wayland
+  // compositor, thus it must be factored out here. This assumes that:
+  // - window's ui_scale will always be set to 1 when neither per-surface
+  // scaling nor kWaylandUiScale feature is enabled.
+  // - frame's window state has already been latched, which is usually done in
+  // `MaybeProcessSubmittedFrames`, before calling into this function.
+  const float surface_buffer_scale =
+      config.surface_scale_factor / window_->latched_state().ui_scale;
+
   surface->set_buffer_transform(
       absl::holds_alternative<gfx::OverlayTransform>(config.transform)
           ? absl::get<gfx::OverlayTransform>(config.transform)
           : gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
-  surface->set_surface_buffer_scale(config.surface_scale_factor);
+  surface->set_surface_buffer_scale(surface_buffer_scale);
   surface->set_buffer_crop(config.crop_rect);
   surface->set_viewport_destination(config.bounds_rect.size());
   surface->set_opacity(config.opacity);

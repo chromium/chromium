@@ -58,7 +58,9 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -233,6 +235,8 @@ class WaylandWindowTest : public WaylandTest {
   void SetUp() override {
     WaylandTest::SetUp();
 
+    buffer_id_gen_ = 0u;
+    frame_id_gen_ = 0u;
     surface_id_ = window_->root_surface()->get_surface_id();
     PostToServerAndWait(
         [id = surface_id_](wl::TestWaylandServerThread* server) {
@@ -426,10 +430,65 @@ class WaylandWindowTest : public WaylandTest {
     return 0;
   }
 
+  WaylandBufferHandle* CreateTestShmBuffer(const gfx::Size& buffer_size,
+                                           WaylandSurface* surface) {
+    CHECK(!buffer_size.IsEmpty());
+    CHECK(surface);
+    CHECK(connection_->buffer_manager_host());
+
+    auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
+    buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
+                                    /*supports_dma_buf=*/false,
+                                    /*supports_viewporter=*/true,
+                                    /*supports_acquire_fence=*/false,
+                                    /*supports_overlays=*/true,
+                                    kAugmentedSurfaceNotSupportedVersion,
+                                    /*supports_single_pixel_buffer=*/true,
+                                    /*server_version=*/{});
+
+    const uint32_t buffer_id = ++buffer_id_gen_;
+    auto length = buffer_size.width() * buffer_size.height() * 4;
+    buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), length, buffer_size,
+                                              buffer_id);
+    task_environment_.RunUntilIdle();
+    return connection_->buffer_manager_host()->EnsureBufferHandle(surface,
+                                                                  buffer_id);
+  }
+
+  // Emulates a new frame being received from Viz being processed by `window`s
+  // frame manager.
+  void CreateBufferAndPresentAsNewFrame(
+      WaylandWindow* window,
+      const MockWaylandPlatformWindowDelegate& delegate,
+      const gfx::Size& buffer_size,
+      float buffer_scale) {
+    CHECK(window);
+    CHECK(window->root_surface());
+    auto* buffer = CreateTestShmBuffer(buffer_size, window->root_surface());
+    ASSERT_TRUE(buffer);
+    window->root_surface()->AttachBuffer(buffer);
+
+    const uint32_t frame_id = ++frame_id_gen_;
+    wl::WaylandOverlayConfig root_config;
+    root_config.buffer_id = buffer->id();
+    root_config.bounds_rect = gfx::RectF(buffer_size);
+    root_config.damage_region = gfx::Rect(buffer_size);
+    root_config.surface_scale_factor = buffer_scale;
+    std::vector<wl::WaylandOverlayConfig> configs;
+    configs.push_back(std::move(root_config));
+    window->CommitOverlays(frame_id, gfx::FrameData(delegate.viz_seq()),
+                           configs);
+  }
+
   // Surface id of |window|'s the root surface. Stored for convenience.
   uint32_t surface_id_ = 0u;
 
   MouseEvent test_mouse_event_;
+
+  // Incremental id used to generate buffer IDs.
+  uint32_t buffer_id_gen_ = 0u;
+  // Incremental id used to generate frame IDs.
+  uint32_t frame_id_gen_ = 0u;
 };
 
 // Regression test for crbug.com/1433175
@@ -5586,11 +5645,13 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
   EXPECT_EQ(1.0f, window_->applied_state().window_scale);
   ASSERT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
 
-  // GetPreferredScaleFactorForAcceleratedWidget must return null until
-  // preferred scale is received from the Wayland compositor.
-  EXPECT_FALSE(
+  // GetPreferredScaleFactorForAcceleratedWidget must return the ui scale value
+  // until the preferred surface scale hasn't been received yet.
+  EXPECT_FALSE(window_->GetPreferredScaleFactor().has_value());
+  EXPECT_EQ(
+      1.0f,
       screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
-          .has_value());
+          .value_or(0.f));
 
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
 
@@ -5604,12 +5665,15 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
   SyncDisplay();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  // Preferred scale for `window_` must have been updated accordingly.
-  const auto preferred_scale_for_window =
-      screen_->GetPreferredScaleFactorForAcceleratedWidget(
-          window_->GetWidget());
-  ASSERT_TRUE(preferred_scale_for_window.has_value());
-  EXPECT_EQ(1.5f, preferred_scale_for_window.value());
+  // Once preferred surface scale is received, the screen API starts returning
+  // the composed scale value, ie: ui_scale * window_scale.
+  EXPECT_EQ(1.5f, window_->GetPreferredScaleFactor().value_or(0.f));
+  EXPECT_EQ(
+      1.5f,
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
+          .value_or(0.f));
+  // The preferred scale is then reflected in state's `window_scale` when
+  // notifying the bounds change.
   EXPECT_EQ(1.5f, window_->applied_state().window_scale);
   ASSERT_EQ(gfx::Size(1200, 900), window_->applied_state().size_px);
 
@@ -5625,6 +5689,97 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
   // scale is unchanged in this case.
   EXPECT_EQ(1.0f, screen_->GetDisplayForAcceleratedWidget(window_->GetWidget())
                       .device_scale_factor());
+}
+
+TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  // Ensure the initial `window_` and its underlying root surface state is set
+  // as expected.
+  EXPECT_EQ(1.0f, window_->applied_state().ui_scale);
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(800, 600), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
+  EXPECT_EQ(window_->applied_state(), window_->latched_state());
+  // Ensure WaylandScreen::GetPreferredScaleFactorForAcceleratedWidget returns
+  // the ui scale value while preferred surface scale hasn't been received yet.
+  EXPECT_FALSE(window_->GetPreferredScaleFactor().has_value());
+  EXPECT_EQ(
+      1.0f,
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
+          .value_or(0.f));
+
+  // Receiving a `wp_fractional_scale_v1::preferred_scale` with scale 1.0
+  // shouldn't lead to `OnBoundsChanged` calls, as no change did actually occur.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(0);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->fractional_scale());
+    mock_surface->fractional_scale()->SendPreferredScale(1.0f);
+  });
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+  // Once preferred surface scale is received, the screen API starts returning
+  // the composed scale value, ie: ui_scale * window_scale.
+  EXPECT_EQ(1.0f, window_->GetPreferredScaleFactor().value_or(0.f));
+  EXPECT_EQ(
+      1.0f,
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
+          .value_or(0.f));
+
+  // Setting font scale to 1.25 (which usually happens when 'large-text' system
+  // setting is turned on) leads to bounds change with the expectations set
+  // below.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+  ASSERT_TRUE(!!connection_->window_manager());
+  connection_->window_manager()->SetFontScale(1.25f);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  // Ensure that once preferred surface scale is received, the screen
+  // GetPreferredScaleFactorForAcceleratedWidget API returns the composed scale
+  // value, ie: ui_scale * window_scale.
+  EXPECT_EQ(1.0f, window_->GetPreferredScaleFactor().value_or(0.f));
+  EXPECT_EQ(
+      1.25f,
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
+          .value_or(0.f));
+
+  EXPECT_EQ(1.25f, window_->applied_state().ui_scale);
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  // DIP size gets downscaled by the composed scale, such that the pixel size
+  // keeps the same.
+  EXPECT_EQ(gfx::Size(640, 480), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
+  EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
+  EXPECT_NE(window_->applied_state(), window_->latched_state());
+
+  // Applied state gets latched when the corresponding produced frame is
+  // received from Viz and processed by `window_`s frame manager, which is
+  // emulated in this test by the `CreateShmBasedBuffer` + `CommitOverlays`
+  // calls below. After that, several expectations are checked, eg: latched
+  // state, surface state (scale) as well as the relevant wayland requests
+  // issued during the process.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface, Damage(0, 0, 800, 600)).Times(1);
+    ASSERT_TRUE(mock_surface->viewport());
+    EXPECT_CALL(*mock_surface->viewport(), SetSource(_, _, _, _)).Times(0);
+    EXPECT_CALL(*mock_surface->viewport(), SetDestination(_, _)).Times(0);
+    // TODO(crbug.com/40856031): Match geometry once ui_scale is applied to it.
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_CALL(*mock_surface->xdg_surface(), AckConfigure(_)).Times(0);
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/gfx::Size(800, 600),
+                                   /*buffer_scale=*/1.25f);
+  // Sync with the test wayland compositor and verify the expectations.
+  VerifyAndClearExpectations();
+  EXPECT_EQ(window_->applied_state(), window_->latched_state());
+  EXPECT_EQ(window_->latched_state().ui_scale, 1.25f);
+  EXPECT_EQ(window_->latched_state().window_scale, 1.0f);
+  EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

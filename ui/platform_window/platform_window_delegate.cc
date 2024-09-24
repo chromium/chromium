@@ -22,15 +22,19 @@ bool IsPlatformWindowStateFullscreen(PlatformWindowState state) {
 
 bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
     const State& old) const {
-  // Changing the bounds origin or fullscreen type will not produce a new frame.
+  // None of the following changes will produce a new frame:
+  // - bounds origin and fullscreen type: no relayout scheduled.
+  // - ui scale: does not imply in a new frame per-se, though inherently implies
+  //   in bounds_dip and/or size_px change. See its declaration for further
+  //   explanation.
+  //
   // Anything else will produce a frame, except for the occlusion state. We do
   // not check that here since there isn't enough information to determine if
   // it will produce a frame, as it depends on whether native occlusion is
   // enabled and if the ui compositor changes visibility.
+  //
   // Note: Changing the window state produces a new frame as
   // OnWindowStateChanged will schedule relayout even without the bounds change.
-  // On the other hand, the fullscreen type change will not schedule relayout
-  // and does not affect producing the frame.
   return old.window_state != window_state ||
          old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
          old.window_scale != window_scale || old.raster_scale != raster_scale;
@@ -47,6 +51,7 @@ std::string PlatformWindowDelegate::State::ToString() const {
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", raster_scale = " << raster_scale;
+  result << ", ui_scale = " << ui_scale;
   result << ", occlusion_state = " << static_cast<int>(occlusion_state);
   result << "}";
   return result.str();

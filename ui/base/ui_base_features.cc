@@ -160,6 +160,12 @@ BASE_FEATURE(kWaylandPerSurfaceScale,
 BASE_FEATURE(kWaylandTextInputV3,
              "WaylandTextInputV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether support for "Large Text" accessibility setting via UI
+// scaling is enabled.
+BASE_FEATURE(kWaylandUiScale,
+             "WaylandUiScale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX)
