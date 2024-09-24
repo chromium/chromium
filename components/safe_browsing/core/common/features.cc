@@ -193,6 +193,10 @@ BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
+             "EnterprisePasswordReuseUiRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHashDatabaseOffsetMap,
              "SafeBrowsingHashDatabaseOffsetMap",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -322,6 +326,7 @@ base::Value::List GetFeatureStatusList() {
       &kDlpRegionalizedEndpoints,
       &kDownloadTailoredWarnings,
       &kEnhancedSafeBrowsingPromo,
+      &kEnterprisePasswordReuseUiRefresh,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryDisableOffstoreExtensions,
       &kExtensionTelemetryForEnterprise,

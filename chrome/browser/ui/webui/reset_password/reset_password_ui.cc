@@ -20,6 +20,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
@@ -159,7 +160,11 @@ base::Value::Dict ResetPasswordUI::PopulateStrings() const {
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
                             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH);
   } else {
-    std::u16string formatted_org_name = GetFormattedHostName(org_name);
+    std::u16string formatted_org_name =
+        base::FeatureList::IsEnabled(
+            safe_browsing::kEnterprisePasswordReuseUiRefresh)
+            ? base::UTF8ToUTF16(org_name)
+            : GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
         known_password_type
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME

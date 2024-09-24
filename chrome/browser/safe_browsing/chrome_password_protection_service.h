@@ -471,7 +471,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyGetWarningDetailTextSavedDomains);
 
   // Gets prefs associated with |profile_|.
-  PrefService* GetPrefs();
+  PrefService* GetPrefs() const;
 
   // Returns whether the profile is valid and has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();

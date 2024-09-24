@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -500,6 +501,7 @@ class ChromePasswordProtectionServiceTest
   base::MockCallback<
       ChromePasswordProtectionService::ChangePhishedCredentialsCallback>
       mock_remove_callback_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ChromePasswordProtectionServiceTest,
@@ -727,6 +729,25 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanSendSamplePing) {
                           /*is_extended_reporting=*/false);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// prefs::kEnterpriseCustomLabel is only registered on Windows, Mac, and Linux.
+TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationPrefEmpty) {
+  feature_list_.InitWithFeatures(
+      {safe_browsing::kEnterprisePasswordReuseUiRefresh}, {});
+  ReusedPasswordAccountType reused_password_type;
+  EXPECT_TRUE((service_->GetOrganizationName(reused_password_type).empty()));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationPrefNonEmpty) {
+  feature_list_.InitWithFeatures(
+      {safe_browsing::kEnterprisePasswordReuseUiRefresh}, {});
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+                                   "Mini Corp Ltd");
+  ReusedPasswordAccountType reused_password_type;
+  EXPECT_EQ("Mini Corp Ltd",
+            service_->GetOrganizationName(reused_password_type));
+}
+
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGmail) {
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
@@ -736,6 +757,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGmail) {
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGSuite) {
+  profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabel,
+                                   "example.com");
   CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
   SetUpSyncAccount("example.com", account_info);
   ReusedPasswordAccountType reused_password_type;
@@ -743,6 +766,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGSuite) {
   reused_password_type.set_is_account_syncing(true);
   EXPECT_EQ("example.com", service_->GetOrganizationName(reused_password_type));
 }
+#endif
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
   using enum SBThreatType;
