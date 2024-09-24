@@ -628,6 +628,218 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-cast-arm-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Android and Cast Receiver build and tests on ARM Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "cast_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "cast_android",
+            "cast_debug",
+            "cast_java_debug",
+            "android_builder",
+            "clang",
+            "remoteexec",
+            "arm",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_cast_receiver",
+            "chromium_android_cast_tests",
+        ],
+    ),
+    # TODO(vigeni): Remove as configuration has been stablized.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(vigeni): Set to True as configuration has been stablized.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "and32dbg",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cast-eng@google.com",
+)
+
+ci.builder(
+    name = "android-cast-arm-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Android and Cast Receiver build and tests on ARM Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "cast_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "cast_android",
+            "cast_release",
+            "cast_java_release",
+            "android_builder",
+            "clang",
+            "remoteexec",
+            "arm",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_cast_receiver",
+            "chromium_android_cast_tests",
+        ],
+    ),
+    # TODO(vigeni): Remove as configuration has been stablized.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(vigeni): Set to True as configuration has been stablized.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "and32rel",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cast-eng@google.com",
+)
+
+ci.builder(
+    name = "android-cast-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Android and Cast Receiver build and tests on ARM64",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "cast_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "cast_android",
+            "cast_debug",
+            "cast_java_debug",
+            "android_builder",
+            "clang",
+            "remoteexec",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_cast_receiver",
+            "chromium_android_cast_tests",
+        ],
+    ),
+    # TODO(vigeni): Remove as configuration has been stablized.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(vigeni): Set to True as configuration has been stablized.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "and64dbg",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cast-eng@google.com",
+)
+
+ci.builder(
+    name = "android-cast-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Android and Cast Receiver build and tests on ARM64 Release",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "cast_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "cast_android",
+            "cast_release",
+            "cast_java_release",
+            "android_builder",
+            "clang",
+            "remoteexec",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_cast_receiver",
+            "chromium_android_cast_tests",
+        ],
+    ),
+    # TODO(vigeni): Remove as configuration has been stablized.
+    gardener_rotations = args.ignore_default(None),
+    # TODO(vigeni): Set to True as configuration has been stablized.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "and64rel",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cast-eng@google.com",
+)
+
+ci.builder(
     name = "Deterministic Android",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(

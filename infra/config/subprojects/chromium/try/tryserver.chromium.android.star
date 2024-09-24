@@ -1240,6 +1240,46 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cast-arm-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-cast-arm-dbg",
+    ],
+    gn_args = "ci/android-cast-arm-dbg",
+    contact_team_email = "cast-eng@google.com",
+)
+
+try_.builder(
+    name = "android-cast-arm-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-cast-arm-rel",
+    ],
+    gn_args = "ci/android-cast-arm-rel",
+    contact_team_email = "cast-eng@google.com",
+)
+
+try_.builder(
+    name = "android-cast-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-cast-arm64-dbg",
+    ],
+    gn_args = "ci/android-cast-arm64-dbg",
+    contact_team_email = "cast-eng@google.com",
+)
+
+try_.builder(
+    name = "android-cast-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-cast-arm64-rel",
+    ],
+    gn_args = "ci/android-cast-arm64-rel",
+    contact_team_email = "cast-eng@google.com",
+)
+
+try_.builder(
     name = "android-x64-cast",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [

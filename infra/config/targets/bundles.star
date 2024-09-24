@@ -217,12 +217,28 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "cast_receiver_junit_tests",
+    additional_compile_targets = [
+        "cast_junit_test_lists",
+    ],
+    targets = [
+        "base_junit_tests",
+        "cast_base_junit_tests",
+        "cast_shell_junit_tests",
+        "content_junit_tests",
+        "net_junit_tests",
+    ],
+    mixins = [
+        "x86-64",
+        "linux-jammy",
+        "junit-swarming-emulator",
+    ],
+)
+
+targets.bundle(
     name = "cast_receiver_gtests",
     additional_compile_targets = [
-        "cast_shell",
         "cast_test_lists",
-        "core_runtime_simple",
-        "core_runtime_starboard",
     ],
     targets = [
         "cast_audio_backend_unittests",
@@ -232,7 +248,6 @@ targets.bundle(
         "cast_display_settings_unittests",
         "cast_graphics_unittests",
         "cast_media_unittests",
-        "cast_shell_browsertests",
         "cast_shell_unittests",
         "cast_unittests",
     ],
@@ -251,9 +266,38 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_android_cast_receiver",
+    additional_compile_targets = [
+        "cast_shell_apk",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_android_cast_receiver_gtests",
+    targets = [
+        "cast_receiver_gtests",
+    ],
+    mixins = [
+        "tangorpro",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_android_cast_tests",
+    targets = [
+        "cast_receiver_junit_tests",
+        "chromium_android_cast_receiver_gtests",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_cast_receiver_gtests",
     targets = [
         "cast_receiver_gtests",
+        "cast_shell_browsertests",
         "linux_flavor_specific_chromium_gtests",
     ],
     mixins = [
