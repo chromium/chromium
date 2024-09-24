@@ -4186,6 +4186,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // increasing the priority of the renderer process anymore.
   void MaybeResetBoostRenderProcessForLoading();
 
+  // A discard optimization that attempts a shutdown of the associated render
+  // process. Shutdown may be reattempted if unsuccessful to give outstanding
+  // keep-alive requests a chance to resolve before timing out. `retries`
+  // tracks the number of shutdown reattempts.
+  void CleanupRenderProcessForDiscardIfPossible(int retries = 0);
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts

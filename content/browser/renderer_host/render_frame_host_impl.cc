@@ -7657,6 +7657,7 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
   // This may be called when the main frame document is replaced with the empty
   // document during discard. Suppress document load notifications in this case.
   if (document_associated_data_->is_discarded()) {
+    CleanupRenderProcessForDiscardIfPossible();
     return;
   }
 
@@ -16606,6 +16607,31 @@ void RenderFrameHostImpl::MaybeResetBoostRenderProcessForLoading() {
   if (boost_render_process_for_loading_) {
     boost_render_process_for_loading_ = false;
     GetProcess()->OnBoostForLoadingRemoved();
+  }
+}
+
+void RenderFrameHostImpl::CleanupRenderProcessForDiscardIfPossible(
+    int retries) {
+  // The delay between render process shutdown attempts. Attempts will continue
+  // until a maximum delay of kKeepAliveHandleFactoryTimeout is reached.
+  constexpr base::TimeDelta kProcessShutdownRetryDelay =
+      base::Milliseconds(5000);
+
+  // Attempt shutdown without running unload handlers, the discard operation has
+  // been acknowledged by the render process at this point.
+  if (GetProcess()->IsInitializedAndNotDead() &&
+      document_associated_data_->is_discarded() &&
+      (retries * kProcessShutdownRetryDelay <
+       RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
+      !GetProcess()->FastShutdownIfPossible(
+          /*page_count=*/1u,
+          /*skip_unload_handlers=*/true)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &RenderFrameHostImpl::CleanupRenderProcessForDiscardIfPossible,
+            weak_ptr_factory_.GetWeakPtr(), ++retries),
+        kProcessShutdownRetryDelay);
   }
 }
 
