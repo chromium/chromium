@@ -2176,27 +2176,6 @@
             ]
         }
     ],
-    "AutofillImproveSubmissionDetection": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_UnifySubmission",
-                    "enable_features": [
-                        "AutofillUnifyAndFixFormTracking"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [
