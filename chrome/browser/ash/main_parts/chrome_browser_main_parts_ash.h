@@ -13,7 +13,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics/external_metrics.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
@@ -94,7 +93,6 @@ class SuspendPerfReporter;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
-class DozeModePowerStatusScheduler;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -203,9 +201,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       accessibility_event_rewriter_delegate_;
 
   scoped_refptr<ExternalMetrics> external_metrics_;
-
-  std::unique_ptr<DozeModePowerStatusScheduler>
-      doze_mode_power_status_scheduler_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 

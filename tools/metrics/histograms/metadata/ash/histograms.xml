@@ -317,13 +317,6 @@ chromium-metrics-reviews@google.com.
                see overview while in tablet mode."/>
 </variants>
 
-<variants name="PowerStatus">
-  <variant name="RealBattery" summary="Real battery status"/>
-  <variant name="RealPower" summary="Real power status"/>
-  <variant name="SimulatedBattery"
-      summary="Simulated battery status (even when on AC power)"/>
-</variants>
-
 <variants name="PsmRequest">
   <variant name="Import" summary="Import data request to Fresnel"/>
   <variant name="Oprf" summary="First phase of check membership requests"/>
@@ -3635,26 +3628,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Width of the docked area in pixels. Recorded every time it changes after a
     user window resize operation is completed.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DozeMode.RealPower.DurationPercentage" units="%"
-    expires_after="2025-09-10">
-  <owner>yichenz@google.com</owner>
-  <owner>xiyuan@google.com</owner>
-  <summary>
-    The percentage of RealPower status duration over the total duration.
-    Recorded daily.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DozeMode.{PowerStatus}.Duration" units="ms"
-    expires_after="2025-09-10">
-  <owner>yichenz@google.com</owner>
-  <owner>xiyuan@google.com</owner>
-  <summary>
-    The accumulated duration in ms of doze mode power scheduler has sent
-    {PowerStatus} to arcvm. Recorded daily.
   </summary>
 </histogram>
 

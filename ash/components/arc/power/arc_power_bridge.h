@@ -74,9 +74,6 @@ class ArcPowerBridge : public KeyedService,
     virtual void OnVmResumed() {}
 
     virtual void OnWillDestroyArcPowerBridge() {}
-
-    // Notifies about android idle state is changed.
-    virtual void OnAndroidIdleStateChange(::arc::mojom::IdleState state) {}
   };
 
   // Returns singleton instance for the given BrowserContext,

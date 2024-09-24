@@ -138,7 +138,6 @@
 #include "chrome/browser/ash/notifications/multi_capture_notifications.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -839,11 +838,6 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   g_browser_process->platform_part()->InitializeSchedulerConfigurationManager();
   arc_service_launcher_ = std::make_unique<arc::ArcServiceLauncher>(
       g_browser_process->platform_part()->scheduler_configuration_manager());
-
-  // This should be created after ArcServiceLauncher creation.
-  doze_mode_power_status_scheduler_ =
-      std::make_unique<DozeModePowerStatusScheduler>(
-          g_browser_process->local_state());
 
   session_termination_manager_ = std::make_unique<SessionTerminationManager>();
 
@@ -1715,11 +1709,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
   vc_ash_feature_client_.reset();
-
-  // This need to be called before `Shell` and |arc_service_launcher_| is
-  // destroyed, and also before |ShutdownDBus()| is called (where
-  // chromeos::PowerManagerClient is destroyed).
-  doze_mode_power_status_scheduler_.reset();
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();

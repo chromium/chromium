@@ -5035,7 +5035,6 @@ static_library("browser") {
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/os_feedback",
       "//chrome/browser/ash/ownership",
-      "//chrome/browser/ash/performance",
       "//chrome/browser/ash/phonehub",
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",

@@ -371,10 +371,6 @@ void ArcPowerBridge::NotifyAndroidIdleState(ArcBridgeService* bridge,
   // power state changes, notify Android interactive state change as well.
   ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(
       state == IdleState::ACTIVE);
-
-  for (auto& observer : observer_list_) {
-    observer.OnAndroidIdleStateChange(state);
-  }
 }
 
 void ArcPowerBridge::OnAcquireDisplayWakeLock(mojom::DisplayWakeLockType type) {
