@@ -305,6 +305,8 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
       {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
       {"secureDnsWithIdentifiersDescription",
        IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsWithIdentifiersAndDomainConfigDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
       {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
       {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
       {"secureDnsDialogCancel",
@@ -324,6 +326,11 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
       "secureDnsOsSettingsDescription",
       l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
                                  product_os_name));
+  html_source->AddString(
+      "secureDnsWithDomainConfigDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION,
+          product_os_name));
 #endif
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

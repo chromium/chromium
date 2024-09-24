@@ -19,7 +19,9 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace ash {
 
@@ -71,8 +73,15 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   // plain text version of the URI templates. Otherwise returns nullopt.
   std::optional<std::string> GetDohWithIdentifiersDisplayServers() const;
 
+  // Returns the OS' secure DNS configuration.
+  net::DnsOverHttpsConfig GetOsDohConfig() const;
+  net::SecureDnsMode GetOsDohMode() const;
+
   void SetPrimaryProfilePropertiesForTesting(PrefService* profile_prefs,
                                              bool is_profile_managed);
+
+  // Whether or not DoHIncludedDomains or DoHExcludedDomains is set.
+  bool IsDohDomainConfigSet() const { return cached_domain_config_set_; }
 
  private:
   void DefaultNetworkChanged(const NetworkState* network) override;

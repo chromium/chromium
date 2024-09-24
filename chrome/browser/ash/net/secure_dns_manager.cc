@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/country_codes/country_codes.h"
 #include "net/dns/public/doh_provider_entry.h"
-#include "net/dns/public/secure_dns_mode.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
@@ -378,12 +377,14 @@ void SecureDnsManager::UpdateDoHConfig(const std::string& new_mode,
   UpdateShillDoHConfig(new_mode, new_template_uris);
 
   // When DoH included or excluded domains policy is set. DoH must be disabled
-  // for Chrome in order for the DNS traffic to reach ChromeOS DNS proxy.
+  // for Chrome in order for the DNS traffic to reach ChromeOS DNS proxy. At the
+  // same time, broadcast the changes to force the UI to be updated.
   std::string new_chrome_mode = new_mode;
   std::string new_chrome_template_uris = new_template_uris;
   if (cached_domain_config_set_) {
     new_chrome_mode = SecureDnsConfig::kModeOff;
     new_chrome_template_uris = std::string();
+    force_update = true;
   }
   UpdateChromeDoHConfig(new_chrome_mode, new_chrome_template_uris,
                         force_update);
@@ -498,6 +499,19 @@ SecureDnsManager::GetDohWithIdentifiersDisplayServers() const {
     return doh_templates_uri_resolver_->GetDisplayTemplates();
   }
   return std::nullopt;
+}
+
+net::DnsOverHttpsConfig SecureDnsManager::GetOsDohConfig() const {
+  net::DnsOverHttpsConfig doh_config;
+  if (cached_mode_ != SecureDnsConfig::kModeOff) {
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(cached_template_uris_);
+  }
+  return doh_config;
+}
+
+net::SecureDnsMode SecureDnsManager::GetOsDohMode() const {
+  return SecureDnsConfig::ParseMode(cached_mode_)
+      .value_or(net::SecureDnsMode::kOff);
 }
 
 }  // namespace ash

@@ -40,8 +40,11 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       // <if expr="chromeos_ash">
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       dohWithIdentifiersActive: false,
       configForDisplay: '',
+      dohDomainConfigSet: false,
       // </if>
     };
 

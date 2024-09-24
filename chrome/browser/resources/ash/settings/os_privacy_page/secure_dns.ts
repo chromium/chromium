@@ -237,11 +237,11 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * configuration.
    */
   private onSecureDnsPrefsChanged_(setting: SecureDnsSetting): void {
-    switch (setting.mode) {
+    switch (setting.osMode) {
       case SecureDnsMode.SECURE:
       case SecureDnsMode.AUTOMATIC:
         this.set('secureDnsToggle_.value', true);
-        this.updateConfigRepresentation_(setting.mode, setting.config);
+        this.updateConfigRepresentation_(setting.osMode, setting.osConfig);
         break;
       case SecureDnsMode.OFF:
         this.set('secureDnsToggle_.value', false);
@@ -382,6 +382,17 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       secureDescription = loadTimeData.substituteString(
           loadTimeData.getString('secureDnsWithIdentifiersDescription'),
           setting.configForDisplay);
+    }
+
+    if (setting.osMode !== SecureDnsMode.OFF && setting.dohDomainConfigSet) {
+      secureDescription =
+          loadTimeData.getString('secureDnsWithDomainConfigDescription');
+      if (setting.dohWithIdentifiersActive) {
+        secureDescription = loadTimeData.substituteString(
+            loadTimeData.getString(
+                'secureDnsWithIdentifiersAndDomainConfigDescription'),
+            setting.configForDisplay);
+      }
     }
 
     if (this.getPref('dns_over_https.mode').enforcement ===
