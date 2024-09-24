@@ -3118,6 +3118,10 @@ void LocalFrameView::UpdateStyleAndLayout() {
     did_layout = UpdateStyleAndLayoutInternal();
   }
 
+  // Update counters after layout since counters may be added during layout for
+  // generated ::scroll-markers.
+  frame_->GetDocument()->GetStyleEngine().UpdateCounters();
+
   // Second pass: run autosize until it stabilizes
   if (auto_size_info_) {
     while (auto_size_info_->AutoSizeIfNeeded())
