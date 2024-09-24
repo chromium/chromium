@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from common import read_package_paths
 
@@ -20,13 +20,18 @@ class TestRunner(ABC):
                  test_args: List[str],
                  packages: List[str],
                  target_id: Optional[str],
-                 package_deps: Optional[List[str]] = None) -> None:
+                 package_deps: Union[Dict[str, str], List[str]] = None):
         self._out_dir = out_dir
         self._test_args = test_args
         self._packages = packages
         self._target_id = target_id
         if package_deps:
-            self._package_deps = self._build_package_deps(package_deps)
+            if isinstance(package_deps, list):
+                self._package_deps = self._build_package_deps(package_deps)
+            elif isinstance(package_deps, dict):
+                self._package_deps = package_deps
+            else:
+                assert False, 'Unsupported package_deps ' + package_deps
         else:
             self._package_deps = self._populate_package_deps()
 

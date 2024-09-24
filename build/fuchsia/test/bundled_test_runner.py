@@ -74,16 +74,12 @@ class _BundledTestRunner(TestRunner):
         returncode = 0
         for test in self._tests:
             assert test.package.endswith('.cm')
-            test_runner = ExecutableTestRunner(self._out_dir,
-                                               test.args.split(), test.package,
-                                               self._target_id,
-                                               self._code_coverage_dir,
-                                               self._logs_dir, [],
-                                               self._test_realm)
+            test_runner = ExecutableTestRunner(
+                self._out_dir, test.args.split(), test.package,
+                self._target_id, self._code_coverage_dir, self._logs_dir,
+                self._package_deps, self._test_realm)
             # It's a little bit wasteful to resolve all the packages once per
             # test package, but it's easier.
-            # pylint: disable=protected-access
-            test_runner._package_deps = self._package_deps
             result = test_runner.run_test().returncode
             logging.info('Result of test %s is %s', test, result)
             if result != 0:
