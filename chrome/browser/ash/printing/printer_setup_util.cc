@@ -78,6 +78,8 @@ void LogPrinterSetup(const chromeos::Printer& printer,
     case PrinterSetupResult::kDbusTimeout:
     case PrinterSetupResult::kManualSetupRequired:
     case PrinterSetupResult::kPrinterRemoved:
+    case PrinterSetupResult::kPrintscanmgrDbusNoReply:
+    case PrinterSetupResult::kDebugdDbusNoReply:
       LOG(ERROR) << ResultCodeToMessage(result);
       break;
     case PrinterSetupResult::kInvalidPrinterUpdate:

@@ -101,7 +101,7 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
   switch (dbus_error) {
     case chromeos::DBusLibraryError::kNoReply:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
-      return PrinterSetupResult::kDbusNoReply;
+      return PrinterSetupResult::kDebugdDbusNoReply;
     case chromeos::DBusLibraryError::kTimeout:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
       return PrinterSetupResult::kDbusTimeout;
@@ -157,7 +157,7 @@ PrinterSetupResult PrinterSetupResultFromAddPrinterResult(
       return PrinterSetupResult::kDbusError;
     case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_NO_REPLY:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
-      return PrinterSetupResult::kDbusNoReply;
+      return PrinterSetupResult::kPrintscanmgrDbusNoReply;
     case printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_TIMEOUT:
       PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
       return PrinterSetupResult::kDbusTimeout;
@@ -518,7 +518,7 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
     case PrinterSetupResult::kDbusError:
       return "D-Bus error occurred. Reboot required.";
     case PrinterSetupResult::kDbusNoReply:
-      return "Couldn't talk to printscanmgr over D-Bus.";
+      return "Deprecated.";
     case PrinterSetupResult::kDbusTimeout:
       return "Timed out trying to reach printscanmgr over D-Bus.";
     // Problem reported by OS.
@@ -534,6 +534,10 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
       return "Printer requires manual setup.";
     case PrinterSetupResult::kPrinterRemoved:
       return "Printer was removed during the setup.";
+    case PrinterSetupResult::kPrintscanmgrDbusNoReply:
+      return "Couldn't talk to printscanmgr over D-Bus.";
+    case PrinterSetupResult::kDebugdDbusNoReply:
+      return "Couldn't talk to debugd over D-Bus.";
   }
 }
 

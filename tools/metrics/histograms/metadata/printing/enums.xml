@@ -92,9 +92,11 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Memory allocation error in Cups"/>
   <int value="16" label="Printer's URI is incorrect"/>
   <int value="17" label="Manual setup required"/>
-  <int value="64" label="No reply from printscanmgr over D-Bus"/>
+  <int value="64" label="Deprecated"/>
   <int value="65" label="Generic D-Bus timeout"/>
   <int value="66" label="Printer removed during setup"/>
+  <int value="67" label="No reply from printscanmgr over D-Bus"/>
+  <int value="68" label="No reply from debugd over D-Bus"/>
 </enum>
 
 <enum name="PrinterStatusQueryResult">

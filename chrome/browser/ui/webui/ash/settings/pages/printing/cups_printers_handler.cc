@@ -958,6 +958,8 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
     case PrinterSetupResult::kFatalError:
     case PrinterSetupResult::kManualSetupRequired:
     case PrinterSetupResult::kPrinterRemoved:
+    case PrinterSetupResult::kPrintscanmgrDbusNoReply:
+    case PrinterSetupResult::kDebugdDbusNoReply:
       PRINTER_LOG(ERROR) << ResultCodeToMessage(result_code);
       break;
     case PrinterSetupResult::kComponentUnavailable:
