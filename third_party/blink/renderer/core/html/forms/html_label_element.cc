@@ -37,7 +37,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -234,9 +236,22 @@ bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
-        element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                                   mojom::blink::FocusType::kMouse, nullptr,
-                                   FocusOptions::Create()));
+        auto* select = DynamicTo<HTMLSelectElement>(element);
+        if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
+            select->IsAppearanceBaseButton() && select->SlottedButton()) {
+          // TODO(crbug.com/1511354): This is a workaround due to
+          // GetFocusableArea/GetFocusDelegate not supporting slotted elements.
+          // Once it is fixed, this can be removed.
+          // https://github.com/whatwg/html/issues/9245#issuecomment-2098998865
+          select->SlottedButton()->Focus(
+              FocusParams(SelectionBehaviorOnFocus::kRestore,
+                          mojom::blink::FocusType::kMouse, nullptr,
+                          FocusOptions::Create()));
+        } else {
+          element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                     mojom::blink::FocusType::kMouse, nullptr,
+                                     FocusOptions::Create()));
+        }
       }
     }
 
