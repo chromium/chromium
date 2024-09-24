@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chromecast/media/audio/playback_rate_shifter.h"
+
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/types/fixed_array.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
@@ -68,8 +70,8 @@ class PlaybackRateShifterTest : public testing::Test, public AudioProvider {
               (kSampleRate / 20 + kReadSize) / rate_shifter_.playback_rate());
 
     expected_playout_timestamp_ = request_timestamp + FramesToTime(buffered);
-    float buffer[num_frames];
-    float* data[1] = {buffer};
+    base::FixedArray<float> buffer(num_frames);
+    float* data[1] = {buffer.data()};
     int read = rate_shifter_.FillFrames(num_frames, request_timestamp, data);
     EXPECT_EQ(read, num_frames);
     num_read_ += read;

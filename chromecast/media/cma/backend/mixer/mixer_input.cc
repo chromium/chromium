@@ -32,6 +32,7 @@ namespace {
 const int64_t kMicrosecondsPerSecond = 1000 * 1000;
 const int kDefaultSlewTimeMs = 50;
 const int kDefaultFillBufferFrames = 2048;
+constexpr int kMaxChannels = 32;
 
 int RoundUpMultiple(int value, int multiple) {
   return multiple * ((value + (multiple - 1)) / multiple);
@@ -308,7 +309,8 @@ int MixerInput::FillAudioData(int num_frames,
     redirected = true;
   }
 
-  float* channels[num_channels_];
+  CHECK_LE(num_channels_, kMaxChannels);
+  float* channels[kMaxChannels];
   for (int c = 0; c < num_channels_; ++c) {
     channels[c] = dest->channel(c);
   }

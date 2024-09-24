@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/task/current_thread.h"
+#include "base/types/fixed_array.h"
 
 #define ALSA_ASSERT(func, ...)                                        \
   do {                                                                \
@@ -102,8 +103,8 @@ void ScopedAlsaMixer::WatchForEvents(snd_mixer_elem_callback_t cb,
 
   int num_fds = alsa_->MixerPollDescriptorsCount(mixer_);
   DCHECK_GT(num_fds, 0);
-  struct pollfd pfds[num_fds];
-  num_fds = alsa_->MixerPollDescriptors(mixer_, pfds, num_fds);
+  base::FixedArray<struct pollfd> pfds(num_fds);
+  num_fds = alsa_->MixerPollDescriptors(mixer_, pfds.data(), num_fds);
   DCHECK_GT(num_fds, 0);
   file_descriptor_watchers_.clear();
   for (int i = 0; i < num_fds; ++i) {
