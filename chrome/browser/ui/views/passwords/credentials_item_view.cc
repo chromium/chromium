@@ -162,7 +162,10 @@ CredentialsItemView::CredentialsItemView(
   }
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInstallFocusRingOnFocus(false);
+  SetInstallFocusRingOnFocus(true);
+  // With Focus Ring on Focus there is a line around the button.
+  // We want to remove this line so setting the thickness as 0.
+  views::FocusRing::Get(this)->SetHaloThickness(0.0f);
 }
 
 CredentialsItemView::~CredentialsItemView() = default;
