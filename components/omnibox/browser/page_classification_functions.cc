@@ -53,6 +53,10 @@ bool IsCustomTab(OEP::PageClassification classification) {
          classification == OEP::OTHER_ON_CCT;
 }
 
+bool IsAndroidHub(OEP::PageClassification classification) {
+  return classification == OEP::ANDROID_HUB;
+}
+
 void CheckObsoletePageClass(OEP::PageClassification classification) {
   CHECK(classification != OEP::OBSOLETE_INSTANT_NTP &&
         classification !=

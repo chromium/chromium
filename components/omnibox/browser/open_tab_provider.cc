@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/tab_matcher.h"
@@ -20,6 +21,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -90,6 +92,14 @@ OpenTabProvider::~OpenTabProvider() = default;
 
 void OpenTabProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
+#if BUILDFLAG(IS_ANDROID)
+  using OEP = ::metrics::OmniboxEventProto;
+  // On Android, the OpenTabProvider should only run for the Hub.
+  if (input.current_page_classification() != OEP::ANDROID_HUB) {
+    return;
+  }
+#endif
+
   matches_.clear();
   if (input.IsZeroSuggest() || input.text().empty()) {
     return;
@@ -186,6 +196,13 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   if (input.InKeywordMode()) {
     match.from_keyword = true;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  using OEP = ::metrics::OmniboxEventProto;
+  if (input.current_page_classification() == OEP::ANDROID_HUB) {
+    match.suggestion_group_id = omnibox::GROUP_MOBILE_OPEN_TABS;
+  }
+#endif
 
   return match;
 }

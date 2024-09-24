@@ -434,6 +434,10 @@ public class OmniboxMetrics {
                 suffix = "Widget";
                 break;
 
+            case PageClassification.ANDROID_HUB_VALUE:
+                suffix = "HUB";
+                break;
+
             case PageClassification.BLANK_VALUE:
             case PageClassification.CONTEXTUAL_SEARCHBOX_VALUE:
             case PageClassification.HOME_PAGE_VALUE:

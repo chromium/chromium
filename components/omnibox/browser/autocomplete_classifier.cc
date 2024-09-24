@@ -55,6 +55,8 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
 #endif
 #if BUILDFLAG(IS_ANDROID)
       AutocompleteProvider::TYPE_VOICE_SUGGEST |
+      // Only enabled for hub search.
+      AutocompleteProvider::TYPE_OPEN_TAB |
 #endif
 #if !BUILDFLAG(IS_IOS)
       (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&

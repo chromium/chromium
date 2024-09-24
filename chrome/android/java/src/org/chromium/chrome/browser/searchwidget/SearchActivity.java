@@ -418,6 +418,14 @@ public class SearchActivity extends AsyncInitializationActivity
                         PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
                 break;
 
+            case IntentOrigin.HUB:
+                // Lens/voice input aren't supported for hub search.
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(false)
+                        .setVoiceEntrypointAllowed(false);
+                mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+                break;
+
             case IntentOrigin.SEARCH_WIDGET:
                 // fallthrough
 

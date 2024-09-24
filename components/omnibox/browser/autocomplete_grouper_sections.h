@@ -102,6 +102,12 @@ class AndroidNonZPSSection : public Section {
   static size_t num_visible_matches_;
 };
 
+// Android prefix section for Hub search.
+class AndroidHubNonZPSSection : public Section {
+ public:
+  explicit AndroidHubNonZPSSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Android ZPS limits and grouping for the NTP.
 // - up to 15 + `max_related_queries` + `max_trending_queries` suggestions
 //   total.

@@ -182,6 +182,13 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
   above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
 }
 
+AndroidHubNonZPSSection::AndroidHubNonZPSSection(
+    omnibox::GroupConfigMap& group_configs)
+    : Section(30,
+              {{30, omnibox::GROUP_MOBILE_OPEN_TABS}},
+              group_configs,
+              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
+
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(

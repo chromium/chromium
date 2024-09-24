@@ -37,6 +37,10 @@ bool IsLensContextualSearchbox(
 bool IsCustomTab(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is the Android Hub searchbox.
+bool IsAndroidHub(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Checks (and asserts in development builds) if Page Classification is
 // obsolete and should not be used.
 void CheckObsoletePageClass(

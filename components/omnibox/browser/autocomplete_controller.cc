@@ -1027,6 +1027,11 @@ bool AutocompleteController::ShouldRunProvider(
            provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
   }
 
+  if (omnibox::IsAndroidHub(input_.current_page_classification())) {
+    return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
+           provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
+  }
+
   if (input_.InKeywordMode()) {
     // Only a subset of providers are run when we're in a starter pack keyword
     // mode. Try to grab the TemplateURL to determine if we're in starter pack
