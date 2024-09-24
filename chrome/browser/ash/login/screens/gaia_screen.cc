@@ -203,13 +203,6 @@ void GaiaScreen::ShowImpl() {
         Shell::Get()->backlights_forced_off_setter());
   }
 
-  // --- Automatic Sign In After Enrollment ---
-  // If the device was just enrolled, sign-in using the previous credentials.
-  if (features::IsOobeAddUserDuringEnrollmentEnabled() &&
-      MaybeLoginWithCachedCredentials()) {
-    return;
-  }
-
   LoadOnlineGaia();
 
   // Landed on the login screen. No longer skipping enrollment for tests.
@@ -445,36 +438,6 @@ void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
     quick_start::QuickStartMetrics::RecordEntryPointVisible(
         quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN);
   }
-}
-
-bool GaiaScreen::MaybeLoginWithCachedCredentials() {
-  CHECK(features::IsOobeAddUserDuringEnrollmentEnabled());
-  CHECK(LoginDisplayHost::default_host());
-  WizardContext* wizard_context =
-      LoginDisplayHost::default_host()->GetWizardContext();
-  CHECK(wizard_context);
-
-  UserContext* user_context = wizard_context->user_context.get();
-  const bool user_context_available =
-      user_context && !user_context->GetAccountId().empty() &&
-      user_context->GetPassword() && !user_context->GetRefreshToken().empty();
-  if (!wizard_context->add_user_from_cached_credentials ||
-      !user_context_available) {
-    return false;
-  }
-
-  CHECK(user_context->GetAuthCode().empty());
-  if (view_) {
-    // Show the gaia screen without loading the gaia-dialog.
-    view_->ToggleLoadingUI(true);
-    view_->Show();
-  }
-
-  wizard_context->add_user_from_cached_credentials = false;
-  LoginDisplayHost::default_host()->CompleteLogin(
-      *std::move(wizard_context->user_context));
-
-  return true;
 }
 
 }  // namespace ash

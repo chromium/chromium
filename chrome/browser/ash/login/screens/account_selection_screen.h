@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
 
@@ -47,12 +48,22 @@ class AccountSelectionScreen : public BaseScreen {
 
   static std::string GetResultString(Result result);
 
+  // Once the credentials are stored during enrollment a delayed task is
+  // scheduled to cleanup the credentials within few minutes. Once that happens
+  // this function is called which will cause the screen to exit if it's shown.
+  void OnCredentialsExpired();
+
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+
+  // Safely checks if the UserContext stored in the WizardContext contains all
+  // information needed to perform the signin.
+  bool IsUserContextComplete(const WizardContext* const wizard_context) const;
+  bool MaybeLoginWithCachedCredentials();
 
   base::WeakPtr<AccountSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;

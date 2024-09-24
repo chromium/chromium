@@ -107,8 +107,6 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void LoadOnlineGaiaForAccount(const AccountId& account,
                                 bool force_default_gaia_page = false);
 
-  bool MaybeLoginWithCachedCredentials();
-
   // Whether the QuickStart entry point visibility has already been determined.
   // This flag prevents duplicate histogram entries.
   bool has_emitted_quick_start_visible = false;

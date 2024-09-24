@@ -22,6 +22,14 @@ import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {getTemplate} from './account_selection.html.js';
 
 /**
+ * Choices a user can make.
+ */
+enum AccountSelectionOptions {
+  REUSE_ACCOUNT = 'reuseAccountFromEnrollment',
+  SIGNIN_AGAIN = 'signinAgain',
+}
+
+/**
  * UI mode for the dialog.
  */
 enum AccountSelectionState {
@@ -42,8 +50,35 @@ export class AccountSelection extends AccountSelectionBase {
   }
 
   static get properties(): PolymerElementProperties {
-    return {};
+    return {
+      /**
+       * Option chosen during account selection stpe.
+       */
+      selectedAccountOption: {
+        type: String,
+      },
+
+      /**
+       * Options for the account selections step.
+       */
+      accountSelectionEnum: {
+        readOnly: true,
+        type: Object,
+        value: AccountSelectionOptions,
+      },
+
+      /**
+       * Email used during enrollment, used for the account selection step.
+       */
+      enrollmentEmail: {
+        type: String,
+      },
+    };
   }
+
+  private enrollmentEmail: string;
+  private selectedAccountOption: string;
+  private accountSelectionEnum: AccountSelectionOptions;
 
   override ready(): void {
     super.ready();
@@ -51,7 +86,10 @@ export class AccountSelection extends AccountSelectionBase {
     this.initializeLoginScreen('AccountSelectionScreen');
   }
   override get EXTERNAL_API(): string[] {
-    return [];
+    return [
+      'showStepProgress',
+      'setUserEmail',
+    ];
   }
 
   override get UI_STEPS() {
@@ -66,6 +104,19 @@ export class AccountSelection extends AccountSelectionBase {
   // Invoked just before being shown. Contains all the data for the screen.
   override onBeforeShow(): void {
     super.onBeforeShow();
+    this.selectedAccountOption = AccountSelectionOptions.REUSE_ACCOUNT;
+  }
+
+  showStepProgress(): void {
+    this.setUIStep(AccountSelectionState.PROGRESS);
+  }
+
+  setUserEmail(emailAddress: string): void {
+    this.enrollmentEmail = emailAddress;
+  }
+
+  private onNextClicked(): void {
+    this.userActed(this.selectedAccountOption);
   }
 }
 

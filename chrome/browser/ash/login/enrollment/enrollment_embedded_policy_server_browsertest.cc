@@ -1464,43 +1464,5 @@ IN_PROC_BROWSER_TEST_F(
   KioskSessionInitializedWaiter().Wait();
 }
 
-// Test suite for a feature that allows to skip the Gaia screen by reusing the
-// credentials saved during enrollment. It depends on the
-// EnrollmentEmbeddedPolicyServerBase for a successful enrollment and the fake
-// gaia server setup.
-class EnrollmentAddUserTest : public EnrollmentEmbeddedPolicyServerBase {
- public:
-  EnrollmentAddUserTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
-  void WaitForLDHSwitch() {
-    // After the enrollment, the current LoginDisplayHost is destroyed, and a
-    // new one is created in its place. During this switch the session state is
-    // changed to LOGIN_PRIMARY, hence we use RunUntil to wait for the state to
-    // change, signaling that the LDH switch is done.
-    EXPECT_TRUE(base::test::RunUntil([]() {
-      return session_manager::SessionManager::Get()->session_state() ==
-             session_manager::SessionState::LOGIN_PRIMARY;
-    }));
-  }
-};
-
-// Testing the flow that allows to store the signin artifacts and the refresh
-// token during the enrollment in order to skip the second signin screen.
-IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, AddUserFlow) {
-  TriggerEnrollmentAndSignInSuccessfully();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  enrollment_ui_.LeaveSuccessScreen();
-
-  // Wait for the creation of the new LDH before attaching an event observer.
-  WaitForLDHSwitch();
-  // Actually wait for the session to start.
-  test::WaitForPrimaryUserSessionStart();
-}
-
 }  // namespace
 }  // namespace ash

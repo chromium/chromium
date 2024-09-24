@@ -28,6 +28,9 @@ class AccountSelectionScreenView {
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
+  virtual void ShowStepProgress() = 0;
+  virtual void SetUserEmail(const std::string& email) = 0;
+
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<AccountSelectionScreenView> AsWeakPtr() = 0;
 };
@@ -51,6 +54,11 @@ class AccountSelectionScreenHandler : public BaseScreenHandler,
 
   // AccountSelectionScreenView:
   void Show() override;
+
+  // Shows the loading spinner.
+  void ShowStepProgress() override;
+  // Sets the email address to be displayed on the reuse account button.
+  void SetUserEmail(const std::string& email) override;
   base::WeakPtr<AccountSelectionScreenView> AsWeakPtr() override;
 
  private:
