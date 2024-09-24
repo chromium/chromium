@@ -2946,17 +2946,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       metrics_->signin_state_for_metrics);
   metrics_->credit_card_form_event_logger.OnDidPollSuggestions(trigger_field);
 
-  std::vector<Suggestion> suggestions;
-  CreditCardSuggestionSummary summary;
-  bool is_virtual_card_standalone_cvc_field = false;
   std::u16string card_number_field_value = u"";
   bool is_card_number_autofilled = false;
   std::vector<std::u16string> last_four_list_for_cvc_suggestion_filtering;
 
-  FormStructure* cached_form = FindCachedFormById(form.global_id());
-
   // Preprocess the form to extract info about card number field.
-  if (cached_form) {
+  if (FormStructure* cached_form = FindCachedFormById(form.global_id())) {
     for (const FormFieldData& field : form.fields()) {
       AutofillField* autofill_field =
           cached_form->GetFieldById(field.global_id());
@@ -2987,33 +2982,23 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     return {};
   }
 
-  if (!IsInAutofillSuggestionsDisabledExperiment()) {
-    if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
-        !four_digit_combinations_in_dom_.empty()) {
-      if (base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-              virtual_card_guid_to_last_four_map =
-                  GetVirtualCreditCardsForStandaloneCvcField(
-                      client()
-                          .GetPersonalDataManager()
-                          ->payments_data_manager(),
-                      trigger_field.origin(), four_digit_combinations_in_dom_);
-          !virtual_card_guid_to_last_four_map.empty()) {
-        suggestions = GetSuggestionsForVirtualCardStandaloneCvc(
-            client(), trigger_field, summary.metadata_logging_context,
-            virtual_card_guid_to_last_four_map);
-        is_virtual_card_standalone_cvc_field = true;
-      }
-    } else {
-      suggestions = GetSuggestionsForCreditCards(
-          client(), trigger_field,
-          base::flat_set<std::u16string>(
-              std::move(last_four_list_for_cvc_suggestion_filtering)),
-          trigger_field_type, trigger_source,
-          ShouldShowScanCreditCard(form, trigger_field),
-          ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
-          summary);
-      ranking_context = std::move(summary.ranking_context);
-    }
+  if (IsInAutofillSuggestionsDisabledExperiment()) {
+    return {};
+  }
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      client(), trigger_field, trigger_field_type, trigger_source, summary,
+      ShouldShowScanCreditCard(form, trigger_field),
+      ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
+      four_digit_combinations_in_dom_,
+      last_four_list_for_cvc_suggestion_filtering);
+  bool is_virtual_card_standalone_cvc_field = std::any_of(
+      suggestions.begin(), suggestions.end(), [](Suggestion suggestion) {
+        return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
+      });
+  if (!is_virtual_card_standalone_cvc_field) {
+    ranking_context = std::move(summary.ranking_context);
   }
 
   metrics_->credit_card_form_event_logger.OnDidFetchSuggestion(

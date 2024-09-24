@@ -731,6 +731,50 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
   return footer_suggestions;
 }
 
+// Returns a mapping of credit card guid values to virtual card last fours for
+// standalone CVC field. Cards will only be added to the returned map if they
+// have usage data on the webpage and the VCN last four was found on webpage
+// DOM.
+base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+GetVirtualCreditCardsForStandaloneCvcField(
+    const PaymentsDataManager& data_manager,
+    const url::Origin& origin,
+    const std::vector<std::string>& four_digit_combinations_in_dom) {
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
+
+  base::span<const VirtualCardUsageData> usage_data =
+      data_manager.GetVirtualCardUsageData();
+  for (const CreditCard* credit_card : data_manager.GetCreditCards()) {
+    // As we only provide virtual card suggestions for standalone CVC fields,
+    // check if the card is an enrolled virtual card.
+    if (credit_card->virtual_card_enrollment_state() !=
+        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+      continue;
+    }
+
+    auto matches_card_and_origin = [&](VirtualCardUsageData ud) {
+      return ud.instrument_id().value() == credit_card->instrument_id() &&
+             ud.merchant_origin() == origin;
+    };
+
+    // If `credit_card` has eligible usage data on `origin`, check if the last
+    // four digits of `credit_card`'s number occur in the DOM.
+    if (auto it = std::ranges::find_if(usage_data, matches_card_and_origin);
+        it != usage_data.end()) {
+      VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
+          it->virtual_card_last_four();
+      if (base::Contains(four_digit_combinations_in_dom,
+                         base::UTF16ToUTF8(virtual_card_last_four.value()))) {
+        // Card has usage data on webpage and last four is present in DOM.
+        virtual_card_guid_to_last_four_map[credit_card->guid()] =
+            virtual_card_last_four;
+      }
+    }
+  }
+  return virtual_card_guid_to_last_four_map;
+}
+
 // Returns true if we should show a virtual card option for the server card
 // `card`, false otherwise.
 bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
@@ -954,47 +998,49 @@ Suggestion CreateCreditCardSuggestion(
 
 }  // namespace
 
-base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-GetVirtualCreditCardsForStandaloneCvcField(
-    const PaymentsDataManager& data_manager,
-    const url::Origin& origin,
-    const std::vector<std::string>& four_digit_combinations_in_dom) {
+std::vector<Suggestion> GetSuggestionsForCreditCards(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource trigger_source,
+    CreditCardSuggestionSummary& summary,
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    std::vector<std::string>& four_digit_combinations_in_dom,
+    std::vector<std::u16string>& last_four_list_for_cvc_suggestion_filtering) {
+  // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's standalone
+  // CVC field.
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
-
-  base::span<const VirtualCardUsageData> usage_data =
-      data_manager.GetVirtualCardUsageData();
-  for (const CreditCard* credit_card : data_manager.GetCreditCards()) {
-    // As we only provide virtual card suggestions for standalone CVC fields,
-    // check if the card is an enrolled virtual card.
-    if (credit_card->virtual_card_enrollment_state() !=
-        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-      continue;
-    }
-
-    auto matches_card_and_origin = [&](VirtualCardUsageData ud) {
-      return ud.instrument_id().value() == credit_card->instrument_id() &&
-             ud.merchant_origin() == origin;
-    };
-
-    // If `credit_card` has eligible usage data on `origin`, check if the last
-    // four digits of `credit_card`'s number occur in the DOM.
-    if (auto it = std::ranges::find_if(usage_data, matches_card_and_origin);
-        it != usage_data.end()) {
-      VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
-          it->virtual_card_last_four();
-      if (base::Contains(four_digit_combinations_in_dom,
-                         base::UTF16ToUTF8(virtual_card_last_four.value()))) {
-        // Card has usage data on webpage and last four is present in DOM.
-        virtual_card_guid_to_last_four_map[credit_card->guid()] =
-            virtual_card_last_four;
-      }
-    }
+  if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
+    virtual_card_guid_to_last_four_map =
+        GetVirtualCreditCardsForStandaloneCvcField(
+            client.GetPersonalDataManager()->payments_data_manager(),
+            trigger_field.origin(), four_digit_combinations_in_dom);
   }
-  return virtual_card_guid_to_last_four_map;
+  // Non-empty virtual_card_guid_to_last_four_map indicates this is standalone
+  // CVC form AND there is matched VCN (based on the VCN usages and last four
+  // from the DOM).
+  std::vector<Suggestion> suggestions;
+  if (!virtual_card_guid_to_last_four_map.empty()) {
+    suggestions = GetVirtualCardStandaloneCvcFieldSuggestions(
+        client, trigger_field, summary.metadata_logging_context,
+        virtual_card_guid_to_last_four_map);
+  } else {
+    // If no virtual cards available for standalone CVC field, fall back to
+    // regular credit card suggestions.
+    suggestions = GetCreditCardOrCvcFieldSuggestions(
+        client, trigger_field,
+        base::flat_set<std::u16string>(
+            std::move(last_four_list_for_cvc_suggestion_filtering)),
+        trigger_field_type, trigger_source, should_show_scan_credit_card,
+        should_show_cards_from_account, summary);
+  }
+
+  return suggestions;
 }
 
-std::vector<Suggestion> GetSuggestionsForCreditCards(
+std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     const base::flat_set<std::u16string>&
@@ -1056,7 +1102,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   // situation when the user would trigger autofill from the context menu, and
   // then no suggestions appear.
   // The "if condition" is satisfied only if `trigger_field_type` is a credit
-  // card field. Then, `GetSuggestionsForCreditCards()` is called with
+  // card field. Then, `GetCreditCardOrCvcFieldSuggestions()` is called with
   // `UNKOWN_TYPE` for the `trigger_field_type`. This guarantees no infinite
   // recursion occurs.
   if (cards_to_suggest.empty() && is_trigger_field_a_credit_card_field &&
@@ -1064,7 +1110,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
           AutofillSuggestionTriggerSource::kManualFallbackPayments &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return GetSuggestionsForCreditCards(
+    return GetCreditCardOrCvcFieldSuggestions(
         client, trigger_field, last_four_set_for_cvc_suggestion_filtering,
         UNKNOWN_TYPE, trigger_source, should_show_scan_credit_card,
         should_show_cards_from_account, summary);
@@ -1126,7 +1172,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   return suggestions;
 }
 
-std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,

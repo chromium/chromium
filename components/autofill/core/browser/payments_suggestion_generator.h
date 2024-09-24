@@ -32,7 +32,7 @@ class FormFieldData;
 class Iban;
 
 // Describes the suggestions returned by
-// `GetSuggestionsForCreditCards()`.
+// `GetCreditCardOrCvcFieldSuggestions()`.
 struct CreditCardSuggestionSummary {
   // Whether any card has card-linked offers.
   bool with_offer = false;
@@ -45,15 +45,23 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
-// Returns a mapping of credit card guid values to virtual card last fours for
-// standalone CVC field. Cards will only be added to the returned map if they
-// have usage data on the webpage and the VCN last four was found on webpage
-// DOM.
-base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-GetVirtualCreditCardsForStandaloneCvcField(
-    const PaymentsDataManager& data_manager,
-    const url::Origin& origin,
-    const std::vector<std::string>& four_digit_combinations_in_dom);
+// Generates suggestions for all available credit cards based on the
+// `trigger_field_type`, `trigger_field`, `trigger_source`,
+// `four_digit_combinations_in_dom`. `summary` contains metadata about the
+// returned suggestions. `last_four_list_for_cvc_suggestion_filtering` is a list
+// of card number last four that will be used for suggestion filtering. This is
+// used to avoid showing suggestions that is unrelated to the cards that have
+// already been autofilled in the form.
+std::vector<Suggestion> GetSuggestionsForCreditCards(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource trigger_source,
+    CreditCardSuggestionSummary& summary,
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    std::vector<std::string>& four_digit_combinations_in_dom,
+    std::vector<std::u16string>& last_four_list_for_cvc_suggestion_filtering);
 
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `trigger_source`.
@@ -63,7 +71,7 @@ GetVirtualCreditCardsForStandaloneCvcField(
 // showing suggestions that is unrelated to the cards that have already been
 // autofilled in the form.
 // TODO(crbug.com/40916587): Implement last four extraction from the DOM.
-std::vector<Suggestion> GetSuggestionsForCreditCards(
+std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     const base::flat_set<std::u16string>&
@@ -77,7 +85,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 // Generates suggestions for standalone CVC fields. These only apply to
 // virtual cards that are saved on file to a merchant. In these cases,
 // we only display the virtual card option and do not show FPAN option.
-std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
