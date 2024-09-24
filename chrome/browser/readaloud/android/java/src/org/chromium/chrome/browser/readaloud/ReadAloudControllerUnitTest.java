@@ -907,6 +907,23 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testPlayTab_playerClosedDuringLoad() {
+        // start a playback with an error
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        mController.onRequestClosePlayers();
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        resolvePromises();
+
+        verify(mPlayerCoordinator, never())
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+    }
+
+    @Test
     public void testPlayTab_inMultiWindow() {
         mFakeTranslateBridge.setCurrentLanguage("en");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));

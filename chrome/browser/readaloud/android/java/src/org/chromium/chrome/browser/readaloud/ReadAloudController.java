@@ -915,6 +915,10 @@ public class ReadAloudController
         createTabPlayback(tab, dateModified, entrypoint)
                 .then(
                         playback -> {
+                            if (mActivePlaybackTabSupplier.get() == null) {
+                                resetCurrentPlayback(ReasonForStoppingPlayback.MANUAL_CLOSE);
+                                return;
+                            }
                             mDateModified = dateModified;
                             mPlayerCoordinator.playbackReady(playback, PLAYING);
                             playback.play();
