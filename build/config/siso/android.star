@@ -102,15 +102,6 @@ def __step_config(ctx, step_config):
             "canonicalize_dir": True,
             "timeout": "2m",
         },
-        {
-            "name": "android/proguard",
-            "command_prefix": "python3 ../../build/android/gyp/proguard.py",
-            "handler": "android_proguard",
-            "canonicalize_dir": True,
-            "remote": remote_run,
-            "platform_ref": "large",
-            "timeout": "10m",
-        },
     ])
     return step_config
 
@@ -244,42 +235,6 @@ def __android_dex_handler(ctx, cmd):
         outputs = cmd.outputs + outputs,
     )
 
-def __android_proguard_handler(ctx, cmd):
-    inputs = []
-    outputs = []
-    for i, arg in enumerate(cmd.args):
-        for k in ["--proguard-configs=", "--input-paths="]:
-            if arg.startswith(k):
-                arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
-                for f in v:
-                    f, _, _ = f.partition(":")
-                    inputs.append(ctx.fs.canonpath(f))
-                break
-        if arg in ["--sdk-jars", "--sdk-extension-jars"]:
-            fn, v = __filearg(ctx, cmd.args[i + 1])
-            if fn:
-                inputs.append(ctx.fs.canonpath(fn))
-            for f in v:
-                f, _, _ = f.partition(":")
-                inputs.append(ctx.fs.canonpath(f))
-            break
-        if arg.startswith("--dex-dest="):
-            arg = arg.removeprefix("--dex-dest=")
-            fn, v = __filearg(ctx, arg)
-            if fn:
-                inputs.append(ctx.fs.canonpath(fn))
-            for f in v:
-                f, _, _ = f.partition(":")
-                outputs.append(ctx.fs.canonpath(f))
-
-    ctx.actions.fix(
-        inputs = cmd.inputs + inputs,
-        outputs = cmd.outputs + outputs,
-    )
-
 def __android_turbine_handler(ctx, cmd):
     inputs = []
     for i, arg in enumerate(cmd.args):
@@ -348,10 +303,9 @@ def __android_write_build_config_handler(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
-    "android_compile_java": __android_compile_java_handler,
     "android_compile_resources": __android_compile_resources_handler,
+    "android_compile_java": __android_compile_java_handler,
     "android_dex": __android_dex_handler,
-    "android_proguard": __android_proguard_handler,
     "android_turbine": __android_turbine_handler,
     "android_write_build_config": __android_write_build_config_handler,
 }
