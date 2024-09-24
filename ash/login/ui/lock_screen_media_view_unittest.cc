@@ -8,9 +8,12 @@
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_test_base.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/test/power_monitor_test.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash {
@@ -177,6 +180,17 @@ TEST_F(LockScreenMediaViewTest, PowerSuspendState) {
   EXPECT_TRUE(media_view()->GetVisible());
   Suspend();
   EXPECT_FALSE(media_view()->GetVisible());
+}
+
+TEST_F(LockScreenMediaViewTest, AccessibleProperties) {
+  SimulateMediaSessionChanged();
+  EXPECT_TRUE(media_view()->GetVisible());
+  ui::AXNodeData node_data;
+  media_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListItem);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(
+                IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 }
 
 }  // namespace ash

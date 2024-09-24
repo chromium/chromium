@@ -259,6 +259,10 @@ MahiMenuView::MahiMenuView(Surface surface)
   textfield_controller_ =
       std::make_unique<MenuTextfieldController>(weak_ptr_factory_.GetWeakPtr());
   AddChildView(CreateInputContainer());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE));
 }
 
 MahiMenuView::~MahiMenuView() {
@@ -302,11 +306,6 @@ void MahiMenuView::RequestFocus() {
 
   // TODO(b/319735347): Add browsertest for this behavior.
   settings_button_->RequestFocus();
-}
-
-void MahiMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE));
 }
 
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {

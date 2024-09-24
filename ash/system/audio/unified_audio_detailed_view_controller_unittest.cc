@@ -271,6 +271,13 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     slider->RequestFocus();
     EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),
                  "QuickSettingsSlider");
+    // Check the accessibility role of QuickSettingsSlider.
+    ui::AXNodeData node_data;
+    slider->GetFocusManager()
+        ->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.role, ax::mojom::Role::kSlider);
 
     const bool is_muted =
         is_input_slider

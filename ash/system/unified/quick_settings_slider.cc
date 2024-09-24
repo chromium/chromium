@@ -85,6 +85,7 @@ QuickSettingsSlider::QuickSettingsSlider(views::SliderListener* listener,
   SetValueIndicatorRadius(kFullSliderRoundedRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
@@ -118,7 +119,6 @@ int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
 
 void QuickSettingsSlider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kSlider;
   std::u16string volume_level = base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(GetValue() * 100 + 0.5)));
 

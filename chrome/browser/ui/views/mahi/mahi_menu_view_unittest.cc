@@ -16,12 +16,15 @@
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
@@ -325,6 +328,19 @@ TEST_F(MahiMenuViewTest, EmptyQuestionNotSubmitted) {
   EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked).Times(0);
 
   event_generator->PressAndReleaseKey(ui::VKEY_RETURN);
+}
+
+TEST_F(MahiMenuViewTest, AccessibleProperties) {
+  auto menu_widget = std::make_unique<ActiveWidget>();
+  menu_widget->Init(CreateParamsForTestWidget());
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  ui::AXNodeData data;
+  menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE));
 }
 
 }  // namespace chromeos::mahi
