@@ -10,9 +10,14 @@ build_webui("build") {
     "batch_upload_app.html.ts",
     "batch_upload.ts",
     "browser_proxy.ts",
+    "data_section.ts",
+    "data_section.html.ts",
   ]
 
-  css_files = [ "batch_upload_app.css" ]
+  css_files = [
+    "batch_upload_app.css",
+    "data_section.css",
+  ]
 
   webui_context_type = "trusted"
 

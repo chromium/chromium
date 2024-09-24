@@ -6,9 +6,17 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-using BatchUploadViewBrowserTest = WebUIMochaBrowserTest;
+class BatchUploadViewBrowserTest : public WebUIMochaBrowserTest {
+ public:
+  BatchUploadViewBrowserTest() {
+    set_test_loader_host(chrome::kChromeUIBatchUploadHost);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(BatchUploadViewBrowserTest, MainView) {
-  set_test_loader_host(chrome::kChromeUIBatchUploadHost);
   RunTest("signin/batch_upload_view_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadViewBrowserTest, DataSections) {
+  RunTest("signin/batch_upload_data_sections_test.js", "mocha.run()");
 }

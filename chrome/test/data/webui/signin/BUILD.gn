@@ -28,6 +28,7 @@ build_webui_tests("build") {
 
   if (enable_dice_support) {
     files += [
+      "batch_upload_data_sections_test.ts",
       "batch_upload_view_test.ts",
       "dice_web_signin_intercept_test.ts",
       "dice_web_signin_intercept_chrome_signin_test.ts",
