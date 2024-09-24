@@ -331,6 +331,12 @@ exec("//generators/sort-consoles.star")
 exec("//validators/builder-group-triggers.star")
 exec("//validators/builders-in-consoles.star")
 
+# Test buildbucket v2 pubsub with findit-staging
+# TODO(b/352560718): Replace with production topic once testing is done
+luci.buildbucket_notification_topic(
+    name = "projects/findit-for-me-staging/topics/buildbucket_build_staging_test",
+)
+
 # Execute this file last so that any configuration changes needed for handling
 # outages gets final say
 exec("//outages/outages.star")
