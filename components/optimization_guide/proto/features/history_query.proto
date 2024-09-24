@@ -81,7 +81,7 @@ message HistoryQueryQuality {
   FinalModelStatus final_model_status = 10;
 }
 
-// Next ID: 5
+// Next ID: 7
 message DocumentShown {
   // The full URL of the document shown to the user.
   string url = 2;
@@ -90,6 +90,14 @@ message DocumentShown {
 
   // Whether the user clicked the shown document.
   bool was_clicked = 4;
+
+  // Best score from passages, replicated for convenient summary.
+  float best_embedding_score = 5;
+
+  // Total score for the document including best passage embedding score
+  // plus any holistic (across all passages) text search score boost.
+  // Also here for convenience as it can in theory be computed from passages.
+  float total_document_score = 6;
 
   reserved 1;
 }
