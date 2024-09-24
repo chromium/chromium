@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
+#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
@@ -60,6 +62,7 @@ class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
 class ArcUiAvailabilityReporter;
+class ArcRevenHardwareChecker;
 
 enum class ProvisioningStatus;
 enum class ArcStopReason;
@@ -393,9 +396,20 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     return is_activation_delayed_.value_or(false);
   }
 
+  // The unit test will use a mock hardware checker for testing.
+  void SetHardwareCheckerForTesting(
+      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
+    hardware_checker_ = std::move(hardware_checker);
+  }
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Handles the completion of the hardware compatibility check for ARC on a
+  // Reven device. If the device is compatible with ARC, it adds a job for
+  // installing the Android DLC image.
+  void OnEnableArcOnReven(std::deque<JobDesc> jobs, bool is_compatible);
 
   // Requests to disable ARC session and allows to optionally remove ARC data.
   // If ARC is already disabled, no-op.
@@ -550,6 +564,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
+  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_ =
+      std::make_unique<arc::ArcRevenHardwareChecker>();
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;

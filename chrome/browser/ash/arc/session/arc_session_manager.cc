@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
+#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -1965,15 +1966,35 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   };
 
   if (arc::IsArcVmDlcEnabled()) {
-    VLOG(1) << "Adding and starting the Android DLC install job.";
+    // Check if the Reven device is compatible for ARC.
+    hardware_checker_->IsRevenDeviceCompatibleForArc(
+        base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
+  } else {
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
+                                           bool is_compatible) {
+  if (is_compatible) {
+    VLOG(1) << "Reven device is compatible for ARC. Adding and starting the "
+               "Android DLC install job.";
     jobs.emplace_front(JobDesc{kArcvmInstallAndroidImageDlc,
                                UpstartOperation::JOB_STOP_AND_START,
                                {}});
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    VLOG(1) << "Reven device is not compatible for ARC.";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
   }
-
-  ConfigureUpstartJobs(std::move(jobs),
-                       base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
-                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::OnExpandPropertyFiles(bool result) {

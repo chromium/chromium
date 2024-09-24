@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/session/mock_arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -1660,6 +1661,23 @@ TEST_F(ArcSessionManagerTest, RequestDisableWithArcDataRemoval) {
 
   // Correctly stop service.
   arc_session_manager()->Shutdown();
+}
+
+// Hardware check enablement test case on the board that supports
+// the arcvm dlc method. (Only the reven board has arcvm dlc feature now).
+TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_,
+              IsRevenDeviceCompatibleForArc(::testing::_))
+      .WillOnce(
+          ::testing::Invoke([](base::OnceCallback<void(bool)> callback) {}));
+  // Inject the mock hardware checker into the ArcSessionManager.
+  arc_session_manager()->SetHardwareCheckerForTesting(
+      std::move(mock_hardware_checker_));
+  arc_session_manager()->ExpandPropertyFilesAndReadSalt();
 }
 
 class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {

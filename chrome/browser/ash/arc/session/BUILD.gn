@@ -24,6 +24,8 @@ static_library("session") {
     "arc_provisioning_result.h",
     "arc_requirement_checker.cc",
     "arc_requirement_checker.h",
+    "arc_reven_hardware_checker.cc",
+    "arc_reven_hardware_checker.h",
     "arc_service_launcher.cc",
     "arc_service_launcher.h",
     "arc_session_manager.cc",
@@ -31,6 +33,7 @@ static_library("session") {
     "arc_session_manager_observer.h",
     "arc_vm_data_migration_necessity_checker.cc",
     "arc_vm_data_migration_necessity_checker.h",
+    "mock_arc_reven_hardware_checker.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -105,6 +108,8 @@ static_library("session") {
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/arc",
@@ -151,6 +156,7 @@ source_set("unit_tests") {
     "arc_disk_space_monitor_unittest.cc",
     "arc_play_store_enabled_preference_handler_unittest.cc",
     "arc_provisioning_result_unittest.cc",
+    "arc_reven_hardware_checker_unittest.cc",
     "arc_session_manager_unittest.cc",
     "arc_vm_data_migration_necessity_checker_unittest.cc",
   ]
@@ -181,6 +187,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory",
+    "//chromeos/ash/components/mojo_service_manager:fake_mojo_service_manager",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//content/test:test_support",
     "//testing/gtest",
   ]
