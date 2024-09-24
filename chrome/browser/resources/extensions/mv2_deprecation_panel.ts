@@ -124,7 +124,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns whether the extensions find alternative button should be
+   * Returns whether the extension's find alternative button should be
    * displayed.
    */
   private showExtensionFindAlternativeButton_(
@@ -136,17 +136,18 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns whether the extensions remove button should be displayed.
+   * Returns whether the extension's remove button should be displayed.
    */
   private showExtensionRemoveButton_(
       extension: chrome.developerPrivate.ExtensionInfo): boolean {
-    // Button is only visible for the disabled stage iff extension doesn't need
-    // to remain installed.
-    // TODO(crbug.com/339061151): Button should also be visible for the
-    // unsupported stage.
-    return this.mv2ExperimentStage ===
-        Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
-        !extension.mustRemainInstalled;
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        return false;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return !extension.mustRemainInstalled;
+    }
   }
 
   /**
@@ -263,10 +264,20 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    */
   private onRemoveButtonClick_(
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
-    assert(
-        this.mv2ExperimentStage === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Disabled.RemoveExtension');
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        assertNotReached();
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.RemoveExtension');
+        break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Unsupported.RemoveExtension');
+        break;
+    }
+
     this.$.actionMenu.close();
     this.delegate.deleteItem(event.model.item.id);
   }

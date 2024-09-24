@@ -8,7 +8,7 @@ import 'chrome://extensions/extensions.js';
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -109,14 +109,37 @@ suite('ExtensionsMV2DeprecationPanel_UnsupportedStage', function() {
     assertFalse(isVisible(findAlternativeButton));
   });
 
-  // TODO(crbug.com/339061151): Button should be visible for this stage, once
-  // functionality is added
-  test('remove button for extension is hidden', function() {
-    const extension = getExtension();
-    const findAlternativeButton =
-        extension.querySelector<CrIconButtonElement>('#removeButton');
-    assertFalse(isVisible(findAlternativeButton));
-  });
+  test(
+      'remove button is visible if extension can be removed, and triggers' +
+          'the extension removal when clicked',
+      async function() {
+        // Remove button is visible when the extension doesn't need to remain
+        // installed.
+        const extension = getExtension();
+        const removeButton =
+            extension.querySelector<CrIconButtonElement>('#removeButton');
+        assertTrue(isVisible(removeButton));
+
+        // Click on the remove button and verify it triggered the correct
+        // delegate call.
+        removeButton?.click();
+        await mockDelegate.whenCalled('deleteItem');
+        assertEquals(1, mockDelegate.getCallCount('deleteItem'));
+        assertDeepEquals(
+            [panelElement.extensions[0]?.id],
+            mockDelegate.getArgs('deleteItem'));
+
+        // Set the extension property to be force installed.
+        panelElement.set('extensions.0', createExtensionInfo({
+                           name: 'Extension A new',
+                           id: 'a'.repeat(32),
+                           mustRemainInstalled: true,
+                         }));
+        await flushTasks();
+
+        // Remove button is hidden when the extension must remain installed.
+        assertFalse(isVisible(removeButton));
+      });
 
   // TODO(crbug.com/339061151): Button should be visible for this stage, once
   // functionality is added
