@@ -42,6 +42,7 @@
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -705,6 +706,42 @@ TEST_P(CanvasRenderingContext2DTest, GetImageAfterContextLoss) {
   test_context_provider_->TestContextGL()->set_context_lost(true);
 
   EXPECT_FALSE(Context2D()->GetImage(FlushReason::kTesting));
+}
+
+TEST_P(CanvasRenderingContext2DTest, GetImageWithAcceleration) {
+  CreateContext(kNonOpaque);
+
+  // Ensure that the canvas resource host prefers GPU rasterization to be able
+  // to check that GetImage() preserves GPU rasterization being used.
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+
+  // Inject a CanvasResourceProviderSharedImage instance to ensure the presence
+  // of a CanvasResourceProvider that creates accelerated snapshots.
+  gfx::Size size = CanvasElement().Size();
+  std::unique_ptr<CanvasResourceProvider> provider =
+      CanvasResourceProvider::CreateSharedImageProvider(
+          SkImageInfo::MakeN32Premul(size.width(), size.height()),
+          cc::PaintFlags::FilterQuality::kMedium,
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+              gpu::SHARED_IMAGE_USAGE_SCANOUT,
+          &CanvasElement());
+  ASSERT_TRUE(provider);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // Verify that CanvasRenderingContext2D::GetImage() creates an accelerated
+  // image given that the underlying CanvasResourceProvider does so.
+  EXPECT_TRUE(Context2D()
+                  ->GetImage(FlushReason::kTesting)
+                  ->PaintImageForCurrentFrame()
+                  .IsTextureBacked());
+
+  // The GetImage() call should have preserved GPU rasterization.
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest,

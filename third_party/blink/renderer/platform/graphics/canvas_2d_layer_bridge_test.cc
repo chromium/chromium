@@ -298,41 +298,26 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
-  {
-    // No fallback case.
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-    EXPECT_TRUE(Host()->IsResourceValid());
-    scoped_refptr<StaticBitmapImage> snapshot =
-        bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-    EXPECT_TRUE(snapshot->IsTextureBacked());
-  }
-
-  {
-    // Fallback case.
-    GrDirectContext* gr = SharedGpuContext::ContextProviderWrapper()
-                              ->ContextProvider()
-                              ->GetGrContext();
-    host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
-    host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(host_.get());
-    host_->AlwaysEnableRasterTimersForTesting();
-    EXPECT_EQ(GetRasterMode(bridge.get()),
-              RasterMode::kGPU);  // We don't yet know that
-                                  // allocation will fail.
-    EXPECT_TRUE(Host()->IsResourceValid());
-    // This will cause SkSurface_Gpu creation to fail without
-    // Canvas2DLayerBridge otherwise detecting that anything was disabled.
-    gr->abandonContext();
-    DrawSomething(bridge.get());
-    scoped_refptr<StaticBitmapImage> snapshot =
-        bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-    EXPECT_FALSE(snapshot->IsTextureBacked());
-  }
+  GrDirectContext* gr = SharedGpuContext::ContextProviderWrapper()
+                            ->ContextProvider()
+                            ->GetGrContext();
+  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
+  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  std::unique_ptr<Canvas2DLayerBridge> bridge =
+      std::make_unique<Canvas2DLayerBridge>(host_.get());
+  host_->AlwaysEnableRasterTimersForTesting();
+  EXPECT_EQ(GetRasterMode(bridge.get()),
+            RasterMode::kGPU);  // We don't yet know that
+                                // allocation will fail.
+  EXPECT_TRUE(Host()->IsResourceValid());
+  // This will cause SkSurface_Gpu creation to fail without
+  // Canvas2DLayerBridge otherwise detecting that anything was disabled.
+  gr->abandonContext();
+  DrawSomething(bridge.get());
+  scoped_refptr<StaticBitmapImage> snapshot =
+      bridge->NewImageSnapshot(FlushReason::kTesting);
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
+  EXPECT_FALSE(snapshot->IsTextureBacked());
 }
 
 class MockLogger : public Canvas2DLayerBridge::Logger {
