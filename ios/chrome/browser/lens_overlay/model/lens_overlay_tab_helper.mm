@@ -56,11 +56,11 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
     snapshot_controller_->CancelOngoingCaptures();
   }
 
-  //  Before hiding the UI, update the snapshot so that lens overlay is visible
-  //  in the tab switcher.
-  UpdateSnapshot();
-
   if (is_showing_lens_overlay_) {
+    // Prior to hiding the UI update the snapshot to ensure lens overlay is
+    // visible in the tab switcher.
+    UpdateSnapshot();
+
     [commands_handler_ hideLensUI:YES];
   }
 }
