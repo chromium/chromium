@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -34,6 +35,12 @@ const T* advance_by_byte_size(const T* p, unsigned byte_size) {
 void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
                                     hb_codepoint_t codepoint,
                                     hb_position_t* width) {
+  // We don't want to compute glyph extents for kUnmatchedVSGlyphId
+  // cases yet. Since we will do that during the second shaping pass,
+  // when VariationSelectorMode is set to kIgnoreVariationSelector.
+  if (codepoint == kUnmatchedVSGlyphId) {
+    return;
+  }
   DCHECK_LE(codepoint, 0xFFFFu);
   CHECK(width);
 
@@ -84,6 +91,12 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
 void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
                                       hb_codepoint_t codepoint,
                                       hb_glyph_extents_t* extents) {
+  // We don't want to compute glyph extents for kUnmatchedVSGlyphId
+  // cases yet. Since we will do that during the second shaping pass,
+  // when VariationSelectorMode is set to kIgnoreVariationSelector.
+  if (codepoint == kUnmatchedVSGlyphId) {
+    return;
+  }
   DCHECK_LE(codepoint, 0xFFFFu);
   CHECK(extents);
 
