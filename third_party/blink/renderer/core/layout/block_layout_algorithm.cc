@@ -3311,11 +3311,12 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
   // Propagate `text-box-trim` only for in-flow children. Check the
   // `LayoutObject` tree, because `InlineNode` synthesizes these flags.
-  if (!child.GetLayoutBox()->IsFloatingOrOutOfFlowPositioned()) {
-    if (should_text_box_trim_start_) [[unlikely]] {
+  if ((should_text_box_trim_start_ || should_text_box_trim_end_) &&
+      !child.GetLayoutBox()->IsFloatingOrOutOfFlowPositioned()) [[unlikely]] {
+    if (should_text_box_trim_start_) {
       builder.SetShouldTextBoxTrimStart();
     }
-    if (should_text_box_trim_end_) [[unlikely]] {
+    if (should_text_box_trim_end_) {
       if (child.IsInline()) {
         // For an inline child, always set the flag. The `InlineLayoutAlgorithm`
         // can determine if it's the last line or not rather quickly. It can
@@ -3337,6 +3338,13 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         builder.SetShouldTextBoxTrimEnd();
       }
     }
+
+    // Propagate `text-box-edge` if this box has non-initial `text-box-trim`.
+    const ComputedStyle& style = Node().Style();
+    builder.SetEffectiveTextBoxEdge(
+        style.TextBoxTrim() != ETextBoxTrim::kNone
+            ? style.GetTextBoxEdge()
+            : constraint_space.EffectiveTextBoxEdge());
   }
 
   if (constraint_space.HasBlockFragmentation()) {

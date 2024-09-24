@@ -630,9 +630,9 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
 
   const FontHeight line_box_metrics = container_builder_.Metrics();
   FontHeight intrinsic_metrics = line_box_metrics;
-  InlineBoxState::AdjustEdges(line_style, line_style.GetFont(), baseline_type_,
-                              should_apply_over, should_apply_under,
-                              intrinsic_metrics);
+  InlineBoxState::AdjustEdges(
+      space.EffectiveTextBoxEdge(), line_style.GetFont(), baseline_type_,
+      should_apply_over, should_apply_under, intrinsic_metrics);
 
   if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.

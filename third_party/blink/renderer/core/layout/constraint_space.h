@@ -804,6 +804,10 @@ class CORE_EXPORT ConstraintSpace final {
   }
 
   // Return true if `text-box-trim` is in effect for the block-start/end.
+  TextBoxEdge EffectiveTextBoxEdge() const {
+    return HasRareData() ? TextBoxEdge(rare_data_->effective_text_box_edge)
+                         : TextBoxEdge();
+  }
   bool ShouldTextBoxTrimStart() const {
     return HasRareData() && rare_data_->should_text_box_trim_start;
   }
@@ -1391,6 +1395,8 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_inside_repeatable_content : 1 = false;
     unsigned should_text_box_trim_start : 1 = false;
     unsigned should_text_box_trim_end : 1 = false;
+    unsigned effective_text_box_edge : TextBoxEdge::kBits =
+                                           static_cast<unsigned>(TextBoxEdge());
     unsigned should_force_text_box_trim_end : 1 = false;
     unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
         DecorationPercentageResolutionType::kContainingBlockInlineSize);
@@ -1701,6 +1707,9 @@ class CORE_EXPORT ConstraintSpace final {
     EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
   }
 
+  void SetEffectiveTextBoxEdge(TextBoxEdge value) {
+    EnsureRareData()->effective_text_box_edge = static_cast<unsigned>(value);
+  }
   void SetShouldTextBoxTrimStart() {
     EnsureRareData()->should_text_box_trim_start = true;
   }
