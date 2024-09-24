@@ -290,7 +290,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1199814941632954229">Fornitura dei certificati in corso per questi profili di certificati</translation>
 <translation id="120069043972472860">Inguardabile</translation>
 <translation id="1201402288615127009">Avanti</translation>
-<translation id="1201564082781748151">I dati locali possono essere ripristinati se dimentichi la password</translation>
 <translation id="1202116106683864634">Vuoi eliminare questa passkey?</translation>
 <translation id="1202596434010270079">L'app kiosk è stata aggiornata. Rimuovi la chiavetta USB.</translation>
 <translation id="1202892408424955784">Prodotti monitorati</translation>
@@ -320,6 +319,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="122082903575839559">Algoritmo di firma certificato</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con crittografia RSA</translation>
 <translation id="1221825588892235038">Solo selezione</translation>
+<translation id="1222835797152767346">Imposta un PIN per facilitare l'accesso</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> richiede una licenza</translation>
 <translation id="1223853788495130632">L'amministratore consiglia un valore specifico per questa impostazione.</translation>
 <translation id="1225177025209879837">Elaborazione della richiesta in corso...</translation>
@@ -3475,6 +3475,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3487649228420469005">Analisi completata</translation>
 <translation id="3488199663160411179">nome</translation>
 <translation id="3490695139702884919">Download… <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">I dati locali possono essere ripristinati se dimentichi il PIN o la password</translation>
 <translation id="3491669675709357988">L'account di tuo figlio non è configurato per la funzionalità Controllo genitori di Family Link. Per aggiungere questa funzionalità, devi completare la configurazione. Leggi informazioni su Controllo genitori nell'app Esplora.</translation>
 <translation id="3491678231052507920">In genere, i siti usano dati e dispositivi per realtà virtuale per consentirti di avviare sessioni VR</translation>
 <translation id="3493043608231401654">Rimuovi <ph name="TAB_TITLE" /> dal gruppo di schede</translation>
@@ -6393,6 +6394,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5624959475330585145">Chiedi prima di utilizzare connessioni non sicure</translation>
 <translation id="5625225435499354052">Modifica in Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
+<translation id="5626172233890210551">Usa la password</translation>
 <translation id="5627832140542566187">Orientamento del display</translation>
 <translation id="5628434207686266338">Imposta la password del dispositivo</translation>
 <translation id="562935524653278697">L'amministratore ha disattivato la sincronizzazione dei tuoi preferiti, della cronologia, delle password e di altre impostazioni.</translation>
@@ -7167,6 +7169,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6207937957461833379">Paese/Regione</translation>
 <translation id="6208521041562685716">Attivazione dei dati mobili in corso</translation>
 <translation id="6208725777148613371">Impossibile salvare su <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Aggiornamento del componente</translation>
 <translation id="6209908325007204267">Il tuo dispositivo include una licenza Chrome Enterprise Upgrade, ma il tuo nome utente non è associato a un account aziendale. Crea un account aziendale dal sito g.co/ChromeEnterpriseAccount su un dispositivo secondario.</translation>
 <translation id="6210282067670792090">Nella barra degli indirizzi, utilizza questa scorciatoia da tastiera con le scorciatoie per motori di ricerca e ricerca su sito</translation>
@@ -10731,6 +10734,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8791534160414513928">Invia una richiesta "Do Not Track" con il tuo traffico di navigazione</translation>
 <translation id="8793390639824829328">I siti usano questa funzionalità per scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="879413103056696865">Quando l'hotspot è attivo, il tuo <ph name="PHONE_NAME" />:</translation>
+<translation id="8794548468611058947">Anziché inserire la password del tuo Account Google per accedere, puoi creare un PIN per: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Nuova finestra</translation>
 <translation id="8796919761992612392">P&amp;ersonalizza Chrome</translation>
 <translation id="8797459392481275117">Non tradurre mai questo sito</translation>

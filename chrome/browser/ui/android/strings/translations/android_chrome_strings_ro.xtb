@@ -153,7 +153,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1696555181932908973">Poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Modifici setările pentru tema întunecată?</translation>
 <translation id="1702907158640575240">Browser gestionat</translation>
-<translation id="1710099199314114079">Comută sau închide filele</translation>
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
 <translation id="1726477445370128854">Poți să navighezi și să cauți mai repede când Chrome preîncarcă pagini pe care crede că le-ai putea accesa</translation>
@@ -878,6 +877,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="510275257476243843">1 oră rămasă</translation>
 <translation id="5114895953710637392">Foaia de filtrare după aplicație este închisă.</translation>
 <translation id="5115811374190515607">în <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="5122378528687922675">Dacă ai nevoie de ajutor, vorbește cu un părinte (<ph name="PARENT_NAME_1" /> sau <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
 <translation id="5132942445612118989">Sincronizează parolele, istoricul și alte date pe toate dispozitivele</translation>
@@ -1492,6 +1492,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7810647596859435254">Deschide cu…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Toate fișierele, un fișier în listă}few{Toate fișierele, # fișiere în listă}other{Toate fișierele, # de fișiere în listă}}</translation>
 <translation id="7815484226266492798">Captură de ecran lungă</translation>
+<translation id="7819605256207059717">Blocat de organizația ta</translation>
 <translation id="7821130663268546430">Toate filele deschise apar în Comutatorul de file</translation>
 <translation id="7822705602465980873">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
 <translation id="7824665136384946951">Organizația ta a dezactivat Navigarea sigură</translation>
@@ -1688,7 +1689,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="864544049772947936">Gestionează ferestrele (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Folosește Chrome în stilul tău</translation>
 <translation id="8664979001105139458">Numele fișierului există deja</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blocată de organizația ta}few{# au fost blocate de organizația ta}other{# au fost blocate de organizația ta}}</translation>
 <translation id="8672883760227492369">În curând, unele parole de pe acest dispozitiv nu vor mai funcționa. Poți muta parolele în Managerul de parole Google.</translation>
 <translation id="8676276370198826499">Înscrie-te la <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Confirmarea conectării</translation>

@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2239100178324503013">Адправіць</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
+<translation id="2242389809734574253">Захаваць нумар IBAN закрытым.</translation>
 <translation id="2246264294482514010">10 x 12 цаляў</translation>
 <translation id="2246480341630108201">Твой бацька (твая маці) яшчэ не ўхваліў(-ла) гэты сайт</translation>
 <translation id="2247789808226901522">Тэрмін дзеяння карткі скончыўся</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3272112314896217187">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код спраўджання</translation>
 <translation id="3272643614306383237">Менш за 1 МБ. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="3273738040255912340">Ваш адміністратар можа аддалена змяняць налады профілю і браўзера, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Захаваць нумар IBAN адкрытым на ўсю вышыню.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэты файл тут: <ph name="DESTINATION_NAME" />}one{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}few{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}many{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}other{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша арганізацыя (<ph name="ENROLLMENT_DOMAIN" />) адправіла на наступныя вэб-сайты пэўныя звесткі (напрыклад, налады або палітыкі).</translation>
 <translation id="3286372614333682499">кніжная</translation>
@@ -2007,6 +2009,7 @@
 <translation id="467662567472608290">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: у сертыфікаце ёсць памылкі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> запытвае дазвол адказваць на падзеі функцый спецыяльных магчымасцей</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Перакласці старонку?</translation>
 <translation id="468314109939257734">Паглядзець нумар сваёй віртуальнай карткі</translation>
 <translation id="4686942373615810936">Створана толькі што</translation>
@@ -2124,6 +2127,7 @@
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4881808915112408168">24 x 31,5 цалі</translation>
 <translation id="4882314601499260499">Ніякія палітыкі для карыстальнікаў не прымяняюцца. Каб дадаць іх, ваша арганізацыя павінна <ph name="LINK_BEGIN" />пацвердзіць ваш дамен<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Увядзіце пытанне ці запыт</translation>
 <translation id="4885030148564729407">Вясельныя і рамантычныя падарожжы</translation>
 <translation id="4885256590493466218">Аплаціць карткай <ph name="CARD_DETAIL" /> пры афармленні заказу</translation>
 <translation id="4887406273302438710">Абараніце паролі з дапамогай Windows Hello</translation>
@@ -2387,6 +2391,7 @@
 <translation id="5371425731340848620">Абнавіць картку</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Каб атрымаць гэты пароль на ўсіх прыладах, пацвердзіце сваю асобу</translation>
 <translation id="5380953781541843508">па ўзрастанні</translation>
 <translation id="5381318171304904246">Калі вы націснеце "Працягнуць", то будзеце перанакіраваны на вэб-сайт банка. Пасля спраўджання вы аўтаматычна вернецеся сюды, каб завяршыць куплю.</translation>
 <translation id="5383478552402031184">Матэрыял для падлог</translation>
@@ -2582,6 +2587,7 @@
 <translation id="572328651809341494">Нядаўнія ўкладкі</translation>
 <translation id="5723873695528696965">Кіраваць прыладамі MIDI і перапраграміраваць іх</translation>
 <translation id="5725297205162868298">Хуткая каманда "<ph name="SHORTCUT_NAME" />" не можа пачынацца з сімвала @</translation>
+<translation id="5728246486828755318">Можа запытваць доступ да пашыраных функцый прынтара</translation>
 <translation id="5729442113829771034">Дашкольная адукацыя</translation>
 <translation id="5730040223043577876">Chrome рэкамендуе скінуць ваш пароль, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="5732392974455271431">Разблакіраваць сайт для вас могуць бацькі</translation>
@@ -2593,6 +2599,7 @@
 <translation id="5743684619253032786">Тавары для догляду пазногцяў</translation>
 <translation id="5745733273847572235">Сайт можа запытваць ваша месцазнаходжанне</translation>
 <translation id="5750869797196646528">Адсочванне рухаў рук</translation>
+<translation id="5752327398324808817">Увядзіце адно ці два словы</translation>
 <translation id="5759751709240058861">Выкарыстоўваць і перамяшчаць вашу камеру.</translation>
 <translation id="5763042198335101085">Увядзіце сапраўдны адрас электроннай пошты</translation>
 <translation id="5764725887548570807">Няправільны фармат крыніцы.</translation>
@@ -3088,6 +3095,7 @@
 <translation id="6671169470640320959">Аўтакрэдытаванне</translation>
 <translation id="6671697161687535275">Выдаліць прапанову аўтазапаўнення форм з Chromium?</translation>
 <translation id="6677351035258626477">Фаст-фуд</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабу аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6681790815630918386">Код CVC захаваны</translation>
 <translation id="6683022854667115063">Навушнікі</translation>
 <translation id="6687230248707087982">Звычайны канверт</translation>
@@ -3104,6 +3112,7 @@
 <translation id="6696575039575740785">Усталяванне вэб-праграм не дазволена</translation>
 <translation id="6698097747703777657">Не атрымалі код? <ph name="BEGIN_LINK" />Запытайце новы<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Створаны:</translation>
+<translation id="6698769547327354196">Каб выключыць Pix у Chrome, перайдзіце ў <ph name="BEGIN_LINK1" />налады аплаты<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Паўзунок часу</translation>
 <translation id="6702851555558236418">Праграмнае забеспячэнне для работы з аўдыя і музыкай</translation>
 <translation id="6702919718839027939">Прэзентацыя</translation>
@@ -3404,6 +3413,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Камерцыйная дзейнасць</translation>
+<translation id="7244061187185055290">Некалькімі словамі апішыце, што вы шукаеце</translation>
 <translation id="7251437084390964440">Канфігурацыя сеткі не адпавядае стандарту ONC. Магчыма, некаторыя часткі канфігурацыі не былі імпартаваны.
 Падрабязныя звесткі:
 <ph name="DEBUG_INFO" /></translation>

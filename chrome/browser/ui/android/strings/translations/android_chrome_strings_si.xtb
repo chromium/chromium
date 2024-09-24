@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ඔබට වෙනත් ක්‍රම උත්සාහ කළ හැක.</translation>
 <translation id="1702543251015153180">ඔබගේ අඳුරු තේමා සැකසීම් වෙනස් කරන්නද?</translation>
 <translation id="1702907158640575240">කළමනාකරණය කළ බ්‍රවුසරය</translation>
-<translation id="1710099199314114079">ටැබ මාරු කරන්න හෝ වසන්න</translation>
 <translation id="1718835860248848330">පසුගිය පැය</translation>
 <translation id="1724977129262658800">ඔබගේ මුරපදය සංස්කරණය කිරීමට අගුලු හරින්න</translation>
 <translation id="1726477445370128854">Chrome ඔබ පිවිසිය හැකි යැයි සිතන පිටු පූර්ව පූරණය කරන විට ඔබට වඩා වේගයෙන් බ්‍රවුස් කිරීමට සහ සෙවීමට හැකිය</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">පැය 1ක් ඉතිරියි</translation>
 <translation id="5114895953710637392">යෙදුම් පෙරහන් පත්‍රය වසා ඇත.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> දක්වා</translation>
+<translation id="5116239826668864748">පණිවිඩ, ලේඛන සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක ඔබට Chrome භාවිත කළ හැක</translation>
 <translation id="5122378528687922675">ඔබට උදව් අවශ්‍ය නම්, ඔබේ දෙමාපියන්ගෙන් විමසන්න (<ph name="PARENT_NAME_1" /> හෝ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">අප්‍රකට පටිත්ත</translation>
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">විවෘත කරන්න...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{සියලු ගොනු, ලැයිස්තුවේ 1 ගොනුවක්}one{සියලු ගොනු, ලැයිස්තුවේ ගොනු #ක්}other{සියලු ගොනු, ලැයිස්තුවේ ගොනු #ක්}}</translation>
 <translation id="7815484226266492798">දිගු තිර රුව</translation>
+<translation id="7819605256207059717">ඔබගේ සංවිධානය විසින් බාගන්නා ලදි</translation>
 <translation id="7821130663268546430">ඔබට පටිති මාරුව තුළ සියලු විවෘත පටිති සොයා ගත හැක</translation>
 <translation id="7822705602465980873">ඔබ පුරනය වී ඇති විට, මෙම දත්ත Google සේවා හරහා ඔබව ආරක්ෂා කිරීමට ඔබේ Google ගිණුම වෙත සම්බන්ධ කරනු ලැබේ, උදාහරණයක් ලෙස ආරක්ෂක සිදුවීමකින් පසුව Gmail තුළ ආරක්ෂාව වැඩි කිරීම.</translation>
 <translation id="7824665136384946951">ඔබේ සංවිධානය සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කර ඇත</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">කවුළු කළමනාකරණය කරන්න (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome ඔබ කැමති ආකාරයට භාවිත කරන්න</translation>
 <translation id="8664979001105139458">ගොනු නාමය දැනටමත් පවතී</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{ඔබේ සංවිධානය විසින් අවහිර කර ඇත}one{# ඔබේ සංවිධානය විසින් අවහිර කර ඇත}other{# ඔබේ සංවිධානය විසින් අවහිර කර ඇත}}</translation>
 <translation id="8672883760227492369">මෙම උපාංගයෙහි සමහර මුරපද ඉක්මනින් වැඩ කිරීම නවත්වනු ඇත. ඔබට මෙම මුරපද Google මුරපද කළමනාකරු වෙත ගෙන යා හැක.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග <ph name="SITE_ETLD_PLUS_ONE" /> වෙත ලියාපදිංචි වන්න</translation>
 <translation id="8676789164135894283">පිරීම් සත්‍යාපනය කිරීම්</translation>

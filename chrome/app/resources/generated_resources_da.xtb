@@ -291,7 +291,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1199814941632954229">Certifikaterne provisioneres for disse certifikatprofiler</translation>
 <translation id="120069043972472860">Meget dårlig</translation>
 <translation id="1201402288615127009">Næste</translation>
-<translation id="1201564082781748151">Lokale data kan gendannes, hvis du glemmer din adgangskode</translation>
 <translation id="1202116106683864634">Er du sikker på, at du vil slette denne adgangsnøgle?</translation>
 <translation id="1202596434010270079">Terminalappen er blevet opdateret. Fjern USB-stikket.</translation>
 <translation id="1202892408424955784">Produkter, du følger</translation>
@@ -2231,6 +2230,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2546991196809436099">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen.</translation>
 <translation id="2548347166720081527">Tillod <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nulstil eSIM-profilens cache</translation>
+<translation id="2549766998450508148">Tryk på 1-4 ændringstaster (Ctrl, Alt, Shift eller søgetasten) og 1 anden tast. Du kan også vælge en enkelt tast.</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="2550212893339833758">Ombyttet hukommelse</translation>
 <translation id="2550596535588364872">Vil du tillade, at <ph name="EXTENSION_NAME" /> åbner <ph name="FILE_NAME" />?</translation>
@@ -4523,7 +4523,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4218081191298393750">Klik på højttalerikonet for at slå lyden fra på denne fane</translation>
 <translation id="4220157655212610908">Brug en ekstern sikkerhedsnøgle</translation>
 <translation id="4220648711404560261">Der opstod en fejl under aktiveringen.</translation>
-<translation id="4222917615373664617">Prisovervågning er aktiveret. Prisen er <ph name="CURRENT_PRICE" />.</translation>
+<translation id="4222917615373664617">Prissporing er aktiveret. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
 <translation id="4225397296022057997">På alle websites</translation>
 <translation id="4228071595943929139">Brug din organisations mailadresse</translation>
@@ -10641,6 +10641,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8715480913140015283">En fane i baggrunden bruger dit kamera</translation>
 <translation id="8716931980467311658">Vil du slette alle Linux-apps og -data i din mappe med Linux-filer fra denne <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
+<translation id="8718560545710680911">Spørg ved hjælp af denne side</translation>
 <translation id="8718994464069323380">En touchskærm blev registreret</translation>
 <translation id="8719472795285728850">Lytter efter udgivelsesaktiviteter...</translation>
 <translation id="8719665168401479425">Brug ansigtsbevægelser til at udføre handlinger</translation>

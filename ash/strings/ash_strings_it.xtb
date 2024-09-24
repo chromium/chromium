@@ -398,6 +398,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
 <translation id="2416438829169535743">Uscire dalla visualizzazione?</translation>
 <translation id="2417486498593892439">Accedi alla rete</translation>
+<translation id="2423619675829330672">Troppi tentativi di inserimento del PIN. Aspetta <ph name="TIME_LEFT" /> e riprova.</translation>
 <translation id="2426051945783024481">Fotocamera centrata automaticamente da Zoom automatico</translation>
 <translation id="2427507373259914951">Clic con il pulsante sinistro</translation>
 <translation id="2429753432712299108">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Prima di accettare, conferma che questa passkey viene visualizzata sul dispositivo: <ph name="PASSKEY" /></translation>
@@ -1574,6 +1575,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
 <translation id="6337159624125741244">Ingrandimento a schermo intero attivato</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Se hai dimenticato il PIN, prova a recuperare questo utente.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connesso</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> quindi <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP SUGGERITE</translation>
@@ -1630,6 +1632,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6539852571005954999">Scansione del file <ph name="FILENAME" /> per il download in corso…</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6542891623636520977">Emoji, GIF e altro ancora</translation>
+<translation id="6545382064335350438">Ancora impossibile verificare il PIN. Riprova.</translation>
 <translation id="6555373427270923730">Digita un indirizzo web nella barra degli indirizzi, quindi premi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuova installazione</translation>
@@ -2026,6 +2029,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivi connessi</translation>
+<translation id="7921565901396407357">Impossibile verificare il PIN. Riprova.</translation>
 <translation id="7923534281713082605">Meteo</translation>
 <translation id="7926080067315048321">Visualizza tutte le attività di Google Tasks sul web</translation>
 <translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>

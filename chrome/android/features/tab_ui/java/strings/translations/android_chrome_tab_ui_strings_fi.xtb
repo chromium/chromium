@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Katso kaupan tiedot</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Siirrä välilehti vasemmalle</translation>
+<translation id="6590332670428149473">Avaa välilehtiryhmän toimintovalikko jaetulle välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> välilehteä muutettu}other{<ph name="MANY_CHANGED" /> välilehteä muutettu}}</translation>
 <translation id="6694634756612002311">Muuta jakamisvalintoja</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9111228330448174435">Näytä valintaikkuna uuden välilehtiryhmän luomisen yhteydessä</translation>
+<translation id="9114502155681725011">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Vaihda välilehteä välilehtiryhmässä näytön alalaidassa</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
 <translation id="9216898458513705996">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>

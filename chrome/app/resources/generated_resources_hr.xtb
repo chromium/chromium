@@ -292,7 +292,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1199814941632954229">Izdaju se certifikati za ove profile certifikata</translation>
 <translation id="120069043972472860">Ne može se gledati</translation>
 <translation id="1201402288615127009">Dalje</translation>
-<translation id="1201564082781748151">Lokalni podaci mogu se vratiti ako zaboravite zaporku</translation>
 <translation id="1202116106683864634">Jeste li sigurni da želite izbrisati taj pristupni ključ?</translation>
 <translation id="1202596434010270079">Aplikacija kioska ažurirana je. Uklonite USB privjesak.</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
@@ -322,6 +321,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="122082903575839559">Algoritam potpisa certifikata</translation>
 <translation id="1221024147024329929">PKCS br. 1 MD2 s RSA enkripcijom</translation>
 <translation id="1221825588892235038">Samo odabir</translation>
+<translation id="1222835797152767346">Postavite PIN da biste se lakše prijavili</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> zahtijeva licencu</translation>
 <translation id="1223853788495130632">Administrator preporučuje određenu vrijednost za tu postavku.</translation>
 <translation id="1225177025209879837">Obrada zahtjeva...</translation>
@@ -6407,6 +6407,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5624959475330585145">Pitaj prije upotrebe nesigurnih veza</translation>
 <translation id="5625225435499354052">Uredite na Google Payu</translation>
 <translation id="5626134646977739690">Naziv:</translation>
+<translation id="5626172233890210551">Upotrijebi zaporku</translation>
 <translation id="5627832140542566187">Usmjerenje zaslona</translation>
 <translation id="5628434207686266338">Postavite zaporku uređaja</translation>
 <translation id="562935524653278697">Administrator je onemogućio sinkronizaciju vaših oznaka, povijesti, zaporki i ostalih postavki.</translation>
@@ -7183,6 +7184,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6207937957461833379">Država/regija</translation>
 <translation id="6208521041562685716">U tijeku je aktivacija mobilnih podataka</translation>
 <translation id="6208725777148613371">Spremanje na <ph name="WEB_DRIVE" /> nije uspjelo – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Ako ste zaboravili šifru ili želite promijeniti ovu postavku, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Ažuriranje komponenti</translation>
 <translation id="6209908325007204267">Vaš uređaj uključuje Nadogradnju za Chrome za poduzeća, no vaše korisničko ime nije povezano s računom tvrtke. Da biste izradili račun tvrtke, otvorite stranicu g.co/ChromeEnterpriseAccount na drugom uređaju.</translation>
 <translation id="6210282067670792090">U adresnoj traci upotrijebite ovaj tipkovni prečac s prečacima za tražilice i pretraživanje web-lokacije</translation>
@@ -10756,6 +10758,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8791534160414513928">Pošalji zahtjev "Do Not Track" uz promet pregledavanja</translation>
 <translation id="8793390639824829328">Web-lokacije upotrebljavaju tu značajku za pomicanje i zumiranje dijeljenih kartica</translation>
 <translation id="879413103056696865">Dok je žarišna točka uključena, vaš će <ph name="PHONE_NAME" />:</translation>
+<translation id="8794548468611058947">Umjesto da za prijavu unosite zaporku Google računa, možete izraditi PIN za ovaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Novi prozor</translation>
 <translation id="8796919761992612392">&amp;Prilagodite Chrome</translation>
 <translation id="8797459392481275117">Nikad nemoj prevoditi ovu web-lokaciju</translation>

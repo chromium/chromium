@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">আপুনি <ph name="SITE_ETLD_PLUS_ONE" />ত অব্যাহত ৰাখিবলৈ আন উপায় চেষ্টা কৰিব পাৰে।</translation>
 <translation id="1702543251015153180">গাঢ় ৰঙৰ থীমৰ ছেটিং সলনি কৰিব নেকি?</translation>
 <translation id="1702907158640575240">পৰিচালিত ব্ৰাউজাৰ</translation>
-<translation id="1710099199314114079">সলনি কৰক অথবা টেব বন্ধ কৰক</translation>
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1724977129262658800">আপোনাৰ পাছৱৰ্ডটো সম্পাদনা কৰিবলৈ আনলক কৰক</translation>
 <translation id="1726477445370128854">আপুনি যাব পৰাৰ সম্ভাৱনা থকা পৃষ্ঠাসমূহ Chromeএ আগতীয়াকৈ ল’ড কৰিলে আপুনি খৰতকীয়াকৈ ব্ৰাউজ আৰু সন্ধান কৰিব পাৰে</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">১ঘণ্টা বাকী আছে</translation>
 <translation id="5114895953710637392">এপ্ ফিল্টাৰ কৰা শ্বীট বন্ধ কৰা আছে।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />লৈ</translation>
+<translation id="5116239826668864748">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5122378528687922675">আপোনাক সহায়ৰ প্ৰয়োজন হ’লে আপোনাৰ অভিভাৱক (<ph name="PARENT_NAME_1" /> অথবা <ph name="PARENT_NAME_2" />)ক কওক</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="5132942445612118989">আপোনাৰ পাছৱর্ড, ইতিহাস আৰু অধিক সকলো ডিভাইচতে ছিংক কৰক</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{আটাইবোৰ ফাইল, সূচীত ১ টা ফাইল আছে}one{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}other{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
+<translation id="7819605256207059717">আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে</translation>
 <translation id="7821130663268546430">আপুনি টেব সলনি কৰোঁতাত আটাইবোৰ খুলি থোৱা টেব পাব পাৰে</translation>
 <translation id="7822705602465980873">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে, কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
 <translation id="7824665136384946951">আপোনাৰ প্ৰতিষ্ঠানে সুৰক্ষিত ব্ৰাউজিং অফ কৰিছে</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">ৱিণ্ড’ পৰিচালনা কৰক (<ph name="INSTANCE_COUNTS" /> টা)</translation>
 <translation id="8664215986015753476">আপোনাৰ নিজৰ ধৰণে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="8664979001105139458">এই ফাইলৰ নামটো ইতিমধ্যে আছে</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে}one{আপোনাৰ প্ৰতিষ্ঠানে # অৱৰোধ কৰিছে}other{আপোনাৰ প্ৰতিষ্ঠানে # অৱৰোধ কৰিছে}}</translation>
 <translation id="8672883760227492369">এই ডিভাইচটোত কিছুমান পাছৱৰ্ডে সোনকালেই কাম কৰা বন্ধ কৰিব। আপুনি এই পাছৱৰ্ডসমূহ Google Password Managerলৈ স্থানান্তৰ কৰিব পাৰে।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন আপ কৰক</translation>
 <translation id="8676789164135894283">ছাইন ইন কৰাৰ সত্যাপন</translation>

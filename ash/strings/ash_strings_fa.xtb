@@ -398,6 +398,7 @@
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
 <translation id="2416438829169535743">از نما خارج می‌شوید؟</translation>
 <translation id="2417486498593892439">ورود به سیستم شبکه</translation>
+<translation id="2423619675829330672">دفعات وارد کردن پین اشتباه از حد مجاز بیشتر شده است. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره امتحان کنید.</translation>
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@
 <translation id="6330012934079202188">درحال نمایش پنجره‌های همه میزکارها، برای نمایش پنجره‌های میزکار کنونی، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="6337159624125741244">ذره‌بین تمام‌صفحه روشن است</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> جلسه مدیریت‌شده‌ای است که توسط <ph name="MANAGER" /> مدیریت می‌شود</translation>
+<translation id="6340148837564298498">اگر پین را فراموش کرده‌اید، این کاربر را بازیابی کنید.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> متصل شد</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">پیشنهادات برنامه</translation>
@@ -1633,6 +1635,7 @@
 <translation id="6539852571005954999">بارگیری <ph name="FILENAME" /> درحال اسکن</translation>
 <translation id="6542521951477560771">پخش محتوا به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">اموجی، گیف، و موارد دیگر</translation>
+<translation id="6545382064335350438">همچنان نمی‌توان پین شما را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="6555373427270923730">نشانی وبی را در نوار نشانی تایپ کنید و سپس <ph name="MODIFIER" /><ph name="KEY" /> را فشار دهید</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 نصب جدید</translation>
@@ -2029,6 +2032,7 @@
 <translation id="7904094684485781019">سرپرست این حساب اجازه ورود چندگانه به سیستم را نمی‌دهد.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> دستگاه متصل است</translation>
+<translation id="7921565901396407357">پین تأیید نشد. دوباره امتحان کنید.</translation>
 <translation id="7923534281713082605">آب‌وهوا</translation>
 <translation id="7926080067315048321">‏همه تکلیف‌های موجود در Google Tasks را در وب مشاهده کنید</translation>
 <translation id="7930731167419639574">اکنون گفتار در دستگاه پردازش می‌شود و «تایپ صوتی» به‌صورت آفلاین کار می‌کند</translation>

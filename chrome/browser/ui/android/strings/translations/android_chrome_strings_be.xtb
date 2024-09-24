@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">Каб працягнуць работу на сайце <ph name="SITE_ETLD_PLUS_ONE" />, паспрабуйце іншыя спосабы ўваходу.</translation>
 <translation id="1702543251015153180">Змяніць налады цёмнай тэмы?</translation>
 <translation id="1702907158640575240">Браўзер пад кіраваннем</translation>
-<translation id="1710099199314114079">Пераключэнне і закрыццё ўкладак</translation>
 <translation id="1718835860248848330">За апошнюю гадзіну</translation>
 <translation id="1724977129262658800">Каб змяніць пароль, трэба разблакіраваць прыладу</translation>
 <translation id="1726477445370128854">Вы можаце шукаць і праглядаць змесціва хутчэй, калі Chrome будзе перадзагружаць старонкі, якія вы з высокай імавернасцю наведаеце</translation>
@@ -297,6 +296,7 @@
 <translation id="2450083983707403292">Пачаць спампоўваць файл "<ph name="FILE_NAME" />" зноў?</translation>
 <translation id="2451607499823206582">Адсочванне</translation>
 <translation id="2453860139492968684">Завяршыць</translation>
+<translation id="2461378706168271257">Шукаць па ўкладках</translation>
 <translation id="2461822463642141190">Цяпер</translation>
 <translation id="2468444275314013497">З браўзерам усё ў парадку</translation>
 <translation id="2472163211318554013">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome</translation>
@@ -601,6 +601,7 @@
 <translation id="3847319713229060696">Дапамагаць павышаць бяспеку ў інтэрнэце для ўсіх</translation>
 <translation id="3856096718352044181">Праверце, ці сапраўдны гэта аператар, або паўтарыце спробу</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3873174561423636563">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK1" />умовамі выкарыстання<ph name="END_LINK1" /> сайта.</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
 <translation id="3899682235662194879">Закрыць усе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
@@ -876,6 +877,7 @@
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
 <translation id="5114895953710637392">Аркуш фільтрацыі па праграме закрыты.</translation>
 <translation id="5115811374190515607">куды: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Вы можаце выкарыстоўваць Chrome кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах</translation>
 <translation id="5122378528687922675">Калі табе патрабуецца дапамога, звярніся да аднаго з бацькоў (<ph name="PARENT_NAME_1" /> або <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">Няма сайтаў</translation>
 <translation id="7656862631699126784">Уключыць блакіроўку ўкладак у рэжыме інкогніта</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
+<translation id="7663320421139257046">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> сайта.</translation>
 <translation id="7665369617277396874">Дадаць уліковы запіс</translation>
 <translation id="766587987807204883">Тут паказваюцца артыкулы, якія можна чытаць нават па-за сеткай</translation>
 <translation id="7666185984446444960">Закрыта: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@
 <translation id="7810647596859435254">Адкрыць з дапамогай…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Усе файлы, 1 файл у спісе}one{Усе файлы, # файл у спісе}few{Усе файлы, # файлы ў спісе}many{Усе файлы, # файлаў у спісе}other{Усе файлы, # файла ў спісе}}</translation>
 <translation id="7815484226266492798">Доўгі здымак экрана</translation>
+<translation id="7819605256207059717">Элемент заблакіраваны вашай арганізацыяй</translation>
 <translation id="7821130663268546430">Усе адкрытыя ўкладкі можна знайсці ў пераключальніку ўкладак</translation>
 <translation id="7822705602465980873">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="7824665136384946951">Ваша арганізацыя выключыла Бяспечны прагляд</translation>
@@ -1685,7 +1689,6 @@
 <translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Персаналізуйце выкарыстанне Chrome</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Спампоўка заблакіравана вашай арганізацыяй}one{# спампоўка заблакіравана вашай арганізацыяй}few{# спампоўкі заблакіраваны вашай арганізацыяй}many{# спамповак заблакіравана вашай арганізацыяй}other{# спампоўкі заблакіраваны вашай арганізацыяй}}</translation>
 <translation id="8672883760227492369">Некаторыя паролі на гэтай прыладзе неўзабаве перастануць працаваць. Вы можаце перамясціць іх у Менеджар пароляў Google.</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="8676789164135894283">Спраўджанне ўваходу</translation>

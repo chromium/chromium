@@ -290,7 +290,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
 <translation id="120069043972472860">Ansehen nicht möglich</translation>
 <translation id="1201402288615127009">Weiter</translation>
-<translation id="1201564082781748151">Lokale Daten können wiederhergestellt werden, falls du dein Passwort vergisst</translation>
 <translation id="1202116106683864634">Möchtest du diesen Passkey wirklich löschen?</translation>
 <translation id="1202596434010270079">Die Kiosk-App wurde aktualisiert. Bitte entferne den USB-Stick.</translation>
 <translation id="1202892408424955784">Beobachtete Produkte</translation>
@@ -1818,7 +1817,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2292862094862078674">Prüfe deine Internetverbindung und versuche es noch einmal. Du kannst auch unten eines der zuvor generierten Designs auswählen.</translation>
 <translation id="2294081976975808113">Privatsphärefunktion</translation>
 <translation id="2294358108254308676">Möchtest du <ph name="PRODUCT_NAME" /> installieren?</translation>
-<translation id="229477815107578534">Einstellungen prüfen</translation>
+<translation id="229477815107578534">Überprüfen Sie Ihre Einstellungen</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> Ergebnisse</translation>
 <translation id="2296022312651137376">Unter <ph name="DOMAIN_NAME" /> muss das Gerät online sein, wenn du dich in <ph name="EMAIL" /> anmeldest</translation>
 <translation id="2296218178174497398">Geräteerkennung</translation>
@@ -2214,6 +2213,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2546991196809436099">Durch Zoomen kannst du Bildschirmelemente vergrößern. Verwende die Suchtaste + Strg + M, um die Lupe zu aktivieren oder zu deaktivieren.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> zugelassen</translation>
 <translation id="2548545707296594436">eSIM-Profilcache zurücksetzen</translation>
+<translation id="2549766998450508148">Drücke 1 bis 4 Modifikatortasten (Strg-, Alt-, Umschalt- oder Suchtaste) und 1 weitere Taste. Du kannst auch nur 1 Taste allein auswählen.</translation>
 <translation id="2549985041256363841">Aufnahme starten</translation>
 <translation id="2550212893339833758">Swap-Speicher</translation>
 <translation id="2550596535588364872">Zulassen, dass <ph name="EXTENSION_NAME" /> <ph name="FILE_NAME" /> öffnet?</translation>
@@ -10616,6 +10616,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8715480913140015283">Ein Tab im Hintergrund verwendet deine Kamera</translation>
 <translation id="8716931980467311658">Alle Linux-Anwendungen und Daten im Ordner "Linux-Dateien" von diesem <ph name="DEVICE_TYPE" /> löschen?</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
+<translation id="8718560545710680911">Frage zu dieser Seite stellen</translation>
 <translation id="8718994464069323380">Touchscreen erkannt</translation>
 <translation id="8719472795285728850">Auf Erweiterungsaktivitäten wird gewartet…</translation>
 <translation id="8719665168401479425">Aktionen mit Gesichtsbewegungen ausführen</translation>

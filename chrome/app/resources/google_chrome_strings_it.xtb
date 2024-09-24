@@ -221,6 +221,7 @@
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3697952514309507634">Altri profili Chrome</translation>
+<translation id="3700276346088749847">cancella i dati di Chrome nel tuo account</translation>
 <translation id="3703994572283698466">La realizzazione di ChromeOS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versione ChromeOS Flex</translation>
 <translation id="3718181793972440140">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
@@ -291,6 +292,7 @@
 <translation id="4575717501879784448">Chrome può rendere inattive queste schede per migliorare la tua esperienza di navigazione e liberare risorse.</translation>
 <translation id="459622048091363950">Dopo che Chrome avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="4600710005438004015">Non è stato possibile aggiornare Chrome alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
+<translation id="4601439950572737842">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="4624065194742029982">Navigazione in incognito di Chrome</translation>
 <translation id="4627412468266359539">Facoltativo: contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS Flex inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="4633000520311261472">Per rendere Chrome più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>

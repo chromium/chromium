@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Ver información de la tienda</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover pestaña a la izquierda</translation>
+<translation id="6590332670428149473">Abrir el menú de acciones del grupo de pestañas compartido <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ver</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestaña cambiada}other{<ph name="MANY_CHANGED" /> pestañas cambiadas}}</translation>
 <translation id="6694634756612002311">Gestionar uso compartido</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplegar grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Desplegar grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="9090098097337832354">Información sobre esta tienda cerrada</translation>
 <translation id="9111228330448174435">Mostrar cuadro de diálogo al crear un nuevo grupo de pestañas</translation>
+<translation id="9114502155681725011">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Cambia de una pestaña a otra en tu grupo de pestañas de la parte inferior de la pantalla</translation>
 <translation id="9169594135889675189">Añadir una pestaña al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>

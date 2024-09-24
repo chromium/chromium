@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>
+<translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> टॅब बदलला}other{<ph name="MANY_CHANGED" /> टॅब बदलले}}</translation>
 <translation id="6694634756612002311">शेअरिंग व्यवस्थापित करा</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>
 <translation id="9111228330448174435">नवीन टॅब गट तयार केल्यावर डायलॉग दाखवा</translation>
+<translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="9150694013019234766">स्क्रीनच्या तळाजवळ तुमच्या टॅब गटातील टॅब दरम्यान स्विच करा</translation>
 <translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>
 <translation id="9216898458513705996">टॅब या डिव्हाइसवर खुले राहतील, पण गट हा <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवला जाईल</translation>

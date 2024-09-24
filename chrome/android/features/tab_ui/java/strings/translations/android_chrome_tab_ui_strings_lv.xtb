@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
+<translation id="6590332670428149473">Atvērt kopīgotās ciļņu grupas “<ph name="TITLE_OF_GROUP" />” (krāsa: <ph name="COLOR_NAME" />) darbību izvēlni</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> cilne mainīta}zero{<ph name="MANY_CHANGED" /> cilnes mainītas}one{<ph name="MANY_CHANGED" /> cilne mainīta}other{<ph name="MANY_CHANGED" /> cilnes mainītas}}</translation>
 <translation id="6694634756612002311">Pārvaldīt kopīgošanu</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
 <translation id="9111228330448174435">Rādīt dialoglodziņu jaunas ciļņu grupas izveidei</translation>
+<translation id="9114502155681725011">Atvērt ciļņu grupas “<ph name="TITLE_OF_GROUP" />” (krāsa: <ph name="COLOR_NAME" />) darbību izvēlni</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
 <translation id="9216898458513705996">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>

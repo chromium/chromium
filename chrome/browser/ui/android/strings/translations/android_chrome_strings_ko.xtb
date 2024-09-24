@@ -153,7 +153,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="1702543251015153180">어두운 테마 설정을 변경하시겠습니까?</translation>
 <translation id="1702907158640575240">관리 브라우저</translation>
-<translation id="1710099199314114079">탭 전환 또는 닫기</translation>
 <translation id="1718835860248848330">지난 1시간</translation>
 <translation id="1724977129262658800">비밀번호를 수정하려면 잠금 해제하세요</translation>
 <translation id="1726477445370128854">사용자가 방문할 것으로 생각되는 페이지를 Chrome에서 미리 로드하면 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
@@ -878,6 +877,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="510275257476243843">1시간 남음</translation>
 <translation id="5114895953710637392">앱 필터 시트가 닫혔습니다.</translation>
 <translation id="5115811374190515607">이동 위치: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
 <translation id="5122378528687922675">도움이 필요하면 부모님(<ph name="PARENT_NAME_1" /> 또는 <ph name="PARENT_NAME_2" />)께 요청하세요</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
@@ -1492,6 +1492,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
+<translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다</translation>
@@ -1688,7 +1689,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
 <translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{조직에서 차단함}other{조직에서 #개를 차단함}}</translation>
 <translation id="8672883760227492369">이 기기의 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>
 <translation id="8676789164135894283">로그인 인증</translation>

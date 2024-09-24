@@ -153,7 +153,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1696555181932908973">Můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="1702543251015153180">Změnit nastavení tmavého motivu?</translation>
 <translation id="1702907158640575240">Spravovaný prohlížeč</translation>
-<translation id="1710099199314114079">Přepnout nebo zavřít karty</translation>
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1724977129262658800">Chcete-li upravit heslo, odemkněte zařízení</translation>
 <translation id="1726477445370128854">Když bude Chrome předběžně načítat stránky, které byste podle něj mohli navštívit, budete moci procházet web a vyhledávat rychleji.</translation>
@@ -297,6 +296,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2450083983707403292">Chcete soubor <ph name="FILE_NAME" /> začít stahovat znovu?</translation>
 <translation id="2451607499823206582">Sledování</translation>
 <translation id="2453860139492968684">Dokončit</translation>
+<translation id="2461378706168271257">Vyhledat na kartách</translation>
 <translation id="2461822463642141190">Aktuální</translation>
 <translation id="2468444275314013497">Váš prohlížeč vypadá v pořádku</translation>
 <translation id="2472163211318554013">Pokud z Chromu chcete získat maximum, přihlaste se</translation>
@@ -601,6 +601,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3847319713229060696">Pomáhat se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="3856096718352044181">Zkontrolujte, zda se jedná o platného poskytovatele, nebo to zkuste znovu později</translation>
 <translation id="3858860766373142691">Název</translation>
+<translation id="3873174561423636563">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK1" />smluvní podmínky<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3899682235662194879">Zavřít všechny anonymní karty</translation>
 <translation id="3900966090527141178">Export hesel</translation>
@@ -876,6 +877,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="510275257476243843">Zbývá: 1 h</translation>
 <translation id="5114895953710637392">Panel filtrování podle aplikace je zavřený.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Chrome můžete použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
 <translation id="5122378528687922675">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME_1" /> nebo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5132942445612118989">Vaše hesla, historie a další údaje na všech zařízeních</translation>
@@ -1458,6 +1460,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7656721520530864426">Žádné weby</translation>
 <translation id="7656862631699126784">Zapnout zámek anonymního režimu</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7663320421139257046">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> tohoto webu.</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="766587987807204883">Zde se zobrazují články, které si můžete číst i offline</translation>
 <translation id="7666185984446444960">Zavřeno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Všechny soubory, 1 soubor v seznamu}few{Všechny soubory, # soubory v seznamu}many{Všechny soubory, # souboru v seznamu}other{Všechny soubory, # souborů v seznamu}}</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
+<translation id="7819605256207059717">Zablokováno vaší organizací</translation>
 <translation id="7821130663268546430">Všechny otevřené karty najdete v přepínači karet</translation>
 <translation id="7822705602465980873">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
 <translation id="7824665136384946951">Vaše organizace Bezpečné prohlížení vypnula</translation>
@@ -1685,7 +1689,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="864544049772947936">Spravovat okna (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Používejte Chrome po svém</translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Zablokováno vaší organizací}few{Vaše organizace # zablokovala}many{Vaše organizace # zablokovala}other{Vaše organizace # zablokovala}}</translation>
 <translation id="8672883760227492369">Některá hesla na tomto zařízení brzy přestanou fungovat. Tato hesla můžete přesunout do Správce hesel Google.</translation>
 <translation id="8676276370198826499">Zaregistrujte se na webu <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Ověření přihlášení</translation>

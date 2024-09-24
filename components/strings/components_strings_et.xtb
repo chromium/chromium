@@ -700,6 +700,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
 <translation id="2241693394036365668">Fail on alla laaditud</translation>
+<translation id="2242389809734574253">IBAN-i salvestamise leht suleti.</translation>
 <translation id="2246264294482514010">10 × 12 tolli</translation>
 <translation id="2246480341630108201">Sinu vanem pole seda veel lubanud</translation>
 <translation id="2247789808226901522">Kaart on aegunud</translation>
@@ -1238,6 +1239,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3272112314896217187">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline kinnituskood</translation>
 <translation id="3272643614306383237">Alla 1 MB. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
 <translation id="3273738040255912340">Teie administraator saab teha teie profiilil ja brauseris distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. Selle seadme tegevusi võidakse hallata ka väljaspool Chromiumi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN-i salvestamise leht on avatud täiskõrgusel.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohas <ph name="DESTINATION_NAME" /> avada}other{Administraatori reegel ei soovita neid faile sihtkohas <ph name="DESTINATION_NAME" /> avada}}</translation>
 <translation id="3282085321714087552">Teie organisatsioon, <ph name="ENROLLMENT_DOMAIN" />, on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
@@ -2125,6 +2127,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4881695831933465202">Ava</translation>
 <translation id="4881808915112408168">24 × 31,5 tolli</translation>
 <translation id="4882314601499260499">Kasutajareegleid pole rakendatud. Kasutajareeglite lisamiseks peab teie organisatsioon <ph name="LINK_BEGIN" />teie domeeni kinnitama<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Sisestage oma küsimus või päring</translation>
 <translation id="4885030148564729407">Mesinädalad ja romantilised puhkused</translation>
 <translation id="4885256590493466218">Makske kassas kaardiga <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Kaitske paroole funktsiooniga Windows Hello</translation>
@@ -2388,6 +2391,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5371425731340848620">Värskendage kaarti</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Teie kell on ajast maas” või „Teie kell on ajast ees” või „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
+<translation id="5379618281582508161">Selle parooli saamiseks kõikidesse oma seadmetesse, kinnitage oma isik</translation>
 <translation id="5380953781541843508">kasvavas järjestuses</translation>
 <translation id="5381318171304904246">Jätkamisel suunatakse teid panga veebisaidile. Pärast kinnitamist suunatakse teid automaatselt tagasi ostu sooritamise juurde.</translation>
 <translation id="5383478552402031184">Põrandatööd</translation>
@@ -2583,6 +2587,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723873695528696965">juhtida ja ümber programmeerida teie MIDI-seadmeid</translation>
 <translation id="5725297205162868298">Otsetee ei saa alata tähemärgiga @: „<ph name="SHORTCUT_NAME" />”</translation>
+<translation id="5728246486828755318">Saab paluda kasutada printeri täiustatud funktsioone</translation>
 <translation id="5729442113829771034">Eelkooliharidus</translation>
 <translation id="5730040223043577876">Chrome soovitab teil parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="5732392974455271431">Vanemad saavad blokeeringu teie eest tühistada</translation>
@@ -2594,6 +2599,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5743684619253032786">Küünehooldustooted</translation>
 <translation id="5745733273847572235">Saab küsida teie asukohta</translation>
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
+<translation id="5752327398324808817">Sisestage sõna või kaks</translation>
 <translation id="5759751709240058861">Kaamera kasutamine ja liigutamine</translation>
 <translation id="5763042198335101085">Sisestage kehtiv e-posti aadress</translation>
 <translation id="5764725887548570807">Vale lähtekoha vorming.</translation>
@@ -3089,6 +3095,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6671169470640320959">Sõidukite finantseerimisteenused</translation>
 <translation id="6671697161687535275">Kas eemaldada Chromiumist vormi soovitus?</translation>
 <translation id="6677351035258626477">Kiirtoit</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6681790815630918386">CVC on salvestatud</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6687230248707087982">Ümbrik (tavaline)</translation>
@@ -3105,6 +3112,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6696575039575740785">Veebirakenduste installimine pole lubatud</translation>
 <translation id="6698097747703777657">Kas te ei saanud koodi? <ph name="BEGIN_LINK" />Hankige uus kood<ph name="END_LINK" />.</translation>
 <translation id="6698381487523150993">Loodud:</translation>
+<translation id="6698769547327354196">Pixi väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" />.</translation>
 <translation id="67007264085648978">Ajakursor</translation>
 <translation id="6702851555558236418">Heli- ja muusikatarkvara</translation>
 <translation id="6702919718839027939">Esitlemine</translation>
@@ -3260,6 +3268,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6978236010531171013">Jaga ikkagi</translation>
 <translation id="6978722349058177832">Kui jagate seda seadet, võib Chromium teilt paluda kinnitust iga kord, kui kasutate maksmiseks automaattäidet</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">hallata juurdepääsu kolmanda osapoole küpsisefailidele</translation>
 <translation id="6979440798594660689">Vaigista (vaikeseade)</translation>
 <translation id="6984270784814146224">Sildita pilt. Teksti ekstraktimine, toimib Google'i AI platvormil</translation>
 <translation id="6987806006823772670">Ümbrik (kaetud)</translation>
@@ -3406,6 +3415,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Majandustegevus</translation>
+<translation id="7244061187185055290">Kirjeldage mõne sõnaga, mida otsite</translation>
 <translation id="7251437084390964440">Võrgu seadistus ei vasta ONC standardile. On võimalik, et seadistuse mõnd osa ei saa importida.
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>

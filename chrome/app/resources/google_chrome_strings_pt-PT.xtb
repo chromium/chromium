@@ -221,6 +221,7 @@
 <translation id="3673813398384385993">O Chrome encontrou software malicioso na extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>
+<translation id="3700276346088749847">limpe os dados do Chrome na sua conta</translation>
 <translation id="3703994572283698466">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
 <translation id="3718181793972440140">Esta ação elimina 1 item deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -292,12 +293,14 @@
 <translation id="4575717501879784448">O Chrome pode tornar estes separadores inativos para melhorar a sua experiência de navegação e libertar recursos.</translation>
 <translation id="459622048091363950">Assim que o Chrome tiver acesso, os Websites poderão solicitar-lhe o acesso.</translation>
 <translation id="4600710005438004015">Não foi possível atualizar o Chrome para a versão mais recente, pelo que não está a beneficiar das novas funcionalidades e correções de segurança.</translation>
+<translation id="4601439950572737842">Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="4624065194742029982">Navegação anónima do Chrome</translation>
 <translation id="4627412468266359539">Opcional: ajude a melhorar as funcionalidades e o desempenho do ChromeOS Flex ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="4633000520311261472">Para tornar o Chrome mais seguro, desativámos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenham sido adicionadas sem o seu conhecimento.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
 <translation id="469553575393225953">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda que apenas os instale a partir da Web Store do Chrome</translation>
 <translation id="4710245680469034439">Personalize o navegador com temas inspirados na natureza, coleções de artistas e muito mais</translation>
+<translation id="4720851490453439956">Serviço interno do Google Updater</translation>
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo não suportado.</translation>
 <translation id="4728575227883772061">Houve uma falha na instalação devido a um erro não especificado. Se o Google Chrome estiver atualmente em execução, feche-o e tente de novo.</translation>
 <translation id="4741235124132242877">Fixado! Use novamente o Google Lens a partir da barra de ferramentas</translation>
@@ -457,6 +460,7 @@
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
 <translation id="6893363893008038481">Remover conta do Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6930294499209825">Mantém o seu software Google atualizado. Se este serviço for desativado ou interrompido, o seu software Google não ficará atualizado, significando que quaisquer vulnerabilidades de segurança não vão poder ser corrigidas e as funcionalidades podem não funcionar. Este serviço desinstala-se a si mesmo quando não existir software Google a usá-lo.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para obter atualizações futuras do Google Chrome, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.1.</translation>
 <translation id="6943584222992551122">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -506,6 +510,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7477130805345743099">O Chrome envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="749228101751499733">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chrome. <ph name="SHORTCUT" /> pode alterar as suas definições dos serviços Google.</translation>
+<translation id="7514258452813684157">Serviço do Google Updater</translation>
 <translation id="7515191208480168435">Pode fixar o Google Lens para acesso fácil</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desativada • O Chrome não consegue validar a origem desta extensão</translation>

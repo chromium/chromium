@@ -291,7 +291,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1199814941632954229">Certificados estão sendo provisionados para esses perfis certificados</translation>
 <translation id="120069043972472860">Não é possível assistir</translation>
 <translation id="1201402288615127009">Próxima</translation>
-<translation id="1201564082781748151">Os dados locais vão poder ser restaurados se você esquecer a senha</translation>
 <translation id="1202116106683864634">Você quer mesmo excluir essa chave de acesso?</translation>
 <translation id="1202596434010270079">O aplicativo de quiosque foi atualizado. Remova o pendrive.</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
@@ -2231,6 +2230,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2546991196809436099">Aumente o zoom para ampliar os itens na tela. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> permitida</translation>
 <translation id="2548545707296594436">Redefinir o cache do perfil do eSIM</translation>
+<translation id="2549766998450508148">Pressione de 1 a 4 teclas modificadoras (Ctrl, Alt, Shift ou pesquisa) e mais 1 tecla. Também é possível selecionar uma única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2550212893339833758">Memória trocada</translation>
 <translation id="2550596535588364872">Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -10643,6 +10643,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8715480913140015283">A guia em segundo plano está usando sua câmera</translation>
 <translation id="8716931980467311658">Excluir todos os aplicativos e dados do Linux da pasta de arquivos do Linux deste <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copiar link</translation>
+<translation id="8718560545710680911">Perguntar usando esta página</translation>
 <translation id="8718994464069323380">Tela touchscreen detectada</translation>
 <translation id="8719472795285728850">Ouvindo atividades da extensão...</translation>
 <translation id="8719665168401479425">Usar gestos faciais para realizar ações</translation>

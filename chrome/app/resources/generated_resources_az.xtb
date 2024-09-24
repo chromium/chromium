@@ -288,7 +288,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1199814941632954229">Bu sertifikat profilləri üçün sertifikatlar təmin edilir</translation>
 <translation id="120069043972472860">İzləmək mümkün deyil</translation>
 <translation id="1201402288615127009">Növbəti</translation>
-<translation id="1201564082781748151">Parolunuzu unutsanız, lokal data bərpa edilə bilər</translation>
 <translation id="1202116106683864634">Bu giriş açarını silmək istədiyinizə əminsiniz?</translation>
 <translation id="1202596434010270079">Kiosk tətbiqi güncəlləşdir. Lütfən, USB -ni çıxarın.</translation>
 <translation id="1202892408424955784">İzlənilən məhsullar</translation>
@@ -2216,6 +2215,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2546991196809436099">Ekrandakı elementləri böyütmək üçün yaxınlaşdırın. Böyüdücünü aktiv və deaktiv etmək üçün Axtarış + Ctrl + M istifadə edin.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> üçün icazə verilib</translation>
 <translation id="2548545707296594436">eSIM profil keşini sıfırlayın</translation>
+<translation id="2549766998450508148">1-4 dəyişdirici düymələrini (ctrl, alt, shift və ya axtarış) və daha 1 düyməni basın. Tək düymə də seçə bilərsiniz.</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2550212893339833758">Dəyişdirilmiş Yaddaş</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> artırmasının <ph name="FILE_NAME" /> faylını açmasına icazə verilsin?</translation>
@@ -10619,6 +10619,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8715480913140015283">Arxa fon tabı kameradan istifadə edir</translation>
 <translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> cihazındakı Linux faylları qovluğundan bütün Linux tətbiq və datası silinsin?</translation>
 <translation id="8717864919010420084">Linki Kopyalayın</translation>
+<translation id="8718560545710680911">Bu səhifədən istifadə edərək soruşun</translation>
 <translation id="8718994464069323380">Sensor ekran aşkarlanıb</translation>
 <translation id="8719472795285728850">Artırma fəaliyyətləri dinlənilir...</translation>
 <translation id="8719665168401479425">Əməliyyatları yerinə yetirmək üçün mimika jestlərindən istifadə edin</translation>

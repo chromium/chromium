@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2239100178324503013">اکنون ارسال شود</translation>
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
+<translation id="2242389809734574253">‏برگ ذخیره کردن IBAN بسته شد.</translation>
 <translation id="2246264294482514010">۱۲ × ۱۰ اینچ</translation>
 <translation id="2246480341630108201">ولی‌تان هنوز موافقت نکرده است</translation>
 <translation id="2247789808226901522">کارت منقضی شده است</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3272112314896217187">کد درستی‌سنجی <ph name="NUMBER_OF_DIGITS" /> رقمی را وارد کنید</translation>
 <translation id="3272643614306383237">کمتر از ۱ مگابایت. ممکن است برخی سایت‌ها در بازدید بعدی‌تان کندتر بار شوند.</translation>
 <translation id="3273738040255912340">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chromium هم مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">‏برگ ذخیره کردن IBAN به‌طور کامل باز شده است.</translation>
 <translation id="3281350579597955952">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> باز کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> باز کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> باز کنید}}</translation>
 <translation id="3282085321714087552">سازمان شما، <ph name="ENROLLMENT_DOMAIN" />، اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>
 <translation id="3286372614333682499">عمودی</translation>
@@ -2125,6 +2127,7 @@
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4881808915112408168">۳۱٫۵ × ۲۴ اینچ</translation>
 <translation id="4882314601499260499">هیچ خط‌مشی کاربری اعمال نشده است. برای افزودن خط‌مشی‌های کاربر، سازمان شما باید <ph name="LINK_BEGIN" />دامنه شما را تأیید کند<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">سؤال یا پیام‌واره‌تان را وارد کنید</translation>
 <translation id="4885030148564729407">ماه‌عسل و سفر عاشقانه</translation>
 <translation id="4885256590493466218">هنگام تصفیه حساب، با <ph name="CARD_DETAIL" /> پرداخت کنید</translation>
 <translation id="4887406273302438710">‏محافظت از گذرواژه‌ها با Windows Hello</translation>
@@ -2584,6 +2587,7 @@
 <translation id="572328651809341494">برگه‌های اخیر</translation>
 <translation id="5723873695528696965">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
 <translation id="5725297205162868298">میان‌بر نمی‌تواند با نویسه @ شروع شود: «<ph name="SHORTCUT_NAME" />»</translation>
+<translation id="5728246486828755318">می‌تواند برای استفاده از ویژگی‌های پیشرفته چاپگر درخواست دهد</translation>
 <translation id="5729442113829771034">آموزش خردسالان</translation>
 <translation id="5730040223043577876">‏Chrome توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="5732392974455271431">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
@@ -2595,6 +2599,7 @@
 <translation id="5743684619253032786">محصولات مراقبت از ناخن</translation>
 <translation id="5745733273847572235">می‌تواند برای استفاده از مکان درخواست دهد</translation>
 <translation id="5750869797196646528">ردیابی دست</translation>
+<translation id="5752327398324808817">یک یا دو کلمه وارد کنید</translation>
 <translation id="5759751709240058861">استفاده از دوربین و حرکت دادن آن</translation>
 <translation id="5763042198335101085">نشانی ایمیل معتبری وارد کنید</translation>
 <translation id="5764725887548570807">قالب مبدأ نامعتبر است.</translation>
@@ -3090,6 +3095,7 @@
 <translation id="6671169470640320959">خودرو اقساطی</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
 <translation id="6677351035258626477">فست‌فود</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
 <translation id="6681790815630918386">کد تأیید کارت ذخیره شد</translation>
 <translation id="6683022854667115063">هدفون</translation>
 <translation id="6687230248707087982">پاکت (ساده)</translation>
@@ -3106,6 +3112,7 @@
 <translation id="6696575039575740785">نصب کردن برنامه‌های وب مجاز نیست</translation>
 <translation id="6698097747703777657">کد را دریافت نکردید؟ <ph name="BEGIN_LINK" />دریافت کد جدید<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ایجاد شده:</translation>
+<translation id="6698769547327354196">‏برای خاموش کردن Pix در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید.</translation>
 <translation id="67007264085648978">لغزنده زمان</translation>
 <translation id="6702851555558236418">نرم‌افزار موسیقی و صدا</translation>
 <translation id="6702919718839027939">ارائه کردن</translation>
@@ -3261,6 +3268,7 @@
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
 <translation id="6978722349058177832">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chromium می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">دسترسی به کوکی‌های طرف سوم را مدیریت کنید</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
 <translation id="6984270784814146224">‏تصویر بدون برچسب. درحال استخراج نوشتار با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="6987806006823772670">پاکت (روکش‌دار)</translation>
@@ -3407,6 +3415,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />؛ <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">فعالیت‌های تجاری</translation>
+<translation id="7244061187185055290">آنچه را جستجو می‌کنید در چند کلمه توصیف کنید</translation>
 <translation id="7251437084390964440">‏پیکربندی شبکه با استاندارد ONC مطابقت ندارد. ممکن است بعضی از قسمت‌های پیکربندی وارد نشود.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>

@@ -292,7 +292,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1199814941632954229">Certifikáty sú poskytované pre tieto profily certifikátov</translation>
 <translation id="120069043972472860">Nepozerateľné</translation>
 <translation id="1201402288615127009">Ďalej</translation>
-<translation id="1201564082781748151">Keď zabudnete heslo, môžete obnoviť miestne údaje</translation>
 <translation id="1202116106683864634">Naozaj chcete odstrániť tento prístupový kľúč?</translation>
 <translation id="1202596434010270079">Aplikácia Kiosk bola aktualizovaná. Odoberte kľúč USB.</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
@@ -2219,6 +2218,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2546991196809436099">Priblížením položky na obrazovke zväčšíte. Lupu zapínajte a vypínajte klávesovou skratkou Hľadať + Ctrl + M.</translation>
 <translation id="2548347166720081527">Povoľujete <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Resetovať vyrovnávaciu pamäť profilu eSIM</translation>
+<translation id="2549766998450508148">Stlačte prvý až štvrtý modifikačný kláves (Ctrl, Alt, Shift alebo kláves vyhľadávania) a 1 ďalší kláves. Môžete vybrať aj jeden kláves.</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
 <translation id="2550212893339833758">Swapovaná pamäť</translation>
 <translation id="2550596535588364872">Povoliť rozšíreniu <ph name="EXTENSION_NAME" /> otvoriť súbor <ph name="FILE_NAME" />?</translation>
@@ -10629,6 +10629,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8715480913140015283">Karta na pozadí používa váš fotoaparát</translation>
 <translation id="8716931980467311658">Chcete odstrániť všetky aplikácie pre Linux a príslušné dáta v priečinku súborov systému Linux z tohto zariadenia <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopírovať odkaz</translation>
+<translation id="8718560545710680911">Opýtať sa pomocou tejto stránky</translation>
 <translation id="8718994464069323380">Bola rozpoznaná dotyková obrazovka</translation>
 <translation id="8719472795285728850">Počúvajú sa aktivity rozšírenia…</translation>
 <translation id="8719665168401479425">Vykonávať akcie gestami tvárou</translation>

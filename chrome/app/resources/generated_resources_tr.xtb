@@ -290,7 +290,6 @@
 <translation id="1199814941632954229">Sertifikalar, bu sertifika profilleri için sağlanıyor</translation>
 <translation id="120069043972472860">İzlenemiyor</translation>
 <translation id="1201402288615127009">İleri</translation>
-<translation id="1201564082781748151">Şifrenizi unutursanız yerel veriler geri yüklenebilir</translation>
 <translation id="1202116106683864634">Bu geçiş anahtarını silmek istediğinizden emin misiniz?</translation>
 <translation id="1202596434010270079">Kiosk uygulaması güncellendi. Lütfen USB çubuğunu çıkarın.</translation>
 <translation id="1202892408424955784">Takip edilen ürünler</translation>
@@ -2215,6 +2214,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2546991196809436099">Ekrandaki öğeleri büyütmek için yakınlaştırın. Büyüteci açmak ve kapatmak için Arama + Ctrl + M tuşlarını kullanın.</translation>
 <translation id="2548347166720081527">İzin veriliyor: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">eSIM profilinin önbelleğini sıfırla</translation>
+<translation id="2549766998450508148">1-4 değiştirici tuşa (ctrl, alt, üst karakter veya arama) ve 1 tuşa daha basın. Dilerseniz tek bir tuş da seçebilirsiniz.</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="2550212893339833758">Değiştirilmiş bellek</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> uzantısının <ph name="FILE_NAME" /> dosyasını açmasına izin verilsin mi?</translation>
@@ -10621,6 +10621,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8715480913140015283">Arka plan sekmesi kameranızı kullanıyor</translation>
 <translation id="8716931980467311658">Linux dosyaları klasörünüzdeki tüm Linux uygulamaları ve verileri bu <ph name="DEVICE_TYPE" /> cihazdan silinsin mi?</translation>
 <translation id="8717864919010420084">Bağlantıyı Kopyala</translation>
+<translation id="8718560545710680911">Bu sayfayı kullanarak sor</translation>
 <translation id="8718994464069323380">Dokunmatik ekran algılandı</translation>
 <translation id="8719472795285728850">Uzantı etkinlikleri dinleniyor...</translation>
 <translation id="8719665168401479425">İşlem yapmak için yüz hareketlerini kullan</translation>

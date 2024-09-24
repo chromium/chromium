@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">متناسب با ناحیه اسکن</translation>
 <translation id="1343442362630695901">دریاچه نمک</translation>
 <translation id="1348657754632799065">نوار ضبط کردن</translation>
+<translation id="1350909945461913813">مراقب باشید کارهایتان را ذخیره کنید</translation>
 <translation id="1367951781824006909">انتخاب یک فایل</translation>
 <translation id="1371650399987522809">‏بازخورد درباره کاغذدیواری ایجادشده با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="1374385338586507108">تعریف</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">‏نسخه SDK:</translation>
 <translation id="2016697457005847575">مراحل عیب‌یابی را امتحان کنید</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">موضوعی را انتخاب کنید و سپس کلمات زیرخط‌دار را برای شخصی‌سازی تصاویر هوش مصنوعی خود انتخاب کنید.</translation>
 <translation id="2045814230297767491">کارد و چنگال</translation>
 <translation id="2047316797244836561">لطفاً برای مشاهده محافظ صفحه، به شبکه متصل شوید و صفحه را مجدد بار کنید.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2082932131694554252">کلید صفحه‌کلید تخصیص‌یافته</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
-<translation id="2085876078937250610">ذخیره کردن…</translation>
 <translation id="2086091080968010660">ممکن است تغییرات مبتنی بر زمان درست نباشد. دسترسی مکان سیستم را در تنظیمات روشن کنید.</translation>
 <translation id="2102231663024125441">ویرایش نوشتار</translation>
 <translation id="2102648867808308635">کمک گرفتن در خواندن این صفحه</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">گفتاری تشخیص داده نشد</translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
+<translation id="2468124392950503650">پیام‌واره موردنظر را برای ایجاد کردن انتخاب کنید یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />راهنمای پیام‌واره<ph name="END_LINK_PROMPTING_GUIDE" /> را مشاهده کنید</translation>
 <translation id="2472215337771558851">‏بااستفاده از «کمک به نوشتن»، پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید؛ از هوش مصنوعی Google بهره می‌گیرد</translation>
 <translation id="2480572840229215612">خرچنگ</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
+<translation id="4486524074141928967">در <ph name="TIME" /> از سیستم خارج خواهید شد</translation>
 <translation id="4500722292849917410">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از یکی از کلیدهای توصیف‌گر (مهار، دگرساز، تبدیل، یا <ph name="META_KEY" />) فشار دهید.</translation>
 <translation id="4500966230243561393">رنگ میانا</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">خاکستری</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5600027863942488546">کلید <ph name="KEY_NAME" /> امتحان شد</translation>
+<translation id="5613201299517339763">از سیستم خارج شدید</translation>
 <translation id="5620281292257375798">فقط داخلی</translation>
 <translation id="5630438231335788050">باوهاوس</translation>
 <translation id="5631759159893697722">انتزاعی</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">فایل پیدا نشد</translation>
 <translation id="5938286923316838007">نمی‌توان نام ضبط‌شده برای این محتوا ایجاد کرد</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
+<translation id="5942727615796467094">سرپرست <ph name="MANAGER" /> زمان‌هایی را که می‌توان از این <ph name="DEVICE_TYPE" /> استفاده کرد تنظیم کرده است</translation>
 <translation id="594552776027197022">ایجد جفت‌کلید تصادفی</translation>
 <translation id="5946538341867151940">‏هنوز متصل نیستید. اگر شرکت مخابراتی تلفن همراه توصیه می‌کند از APN سفارشی استفاده کنید، اطلاعات APN را با انتخاب «+ APN جدید» وارد کنید.</translation>
 <translation id="5947266287934282605">اگر آخرین روز ماهْ پیش‌از این روز باشد، داده‌ها در آخرین روز ماه بازنشانی می‌شود</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">سیاره دیگر</translation>
 <translation id="6359706544163531585">غیرفعال کردن زمینه روشن</translation>
 <translation id="6359919876285606596">این کنش دائمی است و واگردشدنی نیست</translation>
+<translation id="6368342879959028556">پس‌از انتخاب «ایجاد با هوش مصنوعی»، پیام‌واره‌ای سفارشی بنویسید. یا می‌توانید «کاغذدیواری هوش مصنوعی» و موضوع موردنظرتان را انتخاب کنید و سپس کلمه‌های زیرخط‌دار را برای شخصی‌سازی کاغذدیواری هوش مصنوعی انتخاب کنید.</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="6373461326814131011">تالاب</translation>
 <translation id="6379086450106841622">صفحه لمسی</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">رفتن به تنظیمات حساب</translation>
 <translation id="6462978824459367242">دکمه «افزودن نام نقطه دستیابی» اکنون فعال است</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحه مجدداً اسکن شود؟}=1{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}one{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}other{{PAGE_NUMBER} صفحه مجدداً اسکن شود؟}}</translation>
+<translation id="6468146470109254228">‫۳ پیام‌واره اخیر شما و خروجی‌ها. فقط زمانی می‌توانید به این موارد دسترسی داشته باشید که از «کاغذدیواری و سبک» استفاده کنید.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">قایق</translation>
 <translation id="64778964625672495">قرمز تیره</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659594942844771486">برگه</translation>
 <translation id="66621959568103627">صورتی مرجانی</translation>
+<translation id="6667885109186363316">‏<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          «به من ایده بده» را انتخاب کنید تا گزینه‌های منحصربه‌فرد و متنوع‌تری برای تصاویر هوش مصنوعی دریافت کنید.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          وقتی محتوایی با هوش مصنوعی ایجاد می‌کنید، پیام‌واره شما مطابق با <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />خط‌مشی رازداری Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> برای تولید تصاویر و بهبود محصول به سرورهای هوش مصنوعی Google ارسال می‌شود.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          هوش مصنوعی زایا آزمایشی است، در مراحل اولیه توسعه است، و درحال‌حاضر به‌صورت محدود دردسترس است.</translation>
 <translation id="6673898378497337661">افزایش روشنایی صفحه‌کلید</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6694534975463174713">قفل کردن</translation>

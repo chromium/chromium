@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="1702543251015153180">تنظیمات زمینه تاریک تغییر کند؟</translation>
 <translation id="1702907158640575240">مرورگر تحت‌مدیریت</translation>
-<translation id="1710099199314114079">عوض کردن یا بستن برگه‌ها</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1724977129262658800">برای ویرایش گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="1726477445370128854">‏وقتی Chrome صفحاتی را که فکر می‌کند ممکن است بازدید کنید پیش‌بارگیری می‌کند، می‌توانید سریع‌تر مرور و جستجو کنید.</translation>
@@ -635,6 +634,7 @@
 <translation id="4042941173059740150">ادامه <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">گروه بدون نام</translation>
 <translation id="4044708993631234325">برگ زیرین</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}one{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}other{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}}</translation>
 <translation id="405365679581583349">‏به‌روزرسانی «خدمات Google Play»</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
 <translation id="4056223980640387499">سپیا</translation>
@@ -878,6 +878,7 @@
 <translation id="510275257476243843">۱ ساعت باقی‌مانده است</translation>
 <translation id="5114895953710637392">برگ فیلتر کردن برنامه بسته شد.</translation>
 <translation id="5115811374190515607">به <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">‏در هرزمانی با تک‌ضرب زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها می‌توانید از Chrome استفاده کنید</translation>
 <translation id="5122378528687922675">اگر به راهنمایی نیاز داشتید، از ولی خود کمک بگیرید (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">‏ابتدا گذرواژه‌ها را از Chrome صادر و حذف کنید</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> برگه استاندارد}one{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد}other{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد}}</translation>
 <translation id="7603168929588204083">تاریخ نامعتبر</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
@@ -1492,6 +1494,7 @@
 <translation id="7810647596859435254">باز کردن با…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{همه فایل‌ها، ۱ فایل در فهرست}one{همه فایل‌ها، # فایل در فهرست}other{همه فایل‌ها، # فایل در فهرست}}</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
+<translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7821130663268546430">می‌توانید همه برگه‌های باز را در تعویض‌کننده برگه پیدا کنید</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="7824665136384946951">سازمانتان «مرور ایمن» را خاموش کرده است</translation>
@@ -1688,7 +1691,6 @@
 <translation id="864544049772947936">مدیریت پنجره‌ها (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">‏به شیوه خودتان از Chrome استفاده کنید</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{سازمانتان آن را مسدود کرد}one{سازمانتان # را مسدود کرد}other{سازمانتان # را مسدود کرد}}</translation>
 <translation id="8672883760227492369">‏برخی‌از گذرواژه‌های ذخیره‌شده در این دستگاه به‌زودی ازکار خواهد افتاد. می‌توانید این گذرواژه‌ها را به «مدیر گذرواژه Google» منتقل کنید.</translation>
 <translation id="8676276370198826499">ثبت‌نام در <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">درستی‌سنجی‌های ورود به سیستم</translation>

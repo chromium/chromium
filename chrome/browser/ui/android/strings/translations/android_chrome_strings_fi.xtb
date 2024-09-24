@@ -153,7 +153,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1696555181932908973">Voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Muutetaanko tumman teeman asetuksia?</translation>
 <translation id="1702907158640575240">Hallinnoitu selain</translation>
-<translation id="1710099199314114079">Vaihda tai sulje välilehti</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1724977129262658800">Avaa lukitus muokataksesi salasanaasi</translation>
 <translation id="1726477445370128854">Voit selata ja hakea nopeammin, kun Chrome esilataa sivuja, joita saatat sen mukaan avata</translation>
@@ -297,6 +296,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2450083983707403292">Haluatko aloittaa tiedoston <ph name="FILE_NAME" /> lataamisen uudelleen?</translation>
 <translation id="2451607499823206582">Seurataan</translation>
 <translation id="2453860139492968684">Valmis</translation>
+<translation id="2461378706168271257">Hae välilehdiltä</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="2468444275314013497">Selain näyttää hyvältä</translation>
 <translation id="2472163211318554013">Saat eniten irti Chromesta kirjautumalla sisään</translation>
@@ -601,6 +601,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3847319713229060696">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="3856096718352044181">Varmista, että tämä on kelvollinen palveluntarjoaja, tai yritä myöhemmin uudelleen</translation>
 <translation id="3858860766373142691">Nimi</translation>
+<translation id="3873174561423636563">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa tietoja (<ph name="FIELDS_STRING" />) tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK1" />käyttöehtoihin<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="3899682235662194879">Sulje kaikki incognito-välilehdet</translation>
 <translation id="3900966090527141178">Vie salasanat</translation>
@@ -876,6 +877,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="510275257476243843">1 tunti jäljellä</translation>
 <translation id="5114895953710637392">Sovellussuodatintaulukko on suljettu.</translation>
 <translation id="5115811374190515607">kohde: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Voit käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="5122378528687922675">Kysy tarvittaessa vanhemmaltasi (<ph name="PARENT_NAME_1" /> tai <ph name="PARENT_NAME_2" />) apua</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
@@ -1458,6 +1460,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7656721520530864426">Ei sivustoja</translation>
 <translation id="7656862631699126784">Laita incognito-välilehtien lukitus päälle</translation>
 <translation id="7658239707568436148">Peru</translation>
+<translation id="7663320421139257046">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa tietoja (<ph name="FIELDS_STRING" />) tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK1" />tietosuojakäytäntöön<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="766587987807204883">Tässä näet artikkelit, jotka voit lukea myös offline-tilassa</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> suljettu</translation>
@@ -1489,6 +1492,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kaikki tiedostot, 1 tiedosto listassa}other{Kaikki tiedostot, # tiedostoa listassa}}</translation>
 <translation id="7815484226266492798">Pitkä kuvakaappaus</translation>
+<translation id="7819605256207059717">Organisaatiosi estämä</translation>
 <translation id="7821130663268546430">Näet kaikki avoimet välilehdet välilehtien vaihtajassa</translation>
 <translation id="7822705602465980873">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="7824665136384946951">Organisaatiosi on laittanut Selaussuojan pois päältä</translation>
@@ -1685,7 +1689,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="864544049772947936">Ylläpidä ikkunoita (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Käytä Chromea omalla tavallasi</translation>
 <translation id="8664979001105139458">Tiedoston nimi on jo käytössä</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Organisaatiosi estämä}other{Organisaatiosi esti #}}</translation>
 <translation id="8672883760227492369">Jotkin tämän laitteen salasanat lakkaavat pian toimimasta. Voit siirtää ne Google Salasanoihin.</translation>
 <translation id="8676276370198826499">Rekisteröidy palveluun <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>
 <translation id="8676789164135894283">Sisäänkirjautumisen todennukset</translation>

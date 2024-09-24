@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">คุณลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="1702543251015153180">เปลี่ยนการตั้งค่าธีมมืดไหม</translation>
 <translation id="1702907158640575240">เบราว์เซอร์ที่มีการจัดการ</translation>
-<translation id="1710099199314114079">เปลี่ยนหรือปิดแท็บ</translation>
 <translation id="1718835860248848330">ชั่วโมงที่แล้ว</translation>
 <translation id="1724977129262658800">ปลดล็อกเพื่อแก้ไขรหัสผ่าน</translation>
 <translation id="1726477445370128854">คุณจะท่องเว็บและค้นหาได้เร็วขึ้นเมื่อ Chrome โหลดหน้าเว็บที่คิดว่าคุณอาจจะเข้าชมไว้ล่วงหน้า</translation>
@@ -879,6 +878,7 @@
 <translation id="510275257476243843">เหลือ 1 ชั่วโมง</translation>
 <translation id="5114895953710637392">ชีตตัวกรองแอปปิดอยู่</translation>
 <translation id="5115811374190515607">ไปยัง<ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">คุณจะใช้ Chrome ได้ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="5122378528687922675">โปรดขอความช่วยเหลือจากผู้ปกครอง (<ph name="PARENT_NAME_1" /> หรือ <ph name="PARENT_NAME_2" />) หากต้องการ</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
@@ -1494,6 +1494,7 @@
 <translation id="7810647596859435254">เปิดด้วย…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ไฟล์ทั้งหมด 1 ไฟล์ในรายการ}other{ไฟล์ทั้งหมด # ไฟล์ในรายการ}}</translation>
 <translation id="7815484226266492798">ภาพหน้าจอแบบยาว</translation>
+<translation id="7819605256207059717">บล็อกโดยองค์กร</translation>
 <translation id="7821130663268546430">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดในตัวสลับแท็บได้</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="7824665136384946951">องค์กรปิด Google Safe Browsing</translation>
@@ -1690,7 +1691,6 @@
 <translation id="864544049772947936">จัดการหน้าต่าง (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">ใช้ Chrome ในแบบของคุณ</translation>
 <translation id="8664979001105139458">มีชื่อไฟล์นี้อยู่แล้ว</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{ถูกบล็อกโดยองค์กรของคุณ}other{# รายการถูกบล็อกโดยองค์กรของคุณ}}</translation>
 <translation id="8672883760227492369">รหัสผ่านบางรายการในอุปกรณ์นี้จะหยุดทำงานเร็วๆ นี้ คุณย้ายรหัสผ่านดังกล่าวไปยังเครื่องมือจัดการรหัสผ่านบน Google ได้</translation>
 <translation id="8676276370198826499">ลงชื่อสมัครใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">การยืนยันการลงชื่อเข้าใช้</translation>

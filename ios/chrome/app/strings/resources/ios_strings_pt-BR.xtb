@@ -50,7 +50,7 @@
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>
 <translation id="1227113644794103810">Guias inativas</translation>
 <translation id="1231733316453485619">Ativar sincronização?</translation>
-<translation id="1253032109800629289">Ocultar "Receber notificações de acompanhamento de preço"</translation>
+<translation id="1253032109800629289">Ocultar "Receber notificações de monitoramento de preço"</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">Sua última guia aberta</translation>
@@ -882,7 +882,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5279600392753459966">Bloquear todas</translation>
-<translation id="5282340693022193851">Para receber notificações de monitoramento de preços, ative-as nos Ajustes do iOS.</translation>
+<translation id="5282340693022193851">Para receber notificações de monitoramento de preços, ative esse recurso nos Ajustes do iOS.</translation>
 <translation id="5294624619177114121">Notificações no dispositivo móvel</translation>
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1106,7 +1106,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
 <translation id="6295751040240588413">Apelido do cartão inválido</translation>
 <translation id="629730747756840877">Conta</translation>
-<translation id="6301104306974789820">Receber notificações de acompanhamento de preço</translation>
+<translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
 <translation id="6310451064941005489">Opções de senha</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>

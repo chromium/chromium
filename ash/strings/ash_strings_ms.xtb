@@ -398,6 +398,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
 <translation id="2416438829169535743">Keluar daripada paparan?</translation>
 <translation id="2417486498593892439">Log masuk ke rangkaian</translation>
+<translation id="2423619675829330672">Terlalu banyak percubaan PIN. Tunggu selama <ph name="TIME_LEFT" />, kemudian cuba sekali lagi.</translation>
 <translation id="2426051945783024481">Bingkai kamera dipusatkan secara automatik</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
 <translation id="2429753432712299108">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sebelum menerimanya, sila sahkan bahawa kekunci laluan ini dipaparkan pada peranti tersebut: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6330012934079202188">Memaparkan tetingkap daripada semua meja, tekan kekunci Anak panah ke atas untuk memaparkan tetingkap daripada meja semasa</translation>
 <translation id="6337159624125741244">Penggadang skrin penuh dihidupkan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Jika anda terlupa PIN anda, cuba pulihkan semula pengguna ini.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> disambungkan</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> kemudian <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">CADANGAN APL</translation>
@@ -1633,6 +1635,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6539852571005954999">Pengimbasan muat turun <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Menghantar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF dan pelbagai lagi</translation>
+<translation id="6545382064335350438">PIN anda masih tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="6555373427270923730">Taipkan alamat web dalam bar alamat, kemudian tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Pemasangan baharu</translation>
@@ -2029,6 +2032,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7904094684485781019">Pentadbir akaun ini tidak membenarkan berbilang log masuk.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> peranti disambungkan</translation>
+<translation id="7921565901396407357">PIN anda tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="7923534281713082605">Cuaca</translation>
 <translation id="7926080067315048321">Lihat semua tugasan pada Google Tasks pada web</translation>
 <translation id="7930731167419639574">Kini pertuturan diproses secara setempat dan Pengimlakan berfungsi di luar talian</translation>

@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवण्यासाठीचे इतर मार्ग तुम्ही वापरून पाहू शकता.</translation>
 <translation id="1702543251015153180">तुमची गडद थीम सेटिंग्ज बदलायची आहे का?</translation>
 <translation id="1702907158640575240">ब्राउझर व्यवस्थापित करा</translation>
-<translation id="1710099199314114079">टॅब स्विच किंवा बंद करा</translation>
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1724977129262658800">तुमचा पासवर्ड संपादित करण्यासाठी अनलॉक करा</translation>
 <translation id="1726477445370128854">तुम्ही भेट देऊ शकता असे Chrome ला वाटत असलेली पेज ते प्रीलोड करते तेव्हा, तुम्ही आणखी जलद ब्राउझ करू शकता आणि शोधू शकता</translation>
@@ -297,6 +296,7 @@
 <translation id="2450083983707403292">तुम्हाला <ph name="FILE_NAME" /> चे डाउनलोड पुन्हा सुरू करायचे आहे का?</translation>
 <translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2453860139492968684">समाप्त</translation>
+<translation id="2461378706168271257">तुमचे टॅब शोधा</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2468444275314013497">तुमचा ब्राउझर सुरक्षित आहे</translation>
 <translation id="2472163211318554013">Chrome चा पुरेपूर वापर करण्यासाठी साइन इन करा</translation>
@@ -601,6 +601,7 @@
 <translation id="3847319713229060696">वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा</translation>
 <translation id="3856096718352044181">कृपया हा वैध पुरवठादार आहे याची पडताळणी करा किंवा नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3858860766373142691">नाव</translation>
+<translation id="3873174561423636563">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटच्या <ph name="BEGIN_LINK1" />सेवा अटी<ph name="END_LINK1" /> पहा.</translation>
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="3899682235662194879">सर्व गुप्त टॅब बंद करा</translation>
 <translation id="3900966090527141178">पासवर्ड एक्सपोर्ट करा</translation>
@@ -876,6 +877,7 @@
 <translation id="510275257476243843">1 तास शिल्लक</translation>
 <translation id="5114895953710637392">अ‍ॅप फिल्टर शीट बंद केली आहे.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> वर</translation>
+<translation id="5116239826668864748">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप केल्यावर कधीही Chrome वापरू शकता</translation>
 <translation id="5122378528687922675">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME_1" /> किंवा <ph name="PARENT_NAME_2" />) यांना विचारा</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">कोणत्याही साइट नाहीत</translation>
 <translation id="7656862631699126784">गुप्त मोड लॉक सुरू करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7663320421139257046">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> पहा.</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> बंद केले आहेत</translation>
@@ -1489,6 +1492,7 @@
 <translation id="7810647596859435254">यासह उघडा...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सर्व फाइल, सूचीमध्ये १ फाइल आहे}other{सर्व फाइल, सूचीमध्ये # फाइल आहेत}}</translation>
 <translation id="7815484226266492798">मोठा स्क्रीनशॉट</translation>
+<translation id="7819605256207059717">तुमच्या संस्थेने ब्लॉक केले आहे</translation>
 <translation id="7821130663268546430">तुम्ही टॅब स्विचरमध्ये सर्व उघडे टॅब शोधू शकता</translation>
 <translation id="7822705602465980873">तुम्ही साइन इन केले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करण्यासाठी हा डेटा तुमच्या Google खाते शी लिंक केला जातो, उदाहरणार्थ सुरक्षेशी संबंधित घटनेनंतर Gmail मध्ये संरक्षण वाढवणे.</translation>
 <translation id="7824665136384946951">तुमच्या संस्थेने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
@@ -1685,7 +1689,6 @@
 <translation id="864544049772947936">विंडो व्यवस्थापित करा (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">तुमच्या पद्धतीने Chrome वापरा</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{तुमच्या संस्थेने ब्लॉक केले आहे}other{# तुमच्या संस्थेने ब्लॉक केली आहेत}}</translation>
 <translation id="8672883760227492369">या डिव्हाइसवरील काही पासवर्ड लवकरच काम करणे थांबवतील. हे पासवर्ड तुम्ही Google Password Manager वर हलवू शकता.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर साइन अप करा</translation>
 <translation id="8676789164135894283">साइन-इनसंबंधित पडताळणी</translation>

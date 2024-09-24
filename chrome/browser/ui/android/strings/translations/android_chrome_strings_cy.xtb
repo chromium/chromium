@@ -153,7 +153,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1696555181932908973">Gallwch roi cynnig ar ffyrdd eraill o barhau ar <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Newid eich gosodiadau thema dywyll?</translation>
 <translation id="1702907158640575240">Porwr a reolir</translation>
-<translation id="1710099199314114079">Newid neu gau tabiau</translation>
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1724977129262658800">Datglowch i olygu eich cyfrinair</translation>
 <translation id="1726477445370128854">Gallwch bori a chwilio'n gyflymach pan fydd Chrome yn rhaglwytho tudalennau y mae'n credu y byddwch yn ymweld â nhw</translation>
@@ -297,6 +296,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2450083983707403292">Ydych chi am ddechrau lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="2451607499823206582">Dilyn</translation>
 <translation id="2453860139492968684">Gorffen</translation>
+<translation id="2461378706168271257">Chwilio eich tabiau</translation>
 <translation id="2461822463642141190">Presennol</translation>
 <translation id="2468444275314013497">Mae eich porwr yn edrych yn dda</translation>
 <translation id="2472163211318554013">Mewngofnodwch i gael y gorau o Chrome</translation>
@@ -601,6 +601,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3847319713229060696">Helpwch i wella diogelwch y we i bawb</translation>
 <translation id="3856096718352044181">Cadarnhewch fod hwn yn ddarparwr dilys neu rhowch gynnig arall arni yn nes ymlaen</translation>
 <translation id="3858860766373142691">Enw</translation>
+<translation id="3873174561423636563">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweler <ph name="BEGIN_LINK1" />telerau gwasanaeth<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="3899682235662194879">Cau pob tab Anhysbys</translation>
 <translation id="3900966090527141178">Allforio cyfrineiriau</translation>
@@ -876,6 +877,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="510275257476243843">1 awr ar ôl</translation>
 <translation id="5114895953710637392">Mae taflen hidlo ap ar gau.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="5122378528687922675">Os oes angen help arnat, gofynna i dy riant (<ph name="PARENT_NAME_1" /> neu <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab anhysbys</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
@@ -1458,6 +1460,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7656721520530864426">Dim gwefannau</translation>
 <translation id="7656862631699126784">Troi Clo anhysbys ymlaen</translation>
 <translation id="7658239707568436148">Canslo</translation>
+<translation id="7663320421139257046">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweld <ph name="BEGIN_LINK1" />polisi preifatrwydd<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="7665369617277396874">Ychwanegu cyfrif</translation>
 <translation id="766587987807204883">Mae erthyglau yn ymddangos yma, y gallwch eu darllen hyd yn oed pan fyddwch all-lein</translation>
 <translation id="7666185984446444960">Cafodd <ph name="TAB_GROUPS_AND_TABS_PART" /> eu cau</translation>
@@ -1489,6 +1492,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7810647596859435254">Agor gyda…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Pob ffeil, 1 ffeil yn y rhestr}zero{Pob ffeil, # ffeiliau yn y rhestr}two{Pob ffeil, # ffeil yn y rhestr}few{Pob ffeil, # ffeil yn y rhestr}many{Pob ffeil, # ffeil yn y rhestr}other{Pob ffeil, # ffeil yn y rhestr}}</translation>
 <translation id="7815484226266492798">Sgrinlun hir</translation>
+<translation id="7819605256207059717">Rhwystrwyd gan eich sefydliad</translation>
 <translation id="7821130663268546430">Gallwch ddod o hyd i'r holl dabiau agored yn y newidiwr tabiau</translation>
 <translation id="7822705602465980873">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="7824665136384946951">Mae eich sefydliad wedi diffodd Pori'n Ddiogel</translation>
@@ -1685,7 +1689,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="864544049772947936">Rheoli ffenestri (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Defnyddiwch Chrome eich ffordd chi</translation>
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Rhwystrwyd gan eich sefydliad}zero{Rhwystrwyd # gan eich sefydliad}two{Rhwystrwyd # gan eich sefydliad}few{Rhwystrwyd # gan eich sefydliad}many{Rhwystrwyd # gan eich sefydliad}other{Rhwystrwyd # gan eich sefydliad}}</translation>
 <translation id="8672883760227492369">Bydd rhai cyfrineiriau ar y ddyfais hon yn stopio gweithio cyn bo hir. Gallwch symud y cyfrineiriau hyn i'r Rheolwr Cyfrineiriau Google.</translation>
 <translation id="8676276370198826499">Cofrestru ar gyfer <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Gwiriadau mewngofnodi</translation>

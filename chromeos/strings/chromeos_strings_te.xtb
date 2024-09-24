@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1343442362630695901">ఉప్పునీటి సరస్సు</translation>
 <translation id="1348657754632799065">రికార్డింగ్ బార్</translation>
+<translation id="1350909945461913813">ఏదైనా వర్క్‌ను సేవ్ చేయడం మర్చిపోకండి</translation>
 <translation id="1367951781824006909">ఒక ఫైల్‌ని ఎంచుకోండి</translation>
 <translation id="1371650399987522809">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్న వాల్‌పేపర్ కోసం ఫీడ్‌బ్యాక్</translation>
 <translation id="1374385338586507108">నిర్వచించండి</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK వెర్షన్:</translation>
 <translation id="2016697457005847575">పరిష్కార ప్రక్రియకు సంబంధించిన దశలను ట్రై చేయండి</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">మీ AI ఇమేజ్‌లను వ్యక్తిగతీకరించడానికి థీమ్‌ను ఎంచుకుని, అండర్‌లైన్ చేసిన పదాలను ఎంచుకోండి.</translation>
 <translation id="2045814230297767491">కట్లరీ</translation>
 <translation id="2047316797244836561">స్క్రీన్ సేవర్‌ను చూడటానికి, దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2082932131694554252">కేటాయించిన కీబోర్డ్ కీ</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
-<translation id="2085876078937250610">సేవ్ చేయండి…</translation>
 <translation id="2086091080968010660">సమయ ఆధారిత మార్పులు ఖచ్చితమైనవి కాకపోవచ్చు. సెట్టింగ్‌లలో సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి.</translation>
 <translation id="2102231663024125441">టెక్స్ట్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2102648867808308635">ఈ పేజీని చదవడంలో నాకు సహాయం చేయి</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">స్పీచ్ కనుగొనబడలేదు</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ప్రాంప్ట్ గైడ్<ph name="END_LINK_PROMPTING_GUIDE" />‌ను క్రియేట్ చేయడానికి లేదా చూడటానికి ప్రాంప్ట్‌ను ఎంచుకోండి</translation>
 <translation id="2472215337771558851">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోన్న డ్రాఫ్ట్‌ను క్రియేట్ చేయడానికి లేదా ఇప్పటికే ఉన్న దాన్ని మెరుగుపరచడానికి 'నాకు రాయడానికి సహాయం చేయండి'ని ఉపయోగించండి</translation>
 <translation id="2480572840229215612">పీతలు</translation>
 <translation id="248546197012830854">పరికరం ఆఫ్‌లైన్‌లో ఉంది. Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ చేసి, సహాయక కంటెంట్‌ను చూడండి.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">మ్యాచ్ అయ్యే ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
+<translation id="4486524074141928967">మీరు <ph name="TIME" />‌కు సైన్ అవుట్ అవుతారు</translation>
 <translation id="4500722292849917410">షార్ట్‌కట్ అందుబాటులో లేదు. మోడిఫయర్ కీని (ctrl, alt, shift, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="4500966230243561393">ఇంటర్‌ఫేస్ రంగు</translation>
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
@@ -836,7 +839,7 @@
 <translation id="522307662484862935">ఈమెయిల్ అడ్రస్‌ను చేర్చకండి</translation>
 <translation id="5223226274641517059">మీరు రికార్డింగ్ చేస్తున్నప్పుడు లైవ్ టైప్ చేసిన మాటల ఫైల్స్ చూపబడతాయి. మీరు దీనిని సెట్టింగ్‌లలో ఎప్పుడైనా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="5226879510707344687">టైప్ చేసిన మాటల ఫైల్‌ను ఎగుమతి చేయండి</translation>
-<translation id="5227902338748591677">ముదురు రంగు రూపం షెడ్యూల్</translation>
+<translation id="5227902338748591677">డార్క్ థీమ్‌ షెడ్యూల్</translation>
 <translation id="5229104491259541281">"<ph name="QUERY" />"ను కన్వర్ట్ చేయండి</translation>
 <translation id="5229344016299762883">ఫుల్-స్క్రీన్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">బూడిద రంగు</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> కీని పరీక్షించారు</translation>
+<translation id="5613201299517339763">మీరు సైన్ అవుట్ అయ్యారు</translation>
 <translation id="5620281292257375798">అంతర్గతం మాత్రమే</translation>
 <translation id="5630438231335788050">బౌహాస్</translation>
 <translation id="5631759159893697722">సంక్షేపం</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">ఫైల్ కనుగొనబడలేదు</translation>
 <translation id="5938286923316838007">ఈ కంటెంట్ కోసం రికార్డింగ్ పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5939518447894949180">రీసెట్ చేయండి</translation>
+<translation id="5942727615796467094"><ph name="DEVICE_TYPE" />‌ను ఎప్పుడు ఉపయోగించాలో <ph name="MANAGER" /> అడ్మిని‌స్ట్రేటర్ సెట్ చేశారు</translation>
 <translation id="594552776027197022">ర్యాండమ్ కీపెయిర్‌ను జెనరేట్ చేయండి</translation>
 <translation id="5946538341867151940">మీ పరికరం ఇంకా నెట్‌వర్క్‌కు కనెక్ట్ చేయబడలేదు. మీ మొబైల్ క్యారియర్ అనుకూల APNను సిఫార్సు చేస్తే, "+ కొత్త APN"ను ఎంచుకోవడం ద్వారా APN సమాచారాన్ని ఎంటర్ చేయండి</translation>
 <translation id="5947266287934282605">నెల చివరి రోజు ఈ రోజు కంటే ముందు ఉంటే, నెల చివరి రోజున డేటా రీసెట్ చేయబడుతుంది</translation>
@@ -1057,7 +1062,7 @@
 <translation id="6324916366299863871">షార్ట్‌కట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="6327262166342360252">ఈ వాల్‌పేపర్ ఈ టెక్స్ట్‌ను ఉపయోగించి AIతో క్రియేట్ చేయబడింది: "<ph name="PROMPT" />."</translation>
-<translation id="6331191339300272798">ఆటోమేటిక్ ముదురు రంగు రూపం</translation>
+<translation id="6331191339300272798">ఆటోమేటిక్ డార్క్ థీమ్‌</translation>
 <translation id="6335228876613776082">మోడల్‌ను డౌన్‌లోడ్ చేయడం పూర్తయింది</translation>
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
 <translation id="6348252528297699679">లొకేషన్‌ను మీరు సెట్టింగ్‌లు &gt; గోప్యత, సెక్యూరిటీ &gt; గోప్యతా కంట్రోల్స్ &gt; లొకేషన్ యాక్సెస్‌లో ఆఫ్ చేయవచ్చు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">వేరొక గ్రహం</translation>
 <translation id="6359706544163531585">లేత రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="6359919876285606596">ఈ చర్య శాశ్వతమైనది, దీన్ని రద్దు చేయడం సాధ్యం కాదు</translation>
+<translation id="6368342879959028556">“AIతో క్రియేట్ చేయండి”ని ఎంచుకున్నప్పుడు, అనుకూల ప్రాంప్ట్‌ను రాయండి. లేదా మీరు థీమ్‌ను ఎంచుకోవడానికి “AI వాల్‌పేపర్‌లు” ఎంచుకోవచ్చు, ఆపై మీ AI వాల్‌పేపర్‌ను వ్యక్తిగతీకరించడానికి అండర్‌లైన్ చేసిన పదాలను ఎంచుకోవచ్చు.</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="6373461326814131011">కొలను</translation>
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">ఖాతా సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6462978824459367242">APNను జోడించండి బటన్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయాలా?}=1{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}other{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}}</translation>
+<translation id="6468146470109254228">మీ అత్యంత ఇటీవలి 3 ప్రాంప్ట్‌లు, అవుట్‌ఫుట్‌లు. మీరు వాల్‌పేపర్ &amp; స్టయిల్‌ను ఉపయోగిస్తున్నప్పుడు మాత్రమే మీరు వీటిని యాక్సెస్ చేయగలరు.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">పడవలు</translation>
 <translation id="64778964625672495">ముదురు ఎరుపు రంగు</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659594942844771486">బ్రౌజర్ ట్యాబ్</translation>
 <translation id="66621959568103627">పగడపు గులాబీ</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మరింత ప్రత్యేకమైన, విభిన్నమైన AI ఇమేజ్‌ల ఆప్షన్‌లను పొందడానికి "నాలో స్ఫూర్తిని నింపండి" అనే ఆప్షన్‌ను ఎంచుకోండి.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          మీరు AIతో క్రియేట్ చేసినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />కి అనుగుణంగా ఇమేజ్‌లు జెనరేట్ చేయడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి, Googleకు చెందిన AI టెక్నాలజీల సర్వర్‌లకు ప్రాంప్ట్ పంపబడుతుంది.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.</translation>
 <translation id="6673898378497337661">కీబోర్డ్ బ్రైట్‌నెస్‌ను పెంచుతుంది</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6694534975463174713">లాక్</translation>

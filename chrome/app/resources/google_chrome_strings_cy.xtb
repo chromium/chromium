@@ -302,6 +302,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4680828127924988555">Canslo Gosod</translation>
 <translation id="469553575393225953">Gall estyniadau, apiau a themâu o ffynonellau anhysbys niweidio'ch dyfais. Mae Chrome yn argymell eu gosod o Chrome Web Store yn unig</translation>
 <translation id="4710245680469034439">Personoleiddio'ch porwr gyda themâu sydd wedi'u hysbrydoli gan natur, casgliadau artistiaid a rhagor</translation>
+<translation id="4720851490453439956">Gwasanaeth Mewnol Diweddaru Google</translation>
 <translation id="4724676981607797757">Methodd y gosodiad oherwydd gwall protocol na chefnogir.</translation>
 <translation id="4728575227883772061">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Google Chrome yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4741235124132242877">Piniwyd! Defnyddiwch Google Lens eto o'r bar offer</translation>
@@ -465,6 +466,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6885412569789873916">Apiau Beta Chrome</translation>
 <translation id="6893363893008038481">Tynnu Cyfrif o Chrome</translation>
 <translation id="6896758677409633944">Copïo</translation>
+<translation id="6930294499209825">Yn cadw'ch meddalwedd Google yn gyfredol. Os yw'r gwasanaeth hwn wedi'i analluogi neu ei stopio, ni fydd eich meddalwedd Google yn cael ei gadw'n gyfredol, sy'n golygu na all gwendidau diogelwch a all godi gael eu trwsio ac efallai na fydd nodweddion yn gweithio. Mae'r gwasanaeth hwn yn dadosod ei hun pan nad oes meddalwedd Google yn ei ddefnyddio.</translation>
 <translation id="6933858244219479645">System ChromeOS</translation>
 <translation id="6938166777909186039">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>
 <translation id="6943584222992551122">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
@@ -514,6 +516,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7477130805345743099">Bydd Chrome yn eich rhybuddio cyn llwytho unrhyw wefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="7481213027396403996">Cael diogelwch cryfaf Chrome</translation>
 <translation id="749228101751499733">Tra byddwch wedi mewngofnodi, gallwch ddefnyddio'ch cyfrineiriau a rhagor o'ch Cyfrif Google yn Chrome. Gall <ph name="SHORTCUT" /> newid eich gosodiadau gwasanaethau Google.</translation>
+<translation id="7514258452813684157">Gwasanaeth Diweddaru Google</translation>
 <translation id="7515191208480168435">Gallwch binio Google Lens i gael mynediad hawdd</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Wedi diffodd • Nid yw Chrome yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>

@@ -297,6 +297,7 @@
 <translation id="4680828127924988555">Installation abbrechen</translation>
 <translation id="469553575393225953">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chrome empfiehlt, sie nur über den Chrome Web Store zu installieren.</translation>
 <translation id="4710245680469034439">Du kannst deinen Browser mit Designs personalisieren, die beispielsweise von der Natur oder Künstlerkollektionen inspiriert sind</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
 <translation id="4741235124132242877">Angepinnt! Du kannst Google Lens wieder über die Symbolleiste verwenden.</translation>
@@ -456,6 +457,7 @@
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
 <translation id="6893363893008038481">Konto aus Chrome entfernen</translation>
 <translation id="6896758677409633944">Kopieren</translation>
+<translation id="6930294499209825">Hält deine Google-Software auf dem neuesten Stand. Wenn dieser Dienst deaktiviert oder angehalten wurde, wird deine Google-Software nicht mehr aktualisiert. Das heißt, dass eventuelle neue Sicherheitslücken nicht behoben werden können und einige Funktionen möglicherweise nicht funktionieren. Dieser Dienst deinstalliert sich selbst, wenn er nicht von einer Google-Software verwendet wird.</translation>
 <translation id="6933858244219479645">ChromeOS-System</translation>
 <translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
@@ -505,6 +507,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7477130805345743099">Chrome warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="749228101751499733">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Mithilfe des Shortcuts <ph name="SHORTCUT" /> kannst du die Einstellungen für Google‑Dienste jederzeit ändern.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Deaktiviert • Chrome kann nicht bestätigen, woher diese Erweiterung stammt</translation>

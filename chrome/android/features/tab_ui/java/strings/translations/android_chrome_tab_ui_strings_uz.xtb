@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
+<translation id="6590332670428149473"><ph name="COLOR_NAME" /> rangli <ph name="TITLE_OF_GROUP" /> umumiy varaqlar guruhi uchun amallar menyusini ochish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ta varaq oʻzgardi}other{<ph name="MANY_CHANGED" /> ta varaq oʻzgardi}}</translation>
 <translation id="6694634756612002311">Ulashuvni boshqarish</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli guruhni yoyish.}other{<ph name="TABS_COUNT_MANY" /> ta varaqli guruhni yoyish.}}</translation>
 <translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
 <translation id="9111228330448174435">Yangi varaqlar guruhini yaratishda bildirgi chiqarish</translation>
+<translation id="9114502155681725011"><ph name="COLOR_NAME" /> rangli <ph name="TITLE_OF_GROUP" /> varaqlar guruhi uchun amallar menyusini ochish</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
 <translation id="9216898458513705996">Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi</translation>

@@ -301,6 +301,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4680828127924988555">Utzi instalazioa bertan behera</translation>
 <translation id="469553575393225953">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoek Chrome Web Store-tik bakarrik instalatzea gomendatzen du Chrome-k.</translation>
 <translation id="4710245680469034439">Pertsonalizatu arakatzailea naturan, artisten bildumetan eta bestelako elementuetan oinarritutako gaiekin</translation>
+<translation id="4720851490453439956">Google eguneratzeko barneko zerbitzua</translation>
 <translation id="4724676981607797757">Instalazioak huts egin du, protokoloa onartu ez delako.</translation>
 <translation id="4728575227883772061">Instalazioak huts egin du zehaztu gabeko errore batengatik. Google Chrome abian bada, itxi ezazu eta saiatu berriro.</translation>
 <translation id="4741235124132242877">Ainguratu da! Tresna-barraren bidez erabil dezakezu berriro Google Lens.</translation>
@@ -464,6 +465,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
 <translation id="6893363893008038481">Kendu kontua Chrome-tik</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
+<translation id="6930294499209825">Google-ren softwarea eguneratuta mantentzen du. Zerbitzu hau desgaitzen edo gelditzen bada, Google-ren softwarea ez da eguneratuta mantenduko; beraz, agertzen diren segurtasun-ahultasunak ezin izango dira konpondu eta eginbideek agian ez dute funtzionatuko. Zerbitzu hau erabiltzen duen Google-ren softwarerik ez badago, automatikoki desinstalatuko da.</translation>
 <translation id="6933858244219479645">ChromeOS sistema</translation>
 <translation id="6938166777909186039">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>
 <translation id="6943584222992551122">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
@@ -513,6 +515,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7477130805345743099">Chrome-k abisatu egingo dizu webgune bat konexio ez-seguru batekin kargatu aurretik</translation>
 <translation id="7481213027396403996">Lortu Chrome-ren segurtasun-aukerarik sendoena</translation>
 <translation id="749228101751499733">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chrome-n. Google-ren zerbitzuen ezarpenak aldatzeko, erabili <ph name="SHORTCUT" />.</translation>
+<translation id="7514258452813684157">Google eguneratzeko zerbitzua</translation>
 <translation id="7515191208480168435">Google Lens erraz erabiltzeko, aingura ezazu</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desaktibatuta • Chrome-k ezin du egiaztatu luzapena nondik datorren</translation>

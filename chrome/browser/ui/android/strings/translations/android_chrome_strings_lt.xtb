@@ -153,7 +153,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1696555181932908973">Galite išbandyti kitus būdus tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Pakeisti tamsiosios temos nustatymus?</translation>
 <translation id="1702907158640575240">Tvarkoma naršyklė</translation>
-<translation id="1710099199314114079">Perjungti arba uždaryti skirtukus</translation>
 <translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1724977129262658800">Atrakinkite, kad galėtumėte redaguoti slaptažodį</translation>
 <translation id="1726477445370128854">Galite sparčiau naršyti ir ieškoti, kai „Chrome“ iš anksto įkelia puslapius, kuriuose, jos manymu, galėtumėte apsilankyti</translation>
@@ -297,6 +296,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2450083983707403292">Ar norite vėl pradėti <ph name="FILE_NAME" /> atsisiuntimą?</translation>
 <translation id="2451607499823206582">Stebėjimas</translation>
 <translation id="2453860139492968684">Užbaigti</translation>
+<translation id="2461378706168271257">Ieškokite skirtukuose</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2468444275314013497">Naršyklė atrodo gerai</translation>
 <translation id="2472163211318554013">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes</translation>
@@ -601,6 +601,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3847319713229060696">Pagalba didinant visų naudotojų saugą žiniatinklyje</translation>
 <translation id="3856096718352044181">Patvirtinkite, kad tai yra tinkamas paslaugų teikėjas, arba vėliau bandykite dar kartą</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
+<translation id="3873174561423636563">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine. Žr. svetainės <ph name="BEGIN_LINK1" />paslaugų teikimo sąlygas<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="3899682235662194879">Uždaryti visus inkognito skirtukus</translation>
 <translation id="3900966090527141178">Eksportuokite slaptažodžius</translation>
@@ -876,6 +877,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="510275257476243843">Liko 1 val.</translation>
 <translation id="5114895953710637392">Programos filtro lapas uždarytas.</translation>
 <translation id="5115811374190515607">į <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="5122378528687922675">Jei reikia pagalbos, paprašykite vieno iš tėvų (<ph name="PARENT_NAME_1" /> arba <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
@@ -1458,6 +1460,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7656721520530864426">Nėra jokių svetainių</translation>
 <translation id="7656862631699126784">Įjungti inkognito užraktą</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7663320421139257046">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK1" />privatumo politiką<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>
 <translation id="7666185984446444960">Uždaryta: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7810647596859435254">Atidaryti naudojant...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Visi failai, vienas failas sąraše}one{Visi failai, # failas sąraše}few{Visi failai, # failai sąraše}many{Visi failai, # failo sąraše}other{Visi failai, # failų sąraše}}</translation>
 <translation id="7815484226266492798">Ilga ekrano kopija</translation>
+<translation id="7819605256207059717">Užblokavo jūsų organizacija</translation>
 <translation id="7821130663268546430">Visus atidarytus skirtukus rasite skirtukų perjungiklyje</translation>
 <translation id="7822705602465980873">Kai esate prisijungę, šie duomenys susiejami su jūsų „Google“ paskyra, siekiant apsaugoti jus „Google“ paslaugose, pvz., užtikrinant didesnę apsaugą sistemoje „Gmail“ po saugos incidento.</translation>
 <translation id="7824665136384946951">Organizacija išjungė Saugaus naršymo funkciją</translation>
@@ -1685,7 +1689,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="864544049772947936">Tvarkyti langus (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Suasmeninkite „Chrome“ naudojimą</translation>
 <translation id="8664979001105139458">Failas pavadinimas jau yra</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Užblokavo jūsų organizacija}one{# užblokavo jūsų organizacija}few{# užblokavo jūsų organizacija}many{# užblokavo jūsų organizacija}other{# užblokavo jūsų organizacija}}</translation>
 <translation id="8672883760227492369">Kai kurie slaptažodžiai netrukus nebeveiks šiame įrenginyje. Šiuos slaptažodžius galite perkelti į „Google“ slaptažodžių tvarkyklę.</translation>
 <translation id="8676276370198826499">Prisiregistruokite naudoti „<ph name="SITE_ETLD_PLUS_ONE" />“ su „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“</translation>
 <translation id="8676789164135894283">Prisijungimo patvirtinimai</translation>

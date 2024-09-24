@@ -3979,6 +3979,11 @@ possono essere inviati i report aziendali.
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
 <translation id="3990834929384096140">Non forzare l'applicazione della cancellazione dell'eco per l'audio di sistema</translation>
+<translation id="3992082233013655355">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
+      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
+      Finora questo criterio funziona solo per la sessione Ospite gestita.
+
+      Ogni voce dell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata. Ogni voce può anche avere un campo facoltativo con il nome del canale di rilascio dell'IWA. Se il criterio "update_channel" non viene configurato, verrà utilizzato il valore "default".</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="3995880046827722248">Manifest v2 disabilitato</translation>
@@ -6240,7 +6245,7 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5660228672907979869">Blocca l'attivazione del partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="5660950553460381588">Imposta come predefinita la creazione di passkey nel portachiavi iCloud quando possibile.</translation>
 <translation id="5666457529647159548">Consenti agli utenti di gestire i certificati client installati.</translation>
-<translation id="5670249935663090320">Se il criterio viene attivato o se non viene configurato, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Cast nella barra degli strumenti.
+<translation id="5670249935663090320">Se il criterio viene attivato o se non viene configurato, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Trasmetti nella barra degli strumenti.
 
 Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.</translation>
 <translation id="5673254755365419402">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
@@ -6583,11 +6588,6 @@ Se il criterio viene disattivato, l'audio verrà disattivato in modalità Niente
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5962271004971310788">Estensioni di cui l'utente deve consentire l'esecuzione in incognito per poter navigare in questa modalità</translation>
 <translation id="5963752574792883406">porta 990 (può essere sbloccata fino al 01/02/2022)</translation>
-<translation id="5964583455815172553">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
-      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID del pacchetto web che identifica l'IWA.
-      Finora questo criterio funziona solo per la sessione Ospite gestita.
-
-      Ogni voce del criterio è un oggetto con il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID del pacchetto web dell'app web isolata. Entrambi i campi sono obbligatori.</translation>
 <translation id="596523880465577341">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Estensioni autorizzate a utilizzare l'API di attestazione da remoto</translation>
 <translation id="596732417280023843">Il nome del profilo di certificato.</translation>
@@ -6728,27 +6728,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6102449843040973938">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="610892566190435199">Attiva i report sullo stato di alimentazione del dispositivo</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
-<translation id="6112524153927257380">Se il criterio viene impostato, gli utenti non potranno aggirare le decisioni relative alla sicurezza dei download.
-
-      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Dannosi, come segnalato dal server di Navigazione sicura
-      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
-      * Un tipo di file pericoloso (ad esempio tutti i download SWF e tanti download EXE)
-
-      Se il criterio viene impostato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
-
-      0: Nessuna limitazione speciale (opzione predefinita).
-
-      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
-
-      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
-
-      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 
@@ -9250,7 +9229,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOC
 
 Questo criterio aziendale consente agli amministratori di stabilire se gli utenti possono attivare o meno la limitazione aggiuntiva. Se il criterio viene impostato su disabled, non è possibile attivare la limitazione. Se il criterio viene impostato su enabled o se non viene configurato, l'utente può attivare la limitazione oppure quest'ultima potrebbe essere attivata tramite varianti di Chrome.</translation>
 <translation id="793188693675675950">Disabilita l'importazione della home page alla prima esecuzione</translation>
-<translation id="7932017046032784156">Se il criterio viene impostato su Attivato, verrà mostrata l'icona Cast nella barra degli strumenti o nel menu extra e gli utenti non potranno rimuoverla.
+<translation id="7932017046032784156">Se il criterio viene impostato su Attivato, verrà mostrata l'icona Trasmetti nella barra degli strumenti o nel menu extra e gli utenti non potranno rimuoverla.
 
 Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno bloccare o rimuovere l'icona tramite il relativo menu contestuale.
 
@@ -10473,6 +10452,27 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Sui nuovi dispositivi è impostato il fuso orario della costa del Pacifico degli Stati Uniti. Il formato del valore segue quello dei nomi nello IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Se viene inserito un valore non valido, per il criterio viene usato il fuso orario GMT.
 
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
+<translation id="8875202330803089599">Se il criterio viene configurato, gli utenti non potranno bypassare le decisioni relative alla sicurezza dei download.
+
+      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Dannosi, come segnalato dal server di Navigazione sicura
+      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
+      * Un tipo di file pericoloso (ad es. tutti i download SWF e diversi download EXE)
+
+      Se il criterio viene configurato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
+
+      0: Nessuna limitazione speciale. Valore predefinito.
+
+      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
+
+      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi. Opzione consigliata.
+
+      Nota: queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Scarica link…. Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Consente ad alcuni servizi su <ph name="PRODUCT_OS_FLEX_NAME" /> di inviare dati hardware aggiuntivi.
 
 Questi dati hardware vengono utilizzati per migliorare il rendimento generale di <ph name="PRODUCT_OS_FLEX_NAME" />.
@@ -10490,6 +10490,7 @@ Se viene disattivato, vengono inviati solo i dati hardware standard.</translatio
 <translation id="8890438048579188548">Nascondi avvisi di ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Disattiva i report sulle informazioni di sistema del dispositivo</translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="8892771980172542172">Il nome del canale di rilascio/aggiornamento dell'IWA. Questo valore può essere una stringa qualsiasi; non sono applicate limitazioni. Se non viene fornito alcun valore, verrà utilizzato il canale "predefinito".</translation>
 <translation id="8892783613915541293">Ritardi e azioni da compiere quando il dispositivo è inattivo durante l'utilizzo dell'alimentazione CA.</translation>
 <translation id="8897796778265450949">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline</translation>
 <translation id="889814528399907891">Consenti agli utenti di attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale</translation>

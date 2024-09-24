@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">Та <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
 <translation id="1702543251015153180">Бараан загварын тохиргоогоо өөрчлөх үү?</translation>
 <translation id="1702907158640575240">Удирддаг хөтөч</translation>
-<translation id="1710099199314114079">Таб сэлгэх эсвэл хаах</translation>
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1724977129262658800">Нууц үгээ засахын тулд түгжээг тайлна уу</translation>
 <translation id="1726477445370128854">Chrome таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаалсан үед та илүү хурдан үзэж, хайх боломжтой</translation>
@@ -878,6 +877,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="510275257476243843">1 цаг үлдсэн</translation>
 <translation id="5114895953710637392">Аппын шүүлтүүрийн хүснэгтийг хаасан.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> хаягт</translation>
+<translation id="5116239826668864748">Та мессеж, баримт бичиг болон бусад апп дахь холбоосыг товших бүрдээ Chrome-г ашиглах боломжтой</translation>
 <translation id="5122378528687922675">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME_1" /> эсвэл <ph name="PARENT_NAME_2" />) хүснэ үү</translation>
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
@@ -1492,6 +1492,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7810647596859435254">Дараахаар нээх...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Бүх файл, жагсаалтад 1 файл байна}other{Бүх файл, жагсаалтад # файл байна}}</translation>
 <translation id="7815484226266492798">Урт дэлгэцийн агшин</translation>
+<translation id="7819605256207059717">Танай байгууллагаас блоклосон</translation>
 <translation id="7821130663268546430">Таб хооронд шилжүүлэгчээс та бүх нээлттэй табыг олох боломжтой</translation>
 <translation id="7822705602465980873">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="7824665136384946951">Танай байгууллага Safe Browsing-г унтраасан</translation>
@@ -1688,7 +1689,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="864544049772947936">Цонхнуудыг удирдах (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome-г өөрийнхөөрөө ашиглах</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Танай байгууллагаас блоклосон}other{Танай байгууллагаас #-г блоклосон}}</translation>
 <translation id="8672883760227492369">Энэ төхөөрөмж дээрх зарим нууц үг удахгүй ажиллахаа болино. Та эдгээр нууц үгийг Google Нууц үгний менежер лүү зөөх боломжтой.</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р бүртгүүлээрэй</translation>
 <translation id="8676789164135894283">Нэвтрэх баталгаажуулалт</translation>

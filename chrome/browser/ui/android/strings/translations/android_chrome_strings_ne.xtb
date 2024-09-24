@@ -153,7 +153,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1696555181932908973">तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="1702543251015153180">अँध्यारो थिमसम्बन्धी सेटिङ बदल्ने हो?</translation>
 <translation id="1702907158640575240">व्यवस्थापन गरिएको ब्राउजर</translation>
-<translation id="1710099199314114079">ट्याबहरू बदल्नुहोस् वा बन्द गर्नुहोस्</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1724977129262658800">आफ्नो पासवर्ड बदल्न अनलक गर्नुहोस्</translation>
 <translation id="1726477445370128854">Chrome ले उसलाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राख्छ। यसले गर्दा तपाईं ती पेज छिटोछरितो रूपमा ब्राउज गर्न र खोज्न सक्नुहुन्छ</translation>
@@ -297,6 +296,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2450083983707403292">तपाईं <ph name="FILE_NAME" /> लाई फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="2451607499823206582">ट्र्याक गरिँदै छ</translation>
 <translation id="2453860139492968684">समाप्त</translation>
+<translation id="2461378706168271257">आफ्ना ट्याबहरू खोज्नुहोस्</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2468444275314013497">तपाईंको ब्राउजर सुरक्षित देखिन्छ</translation>
 <translation id="2472163211318554013">तपाईं Chrome बाट बढीभन्दा बढी फाइदा लिन चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
@@ -601,6 +601,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3847319713229060696">वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित रहन मद्दत गर्नुहोस्</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="3873174561423636563">साइन अप गर्ने प्रक्रिया जारी राख्न <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले यो साइटसँग तपाईंको <ph name="FIELDS_STRING" /> सेयर गर्ने छ। यो साइटका <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="3899682235662194879">सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="3900966090527141178">पासवर्डहरू एक्सपोर्ट गर्नुहोस्</translation>
@@ -875,6 +876,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
+<translation id="5116239826668864748">तपाईंले कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्</translation>
 <translation id="5122378528687922675">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME_1" /> वा <ph name="PARENT_NAME_2" />) लाई अनुरोध गर्नुहोस्</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
@@ -1457,6 +1459,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7656721520530864426">कुनै पनि साइट छैन</translation>
 <translation id="7656862631699126784">इन्कोग्निटो लक अन गर्नुहोस्</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7663320421139257046">साइन अप गर्ने प्रक्रिया जारी राख्न <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले यो साइटसँग तपाईंको <ph name="FIELDS_STRING" /> सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="7665369617277396874">खाता हाल्नुहोस्</translation>
 <translation id="766587987807204883">लेखहरू यहाँ देखिन्छन् र तपाईं ती लेखहरू अफलाइन भएका बेलामा पनि पढ्न सक्नुहुन्छ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> बन्द गरियो</translation>
@@ -1488,6 +1491,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{सबै फाइल, सूचीमा एउटा फाइल छ}other{सबै फाइल, सूचीमा # वटा फाइल छन्}}</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
+<translation id="7819605256207059717">तपाईंको सङ्गठनले ब्लक गरेको</translation>
 <translation id="7821130663268546430">तपाईं ट्याब स्विचरमा सबै खुला ट्याबहरू भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="7822705602465980873">तपाईं साइन इन अवस्थामा भएका बेला यो जानकारी तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्ने (जस्तै, सुरक्षासम्बन्धी कुनै घटना घटेपछि Gmail मा सुरक्षा बढाउने) प्रयोजनका लागि तपाईंको Google खातामा लिंक गरिन्छ।</translation>
 <translation id="7824665136384946951">तपाईंको सङ्गठनले Safe Browsing अफ गरेको छ</translation>
@@ -1684,7 +1688,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="864544049772947936">विन्डोहरू व्यवस्थापन गर्नु… (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">आफूले चाहे जसरी Chrome प्रयोग गर्नुहोस्</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{तपाईंको सङ्गठनले तोकेको नीतिअनुसार एउटा सामग्री डाउनलोड गर्ने कार्य ब्लक गरिएको छ}other{तपाईंको सङ्गठनले तोकेको नीतिअनुसार # वटा सामग्री डाउनलोड गर्ने कार्य ब्लक गरिएको छ}}</translation>
 <translation id="8672883760227492369">यो डिभाइसमा सेभ गरिएका केही पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्। तपाईं यी पासवर्डहरू सारेर Google पासवर्ड म्यानेजरमा लैजान सक्नुहुन्छ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन अप गर्नुहोस्</translation>
 <translation id="8676789164135894283">साइन इन गर्न कार्यको पुष्टिसम्बन्धी सूचना</translation>

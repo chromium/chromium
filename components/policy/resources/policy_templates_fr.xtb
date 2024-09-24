@@ -6498,11 +6498,6 @@ Si cette règle est désactivée, les sons seront désactivés en mode Sans dist
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5962271004971310788">Extensions dont l'utilisateur doit autoriser l'exécution en mode navigation privée pour utiliser ce même mode</translation>
 <translation id="5963752574792883406">port 990 (peut être débloqué jusqu'au 01/02/2022)</translation>
-<translation id="5964583455815172553">Cette règle permet d'établir la liste des applis Web isolées (IWA) qui s'installent de manière autonome.
-      Les IWA sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'IWA.
-      Jusqu'à présent, cette règle ne fonctionne que pour les sessions Invité gérées.
-
-      Chaque élément de la règle correspond à un objet avec l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'appli Web isolée. Ces deux champs sont obligatoires.</translation>
 <translation id="596523880465577341">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="5966615072639944554">Extensions autorisées à utiliser l'API d'attestation à distance</translation>
 <translation id="596732417280023843">Nom du profil du certificat.</translation>
@@ -6638,27 +6633,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6102449843040973938">Ne pas empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="610892566190435199">Activer les rapports sur l'état de l'alimentation de l'appareil</translation>
 <translation id="6111936128861357925">Autoriser le jeu Easter Egg du dinosaure</translation>
-<translation id="6112524153927257380">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
-
-      Il y a de nombreux types d'avertissements concernant les téléchargements dans Chrome. Les catégories sont les suivantes (consultez la page https://support.google.com/chrome/?p=ib_download_blocked pour en savoir plus sur les alertes de la navigation sécurisée) :
-
-      * Téléchargements malveillants, tels qu'identifiés par le serveur de navigation sécurisée
-      * Téléchargements peu courants ou indésirables, tels qu'identifiés par le serveur de navigation sécurisée
-      * Types de fichiers dangereux (par exemple, tous les téléchargements SWF et la plupart des téléchargements EXE)
-
-      Les catégories bloquées diffèrent selon la valeur définie pour la règle :
-
-      0 : pas de restrictions particulières. Par défaut.
-
-      1 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
-
-      2 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ET des fichiers peu courants ou indésirables identifiés par le serveur de navigation sécurisée ET de tous les types de fichiers dangereux. Recommandé uniquement pour les UO/navigateurs/utilisateurs avec une haute tolérance aux faux positifs.
-
-      3 : blocage de tous les téléchargements. Non recommandé, sauf pour les cas d'utilisation spéciaux.
-
-      4 : blocage des fichiers malveillants identifiés par le serveur de navigation sécurisée ; les types de fichiers dangereux ne sont pas bloqués. Recommandé.
-
-      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Restaurer le comportement permissif.</translation>
 <translation id="6119207979839638596">Cette règle a été supprimée dans la version M75, après que la règle concernant la version maximale de TLS a été supprimée de <ph name="PRODUCT_NAME" />.
 

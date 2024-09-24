@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
 <translation id="1343442362630695901">салёнае возера</translation>
 <translation id="1348657754632799065">Панэль запісу</translation>
+<translation id="1350909945461913813">Захавайце ўсю працу</translation>
 <translation id="1367951781824006909">Выбраць файл</translation>
 <translation id="1371650399987522809">Водгук пра шпалеры на аснове AI ад Google</translation>
 <translation id="1374385338586507108">Вызначыць</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Версія SDK:</translation>
 <translation id="2016697457005847575">Паспрабуйце знайсці і выправіць непаладку</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.</translation>
 <translation id="2045814230297767491">сталовыя прыборы</translation>
 <translation id="2047316797244836561">Каб праглядзець застаўку, падключыце прыладу да інтэрнэту і перазагрузіце старонку.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2082932131694554252">Прызначаная клавіша клавіятуры</translation>
 <translation id="2085089206770112532">Паменшыць яркасць дысплэя</translation>
-<translation id="2085876078937250610">Захаваць…</translation>
 <translation id="2086091080968010660">Змяненні, заснаваныя на часе сутак, могуць быць недакладнымі. Уключыце доступ да сістэмных даных пра месцазнаходжанне ў наладах.</translation>
 <translation id="2102231663024125441">Рэдагаванне тэксту</translation>
 <translation id="2102648867808308635">Дапамажыце мне прачытаць гэту старонку</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">Маўленне не выяўлена</translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
 <translation id="2448312741937722512">Тып</translation>
+<translation id="2468124392950503650">Выберыце запыт для стварэння ці паглядзіце <ph name="BEGIN_LINK_PROMPTING_GUIDE" />дапаможнік па запытах<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Выкарыстоўвайце дапамогу з напісаннем на аснове штучнага інтэлекту ад Google, каб ствараць чарнавікі або дапрацоўваць існуючыя тэксты</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Прылада па-за сеткай. Каб праглядзець даведачнае змесціва, падключыцеся да сеткі Wi-Fi.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4486524074141928967">Вы выйдзеце з уліковага запісу ў <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Гэта спалучэнне клавіш недаступнае – выберыце іншае, націснуўшы клавішы ў такой камбінацыі, якая не будзе ўключаць у сябе клавішу-мадыфікатар (Ctrl, Alt, Shift або "<ph name="META_KEY" />").</translation>
 <translation id="4500966230243561393">Колер інтэрфейсу</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">шэры</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5600027863942488546">Клавіша "<ph name="KEY_NAME" />" праверана</translation>
+<translation id="5613201299517339763">Вы выйшлі з уліковага запісу</translation>
 <translation id="5620281292257375798">Для ўнутранага карыстання</translation>
 <translation id="5630438231335788050">баўгауз</translation>
 <translation id="5631759159893697722">абстракцыя</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">Файл не знойдзены</translation>
 <translation id="5938286923316838007">Не ўдаецца стварыць імёны запісу для гэтага змесціва</translation>
 <translation id="5939518447894949180">Скінуць</translation>
+<translation id="5942727615796467094">Адміністратар (<ph name="MANAGER" />) указаў, калі можна выкарыстоўваць прыладу "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="594552776027197022">Стварэнне выпадковай пары ключоў</translation>
 <translation id="5946538341867151940">Падключэнне не ўстаноўлена. Калі ваш аператар мабільнай сувязі рэкамендуе выкарыстоўваць карыстальніцкую назву пункта доступу, увядзіце неабходную інфармацыю, націснуўшы "+ Новая APN".</translation>
 <translation id="5947266287934282605">Даныя будуць скінуты ў апошні дзень месяца, калі ён папярэднічае выбранаму</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">іншая планета</translation>
 <translation id="6359706544163531585">Адключыць светлую тэму</translation>
 <translation id="6359919876285606596">Гэта дзеянне немагчыма адрабіць</translation>
+<translation id="6368342879959028556">Выбраўшы "Стварыць з дапамогай AI", напішыце свой запыт. Або націсніце "Шпалеры ад AI", каб выбраць тэму, а потым націсніце падкрэсленыя словы, каб персаналізаваць шпалеры ад AI.</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="6373461326814131011">сажалка</translation>
 <translation id="6379086450106841622">Сэнсарны экран</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
 <translation id="6462978824459367242">Кнопка "Дадаць APN" уключана</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканіраваць старонку паўторна?}=1{Сканіраваць старонку {PAGE_NUMBER} паўторна?}one{Сканіраваць старонку {PAGE_NUMBER} паўторна?}few{Сканіраваць старонку {PAGE_NUMBER} паўторна?}many{Сканіраваць старонку {PAGE_NUMBER} паўторна?}other{Сканіраваць старонку {PAGE_NUMBER} паўторна?}}</translation>
+<translation id="6468146470109254228">Вашы тры самыя апошнія запыты і выходныя даныя. Яны даступныя толькі падчас выкарыстання функцыі "Шпалеры і стыль".</translation>
 <translation id="6472207088655375767">Аднаразовы пароль</translation>
 <translation id="6472979596862005515">лодкі</translation>
 <translation id="64778964625672495">цёмна-чырвоны</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="66621959568103627">каралава-ружовы</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Калі вы выкарыстоўваеце штучны інтэлект, ваш запыт адпраўляецца на серверы штучнага інтэлекту ад Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="6673898378497337661">павялічыць яркасць клавіятуры</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6694534975463174713">блакіроўка</translation>

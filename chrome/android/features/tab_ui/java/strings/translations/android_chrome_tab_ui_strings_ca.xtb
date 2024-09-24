@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Consulta la informació de la botiga</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>
+<translation id="6590332670428149473">Obre el menú d'accions del grup de pestanyes compartit <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{S'ha canviat <ph name="ONE_CHANGED" /> pestanya}other{S'han canviat <ph name="MANY_CHANGED" /> pestanyes}}</translation>
 <translation id="6694634756612002311">Gestiona la compartició</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplega el grup format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
 <translation id="9111228330448174435">Mostra un quadre de diàleg en crear un grup de pestanyes nou</translation>
+<translation id="9114502155681725011">Obre el menú d'accions del grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Canvia de pestanya al grup de pestanyes de la part inferior de la pantalla</translation>
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="9216898458513705996">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" /></translation>

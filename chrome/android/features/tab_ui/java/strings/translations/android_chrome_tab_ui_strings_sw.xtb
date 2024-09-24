@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Angalia maelezo ya duka</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sogeza kichupo kushoto</translation>
+<translation id="6590332670428149473">Fungua menyu ya vitendo ya kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" />, rangi <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Nionyeshe</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Kichupo <ph name="ONE_CHANGED" /> kimebadilishwa}other{Vichupo <ph name="MANY_CHANGED" /> vimebadilishwa}}</translation>
 <translation id="6694634756612002311">Dhibiti ruhusa ya ufikiaji</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha kichupo chenye kichupo <ph name="TABS_COUNT_ONE" />.}other{Panua kikundi cha vichupo chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="9090098097337832354">Maelezo kuhusu duka hili yamefungwa</translation>
 <translation id="9111228330448174435">Onyesha kidirisha cha utaratibu wa kuanzisha kikundi kipya cha vichupo</translation>
+<translation id="9114502155681725011">Fungua menyu ya vitendo ya kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, rangi <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Badili kati ya vichupo vilivyo katika kikundi chako cha vichupo karibu na sehemu ya chini ya skrini</translation>
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>
 <translation id="9216898458513705996">Vichupo havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" /></translation>

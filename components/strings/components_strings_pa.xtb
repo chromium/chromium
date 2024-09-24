@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2239100178324503013">ਹੁਣੇ ਭੇਜੋ</translation>
 <translation id="2241693394036365668">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ ਹੈ</translation>
+<translation id="2242389809734574253">"IBAN ਰੱਖਿਅਤ ਕਰੋ" ਉਤਪ੍ਰੇਰਕ ਬੰਦ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="2246264294482514010">10 x 12 ਇੰਚ</translation>
 <translation id="2246480341630108201">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਹਾਲੇ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="2247789808226901522">ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ਅੰਕੀ ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3272643614306383237">1 MB ਤੋਂ ਘੱਟ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋਣ।</translation>
 <translation id="3273738040255912340">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਰਿਪੋਰਟਿੰਗ ਰਾਹੀਂ ਬ੍ਰਾਊਜ਼ਰ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਸਕਦਾ ਹੈ ਅਤੇ ਹੋਰ ਜ਼ਰੂਰੀ ਕਾਰਜ ਕਰ ਸਕਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chromium ਤੋਂ ਬਾਹਰ ਵੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">"IBAN ਰੱਖਿਅਤ ਕਰੋ" ਉਤਪ੍ਰੇਰਕ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="3281350579597955952">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="3282085321714087552">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="ENROLLMENT_DOMAIN" />, ਨੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੁਝ ਜਾਣਕਾਰੀ ਭੇਜੀ ਹੈ, ਜਿਵੇਂ ਸੈਟਿੰਗਾਂ ਜਾਂ ਨੀਤੀਆਂ।</translation>
 <translation id="3286372614333682499">ਪੋਰਟਰੇਟ</translation>
@@ -2122,6 +2124,7 @@
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
 <translation id="4881808915112408168">24 x 31.5 ਇੰਚ</translation>
 <translation id="4882314601499260499">ਕੋਈ ਵਰਤੋਂਕਾਰ ਨੀਤੀ ਲਾਗੂ ਨਹੀਂ ਕੀਤੀ ਗਈ। ਵਰਤੋਂਕਾਰ ਨੀਤੀਆਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਲਈ <ph name="LINK_BEGIN" />ਤੁਹਾਡੇ ਡੋਮੇਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨੀ<ph name="LINK_END" /> ਲਾਜ਼ਮੀ ਹੈ।</translation>
+<translation id="4883911187498618061">ਆਪਣਾ ਸਵਾਲ ਜਾਂ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4885030148564729407">ਹਨੀਮੂਨ ਅਤੇ ਰੋਮਾਂਟਿਕ ਸੈਰਗਾਹ</translation>
 <translation id="4885256590493466218">ਚੈੱਕਆਊਟ ਕਰਨ ਵੇਲੇ <ph name="CARD_DETAIL" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4887406273302438710">Windows Hello ਨਾਲ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -2581,6 +2584,7 @@
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>
 <translation id="5723873695528696965">ਆਪਣੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰੋ</translation>
 <translation id="5725297205162868298">ਸ਼ਾਰਟਕੱਟ @ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਨਾਲ ਸ਼ੁਰੂ ਨਹੀਂ ਹੋ ਸਕਦਾ ਹੈ: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">ਸਾਈਟ, ਅਡਵਾਂਸ ਪ੍ਰਿੰਟਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ</translation>
 <translation id="5729442113829771034">ਬੱਚਿਆਂ ਲਈ ਸ਼ੁਰੂਆਤੀ ਸਿੱਖਿਆ</translation>
 <translation id="5730040223043577876">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਮੁੜ ਵਰਤਿਆ ਹੈ, ਤਾਂ Chrome ਵੱਲੋਂ ਇਸਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="5732392974455271431">ਤੁਹਾਡੇ ਮਾਪੇ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦੇ ਹਨ</translation>
@@ -2592,6 +2596,7 @@
 <translation id="5743684619253032786">ਨਹੁੰਆਂ ਦੀ ਦੇਖਭਾਲ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
 <translation id="5745733273847572235">ਸਾਈਟ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="5750869797196646528">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
+<translation id="5752327398324808817">ਇੱਕ ਜਾਂ ਦੋ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
@@ -3086,6 +3091,7 @@
 <translation id="6671169470640320959">ਆਟੋ ਵਾਹਨਾਂ ਸੰਬੰਧੀ ਵਿੱਤ ਸੇਵਾਵਾਂ</translation>
 <translation id="6671697161687535275">ਕੀ Chromium ਤੋਂ ਫ਼ਾਰਮ ਸੰਬੰਧੀ ਸੁਝਾਅ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6677351035258626477">ਫਾਸਟ ਫੂਡ</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਦੇਖੋ}one{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਦੇਖੋ}other{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਵਿਕਲਪਾਂ ਵਜੋਂ ਦੇਖੋ}}</translation>
 <translation id="6681790815630918386">CVC ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
 <translation id="6687230248707087982">ਐਨਵਲੋਪ (ਪਲੇਨ)</translation>
@@ -3102,6 +3108,7 @@
 <translation id="6696575039575740785">ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="6698097747703777657">ਕੀ ਤੁਹਾਨੂੰ ਕੋਡ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਇਆ? <ph name="BEGIN_LINK" />ਨਵਾਂ ਕੋਡ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ਬਣਾਇਆ:</translation>
+<translation id="6698769547327354196">Chrome ਵਿੱਚ Pix ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ <ph name="BEGIN_LINK1" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਜਾਓ</translation>
 <translation id="67007264085648978">ਸਮੇਂ ਦਾ ਸਕ੍ਰਬਰ</translation>
 <translation id="6702851555558236418">ਆਡੀਓ ਅਤੇ ਸੰਗੀਤ ਸਾਫ਼ਟਵੇਅਰ</translation>
 <translation id="6702919718839027939">ਪੇਸ਼ਕਾਰੀ ਮੋਡ</translation>
@@ -3257,6 +3264,7 @@
 <translation id="6978236010531171013">ਫਿਰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="6978722349058177832">ਜੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਆਟੋਫਿਲ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਭੁਗਤਾਨ ਕਰਨ ਵੇਲੇ, Chromium ਤੁਹਾਨੂੰ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਤੱਕ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="6984270784814146224">ਲੇਬਲ ਰਹਿਤ ਚਿੱਤਰ। ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="6987806006823772670">ਐਨਵਲੋਪ (ਕੋਟੇਡ)</translation>
@@ -3402,6 +3410,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ਕਾਰੋਬਾਰੀ ਕਾਰਵਾਈਆਂ</translation>
+<translation id="7244061187185055290">ਕੁਝ ਸ਼ਬਦਾਂ ਵਿੱਚ, ਵਰਣਨ ਕਰੋ ਕਿ ਤੁਸੀਂ ਕੀ ਲੱਭ ਰਹੇ ਹੋ</translation>
 <translation id="7251437084390964440">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ ONC ਮਿਆਰ ਦੀ ਪਾਲਣਾ ਨਹੀਂ ਕਰਦਾ। ਸ਼ਾਇਦ ਸੰਰੂਪਣ ਦੇ ਭਾਗ ਆਯਾਤ ਨਾ ਕੀਤੇ ਗਏ ਹੋਣ।
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>

@@ -153,7 +153,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1696555181932908973">Puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Baguhin ang mga setting ng iyong madilim na tema?</translation>
 <translation id="1702907158640575240">Pinapamahalaang browser</translation>
-<translation id="1710099199314114079">Maglipat o magsara ng mga tab</translation>
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1724977129262658800">I-unlock para i-edit ang iyong password</translation>
 <translation id="1726477445370128854">Makakapag-browse at makakapaghanap ka nang mas mabilis kapag nag-preload ang Chrome ng mga page na sa palagay nito ay posibleng bisitahin mo</translation>
@@ -297,6 +296,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2450083983707403292">Gusto mo bang simulang muli ang pag-download sa <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Pagsubaybay</translation>
 <translation id="2453860139492968684">Tapos na</translation>
+<translation id="2461378706168271257">Maghanap sa iyong mga tab</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2468444275314013497">Mukhang ligtas ang iyong browser</translation>
 <translation id="2472163211318554013">Mag-sign in para masulit ang Chrome</translation>
@@ -601,6 +601,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3847319713229060696">Tumulong na pahusayin ang seguridad sa web para sa lahat</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3858860766373142691">Pangalan</translation>
+<translation id="3873174561423636563">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />mga tuntunin ng serbisyo<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3899682235662194879">Isara ang lahat ng tab na Incognito</translation>
 <translation id="3900966090527141178">I-export ang mga password</translation>
@@ -876,6 +877,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5114895953710637392">Nakasara ang sheet para sa filter ng app.</translation>
 <translation id="5115811374190515607">sa <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Magagamit mo ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="5122378528687922675">Kung kailangan mo ng tulong, magpatulong sa iyong magulang (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
@@ -1458,6 +1460,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7656721520530864426">Walang site</translation>
 <translation id="7656862631699126784">I-on ang lock ng Incognito</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
+<translation id="7663320421139257046">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="766587987807204883">Lalabas dito ang mga artikulong mababasa mo kahit offline ka</translation>
 <translation id="7666185984446444960">Isinara ang <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7810647596859435254">Buksan gamit ang…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Lahat ng file, may 1 file sa listahan}one{Lahat ng file, may # file sa listahan}other{Lahat ng file, may # na file sa listahan}}</translation>
 <translation id="7815484226266492798">Mahabang Screenshot</translation>
+<translation id="7819605256207059717">Na-block ng iyong organisasyon</translation>
 <translation id="7821130663268546430">Mahahanap mo ang lahat ng bukas na tab sa tab switcher</translation>
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="7824665136384946951">In-off ng iyong organisasyon ang Ligtas na Pag-browse</translation>
@@ -1685,7 +1689,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="864544049772947936">Pamahalaan ang mga window (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Gamitin ang Chrome sa paraang gusto mo</translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Na-block ng iyong organisasyon}one{# ang na-block ng iyong organisasyon}other{# ang na-block ng iyong organisasyon}}</translation>
 <translation id="8672883760227492369">Malapit nang hindi gumana ang ilang password sa device na ito. Puwede mong ilipat sa Google Password Manager ang mga password na ito.</translation>
 <translation id="8676276370198826499">Mag-sign up sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Mga pag-verify sa pag-sign in</translation>

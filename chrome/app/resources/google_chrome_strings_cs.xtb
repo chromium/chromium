@@ -301,6 +301,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4680828127924988555">Zrušit instalaci</translation>
 <translation id="469553575393225953">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chrome doporučuje instalovat je pouze z Internetového obchodu Chrome</translation>
 <translation id="4710245680469034439">Přizpůsobte si prohlížeč pomocí motivů inspirovaných přírodou, sbírkami od umělců a podobně</translation>
+<translation id="4720851490453439956">Interní aktualizační služba Google</translation>
 <translation id="4724676981607797757">Instalace se nezdařila kvůli chybě nepodporovaného protokolu.</translation>
 <translation id="4728575227883772061">Došlo k nespecifikované chybě, instalace se nezdařila. Pokud je Google Chrome právě spuštěný, zavřete jej prosím a zkuste to znovu.</translation>
 <translation id="4741235124132242877">Připnuto! Příště použijte Google Lens z lišty</translation>
@@ -464,6 +465,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
 <translation id="6893363893008038481">Odstranit účet z Chromu</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
+<translation id="6930294499209825">Udržuje software Google aktualizovaný. V případě zakázání nebo zastavení té služby se software Google nebude aktualizovat, což znamená, že nebude možné opravit případné chyby zabezpečení a funkce nemusí fungovat. Pokud tuto službu žádný software Google nepoužívá, sama se odinstaluje.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
@@ -513,6 +515,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7477130805345743099">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chrome upozorní</translation>
 <translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="749228101751499733">Když jste přihlášeni, můžete v Chromu používat hesla a další položky ze svého účtu Google. Pomocí zkratky <ph name="SHORTCUT" /> můžete nastavení služeb Google změnit.</translation>
+<translation id="7514258452813684157">Aktualizační služba Google</translation>
 <translation id="7515191208480168435">Google Lens si můžete pro snadný přístup připnout</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Vypnuto • Chrome nedokáže ověřit, odkud toto rozšíření pochází</translation>

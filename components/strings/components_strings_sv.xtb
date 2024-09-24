@@ -2388,6 +2388,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5371425731340848620">Uppdatera kortet</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Klockan går efter, Klockan går före eller &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
+<translation id="5379618281582508161">Verifiera din identitet om du vill få tillgång till det här lösenordet på alla dina enheter</translation>
 <translation id="5380953781541843508">i stigande ordning</translation>
 <translation id="5381318171304904246">När du fortsätter dirigeras du till bankens webbplats. När du har verifierat din identitet kommer du automatiskt tillbaka så att du kan slutföra köpet.</translation>
 <translation id="5383478552402031184">Golv</translation>

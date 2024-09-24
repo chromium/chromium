@@ -25,6 +25,7 @@
 <translation id="1324107359134968521">Chromium 需获得蓝牙使用权限，才能浏览蓝牙设备。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">检测语言</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
+<translation id="1345251407431278948">已固定！您可以通过工具栏中的新按钮再次使用图片搜索功能</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
@@ -53,9 +54,11 @@
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="1862852878885210965">使用图片搜索功能进行搜索</translation>
 <translation id="1863308913976887472">网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="1880677175115548835">选择文字</translation>
 <translation id="1881322772814446296">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。您可以选择创建新的个人资料来单独存储您现有的 Chromium 数据。<ph name="LEARN_MORE" /></translation>
+<translation id="1900969832270057921">Chromium 更新程序服务</translation>
 <translation id="1906696617298807388">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送至 Google 云端硬盘，以便获取内容建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="1911763535808217981">关闭此功能后，您无需登录 Chromium 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1929939181775079593">Chromium 未响应。要立即重新启动吗？</translation>
@@ -64,6 +67,7 @@
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1966382378801805537">Chromium 无法确定或设置默认浏览器</translation>
 <translation id="1990262977744080398">了解 Chromium 为何屏蔽某些文件（在新标签页中打开）</translation>
+<translation id="1999715455684970349">让您的 Chromium 软件保持最新状态。如果此服务已停用或已停止运行，您的 Chromium 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Chromium 软件使用此服务时，此服务会自行卸载。</translation>
 <translation id="2008474315282236005">这会从这台设备上删除 1 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="2018879682492276940">安装失败。请重试。</translation>
 <translation id="2020032459870799438">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
@@ -98,9 +102,11 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2542968102051442371">选择要使用图片搜索功能搜索的文字</translation>
 <translation id="2554739539410784893">Chromium 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="2572494885440352020">Chromium 帮助程序</translation>
+<translation id="2575822587468774919">选择任何内容即可使用图片搜索功能进行搜索</translation>
 <translation id="2576118232315942160">如需获取您所有设备上的密码等信息，请登录 Chromium</translation>
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
@@ -123,6 +129,7 @@
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
 <translation id="2847479871509788944">从Chromium中移除…</translation>
 <translation id="2850691299438350830">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
+<translation id="2874602845494991903">打开图片搜索</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2910007522516064972">关于 Chromium(&amp;C)</translation>
 <translation id="2915996080311180594">暂不重启</translation>
@@ -227,6 +234,7 @@
 <translation id="4334294535648607276">下载完毕。</translation>
 <translation id="439358628917130594">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
+<translation id="4413205837991854510">始终显示图片搜索快捷方式</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
 <translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" />}other{Chromium 建议您移除它们。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
@@ -274,6 +282,7 @@
 <translation id="494490797786467921">点击即可关闭 Chromium 登录对话框</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
+<translation id="5051959905407134411">试试图片搜索</translation>
 <translation id="5114678101347489141">Chromium 正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
@@ -286,6 +295,7 @@
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5296845517486664001">在试用期间，如果 Chromium 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chromium 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5310474266708705970">以 <ph name="USER_EMAIL" /> 的身份登录 Chromium</translation>
+<translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5352264705793813212">Chromium 找到了一些供您审查的安全建议</translation>
 <translation id="5352361688875342522">其他 Chromium 个人资料</translation>
 <translation id="5358375970380395591">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
@@ -307,6 +317,7 @@
 <translation id="5575418445468216473">您的密码和其他 Chromium 数据已保存在您的 Google 账号中，并将从此设备中移除。如需日后使用这些数据，请重新登录 Chromium。</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
+<translation id="5605834417512968703">选择任意内容即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
@@ -317,6 +328,7 @@
 <translation id="5800158606660203929">自定义和控制 Chromium。将 Chromium 设为默认浏览器。</translation>
 <translation id="5809516625706423866">无法连接到互联网。发生 HTTP 401 Unauthorized 错误，请检查您的代理配置。</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
+<translation id="5871205389137001634">点击即可退出图片搜索功能</translation>
 <translation id="5883558403894052917">Chromium 发现这些内容包含恶意软件：</translation>
 <translation id="5889361821821684993">Chromium 会定期进行检查，以确保您的浏览器使用了最安全的设置。如有任何内容需要您审核，我们会通知您。</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -375,6 +387,7 @@
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：Chromium 可以推测出您的兴趣。之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
+<translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
 <translation id="6443470774889161065">Chromium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="645458117210240797">已关闭 • Chromium 无法验证此扩展程序的来源</translation>
@@ -412,6 +425,7 @@
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6831043979455480757">翻译</translation>
+<translation id="6843464627590537736">图片搜索搜索气泡</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -439,6 +453,7 @@
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推测出的您的兴趣</translation>
+<translation id="7274695763216404502">已固定！可通过工具栏再次使用图片搜索功能</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建议您移除它}other{Chromium 建议您移除它们}}</translation>
 <translation id="7309928523159922338">借助 Ad measurement，您访问的网站可向 Chromium 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
@@ -477,6 +492,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7786760609782648049">提高 Chromium 的运行速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chromium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
+<translation id="7810005234485217901">您可以固定图片搜索功能以方便访问</translation>
 <translation id="7828947555739565424">此设备上已有一份使用该账号创建的 Chromium 个人资料</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
@@ -491,6 +507,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8010081455002666927">自动检测</translation>
 <translation id="8013436988911883588">一旦 Chromium 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="8054112667659782652">始终显示图片搜索快捷方式</translation>
 <translation id="80790299200510644">图片搜索</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
@@ -527,6 +544,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
+<translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
 <translation id="8568283329061645092">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="8576826849825683917">多个组织负责管理 Chromium</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>

@@ -398,6 +398,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
 <translation id="2416438829169535743">Zamknąć widok?</translation>
 <translation id="2417486498593892439">Zaloguj się do sieci</translation>
+<translation id="2423619675829330672">Zbyt wiele prób podania kodu PIN. Poczekaj <ph name="TIME_LEFT" /> i spróbuj ponownie.</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz dostępu: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6337159624125741244">Lupa pełnego ekranu jest włączona</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Jeśli nie pamiętasz kodu PIN, spróbuj przywrócić konto tego użytkownika.</translation>
 <translation id="6344138931392227467">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGEROWANE APLIKACJE</translation>
@@ -1633,6 +1635,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emotikony, GIF-y i inne elementy</translation>
+<translation id="6545382064335350438">Nadal nie udało się zweryfikować kodu PIN. Spróbuj ponownie.</translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559158502366839560">Zobacz więcej aplikacji i gier</translation>
@@ -2028,6 +2031,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7904094684485781019">Administrator tego konta zablokował możliwość wielokrotnego logowania.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Podłączono <ph name="DEVICECOUNT" /> urządzenia</translation>
+<translation id="7921565901396407357">Nie udało się zweryfikować kodu PIN. Spróbuj ponownie.</translation>
 <translation id="7923534281713082605">Pogoda</translation>
 <translation id="7926080067315048321">Zobacz wszystkie zadania na Liście zadań Google na stronie internetowej</translation>
 <translation id="7930731167419639574">Mowa jest teraz przetwarzana lokalnie, a dyktowanie działa offline</translation>

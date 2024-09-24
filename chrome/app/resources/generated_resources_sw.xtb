@@ -290,7 +290,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1199814941632954229">Vyeti vinatayarishwa kwa ajili ya wasifu hizi za vyeti</translation>
 <translation id="120069043972472860">Haitazamiki</translation>
 <translation id="1201402288615127009">Endelea</translation>
-<translation id="1201564082781748151">Data ya kifaa inaweza kurejeshwa iwapo utasahau nenosiri lako</translation>
 <translation id="1202116106683864634">Una uhakika unataka kufuta ufunguo huu wa siri?</translation>
 <translation id="1202596434010270079">Programu ya Skrini Nzima imesasishwa. Tafadhali ondoa hifadhi ya USB.</translation>
 <translation id="1202892408424955784">Bidhaa unazofuatilia</translation>
@@ -2227,6 +2226,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2546991196809436099">Vuta karibu ili uvifanye vipengee kwenye skrini viwe vikubwa. Bonyeza kitufe cha Tafuta kisha Ctrl na M kwa wakati mmoja ili uwashe au uzime kikuzaji.</translation>
 <translation id="2548347166720081527">Umeruhusu <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Weka upya akiba ya wasifu wa eSIM</translation>
+<translation id="2549766998450508148">Bonyeza vitufe 1 hadi 4 vya kurekebisha (ctrl, alt, shift au tafuta) na kitufe kingine 1. Unaweza pia kuchagua kitufe kimoja.</translation>
 <translation id="2549985041256363841">Anza kurekodi</translation>
 <translation id="2550212893339833758">Hifadhi iliyobadilishwa</translation>
 <translation id="2550596535588364872">Ungependa kuruhusu <ph name="EXTENSION_NAME" /> ifungue <ph name="FILE_NAME" />?</translation>
@@ -10635,6 +10635,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8715480913140015283">Kichupo kinachofanya kazi chinichini kinatumia kamera yako</translation>
 <translation id="8716931980467311658">Ungependa kufuta programu zote za Linux na data katika folda ya faili za Linux kwenye <ph name="DEVICE_TYPE" /> hii?</translation>
 <translation id="8717864919010420084">Nakili Kiungo</translation>
+<translation id="8718560545710680911">Uliza ukitumia ukurasa huu</translation>
 <translation id="8718994464069323380">Skrini ya kugusa imetambuliwa</translation>
 <translation id="8719472795285728850">Inasikiliza shughuli za kiendelezi...</translation>
 <translation id="8719665168401479425">Tumia ishara za uso kutekeleza vitendo</translation>

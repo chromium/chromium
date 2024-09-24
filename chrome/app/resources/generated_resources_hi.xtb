@@ -291,7 +291,6 @@
 <translation id="1199814941632954229">प्रमाणपत्र की इन प्रोफ़ाइलों के लिए, प्रमाणपत्रों का इस्तेमाल किया जा रहा है</translation>
 <translation id="120069043972472860">न देखे जाने लायक</translation>
 <translation id="1201402288615127009">अगला</translation>
-<translation id="1201564082781748151">पासवर्ड भूल जाने पर, आपके पास स्थानीय डेटा वापस लाने का विकल्प होता है</translation>
 <translation id="1202116106683864634">क्या वाकई यह पासकी मिटानी है?</translation>
 <translation id="1202596434010270079">कियोस्‍क ऐप अपडेट कर दिया गया है. कृपया USB स्‍टिक को निकालें.</translation>
 <translation id="1202892408424955784">ट्रैक किए गए प्रॉडक्ट</translation>
@@ -321,6 +320,7 @@
 <translation id="122082903575839559">प्रमाणपत्र हस्ताक्षर एल्गोरिद्म</translation>
 <translation id="1221024147024329929">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD2</translation>
 <translation id="1221825588892235038">सिर्फ़ चुनें</translation>
+<translation id="1222835797152767346">साइन इन करने की प्रोसेस आसान बनाने के लिए, एक पिन सेट करें</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> को लाइसेंस की ज़रूरत है</translation>
 <translation id="1223853788495130632">आपका व्‍यवस्‍थापक इस सेटिंग के लिए किसी विशिष्ट मान की अनुशंसा करता है.</translation>
 <translation id="1225177025209879837">अनुरोध पूरा करने की प्रक्रिया जारी है...</translation>
@@ -2231,6 +2231,7 @@
 <translation id="2546991196809436099">स्क्रीन पर मौजूद आइटम बड़े करने के लिए, ज़ूम इन करें. स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + M का इस्तेमाल करें.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी गई है</translation>
 <translation id="2548545707296594436">ई-सिम प्रोफ़ाइल की कैश मेमोरी को रीसेट करें</translation>
+<translation id="2549766998450508148">कार्रवाई बदलने वाली 1 से 4 कुंजियां (Ctrl, Alt, Shift या search) और एक और बटन दबाएं. एक बटन भी चुना जा सकता है.</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="2550212893339833758">स्वैप की गई मेमोरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> को <ph name="FILE_NAME" /> खोलने की मंज़ूरी दें?</translation>
@@ -6406,6 +6407,7 @@
 <translation id="5624959475330585145">असुरक्षित कनेक्शन का इस्तेमाल करने से पहले अनुमति लें</translation>
 <translation id="5625225435499354052">Google Pay पर इससे जुड़ी जानकारी में बदलाव करें</translation>
 <translation id="5626134646977739690">नाम:</translation>
+<translation id="5626172233890210551">पासवर्ड इस्तेमाल करें</translation>
 <translation id="5627832140542566187">डिसप्ले की दिशा</translation>
 <translation id="5628434207686266338">डिवाइस का पासवर्ड सेट करें</translation>
 <translation id="562935524653278697">आपके व्यवस्थापक ने आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग को सिंक करना अक्षम कर दिया है.</translation>
@@ -7181,6 +7183,7 @@
 <translation id="6207937957461833379">देश/क्षेत्र</translation>
 <translation id="6208521041562685716">मोबाइल डेटा चालू किया जा रहा है</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> में सेव नहीं किया जा सका - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">कॉम्पोनेंट अपडेट हो रहा है</translation>
 <translation id="6209908325007204267">आपके डिवाइस में Chrome Enterprise Upgrade शामिल है, लेकिन आपका उपयोगकर्ता नाम किसी Enterprise खाते से जुड़ा हुआ नहीं है. कृपया किसी दूसरे डिवाइस से g.co/ChromeEnterpriseAccount पर जाकर एक Enterprise खाता बनाएं.</translation>
 <translation id="6210282067670792090">पता बार में, सर्च इंजन और साइट खोज के लिए इस्तेमाल होने वाले शॉर्टकट के साथ, इस कीबोर्ड शॉर्टकट का इस्तेमाल करें</translation>
@@ -10637,6 +10640,7 @@
 <translation id="8715480913140015283">बैकग्राउंड टैब आपके कैमरे का इस्तेमाल कर रहा है</translation>
 <translation id="8716931980467311658">इस <ph name="DEVICE_TYPE" /> से अपने सभी Linux ऐप्लिकेशन और अपनी Linux फ़ाइलों में मौजूद डेटा मिटाना चाहते हैं?</translation>
 <translation id="8717864919010420084">लिंक कॉपी करें</translation>
+<translation id="8718560545710680911">इस पेज का इस्तेमाल करके पूछें</translation>
 <translation id="8718994464069323380">टचस्क्रीन का पता चला</translation>
 <translation id="8719472795285728850">एक्सटेंशन गतिविधियों के लिए सुना जा रहा है...</translation>
 <translation id="8719665168401479425">चेहरे के जेस्चर इस्तेमाल करके कार्रवाइयां करें</translation>
@@ -10745,6 +10749,7 @@
 <translation id="8791534160414513928">अपने ब्राउज़िंग ट्रैफ़िक के साथ "Do Not Track" अनुरोध भेजें</translation>
 <translation id="8793390639824829328">शेयर किए गए टैब में स्क्रोल और ज़ूम करने के लिए, साइटें इस सुविधा का इस्तेमाल करती हैं</translation>
 <translation id="879413103056696865">हॉटस्पॉट चालू होने पर, आपका <ph name="PHONE_NAME" /> यह काम करेगा:</translation>
+<translation id="8794548468611058947">साइन इन करने के लिए अपने Google खाते का पासवर्ड डालने के बजाय, इस <ph name="DEVICE_TYPE" /> के लिए एक पिन बनाएं</translation>
 <translation id="8795916974678578410">नई विंडो</translation>
 <translation id="8796919761992612392">Chrome को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="8797459392481275117">इस साइट का कभी भी अनुवाद ना करें</translation>

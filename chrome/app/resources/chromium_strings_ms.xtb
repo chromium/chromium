@@ -43,6 +43,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 
 Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Memuat turun...</translation>
+<translation id="167397405791113306">Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chromium pada Google Account anda.</translation>
 <translation id="1715127912119967311">Untuk membantu meningkatkan ciri ini, Chromium menghantar interaksi anda dengan ciri tersebut kepada Google. Data ini boleh dibaca, diproses dan dianotasikan oleh jurusemak.</translation>
 <translation id="1722488837206509557">Tindakan ini membenarkan anda memilih peranti yang sedia ada dan memaparkan kandungan pada peranti tersebut.</translation>
 <translation id="17264556997921157">Anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chromium menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
@@ -528,6 +529,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai imej</translation>
+<translation id="8326785589245660814">kosongkan data Chromium dalam akaun anda</translation>
 <translation id="8330519371938183845">Log masuk untuk menyegerakkan dan memperibadikan Chromium pada semua peranti anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> menggunakan Chromium sebelum ini</translation>
 <translation id="8357820681460164151">Untuk mengakses bahan penyemak imbas Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
@@ -548,7 +550,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Anda boleh menyematkan Carian Imej untuk akses mudah; klik butang Semat pada bahagian atas panel sisi</translation>
 <translation id="8568283329061645092">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda</translation>
-<translation id="8569978848943545314">Menyediakan perkhidmatan peninggian untuk <ph name="BROWSER_NAME" />.</translation>
 <translation id="8576826849825683917">Berbilang organisasi mengurus Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>

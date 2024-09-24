@@ -290,7 +290,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1199814941632954229">Estanse proporcionando certificados para estes perfís de certificados</translation>
 <translation id="120069043972472860">Non se pode ver</translation>
 <translation id="1201402288615127009">Seguinte</translation>
-<translation id="1201564082781748151">Os datos locais poden restaurarse no caso de que esquezas o contrasinal</translation>
 <translation id="1202116106683864634">Seguro que queres eliminar esta clave de acceso?</translation>
 <translation id="1202596434010270079">Actualizouse a aplicación de quiosco. Retira a memoria USB.</translation>
 <translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
@@ -2216,6 +2215,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2546991196809436099">Achega a imaxe a fin de que os elementos da pantalla sexan meirandes. Para activar e desactivar a lupa, preme Buscar + Control + M.</translation>
 <translation id="2548347166720081527">Concedeuse o permiso: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restablecer memoria caché do perfil da eSIM</translation>
+<translation id="2549766998450508148">Preme as teclas modificadoras do 1 ao 4 (Control, Alt, Maiúsculas ou Buscar) e unha tecla máis. Tamén podes seleccionar unha única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="2550212893339833758">Memoria cambiada</translation>
 <translation id="2550596535588364872">Queres permitirlle á extensión <ph name="EXTENSION_NAME" /> abrir <ph name="FILE_NAME" />?</translation>
@@ -10623,6 +10623,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8715480913140015283">Hai unha pestana en segundo plano que está utilizando a cámara</translation>
 <translation id="8716931980467311658">Queres eliminar todas as aplicacións e datos de Linux do cartafol de ficheiros de Linux deste dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>
+<translation id="8718560545710680911">Pregunta a través desta páxina</translation>
 <translation id="8718994464069323380">Detectouse unha pantalla táctil</translation>
 <translation id="8719472795285728850">Escoitando actividades das extensións…</translation>
 <translation id="8719665168401479425">Usar os xestos faciais para realizar accións</translation>

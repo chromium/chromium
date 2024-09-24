@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Паказаць звесткі пра краму</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Перамясціць укладку ўлева</translation>
+<translation id="6590332670428149473">Адкрыць меню дзеянняў для абагуленай групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Паказаць</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Укладак зменена: <ph name="ONE_CHANGED" />}one{Укладак зменена: <ph name="MANY_CHANGED" />}few{Укладак зменена: <ph name="MANY_CHANGED" />}many{Укладак зменена: <ph name="MANY_CHANGED" />}other{Укладак зменена: <ph name="MANY_CHANGED" />}}</translation>
 <translation id="6694634756612002311">Кіраваць абагульваннем</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак. У ёй <ph name="TABS_COUNT_ONE" /> укладка.}one{Разгарнуць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладка.}few{Разгарнуць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}many{Разгарнуць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладак.}other{Разгарнуць групу ўкладак. У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="9090098097337832354">Інфармацыя пра гэту краму згорнута</translation>
 <translation id="9111228330448174435">Паказваць дыялогавае акно падчас стварэння новай групы ўкладак</translation>
+<translation id="9114502155681725011">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Пераключайцеся паміж укладкамі групы ў ніжняй частцы экрана</translation>
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>
 <translation id="9216898458513705996">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>

@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">左移标签页</translation>
+<translation id="6590332670428149473">打开分享的标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）的操作菜单。</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{已更改 <ph name="ONE_CHANGED" /> 个标签页}other{已更改 <ph name="MANY_CHANGED" /> 个标签页}}</translation>
 <translation id="6694634756612002311">管理共享设置</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>
 <translation id="9111228330448174435">在创建新标签页分组时显示对话框</translation>
+<translation id="9114502155681725011">打开标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）的操作菜单。</translation>
 <translation id="9150694013019234766">在屏幕底部附近的标签页组中切换标签页</translation>
 <translation id="9169594135889675189">向组中添加新标签页</translation>
 <translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>

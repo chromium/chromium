@@ -290,7 +290,6 @@
 <translation id="1199814941632954229">Näille varmenneprofiileille tarjotaan varmenteita</translation>
 <translation id="120069043972472860">Mahdoton katsoa</translation>
 <translation id="1201402288615127009">Seuraava</translation>
-<translation id="1201564082781748151">Paikalliset tiedot voidaan palauttaa, jos unohdat salasanan</translation>
 <translation id="1202116106683864634">Haluatko varmasti poistaa tämän avainkoodin?</translation>
 <translation id="1202596434010270079">Kioskisovellus päivitettiin. Irrota USB-tikku.</translation>
 <translation id="1202892408424955784">Seuratut tuotteet</translation>
@@ -2229,6 +2228,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2546991196809436099">Suurenna näytöllä olevia kohteita lähentämällä. Laita suurennus päälle tai pois päältä painamalla Haku + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> sallittu</translation>
 <translation id="2548545707296594436">Nollaa eSIM-profiilin välimuisti</translation>
+<translation id="2549766998450508148">Paina 1–4 muokkausnäppäintä (ctrl, alt, vaihto tai haku) ja yhtä muuta näppäintä. Voit myös valita yksittäisen näppäimen.</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
 <translation id="2550212893339833758">Vaihdettu muisti</translation>
 <translation id="2550596535588364872">Saako <ph name="EXTENSION_NAME" /> avata tiedoston <ph name="FILE_NAME" />?</translation>
@@ -10635,6 +10635,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8715480913140015283">Taustavälilehti käyttää kameraa.</translation>
 <translation id="8716931980467311658">Poistetaanko kaikki Linux-sovellukset ja Linux-tiedostokansion data laitteelta <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopioi linkki</translation>
+<translation id="8718560545710680911">Kysy tämän sivun kautta</translation>
 <translation id="8718994464069323380">Kosketusnäyttö havaittu</translation>
 <translation id="8719472795285728850">Kuunnellaan laajennustapahtumia…</translation>
 <translation id="8719665168401479425">Käytä toimintoja kasvoeleillä</translation>

@@ -291,7 +291,6 @@
 <translation id="1199814941632954229">এই সার্টিফিকেট প্রোফাইলগুলির জন্য সার্টিফিকেটের অ্যাক্সেস দেওয়া হচ্ছে</translation>
 <translation id="120069043972472860">দেখার মতো নয়</translation>
 <translation id="1201402288615127009">পরের</translation>
-<translation id="1201564082781748151">আপনি পাসওয়ার্ড ভুলে গেলেও, স্থানীয় ডেটা ফিরিয়ে আনা যাবে</translation>
 <translation id="1202116106683864634">আপনি কি সত্যিই এই পাসকী মুছে দিতে চান?</translation>
 <translation id="1202596434010270079">কিয়স্ক অ্যাপ আপডেট করা হয়েছে৷ অনুগ্রহ করে USB স্টিকটি সরান৷</translation>
 <translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
@@ -2231,6 +2230,7 @@
 <translation id="2546991196809436099">স্ক্রিনে কোনও আইটেম বড় করে দেখতে জুম-ইন করুন। ম্যাগনিফায়ার চালু বা বন্ধ করতে, 'Search + Ctrl + M' কী ব্যবহার করুন।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-এর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2548545707296594436">eSIM প্রোফাইল ক্যাশে রিসেট করুন</translation>
+<translation id="2549766998450508148">১-৪টি পরিবর্তক কী (ctrl, alt, shift, অথবা search) এবং আরও ১টি কী প্রেস করুন আপনি একটি সিঙ্গল কীও বেছে নিতে পারেন।</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="2550212893339833758">অদলবদল করা মেমরি</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> খোলার জন্য <ph name="EXTENSION_NAME" />-কে অনুমতি দিন?</translation>
@@ -10642,6 +10642,7 @@
 <translation id="8715480913140015283">ব্যাকগ্রাউন্ড ট্যাব আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="8716931980467311658">এই <ph name="DEVICE_TYPE" /> থেকে Linux ফাইল ফোল্ডারের মধ্যে থাকা Linux অ্যাপ এবং সমস্ত ডেটা মুছে ফেলবেন?</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
+<translation id="8718560545710680911">এই পৃষ্ঠার মাধ্যমে জিজ্ঞাসা করুন</translation>
 <translation id="8718994464069323380">টাচস্ক্রিন শনাক্ত করা হয়েছে</translation>
 <translation id="8719472795285728850">স্ট্রিমে এক্সটেনশনের অ্যাক্টিভিটির উপর লক্ষ্য রাখা হচ্ছে…</translation>
 <translation id="8719665168401479425">অ্যাকশন পারফর্ম করতে, মুখের জেসচার ব্যবহার করুন</translation>

@@ -292,7 +292,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1199814941632954229">Probíhá zřizování certifikátů pro tyto profily certifikátů</translation>
 <translation id="120069043972472860">Nepoužitelná</translation>
 <translation id="1201402288615127009">Další</translation>
-<translation id="1201564082781748151">Místní data můžete obnovit, pokud zapomenete heslo</translation>
 <translation id="1202116106683864634">Opravdu tento přístupový klíč chcete smazat?</translation>
 <translation id="1202596434010270079">Terminálová aplikace byla aktualizována. Vyjměte jednotku USB.</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
@@ -2219,6 +2218,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2546991196809436099">Přiblížením zvětšíte položky na obrazovce. Lupu můžete zapnout či vypnout stisknutím kláves Hledat + Ctrl + M.</translation>
 <translation id="2548347166720081527">Povolené oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Resetovat mezipaměť profilu eSIM karty</translation>
+<translation id="2549766998450508148">Stiskněte 1–4 modifikační klávesy (ctrl, alt, shift nebo hledat) a jednu další klávesu. Můžete také vybrat jednu klávesu.</translation>
 <translation id="2549985041256363841">Zahájit nahrávání</translation>
 <translation id="2550212893339833758">Stránkovaná paměť</translation>
 <translation id="2550596535588364872">Povolit rozšíření <ph name="EXTENSION_NAME" /> otevřít soubor <ph name="FILE_NAME" />?</translation>
@@ -10623,6 +10623,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8715480913140015283">Karta na pozadí používá vaši kameru</translation>
 <translation id="8716931980467311658">Chcete z tohoto zařízení <ph name="DEVICE_TYPE" /> smazat všechny aplikace pro Linux a data ve složce souborů systému Linux?</translation>
 <translation id="8717864919010420084">Kopírovat odkaz</translation>
+<translation id="8718560545710680911">Zeptat se přes tuto stránku</translation>
 <translation id="8718994464069323380">Byla zjištěna dotyková obrazovka</translation>
 <translation id="8719472795285728850">Naslouchání aktivitám rozšíření...</translation>
 <translation id="8719665168401479425">Provádět akce gesty obličejem</translation>

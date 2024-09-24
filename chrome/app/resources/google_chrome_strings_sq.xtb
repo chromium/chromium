@@ -301,6 +301,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4680828127924988555">Anulo instalimin</translation>
 <translation id="469553575393225953">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chrome rekomandon t'i instalosh ato vetëm nga "Dyqani i uebit i Chrome"</translation>
 <translation id="4710245680469034439">Personalizo shfletuesin me tema të frymëzuara nga natyra, koleksione nga artistë etj.</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Instalimi dështoi për shkak të një gabimi të protokollit të pambështetur.</translation>
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4741235124132242877">U gozhdua! Përdor përsëri "Lenten e Google" nga shiriti i veglave</translation>
@@ -464,6 +465,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
 <translation id="6893363893008038481">Hiqe llogarinë nga Chrome</translation>
 <translation id="6896758677409633944">Kopjo</translation>
+<translation id="6930294499209825">E mban të përditësuar softuerin e Google. Nëse ky shërbim çaktivizohet ose ndalohet, softueri yt i Google nuk do të mbahet i përditësuar, që do të thotë se dobësitë e sigurisë që mund të lindin nuk mund të rregullohen dhe veçoritë mund të mos funksionojnë. Ky shërbim çinstalohet vetë kur nuk ka një softuer të Google që e përdor atë.</translation>
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
 <translation id="6938166777909186039">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
@@ -513,6 +515,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7477130805345743099">Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="749228101751499733">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome. <ph name="SHORTCUT" /> mund të ndryshojë cilësimet e shërbimeve të tua të Google.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Mund të gozhdosh "Lenten e Google" për qasje të lehtë</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Joaktive • Chrome nuk mund të verifikojë se nga vjen kjo shtesë</translation>

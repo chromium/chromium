@@ -25,6 +25,7 @@
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
 <translation id="1342274909142618978">Auch Daten aus Chromium löschen (<ph name="URL" />)</translation>
+<translation id="1345251407431278948">Angepinnt! Über die neue Schaltfläche in der Symbolleiste kannst du wieder auf die Bildersuche zugreifen.</translation>
 <translation id="1414495520565016063">Du bist in Chromium angemeldet.</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
@@ -53,9 +54,11 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1820835682567584003">Chromium versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chromium-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="1862852878885210965">Mit der Bildersuche suchen</translation>
 <translation id="1863308913976887472">Websites können Daten zu deinen Interessen bei Chromium speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="1880677175115548835">Text auswählen</translation>
 <translation id="1881322772814446296">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Chromium-Profil. Deine Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chromium-Daten getrennt verwenden möchtest, kannst du ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
+<translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1906696617298807388">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an Google Drive, damit du Vorschläge für Elemente erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="1911763535808217981">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne dich auch in Chromium anmelden zu müssen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
@@ -64,6 +67,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1953553007165777902">Wird heruntergeladen… Noch <ph name="MINUTE" /> Minute(n)</translation>
 <translation id="1966382378801805537">Chromium kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="1990262977744080398">Gründe, warum Chromium einige Dateien blockiert (wird in neuem Tab geöffnet)</translation>
+<translation id="1999715455684970349">Hält deine Chromium-Software auf dem neuesten Stand. Wenn dieser Dienst deaktiviert oder angehalten wurde, wird deine Chromium-Software nicht mehr aktualisiert. Das bedeutet, dass eventuelle neue Sicherheitslücken nicht behoben werden können und einige Funktionen möglicherweise nicht funktionieren. Dieser Dienst deinstalliert sich automatisch, wenn er nicht von einer Chromium-Software verwendet wird.</translation>
 <translation id="2008474315282236005">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="2018879682492276940">Fehler bei der Installation. Bitte versuch es noch einmal.</translation>
 <translation id="2020032459870799438">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
@@ -98,9 +102,11 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2542968102051442371">Text mit der Bildersuche auswählen</translation>
 <translation id="2554739539410784893">Chromium versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
+<translation id="2575822587468774919">Wähle ein beliebiges Element für die Bildersuche aus</translation>
 <translation id="2576118232315942160">Wenn du auf allen deinen Geräten auf deine Passwörter und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="2583187216237139145">Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
@@ -123,6 +129,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2846251086934905009">Installationsfehler: Die Installation konnte nicht abgeschlossen werden und wurde abgebrochen.</translation>
 <translation id="2847479871509788944">Aus Chromium entfernen...</translation>
 <translation id="2850691299438350830">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
+<translation id="2874602845494991903">Bildersuche öffnen</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2910007522516064972">Über &amp;Chromium</translation>
 <translation id="2915996080311180594">Später neu starten</translation>
@@ -227,6 +234,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4334294535648607276">Download abgeschlossen.</translation>
 <translation id="439358628917130594">Für <ph name="MANAGER" /> ist erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Chromium OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="4407044323746248786">Chromium trotzdem beenden?</translation>
+<translation id="4413205837991854510">Schaltfläche für die Bildersuche immer anzeigen</translation>
 <translation id="4415566066719264597">Chromium im Hintergrund ausführen</translation>
 <translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" />}other{Chromium empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">Chromium anpassen und einstellen</translation>
@@ -274,6 +282,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="494490797786467921">Klicken, um Dialogfeld zur Anmeldung in Chromium zu schließen</translation>
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
+<translation id="5051959905407134411">Bildersuche ausprobieren</translation>
 <translation id="5114678101347489141">In Chromium werden neue Funktionen ausprobiert, mit denen Websites bei gleichbleibender Nutzererfahrung beim Surfen weniger Nutzerdaten verwenden</translation>
 <translation id="5123973130450702873">Chromium benötigt eine Berechtigung für das Handtracking</translation>
 <translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
@@ -286,6 +295,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5294316920224716406">Wenn du im Inkognitomodus surfst, warnt Chromium dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="5296845517486664001">Wenn Tests aktiviert sind und Chromium dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chromium jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5310474266708705970">Mit <ph name="USER_EMAIL" /> in Chromium anmelden</translation>
+<translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5352264705793813212">Chromium hat einige Sicherheitsempfehlungen gefunden, die du überprüfen solltest</translation>
 <translation id="5352361688875342522">Andere Chromium-Profile</translation>
 <translation id="5358375970380395591">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Chromium-Profil. Deine Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
@@ -307,6 +317,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5575418445468216473">Deine Passwörter und anderen Chromium-Daten werden in deinem Google-Konto gespeichert und von diesem Gerät entfernt. Wenn du sie in Zukunft verwenden möchtest, melde dich wieder in Chromium an.</translation>
 <translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
+<translation id="5605834417512968703">Wähle ein beliebiges Element für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="5643865575100044307">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
@@ -317,6 +328,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5800158606660203929">Chromium anpassen und verwalten. Chromium als Standardbrowser festlegen.</translation>
 <translation id="5809516625706423866">Internetverbindung kann nicht hergestellt werden. HTTP 401 Unauthorized. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
+<translation id="5871205389137001634">Klicken, um die Bildersuche zu verlassen</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>
 <translation id="5889361821821684993">Chromium prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -375,6 +387,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chromium kann deine Interessen schätzen. Wenn du eine Website besuchst, kann diese von Chromium dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="6400112897226594999">Chromium-Logo auf einem Computerbildschirm.</translation>
 <translation id="6403826409255603130">Chromium ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
+<translation id="6436260184216827876">Die Bildersuche ist nicht verfügbar. Versuche es später noch einmal.</translation>
 <translation id="6442900851116057561">Chromium OS neu starten</translation>
 <translation id="6443470774889161065">Chromium lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="645458117210240797">Deaktiviert • Chromium kann nicht bestätigen, woher diese Erweiterung stammt</translation>
@@ -412,6 +425,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="67706546131546258">Chromium empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>
 <translation id="6779406956731413166">Chromium OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
+<translation id="6843464627590537736">Such-Bubble für die Bildersuche</translation>
 <translation id="6847869444787758381">Chromium wird dich informieren, sollten deine Passwörter nicht mehr sicher sein</translation>
 <translation id="684888714667046800">Internetverbindung kann nicht hergestellt werden. Wenn du eine Firewall verwendest, achte darauf, dass <ph name="PRODUCT_EXE_NAME" /> auf der Zulassungsliste steht.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
@@ -439,6 +453,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="7213407614656404070">Chromium immer verwenden, wenn du auf Links in Nachrichten, Dokumenten und anderen Apps klickst</translation>
 <translation id="7223968959479464213">Task-Manager - Chromium</translation>
 <translation id="7246575524853130370">Deine von Chromium geschätzten Interessen</translation>
+<translation id="7274695763216404502">Angepinnt! Du kannst die Bildersuche wieder über die Symbolleiste verwenden.</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium empfiehlt, sie zu entfernen}other{Chromium empfiehlt, sie zu entfernen}}</translation>
 <translation id="7309928523159922338">Mithilfe der Anzeigenanalyse können von dir besuchte Websites Informationen von Chromium anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.</translation>
 <translation id="731795002583552498">Chromium wird aktualisiert</translation>
@@ -477,6 +492,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7786760609782648049">Chromium noch schneller machen</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Du kannst es Personen mit Zugriff auf deinen Internetverkehr erschweren, zu sehen, welche Websites du besuchst. Chromium nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln.</translation>
+<translation id="7810005234485217901">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen</translation>
 <translation id="7828947555739565424">Ein Chromium-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="7845233973568007926">Vielen Dank für die Installation. Du musst deinen Computer neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="7859018312476869945">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
@@ -491,6 +507,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8010081455002666927">Automatische Erkennung</translation>
 <translation id="8013436988911883588">Sobald Chromium Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="8054112667659782652">Schaltfläche für die Bildersuche immer anzeigen</translation>
 <translation id="80790299200510644">Bildersuche</translation>
 <translation id="8086881907087796310">Die Installation ist fehlgeschlagen, da dein Computer die Mindestanforderungen an die Hardware nicht erfüllt.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
@@ -527,6 +544,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8522801943730206384">Chromium kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556420416730706394">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf die Schaltfläche „Anpinnen“.</translation>
 <translation id="8568283329061645092">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
 <translation id="8576826849825683917">Chromium wird von mehreren Organisationen verwaltet</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>

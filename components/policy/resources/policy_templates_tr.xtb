@@ -6604,11 +6604,6 @@ Politika, Devre Dışı değerine ayarlanırsa Konsantrasyon modundaki sesler de
 Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="5962271004971310788">Gizli modda gezinmek için kullanıcının Gizli modda çalıştırılmasına izin vermesi gereken uzantılar</translation>
 <translation id="5963752574792883406">bağlantı noktası 990 (01.02.2022'ye kadar engellemesi kaldırılabilir)</translation>
-<translation id="5964583455815172553">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
-      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
-      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
-
-      Politikanın her liste öğesi, <ph name="URL_LABEL" /> güncelleme manifestine ve izole web uygulamasının Web Bundle kimliğine sahip bir nesnedir. Her iki alan da zorunludur.</translation>
 <translation id="596523880465577341">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
 <translation id="596732417280023843">Sertifika profilinin adı.</translation>
@@ -6751,27 +6746,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6102449843040973938"><ph name="BOREALIS_NAME" /> politikasının cihazda çalışması engellenmesin</translation>
 <translation id="610892566190435199">Cihazın güç durumu raporlamasını etkinleştir</translation>
 <translation id="6111936128861357925">Dinozor Paskalya Yumurtası Oyununa İzin Verme</translation>
-<translation id="6112524153927257380">Politika ayarlanırsa kullanıcılar indirme güvenliği kararlarını atlayamaz.
-
-      Chrome'da birçok farklı indirme uyarısı vardır. Bu uyarılar genel olarak aşağıdaki gibi sınıflandırılabilir (Güvenli Tarama sonuçları hakkında daha fazla bilgi https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Kötü amaçlı (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
-      * Yaygın olmayan veya istenmeyen (Güvenli Tarama sunucusu tarafından işaretlendiği gibi)
-      * Tehlikeli dosya türü (ör. SWF indirmelerinin tümü ve EXE indirmelerinin birçoğu)
-
-      Politika ayarlanırsa, değerine bağlı olarak bu kategorilerin farklı alt grupları engellenir:
-
-      0: Özel kısıtlama yok. Varsayılan.
-
-      1: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
-
-      2: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları, Güvenli Tarama sunucusu tarafından işaretlenen yaygın olmayan ya da istenmeyen dosyaları VE tehlikeli dosya türlerinin tümünü engeller. Tehlikeli olmayan dosyaların yanlışlıkla tehlikeli olarak sınıflandırılıp engellenmesine tolerans gösterebilecek kuruluş birimleri/tarayıcılar/kullanıcılar dışındakilere önerilmez.
-
-      3: Tüm indirmeleri engeller. Özel kullanım alanları hariç önerilmez.
-
-      4: Güvenli Tarama sunucusu tarafından işaretlenen kötü amaçlı dosyaları engeller, tehlikeli dosya türlerini engellemez. Önerilen.
-
-      Not: Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir... menü seçeneğinden tetiklenen indirmeler için geçerlidir. Görüntülenmekte olan sayfayı indirme ya da yazdırma seçeneklerinden PDF olarak kaydetme için geçerli değildir. Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Daha az kısıtlayıcı davranışı geri yükle.</translation>
 <translation id="6119207979839638596">Bu politika, <ph name="PRODUCT_NAME" /> ürünündeki maksimum TLS sürümü politikası kaldırıldıktan sonra M75 sürümünden kaldırılmıştır.
 

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Sobita skannitava alaga</translation>
 <translation id="1343442362630695901">soolajärv</translation>
 <translation id="1348657754632799065">Salvestusriba</translation>
+<translation id="1350909945461913813">Salvestage kindlasti kõik tööd</translation>
 <translation id="1367951781824006909">Vali fail</translation>
 <translation id="1371650399987522809">Tagasiside Google'i AI toetatavate taustapiltide kohta</translation>
 <translation id="1374385338586507108">Määra</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK versioon:</translation>
 <translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Selleks et oma AI-pilte isikupärastada, valige teema ja seejärel allajoonitud sõnad.</translation>
 <translation id="2045814230297767491">söögiriistad</translation>
 <translation id="2047316797244836561">Ekraanisäästja vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2082932131694554252">Määratud klaviatuuriklahv</translation>
 <translation id="2085089206770112532">Ekraanikuva ereduse vähendamine</translation>
-<translation id="2085876078937250610">Salvestamine …</translation>
 <translation id="2086091080968010660">Ajapõhised muudatused ei pruugi olla asjakohased. Lülitage seadetes sisse süsteemi juurdepääs asukohale.</translation>
 <translation id="2102231663024125441">Teksti muutmine</translation>
 <translation id="2102648867808308635">Aita mul seda lehte lugeda</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">Kõne ei tuvastatud</translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
+<translation id="2468124392950503650">Valige päring, et luua või vaadata <ph name="BEGIN_LINK_PROMPTING_GUIDE" />päringu juhendit<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Kasutage funktsiooni Aita mul kirjutada, et luua mustand või viimistleda olemasolevat tööd (toimib Google'i AI platvormil)</translation>
 <translation id="2480572840229215612">krabid</translation>
 <translation id="248546197012830854">Seade on võrguühenduseta. Abimaterjalide nägemiseks looge ühendus WiFi-võrguga.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">Sobivaid tulemusi pole</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="4486524074141928967">Teid logitakse välja kell <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades muuteklahvi (Ctrl, Alt, tõstuklahv või <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Liidese värv</translation>
 <translation id="4503223151711056411">Vasaknool</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">hallides toonides</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5600027863942488546">Klahvi <ph name="KEY_NAME" /> on testitud</translation>
+<translation id="5613201299517339763">Olete välja logitud</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstraktne</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">Faili ei leitud</translation>
 <translation id="5938286923316838007">Selle sisu puhul ei saa salvestiste jaoks nimesid luua</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
+<translation id="5942727615796467094">Saidi <ph name="MANAGER" /> administraator on määranud, millal seadet <ph name="DEVICE_TYPE" /> saab kasutada</translation>
 <translation id="594552776027197022">Loo juhuslik võtmepaar</translation>
 <translation id="5946538341867151940">Teil pole veel ühendust. Kui teie mobiilioperaator soovitab kohandatud APN-i, sisestage APN-i teave, valides käsu „+ Uus APN“</translation>
 <translation id="5947266287934282605">Kui kuu viimane päev on enne seda päeva, lähtestatakse andmed kuu viimasel päeval</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">teine planeet</translation>
 <translation id="6359706544163531585">Heleda teema keelamine</translation>
 <translation id="6359919876285606596">See toiming on jäädav ja seda ei saa tagasi võtta</translation>
+<translation id="6368342879959028556">Kui teete valiku „Looge AI-ga”, kirjutage kohandatud päring. Või saate teema valimiseks teha valiku „AI taustapildid” ja seejärel AI taustapildi isikupärastamiseks allajoonitud sõnad valida.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6373461326814131011">tiik</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">Ava konto seaded</translation>
 <translation id="6462978824459367242">APN-i nupp Lisa on nüüd lubatud</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Kas skannida leht uuesti?}=1{Kas skannida {PAGE_NUMBER}. leht uuesti?}other{Kas skannida {PAGE_NUMBER}. leht uuesti?}}</translation>
+<translation id="6468146470109254228">Teie kolm kõige viimast päringut ja väljundit. Pääsete neile juurde ainult siis, kui kasutate funktsiooni Taustapilt ja stiil.</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
 <translation id="6472979596862005515">paadid</translation>
 <translation id="64778964625672495">tumepunane</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6659594942844771486">Vaheleht</translation>
 <translation id="66621959568103627">korallroosades toonides</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks tehke valik „Inspireeri mind”.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kui loote AI-ga, saadetakse Google'i AI serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatiivne AI on varajases katsejärgus ja sellel on praegu piiratud saadavus.</translation>
 <translation id="6673898378497337661">suurendab klaviatuuri eredust</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
 <translation id="6694534975463174713">lukk</translation>

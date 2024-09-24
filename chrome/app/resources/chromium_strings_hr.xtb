@@ -43,6 +43,7 @@
 
 Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Svojim Google računima možete upravljati u <ph name="SETTINGS_LINK_BEGIN" />postavkama<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Preuzimanje...</translation>
+<translation id="167397405791113306">Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali Chromiumove podatke na svojem Google računu.</translation>
 <translation id="1715127912119967311">Radi poboljšanja tih značajki Chromium šalje Googleu vaše interakcije s njim. Pregledatelji te podatke mogu čitati, obrađivati i označavati.</translation>
 <translation id="1722488837206509557">To će vam omogućiti odabir između dostupnih uređaja i prikaz sadržaja na njima.</translation>
 <translation id="17264556997921157">Možete vidjeti i ukloniti teme koje web-lokacije koriste da bi vam prikazivale oglase. Chromium procjenjuje vaše interese na temelju vaše nedavne povijesti pregledavanja.</translation>
@@ -528,6 +529,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8313851650939857356">Pogreška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Vaša organizacija zatvara Chromium kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Spremi kao sliku</translation>
+<translation id="8326785589245660814">izbrišite Chromiumove podatke na svojem računu</translation>
 <translation id="8330519371938183845">Prijavite se da biste sinkronizirali i prilagodili Chromium na svim svojim uređajima</translation>
 <translation id="8340674089072921962">E-adresa <ph name="USER_EMAIL_ADDRESS" /> prethodno je upotrebljavala Chromium</translation>
 <translation id="8357820681460164151">Da biste mogli pristupiti svojim sadržajima u pregledniku Chromium na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju</translation>
@@ -548,7 +550,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8555465886620020932">Pogreška usluge: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Pretraživanje slika možete prikvačiti radi lakšeg pristupa; kliknite gumb Prikvači pri vrhu bočne ploče</translation>
 <translation id="8568283329061645092">Chromium može provjeriti vaše zaporke kad se prijavite Google računom</translation>
-<translation id="8569978848943545314">Pruža usluge poboljšanja za <ph name="BROWSER_NAME" />.</translation>
 <translation id="8576826849825683917">Više organizacija upravlja Chromiumom</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: web-lokacije mogu pohraniti informacije o vašim interesima u Chromium. Na primjer, ako posjetite neku web-lokaciju da biste kupili tenisice za maraton, ta web-lokacija može definirati vaš interes kao trčanje maratona. Ako poslije posjetite neku drugu web-lokaciju da biste se registrirali za utrku, ta vam web-lokacija može prikazati oglas za tenisice za trčanje na temelju vaših interesa.</translation>

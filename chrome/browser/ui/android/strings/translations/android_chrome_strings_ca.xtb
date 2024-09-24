@@ -153,7 +153,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1696555181932908973">Pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vols canviar la configuració del tema fosc?</translation>
 <translation id="1702907158640575240">Navegador gestionat</translation>
-<translation id="1710099199314114079">Tanca les pestanyes o canvia d'una a una altra</translation>
 <translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1724977129262658800">Desbloqueja per editar la contrasenya</translation>
 <translation id="1726477445370128854">Pots navegar i fer cerques més ràpidament quan Chrome carrega prèviament les pàgines que considera que podries visitar</translation>
@@ -297,6 +296,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2450083983707403292">Vols tornar a baixar el fitxer <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Seguiment</translation>
 <translation id="2453860139492968684">Finalitza</translation>
+<translation id="2461378706168271257">Cerca a les teves pestanyes</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2468444275314013497">Tot correcte al teu navegador</translation>
 <translation id="2472163211318554013">Inicia la sessió per treure el màxim profit de Chrome</translation>
@@ -601,6 +601,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3847319713229060696">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="3856096718352044181">Verifica que aquest és un proveïdor vàlid o torna-ho a provar més tard</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3873174561423636563">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web. Consulta les <ph name="BEGIN_LINK1" />condicions del servei<ph name="END_LINK1" /> d'aquest lloc web.</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3899682235662194879">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="3900966090527141178">Exporta les contrasenyes</translation>
@@ -876,6 +877,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5114895953710637392">El full de filtratge per aplicació està tancat.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="5122378528687922675">Si necessites ajuda, demana-la al teu pare o mare (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
@@ -1458,6 +1460,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7656721520530864426">Cap lloc web</translation>
 <translation id="7656862631699126784">Activa el bloqueig d'incògnit</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7663320421139257046">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> d'aquest lloc web.</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="766587987807204883">Els articles es mostren aquí i els pots llegir fins i tot sense connexió</translation>
 <translation id="7666185984446444960">S'ha tancat: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7810647596859435254">Obre amb…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tots els fitxers, 1 fitxer a la llista}other{Tots els fitxers, # fitxers a la llista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla llarga</translation>
+<translation id="7819605256207059717">Bloquejat per la teva organització</translation>
 <translation id="7821130663268546430">Al selector de pestanyes hi trobaràs totes les pestanyes obertes</translation>
 <translation id="7822705602465980873">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
 <translation id="7824665136384946951">La teva organització ha desactivat Navegació segura</translation>
@@ -1685,7 +1689,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="864544049772947936">Gestiona les finestres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Utilitza Chrome a la teva manera</translation>
 <translation id="8664979001105139458">El nom del fitxer ja existeix</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloquejat per la teva organització}other{La teva organització n'ha bloquejat #}}</translation>
 <translation id="8672883760227492369">Algunes contrasenyes d'aquest dispositiu deixaran de funcionar aviat. Pots moure-les al gestor de contrasenyes de Google.</translation>
 <translation id="8676276370198826499">Registra't a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificacions d'inici de sessió</translation>

@@ -6754,11 +6754,6 @@ Jika kebijakan ini disetel ke Nonaktif, suara dalam Mode Fokus akan dinonaktifka
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5962271004971310788">Ekstensi yang harus diizinkan berjalan dalam mode Samaran oleh pengguna agar dapat menavigasi dalam mode Samaran</translation>
 <translation id="5963752574792883406">port 990 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
-<translation id="5964583455815172553">Menyetel kebijakan ini akan menentukan daftar aplikasi web terisolasi (IWA) yang diinstal secara otomatis.
-      IWA adalah aplikasi yang memiliki properti keamanan yang berguna dan tidak tersedia untuk halaman web normal. Aplikasi tersebut dikemas dalam Paket Web Bertanda Tangan. Kunci publik Paket Web Bertanda Tangan digunakan untuk membuat ID Paket Web yang mengidentifikasi IWA.
-      Sejauh ini, kebijakan ini hanya berfungsi untuk Sesi Tamu Terkelola.
-
-      Setiap item daftar kebijakan merupakan objek dengan <ph name="URL_LABEL" /> manifes update dan ID Paket Web Aplikasi Web Terisolasi. Kedua kolom wajib diisi.</translation>
 <translation id="596523880465577341">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />'.</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
 <translation id="596732417280023843">Nama profil sertifikat.</translation>
@@ -6906,27 +6901,6 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6102449843040973938">Jangan cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="610892566190435199">Aktifkan pelaporan status daya perangkat</translation>
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
-<translation id="6112524153927257380">Jika kebijakan ini disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
-
-      Ada banyak jenis peringatan download dalam Chrome, yang secara umum dibagi menjadi kategori berikut (pelajari keputusan Safe Browsing lebih lanjut https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Berbahaya, seperti yang ditandai oleh server Safe Browsing
-      * Tidak biasa atau tidak diinginkan, seperti yang ditandai oleh server Safe Browsing
-      * Jenis file berbahaya (misalnya, semua download SWF dan sebagian besar download EXE)
-
-      Menyetel kebijakan ini akan memblokir subset yang berbeda dari kategori berikut, bergantung pada nilai kebijakan:
-
-      0: Tidak ada batasan khusus. Default.
-
-      1: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
-
-      2: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir file yang tidak biasa atau tidak diinginkan yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
-
-      3: Memblokir semua download. Tidak direkomendasikan, kecuali untuk kasus penggunaan khusus.
-
-      4: Memblokir file berbahaya yang ditandai oleh server Safe Browsing; tidak memblokir jenis file berbahaya. Direkomendasikan.
-
-      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="6118226055960302400">Pulihkan perilaku permisif.</translation>
 <translation id="6119207979839638596">Kebijakan ini dihapus di M75 setelah kebijakan versi TLS maksimum dihapus dari <ph name="PRODUCT_NAME" />.
 

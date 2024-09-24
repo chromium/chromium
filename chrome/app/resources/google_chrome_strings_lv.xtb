@@ -299,6 +299,7 @@
 <translation id="4680828127924988555">Atcelt instalēšanu</translation>
 <translation id="469553575393225953">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chrome komanda iesaka instalēt tos tikai no Chrome interneta veikala.</translation>
 <translation id="4710245680469034439">Personalizējiet pārlūku, izmantojot motīvus, kurus iedvesmojusi daba, kuru pamatā ir mākslinieku kolekcijas u. c.</translation>
+<translation id="4720851490453439956">Google atjauninātājs: iekšējais pakalpojums</translation>
 <translation id="4724676981607797757">Instalēšana neizdevās, jo radās neatbalstīta protokola kļūda.</translation>
 <translation id="4728575227883772061">Instalācija neizdevās nenoteiktas kļūdas dēļ. Ja Google Chrome pašlaik darbojas, lūdzu, aizveriet to un mēģiniet vēlreiz.</translation>
 <translation id="4741235124132242877">Piesprausta! Varat atkal piekļūt funkcijai Google Lens, izmantojot rīkjoslu.</translation>
@@ -460,6 +461,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
 <translation id="6893363893008038481">Noņemt kontu no pārlūka Chrome</translation>
 <translation id="6896758677409633944">Kopēt</translation>
+<translation id="6930294499209825">Nodrošina Google programmatūras pastāvīgu atjaunināšanu. Ja šis pakalpojums tiks atspējots vai pārtraukts, jūsu Google programmatūra netiks pastāvīgi atjaunināta, kas nozīmē, ka nebūs iespējams labot drošības ievainojamības, ja tādas radīsies, turklāt var nedarboties funkcijas. Šis pakalpojums pats tiek atinstalēts, ja neviena Google programmatūra to neizmanto.</translation>
 <translation id="6933858244219479645">ChromeOS sistēma</translation>
 <translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>
 <translation id="6943584222992551122">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chrome kā lietotājs <ph name="USER_EMAIL" />.</translation>
@@ -509,6 +511,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7477130805345743099">Pārlūkā Chrome tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="7481213027396403996">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="749228101751499733">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta. <ph name="SHORTCUT" /> var mainīt jūsu Google pakalpojumu iestatījumus.</translation>
+<translation id="7514258452813684157">Google atjauninātāja pakalpojums</translation>
 <translation id="7515191208480168435">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Izslēgts • Chrome nevar pārbaudīt šī paplašinājuma izcelsmi</translation>

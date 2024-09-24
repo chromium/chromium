@@ -398,6 +398,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
 <translation id="2416438829169535743">Sair da vista?</translation>
 <translation id="2417486498593892439">Início de sessão na rede</translation>
+<translation id="2423619675829330672">Demasiadas tentativas de introdução do PIN. Aguarde <ph name="TIME_LEFT" /> e tente novamente.</translation>
 <translation id="2426051945783024481">O enquadramento da câmara foi centrado automaticamente</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Antes de aceitar, confirme que esta chave está indicada nesse dispositivo: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
 <translation id="6337159624125741244">A lupa de ecrã inteiro está ativada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Caso se tenha esquecido do PIN, experimente recuperar este utilizador.</translation>
 <translation id="6344138931392227467">Dispositivo <ph name="DEVICE_NAME" /> ligado</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e, em seguida, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGESTÕES DE APLICAÇÕES</translation>
@@ -1633,6 +1635,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6539852571005954999">A analisar a transferência <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs e muito mais</translation>
+<translation id="6545382064335350438">Ainda não foi possível validar o PIN. Tente novamente.</translation>
 <translation id="6555373427270923730">Introduza um endereço Web na barra de endereço e, em seguida, prima <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>
@@ -2029,6 +2032,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos ligados</translation>
+<translation id="7921565901396407357">Não foi possível validar o PIN. Tente novamente.</translation>
 <translation id="7923534281713082605">Meteorologia</translation>
 <translation id="7926080067315048321">Ver todas as tarefas no Google Tasks na Web</translation>
 <translation id="7930731167419639574">Agora, a voz é processada localmente e o ditado funciona offline.</translation>

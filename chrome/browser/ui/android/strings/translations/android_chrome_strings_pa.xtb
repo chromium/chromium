@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">ਤੁਸੀਂ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੋਰ ਤਰੀਕੇ ਵਰਤ ਕੇ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1702543251015153180">ਕੀ ਤੁਸੀਂ ਆਪਣੀਆਂ ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1702907158640575240">ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਬ੍ਰਾਊਜ਼ਰ</translation>
-<translation id="1710099199314114079">ਟੈਬਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰੋ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="1718835860248848330">ਪਿਛਲਾ ਘੰਟਾ</translation>
 <translation id="1724977129262658800">ਆਪਣੇ ਪਾਸਵਰਡ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="1726477445370128854">Chrome ਮੁਤਾਬਕ ਜਿਨ੍ਹਾਂ ਪੰਨਿਆਂ 'ਤੇ ਤੁਸੀਂ ਜਾ ਸਕਦੇ ਹੋ ਜਦੋਂ ਇਹ ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਖੋਜ ਕਰ ਸਕਦੇ ਹੋ</translation>
@@ -635,6 +634,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="404352903042073578">ਬੇਨਾਮ ਗਰੁੱਪ</translation>
 <translation id="4044708993631234325">ਹੇਠਲੀ ਸ਼ੀਟ</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_ONE" /> ਮਿਆਰੀ ਟੈਬ}one{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_MANY" /> ਮਿਆਰੀ ਟੈਬ}other{ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਨਵੀਂ ਸਰਗਰਮੀ ਵਾਲੀ <ph name="TABS_COUNT_MANY" /> ਮਿਆਰੀ ਟੈਬਾਂ}}</translation>
 <translation id="405365679581583349">Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="405399507749852140">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -878,6 +878,7 @@
 <translation id="510275257476243843">1 ਘੰਟਾ ਬਾਕੀ</translation>
 <translation id="5114895953710637392">ਐਪ ਫਿਲਟਰ ਸ਼ੀਟ ਬੰਦ ਹੈ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> ਵੱਲ</translation>
+<translation id="5116239826668864748">ਸੁਨੇਹੇ, ਦਸਤਾਵੇਜ਼ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਲਿੰਕ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="5122378528687922675">ਜੇ ਤੁਹਾਨੂੰ ਮਦਦ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਮਾਂ-ਪਿਓ (<ph name="PARENT_NAME_1" /> ਜਾਂ <ph name="PARENT_NAME_2" />) ਨੂੰ ਕਹੋ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5132942445612118989">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">ਸਭ ਤੋਂ ਪਹਿਲਾਂ, Chrome ਵਿੱਚੋਂ ਪਾਸਵਰਡਾਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰੋ ਅਤੇ ਮਿਟਾਓ</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ਨੂੰ <ph name="TOP_ORIGIN" /> ਲਈ ਤੁਹਾਡੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦਿਓ</translation>
 <translation id="7596558890252710462">ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ਮਿਆਰੀ ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਮਿਆਰੀ ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਮਿਆਰੀ ਟੈਬਾਂ}}</translation>
 <translation id="7603168929588204083">ਅਵੈਧ ਤਾਰੀਖ</translation>
 <translation id="7605594153474022051">ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7612619742409846846">ਇਸ ਦੇ ਤੌਰ 'ਤੇ Google ਵਿੱਚ ਸਾਈਨ ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
@@ -1492,6 +1494,7 @@
 <translation id="7810647596859435254">ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ 1 ਫ਼ਾਈਲ ਹੈ}one{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਫ਼ਾਈਲ ਹੈ}other{ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ, ਸੂਚੀ ਵਿੱਚ # ਫ਼ਾਈਲਾਂ ਹਨ}}</translation>
 <translation id="7815484226266492798">ਲੰਬਾ ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
+<translation id="7819605256207059717">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="7821130663268546430">ਤੁਸੀਂ ਟੈਬ ਸਵਿੱਚਰ ਵਿੱਚ ਸਾਰੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="7822705602465980873">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਇਹ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਲਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ Google ਸੇਵਾਵਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾ ਸਕੇ, ਉਦਾਹਰਨ ਲਈ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਘਟਨਾ ਤੋਂ ਬਾਅਦ Gmail ਵਿੱਚ ਸੁਰੱਖਿਆ ਵਧਾਉਣਾ।</translation>
 <translation id="7824665136384946951">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
@@ -1688,7 +1691,6 @@
 <translation id="864544049772947936">ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">ਆਪਣੀ ਮਰਜ਼ੀ ਨਾਲ Chrome ਵਰਤੋ</translation>
 <translation id="8664979001105139458">ਫ਼ਾਈਲ ਨਾਮ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ # ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ # ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="8672883760227492369">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੌਜੂਦ ਕੁਝ ਪਾਸਵਰਡ ਜਲਦ ਹੀ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੇ। ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਪਾਸਵਰਡਾਂ ਨੂੰ Google Password Manager 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਸਾਈਨ-ਅੱਪ ਕਰੋ</translation>
 <translation id="8676789164135894283">ਸਾਈਨ-ਇਨ ਲਈ ਪੁਸ਼ਟੀਕਰਨ</translation>

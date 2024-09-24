@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Zobrazit informace o prodejně</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Přesunout kartu doleva</translation>
+<translation id="6590332670428149473">Otevřít nabídku akcí pro sdílenou skupinu karet <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">Ukázat</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Změněna <ph name="ONE_CHANGED" /> karta}few{Změněny <ph name="MANY_CHANGED" /> karty}many{Změněno <ph name="MANY_CHANGED" /> karty}other{Změněno <ph name="MANY_CHANGED" /> karet}}</translation>
 <translation id="6694634756612002311">Spravovat sdílení</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Rozbalit skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbalit skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> karty.}other{Rozbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="9090098097337832354">Informace o této prodejně jsou zavřeny</translation>
 <translation id="9111228330448174435">Při vytváření nové skupiny karet zobrazit dialogové okno</translation>
+<translation id="9114502155681725011">Otevřít nabídku akcí pro skupinu karet <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" /></translation>
 <translation id="9150694013019234766">Ve skupině karet v dolní části obrazovky můžete přepínat mezi kartami</translation>
 <translation id="9169594135889675189">Přidat do skupiny novou kartu</translation>
 <translation id="9216898458513705996">Karty zůstanou na tomto zařízení otevřené, ale skupina bude smazána ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>

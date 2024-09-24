@@ -153,7 +153,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1696555181932908973">Na <ph name="SITE_ETLD_PLUS_ONE" /> lahko poskusite nadaljevati na druge načine.</translation>
 <translation id="1702543251015153180">Želite spremeniti nastavitve temne teme?</translation>
 <translation id="1702907158640575240">Upravljan brskalnik</translation>
-<translation id="1710099199314114079">Preklopite med zavihki ali jih zaprite</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
 <translation id="1726477445370128854">Brskanje in iskanje sta hitrejša, ko Chrome vnaprej naloži strani, za katere meni, da jih boste morda obiskali.</translation>
@@ -297,6 +296,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2450083983707403292">Ali želite znova začeti prenos datoteke <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Spremljanje</translation>
 <translation id="2453860139492968684">Dokončaj</translation>
+<translation id="2461378706168271257">Iskanje po zavihkih</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2468444275314013497">Vaš brskalnik je videti v redu</translation>
 <translation id="2472163211318554013">Prijavite se, če želite čim bolje izkoristiti Chrome</translation>
@@ -601,6 +601,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3847319713229060696">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="3856096718352044181">Preverite, ali je ponudnik veljaven, in poskusite pozneje znova</translation>
 <translation id="3858860766373142691">Ime</translation>
+<translation id="3873174561423636563">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše podatke – <ph name="FIELDS_STRING" /> – s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pogoje storitve<ph name="END_LINK1" /> tega spletnega mesta.</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="3899682235662194879">Zapri vse anonimne zavihke</translation>
 <translation id="3900966090527141178">Izvoz gesel</translation>
@@ -876,6 +877,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="510275257476243843">Še 1 h</translation>
 <translation id="5114895953710637392">List filtra za aplikacije je zaprt.</translation>
 <translation id="5115811374190515607">za <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="5122378528687922675">Če potrebuješ pomoč, se obrni na starša (<ph name="PARENT_NAME_1" /> ali <ph name="PARENT_NAME_2" />).</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
 <translation id="5132942445612118989">Sinhronizirajte gesla, zgodovino in drugo v vseh napravah</translation>
@@ -1458,6 +1460,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7656721520530864426">Ni spletnih mest</translation>
 <translation id="7656862631699126784">Vklop anonimnega zaklepanja</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7663320421139257046">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše podatke – <ph name="FIELDS_STRING" /> – s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> tega spletnega mesta.</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Članki so prikazani tukaj in lahko jih berete, tudi ko nimate povezave</translation>
 <translation id="7666185984446444960">Zaprto: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7810647596859435254">Odpiranje z aplikacijo …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Vse datoteke, 1 datoteka na seznamu}one{Vse datoteke, # datoteka na seznamu}two{Vse datoteke, # datoteki na seznamu}few{Vse datoteke, # datoteke na seznamu}other{Vse datoteke, # datotek na seznamu}}</translation>
 <translation id="7815484226266492798">Dolg posnetek zaslona</translation>
+<translation id="7819605256207059717">Blokirala organizacija</translation>
 <translation id="7821130663268546430">Vse odprte zavihke najdete v preklopu med zavihki</translation>
 <translation id="7822705602465980873">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="7824665136384946951">Vaša organizacija je izklopila Varno brskanje</translation>
@@ -1685,7 +1689,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="864544049772947936">Upravljanje oken (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Uporabljajte Chrome po svoji meri</translation>
 <translation id="8664979001105139458">Ime datoteke že obstaja</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blokirala organizacija}one{# je blokirala vaša organizacija}two{# je blokirala vaša organizacija}few{# je blokirala vaša organizacija}other{# je blokirala vaša organizacija}}</translation>
 <translation id="8672883760227492369">Nekatera gesla v tej napravi bodo kmalu nehala delovati. Ta gesla lahko premaknete v Googlovega upravitelja gesel.</translation>
 <translation id="8676276370198826499">Registrirajte se na <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Preverjanja prijave</translation>

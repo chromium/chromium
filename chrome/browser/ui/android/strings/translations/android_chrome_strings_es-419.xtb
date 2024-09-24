@@ -153,7 +153,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">¿Quieres cambiar la configuración del Tema oscuro?</translation>
 <translation id="1702907158640575240">Navegador administrado</translation>
-<translation id="1710099199314114079">Cambiar o cerrar pestañas</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea la pantalla para editar tu contraseña.</translation>
 <translation id="1726477445370128854">Puedes navegar y realizar búsquedas de manera más rápida cuando Chrome precarga las páginas que considera que puedes visitar</translation>
@@ -878,6 +877,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="510275257476243843">1 hora restante</translation>
 <translation id="5114895953710637392">La hoja de filtros de apps está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos y otras apps</translation>
 <translation id="5122378528687922675">Si necesitas ayuda, pídele a tu madre o padre (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
@@ -1492,6 +1492,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla completa</translation>
+<translation id="7819605256207059717">Tu organización lo bloqueó.</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en el alternador de pestañas</translation>
 <translation id="7822705602465980873">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
 <translation id="7824665136384946951">Tu organización desactivó la Navegación segura</translation>
@@ -1688,7 +1689,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="864544049772947936">Administrar ventanas (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Usa Chrome a tu manera</translation>
 <translation id="8664979001105139458">Ya existe el nombre del archivo</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Tu organización la bloqueó}other{Tu organización bloqueó #}}</translation>
 <translation id="8672883760227492369">Algunas contraseñas de este dispositivo dejarán de funcionar pronto. Puedes mover estas contraseñas al Administrador de contraseñas de Google.</translation>
 <translation id="8676276370198826499">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificaciones para acceder</translation>

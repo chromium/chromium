@@ -1473,7 +1473,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3665100783276035932">A maioria dos sites vai funcionar conforme o esperado</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Saiba mais<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">Ativar Bluetooth</translation>
-<translation id="3671117652518853176">Quando essa opção estiver desativada, pode ser que a verificação seja solicitada para fins de segurança</translation>
+<translation id="3671117652518853176">Mesmo quando essa opção estiver desativada, a verificação pode ser solicitada para fins de segurança</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3672568546897166916">Erro em <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Equipamentos de rede</translation>
@@ -2388,6 +2388,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5371425731340848620">Atualizar cartão</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Seu relógio está atrasado", "Seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Para acessar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
 <translation id="5380953781541843508">em ordem crescente</translation>
 <translation id="5381318171304904246">Ao continuar, vamos abrir o site do seu banco. Após a verificação, você vai retornar automaticamente para concluir a compra.</translation>
 <translation id="5383478552402031184">Serviços de pisos</translation>
@@ -2667,7 +2668,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5915189366813702112">Condições flexíveis de trabalho</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5918373444239520146">Gadgets e aparelhos eletrônicos portáteis</translation>
-<translation id="5918847752193018339">Finalizar compras mais rapidamente quando seus CVCs forem salvos. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">Finalize as compras mais rapidamente quando seus CVCs estiverem salvos. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}}</translation>
 <translation id="5921185718311485855">ativado</translation>
@@ -2885,7 +2886,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298456705131259420">Afeta os sites listados aqui. Inserir "[*.]" antes de um nome de domínio cria uma exceção para o domínio todo. Por exemplo, a adição de "[*.]google.com" significa que os cookies de terceiros também podem estar ativos para mail.google.com, que faz parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Seu dispositivo será reiniciado agora}=1{Seu dispositivo será reiniciado em 1 segundo}one{Seu dispositivo será reiniciado em # segundo}other{Seu dispositivo será reiniciado em # segundos}}</translation>
-<translation id="6301104306974789820">Receber notificações de acompanhamento de preço</translation>
+<translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
 <translation id="6302546952464230349">Mostrar detalhes da permissão de <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software de multimídia</translation>
 <translation id="6305205051461490394">Não é possível acessar <ph name="URL" />.</translation>

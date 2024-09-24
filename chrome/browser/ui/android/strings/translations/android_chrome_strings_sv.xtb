@@ -153,7 +153,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vill du ändra inställningarna för mörkt tema?</translation>
 <translation id="1702907158640575240">Hanterad webbläsare</translation>
-<translation id="1710099199314114079">Byt eller stäng flikar</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1724977129262658800">Lås upp om du vill redigera lösenordet</translation>
 <translation id="1726477445370128854">Du kan surfa och söka snabbare när Chrome läser in sidor som du kanske vill besöka i förväg</translation>
@@ -297,6 +296,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2450083983707403292">Vill du börja ladda ned <ph name="FILE_NAME" /> igen?</translation>
 <translation id="2451607499823206582">Spårning</translation>
 <translation id="2453860139492968684">Slutför</translation>
+<translation id="2461378706168271257">Sök bland dina flikar</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2468444275314013497">Din webbläsare ser bra ut</translation>
 <translation id="2472163211318554013">Logga in så att du får ut mesta möjliga av Chrome</translation>
@@ -602,6 +602,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3847319713229060696">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3858860766373142691">Namn</translation>
+<translation id="3873174561423636563"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />användarvillkor<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
 <translation id="3900966090527141178">Exportera lösenord</translation>
@@ -877,6 +878,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="510275257476243843">1 timme kvar</translation>
 <translation id="5114895953710637392">Arbetsbladet för appfilter har stängts.</translation>
 <translation id="5115811374190515607">i <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5122378528687922675">Prata med din förälder (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) om du behöver hjälp</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
@@ -1459,6 +1461,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7656721520530864426">Inga sidor</translation>
 <translation id="7656862631699126784">Aktivera inkognitolås</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> har stängts</translation>
@@ -1490,6 +1493,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alla filer, 1 fil i listan}other{Alla filer, # filer i listan}}</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
+<translation id="7819605256207059717">Blockerades av organisationen</translation>
 <translation id="7821130663268546430">Du hittar alla öppna flikar i flikbytaren</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
@@ -1686,7 +1690,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="864544049772947936">Hantera fönster (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Använd Chrome på ditt sätt</translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Har blockerats av organisationen}other{# har blockerats av organisationen}}</translation>
 <translation id="8672883760227492369">Vissa lösenord på den här enheten slutar snart att fungera. Du kan flytta lösenorden till Google Lösenordshantering.</translation>
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifieringar för inloggning</translation>

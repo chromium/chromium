@@ -2391,7 +2391,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5371425731340848620">Ažuriraj karticu</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat brza" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
-<translation id="5379618281582508161">Da biste tu zaporku dobili na svim svojim uređajima, potvrdite da ste to vi</translation>
+<translation id="5379618281582508161">Potvrdite identitet da dobijete ovu lozinku na svim uređajima</translation>
 <translation id="5380953781541843508">uzlaznim redoslijedom</translation>
 <translation id="5381318171304904246">Kada nastavite, preusmjerit ćemo vas na web lokaciju banke. Nakon što potvrdite, automatski ćemo vas vratiti da završite kupovinu.</translation>
 <translation id="5383478552402031184">Podne obloge</translation>
@@ -3268,6 +3268,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6978236010531171013">Svejedno dijeli</translation>
 <translation id="6978722349058177832">Ako dijelite uređaj, Chromium može zatražiti da potvrdite prilikom svakog plaćanja pomoću automatskog popunjavanja</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6979302985396162258">upravljali pristupom kolačićima trećih strana</translation>
 <translation id="6979440798594660689">Isključi zvuk (zadano)</translation>
 <translation id="6984270784814146224">Neoznačena slika. Izdvajanje teksta koje omogućava Google AI</translation>
 <translation id="6987806006823772670">Koverta (s premazom)</translation>

@@ -153,7 +153,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1696555181932908973">Há outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Mudar suas configurações do tema escuro?</translation>
 <translation id="1702907158640575240">Navegador gerenciado</translation>
-<translation id="1710099199314114079">Trocar ou fechar guias</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloqueie para editar sua senha</translation>
 <translation id="1726477445370128854">Você pode navegar e fazer buscas mais rápido quando o Chrome pré-carrega páginas que acredita serem de seu interesse</translation>
@@ -297,6 +296,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2450083983707403292">Quer recomeçar o download de <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2453860139492968684">Concluir</translation>
+<translation id="2461378706168271257">Pesquisar nas guias</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2468444275314013497">Parece que está tudo certo com seu navegador</translation>
 <translation id="2472163211318554013">Faça login para aproveitar o Chrome ao máximo</translation>
@@ -601,6 +601,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3847319713229060696">Ajudar a melhorar a segurança para todos na Web</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3873174561423636563">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> do site.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3899682235662194879">Fechar todas as guias anônimas</translation>
 <translation id="3900966090527141178">Exportar senhas</translation>
@@ -877,6 +878,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="510275257476243843">Uma hora restante</translation>
 <translation id="5114895953710637392">A página de filtro de apps está fechada.</translation>
 <translation id="5115811374190515607">para <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps</translation>
 <translation id="5122378528687922675">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
@@ -1459,6 +1461,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7656721520530864426">Nenhum site</translation>
 <translation id="7656862631699126784">Ativar o bloqueio de guias anônimas</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7663320421139257046">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> do site.</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="766587987807204883">Os artigos são exibidos aqui e podem ser lidos até quando você está off-line</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> foram fechados</translation>
@@ -1490,6 +1493,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os arquivos: 1 arquivo na lista}one{Todos os arquivos: # arquivo na lista}other{Todos os arquivos: # arquivos na lista}}</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
+<translation id="7819605256207059717">Bloqueado pela sua organização</translation>
 <translation id="7821130663268546430">Todas as guias abertas ficam no seletor de guias</translation>
 <translation id="7822705602465980873">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="7824665136384946951">Sua organização desativou o recurso Navegação segura</translation>
@@ -1686,7 +1690,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="864544049772947936">Gerenciar janelas (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Use o Chrome do seu jeito</translation>
 <translation id="8664979001105139458">O nome do arquivo já existe</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloqueado pela sua organização}one{# foi bloqueado pela sua organização}other{# foram bloqueados pela sua organização}}</translation>
 <translation id="8672883760227492369">Algumas senhas neste dispositivo deixarão de funcionar em breve. Elas podem ser movidas para o Gerenciador de senhas do Google.</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificações de login</translation>

@@ -297,6 +297,7 @@
 <translation id="4680828127924988555">取消安装</translation>
 <translation id="469553575393225953">来源不明的扩展程序、应用和主题可能会危害您的设备。Chrome 建议只从 Chrome 应用商店安装这些内容</translation>
 <translation id="4710245680469034439">使用取材自大自然、艺术家作品集合等来源的主题，让您的浏览器个性十足</translation>
+<translation id="4720851490453439956">Google 更新程序内部服务</translation>
 <translation id="4724676981607797757">出现协议不受支持错误，因此安装失败。</translation>
 <translation id="4728575227883772061">未知错误导致安装失败。如果 Google Chrome 浏览器正在运行，请将其关闭，然后重试。</translation>
 <translation id="4741235124132242877">已固定！可通过工具栏再次使用 Google 智能镜头</translation>
@@ -456,6 +457,7 @@
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
 <translation id="6893363893008038481">从 Chrome 中移除账号</translation>
 <translation id="6896758677409633944">复制</translation>
+<translation id="6930294499209825">使您的 Google 软件保持为最新状态。如果此服务已停用或已停止运行，您的 Google 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Google 软件使用此服务时，此服务会自行卸载。</translation>
 <translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
@@ -505,6 +507,7 @@
 <translation id="7477130805345743099">Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
 <translation id="749228101751499733">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。使用 <ph name="SHORTCUT" /> 可以更改 Google 服务设置。</translation>
+<translation id="7514258452813684157">Google 更新程序服务</translation>
 <translation id="7515191208480168435">您可以固定 Google 智能镜头以方便访问</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
 <translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>

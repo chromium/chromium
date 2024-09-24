@@ -700,6 +700,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2239100178324503013">Wyślij teraz</translation>
 <translation id="2241693394036365668">Pobrano plik</translation>
+<translation id="2242389809734574253">Zapisywanie numeru IBAN zostało zamknięte.</translation>
 <translation id="2246264294482514010">10 x 12 cali</translation>
 <translation id="2246480341630108201">Twój rodzic nie wyraził jeszcze zgody</translation>
 <translation id="2247789808226901522">Karta utraciła ważność</translation>
@@ -1238,6 +1239,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3272112314896217187">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod weryfikacyjny</translation>
 <translation id="3272643614306383237">Mniej niż 1 MB. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="3273738040255912340">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Zapisywanie numeru IBAN jest otwarte na całą wysokość.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się otwierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
@@ -2125,6 +2127,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4881808915112408168">24 x 31,5 cala</translation>
 <translation id="4882314601499260499">Nie zastosowano zasad dotyczących użytkowników. Aby można było je dodać, Twoja organizacja musi <ph name="LINK_BEGIN" />potwierdzić własność domeny<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Wpisz pytanie lub prompt</translation>
 <translation id="4885030148564729407">Miesiące miodowe i romantyczne podróże</translation>
 <translation id="4885256590493466218">Zapłać kartą <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Chroń hasła za pomocą Windows Hello</translation>
@@ -2584,6 +2587,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723873695528696965">Sterować urządzeniami MIDI i je przeprogramowywać</translation>
 <translation id="5725297205162868298">Skrót nie może zaczynać się od znaku @: „<ph name="SHORTCUT_NAME" />”</translation>
+<translation id="5728246486828755318">Może prosić o dostęp do zaawansowanych funkcji drukarki</translation>
 <translation id="5729442113829771034">Wczesna edukacja dziecięca</translation>
 <translation id="5730040223043577876">Chrome zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
 <translation id="5732392974455271431">Mogą ją dla Ciebie odblokować Twoi rodzice</translation>
@@ -2595,6 +2599,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5743684619253032786">Produkty do pielęgnacji paznokci</translation>
 <translation id="5745733273847572235">Może prosić o dostęp do Twojej lokalizacji</translation>
 <translation id="5750869797196646528">Śledzenie rąk</translation>
+<translation id="5752327398324808817">Wpisz słowo lub dwa</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
 <translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
@@ -3090,6 +3095,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6671169470640320959">Finansowanie samochodów</translation>
 <translation id="6671697161687535275">Usunąć tę podpowiedź do formularza z Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcję}few{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}many{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}other{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}}</translation>
 <translation id="6681790815630918386">Kod CVC został zapisany</translation>
 <translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6687230248707087982">Koperta (zwykła)</translation>
@@ -3106,6 +3112,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6696575039575740785">Instalowanie aplikacji internetowych jest niedozwolone</translation>
 <translation id="6698097747703777657">Kod nie dotarł? <ph name="BEGIN_LINK" />Uzyskaj nowy kod<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Utworzono:</translation>
+<translation id="6698769547327354196">Aby wyłączyć Pix w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Pasek czasu odtwarzania</translation>
 <translation id="6702851555558236418">Oprogramowanie muzyczne i audio</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
@@ -3261,6 +3268,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6978236010531171013">Udostępnij mimo to</translation>
 <translation id="6978722349058177832">Jeśli udostępnisz to urządzenie, Chromium może prosić Cię o weryfikację za każdym razem, gdy będziesz płacić za pomocą autouzupełniania</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
+<translation id="6979302985396162258">zarządzać dostępem do plików cookie innych firm</translation>
 <translation id="6979440798594660689">Wycisz (domyślnie)</translation>
 <translation id="6984270784814146224">Obraz bez etykiety. Wyodrębnianie tekstu z wykorzystaniem AI od Google</translation>
 <translation id="6987806006823772670">Koperta (powlekana)</translation>
@@ -3407,6 +3415,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Operacje biznesowe</translation>
+<translation id="7244061187185055290">Opisz w kilku słowach, czego szukasz</translation>
 <translation id="7251437084390964440">Konfiguracja sieci jest niezgodna ze standardem ONC. Jej część mogła nie zostać zaimportowana.
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>

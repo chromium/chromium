@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Telepítés megszakítása</translation>
 <translation id="469553575393225953">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chrome azt javasolja, hogy csak a Chrome Webáruházból telepítse őket.</translation>
 <translation id="4710245680469034439">Személyre szabhatja böngészőjét a természet, a művészek, a gyűjtemények és egyebek által inspirált témákkal</translation>
+<translation id="4720851490453439956">Google-frissítési belső szolgáltatás</translation>
 <translation id="4724676981607797757">A telepítés nem támogatott protokoll hiba miatt nem sikerült.</translation>
 <translation id="4728575227883772061">A telepítés váratlan hiba miatt nem sikerült. Ha a Google Chrome jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4741235124132242877">Sikeres kitűzés. Ha megint használni szeretné a Google Lens funkciót, megteheti az eszköztárból</translation>
@@ -457,6 +458,7 @@
 <translation id="6885412569789873916">Chrome Beta-alkalmazások</translation>
 <translation id="6893363893008038481">Fiók eltávolítása a Chrome-ból</translation>
 <translation id="6896758677409633944">Másolás</translation>
+<translation id="6930294499209825">Rendszeresen frissíti az Ön által használt Google-szoftvereket. Ha kikapcsolja vagy leállítja ezt a szolgáltatást, a Google-szoftverek nem kerülnek frissítésre, ami azt jelenti, hogy az esetlegesen felmerülő biztonsági hibákat nem lehet kijavítani, és az új funkciók sem jelennek meg. Ez a szolgáltatás eltávolítja saját magát, ha semmilyen Google-szoftver nem használja.</translation>
 <translation id="6933858244219479645">ChromeOS rendszer</translation>
 <translation id="6938166777909186039">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8.1 operációs rendszer fut.</translation>
 <translation id="6943584222992551122">A személy böngészési adatai törlődnek az eszközről. Az adatok visszaállításához jelentkezzen be a Chrome-ba a következő felhasználóként: <ph name="USER_EMAIL" />.</translation>
@@ -506,6 +508,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7477130805345743099">A Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="7481213027396403996">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="749228101751499733">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A(z) <ph name="SHORTCUT" /> billentyűparancs módosíthatja a Google-szolgáltatásokra vonatkozó beállításait.</translation>
+<translation id="7514258452813684157">Google-frissítési szolgáltatás</translation>
 <translation id="7515191208480168435">Az egyszerű hozzáférés érdekében kitűzheti a Google Lens funkciót</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Ki • A Chrome nem tudja ellenőrizni a bővítmény forrását</translation>

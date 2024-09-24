@@ -291,7 +291,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1199814941632954229">Les certificats sont en cours de préparation pour ces profils</translation>
 <translation id="120069043972472860">Impossible à regarder</translation>
 <translation id="1201402288615127009">Suivant</translation>
-<translation id="1201564082781748151">Les données locales peuvent être restaurées si vous oubliez votre mot de passe</translation>
 <translation id="1202116106683864634">Voulez-vous vraiment supprimer cette clé d'accès ?</translation>
 <translation id="1202596434010270079">L'application kiosque a été mise à jour. Veuillez débrancher la clé USB.</translation>
 <translation id="1202892408424955784">Produits suivis</translation>
@@ -2218,6 +2217,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2546991196809436099">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe.</translation>
 <translation id="2548347166720081527">Autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="2548545707296594436">Réinitialiser le cache du profil eSIM</translation>
+<translation id="2549766998450508148">Appuyez sur une à quatre touches de modification (Ctrl, Alt, Maj ou Recherche) et une autre touche. Vous pouvez aussi sélectionner une seule touche.</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2550212893339833758">Espace mémoire d'échange</translation>
 <translation id="2550596535588364872">Autoriser <ph name="EXTENSION_NAME" /> à ouvrir le fichier <ph name="FILE_NAME" /> ?</translation>
@@ -10626,6 +10626,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8715480913140015283">Votre appareil photo est utilisé par un onglet d'arrière-plan</translation>
 <translation id="8716931980467311658">Supprimer toutes les applications et les données Linux de votre dossier "Fichiers Linux" sur cet appareil <ph name="DEVICE_TYPE" /> ?</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
+<translation id="8718560545710680911">Demander à l'aide de cette page</translation>
 <translation id="8718994464069323380">Écran tactile détecté</translation>
 <translation id="8719472795285728850">Analyse des activités des extensions…</translation>
 <translation id="8719665168401479425">Utiliser des expressions faciales pour effectuer des actions</translation>

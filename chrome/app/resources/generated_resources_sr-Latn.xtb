@@ -292,7 +292,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1199814941632954229">Sertifikati se dodeljuju za sledeće profile sertifikata</translation>
 <translation id="120069043972472860">Ne može da se gleda</translation>
 <translation id="1201402288615127009">Dalje</translation>
-<translation id="1201564082781748151">Lokalni podaci mogu da se vrate ako zaboravite lozinku</translation>
 <translation id="1202116106683864634">Da li stvarno želite da izbrišete ovaj pristupni kôd?</translation>
 <translation id="1202596434010270079">Kiosk aplikacija je ažurirana. Uklonite USB memoriju.</translation>
 <translation id="1202892408424955784">Proizvodi koje pratite</translation>
@@ -3482,6 +3481,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3487649228420469005">Skeniranje je gotovo</translation>
 <translation id="3488199663160411179">ime</translation>
 <translation id="3490695139702884919">Preuzima se... <ph name="PERCENT" />%</translation>
+<translation id="3491171603443463516">Lokalni podaci mogu da se vrate ako zaboravite PIN ili lozinku</translation>
 <translation id="3491669675709357988">Nalog deteta nije podešen za Family Link roditeljski nadzor. Možete da dodate roditeljski nadzor kada dovršite podešavanje. Pronaći ćete informacije o roditeljskom nadzoru u aplikaciji Istražite.</translation>
 <translation id="3491678231052507920">Sajtovi obično koriste uređaje i podatke virtuelne realnosti da biste mogli da ulazite u sesije virtuelne realnosti</translation>
 <translation id="3493043608231401654">Uklonite karticu <ph name="TAB_TITLE" /> iz grupe kartica</translation>

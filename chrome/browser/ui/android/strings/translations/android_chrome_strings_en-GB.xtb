@@ -153,7 +153,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1702907158640575240">Managed browser</translation>
-<translation id="1710099199314114079">Switch or close tabs</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1724977129262658800">Unlock to edit your password</translation>
 <translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
@@ -878,6 +877,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="510275257476243843">1 hour left</translation>
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
 <translation id="5122378528687922675">If you need help, ask your parent (<ph name="PARENT_NAME_1" /> or <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
@@ -1492,6 +1492,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7810647596859435254">Open with…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{All files, 1 file in list}other{All files, # files in list}}</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
+<translation id="7819605256207059717">Blocked by your organisation</translation>
 <translation id="7821130663268546430">You can find all open tabs in the Tab Switcher</translation>
 <translation id="7822705602465980873">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
 <translation id="7824665136384946951">Your organisation has turned off Safe Browsing</translation>
@@ -1688,7 +1689,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blocked by your organisation}other{# were blocked by your organisation}}</translation>
 <translation id="8672883760227492369">Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>

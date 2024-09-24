@@ -153,7 +153,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1696555181932908973">Możesz wypróbować inne sposoby logowania na konto <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Zmienić ustawienia ciemnego motywu?</translation>
 <translation id="1702907158640575240">Zarządzana przeglądarka</translation>
-<translation id="1710099199314114079">Przełącz lub zamknij karty</translation>
 <translation id="1718835860248848330">Ostatnia godzina</translation>
 <translation id="1724977129262658800">Odblokuj, aby edytować hasło</translation>
 <translation id="1726477445370128854">Przeglądanie i wyszukiwanie działa szybciej, gdy Chrome wstępnie wczytuje strony, które przewiduje, że możesz odwiedzić</translation>
@@ -635,6 +634,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4042941173059740150">Przejdź do witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupa bez nazwy</translation>
 <translation id="4044708993631234325">Plansza dolna</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardowa karta z nową aktywnością w udostępnionych grupach kart}few{<ph name="TABS_COUNT_MANY" /> standardowe karty z nową aktywnością w udostępnionych grupach kart}many{<ph name="TABS_COUNT_MANY" /> standardowych kart z nową aktywnością w udostępnionych grupach kart}other{<ph name="TABS_COUNT_MANY" /> standardowej karty z nową aktywnością w udostępnionych grupach kart}}</translation>
 <translation id="405365679581583349">Zaktualizuj Usługi Google Play</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -878,6 +878,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="510275257476243843">Pozostała godzina</translation>
 <translation id="5114895953710637392">Arkusz filtra aplikacji jest zamknięty.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach</translation>
 <translation id="5122378528687922675">Jeśli potrzebujesz pomocy, poproś rodzica (<ph name="PARENT_NAME_1" /> lub <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
@@ -1445,6 +1446,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7592322927044331376">Najpierw wyeksportuj i usuń hasła z Chrome</translation>
 <translation id="7594687499944811403">Pozwól stronie <ph name="EMBEDDED_ORIGIN" /> sprawdzać Twoją tożsamość, gdy korzystasz ze strony <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">System operacyjny</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardowa karta}few{<ph name="TABS_COUNT_MANY" /> standardowe karty}many{<ph name="TABS_COUNT_MANY" /> standardowych kart}other{<ph name="TABS_COUNT_MANY" /> standardowej karty}}</translation>
 <translation id="7603168929588204083">Nieprawidłowa data</translation>
 <translation id="7605594153474022051">Synchronizacja nie działa</translation>
 <translation id="7612619742409846846">Jesteś zalogowany w Google jako</translation>
@@ -1492,6 +1494,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Wszystkie pliki, 1 plik na liście}few{Wszystkie pliki, # pliki na liście}many{Wszystkie pliki, # plików na liście}other{Wszystkie pliki, # pliku na liście}}</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
+<translation id="7819605256207059717">Zablokowany przez organizację</translation>
 <translation id="7821130663268546430">Wszystkie otwarte karty znajdziesz w przełączniku kart</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="7824665136384946951">Twoja organizacja wyłączyła Bezpieczne przeglądanie</translation>
@@ -1688,7 +1691,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="864544049772947936">Zarządzaj oknami (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Używaj Chrome po swojemu</translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Zablokowany przez organizację}few{# zostały zablokowane przez organizację}many{# zostało zablokowanych przez organizację}other{# zostało zablokowane przez organizację}}</translation>
 <translation id="8672883760227492369">Niektóre hasła na tym urządzeniu wkrótce przestaną działać. Możesz przenieść te hasła do Menedżera haseł Google.</translation>
 <translation id="8676276370198826499">Zarejestruj się w witrynie <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Weryfikacje logowania</translation>

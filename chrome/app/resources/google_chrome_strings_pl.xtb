@@ -165,6 +165,7 @@
 <translation id="2945997411976714835">Błąd instalacji: nie udało się uruchomić procesu instalatora.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="2970681950995291301">Aby usunąć swoje konto Google z Chrome, wyloguj się z Chrome na stronie Ustawienia</translation>
+<translation id="2994465299455873643">Zapewnia usługi szyfrowania i bezpieczny sposób przywracania <ph name="BROWSER_NAME" /> w razie utraty ważności. Jeśli ta usługa zostanie wyłączona, <ph name="BROWSER_NAME" /> może utracić dostęp do zaszyfrowanych danych i nie być w stanie przeprowadzić samoczynnego przywracania.<ph name="BROWSER_NAME" /></translation>
 <translation id="3018957014024118866">Usuń też dane z Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Uruchom ponownie, aby zaktualizować &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome jest w trybie działania w tle</translation>
@@ -221,6 +222,7 @@
 <translation id="3673813398384385993">Przeglądarka Chrome wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
 <translation id="3695446226812920698">Instrukcje</translation>
 <translation id="3697952514309507634">Inne profile Chrome</translation>
+<translation id="3700276346088749847">usuń dane Chrome ze swojego konta</translation>
 <translation id="3703994572283698466">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Wersja ChromeOS Flex</translation>
 <translation id="3718181793972440140">Spowoduje to usunięcie 1 elementu z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
@@ -291,6 +293,7 @@
 <translation id="4575717501879784448">Chrome może dezaktywować te karty, aby ułatwić przeglądanie i zwolnić zasoby.</translation>
 <translation id="459622048091363950">Gdy Chrome będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
 <translation id="4600710005438004015">Aktualizacja Chrome do najnowszej wersji nie udała się, więc nie masz dostępu do najnowszych funkcji i poprawek zabezpieczeń.</translation>
+<translation id="4601439950572737842">Dane zostały zaszyfrowane Twoim hasłem. Podaj je, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
 <translation id="4624065194742029982">Tryb incognito w Chrome</translation>
 <translation id="4627412468266359539">Opcjonalnie: pomóż ulepszać funkcje i działanie ChromeOS Flex, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="4633000520311261472">Aby poprawić bezpieczeństwo Chrome, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>

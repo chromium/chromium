@@ -398,6 +398,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
 <translation id="2416438829169535743">Kas väljuda vaatest?</translation>
 <translation id="2417486498593892439">Võrku sisselogimine</translation>
+<translation id="2423619675829330672">Sisestasite liiga palju kordi vale PIN-koodi. Oodake <ph name="TIME_LEFT" /> ja proovige uuesti.</translation>
 <translation id="2426051945783024481">Kaamera kaader on automaatselt keskel</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
 <translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see pääsuvõti: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1579,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6330012934079202188">Kuvatud on kõigi töölaudade aknad. Praeguse töölaua akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="6337159624125741244">Täisekraani suurendus on sisse lülitatud</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Kui unustasite oma PIN-koodi, proovige see kasutaja taastada.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, seejärel <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> või <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">RAKENDUSTE SOOVITUSED</translation>
@@ -1634,6 +1636,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6539852571005954999">Allalaaditava faili <ph name="FILENAME" /> skannimine</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emotikonid, GIF-id ja muu</translation>
+<translation id="6545382064335350438">Teie PIN-koodi ei õnnestunud ikka kinnitada. Proovige uuesti.</translation>
 <translation id="6555373427270923730">Sisestage veebiaadress aadressiribale ja vajutage klahvikombinatsiooni <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Uus installimine</translation>
@@ -2030,6 +2033,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> seadet on ühendatud</translation>
+<translation id="7921565901396407357">Teie PIN-koodi ei õnnestunud kinnitada. Proovige uuesti.</translation>
 <translation id="7923534281713082605">Ilm</translation>
 <translation id="7926080067315048321">Vaadake kõiki Google Tasksi ülesandeid veebis</translation>
 <translation id="7930731167419639574">Kõnet töödeldakse nüüd kohalikult ja dikteerimine töötab võrguühenduseta</translation>

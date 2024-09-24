@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Ver informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover guia para a esquerda</translation>
+<translation id="6590332670428149473">Abrir o menu de ações do grupo de guias compartilhado <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> guia modificada}one{<ph name="MANY_CHANGED" /> guia modificada}other{<ph name="MANY_CHANGED" /> guias modificadas}}</translation>
 <translation id="6694634756612002311">Gerenciar compartilhamento</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Abrir grupo de guias com <ph name="TABS_COUNT_ONE" /> guia.}one{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Abrir grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9111228330448174435">Mostrar caixa de diálogo na criação de um novo grupo de guias</translation>
+<translation id="9114502155681725011">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Alterne entre as guias do seu grupo de guias perto da parte inferior da tela</translation>
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>
 <translation id="9216898458513705996">As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>

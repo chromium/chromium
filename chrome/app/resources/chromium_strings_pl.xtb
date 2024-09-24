@@ -9,6 +9,7 @@
 <translation id="1083934481477628225">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chromium</translation>
 <translation id="1098170124587656448">Chromium pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi rozszerzeniami i innymi zagrożeniami.</translation>
 <translation id="1104942323762546749">Chromium chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
+<translation id="112640046208448578">Rozpoznawaj obiekty lub miejsca i kopiuj lub tłumacz tekst. Gdy używasz wyszukiwania obrazów, na serwer jest wysyłany zrzut ekranu ze strony. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium jest domyślną przeglądarką</translation>
 <translation id="1131805035311359397">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliknij menu Chromium</translation>
@@ -41,6 +42,7 @@
 
 Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
+<translation id="167397405791113306">Dane zostały zaszyfrowane Twoim hasłem. Podaj je, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
 <translation id="1715127912119967311">Aby pomóc w ulepszaniu tych funkcji, Chromium wysyła informacje o Twoich interakcjach z nimi do Google. Weryfikatorzy mogą odczytywać i przetwarzać te dane oraz dodawać do nich adnotacje.</translation>
 <translation id="1722488837206509557">Umożliwi Ci to wybranie dostępnych urządzeń i wyświetlanie na nich treści.</translation>
 <translation id="17264556997921157">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chromium ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
@@ -524,6 +526,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8313851650939857356">Błąd uruchamiania: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Twoja organizacja zamyka przeglądarkę Chromium, gdy nie jest ona używana przez <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Zapisz jako obraz</translation>
+<translation id="8326785589245660814">usuń dane Chromium ze swojego konta</translation>
 <translation id="8330519371938183845">Zaloguj się, by synchronizować dane Chromium i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>
 <translation id="8357820681460164151">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Скандоо аймагы боюнча</translation>
 <translation id="1343442362630695901">туздуу көл</translation>
 <translation id="1348657754632799065">Жаздыруу тилкеси</translation>
+<translation id="1350909945461913813">Бардык иштерди сактап коюңуз</translation>
 <translation id="1367951781824006909">Файл тандаңыз</translation>
 <translation id="1371650399987522809">Google сунуштаган ЖИ технологиялары менен түзүлгөн тушкагаздар тууралуу пикир</translation>
 <translation id="1374385338586507108">Аныктоо</translation>
@@ -161,7 +162,7 @@
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
 <translation id="1708602061922134366">Көк (Google)</translation>
 <translation id="1710499924611012470">Атайын мүмкүнчүлүктөрдө өтүү</translation>
-<translation id="1715359911173058521">Сканерге туташа албай койду. Тармакка же USB туташууңузду текшерип, кайра аракет кылыңыз.</translation>
+<translation id="1715359911173058521">Сканерге туташа албай койду. Тармакка же USB туташууңузду текшерип, кайталап көрүңүз.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> менен <ph name="SECOND_MANAGER" /> башкарат</translation>
 <translation id="1718553040985966377">көл</translation>
 <translation id="1720424726586960395">жаркырак токой</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Иштеп чыгуучунун топтомунун версиясы:</translation>
 <translation id="2016697457005847575">Бузулууларды аныктап оңдоо кадамдарын аткарып көрүңүз</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Тема тандап, асты сызылган сөздөрдүн жардамы менен ЖИ түзгөн сүрөттөрдү жекелештириңиз.</translation>
 <translation id="2045814230297767491">идиш-аяк</translation>
 <translation id="2047316797244836561">Көшөгөнү көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">Дагы параметрлер</translation>
 <translation id="2082932131694554252">Дайындалган баскычтоп баскычы</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
-<translation id="2085876078937250610">Сактоо…</translation>
 <translation id="2086091080968010660">Убакыттын негизиндеги өзгөртүүлөр так болбошу мүмкүн. Параметрлерден системага жайгашкан жерди аныктоо мүмкүнчүлүгүн күйгүзүңүз.</translation>
 <translation id="2102231663024125441">Текстти оңдоо</translation>
 <translation id="2102648867808308635">Бул баракты окуганга жардам бер</translation>
@@ -275,7 +276,7 @@
 <translation id="2208388655216963643">импрессионизм</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
-<translation id="2215920961700443347">Интернет жок. Интернетке туташып, кайра аракет кылыңыз.</translation>
+<translation id="2215920961700443347">Интернет жок. Интернетке туташып, кайталап көрүңүз.</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
 <translation id="221994303562837085">Жаздырууну токтотуу</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">Кеп аныкталган жок</translation>
 <translation id="2446553403094072641">Калкыма чекиттин тактыгы</translation>
 <translation id="2448312741937722512">Түрү</translation>
+<translation id="2468124392950503650">Түзүү үчүн сурамды тандап же <ph name="BEGIN_LINK_PROMPTING_GUIDE" />сурам боюнча жетектемени<ph name="END_LINK_PROMPTING_GUIDE" /> караңыз</translation>
 <translation id="2472215337771558851">"Жазууга жардам бер" функциясы Google сунуштаган ЖИ технологиялары аркылуу жумушчу вариант түзүп же учурдагы текстти өркүндөтүүгө жардам берет</translation>
 <translation id="2480572840229215612">крабдар</translation>
 <translation id="248546197012830854">Түзмөк офлайн режиминде. Жардам берүү бөлүмүнө өтүү үчүн Wi-Fi тармагына туташыңыз.</translation>
@@ -508,7 +510,7 @@
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Cигнал начар. Wi-Fi сигналынын булагына жакыныраак жылып көрүңүз.</translation>
-<translation id="3588034708467091142">Интернет байланышыңызды текшерип, кайра аракет кылыңыз.</translation>
+<translation id="3588034708467091142">Интернет байланышыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> – <ph name="APN_NAME" /> байланыш түйүнүнүн колдонуучуга ыңгайлуу аталышы.</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
 <translation id="3600063043775287169">Chromebook аудиосу күйүп турганда, Диктофон бул түзмөктөн чыгып жаткан бардык үндөрдү жаздырат. Жаздырууну тууралап жатканда ушул нерсени эске алыңыз.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">Эч нерсе табылган жок</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
+<translation id="4486524074141928967">Саат <ph name="TIME" /> аккаунттан чыгарыласыз</translation>
 <translation id="4500722292849917410">Ыкчам баскыч жеткиликсиз. Өзгөртүүчү баскыч (ctrl, alt, shift же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="4500966230243561393">Интерфейстин түсү</translation>
 <translation id="4503223151711056411">Солго жебе</translation>
@@ -787,7 +790,7 @@
 <translation id="4969079779290789265">Бөлүү</translation>
 <translation id="4972592110715526173">режимди өзгөртүү</translation>
 <translation id="4981003703840817201">көк жана кызгылтым</translation>
-<translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
+<translation id="498186245079027698">Сканерди текшерип, кайталап көрүңүз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
 <translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="4983216687482551672">Chromebook аудиосу</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">боз</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> баскычы сыналды</translation>
+<translation id="5613201299517339763">Чыгып кеттиңиз</translation>
 <translation id="5620281292257375798">Ички колдонуу үчүн</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">Файл табылган жок</translation>
 <translation id="5938286923316838007">Бул контенттин ысымын коюуга болбойт</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> администратору ушул <ph name="DEVICE_TYPE" /> түзмөгүн колдонууга боло турган убакытты көрсөттү</translation>
 <translation id="594552776027197022">Башаламан иретте жуп ачкычты түзүү</translation>
 <translation id="5946538341867151940">Туташа элексиз. Эгер мобилдик байланыш операторуңуз жеке APN'ди сунуштаса, "+ Жаңы APN" дегенди тандап, APN маалыматын киргизиңиз</translation>
 <translation id="5947266287934282605">Эгер айдын акыркы күнү бул күнгө чейин болсо, маалыматтар айдын акыркы күнү баштапкы абалга келет</translation>
@@ -989,7 +994,7 @@
 <translation id="6017514345406065928">Жашыл</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Ай сайын автоматтык түрдө баштапкы абалга келтирүүнү иштетүү</translation>
-<translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайра аракет кылыңыз.</translation>
+<translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайталап көрүңүз.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6040852767465482106">Аноним</translation>
 <translation id="604124094241169006">Автоматтык</translation>
@@ -1065,12 +1070,13 @@
 <translation id="6352210854422428614">башка планета</translation>
 <translation id="6359706544163531585">Жарык теманы өчүрүү</translation>
 <translation id="6359919876285606596">Бул аракетти артка кайтарууга болбойт</translation>
+<translation id="6368342879959028556">"ЖИ менен түзүү" дегенди тандаганда жеке сурамды жазыңыз. Же тема тандоо үчүн "ЖИ тушкагаздары" дегенди тандап, ЖИ тушкагазын жекелештирүү үчүн асты сызылган сөздөрдү тандай аласыз.</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
 <translation id="6373461326814131011">көлмө</translation>
 <translation id="6379086450106841622">Сенсордук экран</translation>
 <translation id="6381741036071372448">Баскычтопту колдонуп көрүңүз</translation>
 <translation id="6382182670717268353">Көшөгөнү алдын ала көрүү</translation>
-<translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайра аракет кылыңыз.</translation>
+<translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайталап көрүңүз.</translation>
 <translation id="6394634179843537518">Файл кошуу</translation>
 <translation id="6396719002784938593">кургатылган мамык чөп</translation>
 <translation id="639964859328803943">түштөн кийинки чай</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">Аккаунттун параметрлерине өтүү</translation>
 <translation id="6462978824459367242">APN кошуу баскычы иштетилди</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бет кайра скандалсынбы?}=1{{PAGE_NUMBER} бет кайра скандалсынбы?}other{{PAGE_NUMBER} бет кайра скандалсынбы?}}</translation>
+<translation id="6468146470109254228">Акыркы 3 сурамыңыз жана чыккан маалымат. Аларды "Тушкагаз жана стиль" функциясын колдонуп жатканда гана көрө аласыз.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">кайыктар</translation>
 <translation id="64778964625672495">кочкул кызыл</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659594942844771486">Өтмөк</translation>
 <translation id="66621959568103627">кызгылт маржан</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ЖИ аркылуу контент түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жаратуучу жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.</translation>
 <translation id="6673898378497337661">баскычтоптун жарыктыгын көбөйтүү</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6694534975463174713">кулпулоо</translation>
@@ -1175,7 +1192,7 @@
 <translation id="6902359863093437070">Фонду ЖИ менен түзүү</translation>
 <translation id="6905163627763043954">Сынап көрүү</translation>
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
-<translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
+<translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайталап көрүңүз.</translation>
 <translation id="6910845598686542904">Аудио жаздыруудагы үндөрдүн үлгүлөрүн талдоо</translation>
 <translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
 <translation id="6927968682840110570">Жаздыруунун аталышы</translation>

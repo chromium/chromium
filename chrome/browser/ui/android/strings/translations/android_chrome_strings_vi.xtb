@@ -153,7 +153,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1696555181932908973">Bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Bạn muốn thay đổi các chế độ cài đặt cho giao diện tối?</translation>
 <translation id="1702907158640575240">Trình duyệt được quản lý</translation>
-<translation id="1710099199314114079">Chuyển hoặc đóng thẻ</translation>
 <translation id="1718835860248848330">Một giờ qua</translation>
 <translation id="1724977129262658800">Mở khóa để chỉnh sửa mật khẩu của bạn</translation>
 <translation id="1726477445370128854">Bạn có thể duyệt và tìm kiếm nhanh hơn khi Chrome tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập</translation>
@@ -878,6 +877,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="510275257476243843">Còn 1 giờ</translation>
 <translation id="5114895953710637392">Đã đóng bảng lọc theo ứng dụng.</translation>
 <translation id="5115811374190515607">đến <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5122378528687922675">Nếu bạn cần trợ giúp, hãy nhờ cha mẹ (<ph name="PARENT_NAME_1" /> hoặc <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, nhật ký hoạt động và các thông tin khác của bạn trên tất cả các thiết bị</translation>
@@ -1492,6 +1492,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tất cả tệp, 1 tệp trong danh sách}other{Tất cả tệp, # tệp trong danh sách}}</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
+<translation id="7819605256207059717">Tổ chức của bạn đã chặn</translation>
 <translation id="7821130663268546430">Bạn có thể tìm thấy tất cả các thẻ đang mở trong trình chuyển đổi thẻ</translation>
 <translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
 <translation id="7824665136384946951">Tổ chức của bạn đã tắt tính năng Duyệt web an toàn</translation>
@@ -1688,7 +1689,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="864544049772947936">Quản lý cửa sổ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Sử dụng Chrome theo cách của bạn</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Đã bị tổ chức của bạn chặn}other{# nội dung tải xuống đã bị tổ chức của bạn chặn}}</translation>
 <translation id="8672883760227492369">Một số mật khẩu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="8676276370198826499">Đăng ký trên <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Xác minh việc đăng nhập</translation>

@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
 <translation id="1702543251015153180">اپنی گہری تھیم کی ترتیبات کو تبدیل کریں؟</translation>
 <translation id="1702907158640575240">نظم کردہ براؤزر</translation>
-<translation id="1710099199314114079">ٹیبز کو سوئچ یا بند کریں</translation>
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1724977129262658800">اپنے پاس ورڈ کو ترمیم کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="1726477445370128854">‏آپ تیزی سے براؤز اور تلاش کر سکتے ہیں جب Chrome ایسے صفحات کو پیشگی لوڈ کرتا ہے جن کے بارے میں اسے لگتا ہے کہ آپ ملاحظہ کر سکتے ہیں</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">1 گھنٹہ باقی</translation>
 <translation id="5114895953710637392">ایپ فلٹر شیٹ بند ہے۔</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> تک</translation>
+<translation id="5116239826668864748">‏آپ جب بھی پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں</translation>
 <translation id="5122378528687922675">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین (<ph name="PARENT_NAME_1" /> یا <ph name="PARENT_NAME_2" />) سے پوچھیں</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">اس کے ساتھ کھولیں…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{تمام فائلز، فہرست میں 1 فائل}other{تمام فائلز، فہرست میں # فائلز}}</translation>
 <translation id="7815484226266492798">طویل اسکرین شاٹ</translation>
+<translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
 <translation id="7821130663268546430">آپ ٹیب سوئچر میں تمام کھلے ٹیبز تلاش کر سکتے ہیں</translation>
 <translation id="7822705602465980873">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک کر دیا جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">(<ph name="INSTANCE_COUNTS" />) ونڈوز کا نظم کریں</translation>
 <translation id="8664215986015753476">‏Chrome کو اپنے حساب سے استعمال کریں</translation>
 <translation id="8664979001105139458">فائل کا نام پہلے سے موجود ہے</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{آپ کی تنظیم کی طرف سے مسدود کی گئی}other{# آپ کی تنظیم کی طرف سے مسدود کی گئیں}}</translation>
 <translation id="8672883760227492369">‏اس آلہ پر کچھ پاس ورڈز جلد ہی کام کرنا بند کر دیں گے۔ آپ ان پاس ورڈز کو Google پاس ورڈ مینیجر میں منتقل کر سکتے ہیں۔</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن اپ کریں</translation>
 <translation id="8676789164135894283">سائن ان کی تصدیقیں</translation>

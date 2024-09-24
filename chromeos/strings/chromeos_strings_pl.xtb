@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1343442362630695901">słone jezioro</translation>
 <translation id="1348657754632799065">Pasek nagrywania</translation>
+<translation id="1350909945461913813">Zapisz wszystkie zmiany</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1371650399987522809">Opinia o tapecie wygenerowanej z wykorzystaniem AI od Google</translation>
 <translation id="1374385338586507108">Zdefiniuj</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Wersja SDK:</translation>
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy wygenerowane przez AI.</translation>
 <translation id="2045814230297767491">sztućce</translation>
 <translation id="2047316797244836561">Aby wyświetlić wygaszacz ekranu, połącz się z siecią i odśwież stronę.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2082932131694554252">Przypisany klawisz klawiatury</translation>
 <translation id="2085089206770112532">Zmniejsz jasność wyświetlacza</translation>
-<translation id="2085876078937250610">Zapisz…</translation>
 <translation id="2086091080968010660">Zmiany oparte na czasie mogą być niedokładne. Włącz dostęp systemu do lokalizacji w ustawieniach.</translation>
 <translation id="2102231663024125441">Edytowanie tekstu</translation>
 <translation id="2102648867808308635">Pomóż mi czytać tę stronę</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">Nie wykryto mowy</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2468124392950503650">Wybierz prompt, aby go utworzyć, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
 <translation id="2480572840229215612">kraby</translation>
 <translation id="248546197012830854">Urządzenie jest offline. Aby wyświetlić materiały pomocy, połącz się z siecią Wi-Fi.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4486524074141928967">O <ph name="TIME" /> nastąpi wylogowanie</translation>
 <translation id="4500722292849917410">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift lub <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Kolor interfejsu</translation>
 <translation id="4503223151711056411">Strzałka w lewo</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">szary</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5600027863942488546">Przetestowano klawisz <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">Wylogowaliśmy Cię</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5630438231335788050">Bauhausu</translation>
 <translation id="5631759159893697722">streszczenie</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="5938286923316838007">Nie udało się utworzyć nazw nagrań dla tych treści</translation>
 <translation id="5939518447894949180">Resetuj</translation>
+<translation id="5942727615796467094">Administrator witryny <ph name="MANAGER" /> określił, kiedy można używać tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
 <translation id="5946538341867151940">Nie masz jeszcze połączenia. Jeśli Twój operator komórkowy zaleca niestandardowy punkt APN, wpisz informacje o APN, wybierając „+ Nowy APN”</translation>
 <translation id="5947266287934282605">Jeśli ostatni dzień miesiąca przypada przed tym dniem, dane zostaną zresetowane w ostatnim dniu miesiąca.</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">inna planeta</translation>
 <translation id="6359706544163531585">Wyłącz jasny motyw</translation>
 <translation id="6359919876285606596">To działanie jest trwałe i nie można go cofnąć</translation>
+<translation id="6368342879959028556">Gdy wybierzesz „Utwórz przy pomocy AI”, wpisz niestandardowy prompt. Możesz też kliknąć „Tapety AI”, a potem wybrać motyw i podkreślone słowa, aby spersonalizować tapetę AI.</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="6373461326814131011">staw</translation>
 <translation id="6379086450106841622">Ekran dotykowy</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>
 <translation id="6462978824459367242">Przycisk Dodaj APN jest teraz włączony</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}many{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">3 ostatnie prompty i wyniki. Możesz z nich korzystać tylko wtedy, gdy używasz tapety i stylu.</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6472979596862005515">łodzie</translation>
 <translation id="64778964625672495">ciemnoczerwony</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="66621959568103627">koralowy</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami.</translation>
 <translation id="6673898378497337661">zwiększ jasność klawiatury</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
 <translation id="6694534975463174713">zablokuj</translation>

@@ -153,7 +153,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1696555181932908973">Anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Tukar tetapan tema gelap anda?</translation>
 <translation id="1702907158640575240">Penyemak imbas terurus</translation>
-<translation id="1710099199314114079">Tukar atau tutup tab</translation>
 <translation id="1718835860248848330">Jam terakhir</translation>
 <translation id="1724977129262658800">Buka kunci untuk mengedit kata laluan anda</translation>
 <translation id="1726477445370128854">Anda boleh menyemak imbas dan mencari dengan lebih pantas apabila Chrome mempramuat halaman yang diramal akan anda lawati</translation>
@@ -635,6 +634,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4042941173059740150">Terus kepada <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Kumpulan tidak bernama</translation>
 <translation id="4044708993631234325">Helaian bawah</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab standard dengan aktiviti baharu dalam kumpulan tab dikongsi}other{<ph name="TABS_COUNT_MANY" /> tab standard dengan aktiviti baharu dalam kumpulan tab dikongsi}}</translation>
 <translation id="405365679581583349">Kemas kinikan perkhidmatan Google Play</translation>
 <translation id="405399507749852140">Dapatkan makluman sekiranya harga jatuh pada mana-mana laman</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -878,6 +878,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="510275257476243843">1 jam lagi</translation>
 <translation id="5114895953710637392">Helaian penapis apl ditutup.</translation>
 <translation id="5115811374190515607">ke <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain</translation>
 <translation id="5122378528687922675">Jika anda memerlukan bantuan, minta daripada ibu/bapa anda (<ph name="PARENT_NAME_1" /> atau <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab Inkognito</translation>
 <translation id="5132942445612118989">Segerakkan kata laluan, sejarah &amp; pelbagai lagi pada semua peranti</translation>
@@ -1445,6 +1446,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7592322927044331376">Pertama, eksport dan padamkan kata laluan daripada Chrome</translation>
 <translation id="7594687499944811403">Benarkan <ph name="EMBEDDED_ORIGIN" /> mengesahkan itu anda untuk <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistem pengendalian</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab standard}other{<ph name="TABS_COUNT_MANY" /> tab standard}}</translation>
 <translation id="7603168929588204083">Tarikh tidak sah</translation>
 <translation id="7605594153474022051">Penyegerakan tidak berfungsi</translation>
 <translation id="7612619742409846846">Dilog masuk ke Google sebagai</translation>
@@ -1492,6 +1494,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Semua fail, 1 fail dalam senarai}other{Semua fail, # fail dalam senarai}}</translation>
 <translation id="7815484226266492798">Tangkapan Skrin Panjang</translation>
+<translation id="7819605256207059717">Disekat oleh organisasi anda</translation>
 <translation id="7821130663268546430">Anda boleh menemukan semua tab yang dibuka dalam penukar tab</translation>
 <translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="7824665136384946951">Organisasi anda mematikan Penyemakan Imbas Selamat</translation>
@@ -1688,7 +1691,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="864544049772947936">Urus tetingkap (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Guna Chrome dengan cara anda</translation>
 <translation id="8664979001105139458">Nama fail sudah wujud</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Disekat oleh organisasi anda}other{# disekat oleh organisasi anda}}</translation>
 <translation id="8672883760227492369">Sesetengah kata laluan pada peranti ini akan berhenti berfungsi tidak lama lagi. Anda boleh mengalihkan kata laluan kepada Google Password Manager.</translation>
 <translation id="8676276370198826499">Daftar <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Pengesahan log masuk</translation>

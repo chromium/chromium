@@ -165,6 +165,7 @@
 <translation id="2945997411976714835">خطای نصب: فرایند نصب‌کننده شروع نشد.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chrome</translation>
 <translation id="2970681950995291301">‏برای برداشتن «حساب Google» خود از Chrome، در صفحه «تنظیمات» از سیستم Chrome خارج شوید</translation>
+<translation id="2994465299455873643">سرویس‌های رمزگذاری و روشی ایمن برای بازیابی کردن <ph name="BROWSER_NAME" /> درصورت قدیمی شدن آن ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ممکن است <ph name="BROWSER_NAME" /> دسترسی به داده‌های رمزگذاری‌شده را ازدست بدهد و <ph name="BROWSER_NAME" /> نتواند خود را بازیابی کند.</translation>
 <translation id="3018957014024118866">‏داده‌ها از Chrome هم حذف شود (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">‏برای به‌روزرسانی &amp;ChromeOS Flex، راه‌اندازی مجدد کنید</translation>
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
@@ -221,6 +222,7 @@
 <translation id="3673813398384385993">‏Chrome متوجه شده است که این «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
 <translation id="3695446226812920698">با نحوه انجام کار آشنا شوید</translation>
 <translation id="3697952514309507634">‏دیگر نمایه‌های Chrome</translation>
+<translation id="3700276346088749847">‏داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید</translation>
 <translation id="3703994572283698466">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="3716540481907974026">‏نسخه ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
@@ -292,6 +294,7 @@
 <translation id="4575717501879784448">‏‫Chrome می‌تواند این برگه‌ها را غیرفعال کند تا تجربه مرور شما را بهبود بخشد و منابع را آزاد کند.</translation>
 <translation id="459622048091363950">‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="4600710005438004015">‏Chrome به جدیدترین نسخه به‌روزرسانی نشد، بنابراین قابلیت‌های جدید و رفع اشکال‌های امنیتی را ندارید.</translation>
+<translation id="4601439950572737842">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، این گذرعبارت را وارد کنید.</translation>
 <translation id="4624065194742029982">‏حالت ناشناس Chrome</translation>
 <translation id="4627412468266359539">‏اختیاری: با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده به Google، به بهبود ویژگی‌ها و عملکرد ChromeOS Flex کمک کنید.</translation>
 <translation id="4633000520311261472">‏برای ایمن‌تر کردن Chrome، برخی از افزونه‌هایی را که در<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>

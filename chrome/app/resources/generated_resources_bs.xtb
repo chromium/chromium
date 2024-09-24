@@ -292,7 +292,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1199814941632954229">Izdaju se certifikati za ove profile certifikata</translation>
 <translation id="120069043972472860">Ne može se gledati</translation>
 <translation id="1201402288615127009">Naprijed</translation>
-<translation id="1201564082781748151">Ako zaboravite lozinku, lokalni podaci se mogu vratiti</translation>
 <translation id="1202116106683864634">Jeste li sigurni da želite izbrisati ovaj pristupni ključ?</translation>
 <translation id="1202596434010270079">Aplikacija za kiosk je ažurirana. Uklonite USB disk.</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
@@ -322,6 +321,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="122082903575839559">Algoritam potpisa potvrde</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 s RSA šifriranjem</translation>
 <translation id="1221825588892235038">Samo odabir</translation>
+<translation id="1222835797152767346">Postavite PIN da biste se lakše prijavili</translation>
 <translation id="1223484782328004593">Za aplikaciju <ph name="APP_NAME" /> je potrebna licenca</translation>
 <translation id="1223853788495130632">Vaš administrator preporučuje posebnu vrijednost za ovu postavku.</translation>
 <translation id="1225177025209879837">Zahtjev se obrađuje…</translation>
@@ -2234,7 +2234,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2546991196809436099">Uvećajte da stavke na ekranu budu veće. Koristite tipku za pretraživanje + Ctrl + M da uključite i isključite povećalo.</translation>
 <translation id="2548347166720081527">Dato je odobrenje za <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Poništi keš memoriju profila eSIM-a</translation>
-<translation id="2549766998450508148">Pritisnite 1 – 4 modifikatorske tipke (ctrl, alt, shift ili pretraživanje) i još jednu tipku. Možete odabrati i samo jednu tipku.</translation>
+<translation id="2549766998450508148">Pritisnite 1–4 modifikacijske tipke (Ctrl, Alt, Shift, tipku za pretraživanje) i još 1 tipku. Možete odabrati i samo jednu tipku.</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="2550212893339833758">Zamijenjena memorija</translation>
 <translation id="2550596535588364872">Dozvoliti ekstenziji <ph name="EXTENSION_NAME" /> da otvori <ph name="FILE_NAME" />?</translation>
@@ -6421,6 +6421,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5624959475330585145">Pitaj prije korištenja nesigurnih veza</translation>
 <translation id="5625225435499354052">Uredi u Google Payu</translation>
 <translation id="5626134646977739690">Naziv:</translation>
+<translation id="5626172233890210551">Upotrijebi zaporku</translation>
 <translation id="5627832140542566187">Orijentacija prikaza</translation>
 <translation id="5628434207686266338">Postavite lozinku za uređaj</translation>
 <translation id="562935524653278697">Vaš administrator je onemogućio sinhroniziranje oznaka, historije, lozinki i drugih postavki.</translation>
@@ -7198,6 +7199,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6207937957461833379">Zemlja / Regija</translation>
 <translation id="6208521041562685716">Aktiviranje prijenosa podataka na mobilnoj mreži</translation>
 <translation id="6208725777148613371">Pohranjivanje na <ph name="WEB_DRIVE" /> nije uspjelo – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Ako ste zaboravili šifru ili želite promijeniti ovu postavku, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Ažuriranje komponenti</translation>
 <translation id="6209908325007204267">Vaš uređaj uključuje nadogradnju na poslovnu verziju Chromea, ali vaše korisničko ime nije povezano s računom preduzeća. Kreirajte račun preduzeća putem web lokacije g.co/ChromeEnterpriseAccount na sekundarnom uređaju.</translation>
 <translation id="6210282067670792090">Na traci za adresu koristite ovu prečicu na tastaturi s prečicama za pretraživače i pretraživanje web lokacija</translation>
@@ -10661,7 +10663,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8715480913140015283">Kartica u pozadini koristi vašu kameru</translation>
 <translation id="8716931980467311658">Izbrisati sve Linux aplikacije i podatke u Linux folderima fajlova s ovog uređaja <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
-<translation id="8718560545710680911">Pitaj pomoću ove stranice</translation>
+<translation id="8718560545710680911">Pitajte pomoću ove stranice</translation>
 <translation id="8718994464069323380">Otkriven je ekran na dodir</translation>
 <translation id="8719472795285728850">Osluškivanje aktivnosti ekstenzije…</translation>
 <translation id="8719665168401479425">Korištenje pokreta licem za izvršavanje radnji</translation>
@@ -10771,6 +10773,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8791534160414513928">Pošalji zahtjev "Do Not Track" uz saobraćaj pregledanja</translation>
 <translation id="8793390639824829328">Web lokacije koriste ovu funkciju za klizanje na dijeljenim karticama i njihovo zumiranje</translation>
 <translation id="879413103056696865">Dok je pristupna tačka uključena, telefon <ph name="PHONE_NAME" /> će:</translation>
+<translation id="8794548468611058947">Umjesto da za prijavu unosite zaporku Google računa, možete izraditi PIN za ovaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Novi prozor</translation>
 <translation id="8796919761992612392">P&amp;rilagodite Chrome</translation>
 <translation id="8797459392481275117">Nikada ne prevodi ovu web lokaciju</translation>

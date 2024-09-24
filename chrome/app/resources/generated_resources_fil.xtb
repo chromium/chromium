@@ -291,7 +291,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1199814941632954229">Nagbibigay ng mga certificate para sa mga profile ng certificate na ito</translation>
 <translation id="120069043972472860">Hindi gugustuhing panoorin</translation>
 <translation id="1201402288615127009">Susunod</translation>
-<translation id="1201564082781748151">Puwedeng i-restore ang lokal na data kung makalimutan mo ang iyong password</translation>
 <translation id="1202116106683864634">Sigurado ka bang gusto mong i-delete ang passkey na ito?</translation>
 <translation id="1202596434010270079">Na-update na ang Kiosk app. Mangyaring alisin ang USB stick.</translation>
 <translation id="1202892408424955784">Mga sinusubaybayang produkto</translation>
@@ -2231,6 +2230,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2546991196809436099">Mag-zoom in para palakihin ang mga item sa screen. Gamitin ang Search + Ctrl + M para i-on at i-off ang magnifier.</translation>
 <translation id="2548347166720081527">Pinayagan ang <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">I-reset ang cache ng profile ng eSIM</translation>
+<translation id="2549766998450508148">Pumindot ng 1-4 na modifier key (ctrl, alt, shift o search) at 1 pang key. Puwede ka ring pumili ng iisang key.</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="2550212893339833758">Na-swap na memory</translation>
 <translation id="2550596535588364872">Payagan ang <ph name="EXTENSION_NAME" /> na buksan ang <ph name="FILE_NAME" />?</translation>
@@ -10643,6 +10643,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8715480913140015283">Ginagamit ng tab sa background ang iyong camera</translation>
 <translation id="8716931980467311658">I-delete sa <ph name="DEVICE_TYPE" /> na ito ang lahat ng Linux application at data sa iyong folder ng mga Linux file?</translation>
 <translation id="8717864919010420084">Kopyahin ang Link</translation>
+<translation id="8718560545710680911">Magtanong gamit ang page na ito</translation>
 <translation id="8718994464069323380">Na-detect ang touchscreen</translation>
 <translation id="8719472795285728850">Nakikinig para sa mga aktibidad ng extension...</translation>
 <translation id="8719665168401479425">Gumamit ng mga galaw ng mukha para magsagawa ng mga pagkilos</translation>

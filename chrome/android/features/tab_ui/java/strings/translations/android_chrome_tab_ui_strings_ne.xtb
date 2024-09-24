@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>
+<translation id="6590332670428149473"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="6615455863669487791">मलाई देखाउनुहोस्</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> वटा ट्याब परिवर्तन गरियो}other{<ph name="MANY_CHANGED" /> वटा ट्याब परिवर्तन गरिए}}</translation>
 <translation id="6694634756612002311">सेयर गर्ने सुविधा व्यवस्थापन गर्नुहोस्</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9111228330448174435">नयाँ ट्याब समूह बनाउँदा डायलग देखाउनुहोस्</translation>
+<translation id="9114502155681725011"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="9150694013019234766">स्क्रिनको फेद नजिकैबाट आफ्नो ट्याब समूहका ट्याबहरूको अदलबदल गर्नुहोस्</translation>
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="9216898458513705996">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>

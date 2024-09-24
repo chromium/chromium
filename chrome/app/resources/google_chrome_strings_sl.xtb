@@ -302,6 +302,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4680828127924988555">Prekliči namestitev</translation>
 <translation id="469553575393225953">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo v Spletni trgovini Chrome.</translation>
 <translation id="4710245680469034439">Osebno prilagodite brskalnik s temami, ki jih je navdihnila narava, zbirkami umetnikov in drugim</translation>
+<translation id="4720851490453439956">Googlova notranja storitev za posodabljanje</translation>
 <translation id="4724676981607797757">Namestitev ni uspela zaradi napake, povezane z nepodprtim protokolom.</translation>
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4741235124132242877">Pripeto. Google Lens lahko znova uporabite v orodni vrstici.</translation>
@@ -465,6 +466,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6893363893008038481">Odstranitev računa iz Chroma</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6930294499209825">Poskrbi, da je Googlova programska oprema posodobljena. Če je ta storitev onemogočena ali ustavljena, Googlova programska oprema ne bo posodobljena, kar pomeni, da varnostnih ranljivosti, ki se lahko pojavijo, ni mogoče odpraviti in funkcije morda ne delujejo. Ta storitev se samodejno odstrani, če ni Googlove programske opreme, ki bi jo uporabljala.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
@@ -514,6 +516,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7477130805345743099">Chrome vas bo opozoril pred nalaganjem katerega koli spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="749228101751499733">Ko ste prijavljeni, lahko v Chromu uporabljate gesla in drugo iz računa Google. <ph name="SHORTCUT" /> lahko spremeni nastavitve Googlovih storitev.</translation>
+<translation id="7514258452813684157">Googlova storitev za posodabljanje</translation>
 <translation id="7515191208480168435">Google Lens lahko pripnete za preprost dostop</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Izklopljeno • Chrome ne more preveriti, od kod izvira ta razširitev</translation>

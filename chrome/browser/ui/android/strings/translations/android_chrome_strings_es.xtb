@@ -153,7 +153,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1696555181932908973">Puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">¿Cambiar tus ajustes del tema oscuro?</translation>
 <translation id="1702907158640575240">Navegador gestionado</translation>
-<translation id="1710099199314114079">Cambiar o cerrar pestañas</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea para cambiar tu contraseña</translation>
 <translation id="1726477445370128854">Puedes navegar y buscar más rápido cuando Chrome precarga las páginas que considera que podrías visitar.</translation>
@@ -297,6 +296,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2450083983707403292">¿Quieres empezar a descargar <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2453860139492968684">Finalizar</translation>
+<translation id="2461378706168271257">Buscar en tus pestañas</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2468444275314013497">Parece que todo está correcto en tu navegador</translation>
 <translation id="2472163211318554013">Inicia sesión para sacarle el máximo partido a Chrome</translation>
@@ -601,6 +601,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3847319713229060696">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3858860766373142691">Nombre</translation>
+<translation id="3873174561423636563">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta los <ph name="BEGIN_LINK1" />términos del servicio<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
@@ -876,6 +877,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5114895953710637392">La hoja de filtros de aplicaciones está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Puedes usar Chrome cada vez que toques enlaces en mensajes, documentos y otras aplicaciones</translation>
 <translation id="5122378528687922675">Si necesitas ayuda, pídesela a tu padre o madre (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestaña de Incógnito</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
@@ -1458,6 +1460,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7656721520530864426">No hay sitios</translation>
 <translation id="7656862631699126784">Activar el bloqueo de pestañas de incógnito</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7663320421139257046">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766587987807204883">Los artículos se muestran aquí y los puedes leer aunque no tengas conexión a Internet</translation>
 <translation id="7666185984446444960">Cerrados: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1489,6 +1492,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
 <translation id="7815484226266492798">Captura de página completa</translation>
+<translation id="7819605256207059717">Bloqueado por tu organización</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en la Función de cambio de pestaña</translation>
 <translation id="7822705602465980873">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
 <translation id="7824665136384946951">Tu organización ha desactivado Navegación segura</translation>
@@ -1685,7 +1689,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="864544049772947936">Gestionar ventanas (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Usa Chrome a tu manera</translation>
 <translation id="8664979001105139458">El nombre del archivo ya existe</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloqueada por tu organización}other{# han sido bloqueadas por tu organización}}</translation>
 <translation id="8672883760227492369">Algunas contraseñas de este dispositivo dejarán de funcionar pronto, pero puedes moverlas al Gestor de contraseñas de Google.</translation>
 <translation id="8676276370198826499">Regístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verificar inicio de sesión</translation>

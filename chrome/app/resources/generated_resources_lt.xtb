@@ -293,7 +293,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1199814941632954229">Teikiami šių sertifikuojamų profilių sertifikatai</translation>
 <translation id="120069043972472860">Neįmanoma žiūrėti</translation>
 <translation id="1201402288615127009">Kitas</translation>
-<translation id="1201564082781748151">Vietinius duomenis galima atkurti pamiršus slaptažodį</translation>
 <translation id="1202116106683864634">Ar tikrai norite ištrinti šį „passkey“?</translation>
 <translation id="1202596434010270079">Viešojo terminalo buvo atnaujinta. Atjunkite USB atmintuką.</translation>
 <translation id="1202892408424955784">Stebimi produktai</translation>
@@ -2233,6 +2232,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2546991196809436099">Artinkite, kad padidintumėte ekrane rodomus elementus. Norėdami įjungti ar išjungti didintuvą, naudokite paieškos klavišą + „Ctrl“ + M.</translation>
 <translation id="2548347166720081527">Leidžiama: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nustatyti „eSIM“ kortelės profilio talpyklą iš naujo</translation>
+<translation id="2549766998450508148">Paspauskite vieną–keturis modifikavimo klavišus („Ctrl“, „Alt“, „Shift“ arba paieškos) ir dar vieną klavišą. Taip pat galite pasirinkti vieną klavišą.</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
 <translation id="2550212893339833758">Sukeista atmintis</translation>
 <translation id="2550596535588364872">Leisti „<ph name="EXTENSION_NAME" />“ atidaryti <ph name="FILE_NAME" /> failą?</translation>
@@ -10649,6 +10649,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8715480913140015283">Fone veikiančiame skirtuke naudojamas jūsų fotoaparatas</translation>
 <translation id="8716931980467311658">Ištrinti visas „Linux“ programas ir duomenis „Linux“ failų aplanke iš šio „<ph name="DEVICE_TYPE" />“ įrenginio?</translation>
 <translation id="8717864919010420084">Kopijuoti nuorodą</translation>
+<translation id="8718560545710680911">Paklauskite naudodami šį puslapį</translation>
 <translation id="8718994464069323380">Aptiktas jutiklinis ekranas</translation>
 <translation id="8719472795285728850">Klausoma plėtinių veiklos...</translation>
 <translation id="8719665168401479425">Atlikite veiksmus veido gestais</translation>

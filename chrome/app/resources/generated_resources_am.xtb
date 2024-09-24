@@ -291,7 +291,6 @@
 <translation id="1199814941632954229">የዕውቅና ማረጋገጫዎች ለእነዚህ የዕውቅና ማረጋገጫ መገለጫዎች እየተያዙ ነው</translation>
 <translation id="120069043972472860">በጭራሽ ሊታይ አይችልም</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
-<translation id="1201564082781748151">የይለፍ ቃልዎን ከረሱ አካባቢያዊ ውሂብ ወደነበረበት መመለስ ይችላል</translation>
 <translation id="1202116106683864634">እርግጠኛ ነዎት ይህን የይለፍ ቁልፍ መሰረዝ ይፈልጋሉ?</translation>
 <translation id="1202596434010270079">የKiosk መተግበሪያ ዘምኗል። እባክዎ የዩ.ኤስ.ቢ. ስቲኩን ያስወግዱ።</translation>
 <translation id="1202892408424955784">ክትትል የሚደረግባቸው ምርቶች</translation>
@@ -2226,6 +2225,7 @@
 <translation id="2546991196809436099">በማያ ገጹ ላይ ያሉ ንጥሎችን ለማተለቅ ያጉሉ። ማጉያን ለማብራት እና ለማጥፋት Search + Ctrl + Mን ይጠቀሙ።</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ተፈቅዷል</translation>
 <translation id="2548545707296594436">የኢሲም መገለጫ መሸጎጫን ዳግም ያስጀምሩ</translation>
+<translation id="2549766998450508148">1-4 የአሻሻይ ቁልፎች (ctrl፣ alt፣ shift፣ ወይም ፍለጋ) እና 1 ተጨማሪ ቁልፍ ይጫኑ። እንዲሁም አንድ ቁልፍ መምረጥ ይችላሉ።</translation>
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
 <translation id="2550212893339833758">የተተካ ማህደረ ትውስታ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> <ph name="FILE_NAME" />ን እንዲከፍት ይፈቀድለት?</translation>
@@ -10640,6 +10640,7 @@ nil</translation>
 <translation id="8715480913140015283">የጀርባ ትር ካሜራዎን እየተጠቀመ ነው</translation>
 <translation id="8716931980467311658">ከዚህ <ph name="DEVICE_TYPE" /> በእርስዎ Linux ፋይሎች አቃፊ ውስጥ ያሉ ሁሉም የLinux መተግበሪያዎች እና ውሂብ ይሰረዙ?</translation>
 <translation id="8717864919010420084">አገናኝ ቅዳ</translation>
+<translation id="8718560545710680911">ይህን ገፅ በመጠቀም ይጠይቁ</translation>
 <translation id="8718994464069323380">መነካት የሚችል ማያ ተገኝቷል</translation>
 <translation id="8719472795285728850">የቅጥያ እንቅስቃሴዎችን በማዳመጥ ላይ...</translation>
 <translation id="8719665168401479425">እርምጃዎችን ለማከናወን የመልክ ምልክቶችን ይጠቀሙ</translation>

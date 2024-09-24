@@ -6455,11 +6455,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5962271004971310788">为能够在无痕模式下导航而必须允许用户在该模式下运行的扩展程序</translation>
 <translation id="5963752574792883406">端口 990（可在 2022 年 2 月 1 日之前解禁）</translation>
-<translation id="5964583455815172553">通过设置此政策，可以通过列表的形式指定一系列静默安装的独立式 Web 应用 (IWA)。
-      IWA 是具有实用安全属性的应用，普通网页则缺少这类属性。IWA 会被打包成经过签名的 Web 软件包。经过签名的 Web 软件包的公钥用于创建可作为 IWA 标识的 Web 软件包 ID。
-      截至目前，此政策仅适用于受管理的访客会话。
-
-      此政策的每个列表项是一个对象，包含更新清单<ph name="URL_LABEL" />和独立式 Web 应用的 Web 软件包 ID。这两个字段都是必填字段。</translation>
 <translation id="596523880465577341">此政策已被弃用且不再受支持，请改用“<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />”政策。</translation>
 <translation id="5966615072639944554">允许扩展程序使用 Remote Attestation API</translation>
 <translation id="596732417280023843">证书资料的名称。</translation>
@@ -6595,27 +6590,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="6102449843040973938">允许 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="610892566190435199">启用设备电源状态报告功能</translation>
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
-<translation id="6112524153927257380">如果您设置了此政策，用户便无法绕过下载安全性决策。
-
-      Chrome 中有很多类型的下载警告，这些警告大致分为以下类别（如需详细了解“安全浏览”功能的判定结果，请访问 https://support.google.com/chrome/?p=ib_download_blocked）：
-
-      * 恶意，由“安全浏览”服务器标记
-      * 不常见或不需要，由“安全浏览”服务器标记
-      * 危险文件类型（例如，所有 SWF 下载内容和很多 EXE 下载内容）
-
-      通过设置此政策，您可以拦截这些下载内容的不同子集，具体取决于此政策的值：
-
-      0：无特殊限制。默认。
-
-      1：拦截已被“安全浏览”服务器标记的恶意文件以及所有危险文件类型。仅推荐用于对误判有较高容忍度的组织部门/浏览器/用户。
-
-      2：拦截已被“安全浏览”服务器标记的恶意文件、不常见或不需要的文件，以及所有危险文件类型。仅推荐用于对误判有较高容忍度的组织部门/浏览器/用户。
-
-      3：拦截所有下载内容。不推荐，特殊使用情形除外。
-
-      4：拦截已被“安全浏览”服务器标记的恶意文件，但不拦截危险文件类型。推荐。
-
-      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6118226055960302400">恢复允许的行为。</translation>
 <translation id="6119207979839638596">此政策已从 M75 中移除 - 在我们从 <ph name="PRODUCT_NAME" /> 中移除用于指定最高 TLS 版本的政策之后。
 

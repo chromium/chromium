@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Gweld gwybodaeth siop</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Symud tab i'r chwith</translation>
+<translation id="6590332670428149473">Agorwch ddewislen gweithredu grŵp tab ar gyfer grŵp tabiau a rennir <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Dangos i fi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab wedi newid}zero{<ph name="MANY_CHANGED" /> tabiau wedi newid}two{<ph name="MANY_CHANGED" /> dab wedi newid}few{<ph name="MANY_CHANGED" /> thab wedi newid}many{<ph name="MANY_CHANGED" /> thab wedi newid}other{<ph name="MANY_CHANGED" /> tab wedi newid}}</translation>
 <translation id="6694634756612002311">Rheoli rhannu</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Ehangu'r grŵp tabiau sydd ag <ph name="TABS_COUNT_ONE" /> tab.}zero{Ehangu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Ehangu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Ehangu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}many{Ehangu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}other{Ehangu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Gwybodaeth am y siop hon wedi'i chau</translation>
 <translation id="9111228330448174435">Dangos deialog ar greu grŵp tabiau newydd</translation>
+<translation id="9114502155681725011">Agorwch ddewislen gweithredu grŵp tab ar gyfer grŵp tab <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Newidiwch rhwng tabiau yn eich grŵp tabiau yn agos at waelod y sgrîn</translation>
 <translation id="9169594135889675189">Ychwanegu tab newydd at y grŵp</translation>
 <translation id="9216898458513705996">Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu o bob dyfais sydd wedi'i mewngofnodi i <ph name="USER_EMAIL" /></translation>

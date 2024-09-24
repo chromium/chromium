@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
+<translation id="6590332670428149473"><ph name="COLOR_NAME" /> रंग में मौजूद शेयर किए गए टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें.</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> टैब बदला गया}one{<ph name="MANY_CHANGED" /> टैब बदला गया}other{<ph name="MANY_CHANGED" /> टैब बदले गए}}</translation>
 <translation id="6694634756612002311">शेयर करने की सुविधा मैनेज करें</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}}</translation>
 <translation id="9090098097337832354">इस स्टोर के बारे में जानकारी दिखाने वाली स्क्रीन बंद हो गई है</translation>
 <translation id="9111228330448174435">नया टैब ग्रुप बनाने पर डायलॉग दिखाएं</translation>
+<translation id="9114502155681725011"><ph name="COLOR_NAME" /> रंग में मौजूद टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें.</translation>
 <translation id="9150694013019234766">स्क्रीन के सबसे नीचे दिए गए अपने टैब समूह में एक से दूसरे टैब पर जाएं</translation>
 <translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
 <translation id="9216898458513705996">ये टैब इस डिवाइस में खुले रहेंगे, लेकिन <ph name="USER_EMAIL" /> में साइन इन किए गए सभी डिवाइसों से यह ग्रुप मिटा दिया जाएगा</translation>

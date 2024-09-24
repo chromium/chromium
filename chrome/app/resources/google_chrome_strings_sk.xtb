@@ -299,6 +299,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4680828127924988555">Zrušiť inštaláciu</translation>
 <translation id="469553575393225953">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba z Internetového obchodu Chrome.</translation>
 <translation id="4710245680469034439">Prispôsobte si prehliadač motívmi inšpirovanými prírodou, zbierkami umelcov či inak</translation>
+<translation id="4720851490453439956">Interná služba Google Updater</translation>
 <translation id="4724676981607797757">Nepodarilo sa nainštalovať pre chybu nepodporovaného protokolu.</translation>
 <translation id="4728575227883772061">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Google Chrome momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4741235124132242877">Pripnuté! Google Lens môžete znova použiť z panela s nástrojmi.</translation>
@@ -462,6 +463,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6885412569789873916">Aplikácie pre Chrome beta verzie</translation>
 <translation id="6893363893008038481">Odstrániť účet z Chromu</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
+<translation id="6930294499209825">Aktualizuje softvér Googlu. Ak je táto služba vypnutá alebo zastavená, softvér Googlu sa nebude aktualizovať, čo znamená, že nedostatky zabezpečenia, ktoré sa vyskytnú, sa nebudú dať opraviť a funkcie nemusia fungovať. Táto služba sa sama odinštaluje, keď ju nebude používať žiadny softvér Googlu.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.1.</translation>
 <translation id="6943584222992551122">Dáta prehliadania tejto osoby sa odstránia z tohto zariadenia. Ak ich budete chcieť obnoviť, prihláste sa do Chromu ako <ph name="USER_EMAIL" />.</translation>
@@ -511,6 +513,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="7477130805345743099">Chrome vás bude pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
 <translation id="7481213027396403996">Získajte najsilnejšie zabezpečenie Chromu</translation>
 <translation id="749228101751499733">Kým máte aktívne prihlásenie, môžete v Chrome používať svoje heslá a ďalší obsah zo svojho účtu Google. Pomocou skratky <ph name="SHORTCUT" /> môžete zmeniť nastavenia svojich služieb Googlu.</translation>
+<translation id="7514258452813684157">Služba Google Updater</translation>
 <translation id="7515191208480168435">Google Lens si môžete na uľahčenie prístupu pripnúť</translation>
 <translation id="7535429826459677826">Google Chrome verzie pre vývojárov</translation>
 <translation id="7572537927358445944">Vypnuté • Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>

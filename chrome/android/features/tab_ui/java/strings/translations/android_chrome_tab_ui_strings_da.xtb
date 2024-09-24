@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Se butiksinfo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Flyt fane til venstre</translation>
+<translation id="6590332670428149473">Åbn handlingsmenuen for fanegrupper for den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fane blev ændret}one{<ph name="MANY_CHANGED" /> fane blev ændret}other{<ph name="MANY_CHANGED" /> faner blev ændret}}</translation>
 <translation id="6694634756612002311">Administrer deling</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="9090098097337832354">Oplysningerne om denne butik er lukket</translation>
 <translation id="9111228330448174435">Vis dialogboks ved oprettelse af en ny fanegruppe</translation>
+<translation id="9114502155681725011">Åbn handlingsmenuen for fanegrupper for fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Skift mellem faner i din fanegruppe nederst på skærmen</translation>
 <translation id="9169594135889675189">Føj en ny fane til gruppen</translation>
 <translation id="9216898458513705996">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="USER_EMAIL" /></translation>

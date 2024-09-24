@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">ທ່ານສາມາດລອງດຳເນີນການຕໍ່ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍວິທີອື່ນໆໄດ້.</translation>
 <translation id="1702543251015153180">ປ່ຽນການຕັ້ງຄ່າຮູບແບບສີສັນມືດຂອງທ່ານບໍ?</translation>
 <translation id="1702907158640575240">ໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
-<translation id="1710099199314114079">ສະຫຼັບ ຫຼື ປິດແຖບ</translation>
 <translation id="1718835860248848330">ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="1724977129262658800">ປົດລັອກເພື່ອແກ້ໄຂລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1726477445370128854">ທ່ານສາມາດທ່ອງເວັບ ແລະ ຊອກຫາໄດ້ໄວຂຶ້ນເມື່ອ Chrome ໂຫຼດໜ້າທີ່ມັນຄິດວ່າທ່ານອາດຈະເຂົ້າໄວ້ກ່ອນລ່ວງໜ້າ</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">ຍັງເຫຼືອ 1 ຊົ່ວໂມງ</translation>
 <translation id="5114895953710637392">ປິດຊີດຕົວກັ່ນຕອງແອັບແລ້ວ.</translation>
 <translation id="5115811374190515607">ຫາ <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">ທ່ານສາມາດໃຊ້ Chrome ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
 <translation id="5122378528687922675">ກະລຸນາຂໍຄວາມຊ່ວຍເຫຼືອຈາກຜູ້ປົກຄອງ (<ph name="PARENT_NAME_1" /> ຫຼື <ph name="PARENT_NAME_2" />) ຂອງທ່ານ, ຫາກທ່ານຕ້ອງການ</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">ເປີດດ້ວຍ...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ໄຟລ໌ທັງໝົດ, 1 ໄຟລ໌ໃນລາຍຊື່}other{ໄຟລ໌ທັງໝົດ, # ໄຟລ໌ໃນລາຍຊື່}}</translation>
 <translation id="7815484226266492798">ຮູບໜ້າຈໍຍາວ</translation>
+<translation id="7819605256207059717">ບລັອກໄວ້ໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="7821130663268546430">ທ່ານສາມາດຊອກຫາແຖບທີ່ເປີດຢູ່ທັງໝົດໃນຕົວປ່ຽນແຖບໄດ້</translation>
 <translation id="7822705602465980873">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ, ຂໍ້ມູນນີ້ຈະລິ້ງກັບບັນຊີ Google ຂອງທ່ານເພື່ອປົກປ້ອງທ່ານໃນທົ່ວບໍລິການ Google ຕົວຢ່າງ: ການເພີ່ມການປົກປ້ອງໃນ Gmail ຫຼັງຈາກເຫດການຄວາມປອດໄພ.</translation>
 <translation id="7824665136384946951">ອົງກອນຂອງທ່ານໄດ້ປິດ Safe Browsing</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">ຈັດການໜ້າຈໍ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">ໃຊ້ Chrome ໃນແບບຂອງທ່ານ</translation>
 <translation id="8664979001105139458">ມີຊື່ໄຟລ໌ນີ້ຢູ່ແລ້ວ</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{ບລັອກໂດຍອົງກອນຂອງທ່ານ}other{ບລັອກໂດຍອົງກອນຂອງທ່ານ # ລາຍການ}}</translation>
 <translation id="8672883760227492369">ລະຫັດຜ່ານບາງລາຍການໃນອຸປະກອນນີ້ເທົ່ານັ້ນທີ່ຈະຢຸດເຮັດວຽກໃນໄວໆນີ້. ທ່ານສາມາດຍ້າຍລະຫັດຜ່ານເຫຼົ່ານີ້ໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໄດ້.</translation>
 <translation id="8676276370198826499">ລົງທະບຽນໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">ການຢັ້ງຢືນການເຂົ້າສູ່ລະບົບ</translation>

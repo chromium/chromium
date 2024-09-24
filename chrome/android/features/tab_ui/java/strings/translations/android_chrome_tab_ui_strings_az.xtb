@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Mağaza məlumatlarına baxın</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tabı sola daşıyın</translation>
+<translation id="6590332670428149473">Paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab dəyişib}other{<ph name="MANY_CHANGED" /> tab dəyişib}}</translation>
 <translation id="6694634756612002311">Paylaşımı idarə edin</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan tab qrupunu genişləndirin.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu genişləndirin.}}</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9111228330448174435">Yeni tab qrupunun yaradılması dialoqunu göstərin</translation>
+<translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
 <translation id="9150694013019234766">Ekranın aşağısındakı tab qrupunda tablar arasında keçid edin</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="9216898458513705996">Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="USER_EMAIL" /> hesabına giriş edilmiş bütün cihazlardan silinəcək</translation>

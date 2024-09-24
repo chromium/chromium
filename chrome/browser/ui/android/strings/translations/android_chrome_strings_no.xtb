@@ -153,7 +153,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1696555181932908973">Du kan prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="1702543251015153180">Vil du endre innstillingene for mørkt tema?</translation>
 <translation id="1702907158640575240">Administrert nettleser</translation>
-<translation id="1710099199314114079">Bytt eller lukk faner</translation>
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1724977129262658800">Lås opp for å redigere passordet ditt</translation>
 <translation id="1726477445370128854">Du kan surfe og søke raskere når Chrome forhåndslaster sider du kanskje kommer til å besøke</translation>
@@ -878,6 +877,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5114895953710637392">Arket for appfiltrering er lukket.</translation>
 <translation id="5115811374190515607">til <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="5122378528687922675">Spør forelderen din (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />) hvis du trenger hjelp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
@@ -1492,6 +1492,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Lang skjermbilde</translation>
+<translation id="7819605256207059717">Blokkert av organisasjonen din</translation>
 <translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="7824665136384946951">Organisasjonen din har slått av Safe Browsing</translation>
@@ -1688,7 +1689,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="864544049772947936">Administrer vinduer (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Bruk Chrome på din måte</translation>
 <translation id="8664979001105139458">Filnavnet finnes allerede</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blokkert av organisasjonen din}other{# ble blokkert av organisasjonen din}}</translation>
 <translation id="8672883760227492369">Noen passord på denne enheten slutter snart å fungere. Du kan flytte disse passordene til Google Passordlagring.</translation>
 <translation id="8676276370198826499">Registrer deg for <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Påloggingsbekreftelser</translation>

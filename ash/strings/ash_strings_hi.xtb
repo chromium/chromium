@@ -398,6 +398,7 @@
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
 <translation id="2416438829169535743">क्या आपको व्यू से बाहर निकलना है?</translation>
 <translation id="2417486498593892439">नेटवर्क में साइन इन करें</translation>
+<translation id="2423619675829330672">आपने पिन डालने की कोशिश कई बार कर ली है. <ph name="TIME_LEFT" /> तक इंतज़ार करें और फिर से कोशिश करें.</translation>
 <translation id="2426051945783024481">ऑटो फ़्रेमिंग ने कैमरे के फ़ोकस को अपने-आप बीच में कर दिया है</translation>
 <translation id="2427507373259914951">बायां क्लिक</translation>
 <translation id="2429753432712299108">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" जोड़ने की अनुमति चाहता है. स्वीकार करने से पहले, कृपया पुष्टि करें कि यह पासकी उस डिवाइस पर दिखाई जा रही है: <ph name="PASSKEY" /></translation>
@@ -1578,6 +1579,7 @@
 <translation id="6330012934079202188">सभी डेस्क की विंडो दिखाई जा रही हैं, मौजूदा डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन को दबाएं</translation>
 <translation id="6337159624125741244">पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा चालू है</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> एक प्रबंधित सत्र है. इसे <ph name="MANAGER" /> प्रबंधित करता है</translation>
+<translation id="6340148837564298498">अगर आपको अपना पिन याद नहीं है, तो इस खाते का पासवर्ड रीसेट करें.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> कनेक्ट किया गया</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> फिर <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> या <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ऐप्लिकेशन सुझाव</translation>
@@ -1634,6 +1636,7 @@
 <translation id="6539852571005954999">डाउनलोड हो रही फ़ाइल <ph name="FILENAME" /> को स्कैन किया जा रहा है</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="6542891623636520977">इमोजी, GIF वगैरह</translation>
+<translation id="6545382064335350438">आपके पिन की अब भी पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
 <translation id="6555373427270923730">पता बार में कोई वेब पता लिखें और <ph name="MODIFIER" /><ph name="KEY" /> दबाएं</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 अभी इंस्टॉल किया गया है</translation>
@@ -2030,6 +2033,7 @@
 <translation id="7904094684485781019">इस खाते के एडमिन ने एक से ज़्यादा साइन-इन को अस्वीकार कर दिया है.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं</translation>
+<translation id="7921565901396407357">आपके पिन की पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
 <translation id="7923534281713082605">मौसम</translation>
 <translation id="7926080067315048321">वेब पर Google Tasks में सभी टास्क देखें</translation>
 <translation id="7930731167419639574">स्पीच को स्थानीय तौर पर प्रोसेस किया जाता है और लिखवाने की सुविधा ऑफ़लाइन काम करती है</translation>

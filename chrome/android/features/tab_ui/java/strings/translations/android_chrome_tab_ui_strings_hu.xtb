@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Üzletadatok megtekintése</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
+<translation id="6590332670428149473">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű megosztott lapcsoport műveleti menüjének megnyitása.</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> lap módosítva}other{<ph name="MANY_CHANGED" /> lap módosítva}}</translation>
 <translation id="6694634756612002311">Megosztás kezelése</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó lapcsoport kibontása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport kibontása.}}</translation>
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9111228330448174435">Párbeszédpanel megjelenítése új lapcsoport létrehozásakor</translation>
+<translation id="9114502155681725011">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport műveleti menüjének megnyitása.</translation>
 <translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
 <translation id="9216898458513705996">A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>

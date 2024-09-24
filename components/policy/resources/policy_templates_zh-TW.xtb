@@ -6358,11 +6358,6 @@
 如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5962271004971310788">如要以無痕模式瀏覽，使用者必須允許在無痕模式中執行這些擴充功能</translation>
 <translation id="5963752574792883406">通訊埠 990 (2022 年 2 月 1 日前可解除封鎖)</translation>
-<translation id="5964583455815172553">如果設定這項政策，就能指定以無訊息方式安裝的隔離網頁應用程式 (IWA) 清單。
-      相較於一般網頁，IWA 這類應用程式有實用的安全屬性，而且是以 Signed Web Bundle 的形式包裝。Signed Web Bundle 的公開金鑰會用於建立可辨識 IWA 的網頁軟體包 ID。
-      這項政策目前僅適用於受管理的訪客工作階段。
-
-      這項政策的每個清單項目都是一個物件，由更新資訊清單 (<ph name="URL_LABEL" />) 和隔離網頁應用程式的網頁軟體包 ID 組成。請務必填寫這兩個欄位。</translation>
 <translation id="596523880465577341">這項政策已淘汰，因此系統不再支援，請改用「<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />」政策。</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
 <translation id="596732417280023843">憑證設定檔的名稱。</translation>
@@ -6498,27 +6493,6 @@
 <translation id="6102449843040973938">允許在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="610892566190435199">啟用裝置電源狀態回報功能</translation>
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
-<translation id="6112524153927257380">如果設定這項政策，使用者就無法略過下載作業安全性判斷機制。
-
-      Chrome 提供多種下載作業警告，大致可分成以下幾個類別 (如要進一步瞭解安全瀏覽功能判斷機制，請前往 https://support.google.com/chrome/?p=ib_download_blocked)：
-
-      * 惡意檔案：由安全瀏覽伺服器所標記
-      * 罕見或垃圾檔案：由安全瀏覽伺服器所標記
-      * 危險檔案類型：例如所有 SWF 下載內容和許多 EXE 下載內容
-
-      視所採用的值而定，設定這項政策會封鎖上述類別的不同組合：
-
-      0：無特殊限制。這是預設設定。
-
-      1：封鎖由安全瀏覽伺服器所標記的惡意檔案，以及所有危險檔案類型。建議你只為較能容許誤判情形的機構單位/瀏覽器/使用者採用這項設定。
-
-      2：封鎖由安全瀏覽伺服器所標記的惡意、罕見或垃圾檔案，以及所有危險檔案類型。建議你只為較能容許誤判情形的機構單位/瀏覽器/使用者採用這項設定。
-
-      3：封鎖所有下載作業。除非是為了特殊用途，否則不建議你採用這項設定。
-
-      4：封鎖由安全瀏覽伺服器所標記的惡意檔案，但不封鎖危險檔案類型。這是建議採用的設定。
-
-      注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但如果是要下載目前顯示的網頁，或是透過列印選項將網頁儲存為 PDF 檔，則不適用這些限制。如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6118226055960302400">還原許可的行為。</translation>
 <translation id="6119207979839638596">由於 <ph name="PRODUCT_NAME" /> 已移除傳輸層安全標準 (TLS) 最高版本政策，因此這項政策已在 M75 中移除。
 

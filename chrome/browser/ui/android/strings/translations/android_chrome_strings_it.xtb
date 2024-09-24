@@ -153,7 +153,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1696555181932908973">Puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vuoi cambiare le impostazioni del tema scuro?</translation>
 <translation id="1702907158640575240">Browser gestito</translation>
-<translation id="1710099199314114079">Cambia scheda o chiudi le schede</translation>
 <translation id="1718835860248848330">Ultima ora</translation>
 <translation id="1724977129262658800">Sblocca per modificare la password</translation>
 <translation id="1726477445370128854">Puoi eseguire ricerche e navigare più rapidamente quando Chrome precarica le pagine che ritiene tu possa visitare</translation>
@@ -267,6 +266,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
 <translation id="228704530595896923">Elenco di opzioni di condivisione.</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Visualizza <ph name="TABS_COUNT_ONE" /> scheda}other{Visualizza <ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2297822946037605517">Condividi questa pagina</translation>
 <translation id="22981027763501686">Sincronizza per recuperare i preferiti, la cronologia e altri contenuti salvati sugli altri tuoi dispositivi</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
@@ -635,6 +635,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4042941173059740150">Continua su <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Gruppo senza nome</translation>
 <translation id="4044708993631234325">Riquadro inferiore</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda standard con nuova attività in gruppi di schede condivisi}other{<ph name="TABS_COUNT_MANY" /> schede standard con nuova attività in gruppi di schede condivisi}}</translation>
 <translation id="405365679581583349">Aggiorna Google Play Services</translation>
 <translation id="405399507749852140">Ricevi avvisi se il prezzo cala su qualsiasi sito</translation>
 <translation id="4056223980640387499">Seppia</translation>
@@ -878,6 +879,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="510275257476243843">1 ora rimanente</translation>
 <translation id="5114895953710637392">Il foglio di filtro delle app è chiuso.</translation>
 <translation id="5115811374190515607">in <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
 <translation id="5122378528687922675">Se hai bisogno di aiuto, rivolgiti al tuo genitore (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
@@ -1300,6 +1302,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="696447261358045621">Esci dalla modalità di navigazione in incognito</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Visualizza <ph name="TABS_COUNT_ONE" /> scheda con nuove attività in gruppi di schede condivisi}other{Visualizza <ph name="TABS_COUNT_MANY" /> schede con nuove attività in gruppi di schede condivisi}}</translation>
 <translation id="6971862865055170158">Non approvare</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
@@ -1445,6 +1448,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7592322927044331376">Innanzitutto, esporta ed elimina le password da Chrome</translation>
 <translation id="7594687499944811403">Consenti a <ph name="EMBEDDED_ORIGIN" /> di verificare la tua identità per <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistema operativo</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda standard}other{<ph name="TABS_COUNT_MANY" /> schede standard}}</translation>
 <translation id="7603168929588204083">Data non valida</translation>
 <translation id="7605594153474022051">La sincronizzazione non funziona</translation>
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
@@ -1492,6 +1496,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7810647596859435254">Apri con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tutti i file, 1 file nell'elenco}other{Tutti i file, # file nell'elenco}}</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
+<translation id="7819605256207059717">Bloccato dalla tua organizzazione</translation>
 <translation id="7821130663268546430">Puoi trovare tutte le schede aperte nel Selettore di schede</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
@@ -1513,6 +1518,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7896724475402191389">Contenuti per giovani menti - off</translation>
 <translation id="7903184275147100332">L'operazione potrebbe richiedere un minuto</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 download è stato bloccato dalla tua organizzazione}other{# download sono stati bloccati dalla tua organizzazione}}</translation>
 <translation id="7914399737746719723">App installata</translation>
 <translation id="7919123827536834358">Traduci queste lingue automaticamente</translation>
 <translation id="7926975587469166629">Nickname carta</translation>
@@ -1688,7 +1694,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="864544049772947936">Gestisci finestre (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Usa Chrome a modo tuo</translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloccato dalla tua organizzazione}other{# sono stati bloccati dalla tua organizzazione}}</translation>
 <translation id="8672883760227492369">A breve alcune password su questo dispositivo smetteranno di funzionare. Puoi spostare queste password in Gestore delle password di Google.</translation>
 <translation id="8676276370198826499">Registrati a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifiche degli accessi</translation>

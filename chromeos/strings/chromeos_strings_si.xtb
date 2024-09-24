@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ස්කෑන් කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
 <translation id="1343442362630695901">ලුණු විල</translation>
 <translation id="1348657754632799065">පටිගත කිරීමේ තීරුව</translation>
+<translation id="1350909945461913813">ඕනෑම වැඩක් සුරැකීමට වග බලා ගන්න</translation>
 <translation id="1367951781824006909">ගොනුවක් තෝරන්න</translation>
 <translation id="1371650399987522809">Google AI මගින් බල ගැන්වෙන වෝල්පේපරය සඳහා ප්‍රතිපෝෂණය</translation>
 <translation id="1374385338586507108">නිර්වචනය කරන්න</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK අනුවාදය:</translation>
 <translation id="2016697457005847575">දෝෂාවේක්ෂ පියවර උත්සාහ කරන්න</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">තේමාවක් තෝරා ඉන්පසු ඔබේ AI රූප පුද්ගලායනය කිරීමට යටින් ඉරි ඇඳ ඇති වචන තෝරන්න.</translation>
 <translation id="2045814230297767491">හැඳි ගෑරුප්පු</translation>
 <translation id="2047316797244836561">ජාලයකට සම්බන්ධ වී තිර සුරැකුම බැලීමට පිටුව නැවත පූරණ කරන්න.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2082932131694554252">පවරා ඇති යතුරු පුවරු යතුර</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
-<translation id="2085876078937250610">සුරකින්න…</translation>
 <translation id="2086091080968010660">කාලය පදකම් වන වෙනස්කම් නිරවද්‍ය නොවේවි. සැකසීම් තුළ පද්ධති ස්ථාන ප්‍රවේශය සක්‍රීය කරන්න.</translation>
 <translation id="2102231663024125441">පෙළ සංස්කරණය</translation>
 <translation id="2102648867808308635">මෙම පිටුව කියවීමට මට උදවු කරන්න</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">කථනය අනාවරණ නොවිය</translation>
 <translation id="2446553403094072641">පාවෙන ලක්ෂ්‍යය නිරවද්‍යතාව</translation>
 <translation id="2448312741937722512">වර්ගය</translation>
+<translation id="2468124392950503650">නිර්මාණය කිරීමට ප්‍රේරකය තෝරන්න හෝ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ප්‍රේරක මාර්ගෝපදේශය<ph name="END_LINK_PROMPTING_GUIDE" /> බලන්න</translation>
 <translation id="2472215337771558851">Google AI මගින් බල ගැන්වෙන කෙටුම්පතක් තැනීමට හෝ පවතින වැඩ ප්‍රසාදනය කිරීමට මට ලිවීමට උදවු කරන්න භාවිත කරන්න</translation>
 <translation id="2480572840229215612">කකුළුවෝ</translation>
 <translation id="248546197012830854">උපාංගය නොබැඳි වේ. උදවු අන්තර්ගතය බැලීමට Wi-Fi ජාලයට සම්බන්ධ වන්න.</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">ගැළපෙන ප්‍රතිඵල නැත</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
+<translation id="4486524074141928967">ඔබ <ph name="TIME" />ට වරනය වනු ඇත</translation>
 <translation id="4500722292849917410">කෙටිමඟ නොලැබේ. සංස්කාරක යතුරක් භාවිතයෙන් නව කෙටිමඟක් ඔබන්න (ctrl, alt, shift, හෝ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">අතුරු මුහුණත් වර්ණය</translation>
 <translation id="4503223151711056411">වම් ඊතලය</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">අළු</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> යතුර පරීක්ෂා කරන ලදි</translation>
+<translation id="5613201299517339763">ඔබ වරනය වී ඇත</translation>
 <translation id="5620281292257375798">අභ්‍යන්තර පමණයි</translation>
 <translation id="5630438231335788050">බෝහෝස්</translation>
 <translation id="5631759159893697722">උද්ධෘතය</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">ගොනුව හමු නොවිණි</translation>
 <translation id="5938286923316838007">මෙම අන්තර්ගතය සඳහා පටිගත කිරීම් නම් සෑදිය නොහැක</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
+<translation id="5942727615796467094">මෙම <ph name="DEVICE_TYPE" /> භාවිත කළ හැකි වේලාව <ph name="MANAGER" />පරිපාලක විසින් සකසා ඇත</translation>
 <translation id="594552776027197022">අහඹු යතුරු යුගල උත්පාදනය කරන්න</translation>
 <translation id="5946538341867151940">ඔබ තවම සම්බන්ධ වී නැත. ඔබේ ජංගම වාහකයා අභිරුචි APN නිර්දේශ කරන්නේ නම්, "+ නව APN" තේරීමෙන් APN තොරතුරු ඇතුළු කරන්න</translation>
 <translation id="5947266287934282605">මාසයේ අවසාන දිනය මෙම දිනයට පෙර නම්, මාසයේ අවසාන දිනයේ දත්ත යළි සකසනු ලැබේ</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">වෙනස් ග්‍රහලෝකය</translation>
 <translation id="6359706544163531585">ආලෝක තේමාව අබල කරන්න</translation>
 <translation id="6359919876285606596">මෙම ක්‍රියාව ස්ථිර වන අතර පසුගමනය කළ නොහැක</translation>
+<translation id="6368342879959028556">ඔබ "AI සමග සාදන්න" තෝරා ගත් විට අභිරුචි ප්‍රේරකයක් ලියන්න. නැතහොත් ඔබට තේමාවක් තෝරා ගැනීමට “AI වෝල්පේපර” තෝරා ඉන්පසු ඔබේ AI වෝල්පේපරය පුද්ගලායනය කිරීමට යටින් ඉරි ඇඳ ඇති වචන තෝරන්න.</translation>
 <translation id="636850387210749493">ව්‍යාපාරික බඳවාගැනීම</translation>
 <translation id="6373461326814131011">පොකුණ</translation>
 <translation id="6379086450106841622">ස්පර්ශ තිරය</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">ගිණුම් සැකසීම් වෙත යන්න</translation>
 <translation id="6462978824459367242">APN එක් කරන්න බොත්තම දැන් සබලයි</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{පිටුව යළි ස්කෑන් කරන්නද?}=1{{PAGE_NUMBER} පිටුව යළි ස්කෑන් කරන්නද?}one{{PAGE_NUMBER} පිටුව යළි ස්කෑන් කරන්නද?}other{{PAGE_NUMBER} පිටුව යළි ස්කෑන් කරන්නද?}}</translation>
+<translation id="6468146470109254228">ඔබේ වඩාත්ම මෑත ප්‍රේරක සහ ප්‍රතිදාන 3. ඔබට මේවාට ප්‍රවේශ විය හැක්කේ ඔබ වෝල්පේපරය සහ ශෛලිය භාවිත කරන අතරතුර පමණි.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">බෝට්ටු</translation>
 <translation id="64778964625672495">තද රතු</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6659594942844771486">ටැබ</translation>
 <translation id="66621959568103627">කොරල් රෝස</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          වඩාත් අනන්‍ය සහ විවිධ AI රූප විකල්ප ලබා ගැනීමට "මාව පොළඹවන්න" තෝරන්න.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ඔබ AI සමගින් නිර්මාණය කරන විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව, රූප ජනනය කිරීමට සහ නිෂ්පාදනය වැඩි දියුණු කිරීමට ප්‍රේරකය Google AI සේවාදායක වෙත යවනු ලැබේ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          උත්පාදක AI පර්යේෂණාත්මක, මුල් සංවර්ධන අවධියේ පවතින අතර දැනට සීමිතව ලබා ගත හැක.</translation>
 <translation id="6673898378497337661">යතුරු පුවරු දීප්තිය ඉහළට</translation>
 <translation id="6692996468359469499">ඔබේ තේරීමට අදාළ තොරතුරු ලබා ගන්න</translation>
 <translation id="6694534975463174713">අගුල</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
 <translation id="1343442362630695901">աղի լիճ</translation>
 <translation id="1348657754632799065">Ձայնագրման գոտի</translation>
+<translation id="1350909945461913813">Համոզվեք, որ պահում եք աշխատանքը</translation>
 <translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1371650399987522809">Google AI տեխնոլոգիաներով ստեղծված պաստառների վերաբերյալ կարծիք</translation>
 <translation id="1374385338586507108">Սահմանեք</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-ի տարբերակը՝</translation>
 <translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Ընտրեք թեմա, այնուհետև ընտրեք ընդգծված բառերը՝ ձեր ԱԲ պատկերներն անհատականացնելու համար։</translation>
 <translation id="2045814230297767491">դանակ-պատառաքաղ</translation>
 <translation id="2047316797244836561">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ էկրանապահը դիտելու համար։</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2082932131694554252">Նշանակված ստեղն</translation>
 <translation id="2085089206770112532">Էկրանի պայծառության նվազեցում</translation>
-<translation id="2085876078937250610">Պահել…</translation>
 <translation id="2086091080968010660">Ժամանակի հիման վրա փոփոխությունները կարող են ճշգրիտ չլինել։ Միացրեք համակարգի տեղորոշման թույլտվությունը կարգավորումներում։</translation>
 <translation id="2102231663024125441">Տեքստի խմբագրում</translation>
 <translation id="2102648867808308635">Օգնիր կարդալ այս էջը</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">Խոսք չի հայտնաբերվել</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
+<translation id="2468124392950503650">Ընտրեք հարցումը, որպեսզի տեսնեք կամ ստեղծեք <ph name="BEGIN_LINK_PROMPTING_GUIDE" />հարցումների ուղեցույցը<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Google AI տեխնոլոգիաների վրա հիմնված «Օգնիր ինձ գրել» գործառույթի միջոցով ստեղծեք սևագիր կամ հղկեք առկա տեքստը</translation>
 <translation id="2480572840229215612">խաչափառներ</translation>
 <translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">Արդյունքներ չեն գտնվել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4486524074141928967">Դուք դուրս կգրվեք հաշվից <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով կերպափոխիչ ստեղնը (Ctrl, Alt, Shift կամ <ph name="META_KEY" />)։</translation>
 <translation id="4500966230243561393">Միջերեսի գույն</translation>
 <translation id="4503223151711056411">Ձախ սլաք</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">մոխրագույն</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
+<translation id="5613201299517339763">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5630438231335788050">բաուհաուս</translation>
 <translation id="5631759159893697722">համառոտ շարադրանք</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
 <translation id="5938286923316838007">Չհաջողվեց ձայնագրությունների անվանումներ ստեղծել այս բովանդակության համար</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
+<translation id="5942727615796467094">Ադմինիստրատորը (<ph name="MANAGER" />) սահմանել է, թե երբ կարող է <ph name="DEVICE_TYPE" /> սարքն օգտագործվել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
 <translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
 <translation id="5947266287934282605">Եթե ամսվա վերջին օրը նախորդում է նշված ամսաթվին, տվյալները կզրոյացվեն ամսվա վերջին օրը</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">այլ մոլորակ</translation>
 <translation id="6359706544163531585">Անջատել բաց թեման</translation>
 <translation id="6359919876285606596">Այս գործողությունը հնարավոր չէ հետարկվել</translation>
+<translation id="6368342879959028556">Երբ ընտրում եք «Ստեղծել ԱԲ-ի միջոցով», գրեք հատուկ հարցում։ Կամ կարող եք ընտրել «AI պաստառներ», որպեսզի նշեք թեմա և ընտրեք ընդգծված բառեր՝ ձեր AI պաստառն անհատականացնելու համար։</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="6373461326814131011">ջրավազան</translation>
 <translation id="6379086450106841622">հպէկրան</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>
 <translation id="6462978824459367242">«Ավելացնել APN» կոճակը միացված է</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Նորից սկանավորե՞լ էջը}=1{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}one{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}other{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
+<translation id="6468146470109254228">Ձեր վերջին 3 հարցումներն ու արտածումները։ Ձեզ դրանք հասանելի կլինեն, քանի դեռ օգտագործում եք «Պաստառ և ոճ» գործառույթը։</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">նավակներ</translation>
 <translation id="64778964625672495">մուգ կարմիր</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="66621959568103627">մարջանային վարդագույն</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Երբ դուք որևէ բան եք ստեղծում ԱԲ-ի միջոցով, հարցումն ուղարկվում է Google ԱԲ-ի սերվերներ՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար՝ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի գաղտնիության քաղաքականության<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> համաձայն։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Գեներատիվ արհեստական բանականությունը փորձարկման ու մշակման վաղ փուլում է և ներկայումս ունի սահմանափակ հասանելիություն։</translation>
 <translation id="6673898378497337661">ավելացնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
 <translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6694534975463174713">կողպեք</translation>

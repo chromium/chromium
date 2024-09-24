@@ -153,7 +153,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1696555181932908973">Je kunt andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Instellingen voor donker thema wijzigen?</translation>
 <translation id="1702907158640575240">Beheerde browser</translation>
-<translation id="1710099199314114079">Tabbladen wisselen of sluiten</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1724977129262658800">Ontgrendel om je wachtwoord te bewerken</translation>
 <translation id="1726477445370128854">Je kunt sneller browsen en zoeken als Chrome pagina's vooraf laadt waarvan Chrome denkt dat je ze misschien gaat bezoeken</translation>
@@ -878,6 +877,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="510275257476243843">1 uur resterend</translation>
 <translation id="5114895953710637392">Blad voor app-filter is gesloten.</translation>
 <translation id="5115811374190515607">naar <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps tikt</translation>
 <translation id="5122378528687922675">Vraag zo nodig je ouder (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) om hulp</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
@@ -1492,6 +1492,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7810647596859435254">Openen met…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle bestanden, 1 bestand in lijst}other{Alle bestanden, # bestanden in lijst}}</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
+<translation id="7819605256207059717">Geblokkeerd door je organisatie</translation>
 <translation id="7821130663268546430">Je vindt alle geopende tabbladen in de tabbladschakelaar</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
@@ -1688,7 +1689,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="864544049772947936">Vensters beheren (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Gebruik Chrome op jouw manier</translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Geblokkeerd door je organisatie}other{# zijn geblokkeerd door je organisatie}}</translation>
 <translation id="8672883760227492369">Sommige wachtwoorden op dit apparaat werken binnenkort niet meer. Je kunt deze wachtwoorden verplaatsen naar Google Wachtwoordmanager.</translation>
 <translation id="8676276370198826499">Aanmelden bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Inlogverificaties</translation>

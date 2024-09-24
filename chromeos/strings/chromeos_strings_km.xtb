@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ប៉ុន​កន្លែង​ស្កេន</translation>
 <translation id="1343442362630695901">បឹងទឹកប្រៃ</translation>
 <translation id="1348657754632799065">របារថត</translation>
+<translation id="1350909945461913813">សូម​ប្រាកដថា​រក្សាទុក​ការងារទាំងឡាយ</translation>
 <translation id="1367951781824006909">ជ្រើសរើសឯកសារមួយ</translation>
 <translation id="1371650399987522809">មតិកែលម្អ​អំពី​ផ្ទាំង​រូបភាព​ដែលដំណើរការដោយ Google AI</translation>
 <translation id="1374385338586507108">កំណត់​អត្ថន័យ</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">កំណែ SDK៖</translation>
 <translation id="2016697457005847575">សាកល្បងអនុវត្តតាមជំហានដោះស្រាយបញ្ហា</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">ជ្រើសរើសទម្រង់រចនា រួចជ្រើសរើសពាក្យដែលមានបន្ទាត់គូសពីក្រោម ដើម្បីកំណត់រូបភាព AI របស់អ្នកឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។</translation>
 <translation id="2045814230297767491">សមស្លាបព្រា</translation>
 <translation id="2047316797244836561">សូម​ភ្ជាប់​ទៅ​បណ្ដាញ​ រួច​ផ្ទុក​ទំព័រ​ឡើងវិញ ដើម្បី​មើល​ធាតុ​រក្សាអេក្រង់។</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2082932131694554252">គ្រាប់ចុច​លើក្ដារចុច​ដែលបាន​ចាត់តាំង</translation>
 <translation id="2085089206770112532">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺផ្ទាំងអេក្រង់</translation>
-<translation id="2085876078937250610">រក្សាទុក…</translation>
 <translation id="2086091080968010660">ការផ្លាស់ប្ដូរ​ផ្អែកតាម​ពេលវេលា​ប្រហែលជា​មិនត្រឹមត្រូវ​ទេ។ បើក​សិទ្ធិចូលប្រើ​ទីតាំង​ប្រព័ន្ធ​នៅក្នុង​ការកំណត់។</translation>
 <translation id="2102231663024125441">ការកែ​អក្សរ</translation>
 <translation id="2102648867808308635">ជួយខ្ញុំអានទំព័រនេះ</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">មិនមាន​ការនិយាយដែលចាប់បានទេ</translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
+<translation id="2468124392950503650">ជ្រើសរើស​សារតម្រុយ ដើម្បីបង្កើត ឬមើល<ph name="BEGIN_LINK_PROMPTING_GUIDE" />ការណែនាំ​អំពី​សារតម្រុយ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ប្រើ "ជួយខ្ញុំក្នុងការសរសេរ" ដើម្បីបង្កើតសេចក្ដីព្រាង ឬកែលម្អស្នាដៃដែលមានស្រាប់ ដែលដំណើរការដោយ Google AI</translation>
 <translation id="2480572840229215612">ក្ដាម</translation>
 <translation id="248546197012830854">ឧបករណ៍​គ្មាន​អ៊ីនធឺណិត​ទេ។ ភ្ជាប់ទៅ​បណ្ដាញ WiFi ដើម្បីមើល​ខ្លឹមសារជំនួយ។</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">គ្មានលទ្ធផលដែលត្រូវគ្នាទេ</translation>
 <translation id="4479639480957787382">ខ្សែអ៊ីនធឺណិត</translation>
 <translation id="4483049906298469269">មិនអាចភីងច្រកបណ្ដាញមិនមែនលំនាំដើមបានទេ</translation>
+<translation id="4486524074141928967">អ្នកនឹង​ត្រូវបាន​នាំចេញពី​គណនី​នៅម៉ោង <ph name="TIME" /></translation>
 <translation id="4500722292849917410">មិនអាចប្រើ​ផ្លូវកាត់​បានទេ។ សូមចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុចកែសម្រួល (ctrl, alt, shift ឬ<ph name="META_KEY" />)។</translation>
 <translation id="4500966230243561393">ពណ៌​ផ្ទៃ</translation>
 <translation id="4503223151711056411">ព្រួញទៅឆ្វេង</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">ប្រផេះ</translation>
 <translation id="5596627076506792578">ជម្រើសច្រើនទៀត</translation>
 <translation id="5600027863942488546">បានធ្វើតេស្ត​គ្រាប់ចុច <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">អ្នកត្រូវបាននាំ​ចេញពី​គណនី</translation>
 <translation id="5620281292257375798">ផ្ទៃក្នុង​តែប៉ុណ្ណោះ</translation>
 <translation id="5630438231335788050">បូហូស</translation>
 <translation id="5631759159893697722">ចំណុច​សំខាន់</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">រក​មិន​ឃើញ​ឯកសារទេ</translation>
 <translation id="5938286923316838007">មិនអាច​បង្កើត​ឈ្មោះ​ខ្លឹមសារថត​សម្រាប់​ខ្លឹមសារនេះ​បានទេ</translation>
 <translation id="5939518447894949180">កំណត់ឡើងវិញ</translation>
+<translation id="5942727615796467094">អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បាន​កំណត់​ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន</translation>
 <translation id="594552776027197022">បង្កើត​គូសោ​ចៃដន្យ</translation>
 <translation id="5946538341867151940">អ្នកមិនត្រូវបានភ្ជាប់នៅឡើយ​ទេ។ ប្រសិនបើ​ក្រុមហ៊ុន​សេវាទូរសព្ទចល័ត​​របស់​អ្នក​ណែនាំ​ APN ផ្ទាល់ខ្លួន សូម​បញ្ចូល​ព័ត៌មាន​ APN ដោយ​ជ្រើសរើស "+ APN ថ្មី"</translation>
 <translation id="5947266287934282605">ប្រសិនបើ​ថ្ងៃដាច់ខែ​គឺមុនថ្ងៃនេះ នោះ​ទិន្នន័យ​នឹងត្រូវបាន​កំណត់​ឡើងវិញ​នៅថ្ងៃ​ដាច់ខែ</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">ភពផ្សេង</translation>
 <translation id="6359706544163531585">បិទ​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="6359919876285606596">សកម្មភាពនេះ​គឺអចិន្ត្រៃយ៍ និង​មិនអាច​ត្រឡប់វិញ​បានទេ</translation>
+<translation id="6368342879959028556">នៅពេល​អ្នកជ្រើសរើស “បង្កើត​ដោយប្រើ AI” សូម​សរសេរ​សារតម្រុយ​ផ្ទាល់ខ្លួន។ ឬ​អ្នកអាច​ជ្រើសរើស “ផ្ទាំង​រូបភាព AI” ដើម្បី​ជ្រើសរើស​ទម្រង់រចនា បន្ទាប់មក​ជ្រើសរើស​ពាក្យ​ដែលមាន​បន្ទាត់គូស​ពីក្រោម ដើម្បីកំណត់​ផ្ទាំង​រូបភាព AI របស់អ្នក​ឱ្យមាន​លក្ខណៈ​ផ្ទាល់ខ្លួន។</translation>
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
 <translation id="6373461326814131011">ស្រះ</translation>
 <translation id="6379086450106841622">អេក្រង់ថាច់</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">ចូលទៅកាន់ការកំណត់គណនី</translation>
 <translation id="6462978824459367242">ឥឡូវនេះ ប៊ូតុង​បញ្ចូល APN ត្រូវបានបើក</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ស្កេនទំព័រ​ឡើងវិញឬ?}=1{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញឬ?}other{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញឬ?}}</translation>
+<translation id="6468146470109254228">ធាតុចេញ និង​សារតម្រុយ​ថ្មីៗបំផុតទាំង 3 របស់អ្នក។ អ្នកអាច​ចូលប្រើ​ពួកវាបាន ក្នុងពេល​អ្នកកំពុង​ប្រើប្រាស់​ផ្ទាំងរូបភាព និង​រចនាបថតែប៉ុណ្ណោះ។</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ទូក</translation>
 <translation id="64778964625672495">ក្រហមចាស់</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6659594942844771486">ផ្ទាំង</translation>
 <translation id="66621959568103627">ផ្កាឈូកចេញទឹកក្រូច</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ជ្រើសរើស "បំផុស​គំនិតខ្ញុំ" ដើម្បី​ទទួលបាន​ជម្រើស​រូបភាព AI កាន់តែប្លែកពីគេ និង​ផ្សេងៗគ្នា។
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          នៅពេល​អ្នកបង្កើត​ដោយប្រើ AI សារតម្រុយ​ត្រូវបានបញ្ជូនទៅ​ម៉ាស៊ីនមេ Google AI ដើម្បីបង្កើត​រូបភាព និង​កែលម្អ​ផលិតផល ដោយអនុលោមតាម<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />គោលការណ៍ឯកជនភាពរបស់ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />។
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ដែលមាន​សមត្ថភាព​បង្កើត​មានលក្ខណៈ​ពិសោធន៍ ស្ថិតក្នុង​ដំណាក់កាល​អភិវឌ្ឍន៍​ដំបូង និង​អាចឱ្យប្រើបាន​ដោយមានដែនកំណត់នាពេលបច្ចុប្បន្ន។</translation>
 <translation id="6673898378497337661">បង្កើន​ពន្លឺក្ដារចុច</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="6694534975463174713">សោ</translation>

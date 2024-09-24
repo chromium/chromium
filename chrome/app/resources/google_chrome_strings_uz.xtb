@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Oʻrnatishni bekor qilish</translation>
 <translation id="469553575393225953">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chrome ularni fqat Chrome Web Store orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="4710245680469034439">Brauzerni rassomlar, tabiat va boshqa turkumdagi mavzular bilan moslashtiring</translation>
+<translation id="4720851490453439956">Google Updater ichki xizmati</translation>
 <translation id="4724676981607797757">Notanish protokol xatosi sababli oʻrnatilmadi.</translation>
 <translation id="4728575227883772061">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qayta urinib ko‘ring.</translation>
 <translation id="4741235124132242877">Mahkamlandi! Endi uni asboblar panelidan ochish mumkin</translation>
@@ -461,6 +462,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6885412569789873916">Chrome Beta ilovalari</translation>
 <translation id="6893363893008038481">Hisobni Chromedan chiqarish</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
+<translation id="6930294499209825">Chrome dasturini yangilab turadi. Bu xizmat faolsizlantirilsa yoki toʻxtatilsa, Chrome dasturi yangilanmasligi, tuzatilmas zaifliklarni keltirib chiqarishi va ayrim funksiyalar ishlamay qolishi mumkin. Xizmat ishlatadigan Chrome dasturi mavjud boʻlmasa, xizmat avtomatik oʻchirib tashlanadi.</translation>
 <translation id="6933858244219479645">ChromeOS tizimi</translation>
 <translation id="6938166777909186039">Google Chrome yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 8.1.</translation>
 <translation id="6943584222992551122">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
@@ -510,6 +512,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7477130805345743099">Xavfsiz ulanishli har qanday saytga kirganingizda Chrome sizni ogohlantiradi</translation>
 <translation id="7481213027396403996">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="749228101751499733">Chromeda hisobdan chiqmasangiz, Google hisobingizdagi parollar va boshqa maʼlumotlardan foydalana olasiz. <ph name="SHORTCUT" /> Google xizmatlari sozlamalarini oʻzgartirishi mumkin.</translation>
+<translation id="7514258452813684157">Google Updater xizmati</translation>
 <translation id="7515191208480168435">Tezkor ochish uchun Google Lensni mahkamlash mumkin</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Oʻchiq • Chrome bu kengaytma manbasini tekshira olmadi</translation>

@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
+<translation id="6590332670428149473">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների ընդհանուր խմբի գործողությունների ընտրացանկը, գույնը՝ <ph name="COLOR_NAME" />։</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ներդիր փոփոխվել է}one{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է}other{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է}}</translation>
 <translation id="6694634756612002311">Կառավարել հասանելիության պարամետրերը</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած խումբը։}one{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
 <translation id="9111228330448174435">Ցույց տալ ներդիրների նոր խումբ ստեղծելու պատուհանը</translation>
+<translation id="9114502155681725011">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների խմբի գործողությունների ընտրացանկը, գույնը՝ <ph name="COLOR_NAME" />։</translation>
 <translation id="9150694013019234766">Էկրանի ներքևի հատվածում գտնվող ներդիրների խմբում կարող եք անցնել մի ներդիրից մյուսը</translation>
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>
 <translation id="9216898458513705996">Այս սարքում ներդիրները կմնան բացված, սակայն խումբը կջնջվի բոլոր սարքերից, որոնցում մուտք եք գործել <ph name="USER_EMAIL" /> հաշիվ</translation>

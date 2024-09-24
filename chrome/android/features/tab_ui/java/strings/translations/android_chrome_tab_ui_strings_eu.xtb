@@ -129,12 +129,13 @@
 <translation id="6549021453810473782">Ikusi dendari buruzko informazioa</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Eraman fitxa ezkerrera</translation>
+<translation id="6590332670428149473">Ireki <ph name="COLOR_NAME" /> koloreko <ph name="TITLE_OF_GROUP" /> fitxa talde partekatuaren ekintza-menua.</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fitxa aldatu da}other{<ph name="MANY_CHANGED" /> fitxa aldatu dira}}</translation>
 <translation id="6694634756612002311">Kudeatu partekatzea</translation>
 <translation id="6744956528665271406">Editatu taldearen kolorea</translation>
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>
-<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatua, <ph name="COLOR_NAME" /> kolorekoa.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatua, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatu <ph name="COLOR_NAME" />.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa talde partekatu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partekatu fitxa}other{Partekatu fitxak}}</translation>
 <translation id="7129458170538955174">Denda honi buruzko informazioa altuera erdian irekita dago</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Itxi fitxa <ph name="TABS_COUNT_ONE" /> duen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}other{Itxi <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
@@ -170,7 +171,7 @@
 <translation id="8205266828577616993">Eraman fitxa gora</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8338427544764842461">Fitxa taldeak hemen gordetzen dira, eta zure kontuan saioa hasita daukaten gailu guztietan eguneratzen dira</translation>
-<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen fitxa talde partekatua, <ph name="COLOR_NAME" /> kolorekoa.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa talde partekatua, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen fitxa talde partekatu <ph name="COLOR_NAME" />.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa talde partekatu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Itxi hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Itxi hautatutako <ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="8398929769197326728">Karpeta berria (<ph name="CURRENT_TIMESTAMP_MS" />)</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen fitxa taldea.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="9090098097337832354">Denda honi buruzko informazioa itxita dago</translation>
 <translation id="9111228330448174435">Erakutsi leiho bat fitxa taldeak sortzean</translation>
+<translation id="9114502155681725011">Ireki <ph name="COLOR_NAME" /> koloreko <ph name="TITLE_OF_GROUP" /> fitxa taldearen ekintza-menua.</translation>
 <translation id="9150694013019234766">Fitxa batetik bestera joateko, erabili pantailaren behealdean dagoen fitxa taldea</translation>
 <translation id="9169594135889675189">Gehitu beste fitxa bat taldean</translation>
 <translation id="9216898458513705996">Fitxak irekita mantenduko dira gailu honetan, baina <ph name="USER_EMAIL" /> kontuan saioa hasita daukaten gailu guztietan ezabatuko da taldea</translation>

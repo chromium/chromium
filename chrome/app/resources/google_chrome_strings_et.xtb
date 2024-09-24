@@ -167,6 +167,7 @@
 <translation id="2945997411976714835">Installimisviga: installiprotsessi käivitamine ebaõnnestus.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chrome</translation>
 <translation id="2970681950995291301">Google'i konto Chrome'ist eemaldamiseks logige lehel Seaded Chrome'ist välja</translation>
+<translation id="2994465299455873643">Pakub krüpteerimisteenuseid ja turvalist viisi brauseri <ph name="BROWSER_NAME" /> taastamiseks, kui see aegub. Kui see teenus on keelatud, võib <ph name="BROWSER_NAME" /> kaotada juurdepääsu krüpteeritud andmetele ja <ph name="BROWSER_NAME" /> ei pruugi saada end taastada.</translation>
 <translation id="3018957014024118866">Kustutage ka andmed Chrome'ist (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Taaskäivitage &amp;Chrome OS Flexi värskendamiseks</translation>
 <translation id="3037838751736561277">Google Chrome on taustarežiimis.</translation>
@@ -223,6 +224,7 @@
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
 <translation id="3695446226812920698">Lisateave</translation>
 <translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
+<translation id="3700276346088749847">kustutage oma kontol Chrome'i andmed</translation>
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
 <translation id="3718181793972440140">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -294,12 +296,14 @@
 <translation id="4575717501879784448">Chrome võib teha need vahelehed interaktiivseks, mis täiustab teie sirvimiskogemust ja vabastab ressursse.</translation>
 <translation id="459622048091363950">Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
 <translation id="4600710005438004015">Chrome'i ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
+<translation id="4601439950572737842">Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
 <translation id="4627412468266359539">Valikuline: aidake Chrome OS Flexi funktsioone ja toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="4633000520311261472">Chrome'i turvalisemaks muutmiseks keelasime mõned laiendused, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mille lisamisest te ei pruugi teadlik olla.</translation>
 <translation id="4680828127924988555">Tühista installimine</translation>
 <translation id="469553575393225953">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab neid vaid Chrome'i veebipoe kaudu installida</translation>
 <translation id="4710245680469034439">Isikupärastage oma brauserit loodusest, kunstnike kogudest ja muust inspireeritud teemadega</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Installimine ebaõnnestus toetamata protokolli vea tõttu.</translation>
 <translation id="4728575227883772061">Install ebaõnnestus määramata vea tõttu. Kui Google Chrome parasjagu töötab, siis palun sulgege see ja proovige uuesti.</translation>
 <translation id="4741235124132242877">Kinnitatud! Kasutage Google Lensi uuesti tööriistariba kaudu.</translation>
@@ -461,6 +465,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6885412569789873916">Chrome'i beetaversiooni rakendused</translation>
 <translation id="6893363893008038481">Konto eemaldamine Chrome'ist</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
+<translation id="6930294499209825">Hoiab teie Google'i tarkvara ajakohasena. Kui see teenus keelatakse või peatatakse, ei hoita teie Google'i tarkvara ajakohasena, mis tähendab, et tekkida võivaid turvaauke ei saa parandada ja funktsioonid ei pruugi töötada. See teenus desinstallib end ise, kui Google'i tarkvara seda ei kasuta.</translation>
 <translation id="6933858244219479645">ChromeOS-i süsteem</translation>
 <translation id="6938166777909186039">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.1.</translation>
 <translation id="6943584222992551122">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -510,6 +515,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Väljas • Chrome ei suuda tuvastada, kust see laiendus pärineb</translation>

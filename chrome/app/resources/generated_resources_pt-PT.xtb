@@ -290,7 +290,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1199814941632954229">Estão a ser aprovisionados certificados para estes perfis de certificado</translation>
 <translation id="120069043972472860">Impossível de visualizar</translation>
 <translation id="1201402288615127009">Seguinte</translation>
-<translation id="1201564082781748151">É possível restaurar os dados locais caso se esqueça da palavra-passe</translation>
 <translation id="1202116106683864634">Quer mesmo eliminar esta token de acesso?</translation>
 <translation id="1202596434010270079">A aplicação Quiosque foi atualizada. Remova a pen USB.</translation>
 <translation id="1202892408424955784">Produtos monitorizados</translation>
@@ -320,6 +319,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="122082903575839559">Algoritmo de assinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Com encriptação RSA</translation>
 <translation id="1221825588892235038">Apenas a seleção</translation>
+<translation id="1222835797152767346">Defina um PIN para facilitar o início de sessão</translation>
 <translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1223853788495130632">O gestor recomenda um valor específico para esta definição.</translation>
 <translation id="1225177025209879837">A processar o pedido...</translation>
@@ -2217,6 +2217,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2546991196809436099">Aumente o zoom para aumentar o tamanho dos itens no ecrã. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
 <translation id="2548347166720081527">Autorizou <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Repor cache do perfil do eSIM</translation>
+<translation id="2549766998450508148">Prima 1 a 4 teclas de modificação (Ctrl, Alt, Shift ou pesquisa) e mais 1 tecla. Também pode selecionar uma única tecla.</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2550212893339833758">Memória trocada</translation>
 <translation id="2550596535588364872">Permitir que <ph name="EXTENSION_NAME" /> abra <ph name="FILE_NAME" />?</translation>
@@ -6397,6 +6398,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5624959475330585145">Perguntar antes de usar ligações inseguras</translation>
 <translation id="5625225435499354052">Editar no Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
+<translation id="5626172233890210551">Usar antes a palavra-passe</translation>
 <translation id="5627832140542566187">Orientação do ecrã</translation>
 <translation id="5628434207686266338">Defina a palavra-passe do dispositivo</translation>
 <translation id="562935524653278697">O seu gestor desativou a sincronização dos seus marcadores, histórico, palavras-passe e outras definições.</translation>
@@ -7172,6 +7174,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6207937957461833379">País/Região</translation>
 <translation id="6208521041562685716">Os dados móveis estão a ser ativados</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="6209767197996242814">Caso se tenha esquecido da frase de acesso ou queira alterar esta definição, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">Atualização de componentes</translation>
 <translation id="6209908325007204267">O seu dispositivo inclui uma Chrome Enterprise Upgrade, mas o seu nome de utilizador não está associado a uma conta de empresa. Crie uma conta de empresa ao visitar g.co/ChromeEnterpriseAccount num dispositivo secundário.</translation>
 <translation id="6210282067670792090">Na barra de endereço, utilize este atalho de teclado com atalhos para motores de pesquisa e pesquisa no site</translation>
@@ -10628,6 +10631,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8715480913140015283">O separador em segundo plano está a utilizar a sua câmara.</translation>
 <translation id="8716931980467311658">Eliminar todas as aplicações e os dados do Linux da pasta Ficheiros Linux deste <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copiar link</translation>
+<translation id="8718560545710680911">Pergunte através desta página</translation>
 <translation id="8718994464069323380">Ecrã tátil detetado</translation>
 <translation id="8719472795285728850">A ouvir atividades de extensões…</translation>
 <translation id="8719665168401479425">Use gestos faciais para realizar ações</translation>
@@ -10735,6 +10739,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8791534160414513928">Enviar um pedido "Não monitorizar" com o seu tráfego de navegação</translation>
 <translation id="8793390639824829328">Os sites usam esta funcionalidade para deslocar e fazer zoom nos separadores partilhados</translation>
 <translation id="879413103056696865">Enquanto a zona Wi-Fi estiver ativada, o <ph name="PHONE_NAME" /> irá:</translation>
+<translation id="8794548468611058947">Em vez de introduzir a palavra-passe da sua Conta Google para iniciar sessão, pode criar um PIN para este <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">Nova janela</translation>
 <translation id="8796919761992612392">P&amp;ersonalizar o seu Chrome</translation>
 <translation id="8797459392481275117">Nunca traduzir este site</translation>

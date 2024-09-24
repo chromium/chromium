@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="1702543251015153180">更改您的深色主题设置？</translation>
 <translation id="1702907158640575240">受管理的浏览器</translation>
-<translation id="1710099199314114079">切换或关闭标签页</translation>
 <translation id="1718835860248848330">过去一小时</translation>
 <translation id="1724977129262658800">解锁屏幕后才能修改您的密码</translation>
 <translation id="1726477445370128854">如果 Chrome 预加载它认为您可能会访问的网页，您便可更快速地浏览和搜索</translation>
@@ -297,6 +296,7 @@
 <translation id="2450083983707403292">要重新开始下载 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="2451607499823206582">正在跟踪</translation>
 <translation id="2453860139492968684">完成</translation>
+<translation id="2461378706168271257">搜索标签页</translation>
 <translation id="2461822463642141190">当前</translation>
 <translation id="2468444275314013497">您的浏览器看起来很安全</translation>
 <translation id="2472163211318554013">登录即可充分利用 Chrome</translation>
@@ -601,6 +601,7 @@
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="3858860766373142691">名称</translation>
+<translation id="3873174561423636563">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK1" />服务条款<ph name="END_LINK1" />。</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3899682235662194879">关闭所有无痕模式标签页</translation>
 <translation id="3900966090527141178">导出密码</translation>
@@ -876,6 +877,7 @@
 <translation id="510275257476243843">还剩 1 小时</translation>
 <translation id="5114895953710637392">应用过滤器工作表已关闭。</translation>
 <translation id="5115811374190515607">已移至<ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
 <translation id="5122378528687922675">如需帮助，请找家长（<ph name="PARENT_NAME_1" />或<ph name="PARENT_NAME_2" />）帮忙</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
@@ -1456,6 +1458,7 @@
 <translation id="7656721520530864426">尚未访问任何网站</translation>
 <translation id="7656862631699126784">开启无痕模式锁定</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7663320421139257046">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
 <translation id="7665369617277396874">添加账号</translation>
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="7666185984446444960">已关闭 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
@@ -1487,6 +1490,7 @@
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有文件，列表中有 1 个文件}other{所有文件，列表中有 # 个文件}}</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>
+<translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7821130663268546430">您可在标签页切换器中找到所有打开的标签页</translation>
 <translation id="7822705602465980873">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：在安全事件发生后加强 Gmail 的保护力度。</translation>
 <translation id="7824665136384946951">贵组织已关闭安全浏览功能</translation>
@@ -1683,7 +1687,6 @@
 <translation id="864544049772947936">管理窗口（<ph name="INSTANCE_COUNTS" /> 个）</translation>
 <translation id="8664215986015753476">按您自己的方式使用 Chrome</translation>
 <translation id="8664979001105139458">文件名已存在</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{已被贵组织屏蔽}other{# 个下载项已被贵组织屏蔽}}</translation>
 <translation id="8672883760227492369">此设备上的一些密码即将失效。您可以将这些密码移至 Google 密码管理工具。</translation>
 <translation id="8676276370198826499">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">登录验证</translation>

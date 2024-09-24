@@ -153,7 +153,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1696555181932908973">Du kannst andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
 <translation id="1702543251015153180">Möchtest du deine Einstellungen für das dunkle Design ändern?</translation>
 <translation id="1702907158640575240">Verwalteter Browser</translation>
-<translation id="1710099199314114079">Tabs wechseln oder schließen</translation>
 <translation id="1718835860248848330">Letzte Stunde</translation>
 <translation id="1724977129262658800">Entsperren, um dein Passwort zu bearbeiten</translation>
 <translation id="1726477445370128854">Du kannst schneller surfen und suchen, wenn Chrome Seiten vorab lädt, die du wahrscheinlich aufrufen wirst</translation>
@@ -297,6 +296,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2450083983707403292">Möchtest du den Download von <ph name="FILE_NAME" /> noch einmal starten?</translation>
 <translation id="2451607499823206582">Tracking</translation>
 <translation id="2453860139492968684">Fertig</translation>
+<translation id="2461378706168271257">Auf Tabs suchen</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
 <translation id="2472163211318554013">Wenn du Chrome optimal nutzen möchtest, melde dich an</translation>
@@ -601,6 +601,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3873174561423636563"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Die Nutzungsbedingungen der Website <ph name="BEGIN_LINK1" />findest du hier<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3899682235662194879">Alle Inkognitotabs schließen</translation>
 <translation id="3900966090527141178">Passwörter exportieren</translation>
@@ -876,6 +877,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5114895953710637392">Die App-Filtertabelle ist geschlossen.</translation>
 <translation id="5115811374190515607">zu <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="5122378528687922675">Wenn du Hilfe benötigst, sprich mit deinen Eltern (<ph name="PARENT_NAME_1" /> oder <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
@@ -1458,6 +1460,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7656721520530864426">Keine Websites</translation>
 <translation id="7656862631699126784">Inkognitosperre aktivieren</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> dieser Website.</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
 <translation id="766587987807204883">Artikel erscheinen hier und können auch gelesen werden, wenn du offline bist</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> geschlossen</translation>
@@ -1489,6 +1492,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7810647596859435254">Öffnen mit…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle Dateien, 1 Datei in der Liste}other{Alle Dateien, # Dateien in der Liste}}</translation>
 <translation id="7815484226266492798">Langer Screenshot</translation>
+<translation id="7819605256207059717">Von deiner Organisation blockiert</translation>
 <translation id="7821130663268546430">Du findest alle geöffneten Tabs im Tab-Wechsler</translation>
 <translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
 <translation id="7824665136384946951">Deine Organisation hat Safe Browsing deaktiviert</translation>
@@ -1685,7 +1689,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="864544049772947936">Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome für dich anpassen</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Von deiner Organisation blockiert}other{# Elemente wurden von deiner Organisation blockiert}}</translation>
 <translation id="8672883760227492369">Einige Passwörter auf diesem Gerät funktionieren bald nicht mehr. Du kannst diese Passwörter in den Google Passwortmanager verschieben.</translation>
 <translation id="8676276370198826499">Bei <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8676789164135894283">Anmeldebestätigungen</translation>

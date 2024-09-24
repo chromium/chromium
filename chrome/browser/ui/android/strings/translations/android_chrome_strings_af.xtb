@@ -153,7 +153,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1696555181932908973">Jy kan ander maniere probeer om voort te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Verander jou donkertema-instellings?</translation>
 <translation id="1702907158640575240">Bestuurde blaaier</translation>
-<translation id="1710099199314114079">Wissel of maak oortjies toe</translation>
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1724977129262658800">Ontsluit om jou wagwoord te wysig</translation>
 <translation id="1726477445370128854">Jy kan vinniger blaai en soek wanneer Chrome bladsye vooraf laai wat dit dink jy dalk gaan besoek</translation>
@@ -878,6 +877,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="510275257476243843">1 uur oor</translation>
 <translation id="5114895953710637392">Appfilterblad is toe.</translation>
 <translation id="5115811374190515607">na <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Jy kan Chrome enige tyd gebruik wanneer jy tik op skakels in boodskappe, dokumente en ander apps.</translation>
 <translation id="5122378528687922675">Vra jou ouer (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) as jy hulp benodig</translation>
 <translation id="5123685120097942451">Incognito-oortjie</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
@@ -1492,6 +1492,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7810647596859435254">Maak oop met …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle lêers, 1 lêer in lys}other{Alle lêers, # lêers in lys}}</translation>
 <translation id="7815484226266492798">Lang skermkiekie</translation>
+<translation id="7819605256207059717">Geblokkeer deur jou organisasie</translation>
 <translation id="7821130663268546430">Jy kan alle oop oortjies in die oortjiewisselaar vind</translation>
 <translation id="7822705602465980873">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="7824665136384946951">Jou organisasie het Veiligblaai afgeskakel</translation>
@@ -1688,7 +1689,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="864544049772947936">Bestuur vensters (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Gebruik Chrome op jou manier</translation>
 <translation id="8664979001105139458">Lêernaam bestaan reeds</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Geblokkeer deur jou organisasie}other{# is deur jou organisasie geblokkeer}}</translation>
 <translation id="8672883760227492369">Sommige wagwoorde op hierdie toestel sal binnekort ophou werk. Jy kan hierdie wagwoorde na Google Wagwoordbestuurder toe skuif.</translation>
 <translation id="8676276370198826499">Meld aan by <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Aanmeldingverifikasies</translation>

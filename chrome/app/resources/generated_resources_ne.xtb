@@ -288,7 +288,6 @@
 <translation id="1199814941632954229">प्रमाणपत्रका यी प्रोफाइलका हकमा प्रमाणपत्र प्रयोग गरिँदै छन्</translation>
 <translation id="120069043972472860">हेर्न नमिल्ने</translation>
 <translation id="1201402288615127009">अर्को</translation>
-<translation id="1201564082781748151">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो भने पनि लोकल डेटा रिस्टोर गर्न सकिन्छ</translation>
 <translation id="1202116106683864634">तपाईंले यो पासकी मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="1202596434010270079">Kiosk एप अद्यावधिक गरिएको छ। कृपया USB स्टिक हटाउनुहोस्।</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
@@ -2214,6 +2213,7 @@
 <translation id="2546991196809436099">स्क्रिनमा देखिएका वस्तुहरू अझ ठुलो बनाउन जुम इन गर्नुहोस्। म्याग्निफायर अन र अफ गर्न Search + Ctrl + M थिच्नुहोस्।</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="2548545707296594436">eSIM प्रोफाइलको क्यास रिसेट गर्नुहोस्</translation>
+<translation id="2549766998450508148">१ देखि ४ वटा मोडिफायर की (ctrl, alt, सिफ्ट वा सर्च) र थप एउटा की थिच्नुहोस्। तपाईं एउटा की चयन गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="2550212893339833758">स्वाप गरिएको मेमोरी</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> लाई <ph name="EXTENSION_NAME" /> खोल्न अनुमति दिने हो?</translation>
@@ -10618,6 +10618,7 @@
 <translation id="8715480913140015283">पृष्ठभूमि ट्याबले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> बाट आफ्नो Linux फाइलका फोल्डरहरूमा रहेका सबै Linux एप र डेटा मेट्ने हो?</translation>
 <translation id="8717864919010420084">लिंक कपी गर्नुहोस्</translation>
+<translation id="8718560545710680911">यो पेज प्रयोग गरी सोध्नुहोस्</translation>
 <translation id="8718994464069323380">टचस्क्रिन भेटियो</translation>
 <translation id="8719472795285728850">विस्तारसम्बन्धी क्रियाकलापका लागि स्ट्रिम सुन्दै...</translation>
 <translation id="8719665168401479425">कारबाहीहरू गर्न फेसियल जेस्चर प्रयोग गर्नुहोस्</translation>

@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="1702543251015153180">તમારી ઘેરી થીમ માટેના સેટિંગમાં ફેરફાર કરીએ?</translation>
 <translation id="1702907158640575240">મેનેજ કરવામાં આવતું બ્રાઉઝર</translation>
-<translation id="1710099199314114079">ટૅબ સ્વિચ કરો કે બંધ કરો</translation>
 <translation id="1718835860248848330">છેલ્લા એક કલાક</translation>
 <translation id="1724977129262658800">તમારા પાસવર્ડમાં ફેરફાર કરવા માટે અનલૉક કરો</translation>
 <translation id="1726477445370128854">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome જ્યારે પહેલેથી લોડ કરે, ત્યારે તમે ઝડપથી બ્રાઉઝ અને શોધ કરી શકો છો</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">1 કલાક બાકી</translation>
 <translation id="5114895953710637392">ઍપ ફિલ્ટર શીટ બંધ છે.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> પર</translation>
+<translation id="5116239826668864748">તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો</translation>
 <translation id="5122378528687922675">જો તમને સહાયની કોઈ જરૂર હોય, તો માતાપિતા (<ph name="PARENT_NAME_1" /> કે <ph name="PARENT_NAME_2" />)ને પૂછો</translation>
 <translation id="5123685120097942451">છૂપા મોડમાંની ટૅબ</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">આની સાથે ખોલો…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{બધી ફાઇલો, સૂચિમાં 1 ફાઇલ છે}one{બધી ફાઇલો, સૂચિમાં # ફાઇલ છે}other{બધી ફાઇલો, સૂચિમાં # ફાઇલ છે}}</translation>
 <translation id="7815484226266492798">લાંબો સ્ક્રીનશૉટ</translation>
+<translation id="7819605256207059717">તમારી સંસ્થા દ્વારા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="7821130663268546430">ટૅબ સ્વિચરમાં તમે બધા ખુલ્લા ટૅબ મેળવી શકશો</translation>
 <translation id="7822705602465980873">તમે સાઇન ઇન હો ત્યારે, આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, જેથી સમગ્ર Googleની સેવાઓમાં તમારી સુરક્ષા કરી શકાય, ઉદાહરણ તરીકે સુરક્ષા સંબંધી કોઈ બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">વિન્ડો મેનેજ કરો (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chromeનો તમારી રીતે ઉપયોગ કરો</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{તમારી સંસ્થા દ્વારા બ્લૉક કરવામાં આવ્યું છે}one{તમારી સંસ્થા દ્વારા # બ્લૉક કરવામાં આવ્યું છે}other{તમારી સંસ્થા દ્વારા # બ્લૉક કરવામાં આવ્યા છે}}</translation>
 <translation id="8672883760227492369">આ ડિવાઇસ પરના કેટલાક પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે. તમે આ પાસવર્ડને Google Password Managerમાં ખસેડી શકો છો.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> માટે સાઇન અપ કરો</translation>
 <translation id="8676789164135894283">સાઇન ઇન માટેની ચકાસણીઓ</translation>

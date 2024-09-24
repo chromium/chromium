@@ -695,6 +695,7 @@
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
+<translation id="2242389809734574253">IBAN మూసివేయడాన్ని సేవ్ చేయండి.</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
 <translation id="2246480341630108201">మీ తల్లి/తండ్రి ఈ సైట్‌ను యాక్సెస్ చేయడానికి ఇంకా అనుమతి ఇవ్వలేదు</translation>
 <translation id="2247789808226901522">కార్డ్ గడువు ముగిసింది</translation>
@@ -1233,6 +1234,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-డిజిట్ వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3272643614306383237">1 MB కంటే తక్కువ. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
 <translation id="3273738040255912340">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల కూడా మేనేజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">పూర్తి ఎత్తులో తెరవబడిన IBANను సేవ్ చేయండి.</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్స్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
@@ -2120,6 +2122,7 @@
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4881808915112408168">24 x 31.5 అంగుళాలు</translation>
 <translation id="4882314601499260499">యూజర్ పాలసీలు ఏవీ వర్తింపజేసి లేవు. యూజర్ పాలసీలను జోడించడానికి, మీ సంస్థ తప్పకుండా <ph name="LINK_BEGIN" />మీ డొమైన్‌ను వెరిఫై చేయాలి<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">మీ ప్రశ్నను లేదా ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="4885030148564729407">హనీమూన్‌లు &amp; రొమాంటిక్ విహారయాత్రలు</translation>
 <translation id="4885256590493466218">చెక్అవుట్‌లో <ph name="CARD_DETAIL" />తో పేమెంట్ చేయండి</translation>
 <translation id="4887406273302438710">Windows Helloతో పాస్‌వర్డ్‌లను సురక్షితం చేసుకోండి</translation>
@@ -2579,6 +2582,7 @@
 <translation id="572328651809341494">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="5723873695528696965">మీ MIDI పరికరాలను కంట్రోల్ చేయండి, రీప్రోగ్రామ్ చేయండి</translation>
 <translation id="5725297205162868298">షార్ట్‌కట్ @ అక్షరంతో ప్రారంభం కాదు: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">అధునాతన ప్రింటర్ ఫీచర్‌లను ఉపయోగించమని అడగవచ్చు</translation>
 <translation id="5729442113829771034">పూర్వ ప్రాథమిక విద్య</translation>
 <translation id="5730040223043577876">మీరు మీ పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="5732392974455271431">మీ తల్లిదండ్రులు దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
@@ -2590,6 +2594,7 @@
 <translation id="5743684619253032786">గోళ్ల సంరక్షణా ప్రోడక్ట్‌లు</translation>
 <translation id="5745733273847572235">మీ లొకేషన్‌ను ఉపయోగించడం కోసం సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="5750869797196646528">చేతి కదలికల ట్రాకింగ్</translation>
+<translation id="5752327398324808817">ఒక పదం లేదా రెండు పదాలను ఎంటర్ చేయండి</translation>
 <translation id="5759751709240058861">మీ కెమెరాను ఉపయోగించండి, తరలించండి</translation>
 <translation id="5763042198335101085">చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="5764725887548570807">చెల్లని ఆరిజిన్ ఫార్మాట్.</translation>
@@ -3085,6 +3090,7 @@
 <translation id="6671169470640320959">ఆటో ఫైనాన్సింగ్</translation>
 <translation id="6671697161687535275">Chromium నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
 <translation id="6677351035258626477">ఫాస్ట్ ఫుడ్</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఒక ఆప్షన్‌గా చూడండి}other{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఆప్షన్స్‌గా చూడండి}}</translation>
 <translation id="6681790815630918386">CVC సేవ్ అయింది</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6687230248707087982">ఎన్వలప్ (ప్లెయిన్)</translation>
@@ -3101,6 +3107,7 @@
 <translation id="6696575039575740785">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయడం వీలు కాదు</translation>
 <translation id="6698097747703777657">మీ కోడ్‌ను స్వీకరించలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">క్రియేట్ చేయబడింది:</translation>
+<translation id="6698769547327354196">Chromeలో PIXను ఆఫ్ చేయడానికి, మీ <ph name="BEGIN_LINK1" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK1" />కు వెళ్లండి</translation>
 <translation id="67007264085648978">టైమ్ స్క్రబ్బర్</translation>
 <translation id="6702851555558236418">ఆడియో &amp; మ్యూజిక్ సాఫ్ట్‌వేర్</translation>
 <translation id="6702919718839027939">పిన్ చేయండి</translation>
@@ -3256,6 +3263,7 @@
 <translation id="6978236010531171013">ఏదేమైనా షేర్ చేయండి</translation>
 <translation id="6978722349058177832">మీరు ఈ పరికరాన్ని షేర్ చేస్తే, మీరు ఆటోఫిల్‌ను ఉపయోగించి పేమెంట్ చేసిన ప్రతిసారీ వెరిఫై చేయమని Chromium మిమ్మల్ని అడుగుతుంది</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">థర్డ్-పార్టీ కుక్కీలను యాక్సెస్ చేయడానికి మేనేజ్ చేయండి</translation>
 <translation id="6979440798594660689">మ్యూట్ (డిఫాల్ట్)</translation>
 <translation id="6984270784814146224">లేబుల్ లేని ఇమేజ్. Googleకు చెందిన AI టెక్నాలజీల సహాయంతో టెక్స్ట్ ఎక్స్‌ట్రాక్ట్ అవుతోంది</translation>
 <translation id="6987806006823772670">ఎన్వలప్ (కోటెడ్)</translation>
@@ -3402,6 +3410,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">బిజినెస్ యాక్టివిటీలు</translation>
+<translation id="7244061187185055290">మీరు దేన్ని సెర్చ్ చేస్తున్నారో కొన్ని పదాలలో వివరించండి</translation>
 <translation id="7251437084390964440">నెట్‌వర్క్ కాన్ఫిగరేషన్ ONC ప్రమాణానికి అనుకూలంగా లేదు. కాన్ఫిగరేషన్‌లోని భాగాలు దిగుమతి కాకపోయి ఉండకపోవచ్చు.
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>

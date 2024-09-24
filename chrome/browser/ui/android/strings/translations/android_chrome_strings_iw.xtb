@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">רוצה לשנות את ההגדרות של העיצוב הכהה?</translation>
 <translation id="1702907158640575240">דפדפן מנוהל</translation>
-<translation id="1710099199314114079">מעבר בין כרטיסיות וסגירתן</translation>
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1724977129262658800">יש לבטל את הנעילה כדי לערוך את הסיסמה</translation>
 <translation id="1726477445370128854">‏אפשר לגלוש ולחפש מהר יותר כשמערכת Chrome מבצעת הערכה לגבי דפים שהמשתמש יעבור אליהם וטוענת אותם מראש</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">נותרה שעה אחת</translation>
 <translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="5122378528687922675">אם צריך עזרה, אפשר לבקש עזרה מהורה (<ph name="PARENT_NAME_1" /> או <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{כל הקבצים, קובץ אחד ברשימה}one{כל הקבצים, # קבצים ברשימה}two{כל הקבצים, # קבצים ברשימה}other{כל הקבצים, # קבצים ברשימה}}</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
+<translation id="7819605256207059717">נחסם על ידי הארגון שלך</translation>
 <translation id="7821130663268546430">כל הכרטיסיות הפתוחות מופיעות בכלי למעבר בין כרטיסיות</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="7824665136384946951">הארגון שלך השבית את הגלישה הבטוחה</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">ניהול החלונות (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">‏שימוש מותאם אישית ב-Chrome</translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{נחסמה על ידי הארגון שלך}one{‫# נחסמו על ידי הארגון שלך}two{‫# נחסמו על ידי הארגון שלך}other{‫# נחסמו על ידי הארגון שלך}}</translation>
 <translation id="8672883760227492369">‏חלק מהסיסמאות במכשיר הזה יפסיקו לפעול בקרוב. אפשר להעביר את הסיסמאות האלה למנהל הסיסמאות של Google.</translation>
 <translation id="8676276370198826499">יש לך אפשרות להירשם לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">שימוש במכשיר לאימות כניסה לחשבון</translation>

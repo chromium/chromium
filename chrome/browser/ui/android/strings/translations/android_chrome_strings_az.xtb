@@ -153,7 +153,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> saytında davam etmək üçün başqa yolları sınaya bilərsiniz.</translation>
 <translation id="1702543251015153180">Tünd tema ayarları dəyişdirilsin?</translation>
 <translation id="1702907158640575240">İdarə edilən brauzer</translation>
-<translation id="1710099199314114079">Tabları keçirin və ya bağlayın</translation>
 <translation id="1718835860248848330">Son saat</translation>
 <translation id="1724977129262658800">Parolunuzu redaktə etmək üçün kiliddən çıxarın</translation>
 <translation id="1726477445370128854">Chrome ziyarət edə biləcəyinizi düşündüyü səhifələri əvvəlcədən yüklədikdə daha sürətli gözdən keçirə və axtarış edə bilərsiniz</translation>
@@ -297,6 +296,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> faylını yenidən endirmək istəyirsiniz?</translation>
 <translation id="2451607499823206582">İzləmə</translation>
 <translation id="2453860139492968684">Son</translation>
+<translation id="2461378706168271257">Tabları axtarın</translation>
 <translation id="2461822463642141190">Cari</translation>
 <translation id="2468444275314013497">Brauzer təhlükəsiz görünür</translation>
 <translation id="2472163211318554013">Chrome'dan maksimum yararlanmaq üçün daxil olun</translation>
@@ -601,6 +601,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3847319713229060696">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="3856096718352044181">Bunun etibarlı təminatçı olduğunu doğrulayın, ya da daha sonra təkrar cəhd edin</translation>
 <translation id="3858860766373142691">Ad</translation>
+<translation id="3873174561423636563">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />xidmət şərtlərinə<ph name="END_LINK1" /> baxın.</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
 <translation id="3899682235662194879">Bütün Anonim Tabları qapadın</translation>
 <translation id="3900966090527141178">Parolları eskport edin</translation>
@@ -876,6 +877,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="510275257476243843">1 saat qaldı</translation>
 <translation id="5114895953710637392">Tətbiq filtri vərəqi bağlıdır.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> məkanına</translation>
+<translation id="5116239826668864748">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome istifadə edə bilərsiniz</translation>
 <translation id="5122378528687922675">Köməyə ehtiyacınız varsa, valideyninizə müraciət edin (<ph name="PARENT_NAME_1" /> və ya <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Anonim tab</translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
@@ -1456,6 +1458,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7656721520530864426">Sayt yoxdur</translation>
 <translation id="7656862631699126784">Anonim kilidini aktiv edin</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7663320421139257046">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />məxfilik siyasətinə<ph name="END_LINK1" /> baxın.</translation>
 <translation id="7665369617277396874">Hesab əlavə edin</translation>
 <translation id="766587987807204883">Məqalələr burada görünəcək. Onları oflayn olduqda belə oxuya bilərsiniz</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> bağlanıb</translation>
@@ -1487,6 +1490,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7810647596859435254">Bununla açın...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Bütün fayllar, siyahıda 1 fayl}other{Bütün fayllar, siyahıda # fayl}}</translation>
 <translation id="7815484226266492798">Uzun Skrinşot</translation>
+<translation id="7819605256207059717">Təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="7821130663268546430">Açıq tabları tab keçiricisində tapa bilərsiniz</translation>
 <translation id="7822705602465980873">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>
 <translation id="7824665136384946951">Təşkilat Güvənli Baxışı deaktiv edib</translation>
@@ -1683,7 +1687,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="864544049772947936">Pəncərələri idarə edin (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome'u istədiyiniz kimi istifadə edin</translation>
 <translation id="8664979001105139458">Fayl adı artıq mövcuddur</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Təşkilatınız tərəfindən bloklanıb}other{# təşkilatınız tərəfindən bloklanıb}}</translation>
 <translation id="8672883760227492369">Bu cihazdakı bəzi parollar tezliklə işləməyəcək. Bu parolları Google Parol Menecerinə köçürə bilərsiniz.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə <ph name="SITE_ETLD_PLUS_ONE" /> saytına daxil olun</translation>
 <translation id="8676789164135894283">Giriş doğrulamaları</translation>

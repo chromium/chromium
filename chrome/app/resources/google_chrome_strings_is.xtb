@@ -302,6 +302,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4680828127924988555">Hætta við uppsetningu</translation>
 <translation id="469553575393225953">Viðbætur, forrit og þemu frá óþekktum uppruna geta skaðað tækið þitt. Chrome mælir með að sækja slíkar skrár aðeins í Vefverslun Chrome</translation>
 <translation id="4710245680469034439">Sérsníddu skoðun þína með þemum sem eru innblásin af listafólki, náttúrunni og fleiru</translation>
+<translation id="4720851490453439956">Innri uppfærsluþjónusta Google</translation>
 <translation id="4724676981607797757">Uppsetning mistókst vegna villu sem tengist óstuddri samskiptareglu.</translation>
 <translation id="4728575227883772061">Uppsetning mistókst vegna ótilgreindrar villu. Ef Google Chrome er í gangi eins og er skaltu loka því og reyna aftur.</translation>
 <translation id="4741235124132242877">Fest! Nú geturðu opnað Google-linsu af tækjastikunni</translation>
@@ -465,6 +466,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6885412569789873916">Chrome Beta forrit</translation>
 <translation id="6893363893008038481">Fjarlægja reikning úr Chrome</translation>
 <translation id="6896758677409633944">Afrita</translation>
+<translation id="6930294499209825">Heldur Google-hugbúnaðinum þínum uppfærðum. Ef slökkt er á þessari þjónustu eða hún stöðvuð verður Google-hugbúnaðinum þínum ekki haldið uppfærðum sem þýðir að ekki verður hægt að lagfæra öryggisveikleika sem kunna að koma upp og tilteknir eiginleikar virka hugsanlega ekki sem skyldi. Þjónustan fjarlægist sjálfkrafa ef enginn Google-hugbúnaður er að nota hana.</translation>
 <translation id="6933858244219479645">ChromeOS-kerfi</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
@@ -514,6 +516,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7477130805345743099">Chrome varar þig við áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="7481213027396403996">Njóttu hámarksöryggis Chrome</translation>
 <translation id="749228101751499733">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome. <ph name="SHORTCUT" /> getur breytt stillingum þínum fyrir Google-þjónustur.</translation>
+<translation id="7514258452813684157">Uppfærsluþjónusta Google</translation>
 <translation id="7515191208480168435">Þú getur fest Google-linsu til að auðvelda þér aðgang að henni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Slökkt • Chrome getur ekki staðfest hvaðan þessi viðbót kemur</translation>

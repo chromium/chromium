@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Annuller installation</translation>
 <translation id="469553575393225953">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chrome anbefaler, at de kun installeres via Chrome Webshop</translation>
 <translation id="4710245680469034439">Sæt dit personlige præg på din browser med temaer, der er inspireret af naturen, kunstnerkollektioner og meget mere</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Installationen mislykkedes på grund af en fejl med ikke-understøttet protokol.</translation>
 <translation id="4728575227883772061">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Google Chrome kører, bedes du lukke programmet og prøve igen.</translation>
 <translation id="4741235124132242877">Funktionen er fastgjort. Brug Google Lens igen via værktøjslinjen</translation>
@@ -457,6 +458,7 @@
 <translation id="6885412569789873916">Apps i Chrome beta</translation>
 <translation id="6893363893008038481">Fjern kontoen fra Chrome</translation>
 <translation id="6896758677409633944">Kopiér</translation>
+<translation id="6930294499209825">Holder din Google-software opdateret. Hvis denne tjeneste deaktiveres eller stoppes, bliver din Google-software ikke opdateret. Dette betyder, at eventuelle sikkerhedsbrister ikke kan rettes, og at funktioner muligvis ikke fungerer. Denne tjeneste afinstallerer sig selv, når den ikke bruges af nogen Google-software.</translation>
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>
 <translation id="6943584222992551122">Brugerens browserdata slettes fra denne enhed. Log ind på Chrome som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
@@ -506,6 +508,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
 <translation id="7572537927358445944">Fra • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>

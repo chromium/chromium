@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> တွင် ရှေ့ဆက်ရန် အခြားနည်းလမ်းများ စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="1702543251015153180">အမှောင်နောက်ခံ ဆက်တင်များကို ပြောင်းမလား။</translation>
 <translation id="1702907158640575240">စီမံထားသော ဘရောင်ဇာ</translation>
-<translation id="1710099199314114079">တဘ်များကို ပြောင်းပါ သို့မဟုတ် ပိတ်ပါ</translation>
 <translation id="1718835860248848330">နောက်ဆုံးတစ်နာရီ</translation>
 <translation id="1724977129262658800">သင့်စကားဝှက်ကို တည်းဖြတ်ရန် ဖွင့်ပါ</translation>
 <translation id="1726477445370128854">Chrome က သင်ဝင်ကြည့်နိုင်မည်ဟု ထင်သည့် စာမျက်နှာများကို ကြိုဖွင့်သည့်အခါ ပိုမိုမြန်ဆန်စွာ ကြည့်ရှုပြီး ရှာဖွေနိုင်ပါသည်</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">၁ နာရီ ကျန်သည်</translation>
 <translation id="5114895953710637392">အက်ပ်စစ်ထုတ်မှု စာမျက်နှာကို ပိတ်ထားသည်။</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> သို့</translation>
+<translation id="5116239826668864748">မက်ဆေ့ဂျ်၊ မှတ်တမ်းနှင့် အခြားအက်ပ်များတွင် အချိန်မရွေး လင့်ခ်များကို တို့ပြီး Chrome သုံးနိုင်သည်</translation>
 <translation id="5122378528687922675">အကူအညီလိုပါက သင့်မိဘ (<ph name="PARENT_NAME_1" /> သို့မဟုတ်<ph name="PARENT_NAME_2" />) ကိုတောင်းပါ</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
@@ -1491,6 +1491,7 @@
 <translation id="7810647596859435254">… ဖြင့် ဖွင့်ရန်</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ဖိုင်အားလုံး၊ စာရင်းရှိ ဖိုင် ၁ ဖိုင်}other{ဖိုင်အားလုံး၊ စာရင်းရှိ ဖိုင် # ဖိုင်}}</translation>
 <translation id="7815484226266492798">ဖန်သားပြင်ဓာတ်ပုံ အရှည်</translation>
+<translation id="7819605256207059717">သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်</translation>
 <translation id="7821130663268546430">ဖွင့်ထားသောတဘ်အားလုံးကို တဘ်ပြောင်းခလုတ်တွင် ရှာနိုင်သည်</translation>
 <translation id="7822705602465980873">သင်လက်မှတ်ထိုးဝင်ထားချိန်၌ Google ဝန်ဆောင်မှုများတွင် သင့်ကိုကာကွယ်ပေးရန် (ဥပမာ လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်တစ်ခု ဖြစ်ပေါ်ပြီးနောက် Gmail တွင် ကာကွယ်မှု တိုးမြှင့်ခြင်း) ဤဒေတာကို သင့် Google Account တွင် လင့်ခ်ချိတ်ပါသည်။</translation>
 <translation id="7824665136384946951">သင့်အဖွဲ့အစည်းက ‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ကိုပိတ်ထားသည်</translation>
@@ -1687,7 +1688,6 @@
 <translation id="864544049772947936">ဝင်းဒိုး (<ph name="INSTANCE_COUNTS" />) ခုကို စီမံရန်</translation>
 <translation id="8664215986015753476">Chrome ကို သင့်အလိုကျသုံးခြင်း</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}other{# ကို သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}}</translation>
 <translation id="8672883760227492369">ဤစက်တွင် စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ဤစကားဝှက်များကို Google Password Manager သို့ ရွှေ့နိုင်သည်။</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>
 <translation id="8676789164135894283">လက်မှတ်ထိုးဝင်မှု စိစစ်ချက်များ</translation>

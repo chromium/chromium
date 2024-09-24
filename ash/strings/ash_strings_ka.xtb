@@ -398,6 +398,7 @@
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
 <translation id="2416438829169535743">გსურთ ხედიდან გასვლა?</translation>
 <translation id="2417486498593892439">ქსელში შესვლა</translation>
+<translation id="2423619675829330672">PIN-კოდის შეყვანის ზედმეტად ბევრი მცდელობა დაფიქსირდა. მოითმინეთ <ph name="TIME_LEFT" /> და ხელახლა სცადეთ.</translation>
 <translation id="2426051945783024481">კამერის კადრი ავტომატურად ექცევა ცენტრში</translation>
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
 <translation id="2429753432712299108">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს ნებართვას დაწყვილებისთვის. დათანხმებამდე, დაადასტურეთ, რომ ეს კოდი მითითებულია მოწყობილობაში: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@
 <translation id="6330012934079202188">ნაჩვენებია ყველა სამუშაო მაგიდის ფანჯრები, ამჟამინდელი სამუშაო მაგიდის ფანჯრების გამოსაჩენად დააჭირეთ კლავიშს ზემოთ მიმართული ისრით</translation>
 <translation id="6337159624125741244">სრულეკრანიანი ლუპა ჩართულია</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> არის მართული სესია, რომელსაც მართავს <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">თუ PIN-კოდი დაგავიწყდათ, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> დაკავშირებულია</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, შემდეგ კი <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ან <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">აპების შემოთავაზებები</translation>
@@ -1633,6 +1635,7 @@
 <translation id="6539852571005954999">ჩამოტვირთული <ph name="FILENAME" /> სკანირდება</translation>
 <translation id="6542521951477560771">მიმდინარეობს ტრანსლირება <ph name="RECEIVER_NAME" />-ში</translation>
 <translation id="6542891623636520977">Emoji-ები, GIF-ები და სხვა</translation>
+<translation id="6545382064335350438">თქვენი პაროლი კვლავ არ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="6555373427270923730">მისამართთა ზოლში აკრიფეთ ვებმისამართი, ხოლო შემდეგ დაჭერით აირჩიეთ <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ახალდაინსტალირებული</translation>
@@ -2029,6 +2032,7 @@
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა</translation>
+<translation id="7921565901396407357">თქვენი PIN-კოდი არ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="7923534281713082605">ამინდი</translation>
 <translation id="7926080067315048321">ყველა ამოცანის ნახვა Google Tasks-ის ვებსაიტზე</translation>
 <translation id="7930731167419639574">მეტყველება ახლა მუშავდება ადგილობრივად, კარნახი კი მუშაობს ხაზგარეშე რეჟიმში</translation>

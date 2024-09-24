@@ -704,6 +704,7 @@
 <translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
 <translation id="2239100178324503013">Ուղարկել</translation>
 <translation id="2241693394036365668">Ֆայլի ներբեռնում</translation>
+<translation id="2242389809734574253">IBAN-ը պահելու պատուհանը փակվեց։</translation>
 <translation id="2246264294482514010">10 x 12 դյույմ</translation>
 <translation id="2246480341630108201">Ձեր ծնողը դեռ չի հաստատել այս կայքը</translation>
 <translation id="2247789808226901522">Քարտը ժամկետանց է</translation>
@@ -1244,6 +1245,7 @@
 <translation id="3272112314896217187">Մուտքագրեք <ph name="NUMBER_OF_DIGITS" /> թվանշանից բաղկացած հաստատման կոդը</translation>
 <translation id="3272643614306383237">1 ՄԲ-ից պակաս։ Որոշ կայքեր կարող են ավելի դանդաղ բեռնվել հաջորդ այցելության ժամանակ։</translation>
 <translation id="3273738040255912340">Ձեր ադմինիստրատորը կարող է հեռակա կարգով փոխել ձեր պրոֆիլի և դիտարկիչի կարգավորումները, վերլուծել դիտարկիչի մասին տեղեկությունները հաշվետվությունների միջոցով և կատարել այլ անհրաժեշտ առաջադրանքներ։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN-ը պահել ամբողջությամբ բացված պատուհանում։</translation>
 <translation id="3281350579597955952">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ձեր կազմակերպությունը (<ph name="ENROLLMENT_DOMAIN" />) հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
 <translation id="3286372614333682499">ուղղաձիգ</translation>
@@ -2131,6 +2133,7 @@
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="4881808915112408168">24 x 31,5 դյույմ</translation>
 <translation id="4882314601499260499">Օգտագործման կանոններ կիրառված չեն։ Որպեսզի կարողանաք օգտագործման կանոններ ավելացնել, ձեր կազմակերպությունը պետք է <ph name="LINK_BEGIN" />հաստատի ձեր տիրույթը<ph name="LINK_END" />։</translation>
+<translation id="4883911187498618061">Մուտքագրեք ձեր հարցը կամ հարցումը</translation>
 <translation id="4885030148564729407">Մեղրամիս և ռոմանտիկ ճանապարհորդություններ</translation>
 <translation id="4885256590493466218">Վճարեք <ph name="CARD_DETAIL" /> քարտի միջոցով</translation>
 <translation id="4887406273302438710">Պաշտպանեք գաղտնաբառերը Windows Hello-ի միջոցով</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5371425731340848620">Փոփոխել քարտի տվյալները</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">«Ձեր ժամացույցը հետ է ընկել», «Ձեր ժամացույցն առաջ է ընկել» կամ «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
+<translation id="5379618281582508161">Ձեր բոլոր սարքերում այս գաղտնաբառն օգտագործելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="5380953781541843508">աճման կարգով</translation>
 <translation id="5381318171304904246">Շարունակելու դեպքում դուք կտեղափոխվեք ձեր բանկի կայք։ Հաստատելուց հետո դուք ավտոմատ կվերադառնաք՝ ձեր գնումն ավարտելու համար։</translation>
 <translation id="5383478552402031184">Հատակապատում</translation>
@@ -2592,6 +2596,7 @@
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
 <translation id="5723873695528696965">Կառավարել և վերածրագրավորել ձեր MIDI սարքերը</translation>
 <translation id="5725297205162868298">Դյուրանցումը չի կարող սկսվել @ նիշով՝ «<ph name="SHORTCUT_NAME" />»</translation>
+<translation id="5728246486828755318">Կարող է խնդրել տպիչի ընդլայնված գործառույթների օգտագործման թույլտվություն</translation>
 <translation id="5729442113829771034">Նախադպրոցական կրթություն</translation>
 <translation id="5730040223043577876">Խորհուրդ ենք տալիս վերակայել ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="5732392974455271431">Այն կարող է արգելահանվել ձեր ծնողների կողմից</translation>
@@ -2603,6 +2608,7 @@
 <translation id="5743684619253032786">Եղունգների խնամքի միջոցներ</translation>
 <translation id="5745733273847572235">Կարող է հայցել տեղադրության տվյալների օգտագործման թույլտվություն</translation>
 <translation id="5750869797196646528">Ձեռքերի շարժումների հետագծում</translation>
+<translation id="5752327398324808817">Մուտքագրեք մեկ կամ երկու բառ</translation>
 <translation id="5759751709240058861">Օգտագործել և տեղաշարժել ձեր տեսախցիկը</translation>
 <translation id="5763042198335101085">Մուտքագրեք վավեր էլ․ հասցե</translation>
 <translation id="5764725887548570807">Աղբյուրի սխալ ձևաչափ։</translation>
@@ -3098,6 +3104,7 @@
 <translation id="6671169470640320959">Ավտովարկեր</translation>
 <translation id="6671697161687535275">Հեռացնե՞լ ձևերի առաջարկները Chromium-ից:</translation>
 <translation id="6677351035258626477">Արագ սնունդ</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}one{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}other{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}}</translation>
 <translation id="6681790815630918386">CVC-ն պահվեց</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6687230248707087982">Ծրար (սովորական)</translation>
@@ -3114,6 +3121,7 @@
 <translation id="6696575039575740785">Վեբ ծրագրերի տեղադրումը թույլատրված չէ</translation>
 <translation id="6698097747703777657">Կոդը չե՞ք ստացել։ <ph name="BEGIN_LINK" />Ստանալ նոր կոդ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Ստեղծվել է`</translation>
+<translation id="6698769547327354196">Pix-ը Chrome-ում անջատելու համար բացեք ձեր <ph name="BEGIN_LINK1" />վճարման կարգավորումները<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">Ժամանակի սահիչ</translation>
 <translation id="6702851555558236418">Աուդիոյի և երաժշտության մշակման ծրագրեր</translation>
 <translation id="6702919718839027939">Ներկայացում</translation>
@@ -3414,6 +3422,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />, <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Առևտրային գործունեություն</translation>
+<translation id="7244061187185055290">Մի քանի բառով նկարագրեք, թե ինչ եք որոնում</translation>
 <translation id="7251437084390964440">Ցանցի կազմաձևումը չի համապատասխանում ONC ստանդարտին: Կազմաձևման որոշ մասեր չեն ներմուծվի:
 Լրացուցիչ տեղեկություններ՝
 <ph name="DEBUG_INFO" /></translation>

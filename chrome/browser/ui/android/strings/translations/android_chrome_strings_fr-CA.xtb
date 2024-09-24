@@ -153,7 +153,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1696555181932908973">Vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Modifier les paramètres de votre thème sombre?</translation>
 <translation id="1702907158640575240">Navigateur géré</translation>
-<translation id="1710099199314114079">Gérer ou fermer les onglets</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1724977129262658800">Déverrouillez pour modifier votre mot de passe</translation>
 <translation id="1726477445370128854">Vous pouvez naviguer et effectuer des recherches plus rapidement lorsque Chrome précharge les pages que vous êtes susceptible de visiter</translation>
@@ -297,6 +296,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2450083983707403292">Voulez-vous recommencer le téléchargement de <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Suivi activé</translation>
 <translation id="2453860139492968684">Terminer</translation>
+<translation id="2461378706168271257">Recherchez dans vos onglets</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2468444275314013497">Votre navigateur semble correct</translation>
 <translation id="2472163211318554013">Connectez-vous pour profiter pleinement de Chrome</translation>
@@ -601,6 +601,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3847319713229060696">Contribuer à l'amélioration de la sécurité sur le Web pour tout le monde</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3873174561423636563">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3899682235662194879">Fermer tous les onglets de navigation privée</translation>
 <translation id="3900966090527141178">Exporter les mots de passe</translation>
@@ -876,6 +877,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5114895953710637392">La feuille de filtrage des applis est fermée.</translation>
 <translation id="5115811374190515607">à <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applis</translation>
 <translation id="5122378528687922675">Si tu as besoin d'aide, demande à tes parents (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
@@ -1458,6 +1460,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7656721520530864426">Aucun site</translation>
 <translation id="7656862631699126784">Activer le verrouillage en navigation privée</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7663320421139257046">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site. Consultez la <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> fermés</translation>
@@ -1489,6 +1492,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, 1 fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
+<translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7821130663268546430">Vous pouvez trouver tous les onglets ouverts dans le Gestionnaire d'onglets</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="7824665136384946951">Votre organisation a désactivé la Navigation sécurisée</translation>
@@ -1685,7 +1689,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Utiliser Chrome à votre manière</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloqué par votre organisation}one{# a été bloqué par votre organisation}other{# ont été bloqués par votre organisation}}</translation>
 <translation id="8672883760227492369">Certains mots de passe sur cet appareil cesseront bientôt de fonctionner. Vous pouvez transférer ces mots de passe vers le gestionnaire de mots de passe Google.</translation>
 <translation id="8676276370198826499">S'inscrire à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Vérifications de connexion</translation>

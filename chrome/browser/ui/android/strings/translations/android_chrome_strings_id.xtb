@@ -153,7 +153,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Ubah setelan tema gelap?</translation>
 <translation id="1702907158640575240">Browser terkelola</translation>
-<translation id="1710099199314114079">Pindah atau tutup tab</translation>
 <translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1724977129262658800">Buka kunci untuk mengedit sandi Anda</translation>
 <translation id="1726477445370128854">Anda dapat menjelajah dan menelusuri lebih cepat saat Chrome melakukan pramuat halaman yang menurutnya mungkin akan Anda buka</translation>
@@ -878,6 +877,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="510275257476243843">1 jam lagi</translation>
 <translation id="5114895953710637392">Sheet filter aplikasi ditutup.</translation>
 <translation id="5115811374190515607">ke <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Anda dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="5122378528687922675">Jika kamu perlu bantuan, minta kepada orang tuamu (<ph name="PARENT_NAME_1" /> atau <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Tab samaran</translation>
 <translation id="5132942445612118989">Sinkronkan sandi, histori, dan lainnya di semua perangkat</translation>
@@ -1492,6 +1492,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Semua file, 1 file dalam daftar}other{Semua file, # file dalam daftar}}</translation>
 <translation id="7815484226266492798">Screenshot Panjang</translation>
+<translation id="7819605256207059717">Diblokir oleh organisasi Anda</translation>
 <translation id="7821130663268546430">Anda dapat menemukan semua tab yang terbuka di pengalih tab</translation>
 <translation id="7822705602465980873">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
 <translation id="7824665136384946951">Organisasi Anda menonaktifkan Safe Browsing</translation>
@@ -1688,7 +1689,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="864544049772947936">Kelola jendela (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Gunakan Chrome sesuai keinginan</translation>
 <translation id="8664979001105139458">Nama file sudah ada</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Diblokir oleh organisasi Anda}other{# diblokir oleh organisasi Anda}}</translation>
 <translation id="8672883760227492369">Beberapa sandi di perangkat ini akan segera berhenti berfungsi. Anda dapat memindahkan sandi ini ke Pengelola Sandi Google.</translation>
 <translation id="8676276370198826499">Daftar ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifikasi login</translation>

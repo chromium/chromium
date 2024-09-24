@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Cancelar instalação</translation>
 <translation id="469553575393225953">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chrome recomenda os instalar apenas pela Chrome Web Store</translation>
 <translation id="4710245680469034439">Personalize seu navegador com temas inspirados na natureza, coleções de artistas e muito mais</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo sem suporte.</translation>
 <translation id="4728575227883772061">Houve uma falha na instalação devido a um erro não-especificado. Se o Google Chrome estiver em execução no momento, feche-o e tente novamente.</translation>
 <translation id="4741235124132242877">Fixado. Use o Google Lens de novo pela barra de ferramentas</translation>
@@ -457,6 +458,7 @@
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
 <translation id="6893363893008038481">Remover conta do Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6930294499209825">Mantém seu software do Google atualizado. Se este serviço for desativado ou interrompido, o software do Google não será atualizado. Isso significa que as vulnerabilidades de segurança que surgirem não serão corrigidas e talvez recursos não funcionem. O serviço é desinstalado automaticamente quando não está sendo usado por nenhum software do Google.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>
 <translation id="6943584222992551122">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -506,6 +508,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7477130805345743099">O Chrome vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="749228101751499733">Com sua Conta do Google conectada, você poderá usar as senhas e outros dados dela no Chrome. <ph name="SHORTCUT" /> pode mudar as configurações dos Serviços do Google.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Você pode fixar o Google Lens para facilitar o acesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desativada: o Chrome não consegue verificar a origem dessa extensão</translation>

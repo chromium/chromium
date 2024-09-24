@@ -398,6 +398,7 @@
 <translation id="2412593942846481727">అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="2416438829169535743">వీక్షణ నుండి ఎగ్జిట్ అవ్వాలా?</translation>
 <translation id="2417486498593892439">నెట్‌వర్క్‌కు సైన్ ఇన్ చేయండి</translation>
+<translation id="2423619675829330672">చాలా ఎక్కువ సార్లు PINను ఎంటర్ చేసే ప్రయత్నం చేశారు. <ph name="TIME_LEFT" /> సమయం వేచి ఉండి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2426051945783024481">కెమెరా ఫ్రేమ్ ఆటోమేటిక్‌గా మధ్యలో ఉంటుంది</translation>
 <translation id="2427507373259914951">ఎడమ క్లిక్</translation>
 <translation id="2429753432712299108">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. ఆమోదించడానికి ముందు, దయచేసి ఆ పరికరంలో ఈ పాస్‌కీ చూపబడుతోందని నిర్ధారించుకోండి: <ph name="PASSKEY" /></translation>
@@ -671,7 +672,7 @@
 <translation id="3401474642070997151">సూచనలను అనుకూలంగా మార్చడానికి, సూచనపై రైట్-క్లిక్ చేయండి లేదా నొక్కి, పట్టుకోండి</translation>
 <translation id="3405101454990027959">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="3409584356742878290">డెవలపర్ టూల్స్ ఇన్‌స్పెక్టర్‌ను చూడండి లేదా దాచండి</translation>
-<translation id="3410336247007142655">ముదురు రంగు రూపం సెట్టింగ్‌లను చూపించు</translation>
+<translation id="3410336247007142655">డార్క్ థీమ్‌ సెట్టింగ్‌లను చూపించు</translation>
 <translation id="3413817803639110246">ఇప్పటికీ చూడటానికి ఏమీ లేవు</translation>
 <translation id="3417835166382867856">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="3426253816581969877"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />ను నొక్కి, పట్టుకుని, మీరు తెరవాలనుకుంటున్న విండో వచ్చే వరకు <ph name="KEY" />ను నొక్కండి, తర్వాత రిలీజ్ చేయండి</translation>
@@ -1039,7 +1040,7 @@
 <translation id="458210817642223147">GIFను రికార్డ్ చేయండి</translation>
 <translation id="4582666543382004902">Wi-Fiని ఉపయోగించడానికి హాట్‌స్పాట్ ఆఫ్ చేయబడింది. హాట్‌స్పాట్‌ను ఉపయోగించడానికి, WiFiని ఆఫ్ చేయండి.</translation>
 <translation id="4585337515783392668">తెలియని రిసీవర్‌లో ప్రసారం చేయడాన్ని ఆపివేయి</translation>
-<translation id="4596144739579517758">ముదురు రంగు రూపం ఆఫ్‌లో ఉంది</translation>
+<translation id="4596144739579517758">డార్క్ థీమ్‌ ఆఫ్‌లో ఉంది</translation>
 <translation id="4596442969149038771"><ph name="USER" /> షేర్ చేశారు</translation>
 <translation id="4610493115106525653">మంచి ఫలితం</translation>
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
@@ -1274,7 +1275,7 @@
 <translation id="5331975486040154427">USB-C పరికరం (ఎడమవైపు వెనుక పోర్ట్)</translation>
 <translation id="533282197239610265">ప్రసార పరికరాలను చూడండి</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (కుడి)</translation>
-<translation id="5352250171825660495">ముదురు రంగు రూపం ఆన్‌లో ఉంది</translation>
+<translation id="5352250171825660495">డార్క్ థీమ్‌ ఆన్‌లో ఉంది</translation>
 <translation id="5354804064646502504">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 పరికరాలు ఏవీ కనెక్ట్ కాలేదు.</translation>
 <translation id="5356963482258194581">ముదురు రంగు, లేత రంగు రూపాల మధ్య స్విచ్ అవ్వండి. డెస్క్‌టాప్‌పై కుడి క్లిక్ చేసి, వాల్‌పేపర్ &amp; స్టయిల్‌ను ఎంచుకోండి.</translation>
@@ -1578,6 +1579,7 @@
 <translation id="6330012934079202188">అన్ని డెస్క్‌ల నుండి విండోలను చూపుతోంది, ప్రస్తుత డెస్క్ నుండి విండోలను చూపడానికి పై వైపు బాణం కీని నొక్కండి</translation>
 <translation id="6337159624125741244">ఫుల్ స్క్రీన్ మ్యాగ్నిఫైయర్ ఆన్‌లో ఉంది</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> అనేది ఒక మేనేజ్ చేయబడిన సెషన్, దీనిని <ph name="MANAGER" /> మేనేజ్ చేస్తోంది</translation>
+<translation id="6340148837564298498">మీ PINను మీరు మర్చిపోతే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> కనెక్ట్ చేయబడింది</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> తర్వాత <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> లేదా <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">యాప్ సూచనలు</translation>
@@ -1634,6 +1636,7 @@
 <translation id="6539852571005954999">డౌన్‌లోడ్ చేయడానికి <ph name="FILENAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
 <translation id="6542891623636520977">ఎమోజీలు, GIFలు, మరెన్నో</translation>
+<translation id="6545382064335350438">మీ PINను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6555373427270923730">అడ్ర‌స్ బార్‌లో వెబ్ అడ్రస్‌ను టైప్ చేసి, <ph name="MODIFIER" /><ph name="KEY" />‌ను నొక్కండి</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
@@ -2030,6 +2033,7 @@
 <translation id="7904094684485781019">ఈ ఖాతా నిర్వాహకులు బహుళ సైన్-ఇన్‌కు అనుమతించలేదు.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి</translation>
+<translation id="7921565901396407357">మీ PINను వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7923534281713082605">వాతావరణం</translation>
 <translation id="7926080067315048321">వెబ్‌లోని Google టాస్క్‌లలో అన్ని టాస్క్‌లను చూడండి</translation>
 <translation id="7930731167419639574">స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, డిక్టేషన్ ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>

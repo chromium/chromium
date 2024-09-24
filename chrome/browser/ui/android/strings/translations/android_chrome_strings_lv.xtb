@@ -153,7 +153,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1696555181932908973">Varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Vai mainīt jūsu tumšā motīva iestatījumus?</translation>
 <translation id="1702907158640575240">Pārvaldīts pārlūks</translation>
-<translation id="1710099199314114079">Pārslēgt vai aizvērt cilnes</translation>
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1724977129262658800">Atbloķējiet, lai rediģētu paroli</translation>
 <translation id="1726477445370128854">Varat pārlūkot un meklēt ātrāk, ja Chrome iepriekš ielādē lapas, ko jūs varētu apmeklēt saskaņā ar Chrome rīcībā esošajiem datiem</translation>
@@ -297,6 +296,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2450083983707403292">Vai vēlaties vēlreiz sākt faila <ph name="FILE_NAME" /> lejupielādi?</translation>
 <translation id="2451607499823206582">Izsekošana</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
+<translation id="2461378706168271257">Meklējiet cilnēs</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2468444275314013497">Jūsu pārlūks izskatās drošs</translation>
 <translation id="2472163211318554013">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chrome</translation>
@@ -601,6 +601,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3847319713229060696">Palīdzēt uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="3856096718352044181">Pārbaudiet, vai pakalpojumu sniedzējs ir derīgs, vai arī vēlāk mēģiniet vēlreiz</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
+<translation id="3873174561423636563">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ar šo vietni kopīgos šādus jūsu datus: <ph name="FIELDS_STRING" />. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />Pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="3899682235662194879">Aizvērt visas inkognito cilnes</translation>
 <translation id="3900966090527141178">Paroļu eksportēšana</translation>
@@ -876,6 +877,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="510275257476243843">Atlikusi 1 h</translation>
 <translation id="5114895953710637392">Lietotņu filtra lapa ir aizvērta.</translation>
 <translation id="5115811374190515607">uz: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="5122378528687922675">Ja vajadzīga palīdzība, palūdziet, lai jums palīdz vecāki (<ph name="PARENT_NAME_1" /> vai <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
@@ -1458,6 +1460,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7656721520530864426">Nav vietņu</translation>
 <translation id="7656862631699126784">Ieslēgt inkognito bloķēšanu</translation>
 <translation id="7658239707568436148">Atcelt</translation>
+<translation id="7663320421139257046">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ar šo vietni kopīgos šādus jūsu datus: <ph name="FIELDS_STRING" />. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />Konfidencialitātes politiku<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Pievienot kontu</translation>
 <translation id="766587987807204883">Šeit tiek rādīti raksti, kurus varat lasīt arī bezsaistē</translation>
 <translation id="7666185984446444960">Aizvērtas: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
@@ -1489,6 +1492,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7810647596859435254">Atvērt ar…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Visi faili, sarakstā ir 1 fails}zero{Visi faili, sarakstā ir # faili}one{Visi faili, sarakstā ir # fails}other{Visi faili, sarakstā ir # faili}}</translation>
 <translation id="7815484226266492798">Garš ekrānuzņēmums</translation>
+<translation id="7819605256207059717">Lejupielādi bloķēja organizācija</translation>
 <translation id="7821130663268546430">Visas atvērtās cilnes varat atrast ciļņu pārslēdzējā.</translation>
 <translation id="7822705602465980873">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
 <translation id="7824665136384946951">Jūsu organizācija izslēdza drošu pārlūkošanu</translation>
@@ -1685,7 +1689,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="864544049772947936">Pārvaldīt logus (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Pielāgojiet pārlūku Chrome savām vajadzībām</translation>
 <translation id="8664979001105139458">Faila nosaukums jau pastāv</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Lejupielādi bloķēja organizācija}zero{# lejupielādes bloķēja organizācija}one{# lejupielādi bloķēja organizācija}other{# lejupielādes bloķēja organizācija}}</translation>
 <translation id="8672883760227492369">Drīz tiks pārtraukta dažu paroļu darbība šajā ierīcē. Varat pārvietot šīs paroles uz Google paroļu pārvaldnieku.</translation>
 <translation id="8676276370198826499">Reģistrējieties vietnē <ph name="SITE_ETLD_PLUS_ONE" />, izmantojot <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="8676789164135894283">Pierakstīšanās verifikācija</translation>

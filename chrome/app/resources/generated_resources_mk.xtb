@@ -291,7 +291,6 @@
 <translation id="1199814941632954229">Подготвени се сертификати за следниве профили со сертификат</translation>
 <translation id="120069043972472860">Не може да се гледа</translation>
 <translation id="1201402288615127009">Следно</translation>
-<translation id="1201564082781748151">Локалните податоци може да се обноват ако ја заборавите лозинката</translation>
 <translation id="1202116106683864634">Дали сте сигурни дека сакате да го избришете криптографскиов клуч?</translation>
 <translation id="1202596434010270079">Апликацијата на Киоск е ажурирана. Отстранете ја USB-меморијата.</translation>
 <translation id="1202892408424955784">Следени производи</translation>
@@ -2231,6 +2230,7 @@
 <translation id="2546991196809436099">Зумирајте за поголеми ставки на екранот. Користете Search + Ctrl + M за да се вклучи или исклучи лупата.</translation>
 <translation id="2548347166720081527">Дозволена е <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ресетирај го кешот на профилот на eSIM</translation>
+<translation id="2549766998450508148">Притиснете ги копчињата модификатори 1 – 4 (Ctrl, Alt, Shift или Search) и уште 1 копче. Може и да изберете едно копче.</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="2550212893339833758">Заменета меморија</translation>
 <translation id="2550596535588364872">Да се дозволи <ph name="EXTENSION_NAME" /> да ја отвори датотеката „<ph name="FILE_NAME" />“?</translation>
@@ -10643,6 +10643,7 @@
 <translation id="8715480913140015283">Картичка во заднина ја користи вашата камера</translation>
 <translation id="8716931980467311658">Да се избришат сите апликации за Linux и податоците во папката со датотеките на Linux од овој <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Копирај го линкот</translation>
+<translation id="8718560545710680911">Прашајте преку страницава</translation>
 <translation id="8718994464069323380">Откриен е допирен екран</translation>
 <translation id="8719472795285728850">Се слушаат активностите на екстензијата…</translation>
 <translation id="8719665168401479425">Користете движења на лицето за да вршите дејства</translation>

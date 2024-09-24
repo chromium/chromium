@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="1702543251015153180">გსურთ, შეცვალოთ მუქი თემის პარამეტრები?</translation>
 <translation id="1702907158640575240">მართული ბრაუზერი</translation>
-<translation id="1710099199314114079">ჩანართების გადართვა ან დახურვა</translation>
 <translation id="1718835860248848330">ბოლო საათი</translation>
 <translation id="1724977129262658800">განბლოკეთ თქვენი პაროლის რედაქტირებისთვის</translation>
 <translation id="1726477445370128854">თუ Chrome წინასწარ ჩატვირთავს გვერდებს, რომლებიც, მისი გათვლებით, შეიძლება მოინახულოთ, ვების დათვალიერებისა და ძიების პროცესი დაჩქარდება</translation>
@@ -635,6 +634,7 @@
 <translation id="4042941173059740150">გადადით <ph name="SITE_ETLD_PLUS_ONE" />-ზე <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="404352903042073578">უსახელო ჯგუფი</translation>
 <translation id="4044708993631234325">ქვედა ფურცელი</translation>
+<translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ახალი აქტივობის მქონე <ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}other{ახალი აქტივობის მქონე <ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}}</translation>
 <translation id="405365679581583349">განაახლეთ Google Play Services</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>
 <translation id="4056223980640387499">სეპია</translation>
@@ -878,6 +878,7 @@
 <translation id="510275257476243843">დარჩენილია 1 საათი</translation>
 <translation id="5114895953710637392">აპების ფილტრის ფურცელი დახურულია.</translation>
 <translation id="5115811374190515607">აქ: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">შეგიძლიათ გამოიყენოთ Chrome, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით</translation>
 <translation id="5122378528687922675">საჭიროებისამებრ, დაიხმარეთ მშობელი (<ph name="PARENT_NAME_1" /> ან <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
 <translation id="5132942445612118989">მოახდინეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობაზე</translation>
@@ -1445,6 +1446,7 @@
 <translation id="7592322927044331376">პირველ რიგში, დააექსპორტეთ და წაშალეთ პაროლები Chrome-იდან</translation>
 <translation id="7594687499944811403">ნება დართეთ <ph name="EMBEDDED_ORIGIN" />-ს, რომ დაადასტუროს თქვენი ვინაობა <ph name="TOP_ORIGIN" />-ისთვის</translation>
 <translation id="7596558890252710462">ოპერაციული სისტემა</translation>
+<translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართი}other{<ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართი}}</translation>
 <translation id="7603168929588204083">თარიღი არასწორია</translation>
 <translation id="7605594153474022051">სინქრონიზაცია არ მუშაობს</translation>
 <translation id="7612619742409846846">Google-ში შესულია:</translation>
@@ -1492,6 +1494,7 @@
 <translation id="7810647596859435254">გახსნა აპით…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ყველა ფაილი, სიაშია 1 ფაილი}other{ყველა ფაილი, სიაშია # ფაილი}}</translation>
 <translation id="7815484226266492798">ეკრანის გრძელი ანაბეჭდი</translation>
+<translation id="7819605256207059717">დაბლოკილია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="7821130663268546430">ყველა გახსნილი ჩანართის პოვნა ჩანართების გადამრთველში შეგიძლიათ</translation>
 <translation id="7822705602465980873">როცა სისტემაში შესული ხართ, ეს მონაცემები მიებმება თქვენს Google ანგარიშს, რომ დაცული იყოთ Google სერვისების ფარგლებში, მაგალითად, უსაფრთხოებასთან დაკავშირებული ინციდენტის შემდეგ გაძლიერდება დაცვა Gmail-ში.</translation>
 <translation id="7824665136384946951">თქვენმა ორგანიზაციამ გამორთო Safe Browsing</translation>
@@ -1688,7 +1691,6 @@
 <translation id="864544049772947936">ფანჯრების მართვა (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">გამოიყენეთ Chrome თქვენებურად</translation>
 <translation id="8664979001105139458">ამ სახელის მქონე ფაილი უკვე არსებობს</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{დაბლოკილია თქვენი ორგანიზაციის მიერ}other{# დაბლოკილია თქვენი ორგანიზაციის მიერ}}</translation>
 <translation id="8672883760227492369">ამ მოწყობილობაში შენახული რამდენიმე პაროლი მალე შეწყვეტს მოქმედებას. ამ პაროლების გადატანა შეგიძლიათ Google პაროლების მმართველში.</translation>
 <translation id="8676276370198826499">დარეგისტრირდით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="8676789164135894283">დადასტურება შესვლისთვის</translation>

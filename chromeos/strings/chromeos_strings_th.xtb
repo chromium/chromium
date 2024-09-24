@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1343442362630695901">ทะเลสาบน้ำเค็ม</translation>
 <translation id="1348657754632799065">แถบการบันทึก</translation>
+<translation id="1350909945461913813">อย่าลืมบันทึกงาน</translation>
 <translation id="1367951781824006909">เลือกไฟล์</translation>
 <translation id="1371650399987522809">ความคิดเห็นเกี่ยวกับวอลเปเปอร์ที่ทำงานด้วย AI ของ Google</translation>
 <translation id="1374385338586507108">หาความหมาย</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">เวอร์ชันของ SDK:</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">เลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนรูปภาพ AI ในแบบของคุณ</translation>
 <translation id="2045814230297767491">เครื่องใช้บนโต๊ะอาหาร</translation>
 <translation id="2047316797244836561">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2082932131694554252">แป้นบนแป้นพิมพ์ที่กำหนดแล้ว</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
-<translation id="2085876078937250610">บันทึก…</translation>
 <translation id="2086091080968010660">การเปลี่ยนแปลงตามเวลาอาจไม่ถูกต้อง เปิดการเข้าถึงตำแหน่งของระบบในการตั้งค่า</translation>
 <translation id="2102231663024125441">การแก้ไขข้อความ</translation>
 <translation id="2102648867808308635">ช่วยฉันอ่านหน้านี้</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">ไม่พบเสียงพูด</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
+<translation id="2468124392950503650">เลือกพรอมต์เพื่อสร้างหรือดู<ph name="BEGIN_LINK_PROMPTING_GUIDE" />คู่มือการใช้พรอมต์<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ใช้ฟีเจอร์ช่วยฉันเขียนเพื่อสร้างข้อความร่างหรือปรับแต่งงานที่มีอยู่ซึ่งทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="2480572840229215612">ปู</translation>
 <translation id="248546197012830854">อุปกรณ์ออฟไลน์อยู่ เชื่อมต่อกับเครือข่าย Wi-Fi เพื่อดูเนื้อหาช่วยเหลือ</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">ไม่มีผลลัพธ์ที่ตรงกัน</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
+<translation id="4486524074141928967">ระบบจะนำคุณออกจากระบบในเวลา <ph name="TIME" /></translation>
 <translation id="4500722292849917410">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift หรือ<ph name="META_KEY" />)</translation>
 <translation id="4500966230243561393">สีของอินเทอร์เฟซ</translation>
 <translation id="4503223151711056411">ลูกศรซ้าย</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">เทา</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5600027863942488546">ทดสอบปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
+<translation id="5613201299517339763">คุณออกจากระบบแล้ว</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5630438231335788050">สถาบันเบาเฮาส์</translation>
 <translation id="5631759159893697722">บทคัดย่อ</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
 <translation id="5938286923316838007">สร้างชื่อการบันทึกสำหรับเนื้อหานี้ไม่ได้</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
+<translation id="5942727615796467094">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการเครือข่ายมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
 <translation id="5947266287934282605">หากวันสุดท้ายของเดือนอยู่ก่อนวันนี้ ระบบจะรีเซ็ตข้อมูลในวันสุดท้ายของเดือน</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">ดาวเคราะห์ดวงอื่น</translation>
 <translation id="6359706544163531585">ปิดใช้ธีมสว่าง</translation>
 <translation id="6359919876285606596">การดำเนินการนี้มีผลถาวรและเลิกทำไม่ได้</translation>
+<translation id="6368342879959028556">เมื่อเลือก "สร้างด้วย AI" ให้เขียนพรอมต์ที่กำหนดเอง หรือเลือก "วอลเปเปอร์ AI" เพื่อเลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณ</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6373461326814131011">หนองน้ำ</translation>
 <translation id="6379086450106841622">หน้าจอสัมผัส</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>
 <translation id="6462978824459367242">เปิดใช้ปุ่ม "เพิ่ม APN" แล้ว</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้งไหม}=1{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}other{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}}</translation>
+<translation id="6468146470109254228">พรอมต์และเอาต์พุตล่าสุด 3 รายการ คุณเข้าถึงได้เฉพาะขณะที่ใช้วอลล์เปเปอร์และสไตล์</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">เรือ</translation>
 <translation id="64778964625672495">แดงเข้ม</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="66621959568103627">ชมพูคอรัล</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI เป็นเวอร์ชันทดลองที่อยู่ในช่วงการพัฒนาขั้นต้น และมีให้บริการจํากัดในขณะนี้</translation>
 <translation id="6673898378497337661">เพิ่มความสว่างของแป้นพิมพ์</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6694534975463174713">ล็อก</translation>

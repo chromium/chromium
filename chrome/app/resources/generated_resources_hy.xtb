@@ -291,7 +291,6 @@
 <translation id="1199814941632954229">Տրամադրվում են հավաստագրեր հավաստագրման այս պրոֆիլների համար</translation>
 <translation id="120069043972472860">Անդիտելի</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
-<translation id="1201564082781748151">Եթե մոռանաք ձեր գաղտնաբառը, սարքի տվյալները կարող են վերականգնվել</translation>
 <translation id="1202116106683864634">Իսկապե՞ս ուզում եք ջնջել այս մուտքի բանալին։</translation>
 <translation id="1202596434010270079">Kiosk հավելվածը թարմացվեց: Հեռացրեք USB հիշողությունը:</translation>
 <translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
@@ -381,6 +380,7 @@
 <translation id="126387934568812801">Ներառեք այս սքրինշոթը և բացված ներդիրների անունները</translation>
 <translation id="1264083566674525434">Փոփոխել կայքի թույլտվությունները</translation>
 <translation id="1264337193001759725">Ցանցային միջերեսի մատյանները դիտելու համար անցեք <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1264956950255940376">Կիսափակ արեք ձախ աչքը</translation>
 <translation id="1265279736024499987">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր ChromeOS Flex սարքերում, որոնցում մտել եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="126710816202626562">Թարգմանության լեզուն՝</translation>
 <translation id="1267649802567297774">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով, <ph name="STYLE" /> ոճով, <ph name="MOOD" /> տրամադրությամբ։</translation>
@@ -460,6 +460,7 @@
 <translation id="1327527584824210101">Օգտագործեք ձեր մուտքի բանալին</translation>
 <translation id="1327794256477341646">Գործառույթները, որոնց համար պահանջվում է տեղորոշում, չեն աշխատի</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> ժամից</translation>
+<translation id="1328928545650070438">Իջեցրեք հոնքերը</translation>
 <translation id="1329466763986822896">Բարձրացնել այս թեժ կետի գաղտնիության մակարդակը</translation>
 <translation id="1331977651797684645">Սա ես եմ։</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> կայքում որոշ գործառույթներ կարող են չաշխատել, մինչև չհեռացնեք ձեր սարքում այլ կայքերի պահած տվյալները։</translation>
@@ -507,6 +508,7 @@
 <translation id="1363772878823415675"><ph name="SPECIFIC_NAME" />-ին հասանելի դարձրեք USB սարքերը։</translation>
 <translation id="136378536198524553">Էներգիայի տնտեսումը միացված է</translation>
 <translation id="136522805455656552">Ձեր սարքը պաշտպանելու համար գործարկեք և տեղադրեք ծրագրեր միայն վստահելի աղբյուրներից և մշակողներից։ <ph name="LEARN_MORE" /></translation>
+<translation id="1365650529628379165">Բարձրացրեք հոնքերը</translation>
 <translation id="1367817137674340530">Ստեղծվել է <ph name="COUNT" /> պատկեր</translation>
 <translation id="1368603372088757436">Լինուքսը ձեր <ph name="DEVICE_TYPE" /> սարքում չի աջակցվում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում</translation>
@@ -1047,6 +1049,7 @@
 <translation id="1734212868489994726">Բաց կապույտ</translation>
 <translation id="1734230530703461088">Չհաջողվեց բեռնել ընդլայնումները նշված ժամանակահատվածում։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="1734824808160898225">Հնարավոր է՝ <ph name="PRODUCT_NAME" />-ը չկարողանա ինքնաթարմացվել</translation>
+<translation id="1735957571918073979">Թարթեք երկու աչքերով</translation>
 <translation id="1735983780784385591">Ներմուծվել է Linux-ից</translation>
 <translation id="173628468822554835">Եղավ։ Ըստ կանխադրման՝ նոր կայքերը ձեզ չեն ուղարկի ծանուցումներ։</translation>
 <translation id="1737968601308870607">Ուղարկել վրիպակը</translation>
@@ -1164,6 +1167,7 @@
 <translation id="1816036116994822943">Ստեղնաշարի սկանավորման արագությունը</translation>
 <translation id="1817871734039893258">Microsoft ֆայլերի վերականգնում</translation>
 <translation id="1818913467757368489">Մատյանը վերբեռնվում է:</translation>
+<translation id="1819377896744763509">Կարգավորումը կարող է մի փոքր երկար տևել…</translation>
 <translation id="1819443852740954262">Բացել բոլորն ինկոգնիտո պատուհանում</translation>
 <translation id="1819721979226826163">Հպեք Հավելվածների ծանուցումներ &gt; Google Play ծառայություններ։</translation>
 <translation id="1822140782238030981">Արդեն օգտվո՞ւմ եք Chrome-ից։ Մուտք գործեք հաշիվ։</translation>
@@ -2217,6 +2221,7 @@
 <translation id="2546991196809436099">Մեծացրեք մասշտաբը՝ տարրերը էկրանին ավելի խոշոր դարձնելու համար։ Օգտագործեք Որոնում + Ctrl + M դյուրանցումը՝ խոշորացույցը միացնելու և անջատելու համար։</translation>
 <translation id="2548347166720081527">«<ph name="PERMISSION" />»՝ թույլատրված է</translation>
 <translation id="2548545707296594436">Վերակայել eSIM պրոֆիլի քեշը</translation>
+<translation id="2549766998450508148">Սեղմեք 4 կերպափոխիչ ստեղներից մեկը (ctrl, alt, shift կամ որոնում) ու ևս 1 ստեղն։ Կարող եք նաև մեկ ստեղն ընտրել։</translation>
 <translation id="2549985041256363841">Սկսել տեսագրումը</translation>
 <translation id="2550212893339833758">Swap հիշողություն</translation>
 <translation id="2550596535588364872">Թույլատրե՞լ <ph name="EXTENSION_NAME" /> հավելվածին բացել «<ph name="FILE_NAME" />» ֆայլը:</translation>
@@ -2644,6 +2649,7 @@
 <translation id="2856776373509145513">Նոր կոնտեյների ստեղծում</translation>
 <translation id="2856907950922663165">Անջատե՞լ URL-ների գաղտնագրումը</translation>
 <translation id="2859741939921354763">Ներմուծել գաղտնաբառերը <ph name="BRAND" /></translation>
+<translation id="2860710618359053450">Ծնոտն աջ տարեք</translation>
 <translation id="2861301611394761800">Համակարգի թարմացումն ավարտված է: Վերագործարկեք համակարգը:</translation>
 <translation id="2861402191395139055">Passpoint-ի բաժանորդագրություններ</translation>
 <translation id="2861941300086904918">Անվտանգության կառավարիչ - Native Client</translation>
@@ -3061,6 +3067,7 @@
 <translation id="3179982752812949580">Տեքստի տառատեսակը</translation>
 <translation id="3180284704187420717">Պահեք ձեր էջանիշները, գաղտնաբառերը և ավելին համաժամացման միջոցով</translation>
 <translation id="3180716079618904608">Հավելվածների ու խաղերի տեղադրում</translation>
+<translation id="3180990259147710757">Ծնոտը ձախ տարեք</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3182749001423093222">Ուղղագրության ստուգում</translation>
 <translation id="3183139917765991655">Պրոֆիլի ներմուծիչ</translation>
@@ -3337,6 +3344,7 @@
 <translation id="3390013585654699824">Հավելվածի մասին</translation>
 <translation id="3390442085511866400">Պահել տեսանյութի կադրը որպես...</translation>
 <translation id="3390530051434634135">Նշում՝ <ph name="NOTE" /></translation>
+<translation id="3390740059150071453">Նայեք ձախ</translation>
 <translation id="3391721320619127327">ChromeOS Flex-ում ChromeVox Էկրանի ընթերցիչը հիմնականում օգտագործում են տեսողության խնդիրներ ունեցող կամ կույր մարդիկ՝ բրայլյան կամ խոսքի սինթեզատորով էկրանին ցուցադրվող տեքստը կարդալու համար։ Սեղմեք և հինգ վայրկյան պահեք ձայնի ուժգնության կարգավորման երկու կոճակները՝ ChromeVox-ը միացնելու համար։ Երբ ChromeVox-ը միանա, դուք կանցնեք արագ ուղեցույցով։</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394072120086516913">Համակարգիչը միացված է լարով, իսկ հեռարձակման սարքը՝ Wi-Fi-ով</translation>
@@ -4367,6 +4375,7 @@
 <translation id="4100733287846229632">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
 <translation id="4100853287411968461">Սարքի օգտագործման ժամանակի նոր սահմանափակում</translation>
 <translation id="4101352914005291489">Թաքցված SSID</translation>
+<translation id="410225014223200513">Կորացրեք շրթունքները</translation>
 <translation id="4102906002417106771">Վերագործարկել՝ Powerwash-ը գործարկելու համար</translation>
 <translation id="4103644672850109428">Էկրանի ընթերցիչ, խոշորացում</translation>
 <translation id="4104163789986725820">Ար&amp;տահանել…</translation>
@@ -4550,6 +4559,7 @@
 <translation id="425411422794688815">Սխալ առաջացավ։ Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="4254414375763576535">Մեծ ցուցիչ</translation>
 <translation id="4254813446494774748">Թարգմանության լեզուն՝</translation>
+<translation id="4255016471934258618">Լայն բացեք բերանը</translation>
 <translation id="425573743389990240">Մարտկոցի լիցքաթափման արագությունը վատտերով (բացասական արժեքը նշանակում է, որ մարտկոցը լիցքավորվում է)</translation>
 <translation id="4256316378292851214">Պա&amp;հել տեսանյութը որպես…</translation>
 <translation id="4258348331913189841">Ֆայլային համակարգեր</translation>
@@ -4898,6 +4908,7 @@
 <translation id="4513872120116766993">Տեքստի կանխատեսում</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="4515872537870654449">Կապվեք Dell-ի սպասարկման ծառայության հետ։ Եթե հովացումը չաշխատի, դոկ-կայանը կանջատվի:</translation>
+<translation id="4516395361210407049">Գործիքագոտու կոճակների կարգավորումները զրոյացվել են</translation>
 <translation id="4518840066030486079">Shift ստեղնի ռեժիմի ոճ</translation>
 <translation id="4519331665958994620">Կայքերը կարող են տեսախցիկն օգտագործելու թույլտվություն հայցել</translation>
 <translation id="4519605771716872386">Ֆայլերի համաժամացումը միացված է</translation>
@@ -5320,6 +5331,7 @@
 <translation id="4830502475412647084">Օպերացիոն համակարգի թարմացման տեղադրում</translation>
 <translation id="4831226137013573603">անջատել խոսափողը</translation>
 <translation id="4833683849865011483">Տպման սերվերում գտնվել է 1 տպիչ։</translation>
+<translation id="4835598628985424375">Շրթունքները սեղմեք իրար</translation>
 <translation id="4835677468087803981">Թաքցնել PIN կոդը</translation>
 <translation id="4836504898754963407">Մատնահետքերի կառավարում</translation>
 <translation id="4837128290434901661">Վերադառնա՞լ Google Որոնմանը</translation>
@@ -5745,6 +5757,7 @@
 <translation id="5143374789336132547">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Սկիզբ կոճակի սեղմումով ցուցադրվող էջը:</translation>
 <translation id="5143612243342258355">Այս ֆայլը վտանգավոր է</translation>
 <translation id="5143712164865402236">Enter Full Screen</translation>
+<translation id="514387318601895731">Նայեք ներքև</translation>
 <translation id="5143960098217235598">Խոսափողը հասանելի կլինի հավելվածներին, խոսափողի թույլտվություն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">Երբ հեռանաք ձեր սարքից, սարքի էկրանն ավտոմատ կկողպվի։ Երբ էկրանի դիմաց լինեք, այն միացված կմնա ավելի երկար։ Եթե էկրանի կողպումն անջատված է, սարքը չի կողպվի, այլ կանցնի քնի ռեժիմին։</translation>
@@ -6711,6 +6724,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> հավելվածի աշխատանքը շուտով կդադարեցվի</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />-ը գործարկվում է իր սկավառակի պատկերից: Եթե տեղադրեք այն համակարգչում, կարող եք գործարկել առանց սկավառակի պատկերի` միևնույն ժամանակ այն արդի պահելով:</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
+<translation id="5866236843389439313">Ներս ձգեք բերանի ձախ հատվածը</translation>
 <translation id="5868434909835797817">Սարքի խոսափողն անջատված է</translation>
 <translation id="5868479397518301468">Մուտք գործելու ժամանակը սպառվել է</translation>
 <translation id="5868822853313956582">Հետևեք սարքի գույներին</translation>
@@ -6873,6 +6887,7 @@
 <translation id="5985458664595100876">URL-ի ձևաչափն անվավեր է։ Աջակցվում են հետևյալ ձևաչափերը՝ \\server\share և smb://server/share։</translation>
 <translation id="5985556342298151179">Սարքի ադմինիստրատորի կողմից Chrome հավելված է տեղադրվել։</translation>
 <translation id="598810097218913399">Հեռացնել նշանակումը</translation>
+<translation id="5988563937187882754">Նայեք աջ</translation>
 <translation id="5990266201903445068">Միայն Wi-Fi</translation>
 <translation id="5990386583461751448">Թարգմանված է</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}one{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածը։}other{Որպեսզի շարունակեք կայքեր այցելել, խնդրեք ադմինիստրատորին հեռացնել այս հավելվածները։}}</translation>
@@ -9214,6 +9229,7 @@
 <translation id="7713139339518499741">Բնական ձայն</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> կայքի քուքիները թույլատրված են</translation>
 <translation id="7714464543167945231">Վկայագիր</translation>
+<translation id="7715455358521357192">Կիսափակ արեք աջ աչքը</translation>
 <translation id="7716648931428307506">Ընտրեք, թե որտեղ պետք է պահվեն գաղտնաբառերը</translation>
 <translation id="7716781361494605745">Netscape-ի հավաստագրման կենտրոնի քաղաքականության URL</translation>
 <translation id="7717014941119698257">Ներբեռնում` <ph name="STATUS" /></translation>
@@ -9420,6 +9436,7 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Հեռացնել <ph name="EXTENSION_NAME" /> ընդլայնումը</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="7860802890538098598">Ներս ձգեք բերանի աջ հատվածը</translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> րոպեից</translation>
@@ -9803,6 +9820,7 @@
 <translation id="8123975449645947908">Ոլորել հետ</translation>
 <translation id="8124313775439841391">Կառավարվող ONC</translation>
 <translation id="8125651784723647184">Գաղտնաբառերի փոխանցումը կառավարվում է ադմինիստրատորի կողմից</translation>
+<translation id="8126355825906412872">Ժպտացեք</translation>
 <translation id="8129265306888404830">Ձեր կազմակերպության (<ph name="EMAIL_DOMAIN" />) տրամադրած էլ․ հասցեն օգտագործելու համար դուք պետք է օգտագործեք կազմակերպության գրանցումը։ Եթե այս սարքը ձեր անձնական օգտագործման համար է նախատեսված, սարքում մուտք գործեք ձեր անձնական Google հաշիվ։</translation>
 <translation id="8130476996317833777">Թույլ չտալ կայքերին օգտագործել V8 լավարկիչը</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
@@ -10619,6 +10637,7 @@
 <translation id="8715480913140015283">Ֆոնային ներդիրն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="8716931980467311658">Ջնջե՞լ բոլոր Լինուքս հավելվածները, ինչպես նաև «Լինուքսի ֆայլեր» պանակի տվյալները <ph name="DEVICE_TYPE" /> սարքից:</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
+<translation id="8718560545710680911">Հարցրեք այս էջի միջոցով</translation>
 <translation id="8718994464069323380">Հայտնաբերվել է հպէկրան</translation>
 <translation id="8719472795285728850">Ընդլայնման գործողությունների լսում…</translation>
 <translation id="8719665168401479425">Օգտագործել դեմքի շարժումները՝ գործողություններ կատարելու համար</translation>
@@ -10936,6 +10955,7 @@
 <translation id="8944725102565796255">Եթե ուզում եք այս հաշիվն օգտագործել միայն մեկ անգամ, կարող եք <ph name="GUEST_LINK_BEGIN" />օգտագործել սարքը որպես հյուր<ph name="GUEST_LINK_END" />։ Եթե ուզում եք հաշիվ ավելացնել մեկ ուրիշի համար, <ph name="LINK_BEGIN" />ավելացրեք նոր օգտատեր<ph name="LINK_END" /> ձեր <ph name="DEVICE_TYPE" /> սարքում։
 
 Թույլտվությունները, որոնք տրամադրել եք կայքերին և հավելվածներին, կարող են կիրառվել այս հաշվի նկատմամբ։ Ձեր Google հաշիվները կարող եք կառավարել <ph name="SETTINGS_LINK_BEGIN" />Կարգավորումներում<ph name="SETTINGS_LINK_END" />։</translation>
+<translation id="8945050808870279132">Կնճռոտեք քիթը</translation>
 <translation id="8945274638472141382">Պատկերակների չափը</translation>
 <translation id="8945508919180478719">Ձայնագրման ստուդիայի խոսափող</translation>
 <translation id="8946359700442089734">Վրիպազերծման գործառույթները լրիվ միացված չեն այս <ph name="IDS_SHORT_PRODUCT_NAME" /> սարքի վրա:</translation>
@@ -11402,6 +11422,7 @@
 <translation id="971774202801778802">Էջանիշի URL-ն</translation>
 <translation id="973473557718930265">Դուրս գալ</translation>
 <translation id="973558314812359997">Մկնիկի չափսը</translation>
+<translation id="97381968209917373">Ջնջե՞լ «<ph name="CERT_NAME" />» հավաստագիրը</translation>
 <translation id="975893173032473675">Թարգմանության լեզուն</translation>
 <translation id="976499800099896273">Ցուցադրվում է ավտոմատ շտկումը հետարկելու երկխոսության պատուհանը <ph name="TYPED_WORD" /> բառի համար, որը ուղղվել և դարձել էր <ph name="CORRECTED_WORD" />։  Բացելու համար սեղմեք վեր սլաքը, անտեսելու համար՝ Escape։</translation>
 <translation id="976572010712028687">Հաստատեք, որ դուք ծնողն եք</translation>

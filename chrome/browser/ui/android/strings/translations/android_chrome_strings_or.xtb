@@ -153,7 +153,6 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
 <translation id="1702543251015153180">ଆପଣଙ୍କ ଗାଢ଼ା ଥିମ ସେଟିଂସ ବଦଳାଇବେ କି?</translation>
 <translation id="1702907158640575240">ପରିଚାଳିତ ବ୍ରାଉଜର</translation>
-<translation id="1710099199314114079">ଟାବଗୁଡ଼ିକୁ ସ୍ୱିଚ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1718835860248848330">ଶେଷ ଘଣ୍ଟାକର</translation>
 <translation id="1724977129262658800">ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏଡିଟ୍ କରିବାକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1726477445370128854">ଆପଣ ଭିଜିଟ କରିପାରନ୍ତି ବୋଲି Chrome ଭାବୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଏହା ପ୍ରିଲୋଡ କଲେ ଆପଣ ଶୀଘ୍ର ବ୍ରାଉଜ ଏବଂ ସର୍ଚ୍ଚ କରିପାରିବେ</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">1 ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="5114895953710637392">ଆପ ଫିଲ୍ଟର ସିଟ ବନ୍ଦ ଅଛି।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />କୁ</translation>
+<translation id="5116239826668864748">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଯେ କୌଣସି ସମୟରେ Chromeକୁ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="5122378528687922675">ଯଦି ତୁମେ ସହାୟତା ଆବଶ୍ୟକ କର, ତେବେ ତୁମ ବାପାମା (<ph name="PARENT_NAME_1" /> କିମ୍ବା <ph name="PARENT_NAME_2" />)ଙ୍କୁ କୁହ</translation>
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="5132942445612118989">ସମସ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡ, ଇତିବୃତ୍ତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">ଏଥିରେ ଖୋଲନ୍ତୁ…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ 1 ଫାଇଲ}other{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ # ଫାଇଲ}}</translation>
 <translation id="7815484226266492798">ଲମ୍ବା ସ୍କ୍ରିନସଟ୍</translation>
+<translation id="7819605256207059717">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7821130663268546430">ଆପଣ ଟାବ ସୁଇଚରରେ ସମସ୍ତ ଖୋଲା ଥିବା ଟାବ ପାଇପାରିବେ</translation>
 <translation id="7822705602465980873">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ, ଏକ ସୁରକ୍ଷା ଘଟଣା ପରେ Gmailରେ ସୁରକ୍ଷା ବ୍ୟବସ୍ଥାକୁ ବଢ଼ାଇବା ପରି ଏହି ଡାଟା ଆପଣଙ୍କୁ ସମଗ୍ର Google ସେବାରେ ସୁରକ୍ଷା ଦେବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଥାଏ।</translation>
 <translation id="7824665136384946951">ଆପଣଙ୍କ ସଂସ୍ଥା ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବନ୍ଦ କରିଦେଇଛି</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କର (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">ଆପଣଙ୍କ ଅନୁସାରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି}other{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା #କୁ ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="8672883760227492369">ଏହି ଡିଭାଇସରେ କିଛି ପାସୱାର୍ଡ ଶୀଘ୍ର କାମ କରିବା ବନ୍ଦ କରିଦେବ। ଆପଣ ଏହି ପାସୱାର୍ଡଗୁଡ଼ିକୁ Google Password Managerକୁ ମୁଭ କରିପାରିବେ।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଅପ କରନ୍ତୁ</translation>
 <translation id="8676789164135894283">ସାଇନ୍-ଇନ୍ ପାଇଁ ଯାଞ୍ଚକରଣ</translation>

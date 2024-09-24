@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2239100178324503013">ส่งเลย</translation>
 <translation id="2241693394036365668">มีการดาวน์โหลดไฟล์</translation>
+<translation id="2242389809734574253">ปิดข้อความแจ้งให้บันทึก IBAN แล้ว</translation>
 <translation id="2246264294482514010">10 x 12 นิ้ว</translation>
 <translation id="2246480341630108201">ผู้ปกครองยังไม่อนุญาตให้เข้าชม</translation>
 <translation id="2247789808226901522">บัตรหมดอายุ</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3272112314896217187">ป้อนรหัสยืนยัน <ph name="NUMBER_OF_DIGITS" /> หลัก</translation>
 <translation id="3272643614306383237">ไม่ถึง 1 MB บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="3273738040255912340">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">ข้อความแจ้งให้บันทึก IBAN ที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="3281350579597955952">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์นี้ใน <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์เหล่านี้ใน <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
 <translation id="3286372614333682499">แนวตั้ง</translation>
@@ -2124,6 +2126,7 @@
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4881808915112408168">24 x 31.5 นิ้ว</translation>
 <translation id="4882314601499260499">ไม่มีการบังคับใช้นโยบายผู้ใช้ องค์กรของคุณต้อง<ph name="LINK_BEGIN" />ยืนยันโดเมน<ph name="LINK_END" />เพื่อเพิ่มนโยบายผู้ใช้</translation>
+<translation id="4883911187498618061">ป้อนคำถามหรือพรอมต์</translation>
 <translation id="4885030148564729407">สถานที่ฮันนีมูนและสถานที่เที่ยวโรแมนติก</translation>
 <translation id="4885256590493466218">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
 <translation id="4887406273302438710">ปกป้องรหัสผ่านด้วย Windows Hello</translation>
@@ -2583,6 +2586,7 @@
 <translation id="572328651809341494">แท็บล่าสุด</translation>
 <translation id="5723873695528696965">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="5725297205162868298">ทางลัดจะขึ้นต้นด้วยอักขระ @ ไม่ได้: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">สามารถขอใช้ฟีเจอร์ขั้นสูงของเครื่องพิมพ์ได้</translation>
 <translation id="5729442113829771034">การศึกษาปฐมวัย</translation>
 <translation id="5730040223043577876">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="5732392974455271431">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
@@ -2594,6 +2598,7 @@
 <translation id="5743684619253032786">ผลิตภัณฑ์ดูแลเล็บ</translation>
 <translation id="5745733273847572235">สามารถขอตำแหน่งของคุณได้</translation>
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
+<translation id="5752327398324808817">ป้อน 1 คำหรือ 2 คำ</translation>
 <translation id="5759751709240058861">ใช้และเคลื่อนย้ายกล้องของคุณ</translation>
 <translation id="5763042198335101085">ป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
@@ -3089,6 +3094,7 @@
 <translation id="6671169470640320959">สินเชื่อรถยนต์</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
 <translation id="6677351035258626477">ฟาสต์ฟูด</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}other{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}}</translation>
 <translation id="6681790815630918386">บันทึก CVC แล้ว</translation>
 <translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6687230248707087982">ซอง (ธรรมดา)</translation>
@@ -3105,6 +3111,7 @@
 <translation id="6696575039575740785">ไม่อนุญาตให้ติดตั้งเว็บแอป</translation>
 <translation id="6698097747703777657">หากไม่ได้รับรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">สร้าง:</translation>
+<translation id="6698769547327354196">หากต้องการปิด Pix ใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">ตัวควบคุมเวลา</translation>
 <translation id="6702851555558236418">ซอฟต์แวร์ดนตรีและเสียง</translation>
 <translation id="6702919718839027939">การนำเสนอ</translation>
@@ -3407,6 +3414,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" /> <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">การดำเนินธุรกิจ</translation>
+<translation id="7244061187185055290">อธิบายสิ่งที่คุณกำลังค้นหาสั้นๆ</translation>
 <translation id="7251437084390964440">การกำหนดค่าเครือข่ายไม่เป็นไปตามมาตรฐาน ONC ระบบอาจไม่นำเข้าการกำหนดค่าบางส่วน
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>

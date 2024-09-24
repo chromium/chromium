@@ -297,6 +297,7 @@
 <translation id="4680828127924988555">Yüklemeyi İptal Et</translation>
 <translation id="469553575393225953">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chrome bunların yalnızca Chrome Web Mağazası'ndan indirilmesini önerir.</translation>
 <translation id="4710245680469034439">Doğadan, sanatçıların koleksiyonlarından ve diğer alanlardan ilham alan temalarla tarayıcınızı kişiselleştirin.</translation>
+<translation id="4720851490453439956">Google Güncelleyici Dahili Hizmeti</translation>
 <translation id="4724676981607797757">Desteklenmeyen bir protokol hatası nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="4728575227883772061">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Google Chrome şu anda çalışır durumdaysa, kapatıp yeniden deneyin.</translation>
 <translation id="4741235124132242877">Sabitlendi. Araç çubuğundan Google Lens'i tekrar kullanabilirsiniz.</translation>
@@ -458,6 +459,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6893363893008038481">Hesabı Chrome'dan kaldır</translation>
 <translation id="6896758677409633944">Kopyala</translation>
+<translation id="6930294499209825">Google yazılımlarınızı güncel tutar. Bu hizmet devre dışı bırakılırsa veya durdurulursa, Google yazılımlarınız güncel tutulmayacaktır; bu da onarılamayacak güvenlik açıkları meydana gelebileceği ve özelliklerin çalışmayabileceği anlamına gelir. Bu hizmet, kendisini kullanan herhangi bir Google yazılımı olmadığında kendi kendini kaldırır.</translation>
 <translation id="6933858244219479645">ChromeOS Sistemi</translation>
 <translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>
 <translation id="6943584222992551122">Bu kullanıcının göz atma verileri bu cihazdan silinecektir. Verileri kurtarmak için Chrome'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
@@ -507,6 +509,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7477130805345743099">Chrome, güvenli olmayan bağlantı kullanan siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="7481213027396403996">Chrome’un en güçlü güvenlik özelliklerinden faydalanın</translation>
 <translation id="749228101751499733">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. <ph name="SHORTCUT" />, Google hizmetlerindeki ayarlarınızı değiştirebilir.</translation>
+<translation id="7514258452813684157">Google Güncelleyici Hizmeti</translation>
 <translation id="7515191208480168435">Daha kolay erişmek için Google Lens'i sabitleyebilirsiniz</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Kapalı • Chrome, bu uzantının kaynağını doğrulayamıyor</translation>

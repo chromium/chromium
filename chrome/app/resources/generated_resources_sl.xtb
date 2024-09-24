@@ -293,7 +293,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1199814941632954229">Potrdila so v pripravi za te profile potrdil</translation>
 <translation id="120069043972472860">Ni mogoče gledati</translation>
 <translation id="1201402288615127009">Naprej</translation>
-<translation id="1201564082781748151">Če pozabite geslo, je mogoče obnoviti lokalne podatke.</translation>
 <translation id="1202116106683864634">Ali res želite izbrisati to geslo?</translation>
 <translation id="1202596434010270079">Aplikacija za kiosk je posodobljena. Odstranite ključek USB.</translation>
 <translation id="1202892408424955784">Spremljani izdelki</translation>
@@ -2233,6 +2232,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2546991196809436099">Povečajte sliko, če želite povečati elemente na zaslonu. Če želite vklopiti ali izklopiti lupo, pritisnite tipko za iskanje + Ctrl + M.</translation>
 <translation id="2548347166720081527">Omogočeno je dovoljenje <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ponastavi predpomnilnik profila za eSIM</translation>
+<translation id="2549766998450508148">Pritisnite 1–4 modifikatorske tipke (ctrl, alt, shift ali iskanje) in še 1 tipko. Izberete lahko tudi posamezno tipko.</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
 <translation id="2550212893339833758">Zamenjan pomnilnik</translation>
 <translation id="2550596535588364872">Dovolite razširitvi <ph name="EXTENSION_NAME" /> odpiranje datoteke <ph name="FILE_NAME" />?</translation>
@@ -10650,6 +10650,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8715480913140015283">Zavihek v ozadju uporablja kamero</translation>
 <translation id="8716931980467311658">Želite izbrisati vse aplikacije in podatke za Linux iz mape z datotekami za Linux v tej napravi <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopiraj povezavo</translation>
+<translation id="8718560545710680911">Vprašajte na tej strani</translation>
 <translation id="8718994464069323380">Zaznan je bil zaslon na dotik.</translation>
 <translation id="8719472795285728850">Poslušanje dejavnosti razširitev …</translation>
 <translation id="8719665168401479425">Uporaba obraznih potez za izvajanje dejanj</translation>

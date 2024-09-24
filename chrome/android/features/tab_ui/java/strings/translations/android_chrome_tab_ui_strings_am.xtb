@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">የመደብር መረጃን ይመልከቱ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ትርን ወደ ግራ አንቀሳቅስ</translation>
+<translation id="6590332670428149473">ለተጋራ የትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> የትር ቡድን የእርምጃ ምናሌ ይክፈቱ።</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ትር ተለውጧል}one{<ph name="MANY_CHANGED" /> ትር ተለውጧል}other{<ph name="MANY_CHANGED" /> ትሮች ተለውጠዋል}}</translation>
 <translation id="6694634756612002311">ማጋራትን አስተዳድር</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር ያለው የትር ቡድንን ይዘርጉ።}one{<ph name="TABS_COUNT_MANY" /> ትር ያለው የትር ቡድንን ይዘርጉ።}other{<ph name="TABS_COUNT_MANY" /> ትሮች ያሉት የትር ቡድንን ይዘርጉ።}}</translation>
 <translation id="9090098097337832354">ስለዚህ መደብር መረጃ ተዘግቷል</translation>
 <translation id="9111228330448174435">መገናኛን በአዲስ የትር ቡድን ፈጠራ ውስጥ አሳይ</translation>
+<translation id="9114502155681725011">ለትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> የትር ቡድን የእርምጃ ምናሌ ይክፈቱ።</translation>
 <translation id="9150694013019234766">ከማያው ግርጌ አጠገብ በትር ቡድንዎ ውስጥ ባሉ ትሮች መካከይ ይቀያይሩ</translation>
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>
 <translation id="9216898458513705996">ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="USER_EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል</translation>

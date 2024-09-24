@@ -302,6 +302,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4680828127924988555">Cancelar instalación</translation>
 <translation id="469553575393225953">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chrome recomienda instalarlos únicamente desde Chrome Web Store.</translation>
 <translation id="4710245680469034439">Personaliza tu navegador con temas inspirados en la naturaleza, colecciones de artistas y más</translation>
+<translation id="4720851490453439956">Servicio interno de la herramienta de actualización de Google</translation>
 <translation id="4724676981607797757">No se ha podido realizar la instalación debido a un error de protocolo no admitido.</translation>
 <translation id="4728575227883772061">Debido a un error desconocido, la instalación no se ha llevado a cabo. Si Google Chrome se está ejecutando, ciérralo y vuelve a intentarlo.</translation>
 <translation id="4741235124132242877">¡Fijado! Vuelve a usar Google Lens desde la barra de herramientas.</translation>
@@ -465,6 +466,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6885412569789873916">Aplicaciones de Chrome Beta</translation>
 <translation id="6893363893008038481">Eliminar cuenta de Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6930294499209825">Mantiene tu software de Google actualizado. Si este servicio se inhabilita o se detiene, tu software de Google no se mantendrá actualizado, por lo que las vulnerabilidades de seguridad que puedan surgir no se podrán corregir y es posible que algunas funciones no estén operativas. Este servicio se desinstala automáticamente cuando no lo usa ningún software de Google.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.1.</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -514,6 +516,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7477130805345743099">Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="7481213027396403996">Consigue la seguridad más potente de Chrome</translation>
 <translation id="749228101751499733">Mientras tengas la sesión iniciada, puedes usar tus contraseñas y más de tu cuenta de Google en Chrome. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
+<translation id="7514258452813684157">Servicio de herramienta de actualización de Google</translation>
 <translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desactivado • Chrome no puede verificar el origen de esta extensión</translation>

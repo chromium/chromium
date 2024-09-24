@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
+<translation id="6590332670428149473">Aktionsmenü für die freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit der Farbe <ph name="COLOR_NAME" /> öffnen.</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> Tab geändert}other{<ph name="MANY_CHANGED" /> Tabs geändert}}</translation>
 <translation id="6694634756612002311">Freigaben verwalten</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
 <translation id="9111228330448174435">Beim Erstellen einer neuen Tabgruppe kleines Fenster anzeigen</translation>
+<translation id="9114502155681725011">Aktionsmenü für die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit der Farbe <ph name="COLOR_NAME" /> öffnen.</translation>
 <translation id="9150694013019234766">Am unteren Bildschirmrand kannst du zwischen den Tabs in deiner Tabgruppe wechseln</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
 <translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>

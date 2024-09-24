@@ -290,7 +290,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1199814941632954229">Ziurtagiri-profil hauetarako ziurtagiriak hornitzen ari dira</translation>
 <translation id="120069043972472860">Oso txarra</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
-<translation id="1201564082781748151">Pasahitza ahazten bazaizu, gailuko datuak lehenera daitezke</translation>
 <translation id="1202116106683864634">Ziur sarbide-gakoa ezabatu nahi duzula?</translation>
 <translation id="1202596434010270079">Kiosko-aplikazioa eguneratu egin da. Kendu USB memoria.</translation>
 <translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
@@ -2217,6 +2216,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2546991196809436099">Handitu pantaila bertako elementuak hobeto ikusteko. Erabili Bilaketa + Ktrl + M lupa aktibatu eta desaktibatzeko.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> baimendu da</translation>
 <translation id="2548545707296594436">Berrezarri eSIMaren profilaren cachea</translation>
+<translation id="2549766998450508148">Sakatu 1-4 tekla aldatzaileak (Ktrl, Alt, Maius edo Bilaketa) eta beste tekla bat. Tekla bakarra ere hauta dezakezu.</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
 <translation id="2550212893339833758">Trukerako memoria</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> fitxategia irekitzeko baimena eman nahi diozu <ph name="EXTENSION_NAME" /> luzapenari?</translation>
@@ -3990,7 +3990,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3828953470056652895">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />Google Play-ren Zerbitzu-baldintzak<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoriaren erabilera handia - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB bidez fitxategiak partekatzeko biltegia</translation>
-<translation id="38298897782945211">Sareko aplikazio isolatuek automatikoki jarraitzen dute ezarpen hau.</translation>
+<translation id="38298897782945211">Sareko aplikazio isolatuek automatikoki jarraitzen diote ezarpen honi.</translation>
 <translation id="3830470485672984938">Erabili beste sarbide-gako bat</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Luzapen kaltegarri bat berriro aktibatu du administratzaileak}other{{NUM_EXTENSIONS} luzapen kaltegarri berriro aktibatu ditu administratzaileak}}</translation>
 <translation id="3834728400518755610">Mikrofonoaren ezarpenean egindako aldaketa aplikatzeko, itxi egin behar da Linux. Aurrera egiteko, itxi Linux.</translation>
@@ -10616,6 +10616,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8715480913140015283">Atzeko planoko fitxa bat kamera erabiltzen ari da</translation>
 <translation id="8716931980467311658">Linux aplikazio guztiak eta Linux-eko fitxategien karpetako datu guztiak ezabatu nahi dituzu <ph name="DEVICE_TYPE" /> gailutik?</translation>
 <translation id="8717864919010420084">Kopiatu esteka</translation>
+<translation id="8718560545710680911">Galdetu orri hau erabilita</translation>
 <translation id="8718994464069323380">Ukipen-pantaila bat hauteman da</translation>
 <translation id="8719472795285728850">Luzapenaren jarduerarik dagoen entzuten…</translation>
 <translation id="8719665168401479425">Erabili aurpegi-keinuak ekintzak gauzatzeko</translation>

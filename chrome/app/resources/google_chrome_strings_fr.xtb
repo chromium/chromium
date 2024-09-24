@@ -301,6 +301,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4680828127924988555">Annuler l'installation</translation>
 <translation id="469553575393225953">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chrome recommande de les installer uniquement à partir du Chrome Web Store</translation>
 <translation id="4710245680469034439">Personnalisez votre navigateur avec des thèmes inspirés par la nature, des collections d'artistes et plus encore</translation>
+<translation id="4720851490453439956">Service interne de mise à jour Google</translation>
 <translation id="4724676981607797757">Échec de l'installation en raison d'une erreur de protocole non compatible.</translation>
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, fermez-le puis réessayez.</translation>
 <translation id="4741235124132242877">Épinglé. Réutilisez Google Lens à partir de la barre d'outils.</translation>
@@ -464,6 +465,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6885412569789873916">Applications pour la version bêta de Chrome</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>
+<translation id="6930294499209825">Ce service maintient à jour votre logiciel Google, ce qui n'est pas le cas s'il est désactivé ou interrompu. Toute faille de sécurité susceptible d'apparaître ne pourra alors pas être corrigée, et il est possible que certaines options ne fonctionneront pas. Ce service se désinstalle automatiquement quand aucun logiciel Google ne l'utilise.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.1.</translation>
 <translation id="6943584222992551122">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
@@ -513,6 +515,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7477130805345743099">Chrome vous avertit avant de charger un site à l'aide d'une connexion non sécurisée</translation>
 <translation id="7481213027396403996">Renforcer la sécurité de Chrome</translation>
 <translation id="749228101751499733">Lorsque vous êtes connecté, vous pouvez utiliser vos mots de passe et d'autres éléments de votre compte Google dans Chrome. <ph name="SHORTCUT" /> peut modifier les paramètres de vos services Google.</translation>
+<translation id="7514258452813684157">Service de mise à jour Google</translation>
 <translation id="7515191208480168435">Vous pouvez épingler Google Lens pour y accéder facilement</translation>
 <translation id="7535429826459677826">Google Chrome pour les développeurs</translation>
 <translation id="7572537927358445944">Désactivée • Chrome ne peut pas vérifier d'où vient cette extension</translation>

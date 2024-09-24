@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">اسکین کرنے کی جگہ تک فٹ کریں</translation>
 <translation id="1343442362630695901">سالٹ لیک</translation>
 <translation id="1348657754632799065">ریکارڈنگ بار</translation>
+<translation id="1350909945461913813">کسی بھی قسم کے کام کو محفوظ کرنا یقینی بنائیں</translation>
 <translation id="1367951781824006909">ایک فائل منتخب کریں</translation>
 <translation id="1371650399987522809">‏Google AI سے تقویت یافتہ وال پیپر کے لیے تاثرات</translation>
 <translation id="1374385338586507108">وضاحت کریں</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">‏SDK ورژن:</translation>
 <translation id="2016697457005847575">ٹربل شوٹنگ اقدامات کو آزمائیں</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">‏تھیم منتخب کریں اور پھر اپنی AI سے تخلیق کردہ تصاویر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا انتخاب کریں۔</translation>
 <translation id="2045814230297767491">کٹلری</translation>
 <translation id="2047316797244836561">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور اسکرین سیور دیکھنے کے لیے صفحے کو دوبارہ لوڈ کریں۔</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,7 +246,6 @@
 <translation id="2080070583977670716">مزید ترتیبات</translation>
 <translation id="2082932131694554252">کی بورڈ کلید تفویض کی گئی</translation>
 <translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
-<translation id="2085876078937250610">محفوظ کریں…</translation>
 <translation id="2086091080968010660">وقت پر مبنی تبدیلیاں ممکن ہے درست نہ ہوں۔ ترتیبات میں سسٹم کے مقام کی رسائی کو آن کریں۔</translation>
 <translation id="2102231663024125441">ٹیکسٹ میں ترمیم کرنا</translation>
 <translation id="2102648867808308635">اس صفحہ کو پڑھنے میں میری مدد کریں</translation>
@@ -319,6 +320,7 @@
 <translation id="242825218556404975">کسی آواز کا پتہ نہیں چلا</translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
+<translation id="2468124392950503650">تخلیق کرنے کیلئے پرامپٹ منتخب کریں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
 <translation id="2472215337771558851">‏اGoogle AI سے تقویت یافتہ کے ساتھ ایک مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے لکھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="2480572840229215612">کیکڑے</translation>
 <translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
@@ -687,6 +689,7 @@
 <translation id="4474142134969976028">کوئی مماثل نتیجہ نہیں ہے</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4486524074141928967">آپ <ph name="TIME" /> پر سائن آؤٹ ہو جائیں گے</translation>
 <translation id="4500722292849917410">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt, shift, یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
@@ -910,6 +913,7 @@
 <translation id="5595623927872580850">خاکستری</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
+<translation id="5613201299517339763">آپ سائن آؤٹ ہو گئے ہیں</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5630438231335788050">باہاؤس</translation>
 <translation id="5631759159893697722">تجریدی</translation>
@@ -974,6 +978,7 @@
 <translation id="5931523347251946569">فائل نہیں ملی</translation>
 <translation id="5938286923316838007">اس مواد کے لیے ریکارڈنگ کے نام تخلیق نہیں کیے جا سکتے</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
+<translation id="5942727615796467094">منتظم <ph name="MANAGER" /> نے اس <ph name="DEVICE_TYPE" /> کے استعمال کیے جا سکنے کا وقت مقرر کیا ہے</translation>
 <translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
 <translation id="5946538341867151940">‏آپ ابھی تک منسلک نہیں ہیں۔ اگر آپ کا موبائل کیریئر حسب ضرورت APN تجویز کرتا ہے تو "New APN +" کو منتخب کر کے APN کی معلومات درج کریں۔</translation>
 <translation id="5947266287934282605">اگر مہینے کا آخری دن اس دن سے پہلے ہے، تو ڈیٹا کو مہینے کے آخری دن ری سیٹ کر دیا جائے گا</translation>
@@ -1065,6 +1070,7 @@
 <translation id="6352210854422428614">مختلف سیارے</translation>
 <translation id="6359706544163531585">ہلکی تھیم غیر فعال کریں</translation>
 <translation id="6359919876285606596">یہ عمل مستقل ہوتا ہے اور کالعدم نہیں کیا جا سکتا ہے</translation>
+<translation id="6368342879959028556">‏جب آپ ’AI کے ذریعے تخلیق کریں‘ منتخب کریں تو ایک حسب ضرورت پرامپٹ لکھیں۔ یا آپ کوئی تھیم منتخب کرنے کیلئے ’AI وال پیپرز‘ منتخب کریں، پھر اپنے AI وال پیپر کو ذاتی نوعیت کا بنانے کیلئے انڈر لائن کردہ الفاظ کو منتخب کریں۔</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="6373461326814131011">تالاب</translation>
 <translation id="6379086450106841622">ٹچ اسکرین</translation>
@@ -1088,6 +1094,7 @@
 <translation id="6447630859861661624">اکاؤنٹ کی ترتیبات پر جائیں</translation>
 <translation id="6462978824459367242">‏APN شامل کریں بٹن اب فعال ہے</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{صفحہ دوبارہ اسکین کریں؟}=1{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}other{{PAGE_NUMBER} صفحہ دوبارہ اسکین کریں؟}}</translation>
+<translation id="6468146470109254228">آپ کے 3 حالیہ ترین پرامپٹس اور آؤٹ پٹس۔ آپ ان تک رسائی صرف اسی صورت میں کر سکتے ہیں جب آپ وال پیپر اور اسٹائل استعمال کر رہے ہوں۔</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">کشتیاں</translation>
 <translation id="64778964625672495">گہرا سرخ</translation>
@@ -1133,6 +1140,16 @@
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6659594942844771486">براؤزر ٹیب</translation>
 <translation id="66621959568103627">مرجان جیسا گلابی</translation>
+<translation id="6667885109186363316">‏‫<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          مزید منفرد اور متنوع AI سے تخلیق کردہ تصاویر کے اختیارات حاصل کرنے کے لیے "مجھے آئیڈیاز فراہم کریں" کو منتخب کریں۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          جب آپ AI کے ذریعے تخلیق کرتے ہیں تو تصاویر تخلیق کرنے اور پروڈکٹ کو بہتر بنانے کیلئے پرامپٹ Google AI سرورز کو بھیجا جاتا ہے، یہ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> سے مشروط ہے۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          تخلیق کر سکنے والا AI تجرباتی ہے۔ ابھی ڈیولپمنٹ کے ابتدائی مرحلے میں ہے اور ابھی سب کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="6673898378497337661">کی بورڈ کی چمک کو بڑھائیں کریں</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6694534975463174713">لاک</translation>

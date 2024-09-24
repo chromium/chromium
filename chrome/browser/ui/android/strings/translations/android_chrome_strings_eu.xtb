@@ -153,7 +153,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> webgunean aurrera egiteko beste modu batzuk proba ditzakezu.</translation>
 <translation id="1702543251015153180">Gai ilunaren ezarpenak aldatu nahi dituzu?</translation>
 <translation id="1702907158640575240">Kudeatutako arakatzailea</translation>
-<translation id="1710099199314114079">Aldatu edo itxi fitxak</translation>
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1724977129262658800">Pasahitza editatzeko, desblokeatu gailua</translation>
 <translation id="1726477445370128854">Ustez bisitatuko dituzun orriak aurrez kargatzen baditu Chrome-k, azkarrago arakatu ahalko dituzu webguneak, bai eta bilaketak bizkorrago egin ere.</translation>
@@ -297,6 +296,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2450083983707403292">Berriro hasi nahi duzu <ph name="FILE_NAME" /> deskargatzen?</translation>
 <translation id="2451607499823206582">Jarraipena egiten</translation>
 <translation id="2453860139492968684">Amaitu</translation>
+<translation id="2461378706168271257">Bilatu fitxetan</translation>
 <translation id="2461822463642141190">Oraingoa</translation>
 <translation id="2468444275314013497">Zure arakatzaileak itxura ona du</translation>
 <translation id="2472163211318554013">Hasi saioa Chrome-ri etekinik handiena ateratzeko</translation>
@@ -601,6 +601,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3847319713229060696">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3858860766373142691">Izena</translation>
+<translation id="3873174561423636563">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure <ph name="FIELDS_STRING" /> partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />zerbitzu-baldintzak<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3899682235662194879">Itxi ezkutuko moduko fitxa guztiak</translation>
 <translation id="3900966090527141178">Esportatu pasahitzak</translation>
@@ -876,6 +877,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="510275257476243843">Ordubete gelditzen da</translation>
 <translation id="5114895953710637392">Aplikazioaren iragazki-orria itxita dago.</translation>
 <translation id="5115811374190515607">hona: <ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean</translation>
 <translation id="5122378528687922675">Laguntza behar baduzu, eskatu gurasoari (<ph name="PARENT_NAME_1" /> edo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
@@ -1458,6 +1460,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7656721520530864426">Webgunerik ez</translation>
 <translation id="7656862631699126784">Aktibatu ezkutuko moduko fitxak blokeatzeko ezarpena</translation>
 <translation id="7658239707568436148">Utzi</translation>
+<translation id="7663320421139257046">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure <ph name="FIELDS_STRING" /> partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="766587987807204883">Artikuluak agertuko dira hemen, nahi duzunean irakur ditzazun, baita konektatuta ez bazaude ere</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> itxi dira</translation>
@@ -1489,6 +1492,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7810647596859435254">Ireki honekin…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Fitxategi guztiak, 1 fitxategi zerrendan}other{Fitxategi guztiak, # fitxategi zerrendan}}</translation>
 <translation id="7815484226266492798">Orri osoaren pantaila-argazkia</translation>
+<translation id="7819605256207059717">Zure erakundeak blokeatu du</translation>
 <translation id="7821130663268546430">Irekita dauden fitxa guztiak fitxa-aldatzailean aurkituko dituzu</translation>
 <translation id="7822705602465980873">Saioa hasita daukazunean, datuak Google-ko kontuarekin lotzen dira Google-ren zerbitzu guztietan babestuta egon zaitezen; adibidez, Gmail-en babesa handiagotzen da segurtasun-gertakariren bat izan bada.</translation>
 <translation id="7824665136384946951">Erakundeak Arakatze segurua desaktibatu du</translation>
@@ -1685,7 +1689,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="864544049772947936">Kudeatu leihoak (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Erabili Chrome zure erara</translation>
 <translation id="8664979001105139458">Badago izen hori duen fitxategi bat</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Zure erakundeak blokeatu du}other{# blokeatu ditu zure erakundeak}}</translation>
 <translation id="8672883760227492369">Gailu honetako pasahitz batzuek funtzionatzeari utziko diote laster. Google-ren Pasahitz-kudeatzailea zerbitzura eraman ditzakezu pasahitzok.</translation>
 <translation id="8676276370198826499">Erregistratu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="8676789164135894283">Saioa hasteko egiaztapenak</translation>

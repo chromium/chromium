@@ -290,7 +290,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1199814941632954229">Certifikatat po përgatiten për këto profile të certifikatave</translation>
 <translation id="120069043972472860">Nuk shikohet</translation>
 <translation id="1201402288615127009">Para</translation>
-<translation id="1201564082781748151">Të dhënat lokale mund të restaurohen nëse e harron fjalëkalimin tënd</translation>
 <translation id="1202116106683864634">E konfirmon që dëshiron ta fshish këtë çelës kalimi?</translation>
 <translation id="1202596434010270079">Aplikacioni "kioskë" është përditësuar. Hiqe memorien USB.</translation>
 <translation id="1202892408424955784">Produktet e monitoruara</translation>
@@ -2215,6 +2214,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2546991196809436099">Zmadhoje për t'i bërë më të mëdhenj artikujt në ekran. Përdor "Kërko" + Ctrl + M për të aktivizuar dhe çaktivizuar zmadhuesin.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> është lejuar</translation>
 <translation id="2548545707296594436">Rivendos memorien specifike të profilit të eSIM</translation>
+<translation id="2549766998450508148">Shtyp 1-4 taste modifikuese (Ctrl, Alt, Shift ose kërkimi) dhe 1 tast tjetër. Mund të zgjedhësh po ashtu vetëm një tast.</translation>
 <translation id="2549985041256363841">Nis regjistrimin</translation>
 <translation id="2550212893339833758">Memoria e shkëmbyer</translation>
 <translation id="2550596535588364872">T'i lejohet <ph name="EXTENSION_NAME" /> të hapë <ph name="FILE_NAME" />?</translation>
@@ -10617,6 +10617,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8715480913140015283">Skeda në sfond po përdor kamerën tënde</translation>
 <translation id="8716931980467311658">Të fshihen të gjitha aplikacionet dhe të dhënat e Linux në dosjen e skedarëve të Linux nga kjo pajisje <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopjo lidhjen</translation>
+<translation id="8718560545710680911">Pyet duke përdorur këtë faqe</translation>
 <translation id="8718994464069323380">U zbulua ekran me prekje</translation>
 <translation id="8719472795285728850">Po dëgjon për aktivitete shtesë...</translation>
 <translation id="8719665168401479425">Përdor gjestet e fytyrës për të kryer veprime</translation>

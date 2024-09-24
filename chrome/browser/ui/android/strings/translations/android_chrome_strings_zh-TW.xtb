@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
 <translation id="1702543251015153180">要變更深色主題設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
-<translation id="1710099199314114079">切換或關閉分頁</translation>
 <translation id="1718835860248848330">過去 1 小時</translation>
 <translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
 <translation id="1726477445370128854">Chrome 會預先載入你可能造訪的網頁，加快你瀏覽及搜尋的速度</translation>
@@ -878,6 +877,7 @@
 <translation id="510275257476243843">還剩 1 小時</translation>
 <translation id="5114895953710637392">應用程式篩選功能表已關閉。</translation>
 <translation id="5115811374190515607">移至<ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
 <translation id="5122378528687922675">如需協助，請找家長 (<ph name="PARENT_NAME_1" /> 或 <ph name="PARENT_NAME_2" />) 幫忙</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
@@ -1492,6 +1492,7 @@
 <translation id="7810647596859435254">選擇開啟工具…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
+<translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7821130663268546430">你可以在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
@@ -1688,7 +1689,6 @@
 <translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
 <translation id="8664215986015753476">以個人化的方式使用 Chrome</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{貴機構已封鎖}other{貴機構已封鎖這 # 個下載項目}}</translation>
 <translation id="8672883760227492369">這部裝置上的部分密碼不久後將無法存取，你可以將這些密碼移到 Google 密碼管理工具。</translation>
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">登入驗證</translation>

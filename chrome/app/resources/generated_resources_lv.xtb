@@ -292,7 +292,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1199814941632954229">Tiek nodrošināti sertifikāti šiem sertifikātu profiliem:</translation>
 <translation id="120069043972472860">Video nav skatāms</translation>
 <translation id="1201402288615127009">Tālāk</translation>
-<translation id="1201564082781748151">Lokālos datus var atjaunot, ja aizmirstat savu paroli.</translation>
 <translation id="1202116106683864634">Vai tiešām vēlaties dzēst šo piekļuves atslēgu?</translation>
 <translation id="1202596434010270079">Kioska lietotne ir atjaunināta. Lūdzu, izņemiet USB atmiņas karti.</translation>
 <translation id="1202892408424955784">Izsekotie produkti</translation>
@@ -2219,6 +2218,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2546991196809436099">Tuviniet, lai palielinātu ekrānā redzamos vienumus. Lai ieslēgtu vai izslēgtu lupu, nospiediet meklēšanas taustiņu + Ctrl + M.</translation>
 <translation id="2548347166720081527">Piešķirta atļauja “<ph name="PERMISSION" />”</translation>
 <translation id="2548545707296594436">Atiestatīt eSIM profila kešatmiņu</translation>
+<translation id="2549766998450508148">Nospiediet 1–4. modificētājtaustiņu (Ctrl, Alt, Shift vai meklēšanas taustiņu) un vēl vienu taustiņu. Varat arī atlasīt vienu taustiņu.</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="2550212893339833758">Apmainītā atmiņa</translation>
 <translation id="2550596535588364872">Vai atļaut paplašinājumam <ph name="EXTENSION_NAME" /> atvērt failu <ph name="FILE_NAME" />?</translation>
@@ -10625,6 +10625,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8715480913140015283">Fona cilne izmanto ierīces kameru.</translation>
 <translation id="8716931980467311658">Vai dzēst visas Linux lietojumprogrammas un datus, kas ievietoti Linux failu mapē, no šīs ierīces: <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopēt saiti</translation>
+<translation id="8718560545710680911">Vaicāt, izmantojot informāciju šajā lapā</translation>
 <translation id="8718994464069323380">Konstatēts skārienekrāns</translation>
 <translation id="8719472795285728850">Notiek paplašinājuma darbību uztveršana...</translation>
 <translation id="8719665168401479425">Izmantot sejas žestus, lai veiktu darbības</translation>

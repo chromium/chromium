@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>
+<translation id="6590332670428149473">Odpiranje menija z dejanji za deljeno skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> zavihek je spremenjen}one{<ph name="MANY_CHANGED" /> zavihek je spremenjen}two{<ph name="MANY_CHANGED" /> zavihka sta spremenjena}few{<ph name="MANY_CHANGED" /> zavihki so spremenjeni}other{<ph name="MANY_CHANGED" /> zavihkov je spremenjenih}}</translation>
 <translation id="6694634756612002311">Upravljaj deljenje</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Razširitev skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
 <translation id="9111228330448174435">Prikaz pogovornega okna pri ustvarjanju nove skupine zavihkov</translation>
+<translation id="9114502155681725011">Odpiranje menija z dejanji za skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Preklapljanje med zavihki v skupini zavihkov pri dnu zaslona</translation>
 <translation id="9169594135889675189">Skupini dodaj nov zavihek</translation>
 <translation id="9216898458513705996">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" /></translation>

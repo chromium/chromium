@@ -153,7 +153,6 @@
 <translation id="1696555181932908973">Փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="1702543251015153180">Փոխե՞լ մուգ թեմայի կարգավորումները</translation>
 <translation id="1702907158640575240">Կառավարվող դիտարկիչ</translation>
-<translation id="1710099199314114079">Անցնել մյուս ներդիր կամ փակել ներդիրները</translation>
 <translation id="1718835860248848330">Վերջին 1 ժամվա</translation>
 <translation id="1724977129262658800">Ապակողպեք էկրանը՝ ձեր գաղտնաբառը փոխելու համար</translation>
 <translation id="1726477445370128854">Դուք կարող եք արագացնել Chrome-ի աշխատանքը, եթե թույլատրեք, որ այն նախապես էջեր բեռնի։</translation>
@@ -297,6 +296,7 @@
 <translation id="2450083983707403292">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="2451607499823206582">Հետագծում</translation>
 <translation id="2453860139492968684">Ավարտել</translation>
+<translation id="2461378706168271257">Որոնեք ձեր ներդիրներում</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2468444275314013497">Ձեր դիտարկիչն ապահով է</translation>
 <translation id="2472163211318554013">Մտեք հաշիվ՝ Chromе-ի բոլոր գործառույթներից օգտվելու համար</translation>
@@ -601,6 +601,7 @@
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3858860766373142691">Անուն</translation>
+<translation id="3873174561423636563">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3899682235662194879">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="3900966090527141178">Գաղտնաբառերի արտահանում</translation>
@@ -876,6 +877,7 @@
 <translation id="510275257476243843">Մնացել է 1 ժամ</translation>
 <translation id="5114895953710637392">Ըստ հավելվածի զտման աղյուսակը փակված է։</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
+<translation id="5116239826668864748">Հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում</translation>
 <translation id="5122378528687922675">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME_1" /> կամ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">Կայքեր չկան</translation>
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7663320421139257046">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> փակվեց</translation>
@@ -1489,6 +1492,7 @@
 <translation id="7810647596859435254">Բացել հավելվածով…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Բոլոր ֆայլերը, 1 ֆայլ ցանկում}one{Բոլոր ֆայլերը, # ֆայլ ցանկում}other{Բոլոր ֆայլերը, # ֆայլ ցանկում}}</translation>
 <translation id="7815484226266492798">Երկար սքրինշոթ</translation>
+<translation id="7819605256207059717">Արգելափակվել է ձեր կազմակերպության կողմից</translation>
 <translation id="7821130663268546430">Բոլոր բացված ներդիրները կարող եք տեսնել ներդիրների փոխանջատիչում</translation>
 <translation id="7822705602465980873">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="7824665136384946951">Ձեր կազմակերպությունն անջատել է Անվտանգ դիտարկումը</translation>
@@ -1685,7 +1689,6 @@
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Կարգավորեք Chrome-ն ըստ ձեր ճաշակի</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
-<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Արգելափակվել է ձեր կազմակերպության կողմից}one{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}other{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}}</translation>
 <translation id="8672883760227492369">Այս սարքում պահված որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="8676789164135894283">Ծանուցումներ մուտքի մասին</translation>

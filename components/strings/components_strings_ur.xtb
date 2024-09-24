@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
+<translation id="2242389809734574253">‏‫IBAN محفوظ کریں بند ہے۔</translation>
 <translation id="2246264294482514010">‏‎10 x 12 انچ</translation>
 <translation id="2246480341630108201">آپ کے والدین نے ابھی تک یہ نہیں کہا ہے کہ یہ ٹھیک ہے</translation>
 <translation id="2247789808226901522">کارڈ کی میعاد ختم ہو گئی ہے</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> عددی توثیقی کوڈ درج کریں</translation>
 <translation id="3272643614306383237">‏1 MB سے کم۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="3273738040255912340">‏آپ کا منتظم آپ کی پروفائل اور براؤزر میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر بھی کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">‏‫IBAN محفوظ کریں پورا کھلا ہوا ہے۔</translation>
 <translation id="3281350579597955952">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
@@ -2126,6 +2128,7 @@
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4881808915112408168">‏‎24 x 31.5 انچ</translation>
 <translation id="4882314601499260499">صارف کی کوئی پالیسی لاگو نہیں ہوئی ہے۔ صارف کی پالیسیاں شامل کرنے کے لیے، آپ کی تنظیم کا <ph name="LINK_BEGIN" />آپ کے ڈومین کی توثیق<ph name="LINK_END" /> کرنا ضروری ہے۔</translation>
+<translation id="4883911187498618061">اپنا سوال یا پرامپٹ درج کریں</translation>
 <translation id="4885030148564729407">ہنی مونز اور رومانی مقامات</translation>
 <translation id="4885256590493466218">چیک آؤٹ کرنے پر <ph name="CARD_DETAIL" /> سے ادائیگی کریں۔</translation>
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
@@ -2585,6 +2588,7 @@
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5723873695528696965">‏اپنے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کریں</translation>
 <translation id="5725297205162868298">شارٹ کٹ @ حروف سے شروع نہیں ہو سکتا: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">پرنٹر کی جدید ترین خصوصیات استعمال کرنے کیلئے پوچھ سکتا ہے</translation>
 <translation id="5729442113829771034">ابتدائے طفولیت کی تعلیم</translation>
 <translation id="5730040223043577876">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5732392974455271431">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
@@ -2596,6 +2600,7 @@
 <translation id="5743684619253032786">ناخن کی نگہداشت کے پروڈکٹس</translation>
 <translation id="5745733273847572235">سائٹ آپ کا مقام پوچھ سکتی ہے</translation>
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
+<translation id="5752327398324808817">ایک یا دو لفظ درج کریں</translation>
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
@@ -3092,6 +3097,7 @@
 <translation id="6671169470640320959">آٹو فائنانسنگ</translation>
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="6677351035258626477">فاسٹ فوڈ</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{‏جب آپ Chrome میں خریداری کرتے ہیں، تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختیار کے طور پر دیکھیں}other{‏جب آپ Chrome میں خريداری کرتے ہيں تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختيار کے طور پر ديکھيں}}</translation>
 <translation id="6681790815630918386">‏CVC محفوظ ہو گیا</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6687230248707087982">لفافہ (پلین)</translation>
@@ -3108,6 +3114,7 @@
 <translation id="6696575039575740785">ویب ایپس کو انسٹال کرنے کی اجازت نہیں ہے</translation>
 <translation id="6698097747703777657">آپ کا کوڈ موصول نہیں ہوا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">بنا دی گئی:</translation>
+<translation id="6698769547327354196">‏‫Chrome میں Pix کو آف کرنے کے لیے، اپنی <ph name="BEGIN_LINK1" />ادائیگی کی ترتیبات<ph name="END_LINK1" /> پر جائیں</translation>
 <translation id="67007264085648978">ٹائم اسکربر</translation>
 <translation id="6702851555558236418">آڈیو اور موسیقی سافٹ ویئر</translation>
 <translation id="6702919718839027939">پیش کریں</translation>
@@ -3408,6 +3415,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />، <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">کاروباری آپریشنز</translation>
+<translation id="7244061187185055290">چند الفاظ میں اس چیز کی وضاحت کریں جسے آپ تلاش کر رہے ہیں</translation>
 <translation id="7251437084390964440">‏نیٹ ورک کنفیگریشن ONC معیار کی تعمیل نہیں کرتی ہے۔ کنفیگریشن کے حصوں کو درآمد نہیں کیا جا سکتا ہے۔
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>

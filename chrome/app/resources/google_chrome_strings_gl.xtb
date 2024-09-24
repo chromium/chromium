@@ -302,6 +302,7 @@
 <translation id="4680828127924988555">Cancelar instalación</translation>
 <translation id="469553575393225953">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chrome recomenda que os instales só desde Chrome Web Store</translation>
 <translation id="4710245680469034439">Personaliza o navegador con temas inspirados na natureza, en coleccións de artistas e moito máis</translation>
+<translation id="4720851490453439956">Servizo interno de Google Updater</translation>
 <translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4741235124132242877">Elemento fixado! Usa Google Lens de novo desde a barra de ferramentas</translation>
@@ -465,6 +466,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
 <translation id="6893363893008038481">Quitar conta de Chrome</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6930294499209825">Mantén actualizado o software de Google. Se este servizo se desactiva ou se detén, o software de Google non se actualizará, o que quere dicir que non se poderán solucionar as vulnerabilidades de seguranza que poidan xurdir e que poderían afectar a marcha das funcións. Este servizo desinstalarase se ningún software de Google o usa.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -514,6 +516,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7477130805345743099">Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="749228101751499733">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome. <ph name="SHORTCUT" /> pode cambiar a túa configuración dos servizos de Google.</translation>
+<translation id="7514258452813684157">Servizo de Google Updater</translation>
 <translation id="7515191208480168435">Podes fixar Google Lens para acceder facilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desactivado • Chrome non pode verificar de onde procede esta extensión</translation>

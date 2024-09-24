@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ: ਸਥਾਪਨਾਕਾਰ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਸ਼ੁਰੂ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ਨੈੱਟਵਰਕ ਸਾਈਨ-ਇਨ - Chrome</translation>
 <translation id="2970681950995291301">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸੈਟਿੰਗਾਂ ਪੰਨੇ 'ਤੇ ਜਾ ਕੇ Chrome ਤੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="2994465299455873643">ਜੇ <ph name="BROWSER_NAME" /> ਪੁਰਾਣਾ ਹੋ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਇਹ ਇਨਕ੍ਰਿਪਸ਼ਨ ਸੇਵਾਵਾਂ ਅਤੇ ਇਸਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰਨ ਦਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕਾ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦੀ ਹੈ। ਜੇ ਇਹ ਸੇਵਾ ਬੰਦ ਹੈ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ <ph name="BROWSER_NAME" /> ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੇ ਅਤੇ <ph name="BROWSER_NAME" /> ਆਪਣੇ ਆਪ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਨਾ ਕਰ ਸਕੇ।</translation>
 <translation id="3018957014024118866">ਨਾਲ ਹੀ Chrome (<ph name="URL" />) ਤੋਂ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="3037838751736561277">Google Chrome ਬੈਕਗ੍ਰਾਊਂਡ ਮੋਡ ਵਿੱਚ ਹੈ।</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">Chrome ਨੂੰ ਇਹ ਪਤਾ ਲੱਗਾ ਕਿ <ph name="EXTENSION_NAME" /> ਵਿੱਚ ਮਾਲਵੇਅਰ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3697952514309507634">ਹੋਰ Chrome ਪ੍ਰੋਫਾਈਲਾਂ</translation>
+<translation id="3700276346088749847">ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3703994572283698466">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="3716540481907974026">ChromeOS Flex ਵਰਜਨ</translation>
 <translation id="3718181793972440140">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ 1 ਆਈਟਮ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ।</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">Chrome ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਅਤੇ ਸਰੋਤਾਂ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਇਨ੍ਹਾਂ ਟੈਬਾਂ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="459622048091363950">Chrome ਤੱਕ ਪਹੁੰਚ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਲਈ ਪੁੱਛ ਸਕਣਗੀਆਂ।</translation>
 <translation id="4600710005438004015">Chrome ਨਵੀਨਤਮ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਇਸ ਲਈ ਤੁਹਾਨੂੰ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸਥਿਰ ਨਹੀਂ ਮਿਲ ਰਹੇ ਹਨ।</translation>
+<translation id="4601439950572737842">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="4624065194742029982">Chrome ਇਨਕੋਗਨਿਟੋ</translation>
 <translation id="4627412468266359539">ਵਿਕਲਪਿਕ: ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ Google ਨੂੰ ਭੇਜ ਕੇ ChromeOS Flex ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
 <translation id="4633000520311261472">Chrome ਨੂੰ ਵੱਧ ਸੁਰੱਖਿਅਤ ਬਣਾਉਣ ਲਈ, ਅਸੀਂ ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੈ, ਜੋ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ਵਿੱਚ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹਨ ਅਤੇ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਗਈਆਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>

@@ -290,7 +290,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1199814941632954229">Certifikat tillhandahålls för dessa certifikatprofiler</translation>
 <translation id="120069043972472860">Går inte att titta på</translation>
 <translation id="1201402288615127009">Nästa</translation>
-<translation id="1201564082781748151">Lokal data kan återställas om du glömmer ditt lösenord</translation>
 <translation id="1202116106683864634">Vill du radera den här nyckeln?</translation>
 <translation id="1202596434010270079">Kioskappen har uppdaterats. Ta bort USB-minnet.</translation>
 <translation id="1202892408424955784">Bevakade produkter</translation>
@@ -2230,6 +2229,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2546991196809436099">Zooma in för att göra objekt på skärmen större. Aktivera och inaktivera skärmförstoring med Sök + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> har tillåtits</translation>
 <translation id="2548545707296594436">Återställ cacheminne för eSIM-profil</translation>
+<translation id="2549766998450508148">Tryck på en till fyra specialtangenter (Ctrl, Alt, Skift eller Sök) och en till tangent. Du kan även välja en enda tangent.</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
 <translation id="2550212893339833758">Växlingsminne</translation>
 <translation id="2550596535588364872">Tillåter du att <ph name="FILE_NAME" /> öppnas med <ph name="EXTENSION_NAME" />?</translation>
@@ -10639,6 +10639,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8715480913140015283">En flik i bakgrunden använder kameran</translation>
 <translation id="8716931980467311658">Vill du radera alla Linux-program och all data i mappen för Linux-filer från denna <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopiera länk</translation>
+<translation id="8718560545710680911">Fråga med den här sidan</translation>
 <translation id="8718994464069323380">En pekskärm hittades</translation>
 <translation id="8719472795285728850">Lyssnar efter aktivitet i tillägg …</translation>
 <translation id="8719665168401479425">Utföra åtgärder med ansiktsrörelser</translation>

@@ -6468,11 +6468,6 @@ Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</transla
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5962271004971310788">Extensies die de gebruiker in de incognitomodus moet toestaan om te kunnen navigeren in de incognitomodus</translation>
 <translation id="5963752574792883406">poort 990 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
-<translation id="5964583455815172553">Als je het beleid instelt, geef je een lijst op met geïsoleerde web-apps (IWA's) die op de achtergrond worden geïnstalleerd.
-      IWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de IWA wordt geïdentificeerd.
-      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
-
-      Elk lijstitem van het beleid is een object met <ph name="URL_LABEL" /> van het updatemanifest en de webbundel-ID van de geïsoleerde web-app. Beide velden zijn verplicht.</translation>
 <translation id="596523880465577341">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
 <translation id="596732417280023843">De naam van het certificaatprofiel.</translation>
@@ -6608,27 +6603,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6102449843040973938">Niet voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
 <translation id="610892566190435199">Rapportage van aan/uit-status van apparaat aanzetten</translation>
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
-<translation id="6112524153927257380">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
-
-      Er zijn veel verschillende typen downloadmeldingen in Chrome, die grofweg zijn onder te verdelen in de volgende categorieën (meer informatie over Safe Browsing-analyseresultaten vind je op https://support.google.com/chrome/?p=ib_download_blocked):
-
-* Schadelijk, zoals gemarkeerd door de Safe Browsing-server
-* Ongebruikelijk of ongewenst, zoals gemarkeerd door de Safe Browsing-server
-* Een gevaarlijk bestandstype (bijv. alle swf-downloads en veel exe-downloads)
-
-Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van deze subsets geblokkeerd:
-
-0: Geen speciale beperkingen. Standaard.
-
-      1: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
-
-      2: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert ongebruikelijke of ongewenste bestanden die zijn gemarkeerd door de Safe Browsing-server EN blokkeert alle gevaarlijke bestandstypen. Alleen aanbevolen voor OE's/browsers/gebruikers met een hoge tolerantie voor foutpositieven.
-
-      3: Blokkeert alle downloads. Niet aanbevolen, behalve voor speciale toepassingen.
-
-      4: Blokkeert schadelijke bestanden die zijn gemarkeerd door de Safe Browsing-server, blokkeert geen gevaarlijke bestandstypen. Aanbevolen.
-
-      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent zijn geactiveerd als voor downloads die via de menuoptie Link downloaden... zijn geactiveerd. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt getoond of voor de afdrukoptie Opslaan als pdf. Lees meer over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Toegestaan gedrag herstellen.</translation>
 <translation id="6119207979839638596">Dit beleid is verwijderd in M75 nadat het maximale TLS-versiebeleid is verwijderd uit <ph name="PRODUCT_NAME" />.
 

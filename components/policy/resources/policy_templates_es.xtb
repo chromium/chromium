@@ -6518,11 +6518,6 @@ Si se inhabilita esta política, se inhabilitarán los sonidos en el modo Sin di
 Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="5962271004971310788">Extensiones que el usuario debe permitir que se ejecuten en Incógnito para navegar en modo Incógnito</translation>
 <translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
-<translation id="5964583455815172553">Si se establece esta política, se especificará una lista de aplicaciones web aisladas (IWAs) que se instalarán de forma silenciosa.
-      Las IWAs son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles en las páginas web normales. Cada IWA está empaquetada en un paquete web firmado. La clave pública de cada paquete web firmado se usa para crear el ID del paquete web que identifica a la IWA correspondiente.
-      De momento, esta política solo se puede aplicar a las sesiones de invitado gestionadas.
-
-      Cada elemento de la lista de esta política es un objeto con el archivo de manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la aplicación web aislada. Ambos campos son obligatorios.</translation>
 <translation id="596523880465577341">Esta política está obsoleta y no se admite. Usa la política <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
@@ -6658,27 +6653,6 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6102449843040973938">No impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="610892566190435199">Habilitar los informes sobre el estado de la energía del dispositivo</translation>
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
-<translation id="6112524153927257380">Si se establece la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
-
-      Hay muchos tipos de advertencias de descarga en Chrome. En general, pueden dividirse en las siguientes categorías (consulta más información sobre los resultados de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Contenido malicioso: como lo marca el servidor de Navegación segura
-      * Contenido poco frecuente o no deseado: como lo marca el servidor de Navegación segura
-      * Tipo de archivo peligroso: por ejemplo, todas las descargas de archivos SWF y muchas descargas de archivos EXE
-
-      Cuando se establece la política, se bloquean distintos subconjuntos de estas categorías en función de su valor:
-
-      0: sin restricciones especiales. Predeterminado.
-
-      1: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
-
-      2: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y archivos poco frecuentes o no deseados marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
-
-      3: bloquea todas las descargas. No recomendado (excepto en casos especiales).
-
-      4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
-
-      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
 <translation id="6119207979839638596">Esta política se retiró en la versión M75 después de que la política de la versión máxima de TLS se retirase de <ph name="PRODUCT_NAME" />.
 

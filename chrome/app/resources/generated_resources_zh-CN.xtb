@@ -290,7 +290,6 @@
 <translation id="1199814941632954229">正在为这些证书资料配置证书</translation>
 <translation id="120069043972472860">无法观看</translation>
 <translation id="1201402288615127009">下一步</translation>
-<translation id="1201564082781748151">如果您忘记了密码，可以恢复本地数据</translation>
 <translation id="1202116106683864634">确定要删除此通行密钥吗？</translation>
 <translation id="1202596434010270079">自助服务终端应用已更新完毕。请拔下 U 盘。</translation>
 <translation id="1202892408424955784">跟踪的商品</translation>
@@ -2209,6 +2208,7 @@
 <translation id="2546991196809436099">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
+<translation id="2549766998450508148">按 1-4 个辅助键（Ctrl、Alt、Shift 或搜索键）和另外 1 个键。您也可选择单个键。</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="2550212893339833758">已交换的内存</translation>
 <translation id="2550596535588364872">允许“<ph name="EXTENSION_NAME" />”打开“<ph name="FILE_NAME" />”？</translation>
@@ -10610,6 +10610,7 @@
 <translation id="8715480913140015283">背景标签页正在使用您的摄像头</translation>
 <translation id="8716931980467311658">要从这部 <ph name="DEVICE_TYPE" /> 中删除您“Linux 文件”文件夹中的所有 Linux 应用和数据吗？</translation>
 <translation id="8717864919010420084">复制链接</translation>
+<translation id="8718560545710680911">使用此页面提问</translation>
 <translation id="8718994464069323380">检测到触摸屏</translation>
 <translation id="8719472795285728850">正在监听扩展程序活动…</translation>
 <translation id="8719665168401479425">使用面部动作执行操作</translation>

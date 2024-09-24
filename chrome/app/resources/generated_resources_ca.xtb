@@ -290,7 +290,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1199814941632954229">S'estan proporcionant certificats per a aquests perfils de certificat</translation>
 <translation id="120069043972472860">No es pot mirar</translation>
 <translation id="1201402288615127009">Següent</translation>
-<translation id="1201564082781748151">Les dades locals es poden restaurar si oblides la contrasenya</translation>
 <translation id="1202116106683864634">Confirmes que vols suprimir aquesta clau d'accés?</translation>
 <translation id="1202596434010270079">L'aplicació Quiosc s'ha actualitzat. Extraieu la memòria USB.</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
@@ -2217,6 +2216,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2546991196809436099">Amplia perquè els elements de la pantalla siguin més grans. Fes servir Cerca+Ctrl+M per activar i desactivar la lupa.</translation>
 <translation id="2548347166720081527">S'ha permès <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restableix la memòria cau del perfil eSIM</translation>
+<translation id="2549766998450508148">Prem les tecles modificadores de la 1 a la 4 (Ctrl, Alt, Maj o cerca) i una tecla més. També pots seleccionar una sola tecla.</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="2550212893339833758">Memòria intercanviada</translation>
 <translation id="2550596535588364872">Vols permetre que <ph name="EXTENSION_NAME" /> obri <ph name="FILE_NAME" />?</translation>
@@ -10621,6 +10621,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8715480913140015283">Una pestanya de fons està utilitzant la càmera</translation>
 <translation id="8716931980467311658">Vols suprimir totes les aplicacions per a Linux i totes les dades de la carpeta de fitxers de Linux d'aquest dispositiu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copia l'enllaç</translation>
+<translation id="8718560545710680911">Pregunta utilitzant aquesta pàgina</translation>
 <translation id="8718994464069323380">S'ha detectat una pantalla tàctil</translation>
 <translation id="8719472795285728850">S'estan escoltant les activitats de les extensions...</translation>
 <translation id="8719665168401479425">Utilitza gestos facials per dur a terme accions</translation>

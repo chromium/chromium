@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Cancel·la la instal·lació</translation>
 <translation id="469553575393225953">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de Chrome Web Store.</translation>
 <translation id="4710245680469034439">Personalitza el navegador amb temes inspirats en la natura, col·leccions d'artistes i més</translation>
+<translation id="4720851490453439956">Servei intern de l'actualitzador de Google</translation>
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4728575227883772061">S'ha produït un error no especificat durant la instal·lació. Si Google Chrome s'està executant en aquests moments, tanca'l i torna-ho a provar.</translation>
 <translation id="4741235124132242877">S'ha fixat. Torna a utilitzar Google Lens des de la barra d'eines.</translation>
@@ -457,6 +458,7 @@
 <translation id="6885412569789873916">Aplicacions de Chrome Beta</translation>
 <translation id="6893363893008038481">Suprimeix el compte de Chrome</translation>
 <translation id="6896758677409633944">Copia</translation>
+<translation id="6930294499209825">Manté el programari de Google actualitzat. Si aquest servei es desactiva o s'atura, el programari de Google no es mantindrà actualitzat i, per tant, no es podran corregir les vulnerabilitats de seguretat que puguin sorgir i és possible que les funcions no estiguin operatives. Aquest servei es desinstal·la sol quan no hi ha cap programari de Google que l'utilitzi.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.1.</translation>
 <translation id="6943584222992551122">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
@@ -506,6 +508,7 @@
 <translation id="7477130805345743099">Chrome t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="749228101751499733">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
+<translation id="7514258452813684157">Servei de l'actualitzador de Google</translation>
 <translation id="7515191208480168435">Pots fixar Google Lens per accedir-hi fàcilment</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Desactivat • Chrome no pot verificar d'on prové aquesta extensió</translation>

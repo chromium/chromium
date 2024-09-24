@@ -28,6 +28,7 @@
 ያስፈልገዋል። <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ቋንቋ አግኝ</translation>
 <translation id="1342274909142618978">እንዲሁም ከChromium (<ph name="URL" />) ውሂብን ይሰርዙ</translation>
+<translation id="1345251407431278948">ፒን ተደርጓል! የምስል ፍለጋን እንደገና የመሣሪያ አሞሌው ላይ ካለው ከአዲሱ አዝራር መድረስ ይችላሉ</translation>
 <translation id="1414495520565016063">ወደ Chromium ገብተዋል!</translation>
 <translation id="1478370723027452770">በChrome ለሙከራ ላይ እገዛ ያግኙ</translation>
 <translation id="1497802159252041924">የጭነት ስህተት፦ <ph name="INSTALL_ERROR" /></translation>
@@ -56,9 +57,11 @@
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> በመሞከር ላይ ነው</translation>
 <translation id="18552579716432081">በGoogle መለያዎ ውስጥ እያስቀመጡት የአሰሳ ውሂብን ከዚህ መሣሪያ ብቻ ለመሰረዝ፣ <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="185970820835152459">በመለያ የገቡትን የGoogle መለያዎችዎን ማቀናበር ይችላሉ። የእርስዎ የGoogle መለያዎች ለChromium አሳሽ፣ ለPlay መደብር፣ ለGmail እና ለሌሎችም ያገለግላሉ። እንደ የቤተሰብ አባል ለሆነ ለሌላ ሰው መለያ ማከል ከፈለጉ በምትኩ በ<ph name="DEVICE_TYPE" /> ላይ አዲስ ሰው ያክሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="1862852878885210965">በምስል ፍለጋ ፈልግ</translation>
 <translation id="1863308913976887472">ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChromium አማካኝነት ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
 <translation id="1880677175115548835">ጽሁፍ ይምረጡ</translation>
 <translation id="1881322772814446296">በሚተዳደር መለያ እየገቡ ነው፣ እና አስተዳዳሪው በእርስዎ Chromium መገለጫ ላይ ቁጥጥር እየሰጡት ነው። እንደ እርስዎ መተግበሪያዎች፣ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ያሉ የእርስዎ Chromium ውሂብ እስከ መጨረሻው ከ<ph name="USER_NAME" /> ጋር የተያያዙ ይሆናሉ። ይህን ውሂብ በGoogle የመለያዎች Dashboard አማካኝነት ሊሰርዙት ይችላሉ፣ ነገር ግን ይህን ውሂብ ከሌላ መለያ ጋር ሊያጎዳኙት አይችሉም። ነባሩ የእርስዎ Chromium ውሂብ ለይተው ለማስቀመጥም አዲስ መገለጫ እንደ አማራጭ መፍጠር ይችላሉ። <ph name="LEARN_MORE" /></translation>
+<translation id="1900969832270057921">የChromium ማዘመኛ አገልግሎት</translation>
 <translation id="1906696617298807388">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ Chromium የንጥል ጥቆማዎችን ለማግኘት የሚተይቡትን ወደ Google Drive ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="1911763535808217981">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chromium በመለያ ሳይገቡ መግባት ይችላሉ</translation>
 <translation id="1929939181775079593">Chromium መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
@@ -67,6 +70,7 @@
 <translation id="1953553007165777902">በማውረድ ላይ... <ph name="MINUTE" /> ደቂቃ(ዎች) ይቀራል(ሉ)</translation>
 <translation id="1966382378801805537">Chromium ነባሪ አሳሹን ማወቅ ወይም ማቀናበር አልቻለም</translation>
 <translation id="1990262977744080398">Chromium ለምን አንዳንድ ፋይሎችን እንደሚያግድ ይወቁ፣ በአዲስ ትር ውስጥ ይከፍታል</translation>
+<translation id="1999715455684970349">የእርስዎን Chromium ሶፍትዌር ወቅታዊ አድርጎ ያቆያል። ይህ አገልግሎት ከተሰናከለ ወይም ከቆመ የChromium ሶፍትዌርዎ እንደተዘመነ አይቆይም፣ ይህ ማለት ሊከሰቱ የሚችሉ የደህንነት ተጋላጭነቶች ሊስተካከሉ አይችሉም እና ባህሪያት ላይሠሩ ይችላሉ። ይህ አገልግሎት እሱን የሚጠቀም የChromium ሶፍትዌር በማይኖርበት ጊዜ ራሱን ያራግፋል።</translation>
 <translation id="2008474315282236005">ይሄ 1 ንጥል ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="2018879682492276940">መጫን አልተሳካም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="2020032459870799438">ሌሎች የእርስዎ ይለፍ ቃላት ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ነፃ መሆናቸውን ለማረጋገጥ <ph name="BEGIN_LINK" />በመለያ ወደ Chromium ይግቡ<ph name="END_LINK" />።</translation>
@@ -101,9 +105,11 @@
 <translation id="2483889755041906834">በChromium ውስጥ</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
 <translation id="2513154137948333830">ዳግም ማስነሳት ያስፈልጋል፦ <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2542968102051442371">በምስል ፍለጋ ጽሁፍ ይምረጡ</translation>
 <translation id="2554739539410784893">Chromium ነባር የይለፍ ቃላትን ለመተካት እየሞከረ ነው። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="2560420686485554789">Chromium ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ያስፈልገዋል</translation>
 <translation id="2572494885440352020">Chromium አጋዥ</translation>
+<translation id="2575822587468774919">በምስል ፍለጋ ለመፈለግ ማንኛውንም ነገር ይምረጡ</translation>
 <translation id="2576118232315942160">የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chromium ይግቡ</translation>
 <translation id="2583187216237139145">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChromium ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
@@ -126,6 +132,7 @@
 <translation id="2846251086934905009">የጭነት ስህተት፦ ጫኚው አልተጠናቀቀም። ጭነቱ ተቋርጧል።</translation>
 <translation id="2847479871509788944">ከChromium አስወግድ...</translation>
 <translation id="2850691299438350830">በChromium ላይ ደህንነትዎን ይጠብቃል እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
+<translation id="2874602845494991903">የምስል ፍለጋን ክፈት</translation>
 <translation id="2885378588091291677">ተግባር መሪ</translation>
 <translation id="2910007522516064972">ስለ &amp;Chromium</translation>
 <translation id="2915996080311180594">በኋላ ዳግም አስነሳ</translation>
@@ -230,6 +237,7 @@
 <translation id="4334294535648607276">ማውረድ ተጠናቅቋል።</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡት እና እንዲቀበሉት ይፈለጋል። ይህ ውል የChromiumOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
 <translation id="4407044323746248786">የሆነው ሆኖ ከChromium ይወጣ?</translation>
+<translation id="4413205837991854510">የምስል ፍለጋ አቋራጭን ሁልጊዜ አሳይ</translation>
 <translation id="4415566066719264597">Chromium በበስተጀርባ ላይ ያሂድ</translation>
 <translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium እንዲያስወግዱት ይመክራል። <ph name="BEGIN_LINK" />ስለሚደገፍ ቅጥያ የበለጠ ይወቁ<ph name="END_LINK" />}one{Chromium እንዲያስወግዱት ይመክራል። <ph name="BEGIN_LINK" />ስለሚደገፍ ቅጥያ የበለጠ ይወቁ<ph name="END_LINK" />}other{Chromium እንዲያስወግዷቸው ይመክራል። <ph name="BEGIN_LINK" />ስለሚደገፉ ቅጥያዎች የበለጠ ይወቁ<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">Chromiumን ያብጁ እና ይቆጣጠሩ</translation>
@@ -277,6 +285,7 @@
 <translation id="494490797786467921">የChromium የመለያ መግቢያ መገናኛን ለመዝጋት ጠቅ ያድርጉ</translation>
 <translation id="4987820182225656817">እንግዳዎች ማንኛውንም ነገር ወደኋላ ሳይተዉ Chromium መጠቀም ይችላሉ።</translation>
 <translation id="4994636714258228724">እራስዎን በChromium ላይ ያክሉ</translation>
+<translation id="5051959905407134411">የምስል ፍለጋን ሞክር</translation>
 <translation id="5114678101347489141">Chromium ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዳዲስ ባህሪያትን እያሰሰ ነው።</translation>
 <translation id="5123973130450702873">Chromium እጆችዎን ለመከታተል ፈቃድ ያስፈልገዋል</translation>
 <translation id="5187123684706427865">የChromium መለያ ዳግም ማረጋገጥ ያስፈልገዋል</translation>
@@ -289,6 +298,7 @@
 <translation id="5294316920224716406">ማንነትን በማያሳውቅ ሁነታ ሲያስሱ፣ Chromium ደህንነቱ ያልተጠበቀ ግንኙነት በመጠቀም ጣቢያ ከመጫንዎ በፊት ያስጠነቅቀዎታል</translation>
 <translation id="5296845517486664001">ሙከራዎች ሲበሩ እና Chromium በዘፈቀደ እርስዎን በገቢር ሙከራ ካስቀመጠ የአሰሳ ታሪክዎ በሚያዩዋቸው ማስታወቂያዎች እና ከታች በተገመተው ዝንባሌዎች ላይ ተጽዕኖ ይኖረዋል። የእርስዎን ግላዊነት ለመጠበቅ Chromium በየወሩ ዝንባሌዎችዎን ይሰርዛል።</translation>
 <translation id="5310474266708705970">እንደ <ph name="USER_EMAIL" /> ወደ Chromium ግባ</translation>
+<translation id="5313228254328109263">የChromium ማዘመኛ ውስጣዊ አገልግሎት</translation>
 <translation id="5352264705793813212">Chromium ለግምገማዎ አንዳንድ የደህንነት ምክሮችን አግኝቷል</translation>
 <translation id="5352361688875342522">ሌሎች የChromium መገለጫዎች</translation>
 <translation id="5358375970380395591">በሚተዳደር መለያ እየገቡ ነው፣ እና አስተዳዳሪው በእርስዎ Chromium መገለጫ ላይ ቁጥጥር እየሰጡት ነው። እንደ እርስዎ  መተግበሪያዎች፣ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ያሉ የእርስዎ Chromium ውሂብ እስከ መጨረሻው ከ<ph name="USER_NAME" /> ጋር የተያያዙ ይሆናሉ። ይህን ውሂብ በGoogle የመለያዎች Dashboard አማካኝነት ሊሰርዙት ይችላሉ፣ ነገር ግን ይህን ውሂብ ከሌላ መለያ ጋር ሊያጎዳኙት አይችሉም። <ph name="LEARN_MORE" /></translation>
@@ -310,6 +320,7 @@
 <translation id="5575418445468216473">የእርስዎ የይለፍ ቃላት እና ሌላ Chromium ውሂብ የእርስዎ Google መለያ ውስጥ ይቀመጣሉ እና ከዚህ መሣሪያ ይወገዳሉ። ለወደፊት ለመጠቀም Chromium ውስጥ ተመልሰው ይግቡ።</translation>
 <translation id="5579324208890605088">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ሳይሆን እንደ መደበኛ ተጠቃሚ ያሂዱ።</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
+<translation id="5605834417512968703">በምስል ፍለጋ ለመፈለግ ማንኛውንም ነገር ይምረጡ ወይም ከምስል ፍለጋ ለመውጣት ዝለልን ይጫኑ</translation>
 <translation id="5623402015214259806">{0,plural, =0{የChromium ዝማኔ ይገኛል}=1{የChromium ዝማኔ ይገኛል}one{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}}</translation>
 <translation id="5643865575100044307">Chromium በሚዘጉበት ጊዜ የጣቢያ ውሂብን ሁልጊዜ ከመሣሪያዎ ላይ ይሰርዙ</translation>
 <translation id="5653831366781983928">እባክዎ Chromium ን አህን ዳግም ያስጀምሩ</translation>
@@ -320,6 +331,7 @@
 <translation id="5800158606660203929">Chromiumን ያብጁ እና ይቆጣጠሩ። Chromiumን እንደ ነባሪ ያቀናብሩት።</translation>
 <translation id="5809516625706423866">ከበይነመረብ ጋር መገናኘት አልተቻለም። ኤችቲቲፒኤስ 401 አልተፈቀደም። እባክዎ ተኪ ውቅረትዎን ይፈትሹ።</translation>
 <translation id="5862307444128926510">ወደ Chromium እንኳን በደህና መጡ</translation>
+<translation id="5871205389137001634">ከምስል ፍለጋ ለመውጣት ጠቅ ያድርጉ</translation>
 <translation id="5883558403894052917">Chromium እነዚህ ንጥሎች ተንኮል አዘል ዌር እንደያዙ አግኝቷል፦</translation>
 <translation id="5889361821821684993">Chromium የእርስዎ አሳሽ ደህንነታቸው የተጠበቁ ቅንብሮች እንዳለው ለማረጋገጥ በመደበኛነት ይፈትሻል። ማንኛውም ነገር የእርስዎ ግምገማ ካስፈለገው እናሳውቅዎታለን።</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
@@ -378,6 +390,7 @@
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />ይህን ውሂብ እንዴት እንደምንጠቀምበት፦<ph name="END_BOLD" /> Chromium የእርስዎን ዝንባሌዎች ሊገምት ይችላል። በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chromium ዝንባሌዎችዎን እንዲያይ ሊጠይቅ ይችላል።</translation>
 <translation id="6400112897226594999">በኮምፒውተር ማያ ገፅ ውስጥ የChromium ዓርማ።</translation>
 <translation id="6403826409255603130">Chromium ድረ-ገጾችን እና መተግበሪያዎችን እጅግ በጣም ፈጣን በሆነ ፍጥነት የሚያሄድ ድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Chromium ውስጥ አብሮ በተሰራላቸው የተንኮል-አዘል ሶፍትዌር እና የማስገሪያ መከላከያዎች አማካኝነት ደህንነትዎ ይበልጥ በተጠበቀ ሁኔታ ድሩን ያስሱ።</translation>
+<translation id="6436260184216827876">የምስል ፍለጋ አይገኝም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6442900851116057561">ChromiumOSን ዳግም አስጀምር</translation>
 <translation id="6443470774889161065">እርስዎ የመጎብኘት ዕድልዎ ከፍተኛ የሆኑባቸው ተጨማሪ ገጾች ሲጎበኟቸው ይበልጥ በፍጥነት እንዲጫኑ Chromium በቅድሚያ ይጭናቸዋል</translation>
 <translation id="645458117210240797">ጠፍቷል • Chromium ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም</translation>
@@ -415,6 +428,7 @@
 <translation id="67706546131546258">Chromium ይህ ፋይል አደገኛ ሊሆን ስለሚችል እንዲቃኙት ይመክራል።</translation>
 <translation id="6779406956731413166">ChromiumOS በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> እውን ሊሆን ችሏል።</translation>
 <translation id="6831043979455480757">መተርጎም</translation>
+<translation id="6843464627590537736">የምስል ፍለጋ የፍለጋ ዓረፋ</translation>
 <translation id="6847869444787758381">Chromium የእርስዎ የይለፍ ቃላት ከተነጠቁ እርስዎ እንዲያውቁት ያደርግዎታል</translation>
 <translation id="684888714667046800">ከበይነመረቡ ጋር መገናኘት አልተቻለም። ኬላ የሚጠቀሙ ከሆነ እባክዎ <ph name="PRODUCT_EXE_NAME" /> በተፈቀደ ዝርዝር ውስጥ መሆኑን ያረጋግጡ።</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -442,6 +456,7 @@
 <translation id="7213407614656404070">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በሚያደርጉበት ማንኛውም ጊዜ Chromium ይጠቀሙ</translation>
 <translation id="7223968959479464213">ተግባር መሪ - Chromium</translation>
 <translation id="7246575524853130370">በChromium የተገመቱ የእርስዎ ዝንባሌዎች</translation>
+<translation id="7274695763216404502">ፒን ተደርጓል! ከመሣሪያ አሞሌው እንደገና የምስል ፍለጋ ይጠቀሙ</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium እንዲያስወግዱት ይመክራል}one{Chromium እንዲያስወግዱት ይመክራል}other{Chromium እንዲያስወግዷቸው ይመክራል}}</translation>
 <translation id="7309928523159922338">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChromium እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>
 <translation id="731795002583552498">Chromiumን በማዘመን ላይ...</translation>
@@ -480,6 +495,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7786760609782648049">Chromiumን የበለጠ ፈጣን ያድርጉት</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">የበይነመረብ ትራፊክዎ መዳረሻ ላላቸው ሰዎች እርስዎ የትኞቹን ጣቢያዎች እንደሚጎበኙ ማየት ያክብዱባቸው። Chromium የጣቢያውን አይ ፒ አድራሻ በዲኤንኤስ (የጎራ ስም ሥርዓት) ውስጥ ለመፈለግ የተመሰጠረ ግንኙነትን ይጠቀማል።</translation>
+<translation id="7810005234485217901">በቀላሉ ለመድረስ የምስል ፍለጋን ፒን ማድረግ ይችላሉ</translation>
 <translation id="7828947555739565424">ይህን መለያ ያለው አንድ የChromium መገለጫ አስቀድሞ በዚህ መሣሪያ ላይ አለ</translation>
 <translation id="7845233973568007926">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ኮምፒውተርዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="7859018312476869945">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chromium የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
@@ -494,6 +510,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8010081455002666927">በራስ-አግኝ</translation>
 <translation id="8013436988911883588">አንዴ Chromium መዳረሻ ከኖረው በኋላ ድር ጣቢያዎች እርስዎን መዳረሻ መጠየቅ ይችላሉ።</translation>
 <translation id="80471789339884597">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ሁሉንም አሳሾችዎን እንደገና ማስጀመር አለብዎት።</translation>
+<translation id="8054112667659782652">የምስል ፍለጋ አቋራጭን ሁልጊዜ አሳይ</translation>
 <translation id="80790299200510644">ምስል ፈልግ</translation>
 <translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome ለሙከራ</translation>
@@ -530,6 +547,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8522801943730206384">እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል</translation>
 <translation id="8550334526674375523">ይህ የስራ መገለጫ ከግል መገለጫዎ ሙሉ ለሙሉ የተለየ ነው።</translation>
 <translation id="8555465886620020932">የአገልግሎት ስህተት፡ <ph name="SERVICE_ERROR" />።</translation>
+<translation id="8556420416730706394">በቀላሉ ለመድረስ የምስል ፍለጋ ፒን ማድረግ ይችላሉ፤ በጎን ፓነሉ አናት ላይ የሚገኘውን ፒን አድርግ አዝራርን ጠቅ ያድርጉ</translation>
 <translation id="8568283329061645092">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል</translation>
 <translation id="8576826849825683917">ብዙ ድርጅቶች Chromiumን ያስተዳድራሉ</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>

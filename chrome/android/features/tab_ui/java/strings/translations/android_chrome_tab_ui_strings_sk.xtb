@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
+<translation id="6590332670428149473">Otvorte ponuku akcií zdieľanej skupiny kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> karta bola zmenená}few{<ph name="MANY_CHANGED" /> karty boli zmenené}many{<ph name="MANY_CHANGED" /> tabs changed}other{<ph name="MANY_CHANGED" /> kariet bolo zmenených}}</translation>
 <translation id="6694634756612002311">Spravovať zdieľanie</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Rozbaľte skupinu kariet s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbaľte skupinu kariet s <ph name="TABS_COUNT_MANY" /> kartami.}many{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Rozbaľte skupinu s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="9090098097337832354">Informácie o tomto obchode boli zavreté</translation>
 <translation id="9111228330448174435">Zobrazovať dialógové okno pri vytváraní novej skupiny kariet</translation>
+<translation id="9114502155681725011">Otvorte ponuku akcií skupiny kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Prepínajte karty v skupine kariet v dolnej časti obrazovky</translation>
 <translation id="9169594135889675189">Pridať novú kartu do skupiny</translation>
 <translation id="9216898458513705996">Karty zostanú v tomto zariadení otvorené, ale skupina bude odstránená zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>

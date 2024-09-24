@@ -290,7 +290,6 @@
 <translation id="1199814941632954229">या सर्टिफिकेट प्रोफाइलसाठी सर्टिफिकेटची तरतूद केली जात आहे</translation>
 <translation id="120069043972472860">पाहण्यायोग्य नाही</translation>
 <translation id="1201402288615127009">पुढील</translation>
-<translation id="1201564082781748151">तुम्ही तुमचा पासवर्ड विसरल्यास, स्थानिक डेटा रिस्टोअर केला जाऊ शकतो</translation>
 <translation id="1202116106683864634">तुम्हाला ही पासकी नक्की हटवायची आहे का?</translation>
 <translation id="1202596434010270079">कियोस्क ॲप अपडेट केला गेला आहे. कृपया USB स्टिक काढून टाका.</translation>
 <translation id="1202892408424955784">माग ठेवलेली उत्पादने</translation>
@@ -2229,6 +2228,7 @@
 <translation id="2546991196809436099">स्क्रीनवरील आयटम मोठे करण्यासाठी झूम इन करा. मॅग्निफायर सुरू आणि बंद करण्यासाठी Search + Ctrl + M वापरा.</translation>
 <translation id="2548347166720081527">अनुमती असलेली <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">eSIM प्रोफाइल कॅशे रीसेट करा</translation>
+<translation id="2549766998450508148">१ ते ४ मॉडिफायर की (कंट्रोल, ऑल्ट, शिफ्ट किंवा शोधा) आणि आणखी १ की प्रेस करा. तुम्ही स्वतंत्र कीदेखील निवडू शकता.</translation>
 <translation id="2549985041256363841">रेकॉर्डिंग सुरू करा</translation>
 <translation id="2550212893339833758">स्वॅप केलेली मेमरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> ला <ph name="FILE_NAME" /> उघडू द्यायचे?</translation>
@@ -10637,6 +10637,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8715480913140015283">बॅकग्राउंड टॅब तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="8716931980467311658">या <ph name="DEVICE_TYPE" /> वरून तुमच्या Linux फायलींच्या फोल्डरमधील सर्व Linux ॲप्लिकेशन आणि डेटा हटवायचा?</translation>
 <translation id="8717864919010420084">लिंक कॉपी करा</translation>
+<translation id="8718560545710680911">हे पेज वापरून विचारा</translation>
 <translation id="8718994464069323380">टचस्क्रीन डिटेक्ट केली</translation>
 <translation id="8719472795285728850">एक्सटेंशन अ‍ॅक्टिव्हिटी ऐकत आहे...</translation>
 <translation id="8719665168401479425">कृती करण्यासाठी फेशियल जेश्चर वापरा</translation>

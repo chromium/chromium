@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
+<translation id="6590332670428149473">Buksan ang menu ng aksyon ng grupo ng tab para sa naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Binago ang <ph name="ONE_CHANGED" /> tab}one{Binago ang <ph name="MANY_CHANGED" /> tab}other{Binago ang <ph name="MANY_CHANGED" /> na tab}}</translation>
 <translation id="6694634756612002311">Pamahalaan ang pag-share</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9111228330448174435">Ipakita ang dialog sa paggawa ng bagong grupo ng tab</translation>
+<translation id="9114502155681725011">Buksan ang menu ng aksyon ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Magpalipat-lipat sa mga tab sa iyong grupo ng tab malapit sa ibaba ng screen</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="9216898458513705996">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>

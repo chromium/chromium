@@ -398,6 +398,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
 <translation id="2416438829169535743">Izaći iz prikaza?</translation>
 <translation id="2417486498593892439">Prijava na mrežu</translation>
+<translation id="2423619675829330672">Pokušali ste unijeti PIN previše puta. Pričekajte <ph name="TIME_LEFT" /> i pokušajte ponovo.</translation>
 <translation id="2426051945783024481">Kadriranje kamere je automatski centrirano</translation>
 <translation id="2427507373259914951">Lijevi klik</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje. Prije nego što prihvatite potvrdite da se ovaj pristupni ključ prikazuje na tom uređaju: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6330012934079202188">Prikazani su prozori sa svih radnih površina. Pritisnite tipku sa strelicom nagore da se prikažu prozori s trenutne radne površine</translation>
 <translation id="6337159624125741244">Povećalo za cijeli ekran je uključeno</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana sesija kojom upravlja <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Ako ste zaboravili PIN, pokušajte oporaviti ovog korisnika.</translation>
 <translation id="6344138931392227467">Uređaj <ph name="DEVICE_NAME" /> je povezan</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, a zatim <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ili <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">PRIJEDLOZI APLIKACIJA</translation>
@@ -1633,6 +1635,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6539852571005954999">Preuzimanje fajla <ph name="FILENAME" /> koji se skenira</translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodžiji, GIF-ovi i drugo</translation>
+<translation id="6545382064335350438">Potvrda PIN-a opet nije uspjela. Pokušajte ponovo.</translation>
 <translation id="6555373427270923730">Napišite adresu web lokacije u traku za adresu, a zatim pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalacija</translation>
@@ -2029,6 +2032,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7904094684485781019">Administrator ovog računa nije dozvolio višestruku prijavu.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Povezani uređaji: <ph name="DEVICECOUNT" /></translation>
+<translation id="7921565901396407357">Vaš PIN nije potvrđen. Pokušajte ponovo.</translation>
 <translation id="7923534281713082605">Vrijeme</translation>
 <translation id="7926080067315048321">Prikaži sve zadatke na Google Zadacima na webu</translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno i Diktiranje radi offline</translation>

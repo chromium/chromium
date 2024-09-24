@@ -222,6 +222,7 @@
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
 <translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3697952514309507634">Ostali profili na Chromeu</translation>
+<translation id="3700276346088749847">izbrišite Chromeove podatke na svojem računu</translation>
 <translation id="3703994572283698466">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojnim okruženjem Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="3718181793972440140">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -293,6 +294,7 @@
 <translation id="4575717501879784448">Chrome može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
+<translation id="4601439950572737842">Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali Chromeove podatke na svojem Google računu.</translation>
 <translation id="4624065194742029982">Chromeov anonimni način</translation>
 <translation id="4627412468266359539">Neobavezno: pomozite poboljšati značajke i izvedbu ChromeOS Flexa automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
 <translation id="4633000520311261472">Kako bismo Chrome učinili sigurnijim, onemogućili smo neka proširenja koja nisu navedena u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda su dodana bez vašeg znanja.</translation>

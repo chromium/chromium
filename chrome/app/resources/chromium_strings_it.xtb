@@ -41,6 +41,7 @@
 
 A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Download in corso...</translation>
+<translation id="167397405791113306">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chromium nel tuo Account Google.</translation>
 <translation id="1715127912119967311">Per contribuire a migliorare queste funzionalità, Chromium invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
 <translation id="1722488837206509557">In questo modo potrai selezionare i dispositivi disponibili su cui visualizzare i contenuti.</translation>
 <translation id="17264556997921157">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chromium stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
@@ -526,6 +527,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8313851650939857356">Errore di avvio: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">La tua organizzazione chiude Chromium quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Salva come immagine</translation>
+<translation id="8326785589245660814">cancella i dati di Chromium nel tuo account</translation>
 <translation id="8330519371938183845">Accedi per sincronizzare e personalizzare Chromium sui tuoi dispositivi</translation>
 <translation id="8340674089072921962">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> utilizzava in precedenza Chromium</translation>
 <translation id="8357820681460164151">Per accedere ai tuoi contenuti del browser Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>

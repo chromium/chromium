@@ -290,7 +290,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1199814941632954229">Quyidagi profillar uchun sertifikatlar ishga tushirilmoqda</translation>
 <translation id="120069043972472860">Qoniqarsiz</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
-<translation id="1201564082781748151">Parolni yoddan chiqarsangiz, mahalliy maʼlumotlarni tiklash mumkin</translation>
 <translation id="1202116106683864634">Kod oʻchirilsinmi?</translation>
 <translation id="1202596434010270079">Kiosk-ilovasi yangilandi. USB-xotira qurilmasini chiqarib oling.</translation>
 <translation id="1202892408424955784">Kuzatiladigan mahsulotlar</translation>
@@ -2219,6 +2218,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2546991196809436099">Ekrandagi elementlar kattalashtirilishi. Lupani yoqib, oʻchirish uchun Search+Ctrl+M tugmalarini bosing.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ruxsati berildi</translation>
 <translation id="2548545707296594436">eSIM profil keshini asliga qaytarish</translation>
+<translation id="2549766998450508148">1-4 modifikator tugmalari (ctrl, alt, shift yoki search) va yana 1 ta tugmani bosing. Bitta tugmani tanlash ham mumkin.</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
 <translation id="2550212893339833758">Swap xotirasi</translation>
 <translation id="2550596535588364872"><ph name="FILE_NAME" /> <ph name="EXTENSION_NAME" /> bilan ochilsinmi?</translation>
@@ -10622,6 +10622,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8715480913140015283">Fondagi varaq kamerangizdan foydalanmoqda</translation>
 <translation id="8716931980467311658">Ushbu <ph name="DEVICE_TYPE" /> qurilmadagi barcha Linux ilovalar va ma’lumotlar Linux fayllari jildidan o‘chirilsinmi?</translation>
 <translation id="8717864919010420084">Havolani nusxalash</translation>
+<translation id="8718560545710680911">Shu sahifa orqali savol berish</translation>
 <translation id="8718994464069323380">Sensorli ekran aniqlandi</translation>
 <translation id="8719472795285728850">Kengaytma harakatlari kuzatilmoqda...</translation>
 <translation id="8719665168401479425">Yuz ishoralari yordamida amal bajaring</translation>

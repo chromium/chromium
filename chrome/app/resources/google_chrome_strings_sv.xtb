@@ -302,6 +302,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4680828127924988555">Avbryt installationen</translation>
 <translation id="469553575393225953">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara laddar ned dem från Chrome Web Store</translation>
 <translation id="4710245680469034439">Anpassa webbläsaren med teman inspirerade av naturen, konstnärssamlingar med mera</translation>
+<translation id="4720851490453439956">Intern tjänst för Google-uppdatering</translation>
 <translation id="4724676981607797757">Installationen misslyckades på grund av ett protokollfel som inte stöds.</translation>
 <translation id="4728575227883772061">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Google Chrome, om det är igång, och försök sedan igen.</translation>
 <translation id="4741235124132242877">Fäst! Använd Google Lens igen från verktygsfältet</translation>
@@ -465,6 +466,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6885412569789873916">Appar i Chrome Beta</translation>
 <translation id="6893363893008038481">Ta bort kontot från Chrome</translation>
 <translation id="6896758677409633944">Kopiera</translation>
+<translation id="6930294499209825">Ser till att Google-mjukvaran är uppdaterad. Om denna tjänst inaktiveras eller stoppas uppdateras inte Google-mjukvaran. Det innebär att vissa funktioner kanske inte fungerar och att eventuella säkerhetsrisker inte kan åtgärdas. Tjänsten avinstalleras automatiskt om den inte används av Google-mjukvara.</translation>
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.1.</translation>
 <translation id="6943584222992551122">Den här personens webbinformation raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill återställa data.</translation>
@@ -514,6 +516,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7477130805345743099">Chrome varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="749228101751499733">När du är inloggad kan du använda dina lösenord och annat från ditt Google-konto i Chrome. Du kan ändra dina inställningar för Googles tjänster med <ph name="SHORTCUT" />.</translation>
+<translation id="7514258452813684157">Google-uppdateringstjänst</translation>
 <translation id="7515191208480168435">Du kan fästa Google Lens för enkel åtkomst</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Av • Chrome kan inte verifiera var tillägget kommer från</translation>

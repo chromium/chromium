@@ -298,6 +298,7 @@
 <translation id="4680828127924988555">Peru asennus</translation>
 <translation id="469553575393225953">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain Chrome Web Storesta</translation>
 <translation id="4710245680469034439">Tee selaimesta näköisesi teemoilla, joiden inspiraationa on esimerkiksi luonto ja taiteilijoiden kokoelmat</translation>
+<translation id="4720851490453439956">Google sisäinen päivityspalvelu</translation>
 <translation id="4724676981607797757">Asennus epäonnistui, koska protokollaa ei tueta.</translation>
 <translation id="4728575227883772061">Asennus epäonnistui tuntemattoman virheen takia. Jos Google Chrome on tällä hetkellä käynnissä, sulje ohjelma ja yritä uudelleen.</translation>
 <translation id="4741235124132242877">Kiinnitetty! Käytä Google Lensia uudelleen yläpalkista</translation>
@@ -457,6 +458,7 @@
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
 <translation id="6893363893008038481">Poista tili Chromesta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
+<translation id="6930294499209825">Pitää Google-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Google-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Google-ohjelmisto.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
@@ -506,6 +508,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7477130805345743099">Chrome varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="749228101751499733">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. <ph name="SHORTCUT" /> voi muuttaa Googlen palvelujen asetuksiasi.</translation>
+<translation id="7514258452813684157">Googlen päivityspalvelu</translation>
 <translation id="7515191208480168435">Kiinnitä Google Lens, niin voit käyttää sitä helposti</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
 <translation id="7572537927358445944">Pois päältä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>

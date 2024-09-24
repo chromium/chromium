@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
+<translation id="6590332670428149473">Ouvrir le menu Action du groupe d'onglets pour le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié}one{<ph name="MANY_CHANGED" /> onglet modifié}other{<ph name="MANY_CHANGED" /> onglets modifiés}}</translation>
 <translation id="6694634756612002311">Gérer le partage</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9111228330448174435">Afficher la boîte de dialogue lors de la création d'un groupe d'onglets</translation>
+<translation id="9114502155681725011">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Basculez entre les onglets dans votre groupe d'onglets, près du bas de l'écran</translation>
 <translation id="9169594135889675189">Ajouter un onglet au groupe</translation>
 <translation id="9216898458513705996">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
