@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
 
@@ -290,6 +292,20 @@ public class TabGroupRowMediatorUnitTest {
         Callback<FrameLayout> getImageTileContainerCallback =
                 propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK);
         getImageTileContainerCallback.onResult(mImageTileContainer);
+        verify(mImageTileContainer).removeAllViews();
         verify(mImageTileContainer).addView(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroyable() {
+        PropertyModel propertyModel = buildTestModel(Arrays.asList(mTab1), /* isShared= */ true);
+
+        assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
+        propertyModel.get(DESTROYABLE).destroy();
+
+        respondToReadGroup(new GroupMember[] {GROUP_MEMBER1, GROUP_MEMBER2});
+        assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
+        assertNull(propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK));
     }
 }
