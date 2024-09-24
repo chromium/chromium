@@ -46,7 +46,7 @@ import javax.crypto.CipherOutputStream;
  */
 public class CookiesFetcher implements Destroyable {
     /** The default file name for the encrypted cookies storage for the primary OTR profile. */
-    private static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
+    @VisibleForTesting public static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
 
     /** Used for logging. */
     private static final String TAG = "CookiesFetcher";
@@ -90,16 +90,21 @@ public class CookiesFetcher implements Destroyable {
         ProfileManager.removeObserver(mProfileManagerObserver);
     }
 
+    /** Return the directory for cookie files for the appropriate Profile. */
+    protected File getCookieDir() {
+        return new File(mCookieDirPath);
+    }
+
     /** Return the cookie file path for the appropriate Profile. */
     @VisibleForTesting
     String fetchAbsoluteFilePath() {
         ThreadUtils.assertOnBackgroundThread();
-        File directory = new File(mCookieDirPath);
+        File directory = getCookieDir();
         if (!directory.exists() && !directory.mkdir()) {
             Log.e(TAG, "Failed to create cookie directory");
             return null;
         }
-        return new File(mCookieDirPath, fetchFileName()).getAbsolutePath();
+        return new File(directory, fetchFileName()).getAbsolutePath();
     }
 
     /** Return the cookie file name for the appropriate Profile. */
@@ -345,8 +350,9 @@ public class CookiesFetcher implements Destroyable {
         return new CanonicalCookie[size];
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         @JniType("std::string")
         String getCookieFileDirectory(@JniType("Profile*") Profile profile);
 
