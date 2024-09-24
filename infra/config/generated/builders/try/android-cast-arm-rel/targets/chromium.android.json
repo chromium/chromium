@@ -171,37 +171,6 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "cast_graphics_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "cast_graphics_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "AP1A.240505.005",
-            "device_os_type": "userdebug",
-            "device_type": "tangorpro",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cast_graphics_unittests",
-        "test_id_prefix": "ninja://chromecast/graphics:cast_graphics_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
             "cast_media_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
