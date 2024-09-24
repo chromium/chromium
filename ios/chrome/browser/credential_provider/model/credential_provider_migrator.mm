@@ -74,9 +74,9 @@ typedef enum : NSInteger {
   NSArray<id<Credential>>* credentials = self.temporalStore.credentials.copy;
   for (id<Credential> credential in credentials) {
     if (credential.isPasskey) {
-      // TODO(crbug.com/330355124): this can happen too early (before
-      // PasskeySyncBridge::store_ is created in _passkeyStore) if it happens
-      // at startup, so add a mechanism to re-trigger the migration later.
+      // If this happens too early (before the passkey store is ready), the
+      // migration will be re-triggered later for that passkey store by
+      // CredentialProviderMigratorAppAgent.
       if (!_passkeyStore || !_passkeyStore->IsReady()) {
         continue;
       }

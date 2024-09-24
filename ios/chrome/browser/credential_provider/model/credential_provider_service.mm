@@ -602,6 +602,8 @@ void CredentialProviderService::OnPasskeyModelShuttingDown() {
   passkey_model_ = nullptr;
 }
 
+void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
+
 void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]

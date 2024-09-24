@@ -54,6 +54,9 @@ class PasskeyModel : public KeyedService {
 
     // Notifies the observer that the passkey model is shutting down.
     virtual void OnPasskeyModelShuttingDown() = 0;
+
+    // Notifies the observer when the passkey model becomes ready.
+    virtual void OnPasskeyModelIsReady(bool is_ready) = 0;
   };
 
   // Represents the WebAuthn PublicKeyCredentialUserEntity passed by the Relying

@@ -531,6 +531,8 @@ void PasskeySyncBridge::OnStoreReadAllDataAndMetadata(
   TRACE_EVENT0("sync", "PasskeySyncBridge::OnStoreReadAllDataAndMetadata");
   if (error) {
     change_processor()->ReportError(*error);
+    // Notify observers that the model failed to become ready.
+    NotifyPasskeyModelIsReady(ready_);
     return;
   }
 
@@ -546,6 +548,7 @@ void PasskeySyncBridge::OnStoreReadAllDataAndMetadata(
     data_[std::move(storage_key)] = std::move(specifics);
   }
   ready_ = true;
+  NotifyPasskeyModelIsReady(ready_);
   NotifyPasskeysChanged(std::move(changes));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
@@ -563,6 +566,13 @@ void PasskeySyncBridge::NotifyPasskeysChanged(
   TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeysChanged");
   for (auto& observer : observers_) {
     observer.OnPasskeysChanged(changes);
+  }
+}
+
+void PasskeySyncBridge::NotifyPasskeyModelIsReady(bool is_ready) {
+  TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeyModelIsReady");
+  for (auto& observer : observers_) {
+    observer.OnPasskeyModelIsReady(is_ready);
   }
 }
 

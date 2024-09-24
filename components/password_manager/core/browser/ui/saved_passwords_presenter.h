@@ -212,6 +212,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(

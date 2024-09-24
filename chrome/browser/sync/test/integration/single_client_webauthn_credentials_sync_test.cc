@@ -128,6 +128,8 @@ class PasskeyModelReadyChecker : public StatusChangeChecker,
 
   void OnPasskeyModelShuttingDown() override {}
 
+  void OnPasskeyModelIsReady(bool is_ready) override {}
+
  private:
   const raw_ptr<webauthn::PasskeyModel> model_;
   base::ScopedObservation<webauthn::PasskeyModel,

@@ -460,6 +460,7 @@ class AuthenticatorRequestDialogController
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // Update fields in `model_` based on the value of `transport_availability_`
   // and `priority_mechanism_index_`.

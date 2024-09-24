@@ -2392,6 +2392,9 @@ void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
   passkey_model_observation_.Reset();
 }
 
+void AuthenticatorRequestDialogController::OnPasskeyModelIsReady(
+    bool is_ready) {}
+
 void AuthenticatorRequestDialogController::
     UpdateModelForTransportAvailability() {
   model_->request_type = transport_availability_.request_type;

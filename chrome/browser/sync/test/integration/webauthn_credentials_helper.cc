@@ -80,6 +80,8 @@ void LocalPasskeysChangedChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
 
+void LocalPasskeysChangedChecker::OnPasskeyModelIsReady(bool is_ready) {}
+
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
     : profile_(profile), matcher_(matcher) {
@@ -105,6 +107,8 @@ void LocalPasskeysMatchChecker::OnPasskeysChanged(
 void LocalPasskeysMatchChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
+
+void LocalPasskeysMatchChecker::OnPasskeyModelIsReady(bool is_ready) {}
 
 ServerPasskeysMatchChecker::ServerPasskeysMatchChecker(Matcher matcher)
     : matcher_(matcher) {}
@@ -164,6 +168,8 @@ void PasskeyChangeObservationChecker::OnPasskeysChanged(
 void PasskeyChangeObservationChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
+
+void PasskeyChangeObservationChecker::OnPasskeyModelIsReady(bool is_ready) {}
 
 MockPasskeyModelObserver::MockPasskeyModelObserver(
     webauthn::PasskeyModel* model) {

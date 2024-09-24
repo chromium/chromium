@@ -225,6 +225,7 @@ if (ios_enable_credential_provider_extension) {
     ]
     deps = [
       "//components/keyed_service/core",
+      "//components/webauthn/core/browser:passkey_model",
       "//ios/chrome/app/application_delegate:app_state_header",
       "//ios/chrome/app/application_delegate:observing_app_state_agent",
       "//ios/chrome/browser/credential_provider/model",
