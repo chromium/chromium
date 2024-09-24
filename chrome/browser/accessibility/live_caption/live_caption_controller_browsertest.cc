@@ -48,6 +48,12 @@ speech::LanguageCode fr_fr() {
   return speech::LanguageCode::kFrFr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+speech::LanguageCode de_de() {
+  return speech::LanguageCode::kDeDe;
+}
+#endif
+
 }  // namespace
 
 Profile* CreateProfile() {
@@ -452,4 +458,98 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Tests in this block cover babel orca's compatibility with normal live
+// caption. Babel orca only exists on ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
+                       ToggleLiveCaptionForBabelOrca) {
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+
+  // This helper function doesn't notify Soda installed as oppposed to
+  // `SetLiveCaptionEnabled` so we manually invoke those methods below.
+  ToggleLiveCaptionForBabelOrca(true);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_NE(nullptr, GetBubbleController());
+  EXPECT_TRUE(HasBubbleController());
+
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+}
+
+// like the test above, but verifies that BabelOrca still works  with a
+// distinct language from live caption.
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
+                       ToggleBabelOrcaDistinctLanguage) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kUserMicrophoneCaptionLanguageCode,
+      speech::GetLanguageName(fr_fr()));
+
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+
+  // This helper function doesn't notify Soda installed as oppposed to
+  // `SetLiveCaptionEnabled` so we manually invoke those methods below.
+  ToggleLiveCaptionForBabelOrca(true);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(fr_fr());
+  EXPECT_NE(nullptr, GetBubbleController());
+  EXPECT_TRUE(HasBubbleController());
+
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+}
+
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalledForBabelOrca) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kUserMicrophoneCaptionLanguageCode,
+      speech::GetLanguageName(fr_fr()));
+
+  // Toggle the feature.
+  EXPECT_FALSE(HasBubbleController());
+  ToggleLiveCaptionForBabelOrca(true);
+  EXPECT_FALSE(HasBubbleController());
+
+  // install a language and binary that is not either the live caption language
+  // or the language for BabelOrca.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(de_de());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(HasBubbleController());
+
+  // Install the language for BabelOrca, live caption should be enabled.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(fr_fr());
+  EXPECT_TRUE(HasBubbleController());
+
+  // turn off Babel Orca, now we make sure that Live Caption still works.
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_FALSE(HasBubbleController());
+
+  // Toggle live caption, but the associated language is not currently
+  // installed. manually invoke rather than use the helper so that we
+  // can verify that we ignore irrelevant languages below.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+                                               true);
+  EXPECT_FALSE(HasBubbleController());
+
+  // Once again install the neither nor language to verify we're handling
+  // preconditions correctly in both cases.  We have to invoke
+  // `UninstallSodaForTesting` in order to verify with the irrelevant
+  // language again.
+  speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(de_de());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(HasBubbleController());
+
+  // Install the language for live caption, should be enabled.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_TRUE(HasBubbleController());
+
+  // Finally verify we can still turn it off.
+  SetLiveCaptionEnabled(false);
+  EXPECT_FALSE(HasBubbleController());
+}
+#endif
 }  // namespace captions

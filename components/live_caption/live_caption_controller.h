@@ -86,6 +86,9 @@ class LiveCaptionController : public KeyedService,
     return caption_bubble_controller_.get();
   }
 
+  // Babel orca bypasses the live caption enabled preference
+  void ToggleLiveCaptionForBabelOrca(bool enabled);
+
  private:
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
@@ -104,6 +107,7 @@ class LiveCaptionController : public KeyedService,
   void StopLiveCaption();
   void CreateUI();
   void DestroyUI();
+  std::string GetLanguageCode();
 
   void MaybeSetLiveCaptionLanguage();
 
@@ -115,6 +119,9 @@ class LiveCaptionController : public KeyedService,
   std::optional<ui::CaptionStyle> caption_style_;
 
   const std::string application_locale_;
+
+  // Whether LiveCaption is enabled via BabelOrca
+  bool enabled_via_babel_orca_ = false;
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;
