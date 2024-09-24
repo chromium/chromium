@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "Label applies to descendant custom element that uses shadowrootreferencetarget", "Label applies to multiple layers of descendant custom elements that use shadowrootreferencetarget"
+[FAIL] Label applies to multiple layers of descendant custom elements that use shadowrootreferencetarget
+  assert_equals: expected "Label 2" but got "Input 2"
+[FAIL] Label applies to multiple layers of descendant custom elements that use shadowrootreferencetarget
+  assert_equals: expected "Label 2 via Options" but got "Input 2 via Options"
+Harness: the test ran to completion.
+
