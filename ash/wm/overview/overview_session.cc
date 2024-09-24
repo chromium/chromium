@@ -370,6 +370,8 @@ void OverviewSession::Shutdown() {
   // windows in response to work area changes from window activation.
   display_observer_.reset();
 
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
   // that will call into this function again.
@@ -1284,6 +1286,10 @@ void OverviewSession::UpdateFrameThrottling() {
   }
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
+}
+
+base::WeakPtr<OverviewSession> OverviewSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

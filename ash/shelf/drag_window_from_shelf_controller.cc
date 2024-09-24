@@ -837,7 +837,12 @@ void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {
 void DragWindowFromShelfController::OnWindowRestoredToOriginalBounds(
     bool end_overview) {
   base::AutoReset<bool> auto_reset(&during_window_restoration_, true);
-  if (end_overview) {
+  // If `last_overview_drag_session_ptr_` is null, that means another party
+  // started an overview session between the time the drag finished and the
+  // `WindowScaleAnimation` was able to restore the window to the original
+  // bounds. Don't end overview in this case since doing so would disrupt the
+  // latest overview activity.
+  if (end_overview && last_overview_drag_session_ptr_) {
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kDragWindowFromShelf,
         OverviewEnterExitType::kImmediateExit);
@@ -849,6 +854,7 @@ void DragWindowFromShelfController::OnWindowDragStartedInOverview() {
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
   DCHECK(overview_session);
+  last_overview_drag_session_ptr_ = overview_session->GetWeakPtr();
   overview_session->OnWindowDragStarted(window_, /*animate=*/false);
   if (ShouldAllowSplitView())
     overview_session->SetSplitViewDragIndicatorsDraggedWindow(window_);
