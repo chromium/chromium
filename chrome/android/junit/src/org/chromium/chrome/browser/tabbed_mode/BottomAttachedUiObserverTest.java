@@ -18,10 +18,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -44,6 +46,8 @@ import java.util.Optional;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final int BOTTOM_CONTROLS_HEIGHT = 100;
     private static final int BOTTOM_CHIN_HEIGHT = 60;
     private static final int BROWSER_CONTROLS_COLOR = Color.RED;
@@ -98,8 +102,6 @@ public class BottomAttachedUiObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
 
         when(mContextualSearchManager.getOverlayPanelStateProviderSupplier())
@@ -253,6 +255,11 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @Features.DisableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_EDGE_TO_EDGE
+    })
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
@@ -262,6 +269,23 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, true, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth_drawingEdgeToEdge() {
+        when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
                 OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
