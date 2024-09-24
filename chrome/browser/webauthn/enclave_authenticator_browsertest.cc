@@ -2894,8 +2894,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   EXPECT_EQ(recovery_keys.size(), 2u);
 }
 
+// TODO(crbug.com/368799197): The test is flaky.
 // Tests enrolling an iCloud recovery key, then recovering from it.
-IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
+IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
   {
     // Do a make credential request and enroll a PIN.
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
