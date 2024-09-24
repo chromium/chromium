@@ -29,21 +29,34 @@ BASE_FEATURE(kLLPrivacyIsAvailable,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-const char* kLaunchedBoards[] = {
-    "BRYA",     "ATLAS",  "BROX",   "CHERRY", "CORSOLA", "DEDEDE",
-    "DRALLION", "GERALT", "HATCH",  "NISSA",  "OCTOPUS", "RAURU",
-    "REX",      "SARIEN", "SKYRIM", "STARYU", "VOLTEER"};
+const char* kNotLaunchedBoards[] = {
+    // Chrome unittests have an empty board name.
+    // TODO(b/369038879): Remove this after all unittests could pass with Floss.
+    "",
+    // Wave 2
+    "GUYBRUSH",
+    // Wave 3
+    "BRASK", "PUFF",
+    // Wave QCA
+    "JACUZZI", "KUKUI", "STRONGBAD", "TROGDOR",
+    // Wave RTL8822
+    "ASURADA", "GRUNT", "ZORK",
+    // Wave AC7265
+    "EVE", "FIZZ", "KALISTA", "NAMI", "NAUTILUS", "NOCTURNE", "RAMMUS",
+    "SORAKA", "CORAL", "PYRO", "REEF", "SAND", "SNAPPY",
+    // Wave MVL8897
+    "ELM", "HANA"};
 }  // namespace
 
 static bool IsDeviceLaunchedFloss() {
   std::string board = base::SysInfo::HardwareModelName();
-  for (auto* b : kLaunchedBoards) {
+  for (auto* b : kNotLaunchedBoards) {
     if (board.compare(b) == 0) {
-      return true;
+      return false;
     }
   }
 
-  return false;
+  return true;
 }
 #endif
 
