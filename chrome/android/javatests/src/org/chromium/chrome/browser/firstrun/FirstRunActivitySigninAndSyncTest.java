@@ -40,6 +40,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -112,6 +113,12 @@ public class FirstRunActivitySigninAndSyncTest {
                 });
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+        FirstRunActivity.disableAnimationForTesting(true);
+    }
+
+    @After
+    public void tearDown() {
+        FirstRunActivity.disableAnimationForTesting(false);
     }
 
     @Test
