@@ -299,7 +299,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feedback/android:delegate_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/locale:delegate_public_impl_java",
-      "//chrome/browser/model_execution/android:delegate_public_impl_java",
       "//chrome/browser/partnerbookmarks:delegate_public_impl_java",
       "//chrome/browser/partnercustomizations:delegate_public_impl_java",
       "//chrome/browser/password_manager/android:public_impl_java",

@@ -9,13 +9,12 @@ import org.chromium.chrome.browser.model_execution.ExecutionResult.ExecutionErro
 
 /**
  * Instantiable version of {@link ModelExecutionSession}. don't add anything to this class.
- * Downstream targets may provide a different implementation. In GN, we specify that {@link
- * ModelExecutionSession} is compiled separately from its implementation; other projects may specify
- * a different ModelExecutionSession via GN.
+ * Downstream targets may provide a different implementation via @ServiceImpl. Other projects may
+ * specify a different ModelExecutionSession via ServiceLoader.
  */
-public class ModelExecutionSessionImpl extends ModelExecutionSession {
+public class ModelExecutionSessionUpstreamImpl extends ModelExecutionSession {
 
-    public ModelExecutionSessionImpl(@ModelExecutionFeature int feature) {}
+    public ModelExecutionSessionUpstreamImpl(@ModelExecutionFeature int feature) {}
 
     @Override
     public void executeModel(String request, Callback<ExecutionResult> streamingResultCallback) {

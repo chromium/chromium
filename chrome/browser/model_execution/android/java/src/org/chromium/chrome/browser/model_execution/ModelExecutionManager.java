@@ -13,7 +13,7 @@ public class ModelExecutionManager {
         ModelExecutionSessionFactory factory =
                 ServiceLoaderUtil.maybeCreate(ModelExecutionSessionFactory.class);
         if (factory == null) {
-            return new ModelExecutionSessionImpl(feature);
+            return new ModelExecutionSessionUpstreamImpl(feature);
         }
         return factory.forFeature(feature);
     }
