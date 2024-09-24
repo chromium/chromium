@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
+import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
@@ -172,6 +173,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 };
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         mTabWindowManager = TabWindowManagerSingleton.getInstance();
+        // TODO(crbug.com/359875260): This is a temporary solution to get the
+        // ArchivedTabModelSelector from within the tabmodel package.
+        ArchivedTabModelSelectorHolder.setInstanceFn(
+                (profileQuery) -> {
+                    ArchivedTabModelOrchestrator archivedTabModelOrchestrator =
+                            getForProfile(profileQuery);
+                    return archivedTabModelOrchestrator.mTabModelSelector;
+                });
     }
 
     @Override

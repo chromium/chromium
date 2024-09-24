@@ -237,6 +237,16 @@ public class TabModelUtils {
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return null;
 
+        // Support archived tab model querying
+        final TabModelSelector archivedTabModelSelector =
+                ArchivedTabModelSelectorHolder.getInstance(tab.getProfile());
+        if (archivedTabModelSelector != null
+                && archivedTabModelSelector.getTabById(tab.getId()) != null) {
+            return archivedTabModelSelector
+                    .getTabModelFilterProvider()
+                    .getTabModelFilter(/* isIncognito= */ false);
+        }
+
         final ObservableSupplier<TabModelSelector> supplier =
                 TabModelSelectorSupplier.from(windowAndroid);
         if (supplier == null) return null;
