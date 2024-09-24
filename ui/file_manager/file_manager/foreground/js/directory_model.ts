@@ -1517,18 +1517,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       }
     }
 
-    // If the current directory is the Drive placeholder and the real Drive is
-    // mounted, switch to it.
-    if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
-      for (const newVolume of spliceEventDetail.added) {
-        if (newVolume.volumeType === VolumeType.DRIVE) {
-          newVolume.resolveDisplayRoot().then((displayRoot: DirectoryEntry) => {
-            this.changeDirectoryEntry(displayRoot);
-          });
-        }
-      }
-    }
-
     // If the current directory is the OneDrive placeholder and the real
     // OneDrive is mounted, switch to it.
     if (isSkyvaultV2Enabled() && currentDir &&

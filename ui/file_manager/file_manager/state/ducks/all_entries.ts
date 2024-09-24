@@ -21,11 +21,11 @@ import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isDebugStoreEnabled, Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
-import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, type State, type Volume, type VolumeMap} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, PropStatus, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
-import {hasDlpDisabledFiles} from './current_directory.js';
+import {changeDirectory, hasDlpDisabledFiles} from './current_directory.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey} from './volumes.js';
 
 /**
@@ -668,7 +668,18 @@ export async function*
     for await (const action of readSubDirectoriesForDriveRootEntryList(entry)) {
       yield action;
       if (action) {
-        childEntriesToReadDeeper.push(...action.payload.entries);
+        const childEntries = action.payload.entries;
+        childEntriesToReadDeeper.push(...childEntries);
+        // After populating the children of Google Drive, if Google Drive is the
+        // current directory, we need to navigate to its first child - My Drive.
+        const state = getStore().getState();
+        if (action.payload.entries.length > 0 &&
+            state.currentDirectory?.key === entry.toURL()) {
+          yield changeDirectory({
+            toKey: childEntries[0]!.toURL(),
+            status: PropStatus.STARTED,
+          });
+        }
       }
     }
   } else if (entry && isEntryScannable(entry)) {

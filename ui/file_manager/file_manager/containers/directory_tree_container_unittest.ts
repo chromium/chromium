@@ -6,13 +6,16 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
+import {EntryList} from '../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../common/js/mock_chrome.js';
 import type {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
+import {str} from '../common/js/translations.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {VolumeType} from '../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import {addAndroidApps} from '../state/ducks/android_apps.js';
 import {updateMaterializedViews} from '../state/ducks/materialized_views.js';
+import {addUiEntry} from '../state/ducks/ui_entries.js';
 import {addVolume, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
 import {getStore} from '../state/store.js';
@@ -987,4 +990,52 @@ export async function testAddMaterializedView() {
   await waitUntil(() => directoryTree.items.length === 2);
   assertEquals(directoryTree.items[0]!.label, 'Downloads');
   assertEquals(directoryTree.items[1]!.label, 'Google Drive');
+}
+
+/**
+ * Test adding children for Drive when "Google Drive" is selected will navigate
+ * to "My Drive".
+ */
+export async function testNavigateToMyDriveAfterAddingChildrenForDrive() {
+  const directoryTree = directoryTreeContainer.tree;
+  const store = getStore();
+
+  // Add a fake drive without any children.
+  const googleDriveEntry =
+      new EntryList(str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
+  store.dispatch(addUiEntry(googleDriveEntry));
+
+  // At top level, fake My Files and fake Google Drive should be listed.
+  await waitUntil(() => directoryTree.items.length === 2);
+  const googleDriveItem = directoryTree.items[1]!;
+  assertEquals(googleDriveItem.label, 'Google Drive');
+
+  // Click Google Drive to select it.
+  await googleDriveItem.click();
+  await waitForElementUpdate(googleDriveItem);
+  assertTrue(googleDriveItem.selected);
+  assertEquals(googleDriveItem.items.length, 0);
+  assertEquals(
+      store.getState().currentDirectory?.key, googleDriveEntry.toURL());
+
+  // Add My Drive entry into DriveFs.
+  const {volumeManager} = window.fileManager;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
+  await driveVolumeInfo.resolveDisplayRoot();
+  store.dispatch(
+      addVolume(driveVolumeInfo, createFakeVolumeMetadata(driveVolumeInfo)));
+
+  // Wait until the 3 children are rendered.
+  await waitUntil(() => googleDriveItem.items.length === 3);
+  const myDriveItem = googleDriveItem.items[0]!;
+  assertEquals(myDriveItem.label, 'My Drive');
+
+  // The current directory should be My Drive now.
+  // Note: the fake "directoryModel" used here won't do the actual navigation,
+  // so we can't assert `myDriveItem.selected` directly, instead we just assert
+  // the store state value.
+  await waitUntil(
+      () => store.getState().currentDirectory?.key ===
+          myDriveItem.dataset['navigationKey']);
 }
