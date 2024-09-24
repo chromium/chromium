@@ -343,7 +343,7 @@ class _BuildHelper:
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
         if 'target_cpu="arm64"' in self.extra_gn_args_str:
-          self.target = 'trichrome_google_64_32_minimal_apks'
+          self.target = 'trichrome_google_64_minimal_apks'
         else:
           self.target = 'trichrome_google_32_minimal_apks'
       else:
@@ -409,8 +409,6 @@ class _BuildHelper:
       ret += '6432'
     elif '64' in self.target:
       ret += '64'
-    elif '32' in self.target:
-      ret += '32'
     return ret
 
   def IsLinux(self):
