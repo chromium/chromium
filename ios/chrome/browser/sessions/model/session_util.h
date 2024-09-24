@@ -25,10 +25,10 @@ class WebState;
 // Utility method that allows to access the iOS SessionService from C++ code.
 namespace session_util {
 
-// Creates a WebState initialized with `browser_state` and serialized
+// Creates a WebState initialized with `profile` and serialized
 // navigation. The returned WebState has web usage enabled.
 std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     int last_committed_item_index,
     const std::vector<sessions::SerializedNavigationEntry>& navigations);
 

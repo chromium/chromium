@@ -89,8 +89,8 @@ TestSessionRestorationService::CreateUnrealizedWebState(
   metadata.Swap(storage.mutable_metadata());
 
   return web::WebState::CreateWithStorage(
-      browser->GetBrowserState(), web::WebStateID::NewUnique(),
-      std::move(metadata), base::ReturnValueOnce(std::move(storage)),
+      browser->GetProfile(), web::WebStateID::NewUnique(), std::move(metadata),
+      base::ReturnValueOnce(std::move(storage)),
       base::ReturnValueOnce<NSData*>(nil));
 }
 

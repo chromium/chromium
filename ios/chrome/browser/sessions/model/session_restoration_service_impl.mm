@@ -64,7 +64,7 @@ NSData* LoadWebStateSession(const base::FilePath& path) {
 // with DeserializeWebStateList() function.
 std::unique_ptr<web::WebState> CreateWebState(
     const base::FilePath& session_dir,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     web::WebStateID web_state_id,
     web::proto::WebStateMetadataStorage metadata) {
   const base::FilePath web_state_dir =
@@ -77,7 +77,7 @@ std::unique_ptr<web::WebState> CreateWebState(
       web_state_dir.Append(kWebStateSessionFilename);
 
   auto web_state = web::WebState::CreateWithStorage(
-      browser_state, web_state_id, std::move(metadata),
+      profile, web_state_id, std::move(metadata),
       base::BindOnce(&LoadWebStateStorage, web_state_storage_path),
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
@@ -432,7 +432,7 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
       DeserializeWebStateList(browser->GetWebStateList(), std::move(session),
                               enable_pinned_web_states_, enable_tab_groups_,
                               base::BindRepeating(&CreateWebState, session_dir,
-                                                  browser->GetBrowserState()));
+                                                  browser->GetProfile()));
 
   // Loading the session may have dropped some items, so clean the metadata map.
   UpdateMetadataMap(metadata_map, browser->GetWebStateList());
@@ -611,7 +611,7 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   // ensure there is no race condition while trying to read the data from the
   // main thread while it is being written to disk on a background thread.
   return web::WebState::CreateWithStorage(
-      browser->GetBrowserState(), web_state_id, std::move(metadata),
+      browser->GetProfile(), web_state_id, std::move(metadata),
       base::ReturnValueOnce(std::move(storage)),
       base::ReturnValueOnce<NSData*>(nil));
 }

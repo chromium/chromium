@@ -54,16 +54,14 @@
   // Since the app is about to be backgrounded or terminated, save the sessions
   // immediately for the main BrowserState and, if it exists, the incognito
   // BrowserState.
-  ChromeBrowserState* mainBrowserState =
-      browserProviderInterface.mainBrowserProvider.browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(mainBrowserState)
-      ->SaveSessions();
+  ProfileIOS* mainProfile =
+      browserProviderInterface.mainBrowserProvider.browser->GetProfile();
+  SessionRestorationServiceFactory::GetForProfile(mainProfile)->SaveSessions();
 
   if (browserProviderInterface.hasIncognitoBrowserProvider) {
-    ChromeBrowserState* incognitoBrowserstate =
-        browserProviderInterface.incognitoBrowserProvider.browser
-            ->GetBrowserState();
-    SessionRestorationServiceFactory::GetForBrowserState(incognitoBrowserstate)
+    ProfileIOS* incognitoProfile =
+        browserProviderInterface.incognitoBrowserProvider.browser->GetProfile();
+    SessionRestorationServiceFactory::GetForProfile(incognitoProfile)
         ->SaveSessions();
   }
 

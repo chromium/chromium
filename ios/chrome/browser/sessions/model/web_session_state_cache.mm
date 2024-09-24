@@ -104,8 +104,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }  // anonymous namespace
 
 @interface WebSessionStateCache ()
-// The ChromeBrowserState passed on initialization.
-@property(nonatomic) ChromeBrowserState* browserState;
+// The ProfileIOS passed on initialization.
+@property(nonatomic, assign) ProfileIOS* profile;
 @end
 
 @implementation WebSessionStateCache {
@@ -125,12 +125,11 @@ void PurgeCacheOnBackgroundSequenceExcept(
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ProfileIOS*)profile {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
-    _browserState = browserState;
-    _cacheDirectory =
-        browserState->GetStatePath().Append(kLegacyWebSessionsDirname);
+    _profile = profile;
+    _cacheDirectory = profile->GetStatePath().Append(kLegacyWebSessionsDirname);
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
@@ -199,7 +198,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   _taskRunner = nullptr;
-  _browserState = nullptr;
+  _profile = nullptr;
 }
 
 #pragma mark - Private
@@ -212,11 +211,10 @@ void PurgeCacheOnBackgroundSequenceExcept(
 // Returns a set of all known tab ids.
 - (std::set<std::string>)liveSessionIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  DCHECK(_browserState) << "-liveSessionIDs called after -shutdown";
+  DCHECK(_profile) << "-liveSessionIDs called after -shutdown";
 
   std::set<std::string> liveSessionIDs;
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
     WebStateList* webStateList = browser->GetWebStateList();

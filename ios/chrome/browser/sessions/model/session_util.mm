@@ -28,13 +28,13 @@ constexpr std::string_view kInactiveBrowserIdentifierSuffix = "-Inactive";
 }  // namespace
 
 std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     int last_committed_item_index,
     const std::vector<sessions::SerializedNavigationEntry>& navigations) {
   DCHECK_GE(last_committed_item_index, 0);
   DCHECK_LT(static_cast<size_t>(last_committed_item_index), navigations.size());
 
-  web::WebState::CreateParams params(browser_state);
+  web::WebState::CreateParams params(profile);
   auto web_state = web::WebState::Create(params);
   web_state->GetNavigationManager()->Restore(
       last_committed_item_index,

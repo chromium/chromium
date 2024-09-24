@@ -77,7 +77,7 @@ class LiveTabContextBrowserAgent
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };

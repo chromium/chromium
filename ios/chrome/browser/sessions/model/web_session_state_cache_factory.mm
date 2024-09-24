@@ -19,7 +19,7 @@
 
 namespace {
 // C++ wrapper around WebSessionStateCache, owning the WebSessionStateCache and
-// allowing it bind it to an ChromeBrowserState as a KeyedService.
+// allowing it bind it to an ProfileIOS as a KeyedService.
 class WebSessionStateCacheWrapper : public KeyedService {
  public:
   WebSessionStateCacheWrapper(BrowserList* browser_list,
@@ -65,11 +65,10 @@ void WebSessionStateCacheWrapper::Shutdown() {
 
 std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
     web::BrowserState* context) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<WebSessionStateCacheWrapper>(
-      BrowserListFactory::GetForBrowserState(chrome_browser_state),
-      [[WebSessionStateCache alloc] initWithBrowserState:chrome_browser_state]);
+      BrowserListFactory::GetForProfile(profile),
+      [[WebSessionStateCache alloc] initWithBrowserState:profile]);
 }
 }  // namespace
 

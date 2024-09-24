@@ -16,7 +16,7 @@ class BrowserState;
 class FakeTabRestoreService : public sessions::TabRestoreService {
  public:
   // Type of the factory returned by GetTestingFactory(). Can be registered
-  // with TestChromeBrowserState::Builder::AddTestingFactory().
+  // with TestProfileIOS::Builder::AddTestingFactory().
   using TestingFactory = base::RepeatingCallback<std::unique_ptr<KeyedService>(
       web::BrowserState*)>;
 

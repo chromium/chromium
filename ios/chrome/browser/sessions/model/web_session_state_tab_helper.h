@@ -63,7 +63,7 @@ class WebSessionStateTabHelper
   void CreateScrollingObserver();
   void OnScrollEvent();
 
-  ChromeBrowserState* GetBrowserState();
+  ProfileIOS* GetProfile();
 
   // Mark the tab helper as stale.  Future calls to SaveSessionStateIfStale()
   // will result in calls to SaveSessionState().

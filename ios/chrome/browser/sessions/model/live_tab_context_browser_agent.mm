@@ -24,7 +24,7 @@
 BROWSER_USER_DATA_KEY_IMPL(LiveTabContextBrowserAgent)
 
 LiveTabContextBrowserAgent::LiveTabContextBrowserAgent(Browser* browser)
-    : browser_state_(browser->GetBrowserState()),
+    : profile_(browser->GetProfile()),
       web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {}
 
@@ -137,7 +137,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
   // TODO(crbug.com/40491734): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
       session_util::CreateWebStateWithNavigationEntries(
-          browser_state_, tab.normalized_navigation_index(), tab.navigations),
+          profile_, tab.normalized_navigation_index(), tab.navigations),
       WebStateList::InsertionParams::AtIndex(tab_index).Activate());
   return nullptr;
 }
@@ -147,7 +147,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
   web_state_list_->ReplaceWebStateAt(
       web_state_list_->active_index(),
       session_util::CreateWebStateWithNavigationEntries(
-          browser_state_, tab.normalized_navigation_index(), tab.navigations));
+          profile_, tab.normalized_navigation_index(), tab.navigations));
 
   return nullptr;
 }

@@ -54,7 +54,7 @@ class IOSChromeTabRestoreServiceClient
   bool HasLastSession() override;
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
 
-  const base::FilePath browser_state_path_;
+  const base::FilePath profile_path_;
   raw_ptr<BrowserList> browser_list_;
 };
 

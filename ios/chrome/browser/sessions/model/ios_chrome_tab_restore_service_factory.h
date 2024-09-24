@@ -16,7 +16,7 @@ class TabRestoreService;
 }
 
 // Singleton that owns all TabRestoreServices and associates them with
-// ChromeBrowserStates.
+// ProfileIOS.
 class IOSChromeTabRestoreServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:

@@ -31,16 +31,16 @@ class WebSessionStateCacheTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    sessionCache_ = [[WebSessionStateCache alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+    TestProfileIOS::Builder test_cbs_builder;
+    profile_ = std::move(test_cbs_builder).Build();
+    sessionCache_ =
+        [[WebSessionStateCache alloc] initWithBrowserState:profile_.get()];
 
-    web::WebState::CreateParams createParams(chrome_browser_state_.get());
+    web::WebState::CreateParams createParams(profile_.get());
     web_state_ = web::WebState::Create(createParams);
 
     session_cache_directory_ =
-        chrome_browser_state_->GetStatePath().Append(kLegacyWebSessionsDirname);
+        profile_->GetStatePath().Append(kLegacyWebSessionsDirname);
   }
 
   bool StorageExists() {
@@ -69,7 +69,7 @@ class WebSessionStateCacheTest : public PlatformTest {
   base::FilePath session_cache_directory_;
   std::unique_ptr<web::WebState> web_state_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   WebSessionStateCache* sessionCache_;
 };
 

@@ -36,8 +36,8 @@ sessions::LiveTabContext* FindLiveTabContextWithCondition(
 IOSChromeTabRestoreServiceClient::IOSChromeTabRestoreServiceClient(
     const base::FilePath& state_path,
     BrowserList* browser_list)
-    : browser_state_path_(state_path), browser_list_(browser_list) {
-  DCHECK(!browser_state_path_.empty());
+    : profile_path_(state_path), browser_list_(browser_list) {
+  DCHECK(!profile_path_.empty());
   DCHECK(browser_list_);
 }
 
@@ -113,7 +113,7 @@ std::string IOSChromeTabRestoreServiceClient::GetExtensionAppIDForTab(
 }
 
 base::FilePath IOSChromeTabRestoreServiceClient::GetPathToSaveTo() {
-  return browser_state_path_;
+  return profile_path_;
 }
 
 GURL IOSChromeTabRestoreServiceClient::GetNewTabURL() {

@@ -16,7 +16,7 @@ namespace web {
 class WebStateID;
 }
 
-// A browser state keyed service, providing an on-disk cache of WKWebView
+// A profile keyed service, providing an on-disk cache of WKWebView
 // sessionState data, modeled after the SnapshotStorage. Data is persisted to
 // disk in a background thread with the provided NSData to a file name based on
 // the webState TabId. Data can be written or deleted by tabId, delayed during
@@ -24,7 +24,7 @@ class WebStateID;
 @interface WebSessionStateCache : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ProfileIOS*)profile
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
