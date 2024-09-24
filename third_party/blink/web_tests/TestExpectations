@@ -1766,6 +1766,8 @@ crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html 
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5882140
+crbug.com/350426235 http/tests/devtools/console/console-uncaught-promise-in-worker.js [ Failure Pass ]
 
 # During work on crbug.com/1171767, we discovered a bug demonstrable through
 # WPT. Marking as a failing test until we update our implementation.
