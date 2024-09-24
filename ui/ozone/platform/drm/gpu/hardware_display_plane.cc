@@ -106,6 +106,109 @@ void HardwareDisplayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
   }
 }
 
+std::ostream& HardwareDisplayPlane::DumpProperties(std::ostream& out) const {
+#define DRM_PLANE_PROPERTY_DUMP_ALL                                    \
+  DRM_PROPERTY_DUMP(crtc_id, DRM_INT)                                  \
+  DRM_PROPERTY_DUMP(crtc_x, DRM_INT)                                   \
+  DRM_PROPERTY_DUMP(crtc_y, DRM_INT)                                   \
+  DRM_PROPERTY_DUMP(crtc_w, DRM_INT)                                   \
+  DRM_PROPERTY_DUMP(crtc_h, DRM_INT)                                   \
+  DRM_PROPERTY_DUMP(fb_id, DRM_INT)                                    \
+  DRM_PROPERTY_DUMP(src_x, DRM_SHIFT16)                                \
+  DRM_PROPERTY_DUMP(src_y, DRM_SHIFT16)                                \
+  DRM_PROPERTY_DUMP(src_w, DRM_SHIFT16)                                \
+  DRM_PROPERTY_DUMP(src_h, DRM_SHIFT16)                                \
+  DRM_PROPERTY_DUMP(type, DRM_TYPE)                                    \
+  DRM_PROPERTY_DUMP_OPTIONAL(rotation, DRM_ROTATION)                   \
+  DRM_PROPERTY_DUMP_OPTIONAL(in_fence_fd, DRM_INT)                     \
+  DRM_PROPERTY_DUMP_OPTIONAL(plane_color_encoding, DRM_COLOR_ENCODING) \
+  DRM_PROPERTY_DUMP_OPTIONAL(plane_color_range, DRM_COLOR_RANGE)       \
+  DRM_PROPERTY_DUMP_OPTIONAL(plane_fb_damage_clips, DRM_INT)
+
+#define DRM_PROPERTY_DUMP_OPTIONAL(property, dump) \
+  if (properties_.property.id) {                   \
+    out << #property << "=";                       \
+    dump(property);                                \
+    out << ",";                                    \
+  }
+#define DRM_PROPERTY_DUMP(property, dump) \
+  out << #property << "=";                \
+  dump(property);                         \
+  out << ",";
+
+#define DRM_INT(property) out << properties_.property.value;
+#define DRM_SHIFT16(property) out << (properties_.property.value >> 16);
+#define DRM_TYPE(property)              \
+  switch (properties_.property.value) { \
+    case DRM_PLANE_TYPE_OVERLAY:        \
+      out << "DRM_PLANE_TYPE_OVERLAY";  \
+      break;                            \
+    case DRM_PLANE_TYPE_PRIMARY:        \
+      out << "DRM_PLANE_TYPE_PRIMARY";  \
+      break;                            \
+    case DRM_PLANE_TYPE_CURSOR:         \
+      out << "DRM_PLANE_TYPE_CURSOR";   \
+      break;                            \
+    default:                            \
+      NOTREACHED();                     \
+  }
+#define DRM_ROTATION(property)                   \
+  switch (properties_.property.value) {          \
+    case DRM_MODE_ROTATE_0:                      \
+      out << "NONE";                             \
+      break;                                     \
+    case DRM_MODE_REFLECT_X | DRM_MODE_ROTATE_0: \
+      out << "FLIP_HORIZONTAL";                  \
+      break;                                     \
+    case DRM_MODE_REFLECT_Y | DRM_MODE_ROTATE_0: \
+      out << "FLIP_VERTICAL";                    \
+      break;                                     \
+    case DRM_MODE_ROTATE_270:                    \
+      out << "ROTATE_CLOCKWISE_90";              \
+      break;                                     \
+    case DRM_MODE_ROTATE_180:                    \
+      out << "ROTATE_CLOCKWISE_180";             \
+      break;                                     \
+    case DRM_MODE_ROTATE_90:                     \
+      out << "ROTATE_CLOCKWISE_270";             \
+      break;                                     \
+    default:                                     \
+      NOTREACHED();                              \
+  }
+#define DRM_COLOR_ENCODING(property)                                \
+  if (properties_.property.value == color_encoding_bt601_) {        \
+    out << "\"ITU-R BT.601 YCbCr\"";                                \
+  } else if (properties_.property.value == color_encoding_bt709_) { \
+    out << "\"ITU-R BT.709 YCbCr\"";                                \
+  } else {                                                          \
+    NOTREACHED();                                                   \
+  }
+#define DRM_COLOR_RANGE(property)                           \
+  if (properties_.property.value == color_range_limited_) { \
+    out << "\"YCbCr limited range\"";                       \
+  } else {                                                  \
+    NOTREACHED();                                           \
+  }
+
+  out << "plane_id=" << id_ << ":{";
+  DRM_PLANE_PROPERTY_DUMP_ALL
+  out << "}";
+
+#undef DRM_PROPERTY_DUMP
+#undef DRM_PROPERTY_DUMP_OPTIONAL
+
+#undef DRM_INT
+#undef DRM_SHIFT16
+#undef DRM_TYPE
+#undef DRM_ROTATION
+#undef DRM_COLOR_ENCODING
+#undef DRM_COLOR_RANGE
+
+#undef DRM_PLANE_PROPERTY_DUMP_ALL
+
+  return out;
+}
+
 bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   InitializeProperties(drm);
 
@@ -211,6 +314,7 @@ std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
 }
 
 void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
+  // Query plane properties from name to id
   ScopedDrmObjectPropertyPtr props =
       drm->GetObjectProperties(id_, DRM_MODE_OBJECT_PLANE);
   GetDrmPropertyForName(drm, props.get(), "CRTC_ID", &properties_.crtc_id);
