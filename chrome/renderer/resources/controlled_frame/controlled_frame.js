@@ -29,6 +29,20 @@ class ControlledFrameElement extends WebViewElement {
     privates(this).internal = new ControlledFrameImpl(this);
     privates(this).originalGo = originalGo;
   }
+
+  // Override add/removeContentScripts to accept a `callback` parameter
+  // so they can be used with Promises.
+  addContentScripts(rules, callback) {
+    var internal = privates(this).internal;
+    return WebViewInternal.addContentScripts(
+        internal.viewInstanceId, rules, callback);
+  }
+
+  removeContentScripts(names, callback) {
+    var internal = privates(this).internal;
+    return WebViewInternal.removeContentScripts(
+        internal.viewInstanceId, names, callback);
+  }
 }
 
 // Forward remaining ControlledFrameElement.foo* method calls to

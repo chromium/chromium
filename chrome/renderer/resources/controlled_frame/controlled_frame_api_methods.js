@@ -7,9 +7,6 @@
 // Contains a list of API method names that do not produce asynchronous results
 // for use in GuestViewContainerElement.forwardApiMethods().
 const CONTROLLED_FRAME_API_METHODS = [
-  // Add content scripts for the guest page.
-  'addContentScripts',
-
   // Returns whether there is a previous history entry to navigate to.
   'canGoBack',
 
@@ -21,9 +18,6 @@ const CONTROLLED_FRAME_API_METHODS = [
 
   // Prints the contents of the webview.
   'print',
-
-  // Removes content scripts for the guest page.
-  'removeContentScripts',
 
   // Reloads the current top-level page.
   'reload',
@@ -44,6 +38,9 @@ const CONTROLLED_FRAME_API_METHODS = [
 // object, since there is not a way to know the expected size of the arguments
 // accepted by the function.
 const CONTROLLED_FRAME_PROMISE_API_METHODS = [
+  // Add content scripts for the guest page.
+  {name: 'addContentScripts', callbackIndex: 1},
+
   // Navigates to the previous history entry.
   {name: 'back', callbackIndex: 0},
 
@@ -74,6 +71,9 @@ const CONTROLLED_FRAME_PROMISE_API_METHODS = [
 
   // Returns whether audio is muted.
   {name: 'isAudioMuted', callbackIndex: 0},
+
+  // Removes content scripts for the guest page.
+  {name: 'removeContentScripts', callbackIndex: 1},
 
   // Changes the zoom factor of the page.
   {name: 'setZoom', callbackIndex: 1},
