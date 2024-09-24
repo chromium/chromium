@@ -62,15 +62,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
-
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
 #endif
 
 namespace web_app {
@@ -1501,10 +1496,9 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
+class WebAppRegistrarAshTest : public WebAppTest {
  public:
   void SetUp() override {
-    // Set up user manager to so that Lacros mode can be enabled.
     // TODO(crbug.com/40275387): Consider setting up a fake user in all Ash web
     // app tests.
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -1519,8 +1513,6 @@ class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
     // Need to run the WebAppTest::SetUp() after the fake user manager set up
     // so that the scoped_user_manager can be destructed in the correct order.
     WebAppTest::SetUp();
-
-    VerifyLacrosStatus();
   }
   WebAppRegistrarAshTest() = default;
   ~WebAppRegistrarAshTest() override = default;
@@ -1530,7 +1522,7 @@ class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-TEST_P(WebAppRegistrarAshTest, SourceSupported) {
+TEST_F(WebAppRegistrarAshTest, SourceSupported) {
   const GURL example_url("https://example.com/my-app/start");
   const GURL swa_url("chrome://swa/start");
   const GURL uninstalling_url("https://example.com/uninstalling/start");
@@ -1559,24 +1551,13 @@ TEST_P(WebAppRegistrarAshTest, SourceSupported) {
     registrar.InitRegistry(std::move(registry));
   }
 
-  if (GetParam() == CrosapiParam::kEnabled) {
-    // Non-system web apps are managed by Lacros, excluded in Ash
-    // WebAppRegistrar.
-    EXPECT_EQ(registrar.CountUserInstalledApps(), 0);
-    EXPECT_EQ(CountApps(registrar.GetApps()), 1);
+  EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
+  EXPECT_EQ(CountApps(registrar.GetApps()), 2);
 
-    EXPECT_FALSE(registrar.FindAppWithUrlInScope(example_url).has_value());
-    EXPECT_TRUE(registrar.GetAppScope(example_id).is_empty());
-    EXPECT_FALSE(registrar.GetAppUserDisplayMode(example_id).has_value());
-  } else {
-    EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
-    EXPECT_EQ(CountApps(registrar.GetApps()), 2);
-
-    EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
-    EXPECT_EQ(registrar.GetAppScope(example_id),
-              GURL("https://example.com/my-app/"));
-    EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
-  }
+  EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+  EXPECT_EQ(registrar.GetAppScope(example_id),
+            GURL("https://example.com/my-app/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
 
   EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
   EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
@@ -1589,11 +1570,6 @@ TEST_P(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppRegistrarAshTest,
-                         ::testing::Values(CrosapiParam::kEnabled,
-                                           CrosapiParam::kDisabled),
-                         WithCrosapiParam::ParamToString);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

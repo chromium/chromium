@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -38,9 +37,6 @@
 #include "content/public/test/test_utils.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
-
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
 
 namespace {
 
@@ -265,23 +261,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
   EXPECT_EQ(item->collection_id(), ash::AppCollection::kEssentials);
 }
 
-class AppServiceSystemWebAppItemBrowserTest
-    : public AppServiceAppItemBrowserTest,
-      public WithCrosapiParam {
-  void SetUpOnMainThread() override {
-    AppServiceAppItemBrowserTest::SetUpOnMainThread();
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    VerifyLacrosStatus();
-  }
-};
+using AppServiceSystemWebAppItemBrowserTest = AppServiceAppItemBrowserTest;
 
-IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
+IN_PROC_BROWSER_TEST_F(AppServiceSystemWebAppItemBrowserTest, Activate) {
   Profile* const profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
   const webapps::AppId app_id = web_app::kHelpAppId;
@@ -305,9 +287,3 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
 
   app_item.PerformActivate(ui::EF_NONE);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppServiceSystemWebAppItemBrowserTest,
-                         ::testing::Values(CrosapiParam::kDisabled,
-                                           CrosapiParam::kEnabled),
-                         WithCrosapiParam::ParamToString);

@@ -44,7 +44,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
@@ -62,9 +61,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/widget.h"
-
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
 
 namespace mojo {
 
@@ -947,23 +943,10 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, PaymentApp) {
                   .empty());
 }
 
-class AppServiceAppWindowSystemWebAppBrowserTest
-    : public AppServiceAppWindowWebAppBrowserTest,
-      public WithCrosapiParam {
-  void SetUpOnMainThread() override {
-    AppServiceAppWindowWebAppBrowserTest::SetUpOnMainThread();
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    VerifyLacrosStatus();
-  }
-};
+using AppServiceAppWindowSystemWebAppBrowserTest =
+    AppServiceAppWindowWebAppBrowserTest;
 
-IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowSystemWebAppBrowserTest,
                        SystemWebAppWindow) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
@@ -998,9 +981,3 @@ IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
   instances = app_service_proxy_->InstanceRegistry().GetInstances(app_id);
   EXPECT_TRUE(instances.empty());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppServiceAppWindowSystemWebAppBrowserTest,
-                         ::testing::Values(CrosapiParam::kEnabled,
-                                           CrosapiParam::kDisabled),
-                         WithCrosapiParam::ParamToString);

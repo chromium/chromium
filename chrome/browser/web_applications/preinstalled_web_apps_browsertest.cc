@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -27,13 +26,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
-
 namespace web_app {
 
-class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase,
-                                       public WithCrosapiParam {
+class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase {
  public:
   PreinstalledWebAppsBrowserTest()
       : skip_preinstalled_web_app_startup_(
@@ -54,31 +49,18 @@ class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase,
     command_line->RemoveSwitch(switches::kDisableDefaultApps);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpOnMainThread() override {
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    WebAppBrowserTestBase::SetUpOnMainThread();
-    VerifyLacrosStatus();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   base::FilePath empty_path_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  if (GetParam() == test::CrosapiParam::kDisabled) {
-    // TODO(http://crbug.com/328691719): Test is flaky on CHROMEOS.
-    return;
-  }
+// TODO(http://crbug.com/328691719): Test is flaky on CHROMEOS.
+#define MAYBE_CheckInstalledFields DISABLED_CheckInstalledFields
+#else
+#define MAYBE_CheckInstalledFields CheckInstalledFields
 #endif
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
+                       MAYBE_CheckInstalledFields) {
   base::AutoReset<bool> scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
@@ -163,22 +145,17 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                   install_results,
               std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
-            if (GetParam() == test::CrosapiParam::kDisabled) {
-              EXPECT_EQ(install_results.size(),
-                        kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
+            EXPECT_EQ(install_results.size(),
+                      kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
 
-              for (const auto& expectation : kOfflineOnlyExpectations) {
-                EXPECT_EQ(
-                    install_results[GURL(expectation.install_url)].code,
-                    webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
-              }
+            for (const auto& expectation : kOfflineOnlyExpectations) {
+              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                        webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
+            }
 
-              for (const auto& expectation : kOnlineOnlyExpectations) {
-                EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                          webapps::InstallResultCode::kInstallURLLoadFailed);
-              }
-            } else {
-              EXPECT_EQ(install_results.size(), 0u);
+            for (const auto& expectation : kOnlineOnlyExpectations) {
+              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                        webapps::InstallResultCode::kInstallURLLoadFailed);
             }
 
             EXPECT_EQ(uninstall_results.size(), 0u);
@@ -188,22 +165,9 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   run_loop.Run();
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
-    if (GetParam() == test::CrosapiParam::kDisabled) {
-      EXPECT_EQ(provider.registrar_unsafe().GetAppLaunchUrl(expectation.app_id),
-                GURL(expectation.launch_url));
-    } else {
-      EXPECT_FALSE(provider.registrar_unsafe().GetAppById(expectation.app_id));
-    }
+    EXPECT_EQ(provider.registrar_unsafe().GetAppLaunchUrl(expectation.app_id),
+              GURL(expectation.launch_url));
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PreinstalledWebAppsBrowserTest,
-                         ::testing::Values(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                             CrosapiParam::kEnabled,
-#endif
-                             CrosapiParam::kDisabled),
-                         WithCrosapiParam::ParamToString);
 
 }  // namespace web_app
