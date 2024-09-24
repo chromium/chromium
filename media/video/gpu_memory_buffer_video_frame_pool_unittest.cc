@@ -314,7 +314,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
@@ -334,7 +334,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
-    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_TRUE(frame->HasTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
 
     EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
@@ -406,7 +406,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
@@ -427,7 +427,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
-    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_TRUE(frame->HasTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
 
     EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
@@ -542,7 +542,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
@@ -566,7 +566,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_TRUE(frame->HasTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -613,7 +613,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
@@ -636,7 +636,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_TRUE(frame->HasTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
 
     EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
@@ -689,7 +689,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_XR30, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -715,7 +715,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_P010LE, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -753,7 +753,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
     EXPECT_EQ(PIXEL_FORMAT_P010LE, frame->format());
-    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_TRUE(frame->HasTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -808,7 +808,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_XR30, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -835,7 +835,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_XR30, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
@@ -861,7 +861,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_XB30, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
@@ -878,7 +878,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_ABGR, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_TRUE(frame->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
@@ -1124,7 +1124,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, VideoFrameChangesPixelFormat) {
 
   EXPECT_NE(software_frame_1.get(), frame_1.get());
   EXPECT_EQ(PIXEL_FORMAT_ABGR, frame_1->format());
-  EXPECT_EQ(1u, frame_1->NumTextures());
+  EXPECT_TRUE(frame_1->HasTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame_1->metadata().read_lock_fences_enabled);
 

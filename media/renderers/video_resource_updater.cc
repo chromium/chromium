@@ -88,7 +88,6 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     viz::SharedImageFormat& si_format,
     bool use_stream_video_draw_quad) {
   const VideoPixelFormat format = frame.format();
-  DCHECK_EQ(frame.NumTextures(), 1u);
 
   if (frame.RequiresExternalSampler()) {
     // The texture |target| can be 0 for Fuchsia.
@@ -1014,7 +1013,6 @@ void VideoResourceUpdater::CopyHardwarePlane(
   // This path is currently only used with single mailbox frames. Assert this
   // here since this code isn't tuned for multiple planes; it should only update
   // the release token once.
-  DCHECK_EQ(video_frame->NumTextures(), 1u);
   WaitAndReplaceSyncTokenClient client(RasterInterface());
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
 
@@ -1049,9 +1047,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
   if (copy_required) {
     target = GL_TEXTURE_2D;
   }
-
-  const size_t num_textures = video_frame->NumTextures();
-  DCHECK_EQ(num_textures, 1u);
 
   viz::SharedImageFormat si_format;
   external_resource.type = ExternalResourceTypeForHardwarePlanes(

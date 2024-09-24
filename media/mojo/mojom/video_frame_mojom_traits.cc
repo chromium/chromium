@@ -140,6 +140,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     if (input->HasSharedImage()) {
       // `input` is either empty or of size 1 with
       // GpuMemoryBufferSharedImageVideoFrameData.
+      CHECK(input->HasTextures());
       CHECK_EQ(input->NumTextures(), 1u);
       shared_image = input->shared_image()->Export();
     }

@@ -1317,9 +1317,8 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
     return wrapped_frame_->MapGMBOrSharedImage();
   }
   if (is_mappable_si_enabled_) {
-    // When MappableSI is enabled, there can only be 1 shared image
-    // even for multiplanar formats.
-    CHECK_EQ(NumTextures(), 1U);
+    // If MappableSI is used, there must be a shared image.
+    CHECK(HasTextures());
     if (auto mapping = shared_image_->Map()) {
       return base::WrapUnique(
           new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
@@ -1337,9 +1336,8 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
     return wrapped_frame_->GetGpuMemoryBufferHandle();
   }
   if (is_mappable_si_enabled_) {
-    // When MappableSI is enabled, there can only be 1 shared image
-    // even for multiplanar formats.
-    CHECK_EQ(NumTextures(), 1U);
+    // If MappableSI is used, there must be a shared image.
+    CHECK(HasTextures());
     return shared_image_->CloneGpuMemoryBufferHandle();
   }
   if (gpu_memory_buffer_) {
@@ -1574,7 +1572,7 @@ std::string VideoFrame::AsHumanReadableString() const {
                       natural_size_)
     << " timestamp:" << timestamp_.InMicroseconds();
   if (HasTextures())
-    s << " textures: " << NumTextures();
+    s << " texture: true";
   return s.str();
 }
 
