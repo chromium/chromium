@@ -76,6 +76,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // canvas. If not specified, then this will be a rectangle at 0,0 with the
     // size of `video_frame->visible_rect().size()`.
     std::optional<gfx::RectF> dest_rect;
+    // If true, then reinterpret the video frame as being in sRGB color space
+    // (though preserving the original YUV to RGB matrix) when drawing.
+    bool reinterpret_as_srgb = false;
     // The transformation to apply to the video before the copy.
     VideoTransformation transformation = media::kNoTransformation;
   };

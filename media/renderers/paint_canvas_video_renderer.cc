@@ -1024,6 +1024,11 @@ void PaintCanvasVideoRenderer::Paint(
   }
   DCHECK(cache_);
   cc::PaintImage image = cache_->paint_image;
+  if (params.reinterpret_as_srgb) {
+    image = cc::PaintImageBuilder::WithCopy(image)
+                .set_reinterpret_as_srgb(true)
+                .TakePaintImage();
+  }
   DCHECK(image);
 
   cc::PaintFlags video_flags;
@@ -1090,7 +1095,8 @@ void PaintCanvasVideoRenderer::Paint(
   // This if is a special handling of video for SkiaPaintcanvas backend, where
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
-  if (!need_transform && video_frame->IsMappable() && flags.isOpaque() &&
+  if (!need_transform && !params.reinterpret_as_srgb &&
+      video_frame->IsMappable() && flags.isOpaque() &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
       (pixels = canvas->accessTopLayerPixels(&info, &row_bytes, &origin)) &&

@@ -128,6 +128,9 @@ class PaintCanvasVideoRendererTest : public testing::Test {
   // Paints to |canvas| using |renderer_| without any frame data.
   void PaintWithoutFrame(cc::PaintCanvas* canvas);
 
+  // Set `video_frame` to `color`.
+  void FillFrameWithColor(scoped_refptr<VideoFrame> video_frame, Color color);
+
   // Paints the |video_frame| to the |canvas| using |renderer_|, setting the
   // color of |video_frame| to |color| first.
   void Paint(scoped_refptr<VideoFrame> video_frame,
@@ -274,6 +277,24 @@ PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
 
 PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
 
+void PaintCanvasVideoRendererTest::FillFrameWithColor(
+    scoped_refptr<VideoFrame> video_frame,
+    Color color) {
+  switch (color) {
+    case kNone:
+      break;
+    case kRed:
+      media::FillYUV(video_frame.get(), 76, 84, 255);
+      break;
+    case kGreen:
+      media::FillYUV(video_frame.get(), 149, 43, 21);
+      break;
+    case kBlue:
+      media::FillYUV(video_frame.get(), 29, 255, 107);
+      break;
+  }
+}
+
 void PaintCanvasVideoRendererTest::PaintWithoutFrame(cc::PaintCanvas* canvas) {
   cc::PaintFlags flags;
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
@@ -296,19 +317,7 @@ void PaintCanvasVideoRendererTest::PaintRotated(
     Color color,
     SkBlendMode mode,
     VideoTransformation video_transformation) {
-  switch (color) {
-    case kNone:
-      break;
-    case kRed:
-      media::FillYUV(video_frame.get(), 76, 84, 255);
-      break;
-    case kGreen:
-      media::FillYUV(video_frame.get(), 149, 43, 21);
-      break;
-    case kBlue:
-      media::FillYUV(video_frame.get(), 29, 255, 107);
-      break;
-  }
+  FillFrameWithColor(video_frame, color);
   cc::PaintFlags flags;
   flags.setBlendMode(mode);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
@@ -366,6 +375,24 @@ TEST_F(PaintCanvasVideoRendererTest, CopyTransparentFrame) {
        target_canvas());
   EXPECT_EQ(static_cast<SkColor>(SK_ColorTRANSPARENT),
             bitmap()->getColor(0, 0));
+}
+
+TEST_F(PaintCanvasVideoRendererTest, ReinterpretAsSRGB) {
+  FillFrameWithColor(natural_frame(), kRed);
+  natural_frame()->set_color_space(gfx::ColorSpace::CreateHDR10());
+
+  cc::PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrcOver);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(natural_frame(), target_canvas(), flags, params, nullptr);
+  EXPECT_NE(SK_ColorRED, bitmap()->getColor(0, 0));
+
+  params.reinterpret_as_srgb = true;
+  renderer_.Paint(natural_frame(), target_canvas(), flags, params, nullptr);
+  EXPECT_EQ(SK_ColorRED, bitmap()->getColor(0, 0));
 }
 
 TEST_F(PaintCanvasVideoRendererTest, Natural) {
