@@ -113,7 +113,8 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
     EXPECT_EQ(google_brand::IsEnterprise(gce_prefix + ch), ch != 'L');
   }
   for (const std::string prefix :
-       {"GCC", "GCF", "GCG", "GCH", "GCK", "GCL", "GCM"}) {
+       {"GCC", "GCF", "GCG", "GCH", "GCK", "GCL", "GCM", "GCO", "GCP", "GCQ",
+        "GCS", "GCT", "GCU", "GCV", "GCW"}) {
     for (char ch = 'A'; ch <= 'Z'; ++ch) {
       EXPECT_TRUE(google_brand::IsEnterprise(prefix + ch));
     }

@@ -661,10 +661,8 @@ std::wstring TransformCloudManagementBrandCode(const std::wstring& brand_code,
     const wchar_t* cbe_brand;
     const wchar_t* cbcm_brand;
   } kCbcmBrandRemapping[] = {
-      {L"GCE", L"GCC"},
-      {L"GCF", L"GCK"},
-      {L"GCG", L"GCL"},
-      {L"GCH", L"GCM"},
+      {L"GCE", L"GCC"}, {L"GCF", L"GCK"}, {L"GCG", L"GCL"}, {L"GCH", L"GCM"},
+      {L"GCO", L"GCT"}, {L"GCP", L"GCU"}, {L"GCQ", L"GCV"}, {L"GCS", L"GCW"},
   };
   if (to_cbcm) {
     for (auto mapping : kCbcmBrandRemapping) {
