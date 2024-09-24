@@ -124,7 +124,7 @@ void DistillerImpl::DistillNextPage() {
   if (!waiting_pages_.empty()) {
     auto front = waiting_pages_.begin();
     int page_num = front->first;
-    const GURL url = front->second;
+    const GURL url = std::move(front->second);
 
     waiting_pages_.erase(front);
     DCHECK(url.is_valid());

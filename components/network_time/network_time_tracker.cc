@@ -432,10 +432,9 @@ void NetworkTimeTracker::CheckTime() {
 
   std::string query_string;
   query_signer_->SignRequest("", &query_string);
-  GURL url = server_url_;
   GURL::Replacements replacements;
   replacements.SetQueryStr(query_string);
-  url = url.ReplaceComponents(replacements);
+  GURL url = server_url_.ReplaceComponents(replacements);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("network_time_component", R"(
@@ -461,7 +460,7 @@ void NetworkTimeTracker::CheckTime() {
           }
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
+  resource_request->url = std::move(url);
   // Not expecting any cookies, but just in case.
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;

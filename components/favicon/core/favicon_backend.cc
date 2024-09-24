@@ -155,7 +155,7 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
   base::Time last_updated;
   base::Time last_requested;
   favicon_base::FaviconRawBitmapResult bitmap_result;
-  bitmap_result.icon_url = icon_url;
+  bitmap_result.icon_url = std::move(icon_url);
   bitmap_result.icon_type = icon_type;
   if (!db_->GetFaviconBitmap(largest_icon.bitmap_id, &last_updated,
                              &last_requested, &bitmap_result.bitmap_data,

@@ -328,7 +328,7 @@ void UserNoteService::InitializeNewNoteForCreation(
   auto target = std::make_unique<UserNoteTarget>(
       is_page_level ? UserNoteTarget::TargetType::kPage
                     : UserNoteTarget::TargetType::kPageText,
-      selected_text, GURL(frame->GetLastCommittedURL()), serialized_selector);
+      selected_text, frame->GetLastCommittedURL(), serialized_selector);
 
   // TODO(gujen): This partial note creation logic will be moved to an API
   // exposed by the storage layer in order to keep the creation of UserNote

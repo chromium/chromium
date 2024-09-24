@@ -88,7 +88,7 @@ bool ParseOfflineHeaderValue(const std::string& header_value,
       GURL url = GURL(decoded_url);
       if (!url.is_valid())
         return false;
-      *intent_url = url;
+      *intent_url = std::move(url);
     } else {
       return false;
     }

@@ -121,7 +121,7 @@ WebAppOriginAssociationParser::ParseAssociatedWebApp(
   }
 
   mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
-  app->web_app_identity = web_app_identity;
+  app->web_app_identity = std::move(web_app_identity);
   return app;
 }
 

@@ -383,7 +383,7 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
     url = net::AppendQueryParameter(url, entry->first, entry->second);
   }
 
-  rr->url = url;
+  rr->url = std::move(url);
   rr->method = "POST";
   rr->load_flags =
       net::LOAD_DISABLE_CACHE | (bypass_proxy ? net::LOAD_BYPASS_PROXY : 0);
