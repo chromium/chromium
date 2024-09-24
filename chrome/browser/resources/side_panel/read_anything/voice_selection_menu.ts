@@ -344,11 +344,14 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     return this.voiceGroups_[groupIndex].voices[voiceIndex];
   }
 
-  // TODO(crbug.com/352070610): Add allocation error messages here too.
   private computeErrorMessages_(): string[] {
-    return this.computeMessages_(
+    const allocationErrors = this.computeMessages_(
+        ([_, notification]) => notification === NotificationType.NO_SPACE,
+        'readingModeVoiceMenuNoSpace');
+    const noInternetErrors = this.computeMessages_(
         ([_, notification]) => notification === NotificationType.NO_INTERNET,
         'readingModeVoiceMenuNoInternet');
+    return allocationErrors.concat(noInternetErrors);
   }
 
   private computeDownloadingMessages_(): string[] {

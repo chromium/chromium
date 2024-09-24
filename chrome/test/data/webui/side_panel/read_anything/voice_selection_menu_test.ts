@@ -549,7 +549,9 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('shows error message when fail', async () => {
-        await setOfflineError(lang1, lang2, lang3, lang4);
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION, lang1, lang2);
+        await setOfflineError(lang3, lang4);
         const msgs = getErrorMessages();
 
         assertEquals(0, getDownloadMessages().length);
@@ -582,7 +584,8 @@ suite('VoiceSelectionMenu', () => {
         await microtasksFinished();
         await setVoiceStatus(
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2);
-        await setOfflineError(lang3, lang4);
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION, lang3, lang4);
 
         voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
         await microtasksFinished();

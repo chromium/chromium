@@ -126,6 +126,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"readingModeLanguageMenuNoSpaceButVoicesExist",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"readingModeVoiceMenuNoSpace", IDS_READING_MODE_VOICE_MENU_NO_SPACE},
       {"previewVoiceAccessibilityLabel",
        IDS_READING_MODE_VOICE_MENU_PREVIEW_LANGUAGE},
       {"languageMenuNoResults", IDS_READING_MODE_LANGUAGE_MENU_NO_RESULTS},
