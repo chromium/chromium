@@ -65,7 +65,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LoadingScreen) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
+// TODO(crbug.com/369352286): This test is flaky on Linux. Fix and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_VoiceSelectionMenu DISABLED_VoiceSelectionMenu
+#else
+#define MAYBE_VoiceSelectionMenu VoiceSelectionMenu
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_VoiceSelectionMenu) {
   RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
                    "mocha.run()");
 }
