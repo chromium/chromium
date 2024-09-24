@@ -382,11 +382,17 @@
     <message name="IDS_PRINT_PAGE_DELIVERY_REVERSE_ORDER_FACE_UP" desc="PWG5100.3 (3.15) print-page-delivery: reverse-order-face-up">
       Reverse order face up
     </message>
+    <message name="IDS_PRINT_PAGE_DELIVERY_REVERSE_ORDER" desc="CUPS print-page-delivery: reverse-order">
+      Reverse order
+    </message>
     <message name="IDS_PRINT_PAGE_DELIVERY_SAME_ORDER_FACE_DOWN" desc="PWG5100.3 (3.15) print-page-delivery: same-order-face-down">
       Same order face down
     </message>
     <message name="IDS_PRINT_PAGE_DELIVERY_SAME_ORDER_FACE_UP" desc="PWG5100.3 (3.15) print-page-delivery: same-order-face-up">
       Same order face up
+    </message>
+    <message name="IDS_PRINT_PAGE_DELIVERY_SAME_ORDER" desc="CUPS print-page-delivery: same-order">
+      Same order
     </message>
     <message name="IDS_PRINT_PAGE_DELIVERY_SYSTEM_SPECIFIED" desc="PWG5100.3 (3.15) print-page-delivery: system-specified">
       System specified
