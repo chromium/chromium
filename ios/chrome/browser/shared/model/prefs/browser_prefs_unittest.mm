@@ -64,6 +64,7 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   pref_service()->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
                              1);
   pref_service()->SetBoolean(prefs::kIncognitoInterstitialEnabled, true);
+  pref_service()->SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount, 1);
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), false);
@@ -91,10 +92,18 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kIdentityConfirmationSnackbarDisplayCount),
             0);
+
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
             true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
             false);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      1);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      0);
 
   MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
 
@@ -130,6 +139,13 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
             false);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
             true);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      0);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      1);
 }
 
 // Check that the migration of a pref from localState prefService to

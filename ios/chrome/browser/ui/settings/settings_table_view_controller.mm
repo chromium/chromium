@@ -1445,7 +1445,7 @@ struct EnhancedSafeBrowsingActivePromoData
       base::RecordAction(base::UserMetricsAction("Settings.AddressBar.Opened"));
       [self showAddressBarPreferenceSetting];
       // Sets the "new" IPH badge shown count to max so it's not shown again.
-      _browserState->GetPrefs()->SetInteger(
+      GetApplicationContext()->GetLocalState()->SetInteger(
           prefs::kAddressBarSettingsNewBadgeShownCount, INT_MAX);
       break;
     case SettingsItemTypePasswords:
@@ -2079,11 +2079,7 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)updateAddressBarNewIPHBadge {
   CHECK(_addressBarPreferenceItem);
 
-  if (!_browserState) {
-    return;
-  }
-
-  PrefService* prefService = _browserState->GetPrefs();
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
   NSInteger showCount =
       prefService->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount);
 

@@ -765,6 +765,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Register pref storing whether the Incognito interstitial for third-party
   // intents is enabled.
   registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
+
+  registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
+                                0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -820,6 +823,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   tab_groups::prefs::RegisterProfilePrefs(registry);
 
+  // Deprecated, migrated to LocalState pref.
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
@@ -1344,6 +1348,7 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIdentityConfirmationSnackbarLastPromptTime, prefs);
 
+  // Added 09/2024.
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIdentityConfirmationSnackbarDisplayCount, prefs);
 
@@ -1356,6 +1361,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // kForceMigrateSyncingUserToSignedIn. Also remove the
   // signinAndEnableLegacySyncFeature test helper and corresponding tests.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
+
+  // Added 09/2024.
+  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kAddressBarSettingsNewBadgeShownCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {
