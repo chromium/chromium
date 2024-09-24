@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -100,9 +101,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
                                 callback.onResult(new Pair<>(mDrawable, mDrawable)))
                 .when(mBookmarkImageFetcher)
                 .fetchFirstTwoImagesForFolder(any(), any());
-        doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
-                .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
+        setBookmarkImageReturnValue(mDrawable);
         doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mFavicon))
                 .when(mBookmarkImageFetcher)
                 .fetchFaviconForBookmark(any(), any());
@@ -305,20 +304,19 @@ public class ImprovedBookmarkRowCoordinatorTest {
                         "account",
                         new GURL("https://account.com/"));
 
+        setBookmarkImageReturnValue(mFavicon);
         PropertyModel model = mCoordinator.createBasePropertyModel(localBookmarkId);
         assertTrue(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
-        assertFalse(
+        // Local bookmarks will still go through the native consent flow.
+        assertTrue(
                 mCoordinator.shouldShowImagesForBookmark(
                         bookmarkModel.getBookmarkById(localBookmarkId),
                         BookmarkRowDisplayPref.VISUAL));
         assertEquals(mFavicon, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get());
 
+        setBookmarkImageReturnValue(mDrawable);
         model = mCoordinator.createBasePropertyModel(bookmarkModel.getMobileFolderId());
         assertTrue(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
-        assertFalse(
-                mCoordinator.shouldShowImagesForBookmark(
-                        bookmarkModel.getBookmarkById(bookmarkModel.getMobileFolderId()),
-                        BookmarkRowDisplayPref.VISUAL));
         assertEquals(
                 new Pair<>(null, null),
                 model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());
@@ -326,5 +324,11 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         model = mCoordinator.createBasePropertyModel(accountBookmarkId);
         assertFalse(model.get(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK));
+    }
+
+    private void setBookmarkImageReturnValue(@Nullable Drawable drawable) {
+        doCallback(1, (Callback<Drawable> callback) -> callback.onResult(drawable))
+                .when(mBookmarkImageFetcher)
+                .fetchImageForBookmarkWithFaviconFallback(any(), any());
     }
 }

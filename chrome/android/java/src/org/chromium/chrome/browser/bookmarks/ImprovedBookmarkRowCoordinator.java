@@ -18,7 +18,6 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -220,12 +219,6 @@ public class ImprovedBookmarkRowCoordinator {
      */
     boolean shouldShowImagesForBookmark(
             BookmarkItem item, @BookmarkRowDisplayPref int displayPref) {
-        // Local bookmarks shouldn't get images, even if they're cached. This is only relevant when
-        // account bookmarks are enabled.
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
-                && !item.isAccountBookmark()) {
-            return false;
-        }
         return displayPref == BookmarkRowDisplayPref.VISUAL;
     }
 
