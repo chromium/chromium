@@ -156,6 +156,10 @@
     overflow: hidden;
     padding: 0;
   }
+
+  iron-icon[icon^='personalization-shared:refresh'] {
+    transform: rotateY(180deg);
+  }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
   <sea-pen-error thumbnail-response-status-code="[[thumbnailResponseStatusCode_]]"></sea-pen-error>

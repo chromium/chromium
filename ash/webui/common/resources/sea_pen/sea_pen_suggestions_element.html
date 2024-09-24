@@ -34,12 +34,19 @@
 
   #container cr-button.shuffle {
     border: none;
+    margin-inline-end: 10px;
   }
 </style>
 <div id="container">
   <iron-a11y-keys id="keys" keys="left right"
       on-keys-pressed="onSuggestionKeyPressed_">
   </iron-a11y-keys>
+  <cr-button id="shuffle"
+      class="shuffle"
+      on-click="onShuffleClicked_">
+    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
+    <iron-icon icon="personalization-shared:refresh"></iron-icon>
+  </cr-button>
   <iron-selector
       id="suggestionSelector"
       selected="0"
@@ -55,10 +62,4 @@
       </cr-button>
     </template>
   </iron-selector>
-  <cr-button id="shuffle"
-      class="shuffle"
-      on-click="onShuffleClicked_">
-    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
-    <iron-icon icon="personalization-shared:refresh"></iron-icon>
-  </cr-button>
 </div>
