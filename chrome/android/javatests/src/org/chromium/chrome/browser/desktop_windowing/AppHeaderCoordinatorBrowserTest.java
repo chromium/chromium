@@ -64,9 +64,13 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.util.concurrent.TimeoutException;
 
 /** Browser test for {@link AppHeaderCoordinator} */
 @RequiresApi(Build.VERSION_CODES.R)
@@ -77,6 +81,8 @@ import org.chromium.ui.test.util.UiRestriction;
 public class AppHeaderCoordinatorBrowserTest {
     private static final int APP_HEADER_LEFT_PADDING = 10;
     private static final int APP_HEADER_RIGHT_PADDING = 20;
+    private static final String TEXTFIELD_DOM_ID = "inputElement";
+    private static final int KEYBOARD_TIMEOUT = 10000;
 
     private static final WindowInsetsCompat BOTTOM_NAV_BAR_INSETS =
             new WindowInsetsCompat.Builder()
@@ -357,6 +363,72 @@ public class AppHeaderCoordinatorBrowserTest {
         // Exit desktop windowing mode and finish the second activity.
         AppHeaderUtils.setAppInDesktopWindowForTesting(false);
         secondActivity.finish();
+    }
+
+    @Test
+    @MediumTest
+    public void testKeyboardInDesktopWindowingModePadsRootView() throws TimeoutException {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        triggerDesktopWindowingModeChange(activity, true);
+        var insetObserver = activity.getWindowAndroid().getInsetObserver();
+
+        // Navigate to a URL with an input field. Clicking on it should trigger the OSK.
+        mActivityTestRule.loadUrl(
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/page_with_editable.html"));
+        DOMUtils.clickNode(activity.getActivityTab().getWebContents(), TEXTFIELD_DOM_ID);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isKeyboardShowing =
+                            mActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(activity, activity.getTabsView());
+                    Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
+                },
+                KEYBOARD_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // Verify that the root view is padded at the bottom to account for the OSK inset.
+        var rootView = activity.getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var keyboardInset = insetObserver.getSupplierForKeyboardInset().get();
+                    Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(keyboardInset));
+                });
+
+        // Remove input field focus to hide the keyboard.
+        JavaScriptUtils.executeJavaScript(
+                activity.getActivityTab().getWebContents(),
+                "document.querySelector('input').blur()");
+
+        // Verify that the root view bottom padding uses the system bar bottom inset.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var systemBarBottomInset =
+                            insetObserver
+                                    .getLastRawWindowInsets()
+                                    .getInsets(WindowInsetsCompat.Type.systemBars())
+                                    .bottom;
+                    Criteria.checkThat(
+                            rootView.getPaddingBottom(), Matchers.is(systemBarBottomInset));
+                });
+
+        // Dispatch window insets to simulate no overlap of the app window with system bar windows.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    insetObserver.onApplyWindowInsets(
+                            rootView,
+                            new WindowInsetsCompat.Builder()
+                                    .setInsets(
+                                            WindowInsetsCompat.Type.systemBars(),
+                                            Insets.of(0, 0, 0, 0))
+                                    .build());
+                });
+
+        // Verify that the root view bottom padding is reset.
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
     }
 
     private void doTestOnTopResumedActivityChanged(

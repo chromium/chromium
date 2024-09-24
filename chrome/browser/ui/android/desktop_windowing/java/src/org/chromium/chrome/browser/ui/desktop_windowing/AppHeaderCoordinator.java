@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -56,18 +57,22 @@ public class AppHeaderCoordinator
     private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final InsetObserver mInsetObserver;
-    private final InsetsRectProvider mInsetsRectProvider;
+    private final InsetsRectProvider mCaptionBarRectProvider;
+    private final WindowInsetObserver mWindowInsetObserver;
     private final WindowInsetsController mInsetsController;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     // Internal states
     private boolean mIsInDesktopWindow;
+    private boolean mIsEdgeToEdgeActive;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
+    private int mKeyboardInset;
+    private int mSystemBarBottomInset;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -88,13 +93,28 @@ public class AppHeaderCoordinator
             Activity activity,
             View rootView,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
-            InsetObserver insetObserver,
+            @NonNull InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState) {
         mActivity = activity;
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
+        mWindowInsetObserver =
+                new WindowInsetObserver() {
+                    @Override
+                    public void onInsetChanged(int left, int top, int right, int bottom) {
+                        mSystemBarBottomInset = bottom;
+                        maybeUpdateRootViewBottomPadding();
+                    }
+
+                    @Override
+                    public void onKeyboardInsetChanged(int inset) {
+                        mKeyboardInset = inset;
+                        maybeUpdateRootViewBottomPadding();
+                    }
+                };
+        mInsetObserver.addObserver(mWindowInsetObserver);
         mInsetsController = mRootView.getWindowInsetsController();
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -106,7 +126,7 @@ public class AppHeaderCoordinator
                                 INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
 
         // Initialize mInsetsRectProvider and setup observers.
-        mInsetsRectProvider =
+        mCaptionBarRectProvider =
                 sInsetsRectProviderForTesting != null
                         ? sInsetsRectProviderForTesting
                         : new InsetsRectProvider(
@@ -114,19 +134,20 @@ public class AppHeaderCoordinator
                                 WindowInsetsCompat.Type.captionBar(),
                                 insetObserver.getLastRawWindowInsets());
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
-        mInsetsRectProvider.addObserver(insetsRectUpdateRunnable);
+        mCaptionBarRectProvider.addObserver(insetsRectUpdateRunnable);
 
         // Populate the initial value if the rect provider is ready.
-        if (!mInsetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
+        if (!mCaptionBarRectProvider.getWidestUnoccludedRect().isEmpty()) {
             insetsRectUpdateRunnable.onBoundingRectsUpdated(
-                    mInsetsRectProvider.getWidestUnoccludedRect());
+                    mCaptionBarRectProvider.getWidestUnoccludedRect());
         }
     }
 
     /** Destroy the instances and remove all the dependencies. */
     public void destroy() {
         mActivity = null;
-        mInsetsRectProvider.destroy();
+        mCaptionBarRectProvider.destroy();
+        mInsetObserver.removeObserver(mWindowInsetObserver);
         mObservers.clear();
         mActivityLifecycleDispatcher.unregister(this);
     }
@@ -177,23 +198,31 @@ public class AppHeaderCoordinator
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
         mHeuristicResult =
                 checkIsInDesktopWindow(
-                        mActivity, mInsetObserver, mInsetsRectProvider, mHeuristicResult);
+                        mActivity, mInsetObserver, mCaptionBarRectProvider, mHeuristicResult);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         // Use an empty |widestUnoccludedRect| instead of the cached Rect while creating the
         // AppHeaderState while not in or while exiting desktop windowing mode, so that it always
         // holds a valid state for observers to use.
         var appHeaderState =
                 new AppHeaderState(
-                        mInsetsRectProvider.getWindowRect(),
+                        mCaptionBarRectProvider.getWindowRect(),
                         isInDesktopWindow
-                                ? mInsetsRectProvider.getWidestUnoccludedRect()
+                                ? mCaptionBarRectProvider.getWidestUnoccludedRect()
                                 : new Rect(),
                         isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 
         boolean desktopWindowingModeChanged = mIsInDesktopWindow != isInDesktopWindow;
         mIsInDesktopWindow = isInDesktopWindow;
+        // Note that this E2E state may be inconsistent in reality, especially because there may be
+        // other callers of #setDecorFitsSystemWindows(). It is assumed here that E2E is always
+        // consistent with desktop windowing mode.
+        mIsEdgeToEdgeActive = mIsInDesktopWindow;
         mAppHeaderState = appHeaderState;
+
+        // Update the root-level content view's padding to account for bottom inset changes.
+        maybeUpdateRootViewBottomPadding();
+
         for (var observer : mObservers) {
             observer.onAppHeaderStateChanged(mAppHeaderState);
         }
@@ -205,7 +234,7 @@ public class AppHeaderCoordinator
         }
 
         // 1. Enter E2E if we are in desktop windowing mode.
-        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mIsInDesktopWindow);
+        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mIsEdgeToEdgeActive);
 
         // 2. Set the captionBar background appropriately to draw into the region.
         updateCaptionBarBackground(mIsInDesktopWindow);
@@ -296,9 +325,30 @@ public class AppHeaderCoordinator
                 captionBarAppearance, APPEARANCE_LIGHT_CAPTION_BARS);
     }
 
+    // Desktop windows use E2E display and the root-level content view's bottom padding needs to be
+    // updated to "resize" the content view and restrict showing bottom Chrome UI within these
+    // bounds.
+    // TODO (crbug/325506516): Remove this logic when E2E implementation handles this.
+    private void maybeUpdateRootViewBottomPadding() {
+        int rootViewBottomPadding = mRootView.getPaddingBottom();
+        // Pad the root view with bottom window insets only if E2E is active.
+        int bottomInset =
+                !mIsEdgeToEdgeActive ? 0 : Math.max(mKeyboardInset, mSystemBarBottomInset);
+
+        // If the root view is padded as needed already, return early.
+        if (rootViewBottomPadding == bottomInset) return;
+
+        mRootView.setPadding(
+                mRootView.getPaddingLeft(),
+                mRootView.getPaddingTop(),
+                mRootView.getPaddingRight(),
+                bottomInset);
+    }
+
     /** Set states for testing. */
     public void setStateForTesting(boolean isInDesktopWindow, AppHeaderState appHeaderState) {
         mIsInDesktopWindow = isInDesktopWindow;
+        mIsEdgeToEdgeActive = isInDesktopWindow;
         mAppHeaderState = appHeaderState;
 
         for (var observer : mObservers) {
@@ -310,5 +360,9 @@ public class AppHeaderCoordinator
     public static void setInsetsRectProviderForTesting(InsetsRectProvider providerForTesting) {
         sInsetsRectProviderForTesting = providerForTesting;
         ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
+    }
+
+    WindowInsetObserver getWindowInsetObserverForTesting() {
+        return mWindowInsetObserver;
     }
 }
