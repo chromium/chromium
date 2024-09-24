@@ -109,8 +109,8 @@ ContextProperties ContextImplDml::GetProperties(
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
-       // CumulativeSum is not implemented.
-       /*cumulative_sum_input=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cumulative_summation_operator_desc#tensor-support
+       /*cumulative_sum_input=*/kFloat16To32Ints32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
        /*dequantize_linear_input=*/kInts8To32,
@@ -376,6 +376,8 @@ ContextProperties ContextImplDml::GetProperties(
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {
     properties.data_type_limits.clamp_input = SupportedDataTypes::All();
+    properties.data_type_limits.cumulative_sum_input =
+        DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.max_input = SupportedDataTypes::All();
     properties.data_type_limits.min_input = SupportedDataTypes::All();
     properties.data_type_limits.pad_input = SupportedDataTypes::All(),

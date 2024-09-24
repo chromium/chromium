@@ -1753,6 +1753,47 @@ void CreateOperatorNodeForConv2d(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+void CreateOperatorNodeForCumulativeSum(
+    const ContextProperties& context_properties,
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::CumulativeSumPtr& cumulative_sum,
+    GraphBuilderDml& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, cumulative_sum->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  CHECK(context_properties.data_type_limits.cumulative_sum_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  uint64_t output_id = cumulative_sum->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const uint32_t axis = cumulative_sum->axis;
+  DML_AXIS_DIRECTION axis_direction =
+      cumulative_sum->reversed
+          ? DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_DECREASING
+          : DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
+  DML_CUMULATIVE_SUMMATION_OPERATOR_DESC cumulative_sum_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Axis = axis,
+      .AxisDirection = axis_direction,
+      .HasExclusiveSum = cumulative_sum->exclusive};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const std::string& label = cumulative_sum->label;
+  const OperatorNode* cumulative_sum_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_CUMULATIVE_SUMMATION, &cumulative_sum_operator_desc, inputs,
+      label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      cumulative_sum_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 template <typename DML_OPERATOR_DESC>
 const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
                                          const TensorDesc& b_tensor,
@@ -5956,6 +5997,13 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
             context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kCumulativeSum: {
+        CreateOperatorNodeForCumulativeSum(
+            context_properties, id_to_operand_map,
+            operation->get_cumulative_sum(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kDequantizeLinear: {
