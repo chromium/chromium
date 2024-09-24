@@ -502,9 +502,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // token for these writes.
     cached_snapshot_.reset();
 
-    // We don't need to do copy-on-write for the resource here since writes to
-    // the GMB are deferred until it needs to be dispatched to the display
-    // compositor via ProduceCanvasResource.
+    // Determine if copy-on-write is needed for accelerated resources (note that
+    // for unaccelerated resources, writes to the SharedImage are deferred to
+    // ProduceCanvasResource and hence copy-on-write is never needed here).
     if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
       cached_content_id_ = PaintImage::kInvalidContentId;
       DCHECK(!current_resource_has_write_access_)
