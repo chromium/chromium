@@ -5,12 +5,56 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_iterator.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
+
+namespace {
+
+class AsyncIteratorCloseFulfillFunction final
+    : public ScriptFunction::Callable {
+ public:
+  explicit AsyncIteratorCloseFulfillFunction(ExceptionContext exception_context)
+      : exception_context_(exception_context) {}
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    // In a detached context, we shouldn't proceed to do things that can run
+    // script.
+    if (!script_state->ContextIsValid()) {
+      return ScriptValue();
+    }
+
+    // 9.1. If Type(returnPromiseResult) is not Object, throw a TypeError.
+    if (!value.V8Value()->IsObject()) {
+      auto error = V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(),
+          "Expected return() to resolve to an Object.");
+      ApplyContextToException(script_state, error, exception_context_);
+      V8ThrowException::ThrowException(script_state->GetIsolate(), error);
+      return ScriptValue();
+    }
+
+    // 9.2. Return undefined.
+    return ScriptValue();
+  }
+
+  void Trace(Visitor* visitor) const final {
+    ScriptFunction::Callable::Trace(visitor);
+  }
+
+ private:
+  ExceptionContext exception_context_;
+};
+
+}  // namespace
 
 // static
 ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
@@ -198,6 +242,142 @@ bool ScriptIterator::Next(ExecutionContext* execution_context,
     done_ = done->BooleanValue(isolate_);
     return !done_;
   }
+}
+
+ScriptValue ScriptIterator::CloseSync(ScriptState* script_state,
+                                      ExceptionState& exception_state,
+                                      v8::Local<v8::Value> reason) {
+  DCHECK_EQ(kind_, Kind::kSync);
+  DCHECK(!IsNull());
+
+  v8::Local<v8::Context> current_context = script_state->GetContext();
+  v8::Local<v8::Object> iterator = iterator_.Get(script_state);
+
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
+
+  // 7.4.9 IteratorClose().
+  //
+  // 3. Let innerResult be Completion(GetMethod(iterator, "return")).
+  v8::Local<v8::Value> return_method;
+  if (!iterator->Get(current_context, V8AtomicString(isolate_, "return"))
+           .ToLocal(&return_method)) {
+    DCHECK(rethrow_scope.HasCaught());
+    // 6. If innerResult is a throw completion, return ? innerResult.
+    return ScriptValue();
+  }
+
+  // 7.3.10 GetMethod(V, P):
+  //
+  // 3. If IsCallable(func) is false, throw a TypeError exception.
+  if (!return_method->IsFunction()) {
+    exception_state.ThrowTypeError("return() function must be callable.");
+    return ScriptValue();
+  }
+
+  // 4. If innerResult is a normal completion, then
+  //   a. Let return be innerResult.[[Value]].
+  //   b. If return is undefined, return ? completion.
+  if (return_method->IsNullOrUndefined()) {
+    return ScriptValue();
+  }
+
+  // 4.c. Set innerResult to Completion(Call(return, iterator)).
+  v8::Local<v8::Value> return_value;
+  if (!V8ScriptRunner::CallFunction(return_method.As<v8::Function>(),
+                                    ExecutionContext::From(script_state),
+                                    iterator, reason.IsEmpty() ? 0 : 1, &reason,
+                                    isolate_)
+           .ToLocal(&return_value)) {
+    DCHECK(rethrow_scope.HasCaught());
+    // 6. If innerResult is a throw completion, return ? innerResult.
+    return ScriptValue();
+  }
+
+  // If innerResult.[[Value]] is not an Object, throw a TypeError exception.
+  if (!return_value->IsObject()) {
+    exception_state.ThrowTypeError("Expected return() to return an Object.");
+    return ScriptValue();
+  }
+
+  // 8. Return ? completion.
+  return ScriptValue(isolate_, reason);
+}
+
+ScriptPromise<IDLAny> ScriptIterator::CloseAsync(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context,
+    v8::Local<v8::Value> reason) {
+  DCHECK_EQ(kind_, Kind::kAsync);
+  DCHECK(!IsNull());
+
+  v8::Local<v8::Context> current_context = script_state->GetContext();
+  v8::Local<v8::Object> iterator = iterator_.Get(script_state);
+
+  // To close an async iterator<T> |iterator|, with reason |reason|:
+  // https://whatpr.org/webidl/1397.html#async-iterator-close.
+  v8::TryCatch try_catch(script_state->GetIsolate());
+
+  // 3. Let returnMethod be GetMethod(iteratorObj, "return").
+  v8::Local<v8::Value> return_method;
+  if (!iterator->Get(current_context, V8AtomicString(isolate_, "return"))
+           .ToLocal(&return_method)) {
+    // 4. If returnMethod is an abrupt completion, return a promise rejected
+    // with returnMethod.[[Value]].
+    DCHECK(try_catch.HasCaught());
+    ScriptPromise<IDLAny> rejected_promise =
+        ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
+    try_catch.Reset();
+    return rejected_promise;
+  }
+
+  // 7.3.10 GetMethod(V, P):
+  //
+  // 3. If IsCallable(func) is false, throw a TypeError exception.
+  if (!return_method->IsFunction()) {
+    V8ThrowException::CreateTypeError(script_state->GetIsolate(),
+                                      "return() function must be callable");
+    ScriptPromise<IDLAny> rejected_promise =
+        ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
+    try_catch.Reset();
+    return rejected_promise;
+  }
+
+  // 5. If returnMethod is undefined, return a promise resolved with
+  //    undefined.
+  if (return_method->IsNullOrUndefined()) {
+    return EmptyPromise();
+  }
+
+  // 6. Let returnResult be
+  //    Call(returnMethod.[[Value]], iteratorObj, « reason »).
+  v8::Local<v8::Value> return_result;
+  if (!V8ScriptRunner::CallFunction(return_method.As<v8::Function>(),
+                                    ExecutionContext::From(script_state),
+                                    iterator, reason.IsEmpty() ? 0 : 1, &reason,
+                                    isolate_)
+           .ToLocal(&return_result)) {
+    // 7. If returnResult is an abrupt completion, return a promise rejected
+    //    with returnResult.[[Value]].
+    DCHECK(try_catch.HasCaught());
+    ScriptPromise<IDLAny> rejected_promise =
+        ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
+    try_catch.Reset();
+    return rejected_promise;
+  }
+
+  // 8. Let returnPromise be a promise resolved with returnResult.[[Value]].
+  ScriptPromise<IDLAny> return_promise =
+      ToResolvedPromise<IDLAny>(script_state, return_result);
+
+  // 9. Return the result of reacting to returnPromise with the following
+  //    fulfillment steps, given returnPromiseResult:
+  //
+  // (See documentation in `AsyncIteratorCloseFulfillFunction` for remaining
+  // documentation).
+  ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<AsyncIteratorCloseFulfillFunction>(
+                        exception_context));
+  return return_promise.Then(on_fulfilled);
 }
 
 }  // namespace blink

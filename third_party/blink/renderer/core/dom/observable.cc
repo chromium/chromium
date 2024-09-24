@@ -1620,6 +1620,10 @@ class OperatorFromAsyncIterableSubscribeDelegate final
   // "Return a new Observable whose subscribe callback is an algorithm that
   // takes a Subscriber |subscriber| and does the following:"
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    if (subscriber->signal()->aborted()) {
+      return;
+    }
+
     // `Observable::from()` already checks that `async_iterable_` is a JS
     // object, so we can safely convert it here.
     //
@@ -1647,7 +1651,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
   // run it to completion, which `SubscriptionRunner` is responsible for.
   //
   // See documentation above its instantiation for ownership details.
-  class SubscriptionRunner final : public GarbageCollected<SubscriptionRunner> {
+  class SubscriptionRunner final : public AbortSignal::Algorithm {
    public:
     SubscriptionRunner(v8::Local<v8::Object> v8_async_iterable,
                        Subscriber* subscriber,
@@ -1678,6 +1682,15 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         return;
       }
 
+      // This happens if `ScriptIterator::FromIterable()`, which runs script,
+      // aborts the subscription. In that case, we respect the abort and leave
+      // the iterator alone.
+      if (subscriber_->signal()->aborted()) {
+        return;
+      }
+
+      abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
+
       // Note that it's possible for `iterator_.IsNull()` to be true here, and
       // we have to handle it appropriately. Here's why:
       //
@@ -1696,6 +1709,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // The object failed to convert to an async or sync iterable.
         v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
             script_state->GetIsolate(), "Object must be iterable");
+        ClearAbortAlgorithm();
         subscriber->error(script_state,
                           ScriptValue(script_state->GetIsolate(), type_error));
         return;
@@ -1708,6 +1722,14 @@ class OperatorFromAsyncIterableSubscribeDelegate final
     // "Let |nextAlgorithm| be the following steps, given a Subscriber
     // |subscriber| and an Iterator Record |iteratorRecord|:"
     void GetNextValue(Subscriber* subscriber, ScriptState* script_state) {
+      // This can happen when the subscription is aborted in between async
+      // values being emitted. The Promise resulting from the previous iteration
+      // eventually resolves, but we ensure not to retrieve the value *after
+      // that* with this check.
+      if (subscriber->signal()->aborted()) {
+        return;
+      }
+
       DCHECK(!iterator_.IsNull());
       ExceptionState exception_state(script_state->GetIsolate(),
                                      exception_context_);
@@ -1754,14 +1776,43 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       next_promise_.Then(on_fulfilled, on_rejected);
     }
 
-    void Trace(Visitor* visitor) const {
+    void ClearAbortAlgorithm() {
+      subscriber_->signal()->RemoveAlgorithm(abort_algorithm_handle_);
+      abort_algorithm_handle_.Clear();
+    }
+
+    // This is the abort algorithm that runs when the relevant subscription is
+    // aborted. It's responsible for running ECMAScript's AsyncIteratorClose()
+    // abstract algorithm [1] on `SubscriptionManager::iterator_`, which invokes
+    // the `return()` method on the iterator if one such exists, to indicate to
+    // the underlying object that the consumer is terminating its consumption of
+    // values before exhaustion.
+    //
+    // [1]: https://tc39.es/ecma262/#sec-asynciteratorclose.
+    void Run() override {
+      // The abort algorithm is only set up once the `iterator_` is established.
+      DCHECK(!iterator_.IsNull());
+      iterator_.CloseAsync(
+          script_state_, exception_context_,
+          subscriber_->signal()->reason(script_state_).V8Value());
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(abort_algorithm_handle_);
       visitor->Trace(subscriber_);
       visitor->Trace(script_state_);
       visitor->Trace(iterator_);
       visitor->Trace(next_promise_);
+
+      Algorithm::Trace(visitor);
     }
 
    private:
+    // The handle associated with the algorithm that runs in response to the
+    // consumer aborting the subscription. Initialized in the constructor, and
+    // used to "remove" the algorithm from the signal in the case where the
+    // iterable becomes exhausted before the signal is aborted.
+    Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
     // The specific `Subscriber` that `this` will push values to from
     // `iterator_`, as they are asynchronously emitted.
     Member<Subscriber> subscriber_;
@@ -1817,6 +1868,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         if (!iterator_result->IsObject()) {
           v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
               isolate, "Expected next() Promise to resolve to an Object");
+          delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, ScriptValue(isolate, type_error));
           return ScriptValue();
         }
@@ -1834,6 +1886,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         if (try_catch.HasCaught()) {
           ScriptValue exception(script_state->GetIsolate(),
                                 try_catch.Exception());
+          delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
           return ScriptValue();
         }
@@ -1846,6 +1899,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         const bool done = ToBoolean(isolate, maybe_done.ToLocalChecked(),
                                     ASSERT_NO_EXCEPTION);
         if (done) {
+          delegate_->ClearAbortAlgorithm();
           subscriber_->complete(script_state);
           return ScriptValue();
         }
@@ -1859,6 +1913,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         if (try_catch.HasCaught()) {
           ScriptValue exception(script_state->GetIsolate(),
                                 try_catch.Exception());
+          delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
           return ScriptValue();
         }
@@ -1874,6 +1929,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       } else {
         // If |nextPromise| was rejected with reason |r|, then run
         // |subscriber|'s error() method, given |r|.
+        delegate_->ClearAbortAlgorithm();
         subscriber_->error(script_state, value);
       }
 
