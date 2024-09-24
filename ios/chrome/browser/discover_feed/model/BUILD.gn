@@ -63,6 +63,7 @@ source_set("discover_feed_app_agent") {
   sources = [
     "discover_feed_app_agent.h",
     "discover_feed_app_agent.mm",
+    "discover_feed_profile_helper.h",
   ]
   deps = [
     ":constants",
@@ -90,6 +91,30 @@ source_set("discover_feed_app_agent") {
   frameworks = [
     "BackgroundTasks.framework",
     "UserNotifications.framework",
+  ]
+}
+
+source_set("discover_feed_profile_agent") {
+  sources = [
+    "discover_feed_profile_agent.h",
+    "discover_feed_profile_agent.mm",
+  ]
+  deps = [
+    ":discover_feed_app_agent",
+    ":discover_feed_factory",
+    ":model",
+    "//base",
+    "//components/push_notification",
+    "//components/search_engines",
+    "//components/signin/public/base",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
   ]
 }
 

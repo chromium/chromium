@@ -6,6 +6,7 @@
 
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 
 @interface ProfileController () <ProfileStateObserver>
@@ -60,6 +61,9 @@
 #pragma mark Private methods
 
 - (void)attachProfileAgents {
+  // TODO(crbug.com/355142171): Remove the DiscoverFeedProfileAgent?
+  [_state addAgent:[[DiscoverFeedProfileAgent alloc] init]];
+
   [_state addAgent:[[ProfileActivityProfileAgent alloc] init]];
 }
 

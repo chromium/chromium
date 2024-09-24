@@ -7,6 +7,8 @@
 #import <BackgroundTasks/BackgroundTasks.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/barrier_callback.h"
+#import "base/ranges/algorithm.h"
 #import "components/metrics/metrics_service.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_profile_helper.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
@@ -32,9 +35,181 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
+namespace {
+
+// A variation of base::ScopedClosureRunner that invokes a callback with
+// default arguments if the callback has not been invoked directly.
+template <typename Signature>
+class ScopedCallbackRunner;
+
+template <typename R, typename... Args>
+class ScopedCallbackRunner<R(Args...)> {
+ public:
+  [[nodiscard]] explicit ScopedCallbackRunner(
+      base::OnceCallback<R(Args...)> callback,
+      Args&&... args)
+      : callback_(std::move(callback)), args_(std::forward<Args>(args)...) {}
+
+  ScopedCallbackRunner(ScopedCallbackRunner&&) = default;
+  ScopedCallbackRunner& operator=(ScopedCallbackRunner&&) = default;
+
+  ~ScopedCallbackRunner() { RunAndReset(); }
+
+  void RunAndReset() {
+    RunAndReset(std::make_index_sequence<sizeof...(Args)>());
+  }
+
+  [[nodiscard]] base::OnceCallback<R(Args...)> Release() && {
+    return std::move(callback_);
+  }
+
+ private:
+  template <size_t... Indexes>
+  void RunAndReset(std::index_sequence<Indexes...>) {
+    if (callback_) {
+      std::move(callback_).Run(std::get<Indexes>(std::move(args_))...);
+    }
+  }
+
+  base::OnceCallback<R(Args...)> callback_;
+  std::tuple<Args...> args_;
+};
+
+// Returns a callback that will invoke `callback` if called. If the returned
+// callback is not invoked, then instead `callback` will be invoked with
+// `default_args...`.
+template <typename R, typename... Args>
+base::OnceCallback<R(Args...)> EnsureCallbackCalled(
+    base::OnceCallback<R(Args...)> callback,
+    Args&&... default_args) {
+  using Runner = ScopedCallbackRunner<R(Args...)>;
+  return base::BindOnce(
+      [](Runner runner, Args... args) -> R {
+        return std::move(runner).Release().Run(std::forward<Args>(args)...);
+      },
+      Runner(std::move(callback), std::forward<Args>(default_args)...));
+}
+
+// Returns a callback that will invoke `callback` if called. If the returned
+// callback is not invoked, then instead `callback` will be invoked with
+// `default_args...`.
+template <typename R, typename... Args>
+base::OnceCallback<R(Args...)> EnsureCallbackCalled(
+    base::RepeatingCallback<R(Args...)> callback,
+    Args&&... default_args) {
+  using Runner = ScopedCallbackRunner<R(Args...)>;
+  return base::BindOnce(
+      [](Runner runner, Args... args) -> R {
+        return std::move(runner).Release().Run(std::forward<Args>(args)...);
+      },
+      Runner(std::move(callback), std::forward<Args>(default_args)...));
+}
+
+// Returns whether `values` only contains `true`.
+bool AllOperationSucceeded(std::vector<bool> values) {
+  return base::ranges::all_of(values, std::identity());
+}
+
+// Wraps a list of DiscoverFeedProfileHelper. This code is derived
+// from CRBProtocolObservers (but specialized) as it cannot use this class as
+// it needs to know the number of observers still present.
+class DiscoverFeedProfileHelperList {
+ public:
+  DiscoverFeedProfileHelperList() = default;
+
+  DiscoverFeedProfileHelperList(const DiscoverFeedProfileHelperList&) = delete;
+  DiscoverFeedProfileHelperList& operator=(
+      const DiscoverFeedProfileHelperList&) = delete;
+
+  ~DiscoverFeedProfileHelperList() = default;
+
+  // Adds `helper` to this list.
+  void AddHelper(id<DiscoverFeedProfileHelper> helper) {
+    auto iter = std::find(helpers_.begin(), helpers_.end(), helper);
+    CHECK(iter == helpers_.end());
+    helpers_.push_back(helper);
+  }
+
+  // Removes `helper` from this list.
+  void RemoveHelper(id<DiscoverFeedProfileHelper> helper) {
+    auto iter = std::find(helpers_.begin(), helpers_.end(), helper);
+    CHECK(iter != helpers_.end());
+    helpers_.erase(iter);
+  }
+
+  // Invokes -refreshFeedInBackground for all helpers.
+  void RefreshFeedInBackground() {
+    Compact();
+    for (id<DiscoverFeedProfileHelper> helper : helpers_) {
+      [helper refreshFeedInBackground];
+    }
+  }
+
+  // Invokes -performBackgroundRefreshes for all helpers, invoking `callback`
+  // with success if all the operation succeeded for all helpers.
+  void PerformBackgroundRefreshes(BackgroundRefreshCallback callback) {
+    Compact();
+
+    auto barrier = base::BarrierCallback<bool>(
+        helpers_.size(),
+        base::BindOnce(&AllOperationSucceeded).Then(std::move(callback)));
+
+    for (id<DiscoverFeedProfileHelper> helper : helpers_) {
+      // Use `EnsureCallbackCallback(..., true)` to consider the operation was
+      // a success if the Profile is destroyed while the operation is pending.
+      [helper performBackgroundRefreshes:EnsureCallbackCalled(barrier, true)];
+    }
+  }
+
+  // Invokes -handleBackgroundRefreshTaskExpiration for all helpers.
+  void HandleBackgroundRefreshTaskExpiration() {
+    Compact();
+    for (id<DiscoverFeedProfileHelper> helper : helpers_) {
+      [helper handleBackgroundRefreshTaskExpiration];
+    }
+  }
+
+  // Invokes -earliestBackgroundRefreshDate for all helpers and returns the
+  // smallest of all the dates.
+  base::Time EarliestBackgroundRefreshDate() {
+    Compact();
+
+    base::Time result;
+    for (id<DiscoverFeedProfileHelper> helper : helpers_) {
+      const base::Time date = [helper earliestBackgroundRefreshDate];
+      if (date != base::Time() && (result == base::Time() || date < result)) {
+        result = date;
+      }
+    }
+    return result;
+  }
+
+ private:
+  // Compacts the list of helpers, removing all nil weak pointers.
+  void Compact() {
+    helpers_.erase(std::remove(helpers_.begin(), helpers_.end(), nil),
+                   helpers_.end());
+  }
+
+  std::vector<__weak id<DiscoverFeedProfileHelper>> helpers_;
+};
+
+}  // namespace
+
 @implementation DiscoverFeedAppAgent {
   // Set to YES when the app is foregrounded.
   BOOL _wasForegroundedAtLeastOnce;
+  DiscoverFeedProfileHelperList _helpers;
+}
+
+#pragma mark - Public
+
+- (void)addHelper:(id<DiscoverFeedProfileHelper>)helper {
+  _helpers.AddHelper(helper);
+}
+
+- (void)removeHelper:(id<DiscoverFeedProfileHelper>)helper {
+  _helpers.RemoveHelper(helper);
 }
 
 #pragma mark - AppStateObserver
@@ -59,78 +234,17 @@
     // case, a new value would never be saved again once we save NO, since the
     // NO codepath would not execute saving a new value.
     SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart();
-  } else if (appState.initStage == InitStageNormalUI) {
-    if (IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
-      // Starting the DiscoverFeedService is required before users are able to
-      // interact with any tab because following a web channel (part of the
-      // Following Feed feature which depends on the DiscoverFeedService) is
-      // available on any tab, and not just the NTP where the Following Feed
-      // lives. This line is intended to crash if DiscoverFeedService is not
-      // able to be instantiated here.
-      AuthenticationService* authService =
-          AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainProfile.profile);
-      if (authService &&
-          authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-        DiscoverFeedServiceFactory::GetForProfile(
-            self.appState.mainProfile.profile);
-      }
-    }
-
-    BOOL isContentNotificationProvisionalEnabled = NO;
-    if (IsContentNotificationExperimentEnabled()) {
-      // Only start doing the content notificaiton user eligibiliey check when
-      // content notification experiment is enabled.
-      AuthenticationService* authService =
-          AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainProfile.profile);
-      bool isUserSignedIn = authService && authService->HasPrimaryIdentity(
-                                               signin::ConsentLevel::kSignin);
-
-      const TemplateURL* defaultSearchURLTemplate =
-          ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.appState.mainProfile.profile)
-              ->GetDefaultSearchProvider();
-
-      bool isDefaultSearchEngine = defaultSearchURLTemplate &&
-                                   defaultSearchURLTemplate->prepopulate_id() ==
-                                       TemplateURLPrepopulateData::google.id;
-
-      PrefService* pref_service = self.appState.mainProfile.profile->GetPrefs();
-
-      isContentNotificationProvisionalEnabled =
-          IsContentNotificationProvisionalEnabled(
-              isUserSignedIn, isDefaultSearchEngine, pref_service);
-    }
-
-    if (isContentNotificationProvisionalEnabled) {
-      // This method does not show a UI prompt to the user. Provisional
-      // notifications are authorized without any user input if the user hasn't
-      // previously disabled notifications.
-      AuthenticationService* authService =
-          AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainProfile.profile);
-      std::vector<PushNotificationClientId> clientIds = {
-          PushNotificationClientId::kContent,
-          PushNotificationClientId::kSports};
-      [ProvisionalPushNotificationUtil
-          enrollUserToProvisionalNotificationsForClientIds:clientIds
-                               clientEnabledForProvisional:YES
-                                           withAuthService:authService
-                                     deviceInfoSyncService:nil];
-    }
   }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
 }
 
-#pragma mark - SceneObservingAppAgent
+#pragma mark - ObservingAppAgent
 
 - (void)appDidEnterBackground {
   if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
-  } else if ([self feedServiceIfCreated]) {
-    [self feedServiceIfCreated]->RefreshFeed(
-        FeedRefreshTrigger::kForegroundAppClose);
+  } else {
+    _helpers.RefreshFeedInBackground();
   }
 }
 
@@ -145,26 +259,6 @@
 }
 
 #pragma mark - Helpers
-
-// Returns the DiscoverFeedService.
-- (DiscoverFeedService*)feedService {
-  // DiscoverFeedService is expected to be available since the startup sequence
-  // should create background objects before this method is called. This line is
-  // intended to crash if DiscoverFeedService is not available.
-  return DiscoverFeedServiceFactory::GetForProfile(
-      self.appState.mainProfile.profile);
-}
-
-// Returns the DiscoverFeedService if created.
-- (DiscoverFeedService*)feedServiceIfCreated {
-  return DiscoverFeedServiceFactory::GetForProfileIfExists(
-      self.appState.mainProfile.profile);
-}
-
-// Returns the FeedMetricsRecorder.
-- (FeedMetricsRecorder*)feedMetricsRecorder {
-  return self.feedService->GetFeedMetricsRecorder();
-}
 
 // Registers handler for the background refresh task. According to
 // documentation, this must complete before the end of
@@ -211,16 +305,13 @@
 // date from DiscoverFeedService or an override date created with the override
 // interval in Experimental Settings.
 - (NSDate*)earliestBackgroundRefreshBeginDate {
-  NSDate* earliestBeginDate = nil;
   if (IsFeedOverrideDefaultsEnabled()) {
-    earliestBeginDate = [NSDate
+    return [NSDate
         dateWithTimeIntervalSinceNow:GetBackgroundRefreshIntervalInSeconds()];
-  } else {
-    // This is expected to crash if FeedService is not available.
-    earliestBeginDate =
-        [self feedService]->GetEarliestBackgroundRefreshBeginDate();
   }
-  return earliestBeginDate;
+
+  const base::Time date = _helpers.EarliestBackgroundRefreshDate();
+  return date != base::Time() ? date.ToNSDate() : nil;
 }
 
 // This method is called when the app is in the background.
@@ -241,21 +332,26 @@
   }
   task.expirationHandler = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
-      // This is expected to crash if FeedService is not available.
-      [self feedService]->HandleBackgroundRefreshTaskExpiration();
-      [self maybeNotifyRefreshSuccess:NO];
+      [self handleBackgroundRefreshTaskExpiration];
     });
   };
 
   // Cold starts are killed earlier in this method, so warm and cold starts
   // cannot be recorded at the same time.
   [self recordWarmStartMetrics];
+  _helpers.PerformBackgroundRefreshes(base::BindOnce(^(bool success) {
+    [self handleBackgroundRefreshCompletion:success task:task];
+  }));
+}
 
-  // This is expected to crash if FeedService is not available.
-  [self feedService]->PerformBackgroundRefreshes(^(BOOL success) {
-    [self maybeNotifyRefreshSuccess:success];
-    [task setTaskCompletedWithSuccess:success];
-  });
+- (void)handleBackgroundRefreshTaskExpiration {
+  _helpers.HandleBackgroundRefreshTaskExpiration();
+  [self maybeNotifyRefreshSuccess:NO];
+}
+
+- (void)handleBackgroundRefreshCompletion:(bool)success task:(BGTask*)task {
+  [self maybeNotifyRefreshSuccess:success];
+  [task setTaskCompletedWithSuccess:success];
 }
 
 // Records cold start histogram and kills app.

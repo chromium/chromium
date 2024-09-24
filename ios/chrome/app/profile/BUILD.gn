@@ -34,6 +34,7 @@ source_set("profile_controller") {
   deps = [
     ":profile",
     "//base",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
   ]
 }

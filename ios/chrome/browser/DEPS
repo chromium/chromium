@@ -78,6 +78,7 @@ include_rules = [
   "+components/policy/policy_constants.h",
   "+components/policy/proto/device_management_backend.pb.h",
   "+components/pref_registry",
+  "+components/push_notification",
   "+components/startup_metric_utils/browser",
   "+components/startup_metric_utils/common",
   "+components/prefs",
