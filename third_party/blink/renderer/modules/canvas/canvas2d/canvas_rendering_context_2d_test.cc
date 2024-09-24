@@ -138,6 +138,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -742,6 +743,39 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAcceleration) {
 
   // The GetImage() call should have preserved GPU rasterization.
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+}
+
+TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
+  CreateContext(kNonOpaque);
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+
+  // As no CanvasResourceProvider has yet been created, the host should default
+  // to the raster mode that has been set as preferred.
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // This will cause SkSurface_Gpu creation to fail without
+  // Canvas2DLayerBridge otherwise detecting that anything was disabled.
+  SharedGpuContext::ContextProviderWrapper()
+      ->ContextProvider()
+      ->GetGrContext()
+      ->abandonContext();
+
+  // Drawing to the canvas should cause a CanvasResourceProvider to be created.
+  // It is not possible to create a valid CanvasResourceProviderSharedImage
+  // instance without a GrContext as creating an SkSurface will fail, so the
+  // created provider should be unaccelerated (and hence downgrade the raster
+  // mode to CPU).
+  Context2D()->fillRect(3, 3, 1, 1);
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+
+  // Without GPU rasterization, snapshots should not be texture-backed.
+  EXPECT_FALSE(Context2D()
+                   ->GetImage(FlushReason::kTesting)
+                   ->PaintImageForCurrentFrame()
+                   .IsTextureBacked());
+
+  // Verify that taking the snapshot did not alter the raster mode.
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest,

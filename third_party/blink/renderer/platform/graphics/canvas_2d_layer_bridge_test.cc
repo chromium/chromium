@@ -297,41 +297,6 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
   provider->FlushCanvas(FlushReason::kTesting);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
-  GrDirectContext* gr = SharedGpuContext::ContextProviderWrapper()
-                            ->ContextProvider()
-                            ->GetGrContext();
-  host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
-  host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(host_.get());
-  host_->AlwaysEnableRasterTimersForTesting();
-
-  // As no CanvasResourceProvider has yet been created, the host should default
-  // to the raster mode that has been set as preferred.
-  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-
-  // This will cause SkSurface_Gpu creation to fail without
-  // Canvas2DLayerBridge otherwise detecting that anything was disabled.
-  gr->abandonContext();
-
-  // Drawing to the canvas should cause a CanvasResourceProvider to be created.
-  // It is not possible to create a valid CanvasResourceProviderSharedImage
-  // instance without a GrContext as creating an SkSurface will fail, so the
-  // created provider should be unaccelerated (and hence downgrade the raster
-  // mode to CPU).
-  DrawSomething(bridge.get());
-  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-
-  // Without GPU rasterization, snapshots should not be texture-backed.
-  scoped_refptr<StaticBitmapImage> snapshot =
-      bridge->NewImageSnapshot(FlushReason::kTesting);
-  EXPECT_FALSE(snapshot->IsTextureBacked());
-
-  // Verify that taking the snapshot did not alter the raster mode.
-  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-}
-
 class MockLogger : public Canvas2DLayerBridge::Logger {
  public:
   MOCK_METHOD1(ReportHibernationEvent,
