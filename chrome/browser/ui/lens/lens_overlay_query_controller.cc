@@ -986,7 +986,9 @@ void LensOverlayQueryController::FetchEndpoint(
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher =
       std::make_unique<EndpointFetcher>(
-          /*url_loader_factory=*/g_browser_process->shared_url_loader_factory(),
+          /*url_loader_factory=*/profile_
+              ? profile_->GetURLLoaderFactory().get()
+              : g_browser_process->shared_url_loader_factory(),
           /*url=*/fetch_url,
           /*http_method=*/kHttpMethod,
           /*content_type=*/kContentType,
