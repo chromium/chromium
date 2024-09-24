@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/textfield/textfield.js';
+import 'chrome://resources/cros_components/snackbar/snackbar.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-tooltip.js';
 import './recording-title-suggestion.js';
 
+import {
+  Snackbar,
+} from 'chrome://resources/cros_components/snackbar/snackbar.js';
 import {
   Textfield,
 } from 'chrome://resources/cros_components/textfield/textfield.js';
@@ -109,6 +113,8 @@ export class RecordingTitle extends ReactiveLitElement {
   private readonly platformHandler = usePlatformHandler();
 
   private readonly renameContainer = createRef<HTMLDivElement>();
+
+  private readonly snackBar = createRef<Snackbar>();
 
   private readonly suggestTitleButton = createRef<CraIconButton>();
 
@@ -218,6 +224,8 @@ export class RecordingTitle extends ReactiveLitElement {
       ...meta,
       title,
     });
+    const snackBar = assertExists(this.snackBar.value);
+    snackBar.showPopover();
   }
 
   private onChangeTitle(ev: Event) {
@@ -254,7 +262,7 @@ export class RecordingTitle extends ReactiveLitElement {
     ></recording-title-suggestion>`;
   }
 
-  override render(): RenderResult {
+  private renderTitle(): RenderResult {
     if (this.editing.value) {
       const suggestionIconButton =
         this.suggestionShown.value || !this.shouldShowTitleSuggestion.value ?
@@ -295,6 +303,17 @@ export class RecordingTitle extends ReactiveLitElement {
         ${this.recordingMetadata?.title ?? ''}
         <cra-tooltip>${i18n.titleRenameTooltip}</cra-tooltip>
       </div>
+    `;
+  }
+
+  override render(): RenderResult {
+    return html`
+      <cros-snackbar
+        message=${i18n.titleRenameSnackbarMessage}
+        timeoutMs="4000"
+        ${ref(this.snackBar)}
+      ></cros-snackbar>
+      ${this.renderTitle()}
     `;
   }
 }

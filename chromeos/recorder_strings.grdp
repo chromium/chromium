@@ -432,6 +432,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
     Recording all Chromebook audio
   </message>
+  <message desc="Message after users rename the title of a recording." name="IDS_RECORDER_TITLE_RENAME_SNACKBAR_MESSAGE">
+    File renamed
+  </message>
   <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
     Rename
   </message>

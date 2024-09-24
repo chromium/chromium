@@ -255,6 +255,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION},
     {"systemAudioConsentDialogHeader",
      IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER},
+    {"titleRenameSnackbarMessage", IDS_RECORDER_TITLE_RENAME_SNACKBAR_MESSAGE},
     {"titleRenameTooltip", IDS_RECORDER_TITLE_RENAME_TOOLTIP},
     {"titleSuggestionButtonTooltip",
      IDS_RECORDER_TITLE_SUGGESTION_BUTTON_TOOLTIP},

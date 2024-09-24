@@ -154,6 +154,7 @@ const noArgStringNames = [
   'systemAudioConsentDialogConsentButton',
   'systemAudioConsentDialogDescription',
   'systemAudioConsentDialogHeader',
+  'titleRenameSnackbarMessage',
   'titleRenameTooltip',
   'titleSuggestionButtonTooltip',
   'titleSuggestionFailedStatusMessage',
