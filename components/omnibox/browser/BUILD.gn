@@ -499,10 +499,6 @@ static_library("location_bar") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/cpp:cpp" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
