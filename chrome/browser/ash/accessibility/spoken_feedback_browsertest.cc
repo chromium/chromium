@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -615,18 +614,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableSpokenFeedback) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusToolbar) {
   EnableChromeVox();
   // Wait for the browser to show up.
-  // In Ash, this results in a navigation, while in Lacros, this creates
-  // a new window. Thus the former has a "back" button while the latter
-  // does not, and focus will jump directly to the "reload" button.
   StablizeChromeVoxState();
   sm_.Call([this]() { SendKeyPressWithAltAndShift(ui::VKEY_T); });
-  if (IsLacrosRunning()) {
-    // The reload button should become focused.
-    sm_.ExpectSpeech("Reload");
-  } else {
-    // The back button should become focused.
-    sm_.ExpectSpeech("Back");
-  }
+  // The back button should become focused.
+  sm_.ExpectSpeech("Back");
   sm_.Replay();
 }
 
@@ -999,12 +990,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowHeadingList) {
   sm_.ExpectSpeech("Sub-category");
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Sub-category");
-  if (IsLacrosRunning()) {
-    // With Lacros, it takes one more search+down to get out of the sub-category
-    // after having been in the heading menu.
-    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
-    sm_.ExpectSpeech("Sub-category");
-  }
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Text");
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });

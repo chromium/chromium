@@ -7,15 +7,13 @@
 
 #include <memory>
 
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 class Profile;
 
 namespace ash {
 
-// Class that can be used for Accessibility feature browsertests that run
-// in Ash or Lacros.
+// Class that can be used for Accessibility feature browsertests.
 class AccessibilityFeatureBrowserTest : public InProcessBrowserTest {
  public:
   AccessibilityFeatureBrowserTest();
@@ -25,22 +23,12 @@ class AccessibilityFeatureBrowserTest : public InProcessBrowserTest {
       const AccessibilityFeatureBrowserTest&) = delete;
   ~AccessibilityFeatureBrowserTest() override;
 
-  // InProcessBrowserTest:
-  void SetUpInProcessBrowserTestFixture() override;
-  void SetUpOnMainThread() override;
-  void TearDownInProcessBrowserTestFixture() override;
-
-  // Navigates to the given URL in Ash or Lacros. Does not wait for the load to
+  // Navigates to the given URL. Does not wait for the load to
   // complete.
   void NavigateToUrl(const GURL& url);
 
-  bool IsLacrosRunning() const;
-
-  // Returns the Ash profile.
+  // Returns the profile.
   Profile* GetProfile() const;
-
- private:
-  std::unique_ptr<::test::AshBrowserTestStarter> ash_starter_;
 };
 
 }  // namespace ash
