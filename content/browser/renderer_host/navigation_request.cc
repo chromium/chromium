@@ -1716,10 +1716,10 @@ NavigationRequest::NavigationRequest(
       embedder_shared_storage_context_(embedder_shared_storage_context),
       has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()),
       request_method_(common_params_->method) {
-  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::NavigationRequest",
+  TRACE_EVENT_WITH_FLOW1("navigation", "NavigationRequest::NavigationRequest",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+                         TRACE_EVENT_FLAG_FLOW_OUT, "navigation_request", this);
   CHECK(!common_params_->initiator_base_url ||
         !common_params_->initiator_base_url->is_empty());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
@@ -1743,8 +1743,6 @@ NavigationRequest::NavigationRequest(
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
   runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
 
-  TRACE_EVENT1("navigation", "NavigationRequest::NavigationRequest",
-               "navigation_request", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
                                     navigation_id_, "navigation_request", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
