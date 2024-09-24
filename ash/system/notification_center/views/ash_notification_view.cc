@@ -480,7 +480,7 @@ AshNotificationView::AshNotificationView(
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kScaleToMaximum))
+                                   views::MaximumFlexSizeRule::kUnbounded))
                   .AddChild(
                       CreateHeaderRowBuilder()
                           .SetIsInAshNotificationView(true)
