@@ -55,7 +55,7 @@ suite('CategoriesTest', () => {
     }
     categoriesElement = document.createElement('customize-chrome-categories');
     document.body.appendChild(categoriesElement);
-    await microtasksFinished();
+    await handler.whenCalled('getBackgroundCollections');
   }
 
   setup(async () => {
@@ -91,6 +91,7 @@ suite('CategoriesTest', () => {
       test('collection visibility based on error detection', async () => {
         const numCollections = 2;
         await setInitialSettings(numCollections);
+        await microtasksFinished();
 
         const collections =
             categoriesElement.shadowRoot!.querySelectorAll('.collection');
@@ -115,22 +116,21 @@ suite('CategoriesTest', () => {
         const numCollections = 2;
         await setInitialSettings(numCollections);
 
-        const collections =
-            categoriesElement.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.collection');
-        assertEquals(numCollections, collections.length);
-        const img1 = collections[0]!.querySelector<CrAutoImgElement>('img');
-        const img2 = collections[1]!.querySelector<CrAutoImgElement>('img');
-        assertTrue(!!img1);
-        assertTrue(!!img2);
-
+        const images =
+            categoriesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
+                '.collection img');
+        assertEquals(numCollections, images.length);
+        const img1Error = eventToPromise('error', images[0]!);
+        const img2Error = eventToPromise('error', images[1]!);
+        await Promise.all([img1Error, img2Error]);
         await microtasksFinished();
+
         if (!errorDetectionEnabled) {
-          assertEquals('https://collection-1.jpg', img1.autoSrc);
-          assertEquals('https://collection-2.jpg', img2.autoSrc);
+          assertEquals('https://collection-1.jpg', images[0]!.autoSrc);
+          assertEquals('https://collection-2.jpg', images[1]!.autoSrc);
         } else {
-          assertEquals('https://replaced-1.jpg', img1.autoSrc);
-          assertEquals('https://replaced-2.jpg', img2.autoSrc);
+          assertEquals('https://replaced-1.jpg', images[0]!.autoSrc);
+          assertEquals('https://replaced-2.jpg', images[1]!.autoSrc);
         }
       });
 
