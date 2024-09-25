@@ -10,11 +10,6 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions)
 assert(is_chromeos_ash)
 
-copy("mojo_service_manager_policy") {
-  sources = [ "net/network_health/network_health_service_policy.json" ]
-  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
