@@ -1,7 +1,7 @@
 <div class="experiment" id="${this.feature_.internal_name}">
-  <div class="${this.getExperimentCssClass_()} flex-container">
+  <div class="flex-container">
     <div class="flex">
-      <h2 class="experiment-name" id="${this.feature_.internal_name}_name"
+      <h2 class="experiment-name" id="${this.getHeaderId_()}"
           .title="${this.getExperimentTitle_()}"
           @click="${this.onExperimentNameClick_}">
         ${this.feature_.name}
@@ -14,7 +14,7 @@
       ${this.feature_.origin_list_value !== undefined ? html`
         <div class="textarea-container">
           <textarea class="experiment-origin-list-value"
-              aria-labelledby="${this.feature_.internal_name}_name"
+              aria-labelledby="${this.getHeaderId_()}"
               data-internal-name="${this.feature_.internal_name}"
               .value="${this.feature_.origin_list_value}"
               @change="${this.onTextareaChange_}">
@@ -25,7 +25,7 @@
       ${this.feature_.string_value !== undefined ? html`
         <div class="input-container">
           <input type="text"
-              aria-labelledby="${this.feature_.internal_name}_name"
+              aria-labelledby="${this.getHeaderId_()}"
               data-internal-name="${this.feature_.internal_name}"
               .value="${this.feature_.string_value}"
               @change="${this.onTextInputChange_}">
@@ -53,7 +53,7 @@
       ${this.showMultiValueSelect_() ? html`
         <select class="experiment-select"
             data-internal-name="${this.feature_.internal_name}"
-            aria-labelledby="${this.feature_.internal_name}_name"
+            aria-labelledby="${this.getHeaderId_()}"
             @change="${this.onExperimentSelectChange_}">
           ${this.feature_.options!.map(option => html`
             <option ?selected="${option.selected}">
@@ -66,7 +66,7 @@
       ${this.showEnableDisableSelect_() ? html`
         <select class="experiment-enable-disable"
             data-internal-name="${this.feature_.internal_name}"
-            aria-labelledby="${this.feature_.internal_name}_name"
+            aria-labelledby="${this.getHeaderId_()}"
             @change="${this.onExperimentEnableDisableChange_}">
           <option value="disabled" ?selected="${!this.feature_.enabled}">
             $i18n{disabled}

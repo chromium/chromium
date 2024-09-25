@@ -6,15 +6,26 @@ import 'chrome://flags/experiment.js';
 
 import type {ExperimentElement} from 'chrome://flags/experiment.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
 
 suite('ExperimentTest', function() {
   let experiment: ExperimentElement;
   let browserProxy: TestFlagsBrowserProxy;
+
+  function hasBeforePseudoElement(element: HTMLElement): boolean {
+    const styles = window.getComputedStyle(element, '::before');
+    return styles.content !== 'none';
+  }
+
+  function simulateUserInput(
+      select: HTMLSelectElement, index: number): Promise<void> {
+    select.selectedIndex = index;
+    select.dispatchEvent(new Event('change'));
+    return microtasksFinished();
+  }
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -23,7 +34,7 @@ suite('ExperimentTest', function() {
     experiment = document.createElement('flags-experiment');
   });
 
-  test('check available experiments with options', function() {
+  test('ExperimentWithOptions', async function() {
     experiment.data = {
       'description': 'available feature',
       'internal_name': 'available-feature',
@@ -50,9 +61,11 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
-    assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
+    const experimentName = experiment.getRequiredElement('.experiment-name');
+    assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
     assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
@@ -69,9 +82,20 @@ suite('ExperimentTest', function() {
       assertTrue(option instanceof HTMLOptionElement);
       assertEquals(options[i], option.value);
     }
+
+    // Check that the UI has updates correctly when switching between default
+    // and non-default states.
+    assertEquals(0, select.selectedIndex);
+    assertFalse(hasBeforePseudoElement(experimentName));
+    await simulateUserInput(select, 1);
+    assertTrue(hasBeforePseudoElement(experimentName));
+    await simulateUserInput(select, 2);
+    assertTrue(hasBeforePseudoElement(experimentName));
+    await simulateUserInput(select, 0);
+    assertFalse(hasBeforePseudoElement(experimentName));
   });
 
-  test('check available experiments without options', function() {
+  test('ExperimentWithoutOptions', async function() {
     experiment.data = {
       'description': 'available feature no default',
       'internal_name': 'available-feature-no-default',
@@ -81,9 +105,11 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
-    assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
+    const experimentName = experiment.getRequiredElement('.experiment-name');
+    assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
     assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
@@ -97,12 +123,18 @@ suite('ExperimentTest', function() {
     assertEquals('disabled', select.options[0]!.value);
     assertEquals('enabled', select.options[1]!.value);
     assertEquals('enabled', select.value);
+    assertEquals(1, select.selectedIndex);
+
+    // Check that the UI has updates correctly when switching between default
+    // and non-default states.
+    assertFalse(hasBeforePseudoElement(experimentName));
+    await simulateUserInput(select, 0);
+    assertTrue(hasBeforePseudoElement(experimentName));
+    await simulateUserInput(select, 1);
+    assertFalse(hasBeforePseudoElement(experimentName));
   });
 
-  test('check unavailable experiments', function() {
-    loadTimeData.data = {
-      'not-available-platform': 'Not available on your platform.',
-    };
+  test('UnavailableExperiment', async function() {
     experiment.unsupported = true;
     experiment.data = {
       'description': 'unavailable feature',
@@ -113,9 +145,11 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
-    assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
+    const experimentName = experiment.getRequiredElement('.experiment-name');
+    assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
     assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
@@ -126,9 +160,11 @@ suite('ExperimentTest', function() {
     const actions = experiment.getRequiredElement('.experiment-actions');
     assertTrue(!!actions);
     assertTrue(isVisible(actions));
+
+    assertFalse(hasBeforePseudoElement(experimentName));
   });
 
-  test('check available experiments with links', function() {
+  test('ExperimentWithLinks', async function() {
     experiment.data = {
       'description': 'available feature with links',
       'internal_name': 'available-feature-with-links',
@@ -156,6 +192,7 @@ suite('ExperimentTest', function() {
       'links': ['https://a.com'],
     };
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.links-container')));
@@ -167,7 +204,7 @@ suite('ExperimentTest', function() {
     assertEquals('https://a.com/', linkElement.href);
   });
 
-  test('check experiment with text input', async function() {
+  test('ExperimentWithTextInput', async function() {
     const data = {
       'description': 'Some Description',
       'internal_name': 'some-description',
@@ -179,6 +216,7 @@ suite('ExperimentTest', function() {
     };
     experiment.data = data;
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
     assertFalse(!!experiment.shadowRoot!.querySelector('.textarea-container'));
@@ -202,7 +240,7 @@ suite('ExperimentTest', function() {
     assertEquals(input.value, args[1]);
   });
 
-  test('check experiment with textarea', async function() {
+  test('ExperimentWithTextarea', async function() {
     const data = {
       'description': 'Some Description',
       'internal_name': 'some-description',
@@ -214,6 +252,7 @@ suite('ExperimentTest', function() {
     };
     experiment.data = data;
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
     assertTrue(isVisible(experiment));
     assertFalse(!!experiment.shadowRoot!.querySelector('.input-container'));
@@ -237,7 +276,7 @@ suite('ExperimentTest', function() {
     assertEquals(textarea.value, args[1]);
   });
 
-  test('ExpandCollapseClick', function() {
+  test('ExpandCollapseClick', async function() {
     const data = {
       'description': 'Some Description',
       'internal_name': 'some-description',
@@ -248,16 +287,21 @@ suite('ExperimentTest', function() {
     };
     experiment.data = data;
     document.body.appendChild(experiment);
+    await microtasksFinished();
 
+    // Checking the 'expanded_' attribute since simulating the '@media
+    // (max-width: 480px)' case in tests and then checking computed styles is
+    // not possible (no control of the window's width).
+    assertFalse(experiment.hasAttribute('expanded_'));
     const experimentName = experiment.getRequiredElement('.experiment-name');
-    const parentElement = experimentName.parentElement;
-    assertTrue(!!parentElement);
-    assertFalse(parentElement.classList.contains('expand'));
 
     experimentName.click();
-    assertTrue(parentElement.classList.contains('expand'));
+    await microtasksFinished();
+    assertTrue(experiment.hasAttribute('expanded_'));
+
 
     experimentName.click();
-    assertFalse(parentElement.classList.contains('expand'));
+    await microtasksFinished();
+    assertFalse(experiment.hasAttribute('expanded_'));
   });
 });

@@ -41,7 +41,7 @@
   padding: 0;
 }
 
-.experiment-switched .experiment-name::before {
+:host(:not([is-default_])) .experiment-name::before {
   --end-margin: 4px;
   --diameter: 10px;
   background-color: var(--interactive-color);
@@ -122,22 +122,22 @@ input {
   }
 }
 
-.experiment-switched select {
+:host(:not([is-default_])) select {
   background: var(--link-color);
   color: white;
 }
 
-.experiment-switched option {
+:host(:not([is-default_])) option {
   background: white;
   color: var(--link-color);
 }
 
 @media (prefers-color-scheme: dark) {
-  .experiment-switched select {
+  :host(:not([is-default_])) select {
     color: var(--google-grey-900);
   }
 
-  .experiment-switched option {
+  :host(:not([is-default_])) option {
     background: var(--toolbar-color);
     color: var(--primary-color);
   }
@@ -184,14 +184,14 @@ input {
     width: 100%;
   }
 
-  .expand .body {
+  :host([expanded_]) .body {
     overflow: visible;
     white-space: normal;
   }
 }
 
 @media (max-width: 732px) {
-  .experiment-switched .experiment-name::before {
+  :host(:not([is-default_])) .experiment-name::before {
     margin-inline-start: 0;
   }
 }

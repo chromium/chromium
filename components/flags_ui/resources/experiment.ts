@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './experiment.css.js';
 import {getHtml} from './experiment.html.js';
@@ -72,8 +75,14 @@ export class ExperimentElement extends CrLitElement {
   static override get properties() {
     return {
       feature_: {type: Object},
+      unsupported: {type: Boolean},
 
-      unsupported: {
+      isDefault_: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      expanded_: {
         type: Boolean,
         reflect: true,
       },
@@ -89,7 +98,15 @@ export class ExperimentElement extends CrLitElement {
     supported_platforms: [],
   };
 
+  // Whether the controls to change the experiment state should be hidden.
   unsupported: boolean = false;
+
+  // Whether the currently selected value is the default value.
+  protected isDefault_: boolean = false;
+
+  // Whether the description text is expanded. Only has an effect on narrow
+  // widths (max-width: 480px).
+  protected expanded_: boolean = false;
 
   getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
       HTMLElementTagNameMap[K];
@@ -101,23 +118,37 @@ export class ExperimentElement extends CrLitElement {
     return el;
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('feature_') ||
+        changedProperties.has('unsupported')) {
+      this.isDefault_ = this.computeIsDefault_();
+    }
+  }
+
   set data(feature: Feature) {
     this.feature_ = feature;
   }
 
-  protected getExperimentCssClass_(): string {
-    return this.feature_.is_default ? 'experiment-default' :
-                                      'experiment-switched';
-  }
-
   protected getExperimentTitle_(): string {
-    return this.feature_.is_default ?
-        '' :
-        loadTimeData.getString('experiment-enabled');
+    if (this.showEnableDisableSelect_()) {
+      return this.isDefault_ ? '' :
+                               loadTimeData.getString('experiment-enabled');
+    }
+
+    return '';
   }
 
   protected getPlatforms_(): string {
     return this.feature_.supported_platforms.join(', ');
+  }
+
+  protected getHeaderId_(): string {
+    return `${this.feature_.internal_name}_name`;
   }
 
   protected showEnableDisableSelect_(): boolean {
@@ -150,10 +181,8 @@ export class ExperimentElement extends CrLitElement {
     }));
   }
 
-  protected onExperimentNameClick_(e: Event) {
-    // Toggling of experiment description overflow content on smaller screens.
-    // Only has an effect on narrow widths (max-width: 480px).
-    (e.currentTarget as HTMLElement).parentElement!.classList.toggle('expand');
+  protected onExperimentNameClick_(_e: Event) {
+    this.expanded_ = !this.expanded_;
   }
 
   getSelect(): HTMLSelectElement|null {
@@ -189,16 +218,20 @@ export class ExperimentElement extends CrLitElement {
         highlightMatch(searchTerm.replace(/\s/, '-'), permalink);
   }
 
+  protected computeIsDefault_(): boolean {
+    if (this.showEnableDisableSelect_()) {
+      const select = this.getRequiredElement('select');
+      const enabled = select.value === 'enabled';
+      return enabled ? (this.feature_.is_default === this.feature_.enabled) :
+                       (this.feature_.is_default !== this.feature_.enabled);
+    }
 
-  /**
-   * Sets style depending on the selected option.
-   * @param isDefault Whether or not the default option is selected.
-   */
-  private updateDefaultStyle_(isDefault: boolean) {
-    const experimentContainer =
-        this.getRequiredElement('.experiment-default, .experiment-switched');
-    experimentContainer.classList.toggle('experiment-default', isDefault);
-    experimentContainer.classList.toggle('experiment-switched', !isDefault);
+    if (this.showMultiValueSelect_()) {
+      const select = this.getRequiredElement('select');
+      return select.selectedIndex === 0;
+    }
+
+    return true;
   }
 
   /**
@@ -212,17 +245,12 @@ export class ExperimentElement extends CrLitElement {
     assert(this.feature_);
     assert(!this.feature_.options || this.feature_.options.length === 0);
 
+    this.isDefault_ = this.computeIsDefault_();
+
     const experimentEnableDisable = e.target as HTMLSelectElement;
-    const enable = experimentEnableDisable.value === 'enabled';
     FlagsBrowserProxyImpl.getInstance().enableExperimentalFeature(
-        this.feature_.internal_name, enable);
-
-    const isDefault = enable ?
-        (this.feature_.is_default === this.feature_.enabled) :
-        (this.feature_.is_default !== this.feature_.enabled);
-
-    this.updateDefaultStyle_(isDefault);
-
+        this.feature_.internal_name,
+        experimentEnableDisable.value === 'enabled');
     experimentEnableDisable.dispatchEvent(new Event('select-change', {
       bubbles: true,
       composed: true,
@@ -240,13 +268,11 @@ export class ExperimentElement extends CrLitElement {
     assert(this.feature_);
     assert(this.feature_.options && this.feature_.options.length > 0);
 
+    this.isDefault_ = this.computeIsDefault_();
+
     const experimentSelect = e.target as HTMLSelectElement;
-    const index = experimentSelect.selectedIndex;
-
     FlagsBrowserProxyImpl.getInstance().selectExperimentalFeature(
-        this.feature_.internal_name, index);
-    this.updateDefaultStyle_(index === 0);
-
+        this.feature_.internal_name, experimentSelect.selectedIndex);
     experimentSelect.dispatchEvent(new Event('select-change', {
       bubbles: true,
       composed: true,
