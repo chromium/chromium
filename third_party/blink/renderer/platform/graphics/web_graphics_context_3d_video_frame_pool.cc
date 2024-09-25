@@ -418,7 +418,7 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
          format == media::PIXEL_FORMAT_XRGB ||
          format == media::PIXEL_FORMAT_ARGB)
       << "Invalid format " << format;
-  DCHECK_EQ(src_video_frame->NumTextures(), std::size_t{1});
+  DCHECK(src_video_frame->HasTextures());
   viz::SharedImageFormat texture_format;
   switch (format) {
     case media::PIXEL_FORMAT_XBGR:

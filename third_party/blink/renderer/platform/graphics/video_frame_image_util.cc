@@ -43,12 +43,11 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   return false;
 #else
-  return frame.NumTextures() == 1 &&
-         (frame.format() == media::PIXEL_FORMAT_ARGB ||
-          frame.format() == media::PIXEL_FORMAT_XRGB ||
-          frame.format() == media::PIXEL_FORMAT_ABGR ||
-          frame.format() == media::PIXEL_FORMAT_XBGR ||
-          frame.format() == media::PIXEL_FORMAT_BGRA);
+  return frame.HasTextures() && (frame.format() == media::PIXEL_FORMAT_ARGB ||
+                                 frame.format() == media::PIXEL_FORMAT_XRGB ||
+                                 frame.format() == media::PIXEL_FORMAT_ABGR ||
+                                 frame.format() == media::PIXEL_FORMAT_XBGR ||
+                                 frame.format() == media::PIXEL_FORMAT_BGRA);
 #endif
 }
 

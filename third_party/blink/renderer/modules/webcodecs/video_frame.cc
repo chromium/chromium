@@ -456,7 +456,7 @@ std::optional<media::VideoPixelFormat> CopyToFormat(
   // Externally-sampled frames read back as RGB, regardless of the format.
   // TODO(crbug.com/40215121): Enable alpha readback for supported formats.
   if (!mappable && frame.RequiresExternalSampler()) {
-    DCHECK_EQ(frame.NumTextures(), 1u);
+    DCHECK(frame.HasTextures());
     return media::PIXEL_FORMAT_XRGB;
   }
 

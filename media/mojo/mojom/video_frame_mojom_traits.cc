@@ -125,7 +125,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  DCHECK_LE(input->NumTextures(), 1u);
   // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailbox,
   // we should only access it when there are textures.
   gpu::MailboxHolder mailbox_holder;
@@ -141,7 +140,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
       // `input` is either empty or of size 1 with
       // GpuMemoryBufferSharedImageVideoFrameData.
       CHECK(input->HasTextures());
-      CHECK_EQ(input->NumTextures(), 1u);
       shared_image = input->shared_image()->Export();
     }
 

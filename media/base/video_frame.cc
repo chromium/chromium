@@ -1267,20 +1267,6 @@ bool VideoFrame::HasTextures() const {
                         : !mailbox_holder_.mailbox.IsZero();
 }
 
-size_t VideoFrame::NumTextures() const {
-  if (wrapped_frame_)
-    return wrapped_frame_->NumTextures();
-
-  if (!HasTextures())
-    return 0;
-
-  if (mailbox_holder_.mailbox.IsZero()) {
-    return 0;
-  }
-
-  return 1;
-}
-
 bool VideoFrame::HasSharedImage() const {
   return wrapped_frame_ ? wrapped_frame_->HasSharedImage()
                         : shared_image_ != nullptr;

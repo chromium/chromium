@@ -136,7 +136,7 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
         CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                         media::VideoFrame::STORAGE_OPAQUE,
                         media::PIXEL_FORMAT_XRGB, base::TimeDelta());
-    EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
+    EXPECT_TRUE(shared_image_frame->HasTextures());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
     EXPECT_FALSE(
         WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
@@ -155,7 +155,7 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
       CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                       media::VideoFrame::STORAGE_OPAQUE,
                       media::PIXEL_FORMAT_XRGB, base::TimeDelta());
-  EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
+  EXPECT_TRUE(shared_image_frame->HasTextures());
 
   auto image = CreateImageFromVideoFrame(shared_image_frame);
   ASSERT_TRUE(image->IsTextureBacked());

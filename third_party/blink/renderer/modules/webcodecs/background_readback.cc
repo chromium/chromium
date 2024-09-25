@@ -36,7 +36,7 @@
 
 namespace {
 bool CanUseRgbReadback(media::VideoFrame& frame) {
-  return media::IsRGB(frame.format()) && (frame.NumTextures() == 1);
+  return media::IsRGB(frame.format()) && frame.HasTextures();
 }
 
 SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,

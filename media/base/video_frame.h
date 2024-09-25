@@ -552,9 +552,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // accessed via data(), visible_data() etc.
   bool HasTextures() const;
 
-  // Returns the number of native textures.
-  size_t NumTextures() const;
-
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
 

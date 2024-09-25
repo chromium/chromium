@@ -111,7 +111,7 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
     return false;
   }
 
-  bool has_alpha = !IsOpaque(format) && src_frame.NumTextures() == 1;
+  bool has_alpha = !IsOpaque(format);
   SkColorType sk_color_type = SkColorTypeForPlane(format, src_plane);
   SkAlphaType sk_alpha_type =
       has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
