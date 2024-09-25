@@ -78,11 +78,6 @@
 #define MAXPHONSUGS 2
 #define MAXCOMPOUNDSUGS 3
 
-// timelimit: max ~1/4 sec (process time on Linux) for a time consuming function
-#define TIMELIMIT (CLOCKS_PER_SEC / 4)
-#define MINTIMER 100
-#define MAXPLUSTIMER 100
-
 #define NGRAM_LONGER_WORSE (1 << 0)
 #define NGRAM_ANY_MISMATCH (1 << 1)
 #define NGRAM_LOWERING (1 << 2)
@@ -92,7 +87,6 @@
 #include "affixmgr.hxx"
 #include "hashmgr.hxx"
 #include "langnum.hxx"
-#include <time.h>
 
 enum { LCS_UP, LCS_LEFT, LCS_UPLEFT };
 

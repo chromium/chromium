@@ -122,7 +122,7 @@ Cygwin1.dll.
 
 # Debugging
 
-It is recomended to install a debug build of the standard library:
+It is recommended to install a debug build of the standard library:
 
     libstdc++6-6-dbg
 

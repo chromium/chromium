@@ -3,7 +3,7 @@
 
 #if defined(HUNSPELL_STATIC)
 #  define LIBHUNSPELL_DLL_EXPORTED
-#elif defined(_MSC_VER)
+#elif defined(_WIN32)
 #  if defined(BUILDING_LIBHUNSPELL)
 #    define LIBHUNSPELL_DLL_EXPORTED __declspec(dllexport)
 #  else
@@ -13,6 +13,16 @@
 #  define LIBHUNSPELL_DLL_EXPORTED __attribute__((__visibility__("default")))
 #else
 #  define LIBHUNSPELL_DLL_EXPORTED
+#endif
+
+/* use thread_local, if it's possible, otherwise static */
+
+#if defined(_WIN32)
+#define HUNSPELL_THREAD_LOCAL thread_local
+#elif 0
+#define HUNSPELL_THREAD_LOCAL thread_local
+#else
+#define HUNSPELL_THREAD_LOCAL static
 #endif
 
 #endif

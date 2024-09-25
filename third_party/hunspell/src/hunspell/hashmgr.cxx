@@ -248,7 +248,7 @@ int HashMgr::add_word(const std::string& in_word,
 
   std::string *word_copy = NULL;
   std::string *desc_copy = NULL;
-  if (!ignorechars.empty() || complexprefixes) {
+  if ((!ignorechars.empty() && !has_no_ignored_chars(in_word, ignorechars)) || complexprefixes) {
     word_copy = new std::string(in_word);
 
     if (!ignorechars.empty()) {
@@ -318,7 +318,7 @@ int HashMgr::add_word(const std::string& in_word,
       hp->var += H_OPT_PHON;
       // store ph: fields (pronounciation, misspellings, old orthography etc.)
       // of a morphological description in reptable to use in REP replacements.
-      if (reptable.capacity() < tablesize/MORPH_PHON_RATIO)
+      if (reptable.capacity() < (unsigned int)(tablesize/MORPH_PHON_RATIO))
           reptable.reserve(tablesize/MORPH_PHON_RATIO);
       std::string fields = HENTRY_DATA(hp);
       std::string::const_iterator iter = fields.begin();
@@ -326,9 +326,19 @@ int HashMgr::add_word(const std::string& in_word,
       while (start_piece != fields.end()) {
         if (std::string(start_piece, iter).find(MORPH_PHON) == 0) {
           std::string ph = std::string(start_piece, iter).substr(sizeof MORPH_PHON - 1);
-          std::vector<w_char> w;
           if (ph.size() > 0) {
-            std::string wordpart(in_word);
+            std::vector<w_char> w;
+            size_t strippatt;
+            std::string wordpart;
+            // dictionary based REP replacement, separated by "->"
+            // for example "pretty ph:prity ph:priti->pretti" to handle
+            // both prity -> pretty and pritier -> prettiest suggestions.
+            if (((strippatt = ph.find("->")) != std::string::npos) &&
+                    (strippatt > 0) && (strippatt < ph.size() - 2)) {
+                wordpart = ph.substr(strippatt + 2);
+                ph.erase(ph.begin() + strippatt, ph.end());
+            } else
+                wordpart = in_word;
             // when the ph: field ends with the character *,
             // strip last character of the pattern and the replacement
             // to match in REP suggestions also at character changes,
@@ -336,8 +346,8 @@ int HashMgr::add_word(const std::string& in_word,
             // REP replacement instead of "prity->pretty", to get
             // prity->pretty and pritiest->prettiest suggestions.
             if (ph.at(ph.size()-1) == '*') {
-              int strippatt = 1;
-              int stripword = 0;
+              strippatt = 1;
+              size_t stripword = 0;
               if (utf8) {
                 while ((strippatt < ph.size()) &&
                   ((ph.at(ph.size()-strippatt-1) & 0xc0) == 0x80))
@@ -396,10 +406,10 @@ int HashMgr::add_word(const std::string& in_word,
                 reptable.back().pattern.assign(ph_capitalized);
                 reptable.back().outstrings[0].assign(wordpart);
               }
-           }
-           reptable.push_back(replentry());
-           reptable.back().pattern.assign(ph);
-           reptable.back().outstrings[0].assign(wordpart);
+            }
+            reptable.push_back(replentry());
+            reptable.back().pattern.assign(ph);
+            reptable.back().outstrings[0].assign(wordpart);
           }
         }
         start_piece = mystrsep(fields, iter);
@@ -572,24 +582,8 @@ int HashMgr::remove_forbidden_flag(const std::string& word) {
   if (!dp)
     return 1;
   while (dp) {
-    if (dp->astr && TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-      if (dp->alen == 1)
-        dp->alen = 0;  // XXX forbidden words of personal dic.
-      else {
-        unsigned short* flags2 =
-            (unsigned short*)malloc(sizeof(unsigned short) * (dp->alen - 1));
-        if (!flags2)
-          return 1;
-        int i, j = 0;
-        for (i = 0; i < dp->alen; i++) {
-          if (dp->astr[i] != forbiddenword)
-            flags2[j++] = dp->astr[i];
-        }
-        dp->alen--;
-        free(dp->astr);
-        dp->astr = flags2;  // XXX allowed forbidden words
-      }
-    }
+    if (dp->astr && TESTAFF(dp->astr, forbiddenword, dp->alen))
+      dp->alen = 0;  // XXX forbidden words of personal dic.
     dp = dp->next_homonym;
   }
   return 0;
