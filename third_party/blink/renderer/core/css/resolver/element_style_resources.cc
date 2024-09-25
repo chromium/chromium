@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
+#include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_crossfade_image.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/style/style_pending_image.h"
+#include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
@@ -270,6 +272,16 @@ StyleImage* ElementStyleResources::GetStyleImage(CSSPropertyID property,
 }
 
 static bool AllowExternalResources(CSSPropertyID property) {
+  if (RuntimeEnabledFeatures::SvgExternalResourcesEnabled()) {
+    if (property == CSSPropertyID::kClipPath ||
+        property == CSSPropertyID::kFill ||
+        property == CSSPropertyID::kMarkerEnd ||
+        property == CSSPropertyID::kMarkerMid ||
+        property == CSSPropertyID::kMarkerStart ||
+        property == CSSPropertyID::kStroke) {
+      return true;
+    }
+  }
   return property == CSSPropertyID::kBackdropFilter ||
          property == CSSPropertyID::kFilter;
 }
@@ -305,6 +317,34 @@ static void LoadResourcesForFilter(
   }
 }
 
+static SVGResource* GetSVGResourceOrNull(StyleSVGResource* style_resource) {
+  return style_resource ? style_resource->Resource() : nullptr;
+}
+
+static SVGResource* GetSingleSVGResource(CSSPropertyID property,
+                                         ComputedStyleBuilder& builder) {
+  CHECK(RuntimeEnabledFeatures::SvgExternalResourcesEnabled());
+  switch (property) {
+    case CSSPropertyID::kClipPath: {
+      auto* reference_clip =
+          DynamicTo<ReferenceClipPathOperation>(builder.MutableClipPath());
+      return reference_clip ? reference_clip->Resource() : nullptr;
+    }
+    case CSSPropertyID::kFill:
+      return GetSVGResourceOrNull(builder.FillPaint().Resource());
+    case CSSPropertyID::kMarkerEnd:
+      return GetSVGResourceOrNull(builder.MarkerEndResource());
+    case CSSPropertyID::kMarkerMid:
+      return GetSVGResourceOrNull(builder.MarkerMidResource());
+    case CSSPropertyID::kMarkerStart:
+      return GetSVGResourceOrNull(builder.MarkerStartResource());
+    case CSSPropertyID::kStroke:
+      return GetSVGResourceOrNull(builder.StrokePaint().Resource());
+    default:
+      NOTREACHED();
+  }
+}
+
 void ElementStyleResources::LoadPendingSVGResources(
     ComputedStyleBuilder& builder) {
   Document& document = element_.GetDocument();
@@ -316,6 +356,16 @@ void ElementStyleResources::LoadPendingSVGResources(
         break;
       case CSSPropertyID::kFilter:
         LoadResourcesForFilter(builder.MutableFilterOperations(), document);
+        break;
+      case CSSPropertyID::kClipPath:
+      case CSSPropertyID::kFill:
+      case CSSPropertyID::kMarkerEnd:
+      case CSSPropertyID::kMarkerMid:
+      case CSSPropertyID::kMarkerStart:
+      case CSSPropertyID::kStroke:
+        if (SVGResource* resource = GetSingleSVGResource(property, builder)) {
+          resource->Load(document, kCrossOriginAttributeAnonymous);
+        }
         break;
       default:
         NOTREACHED_IN_MIGRATION();

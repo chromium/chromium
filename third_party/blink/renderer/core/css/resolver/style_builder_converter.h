@@ -130,7 +130,8 @@ class StyleBuilderConverter {
   static DynamicRangeLimit ConvertDynamicRangeLimit(StyleResolverState&,
                                                     const CSSValue&);
   static StyleSVGResource* ConvertElementReference(StyleResolverState&,
-                                                   const CSSValue&);
+                                                   const CSSValue&,
+                                                   CSSPropertyID);
   static FilterOperations ConvertFilterOperations(StyleResolverState&,
                                                   const CSSValue&,
                                                   CSSPropertyID);
@@ -282,7 +283,8 @@ class StyleBuilderConverter {
                                               bool for_visited_link = false);
   static SVGPaint ConvertSVGPaint(StyleResolverState&,
                                   const CSSValue&,
-                                  bool for_visited_link);
+                                  bool for_visited_link,
+                                  CSSPropertyID = CSSPropertyID::kInvalid);
   static TextBoxEdge ConvertTextBoxEdge(StyleResolverState&, const CSSValue&);
   static TextDecorationThickness ConvertTextDecorationThickness(
       StyleResolverState&,

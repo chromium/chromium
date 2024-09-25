@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
+#include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -3637,6 +3638,13 @@ const blink::Color Fill::ColorIncludingFallback(bool visited_link,
                             is_current_color);
 }
 
+void Fill::ApplyValue(StyleResolverState& state,
+                      const CSSValue& value,
+                      ValueMode) const {
+  state.StyleBuilder().SetFillPaint(StyleBuilderConverter::ConvertSVGPaint(
+      state, value, false, PropertyID()));
+}
+
 const CSSValue* FillOpacity::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -5996,6 +6004,14 @@ const CSSValue* MarkerEnd::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForSVGResource(style.MarkerEndResource());
 }
 
+void MarkerEnd::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value,
+                           ValueMode) const {
+  state.StyleBuilder().SetMarkerEndResource(
+      StyleBuilderConverter::ConvertElementReference(state, value,
+                                                     PropertyID()));
+}
+
 const CSSValue* MarkerMid::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -6014,6 +6030,14 @@ const CSSValue* MarkerMid::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForSVGResource(style.MarkerMidResource());
 }
 
+void MarkerMid::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value,
+                           ValueMode) const {
+  state.StyleBuilder().SetMarkerMidResource(
+      StyleBuilderConverter::ConvertElementReference(state, value,
+                                                     PropertyID()));
+}
+
 const CSSValue* MarkerStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -6030,6 +6054,14 @@ const CSSValue* MarkerStart::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForSVGResource(style.MarkerStartResource());
+}
+
+void MarkerStart::ApplyValue(StyleResolverState& state,
+                             const CSSValue& value,
+                             ValueMode) const {
+  state.StyleBuilder().SetMarkerStartResource(
+      StyleBuilderConverter::ConvertElementReference(state, value,
+                                                     PropertyID()));
 }
 
 const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
@@ -8608,6 +8640,13 @@ const blink::Color Stroke::ColorIncludingFallback(
   }
   return stroke_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme(),
                               is_current_color);
+}
+
+void Stroke::ApplyValue(StyleResolverState& state,
+                        const CSSValue& value,
+                        ValueMode) const {
+  state.StyleBuilder().SetStrokePaint(StyleBuilderConverter::ConvertSVGPaint(
+      state, value, false, PropertyID()));
 }
 
 const CSSValue* StrokeDasharray::ParseSingleValue(

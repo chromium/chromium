@@ -243,7 +243,8 @@ DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
 
 StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
     StyleResolverState& state,
-    const CSSValue& value) {
+    const CSSValue& value,
+    CSSPropertyID property_id) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return nullptr;
@@ -251,8 +252,8 @@ StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
 
   const auto& url_value = To<cssvalue::CSSURIValue>(value);
   SVGResource* resource =
-      state.GetElementStyleResources().GetSVGResourceFromValue(
-          CSSPropertyID::kInvalid, url_value);
+      state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
+                                                               url_value);
   return MakeGarbageCollected<StyleSVGResource>(
       resource, url_value.ValueForSerialization());
 }
@@ -293,7 +294,6 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
     SVGResource* resource =
         state.GetElementStyleResources().GetSVGResourceFromValue(
             CSSPropertyID::kClipPath, *url_value);
-    // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
     return MakeGarbageCollected<ReferenceClipPathOperation>(
         url_value->ValueForSerialization(), resource);
   }
@@ -2531,18 +2531,19 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
 
 SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
                                                 const CSSValue& value,
-                                                bool for_visited_link) {
+                                                bool for_visited_link,
+                                                CSSPropertyID property_id) {
   const CSSValue* local_value = &value;
   SVGPaint paint;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
-    paint.resource = ConvertElementReference(state, list->Item(0));
+    paint.resource = ConvertElementReference(state, list->Item(0), property_id);
     local_value = &list->Item(1);
   }
 
   if (local_value->IsURIValue()) {
     paint.type = SVGPaintType::kUri;
-    paint.resource = ConvertElementReference(state, *local_value);
+    paint.resource = ConvertElementReference(state, *local_value, property_id);
   } else {
     auto* local_identifier_value = DynamicTo<CSSIdentifierValue>(local_value);
     if (local_identifier_value) {
