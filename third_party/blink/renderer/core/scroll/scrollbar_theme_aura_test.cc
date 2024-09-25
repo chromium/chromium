@@ -250,6 +250,10 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
 // size when the scrollbars are larger and smaller than the minimal size (enough
 // space for two buttons and a pixel in the middle).
 TEST_P(ScrollbarThemeAuraTest, NinePatchCanvas) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
@@ -277,6 +281,10 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchCanvas) {
 // middle of the canvas taking into consideration when the scrollbars' width is
 // even to expand the width of the center-patch.
 TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
@@ -297,6 +305,10 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
 // invalidations when the scrollbar uses nine-patch track and buttons
 // resources.
 TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
   ScrollbarThemeAuraButtonOverride theme;
   ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(

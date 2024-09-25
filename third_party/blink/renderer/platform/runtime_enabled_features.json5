@@ -434,10 +434,10 @@
       name: "AudioVideoTracks",
       status: "experimental",
     },
-    // Killswitch. Remove after 1 or 2 stable releases.
+    // Killswitch activated for crbug.com/365405756; need to re-enable this.
     {
       name: "AuraScrollbarUsesNinePatchTrack",
-      status: "stable",
+      status: "test",
     },
     // Killswitch. Remove after 1 or 2 stable releases.
     {
