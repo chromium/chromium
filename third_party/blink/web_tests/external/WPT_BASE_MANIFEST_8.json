@@ -239,7 +239,7 @@
       ]
      ],
      "displaylocked-serialize.html": [
-      "04be6ddf71a7f70c6dbd1610df236a118e316374",
+      "8dd8efaa6af5f48a4148dc142348888b129e53bf",
       [
        null,
        {}
@@ -7328,15 +7328,6 @@
        ],
        "select-in-table-crash.html": [
         "d1f1cee2177a1e58d635c8e96f257cee557a39ea",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "the-selectlist-element": {
-       "selectlist-listbox-fallback-change-crash.tentative.html": [
-        "1a9e81d8178a24f834d2e8ae7d86b60eb5ea4ad0",
         [
          null,
          {}
@@ -284466,47 +284457,8 @@
        ]
       },
       "the-selectlist-element": {
-       "button-type-selectlist-appearance.tentative.html": [
-        "3ab7044366e54bf1640dcb287491389db0523c82",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/button-type-selectlist-appearance-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-button-type-appearance.tentative.html": [
-        "50ad339b0568c2f0fd641ad6241d464b66421fcb",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-button-type-appearance-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-default-button-slot.tentative.html": [
-        "d8688d5957d211d2b475a20579038455b7d90d18",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-default-button-slot-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "selectlist-explicit-size.tentative.html": [
-        "d9e52a9fff74ab91b6a33cc10d70a7055a54e48e",
+        "c2da48740317b26c6e89c9136141ff91e26a8da3",
         [
          null,
          [
@@ -284519,7 +284471,7 @@
         ]
        ],
        "selectlist-font-size.tentative.html": [
-        "9c30e71bda38ea344419de4e087be5b651a38989",
+        "cfc8cd32e2fd5308296c3b89f19bf507468bad17",
         [
          null,
          [
@@ -284531,21 +284483,8 @@
          {}
         ]
        ],
-       "selectlist-listbox-element.tentative.html": [
-        "14223633b90eba2c49234a3e2ec4edc68f0df187",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-listbox-element-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "selectlist-marker-end-aligned.tentative.html": [
-        "c2540acb368c7b945f13b454d1190c8780c27a48",
+        "eb17e2cd0aad9c20edd9a00240d05fd9465ff6a3",
         [
          null,
          [
@@ -284557,34 +284496,8 @@
          {}
         ]
        ],
-       "selectlist-marker-part.tentative.html": [
-        "dedabc9bab78d96f2485366a6277ae83ca89245f",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-marker-part-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-marker-slot.tentative.html": [
-        "de43a02c33f0e7f2e9db4703c7b3078e10f32d86",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-marker-slot-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "selectlist-marker-visible-overflow.tentative.html": [
-        "345c2059837af324d47c31658eeabb8375ad991e",
+        "6d3ea1383a6fe4f7201b1c1ae58d499226447b0d",
         [
          null,
          [
@@ -284597,7 +284510,7 @@
         ]
        ],
        "selectlist-option-label-rendering.tentative.html": [
-        "c719ee0e070166d9a669c2abd8ee082a12d615f6",
+        "1aa129468da0547a983c0dedbf1dec93dcb2d129",
         [
          null,
          [
@@ -284610,7 +284523,7 @@
         ]
        ],
        "selectlist-overflow-x.tentative.html": [
-        "93c1b948a096020f1865f9f6ccba93a3c839afa8",
+        "b6227190206d557aab9e0bec9905ac6439a50da4",
         [
          null,
          [
@@ -284622,21 +284535,8 @@
          {}
         ]
        ],
-       "selectlist-rtl.tentative.html": [
-        "24f79596321f413025cddc9c5e10a8c34f701d90",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-rtl-ref.tentative.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "selectlist-selected-value-behavior.tentative.html": [
-        "a43e43d267a6bb007738ffc311b2f681a09115b5",
+        "79ae0d330ba112276e1dfb0f7a1ea920504db1cc",
         [
          null,
          [
@@ -284648,79 +284548,14 @@
          {}
         ]
        ],
-       "selectlist-selected-value-part.tentative.html": [
-        "8fc05480d15ebf06d12d2be31bf49f801c0018a4",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-selected-value-part-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-selected-value-slot.tentative.html": [
-        "c69a962c295673f15d6b1923d984341b9023ffd3",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-selected-value-slot-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-selectedoption-element-cloning.tentative.html": [
-        "5d273c21bffb71372efd35469372878284fff742",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-selectedoption-element-cloning-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "selectlist-text-only.tentative.html": [
-        "ceefeca6087fb8252383022cae60c032048d8d93",
+        "55359331ae70951b1c3172cf0916c8c3dcc58808",
         [
          null,
          [
           [
            "/html/semantics/forms/the-selectlist-element/selectlist-text-only-ref.html",
            "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-writingmode-lr.tentative.html": [
-        "9973696ddd75f568af09d0c89639bdb9fbbc83b6",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-writingmode-tb-ref.html",
-           "!="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "selectlist-writingmode-rl.tentative.html": [
-        "dc74203e69c89bc6a31553668ba880ecdd947b99",
-        [
-         null,
-         [
-          [
-           "/html/semantics/forms/the-selectlist-element/selectlist-writingmode-tb-ref.html",
-           "!="
           ]
          ],
          {}
@@ -307061,8 +306896,20 @@
      "31e460be1737dc8d313184a6335a6e95c4533f0c",
      []
     ],
+    "cookieStore_getAll_arguments.https.any.serviceworker-expected.txt": [
+     "6c68d6d8e1481c5436437129b87f4b5a620726f3",
+     []
+    ],
     "cookieStore_get_arguments.https.any-expected.txt": [
      "1f0ce140a594e8f91f33d87ce760455d2112800b",
+     []
+    ],
+    "cookieStore_get_arguments.https.any.serviceworker-expected.txt": [
+     "e4c971b8d653aed83aaeea9606e1095ddf35daee",
+     []
+    ],
+    "cookieStore_in_detached_frame.https-expected.txt": [
+     "b7d01ee3a8a66009856be060145c8633f6782001",
      []
     ],
     "resources": {
@@ -335070,10 +334917,6 @@
        []
       ],
       "parsing": {
-       "inheritance-expected.txt": [
-        "0e54fc587ea7ae8daa6fb45b43d6a21dd9cf6318",
-        []
-       ],
        "text-box-computed-expected.txt": [
         "ae11a3bb58a9174445adeac64a58b59e97a9800b",
         []
@@ -360961,7 +360804,7 @@
       []
      ],
      "testharness-api.md": [
-      "19b96b550b2f7fefe648bab121f90dcc714396ed",
+      "50f4358197a106fe50ba835ec57fd80acf1ecdad",
       []
      ],
      "testharness-tutorial.md": [
@@ -361632,11 +361475,11 @@
     "observable": {
      "tentative": {
       "observable-from.any-expected.txt": [
-       "48edf8845ef434447900988f539dcc2b13126cba",
+       "90faca59d59d4199fa430ee25c80f061257f089b",
        []
       ],
       "observable-from.any.worker-expected.txt": [
-       "48edf8845ef434447900988f539dcc2b13126cba",
+       "90faca59d59d4199fa430ee25c80f061257f089b",
        []
       ]
      }
@@ -368527,13 +368370,13 @@
       []
      ],
      "test-helpers.js": [
-      "893cd198483ca46fd4431e84e8ca91315f34986b",
+      "f1130f7a0d05af9044145e00ac74abbc4220f59d",
       []
      ]
     },
     "script-tests": {
      "FileSystemDirectoryHandle-move.js": [
-      "abdbc9ef2bf372f5960c433cd769b457fde5e137",
+      "8e9a01309358b550c43297fcf0e597e1f6ac2bc8",
       []
      ]
     }
@@ -370217,7 +370060,7 @@
       []
      ],
      "messaging-helpers.js": [
-      "300412a693d12ebd91bbdf8da0e9336d86d1c72c",
+      "2aebc996a696ac4edade2f26041d943fa61af70e",
       []
      ],
      "messaging-serialize-helpers.js": [
@@ -370237,33 +370080,33 @@
       []
      ],
      "test-helpers.js": [
-      "8f969c987dd523629576c7ca1542c2c6b6e2e676",
+      "d1cc6a5f39c1a243f3fc56a88a2f37dbf0ab61b9",
       []
      ]
     },
     "script-tests": {
      "FileSystemBaseHandle-IndexedDB.js": [
-      "75cb7bdde8ce36eafe3b16bb5d3889b67b6e1e59",
+      "ff41505e64cd0b715e98eb365f4bdf1efac1b8e6",
       []
      ],
      "FileSystemBaseHandle-buckets.js": [
-      "c06e940d7e9c5ab2c236c12e87f917f84e368004",
+      "9654755148a871e8af19a16aab93208eaa24e6e8",
       []
      ],
      "FileSystemBaseHandle-getUniqueId.js": [
-      "ee0cd5e3494c8bac5b4e36cb332b8c0c5025d49f",
+      "d84be5b6b5ffda2384b5ad5552fd18baac476864",
       []
      ],
      "FileSystemBaseHandle-isSameEntry.js": [
-      "e3b6d1891e1ec1bafbbeeac3652944c9c699638c",
+      "425aa3ce2b2331e3cf452bf29f0e577f4b6313e1",
       []
      ],
      "FileSystemBaseHandle-postMessage-BroadcastChannel.js": [
-      "681037db2fb129319935313f399cbafc08149d85",
+      "a892592fa294de7cb3ce199fd4d5cdeae693da55",
       []
      ],
      "FileSystemBaseHandle-postMessage-Error.js": [
-      "7c97a7da484e3fca54d458d6b1fde4bf7c216406",
+      "0d94e1b81ccb43fc8058633d8ee79afdf5c5b148",
       []
      ],
      "FileSystemBaseHandle-postMessage-MessagePort-frames.js": [
@@ -370291,27 +370134,27 @@
       []
      ],
      "FileSystemBaseHandle-remove.js": [
-      "021576310b3d7d89a867d6754e370978670c1a4b",
+      "30465010d68999d5ecb12bfe48955a78b98ed531",
       []
      ],
      "FileSystemDirectoryHandle-getDirectoryHandle.js": [
-      "6a63edecc5fa98a1a941c77a8e17dca8325e6f52",
+      "2ee30f454178a17e78fd22cf616765a023dbd8f6",
       []
      ],
      "FileSystemDirectoryHandle-getFileHandle.js": [
-      "840e85b436d4ed9a8ae71e05523255b2e37c3c54",
+      "3d6d74aab1fac9ca2eac08e50a9aaf5933ddfd33",
       []
      ],
      "FileSystemDirectoryHandle-iteration.js": [
-      "815ae2193624cad7c65fcf1952fa4e66956d3604",
+      "251368f02c40ce3666533fa183a60a641a05e103",
       []
      ],
      "FileSystemDirectoryHandle-removeEntry.js": [
-      "83d8eef7900247014dc491500dc21bc23aab3955",
+      "4193839e2c1df72db9218af0e6fb85bb118b5900",
       []
      ],
      "FileSystemDirectoryHandle-resolve.js": [
-      "a8900f97e54523f29bdc9afcd021d32c9dbb0e08",
+      "9da1340cd0975a543ee1aa709ab338e234a8c73c",
       []
      ],
      "FileSystemFileHandle-create-sync-access-handle.js": [
@@ -370319,11 +370162,11 @@
       []
      ],
      "FileSystemFileHandle-getFile.js": [
-      "330b790edc6c72b04d06b1ecca20c5ccfd162edc",
+      "dccbf140dcfb95653ff7593d20e3615352b4277e",
       []
      ],
      "FileSystemFileHandle-move.js": [
-      "c5d08f305d0612376a3641798d0a6b3b909cf404",
+      "3c25236ca65dcc688dd7a74e0be4c0ce9ccef70e",
       []
      ],
      "FileSystemObserver-writable-file-stream.js": [
@@ -370339,15 +370182,15 @@
       []
      ],
      "FileSystemWritableFileStream-piped.js": [
-      "847fefa2175a6082eafdf590355713a8ac4e7404",
+      "e4b11b82a320576516763fc13c0dd802c6e859b7",
       []
      ],
      "FileSystemWritableFileStream-write.js": [
-      "b0485035b9174ef2097f0a0a491aef501fc13a49",
+      "40307279feaa6cef084e5cf36aa6e1288c689899",
       []
      ],
      "FileSystemWritableFileStream.js": [
-      "53e4fc1f28e4aeddac44df7b0bd4b08ce7a7dccf",
+      "ada0520f8e8bb2f9a306ba5603b0623500beb425",
       []
      ]
     }
@@ -374839,15 +374682,15 @@
       },
       "text": {
        "2d.text.draw.fill.basic.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.fill.maxWidth.large.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.fill.rtl.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.fontface.notinpage-expected.txt": [
@@ -374855,7 +374698,7 @@
         []
        ],
        "2d.text.draw.stroke.basic.png": [
-        "fb3b5b830d345d2aa858e41673e08f99977baf08",
+        "d4f6dc1ee883e0a25a17149bc04154be3e7b5738",
         []
        ],
        "2d.text.drawing.style.reset.fontKerning.none2-expected.html": [
@@ -375309,19 +375152,19 @@
       },
       "text": {
        "2d.text.draw.fill.basic.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.fill.maxWidth.large.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.fill.rtl.png": [
-        "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
+        "8021427a07dc4ed754e2b3b1357aca7029bb0fe3",
         []
        ],
        "2d.text.draw.stroke.basic.png": [
-        "fb3b5b830d345d2aa858e41673e08f99977baf08",
+        "d4f6dc1ee883e0a25a17149bc04154be3e7b5738",
         []
        ],
        "2d.text.drawing.style.reset.fontKerning.none2-expected.html": [
@@ -375543,7 +375386,7 @@
         []
        ],
        "fill-and-stroke-styles.yaml": [
-        "72d027a634e71aa84e24b34a6d483d91f594b6de",
+        "83a383181440ddd8874d725a1c5dbcf977ae5fc0",
         []
        ],
        "filters.yaml": [
@@ -384090,80 +383933,36 @@
         "276fd5f220aeda3baea9e86b6f951ef37c5655fe",
         []
        ],
-       "button-type-selectlist-appearance-ref.html": [
-        "fd7f2b7bcaf8adfd469b6fcfbbb5b0e7a2cf970a",
-        []
-       ],
-       "selectlist-button-type-appearance-ref.html": [
-        "37d4b1b47146bcea345fb47a8d242264c509ec88",
-        []
-       ],
-       "selectlist-default-button-slot-ref.html": [
-        "faa96e1f2724a8f484a2211ba90c7c8ef3a1d478",
-        []
-       ],
        "selectlist-explicit-size-ref.tentative.html": [
-        "46d932c4b270be7ac2c9593d60c35c6503ebc20e",
+        "cefe15ad8e43eb421c256cd3672de8ddb9951c83",
         []
        ],
        "selectlist-font-size-ref.tentative.html": [
-        "46d6dbdb9b2c740dfe1dd3ef5a8e44a766cbd786",
-        []
-       ],
-       "selectlist-listbox-element-ref.html": [
-        "5533a97f603d8ad333a8763db15e47f1a07ee83b",
+        "e79226c0abcce7e1ffca2affb3708df6cc43c0a8",
         []
        ],
        "selectlist-marker-end-aligned-ref.tentative.html": [
-        "b1df8a65816380fd9573e8f463542c50e888b781",
-        []
-       ],
-       "selectlist-marker-part-ref.html": [
-        "1a1302b96db7acdaa91d1d3551a5a047d41c13af",
-        []
-       ],
-       "selectlist-marker-slot-ref.html": [
-        "e910df4c5abc609d619c607a9393a4c6f96d37ba",
+        "551aa657a71d8a98160e70a9941404f7a011e1cb",
         []
        ],
        "selectlist-marker-visible-overflow-ref.tentative.html": [
-        "dda53db5bf859f4c5e00d578028d02236111b454",
+        "10e462018e68da12b9c72078e86317c167d8caaa",
         []
        ],
        "selectlist-option-label-rendering-ref.html": [
-        "1ab1d547228523e5f087d1faa55ebca35d5874dc",
+        "6dff2fe9005a9597e05cc3e52bf86ed37321f23c",
         []
        ],
        "selectlist-overflow-x-ref.tentative.html": [
-        "df87060359bc38d6e7da8cab9c38167ed5249353",
-        []
-       ],
-       "selectlist-rtl-ref.tentative.html": [
-        "7c71ea079cfc1a8292ed5ae415c86ebefa11a972",
+        "5e9f554d9615476ac327ef0894b7b81e53994e82",
         []
        ],
        "selectlist-selected-value-behavior-ref.html": [
-        "7d76f1c8176d898241d19f2705ce24e15e09620c",
-        []
-       ],
-       "selectlist-selected-value-part-ref.html": [
-        "3be168beba95e20a16671cc05260ed57fbfb5a25",
-        []
-       ],
-       "selectlist-selected-value-slot-ref.html": [
-        "ecb8c886a1d1ec39f99a389917e40a56e958dbf6",
-        []
-       ],
-       "selectlist-selectedoption-element-cloning-ref.html": [
-        "1c0be58d67e3856d91bdb6351ba19e48426da720",
+        "007d44f8239726149d74f1d49b2ba669ab2c2286",
         []
        ],
        "selectlist-text-only-ref.html": [
-        "ab28fbede61dc7d4332722680187ea4ad075a686",
-        []
-       ],
-       "selectlist-writingmode-tb-ref.html": [
-        "db922f5f9fbb802cfa7baae92fb7a327ce4f3672",
+        "b2622f5b3b4e2a9bf0449974f8c90f989d99792a",
         []
        ],
        "support": {
@@ -384171,8 +383970,8 @@
          "9cc5a1d6034e7cf2a234728e0d943f3ec6676d01",
          []
         ],
-        "fake-selectlist.js": [
-         "77b3f7492112d98798942bbe9a1db166c9be169e",
+        "customizable-select-styles.css": [
+         "4e53f8be912db3f38b560989cceb482f8671fbe7",
          []
         ],
         "selectlist_button_icon.svg": [
@@ -396237,7 +396036,7 @@
       []
      ],
      "permissions-policy-payment-extension.html": [
-      "bb9f86ef016404f170a931b9727181f315ccd86d",
+      "a4ac736293dac4ffe91388527243b13933c2b636",
       []
      ],
      "permissions-policy-payment.html": [
@@ -400397,7 +400196,7 @@
       []
      ],
      "open-in-iframe.html": [
-      "9bf8beb66aa1c2514b591db508014572d1ec6b7e",
+      "a6fc581abad90d9557c227d9bb53277b99339e89",
       []
      ],
      "serial-allowed-by-permissions-policy-worker.js": [
@@ -452778,21 +452577,21 @@
      ]
     ],
     "cookieStore_event_delete.https.window.js": [
-     "e8c6fc036a76863acf2d8b2b3660550715f1dc0d",
+     "a76ca26bd3c7c5cad9f0d8b3a6cf70b8f7b4e9cd",
      [
       "cookie-store/cookieStore_event_delete.https.window.html",
       {}
      ]
     ],
     "cookieStore_event_overwrite.https.window.js": [
-     "3acffea41c1d6a08e5aaf1ca944567347d174de0",
+     "427e7dcbb7ce0ff1627a2f45a2a407d1c0189dc3",
      [
       "cookie-store/cookieStore_event_overwrite.https.window.html",
       {}
      ]
     ],
     "cookieStore_getAll_arguments.https.any.js": [
-     "264b6b7a7f74057703d518bf9eb4db18d80c0e9c",
+     "868246f606f4ace75f807eef584d263114778f4b",
      [
       "cookie-store/cookieStore_getAll_arguments.https.any.html",
       {
@@ -452891,7 +452690,7 @@
      ]
     ],
     "cookieStore_get_arguments.https.any.js": [
-     "8507682f8ec6a947f67f08d1f59cbe769f6f0e88",
+     "d6ea0edef6a3d4e0cc69d4455d6672ddd433deda",
      [
       "cookie-store/cookieStore_get_arguments.https.any.html",
       {
@@ -453044,7 +452843,7 @@
      ]
     ],
     "cookieStore_in_detached_frame.https.html": [
-     "08a7b5b8e4629440956943489dd7fa7ca200b537",
+     "cd2bd79e686cd9b31b9252412e9e9a069cd779be",
      [
       null,
       {}
@@ -457080,7 +456879,7 @@
       ]
      ],
      "anchor-scope-shadow-names.html": [
-      "69e1d5216180b9e03485bc65b72246424db3e6bd",
+      "f84cddabeeced3dda502ac4c037c20c438bfc35f",
       [
        null,
        {}
@@ -460446,7 +460245,7 @@
       ]
      ],
      "hit-test-transformed-inline.html": [
-      "239b2b23956818b25c401349e69dacbf03b169fc",
+      "1b415790fd6d6abcac4f45a09ed065cb70d803c7",
       [
        null,
        {}
@@ -476512,6 +476311,13 @@
        {}
       ]
      ],
+     "host-is-featureless.html": [
+      "fcbff34ac1a8eb34ba4ed12b90448bbf14b10b15",
+      [
+       null,
+       {}
+      ]
+     ],
      "host-parsing.html": [
       "139433af483a94a43c70a7f429a221f759d0c8a7",
       [
@@ -480636,6 +480442,13 @@
      ],
      "input-preprocessing.html": [
       "9ef9a730820d85a015b51cb230aa09f397a78400",
+      [
+       null,
+       {}
+      ]
+     ],
+     "invalid-nested-rules.html": [
+      "a277305496eeaa1c429ab627697eb25de08bf035",
       [
        null,
        {}
@@ -498242,7 +498055,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "82b87b63d7dea3c7ed9bbd4003f5b58ad07d5831",
+     "9e617827f6468dfe1b7d91fb2d47db4193f69143",
      [
       null,
       {
@@ -565598,6 +565411,20 @@
          {}
         ]
        ],
+       "2d.fillStyle.relativecolor.currentcolor.html": [
+        "db7fb08c42c38d163b44e9bef733a03b01e7e229",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.relativecolor.html": [
+        "57163bf5ee333fdbd341a03016f2583237044883",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.fillStyle.toStringFunctionCallback.html": [
         "c2b5f4f8a0c5d44de3cff762c4c9dfb31461a6e5",
         [
@@ -565985,6 +565812,13 @@
        ],
        "2d.gradient.radial.transform.3.html": [
         "9cb4f9e5ad70a0e7d03c862a9332ba5e89e6966b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.relativecolor.html": [
+        "a4ad294756da30626c4cc8dc4f6b5946f53164f4",
         [
          null,
          {}
@@ -566405,6 +566239,13 @@
        ],
        "2d.strokeStyle.default.html": [
         "a024452868b7a998617365c9c88259b14b5793c9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.strokeStyle.relativecolor.html": [
+        "eeaf1bf04753c53b77a9082228b1dafcbc4d134f",
         [
          null,
          {}
@@ -575654,6 +575495,20 @@
          {}
         ]
        ],
+       "2d.fillStyle.relativecolor.html": [
+        "586ec84e9979d68cf96cfe8d9651a11c43910114",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.relativecolor.worker.js": [
+        "a9d0f2c815a6ebc74f325ef1c75e3855ced07801",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.relativecolor.worker.html",
+         {}
+        ]
+       ],
        "2d.fillStyle.toStringFunctionCallback.html": [
         "9efa38772fe94822a00844a0b129063cc7e2ebb5",
         [
@@ -576410,6 +576265,20 @@
          {}
         ]
        ],
+       "2d.gradient.relativecolor.html": [
+        "56c6bd4e0df7ad33422cd5559c798063a08679ec",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.gradient.relativecolor.worker.js": [
+        "99e479bdda63a70c7c815ad3c5e7ced7c4f1b51e",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.relativecolor.worker.html",
+         {}
+        ]
+       ],
        "2d.pattern.basic.canvas.html": [
         "a0f5d195da1c8551ac8d3490ef0c7e57aa69e4bf",
         [
@@ -576974,6 +576843,20 @@
         "9e0ac8be3ea52d22ee29f96085444c72b153d924",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.strokeStyle.default.worker.html",
+         {}
+        ]
+       ],
+       "2d.strokeStyle.relativecolor.html": [
+        "91baf07b6fe760c21d212ddbcb503a7303456431",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.strokeStyle.relativecolor.worker.js": [
+        "9909ba047a9a757b2075c3502ea31ffc339032bf",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.strokeStyle.relativecolor.worker.html",
          {}
         ]
        ]
@@ -601266,7 +601149,7 @@
          ]
         ],
         "select-mouse-behavior.tentative.html": [
-         "b6463b57b750a216fc7e89b895d66c9fe80a602b",
+         "d4959c34bc9e9039cfad1d2dca42fe4bee28d219",
          [
           null,
           {
@@ -601473,74 +601356,8 @@
        ]
       },
       "the-selectlist-element": {
-       "selectlist-ask-for-reset.html": [
-        "7cf2aff51594fa334dffe300f88a152d06b8918e",
-        [
-         null,
-         {}
-        ]
-       ],
-       "selectlist-button-closes-listbox.tentative.html": [
-        "d3e6febd7885d426c3d858996d58f97cbe320589",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-button-type-behavior.tentative.html": [
-        "cc7eb62a6327e90a2d038e777612685e00edb746",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-disabled.tentative.html": [
-        "f557804d9bf3d81daa2132d604d1085e65e6fca7",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
        "selectlist-events.tentative.html": [
-        "a88a3b1f7da0b62cd4d6bb1fcc13764a9c165fe6",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-form-attribute.tentative.html": [
-        "c1872b930392d1f6e7a8a510b99b9337ceff4254",
-        [
-         null,
-         {}
-        ]
-       ],
-       "selectlist-form-elements.tentative.html": [
-        "07e5be6ef4f47fc4ddc048923999f9bbf4ff80f8",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-form-submission.tentative.html": [
-        "4b5e4970287b4df5bfd0c516f0e116fe68ddd77d",
-        [
-         null,
-         {}
-        ]
-       ],
-       "selectlist-keyboard-behavior.tentative.html": [
-        "a70ab7e6a5d5de5e653ebf54fb88685fd85c9e45",
+        "f06fb8e9be1a244c9fd2e2100b1e4ceb3d7840a5",
         [
          null,
          {
@@ -601549,32 +601366,16 @@
         ]
        ],
        "selectlist-keyboard.tentative.html": [
-        "5d1c65e9413d0a60e757c90033220178515743a9",
+        "9e7613e4c2db82afdc6caead8b2ec2788c995443",
         [
          null,
          {
           "testdriver": true
          }
-        ]
-       ],
-       "selectlist-labels.tentative.html": [
-        "819da49fdd4137760bba7cbb3d1e87ef1c595edc",
-        [
-         null,
-         {}
         ]
        ],
        "selectlist-many-options.tentative.html": [
-        "36bae1a82baec56402a783c8a84fa65350ab4057",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-nested.tentative.html": [
-        "c29413f180c544a6f505ddef2021e2dac3d7d766",
+        "2aef5b138afd9863b954af9544909f2d4c2bb977",
         [
          null,
          {
@@ -601583,7 +601384,7 @@
         ]
        ],
        "selectlist-option-focusable.tentative.html": [
-        "993ef007e683052ec86d613a98d1a1b68f3e58f0",
+        "a5c1e5d9225bd814c14d02cf068c1c6594a94a68",
         [
          null,
          {
@@ -601592,16 +601393,7 @@
         ]
        ],
        "selectlist-popover-position-with-zoom.tentative.html": [
-        "692eed7caae18f46d9ed606fd1890c65e4bc0cb1",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "selectlist-popover-position.tentative.html": [
-        "a19e2b0d282deff96436c46d6c52f87135152c72",
+        "f522e2e3531d81d99db811273559a093ddfe38f4",
         [
          null,
          {
@@ -601610,7 +601402,7 @@
         ]
        ],
        "selectlist-pseudo-light-dismiss-invalidation.tentative.html": [
-        "bda5842a37c4bdd8484a39ec0b10b6ed63384816",
+        "c9631d92e1258b047e16afea9345a8e7daecf450",
         [
          null,
          {
@@ -601619,28 +601411,23 @@
         ]
        ],
        "selectlist-pseudo-open-closed.tentative.html": [
-        "1d5a082c033052a59ab35b2e543187794311adfd",
+        "d863c9b1c6b00ad44b4dbe5870f07b6d456b0832",
         [
          null,
-         {}
+         {
+          "testdriver": true
+         }
         ]
        ],
        "selectlist-required-attribute.tentative.html": [
-        "ef4408915b32431e66fb121d90a06ac9a98520c2",
-        [
-         null,
-         {}
-        ]
-       ],
-       "selectlist-selectedoption-element.tentative.html": [
-        "593c4a6f21132b73cb6b28aaebd9a3dc6a9444b6",
+        "254b065de181e54686ae4439cbf0ea3be51f8713",
         [
          null,
          {}
         ]
        ],
        "selectlist-tab-navigation.tentative.html": [
-        "3b7d9d3d9ada9aee6f4227572450774b347a5b34",
+        "02bef0750b2e46e5adb9133cf6d2960feff387e0",
         [
          null,
          {
@@ -601649,7 +601436,7 @@
         ]
        ],
        "selectlist-tabindex-order.tentative.html": [
-        "c93efe1118e16bf2383512b467b84326952402c7",
+        "7cef337398ada60cb5899d1ca00172a825a35319",
         [
          null,
          {
@@ -601657,41 +601444,25 @@
          }
         ]
        ],
-       "selectlist-user-select.tentative.html": [
-        "078e8a4d83c0d05f9c0b149760edbf145d2d4328",
-        [
-         null,
-         {}
-        ]
-       ],
        "selectlist-validity.tentative.html": [
-        "2b2033f668856b1d3475b303e37631cb0a8bab0c",
+        "f4190562a49e0ade247338ebf9dd8cec0a1b996c",
         [
          null,
          {}
         ]
        ],
        "selectlist-value-option.tentative.html": [
-        "243067937cb981d2564125c0fa8d08083cde1f3b",
+        "28f9b7413e0fab542d227d65e81a8d51206b4987",
         [
          null,
          {}
         ]
        ],
        "selectlist-value-selectedOption.tentative.html": [
-        "20e72ac1dcb5549cb3c08a62652a14e99486111a",
+        "9ad693acbb8ee9e77e5d31442c8135698964c8e0",
         [
          null,
          {}
-        ]
-       ],
-       "tab-closes-listbox.tentative.html": [
-        "1706ed34cc6e1a04ce802a246ffd1203dc9eb1d1",
-        [
-         null,
-         {
-          "testdriver": true
-         }
         ]
        ]
       },
@@ -632387,10 +632158,12 @@
      ]
     ],
     "payment-extension-allowed-by-permissions-policy-attribute.https.sub.html": [
-     "ba6d033257fafc559fd8bea531ad5aa6e8938e36",
+     "452013eeee51e00ad94cffacc171d818764f15b8",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "payment-supported-by-permissions-policy.tentative.html": [
@@ -653871,10 +653644,21 @@
       ]
      ],
      "sandboxed_iframe.https.window.js": [
-      "763cdefa0671b60b2f7b0ca98087e7a26b5d3de3",
+      "15bdc5a9ed124e417d5764011482f792c8738cfa",
       [
        "serial/requestPort/sandboxed_iframe.https.window.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ]
+        ]
+       }
       ]
      ]
     },
@@ -701099,6 +700883,225 @@
          [
           "title",
           "test WebNN API element-wise cos operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cumulative_sum.https.any.js": [
+      "5ef2ac6ed715dd27bdecd82a53c969d9ebe0b21c",
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/cumulative_sum.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API cumulativeSum operation"
          ],
          [
           "global",

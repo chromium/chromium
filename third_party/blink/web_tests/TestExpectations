@@ -5545,7 +5545,9 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 # crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
 # wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
 # so, please file a bug for that case with details.
-crbug.com/364924715 external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
+crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # The listbox doesn't scroll to the selected option, during typeahead:
 crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
@@ -5556,7 +5558,7 @@ crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/sel
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-explicit-size.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-font-size.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-keyboard.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Failure Crash ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-visible-overflow.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-label-rendering.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-overflow-x.tentative.html [ Failure ]
@@ -8110,5 +8112,5 @@ crbug.com/358889281 [ Win ] external/wpt/event-timing/TapToStopFling.html [ Fail
 crbug.com/363034702 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass ]
 
 # Gardener 2024-09-24
-crbug.com/369241615 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Failure Crash ]
-crbug.com/369241615 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Failure Crash ]
+crbug.com/369241615 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash Failure ]
+crbug.com/369241615 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash Failure ]
