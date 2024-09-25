@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -379,7 +374,11 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
 
 TEST(CSSSelectorParserTest, SerializedUniversal) {
   test::TaskEnvironment task_environment;
-  const char* test_cases[][2] = {
+  struct SerializationTestCase {
+    const char* source;
+    const char* expected;
+  };
+  const SerializationTestCase test_cases[] = {
       {"*::-webkit-volume-slider", "::-webkit-volume-slider"},
       {"*::cue(i)", "::cue(i)"},
       {"*:host-context(.x)", "*:host-context(.x)"},
@@ -397,16 +396,16 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
   sheet->ParserAddNamespace(AtomicString("ns"), AtomicString("http://ns.org"));
 
   HeapVector<CSSSelector> arena;
-  for (auto** test_case : test_cases) {
-    SCOPED_TRACE(test_case[0]);
-    CSSParserTokenStream stream(test_case[0]);
+  for (const SerializationTestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.source);
+    CSSParserTokenStream stream(test_case.source);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
         stream, context, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
         /*semicolon_aborts_nested_selector=*/false, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
-    EXPECT_EQ(test_case[1], list->SelectorsText());
+    EXPECT_EQ(test_case.expected, list->SelectorsText());
   }
 }
 
