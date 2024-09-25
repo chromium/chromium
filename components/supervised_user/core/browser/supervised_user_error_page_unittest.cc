@@ -58,13 +58,12 @@ INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
 
 struct BuildHtmlTestParameter {
   bool allow_access_requests;
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const std::string& profile_image_url;
-  RAW_PTR_EXCLUSION const std::string& profile_image_url2;
-  RAW_PTR_EXCLUSION const std::string& custodian;
-  RAW_PTR_EXCLUSION const std::string& custodian_email;
-  RAW_PTR_EXCLUSION const std::string& second_custodian;
-  RAW_PTR_EXCLUSION const std::string& second_custodian_email;
+  const std::string profile_image_url;
+  const std::string profile_image_url2;
+  const std::string custodian;
+  const std::string custodian_email;
+  const std::string second_custodian;
+  const std::string second_custodian_email;
   FilteringBehaviorReason reason;
   bool has_two_parents;
 };
