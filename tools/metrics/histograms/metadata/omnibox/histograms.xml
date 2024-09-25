@@ -948,7 +948,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.HistoryFuzzy.MatchConversion.{SubProvider}"
-    units="counts" expires_after="2024-11-03">
+    units="counts" expires_after="2025-11-03">
   <owner>orinj@chromium.org</owner>
   <owner>jdonnelly-team@google.com</owner>
   <summary>
@@ -973,7 +973,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.HistoryFuzzy.Precision" enum="Boolean"
-    expires_after="M119">
+    expires_after="2025-11-03">
   <owner>orinj@chromium.org</owner>
   <owner>jdonnelly-team@google.com</owner>
   <summary>
@@ -992,7 +992,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.HistoryFuzzy.SearchDuration" units="ms"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>orinj@chromium.org</owner>
   <owner>jdonnelly-team@google.com</owner>
   <summary>
@@ -2499,7 +2499,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.WebUI.FirstUpdate" units="ms"
-    expires_after="2024-11-01">
+    expires_after="2025-11-03">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2513,7 +2513,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.WebUI.HandlerReadyOnFirstAccess" enum="Boolean"
-    expires_after="2024-10-06">
+    expires_after="2025-11-03">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
