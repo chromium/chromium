@@ -22,6 +22,7 @@ import org.chromium.base.ImportantFileWriterAndroidJni;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -186,8 +187,10 @@ public class CookiesFetcherTest {
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -208,8 +211,10 @@ public class CookiesFetcherTest {
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(true);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -229,8 +234,10 @@ public class CookiesFetcherTest {
         assertCookieFileExists(fetcher, true);
         assertLegacyCookieFileExists(false);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         assertCookieFileExists(fetcher, false);
         assertLegacyCookieFileExists(false);
@@ -249,8 +256,10 @@ public class CookiesFetcherTest {
         }
 
         assertLegacyCookieFileExists(true);
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
         assertLegacyCookieFileExists(
                 true); // Legacy file should not be deleted for non-initial profiles.
     }
@@ -260,8 +269,10 @@ public class CookiesFetcherTest {
         setupProfileProvider(mProfile1, mIncognitoProfile1);
         CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
         assertLegacyCookieFileExists(false);
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
         assertLegacyCookieFileExists(false);
     }
 
@@ -284,8 +295,10 @@ public class CookiesFetcherTest {
         assertLegacyCookieFileExists(false);
         assertCookieFileExists(fetcher, true);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         Mockito.verify(mCookiesFetcherJni, Mockito.times(3))
                 .restoreCookies(
@@ -327,8 +340,10 @@ public class CookiesFetcherTest {
         assertLegacyCookieFileExists(true);
         assertCookieFileExists(fetcher, false);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         // The legacy file is not attempted to restore due to the cipher key being wiped out during
         // app upgrade.
@@ -372,8 +387,10 @@ public class CookiesFetcherTest {
         assertLegacyCookieFileExists(true);
         assertCookieFileExists(fetcher, false);
 
-        fetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        fetcher.restoreCookies(restoreCallback::notifyCalled);
         mExecutorRule.runAllBackgroundAndUi();
+        restoreCallback.waitForOnly();
 
         Mockito.verify(mCookiesFetcherJni, Mockito.never())
                 .restoreCookies(

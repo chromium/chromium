@@ -37,6 +37,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.cookies.CookiesFetcher;
+import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,12 +59,16 @@ public class CustomTabActivityTabControllerUnitTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
+    @Rule public final JniMocker jniMocker = new JniMocker();
+
     private CustomTabActivityTabController mTabController;
 
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Network mNetwork;
+
+    @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
 
     private static final long TEST_TARGET_NETWORK = 1000;
 
@@ -75,6 +82,8 @@ public class CustomTabActivityTabControllerUnitTest {
 
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
+
+        jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
     }
 
     @Test

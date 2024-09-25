@@ -20,6 +20,7 @@ import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /** Test for {@link CustomTabCookiesFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -56,7 +58,7 @@ public class CustomTabCookiesFetcherUnitTest {
     }
 
     @Test
-    public void testFilesCleanedUpPostRestore() throws IOException {
+    public void testFilesCleanedUpPostRestore() throws IOException, TimeoutException {
         CustomTabCookiesFetcher cctCookiesFetcher =
                 new CustomTabCookiesFetcher(mProfileProvider, new CipherFactory(), 7);
 
@@ -77,10 +79,12 @@ public class CustomTabCookiesFetcherUnitTest {
                                 - 2 * CustomTabFileUtils.STATE_EXPIRY_THRESHOLD));
         Assert.assertTrue(outOfDateCookieFile.exists());
 
-        cctCookiesFetcher.restoreCookies();
+        CallbackHelper restoreCallback = new CallbackHelper();
+        cctCookiesFetcher.restoreCookies(restoreCallback::notifyCalled);
 
         mExecutor.runAll();
         Assert.assertFalse(outOfDateCookieFile.exists());
+        restoreCallback.waitForOnly();
     }
 
     @Test

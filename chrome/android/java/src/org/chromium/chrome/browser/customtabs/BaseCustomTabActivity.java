@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
-import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -114,7 +113,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
-    private CookiesFetcher mCookiesFetcher;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -455,9 +453,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                     () -> CustomTabsConnection.createSpareWebContents(profile));
         }
 
-        if (mCookiesFetcher != null) {
-            mCookiesFetcher.destroy();
-            mCookiesFetcher = null;
+        if (mTabController != null) {
+            mTabController.destroy();
         }
 
         super.onDestroyInternal();
@@ -839,35 +836,5 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCipherFactory.saveToBundle(outState);
-    }
-
-    @Override
-    public void onResumeWithNative() {
-        super.onResumeWithNative();
-
-        boolean hadCipherData = mCipherFactory.restoreFromBundle(getSavedInstanceState());
-
-        assert getProfileProviderSupplier().hasValue();
-        getProfileProviderSupplier()
-                .runSyncOrOnAvailable(
-                        (profileProvider) -> {
-                            if (mIntentDataProvider.isOffTheRecord() && mCookiesFetcher == null) {
-                                mCookiesFetcher =
-                                        new CustomTabCookiesFetcher(
-                                                profileProvider, mCipherFactory, this.getTaskId());
-                                if (hadCipherData) {
-                                    mCookiesFetcher.restoreCookies();
-                                }
-                            }
-                        });
-    }
-
-    @Override
-    public void onPauseWithNative() {
-        super.onPauseWithNative();
-
-        if (mCookiesFetcher != null) {
-            mCookiesFetcher.persistCookies();
-        }
     }
 }
