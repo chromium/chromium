@@ -17,6 +17,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -82,7 +83,10 @@ public class PartnerBrowserCustomizations {
         CustomizationProviderDelegate mDelegate;
 
         public ProviderPackage() {
-            mDelegate = new CustomizationProviderDelegateImpl();
+            mDelegate = ServiceLoaderUtil.maybeCreate(CustomizationProviderDelegate.class);
+            if (mDelegate == null) {
+                mDelegate = new CustomizationProviderDelegateUpstreamImpl();
+            }
         }
 
         @Override
@@ -219,8 +223,13 @@ public class PartnerBrowserCustomizations {
                             }
 
                             if (isCancelled()) return null;
-                            CustomizationProviderDelegateImpl delegate =
-                                    new CustomizationProviderDelegateImpl();
+
+                            CustomizationProviderDelegate delegate =
+                                    ServiceLoaderUtil.maybeCreate(
+                                            CustomizationProviderDelegate.class);
+                            if (delegate == null) {
+                                delegate = new CustomizationProviderDelegateUpstreamImpl();
+                            }
 
                             // Refresh the homepage first, as it has potential impact on the URL to
                             // use for the initial tab.
