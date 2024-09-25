@@ -81,16 +81,16 @@ base::Value::Dict MakeEvent(const CrxDownloader::DownloadMetrics& dm) {
   event.Set("url", dm.url.spec());
 
   // -1 means that the  byte counts are not known.
-  if (dm.total_bytes != -1 &&
+  if (dm.total_bytes >= 0 &&
       dm.total_bytes < protocol_request::kProtocolMaxInt) {
     event.Set("total", static_cast<double>(dm.total_bytes));
   }
-  if (dm.downloaded_bytes != -1 &&
-      dm.total_bytes < protocol_request::kProtocolMaxInt) {
+  if (dm.downloaded_bytes >= 0 &&
+      dm.downloaded_bytes < protocol_request::kProtocolMaxInt) {
     event.Set("downloaded", static_cast<double>(dm.downloaded_bytes));
   }
-  if (dm.download_time_ms &&
-      dm.total_bytes < protocol_request::kProtocolMaxInt) {
+  if (dm.download_time_ms >= 0 &&
+      dm.download_time_ms < protocol_request::kProtocolMaxInt) {
     event.Set("download_time_ms", static_cast<double>(dm.download_time_ms));
   }
   return event;
