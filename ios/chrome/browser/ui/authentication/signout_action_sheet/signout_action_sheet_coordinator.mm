@@ -78,6 +78,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   __weak UIView* _view;
   // Source of the sign-out action. For histogram if the sign-out occurs.
   signin_metrics::ProfileSignout _signout_source_metric;
+  // Show the snackbar above the snackbar.
+  BOOL _forceSnackbarOverToolbar;
 }
 
 // Service for managing identity authentication.
@@ -98,6 +100,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
                                       view:(UIView*)view
+                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
                                 withSource:(signin_metrics::ProfileSignout)
                                                signout_source_metric {
   self = [super initWithBaseViewController:viewController browser:browser];
@@ -105,6 +108,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     _rect = rect;
     _view = view;
     _signout_source_metric = signout_source_metric;
+    _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
   }
   return self;
 }
@@ -550,10 +554,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // The snackbar message might be nil if the snackbar is not needed.
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
   __weak __typeof(self) weakSelf = self;
+  BOOL forceSnackbarOverToolbar = _forceSnackbarOverToolbar;
   self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
     // The snackbar should be displayed even if self has been deallocated.
-    [snackbarCommandsHandler
-        showSnackbarMessageOverBrowserToolbar:snackbarMessage];
+    if (forceSnackbarOverToolbar) {
+      [snackbarCommandsHandler
+          showSnackbarMessageOverBrowserToolbar:snackbarMessage];
+    } else {
+      [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
+                                      bottomOffset:0];
+    }
     [weakSelf signOutDidFinish];
   });
   // Get UMA metrics on the usage of different options for signout available

@@ -51,6 +51,7 @@ class Browser;
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
                                       view:(UIView*)view
+                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
                                 withSource:(signin_metrics::ProfileSignout)
                                                signout_source_metric
     NS_DESIGNATED_INITIALIZER;

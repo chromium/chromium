@@ -679,6 +679,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                          browser:_browser
                             rect:itemView.frame
                             view:itemView
+        forceSnackbarOverToolbar:NO
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak LegacyAccountsTableViewController* weakSelf = self;

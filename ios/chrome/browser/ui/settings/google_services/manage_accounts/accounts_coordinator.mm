@@ -276,6 +276,7 @@ using signin_metrics::PromoAction;
                          browser:self.browser
                             rect:itemView.bounds
                             view:itemView
+        forceSnackbarOverToolbar:NO
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak __typeof(self) weakSelf = self;

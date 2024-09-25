@@ -416,6 +416,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                          browser:self.browser
                             rect:targetRect
                             view:self.viewController.view
+        forceSnackbarOverToolbar:NO
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   self.signoutActionSheetCoordinator.delegate = self;

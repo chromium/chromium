@@ -96,6 +96,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                               rect:view_controller_.view.frame
                               view:view_controller_.view
+          forceSnackbarOverToolbar:NO
                         withSource:signin_metrics::ProfileSignout::
                                        kUserClickedSignoutSettings];
     signout_coordinator_.signoutCompletion = ^(BOOL success) {

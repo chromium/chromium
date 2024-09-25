@@ -244,6 +244,7 @@ using signin_metrics::PromoAction;
                          browser:self.browser
                             rect:targetRect
                             view:self.viewController.view
+        forceSnackbarOverToolbar:NO
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;

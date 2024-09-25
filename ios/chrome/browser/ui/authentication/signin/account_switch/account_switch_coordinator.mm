@@ -158,6 +158,7 @@ using signin_metrics::AccessPoint;
                          browser:_browser
                             rect:_rect
                             view:_rectAnchorView
+        forceSnackbarOverToolbar:YES
                       withSource:signin_metrics::ProfileSignout::
                                      kChangeAccountInAccountMenu];
   _signoutActionSheetCoordinator.accountSwitch = YES;

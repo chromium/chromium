@@ -107,6 +107,7 @@
                          browser:browser
                             rect:_viewController.view.frame
                             view:_viewController.view
+        forceSnackbarOverToolbar:NO
                       withSource:signout_source_metric];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak __typeof(self) weakSelf = self;

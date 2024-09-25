@@ -224,6 +224,7 @@
                          browser:self.browser
                             rect:targetRect
                             view:_viewController.view
+        forceSnackbarOverToolbar:YES
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutInAccountMenu];
   __weak __typeof(self) weakSelf = self;

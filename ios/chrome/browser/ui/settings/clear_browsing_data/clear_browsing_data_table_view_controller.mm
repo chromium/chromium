@@ -673,6 +673,7 @@
                          browser:browser
                             rect:itemView.frame
                             view:itemView
+        forceSnackbarOverToolbar:NO
                       withSource:signout_source_metric];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
