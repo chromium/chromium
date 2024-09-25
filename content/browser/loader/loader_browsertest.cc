@@ -1285,7 +1285,14 @@ IN_PROC_BROWSER_TEST_F(LoaderNoScriptStreamingBrowserTest, LoadScript) {
 
 // Regression test for https://crbug.com/362788339
 // Tests that script can be loaded when the server responded 304 response.
-IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, Subresource304Response) {
+// TODO(crbug.com/369439037):  Re-enable once flakiness is resolved for Windows
+// ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Subresource304Response DISABLED_Subresource304Response
+#else
+#define MAYBE_Subresource304Response Subresource304Response
+#endif
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_Subresource304Response) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
