@@ -84,6 +84,9 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_LINUX)
     case Sandbox::kVideoEffects:
 #endif
+#if BUILDFLAG(IS_MAC)
+    case Sandbox::kOnDeviceTranslation:
+#endif
       return false;
   }
 }
@@ -167,6 +170,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kSpeechRecognition:
 #if BUILDFLAG(IS_LINUX)
     case Sandbox::kVideoEffects:
+#endif
+#if BUILDFLAG(IS_MAC)
+    case Sandbox::kOnDeviceTranslation:
 #endif
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kUtilityProcess);
@@ -278,6 +284,10 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_LINUX)
     case Sandbox::kVideoEffects:
       return switches::kVideoEffectsSandbox;
+#endif
+#if BUILDFLAG(IS_MAC)
+    case Sandbox::kOnDeviceTranslation:
+      return switches::kOnDeviceTranslationSandbox;
 #endif
 #if BUILDFLAG(IS_WIN)
     case Sandbox::kXrCompositing:
@@ -392,6 +402,11 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
 #if BUILDFLAG(IS_LINUX)
   if (sandbox_string == switches::kVideoEffectsSandbox) {
     return Sandbox::kVideoEffects;
+  }
+#endif
+#if BUILDFLAG(IS_MAC)
+  if (sandbox_string == switches::kOnDeviceTranslationSandbox) {
+    return Sandbox::kOnDeviceTranslation;
   }
 #endif
 #if BUILDFLAG(IS_FUCHSIA)

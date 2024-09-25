@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -88,6 +90,28 @@ std::set<LanguagePackKey> GetInstalledLanguagePacks() {
 }
 
 }  // namespace
+
+// static
+base::FilePath
+OnDeviceTranslationServiceController::GetTranslateKitComponentPath() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(on_device_translation::kTranslateKitBinaryPath)) {
+    return command_line->GetSwitchValuePath(
+        on_device_translation::kTranslateKitBinaryPath);
+  }
+  if (base::FeatureList::IsEnabled(
+          on_device_translation::kEnableTranslateKitComponent)) {
+    base::FilePath components_dir;
+    base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                           &components_dir);
+    return components_dir.empty()
+               ? base::FilePath()
+               : components_dir.Append(
+                     on_device_translation::
+                         kTranslateKitBinaryInstallationRelativeDir);
+  }
+  return base::FilePath();
+}
 
 std::optional<
     std::vector<OnDeviceTranslationServiceController::LanguagePackInfo>>

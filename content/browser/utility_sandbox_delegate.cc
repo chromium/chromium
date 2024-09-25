@@ -96,6 +96,9 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
 #endif
+#if BUILDFLAG(IS_MAC)
+      sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
+#endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
   DCHECK(supported_sandbox_type);

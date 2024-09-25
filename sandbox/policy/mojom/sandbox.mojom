@@ -165,4 +165,11 @@ enum Sandbox {
   // Nearby Presence.
   [EnableIf=is_chromeos_ash]
   kNearby,
+
+  // Hosts On Device Translation service.
+  // Currently the sandboxing of the On Device Translation service is supported
+  // only on macOS.
+  // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
+  [EnableIf=is_mac]
+  kOnDeviceTranslation,
 };

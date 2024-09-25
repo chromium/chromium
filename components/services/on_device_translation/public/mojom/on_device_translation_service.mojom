@@ -7,6 +7,7 @@ module on_device_translation.mojom;
 import "components/services/on_device_translation/public/mojom/translator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 
@@ -39,11 +40,21 @@ struct OnDeviceTranslationServiceConfig {
   array<OnDeviceTranslationLanguagePackage> packages;
 };
 
+
+// Currently the sandboxing of the On Device Translation service is supported
+// only on macOS.
+// TODO(crbug.com/340778819): Implement sandboxing on other platforms.
+[EnableIf=is_mac]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
+    = sandbox.mojom.Sandbox.kOnDeviceTranslation;
+[EnableIfNot=is_mac]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
+    = sandbox.mojom.Sandbox.kNoSandbox;
+
 // The service that provides translation capabilities through
 // various implementation.
-// TODO(https://crbug.com/340778819): fix the sandbox type as we cannot load the
-// library from sandbox.
-[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+[ServiceSandbox=kOnDeviceTranslationSandbox,
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceTranslationService {
   // This must be called soon after creating the service. Also this can be used
   // when the binary or the language packages are updated (or uninstalled).

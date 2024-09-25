@@ -30,6 +30,12 @@ class OnDeviceTranslationServiceController {
 
   static OnDeviceTranslationServiceController* GetInstance();
 
+  // If the TranslateKit binary path is passed via the command line, returns the
+  // binary path. If the TranslateKit binary is installed as a component,
+  // returns the directory path of the component. Otherwise, returns an empty
+  // path.
+  static base::FilePath GetTranslateKitComponentPath();
+
   // Creates a translator class that implements
   // `on_device_translation::mojom::Translator`, and bind it with the
   // `receiver`.

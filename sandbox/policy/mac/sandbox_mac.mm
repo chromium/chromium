@@ -31,6 +31,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "sandbox/policy/mac/screen_ai.sb.h"
 #endif
+#include "sandbox/policy/mac/on_device_translation.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -90,6 +91,9 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       break;
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
       profile += kSeatbeltPolicyString_on_device_model_execution;
+      break;
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+      profile += kSeatbeltPolicyString_on_device_translation;
       break;
     // kService and kUtility are the same on OS_MAC, so fallthrough.
     case sandbox::mojom::Sandbox::kService:
