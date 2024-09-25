@@ -1,37 +1,19 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2024 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 syntax = "proto2";
 
 package ash.cfm.proto;
 
+
 import 'logs_payload.proto';
 
 option optimize_for = LITE_RUNTIME;
-option java_outer_classname = "TransportPayloadProto";
-option java_package = "com.google.videoconf.devices.hotlog";
+
 
 message TransportPayload {
-  enum Type {
-    DEFAULT_UNKNOWN = 0;
-    OS = 1;
-    APP = 2;
-  }
-
-  // Required.
-  // Whether this payload came from the OS (hotlog) or APP (hotrod).
-  optional Type payload_type = 1 [deprecated = true];
-
-  // Required.
-  // Identifying information about the device itself.
-  optional DeviceDetails device_details = 2 [deprecated = true];
-
-  // Required.
-  // The actual payload in serialized form.
-  // If OS, message is of type OsTransportPayload.
-  // If APP, message if of type AppTransportPayload.
-  // NB: AppTransportPayload is a Google3 message not found in chromium source.
-  optional bytes payload = 3 [deprecated = true];
+  reserved 1, 2, 3;
 
   // Required. The number of milliseconds since the Unix epoch when this
   // TransportPayload was first created. This is used for measuring e2e
@@ -39,30 +21,13 @@ message TransportPayload {
   optional int64 collection_timestamp_ms = 4;
 
   // Required. The Chrome OS permanent ID of the device.
-  optional string permanent_id = 5;
+  optional string permanent_id = 5 /* type = ST_HARDWARE_ID */;
 
   // Required. A payload for the request.
   oneof oneof_request {
     LogPayload log_payload = 6;
   }
-}
-message DeviceDetails {
-  optional string release_board = 1;
-  optional string os_release_version = 2;
-  // Permanent ID which persists across provisioning
-  optional string device_id = 3;
-  optional string service_account_email_address = 4;
-  optional int64 service_account_gaia_id = 5;
-  optional string kernel_version = 6;
-  optional string os_release_track = 7;
-  optional string chrome_milestone = 8;
-  optional string chrome_release_version = 9;
-  optional int64 uptime_ms = 10;
-  // Temporary ID provided during provisioning
-  optional string cros_device_id = 11;
-  optional string cohort_hint = 12;
-  optional bool release_channel_delegated = 13;
-  optional string release_build_type = 14;
-  optional string channel_name = 15;
-  optional string hwid = 16;
+
+  // Required. The Service Account Email associated with the device
+  optional string robot_email = 7 /* type = ST_IDENTIFYING_ID */;
 }
