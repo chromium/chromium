@@ -104,7 +104,6 @@ AffixMgr::AffixMgr(const char* affpath,
   complexprefixes = 0;
   parsedmaptable = false;
   parsedbreaktable = false;
-  parsedrep = false;
   iconvtable = NULL;
   oconvtable = NULL;
   // allow simplified compound forms (see 3rd field of CHECKCOMPOUNDPATTERN)
@@ -583,16 +582,6 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
         return 1;
       }
     }
-
-#ifndef HUNSPELL_CHROME_CLIENT
-    /* parse in the typical fault correcting table */
-    if (line.compare(0, 3, "REP", 3) == 0) {
-      if (!parse_reptable(line, afflst)) {
-        finishFileMgr(afflst);
-        return 1;
-      }
-    }
-#endif
 
     /* parse in the input conversion table */
     if (line.compare(0, 5, "ICONV", 5) == 0) {
@@ -1355,19 +1344,19 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
   }
 
 #else
-  if ((wl < 2) || reptable.empty())
+  if ((wl < 2) || get_reptable().empty())
     return 0;
 
-  for (size_t i = 0; i < reptable.size(); ++i) {
+  for (size_t i = 0; i < get_reptable().size(); ++i) {
     const char* r = word;
-    const size_t lenp = reptable[i].pattern.size();
+    const size_t lenp = get_reptable()[i].pattern.size();
     // search every occurence of the pattern in the word
-    while ((r = strstr(r, reptable[i].pattern.c_str())) != NULL) {
+    while ((r = strstr(r, get_reptable()[i].pattern.c_str())) != NULL) {
       std::string candidate(word);
       size_t type = r == word && langnum != LANG_hu ? 1 : 0;
-      if (r - word + reptable[i].pattern.size() == lenp && langnum != LANG_hu)
+      if (r - word + get_reptable()[i].pattern.size() == lenp && langnum != LANG_hu)
         type += 2;
-      candidate.replace(r - word, lenp, reptable[i].outstrings[type]);
+      candidate.replace(r - word, lenp, get_reptable()[i].outstrings[type]);
       if (candidate_check(candidate.c_str(), candidate.size()))
         return 1;
       ++r;  // search for the next letter
@@ -3495,7 +3484,7 @@ int AffixMgr::expand_rootword(struct guessword* wlst,
 
 // return replacing table
 const std::vector<replentry>& AffixMgr::get_reptable() const {
-  return reptable;
+  return pHMgr->get_reptable();
 }
 
 // return iconv table
@@ -3773,103 +3762,6 @@ bool AffixMgr::parse_cpdsyllable(const std::string& line, FileMgr* af) {
   return true;
 }
 
-/* parse in the typical fault correcting table */
-bool AffixMgr::parse_reptable(const std::string& line, FileMgr* af) {
-  if (parsedrep) {
-    HUNSPELL_WARNING(stderr, "error: line %d: multiple table definitions\n",
-                     af->getlinenum());
-    return false;
-  }
-  parsedrep = true;
-  int numrep = -1;
-  int i = 0;
-  int np = 0;
-  std::string::const_iterator iter = line.begin();
-  std::string::const_iterator start_piece = mystrsep(line, iter);
-  while (start_piece != line.end()) {
-    switch (i) {
-      case 0: {
-        np++;
-        break;
-      }
-      case 1: {
-        numrep = atoi(std::string(start_piece, iter).c_str());
-        if (numrep < 1) {
-          HUNSPELL_WARNING(stderr, "error: line %d: incorrect entry number\n",
-                           af->getlinenum());
-          return false;
-        }
-        reptable.reserve(numrep);
-        np++;
-        break;
-      }
-      default:
-        break;
-    }
-    ++i;
-    start_piece = mystrsep(line, iter);
-  }
-  if (np != 2) {
-    HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
-                     af->getlinenum());
-    return false;
-  }
-
-  /* now parse the numrep lines to read in the remainder of the table */
-  for (int j = 0; j < numrep; ++j) {
-    std::string nl;
-    if (!af->getline(nl))
-      return false;
-    mychomp(nl);
-    reptable.push_back(replentry());
-    iter = nl.begin();
-    i = 0;
-    int type = 0;
-    start_piece = mystrsep(nl, iter);
-    while (start_piece != nl.end()) {
-      switch (i) {
-        case 0: {
-          if (nl.compare(start_piece - nl.begin(), 3, "REP", 3) != 0) {
-            HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
-                             af->getlinenum());
-            reptable.clear();
-            return false;
-          }
-          break;
-        }
-        case 1: {
-          if (*start_piece == '^')
-            type = 1;
-          reptable.back().pattern.assign(start_piece + type, iter);
-          mystrrep(reptable.back().pattern, "_", " ");
-          if (!reptable.back().pattern.empty() && reptable.back().pattern[reptable.back().pattern.size() - 1] == '$') {
-            type += 2;
-            reptable.back().pattern.resize(reptable.back().pattern.size() - 1);
-          }
-          break;
-        }
-        case 2: {
-          reptable.back().outstrings[type].assign(start_piece, iter);
-          mystrrep(reptable.back().outstrings[type], "_", " ");
-          break;
-        }
-        default:
-          break;
-      }
-      ++i;
-      start_piece = mystrsep(nl, iter);
-    }
-    if (reptable.back().pattern.empty() || reptable.back().outstrings[type].empty()) {
-      HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
-                       af->getlinenum());
-      reptable.clear();
-      return false;
-    }
-  }
-  return true;
-}
-
-/* parse in the typical fault correcting table */
 bool AffixMgr::parse_convtable(const std::string& line,
                               FileMgr* af,
                               RepList** rl,

@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 2024f1f..9b60b9d 100644
+index 767274e..c688751 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -84,11 +84,19 @@
@@ -22,7 +22,7 @@ index 2024f1f..9b60b9d 100644
  
    // register hash manager and load affix data from aff file
    csconv = NULL;
-@@ -163,9 +171,17 @@ AffixMgr::AffixMgr(const char* affpath,
+@@ -162,9 +170,17 @@ AffixMgr::AffixMgr(const char* affpath,
      sFlag[i] = NULL;
    }
  
@@ -40,7 +40,7 @@ index 2024f1f..9b60b9d 100644
  
    if (parse_file(affpath, key)) {
      HUNSPELL_WARNING(stderr, "Failure loading aff file %s\n", affpath);
-@@ -243,7 +259,44 @@ void AffixMgr::finishFileMgr(FileMgr* afflst) {
+@@ -242,7 +258,44 @@ void AffixMgr::finishFileMgr(FileMgr* afflst) {
  
  // read in aff file and build up prefix and suffix entry objects
  int AffixMgr::parse_file(const char* affpath, const char* key) {
@@ -85,7 +85,7 @@ index 2024f1f..9b60b9d 100644
    // checking flag duplication
    char dupflags[CONTSIZE];
    char dupflags_ini = 1;
-@@ -258,16 +311,17 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -257,16 +310,17 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          stderr, "error: could not open affix description file %s\n", affpath);
      return 1;
    }
@@ -104,7 +104,7 @@ index 2024f1f..9b60b9d 100644
      /* remove byte order mark */
      if (firstline) {
        firstline = 0;
-@@ -277,6 +331,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -276,6 +330,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          line.erase(0, 3);
        }
      }
@@ -112,23 +112,7 @@ index 2024f1f..9b60b9d 100644
  
      /* parse in the keyboard string */
      if (line.compare(0, 3, "KEY", 3) == 0) {
-@@ -529,6 +584,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
-       }
-     }
- 
-+#ifndef HUNSPELL_CHROME_CLIENT
-     /* parse in the typical fault correcting table */
-     if (line.compare(0, 3, "REP", 3) == 0) {
-       if (!parse_reptable(line, afflst)) {
-@@ -536,6 +592,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
-         return 1;
-       }
-     }
-+#endif
- 
-     /* parse in the input conversion table */
-     if (line.compare(0, 5, "ICONV", 5) == 0) {
-@@ -685,6 +742,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -676,6 +731,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
        checksharps = 1;
      }
  
@@ -136,7 +120,7 @@ index 2024f1f..9b60b9d 100644
      /* parse this affix: P - prefix, S - suffix */
      // affix type
      char ft = ' ';
-@@ -702,6 +760,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
+@@ -693,6 +749,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
          return 1;
        }
      }
@@ -144,7 +128,7 @@ index 2024f1f..9b60b9d 100644
    }
  
    finishFileMgr(afflst);
-@@ -1278,6 +1337,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
+@@ -1269,6 +1326,24 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
  // Is word a non-compound with a REP substitution (see checkcompoundrep)?
  int AffixMgr::cpdrep_check(const char* word, int wl) {
  
@@ -166,10 +150,10 @@ index 2024f1f..9b60b9d 100644
 +  }
 +
 +#else
-   if ((wl < 2) || reptable.empty())
+   if ((wl < 2) || get_reptable().empty())
      return 0;
  
-@@ -1296,6 +1373,7 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
+@@ -1287,6 +1362,7 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
        ++r;  // search for the next letter
      }
    }
@@ -177,7 +161,7 @@ index 2024f1f..9b60b9d 100644
  
    return 0;
  }
-@@ -4389,7 +4467,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
+@@ -4283,7 +4359,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
        case '^': {
          if (*(k - 1) == ']')
            neg = 1;
@@ -186,7 +170,7 @@ index 2024f1f..9b60b9d 100644
            *(k - 1) = *k;
          break;
        }
-@@ -4487,6 +4565,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4381,6 +4457,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter).c_str());
@@ -194,7 +178,7 @@ index 2024f1f..9b60b9d 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4495,6 +4574,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4389,6 +4466,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -203,7 +187,7 @@ index 2024f1f..9b60b9d 100644
        }
        // piece 3 - is cross product indicator
 diff --git a/src/hunspell/affixmgr.hxx b/src/hunspell/affixmgr.hxx
-index d41e69c..f42c893 100644
+index 8db3fda..7fd0fc6 100644
 --- a/src/hunspell/affixmgr.hxx
 +++ b/src/hunspell/affixmgr.hxx
 @@ -89,6 +89,40 @@
@@ -247,7 +231,7 @@ index d41e69c..f42c893 100644
  class AffixMgr {
    PfxEntry* pStart[SETSIZE];
    SfxEntry* sStart[SETSIZE];
-@@ -172,11 +206,19 @@ class AffixMgr {
+@@ -170,11 +204,19 @@ class AffixMgr {
    int fullstrip;
  
    int havecontclass;           // boolean variable
@@ -267,7 +251,7 @@ index d41e69c..f42c893 100644
    ~AffixMgr();
    struct hentry* affix_check(const char* word,
                               int len,
-@@ -334,6 +376,10 @@ class AffixMgr {
+@@ -332,6 +374,10 @@ class AffixMgr {
    int get_fullstrip() const;
  
   private:
@@ -360,7 +344,7 @@ index 62433ae..9016822 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index 23421b5..cf05a56 100644
+index d8d5d20..05a159e 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -81,8 +81,14 @@
@@ -469,7 +453,7 @@ index 23421b5..cf05a56 100644
    const std::string* word = &in_word;
    const std::string* desc = in_desc;
  
-@@ -315,6 +373,17 @@ int HashMgr::add_word(const std::string& in_word,
+@@ -330,6 +388,17 @@ int HashMgr::add_word(const std::string& in_word,
  
    delete desc_copy;
    delete word_copy;
@@ -487,7 +471,7 @@ index 23421b5..cf05a56 100644
    return 0;
  }
  
-@@ -379,6 +448,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+@@ -394,6 +463,12 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
  
  // remove word (personal dictionary function for standalone applications)
  int HashMgr::remove(const std::string& word) {
@@ -500,7 +484,7 @@ index 23421b5..cf05a56 100644
    struct hentry* dp = lookup(word.c_str());
    while (dp) {
      if (dp->alen == 0 || !TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-@@ -396,6 +471,7 @@ int HashMgr::remove(const std::string& word) {
+@@ -411,6 +486,7 @@ int HashMgr::remove(const std::string& word) {
      }
      dp = dp->next_homonym;
    }
@@ -508,7 +492,7 @@ index 23421b5..cf05a56 100644
    return 0;
  }
  
-@@ -470,6 +546,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
+@@ -485,6 +561,44 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
  // walk the hash table entry by entry - null at end
  // initialize: col=-1; hp = NULL; hp = walk_hashtable(&col, hp);
  struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
@@ -553,7 +537,7 @@ index 23421b5..cf05a56 100644
    if (hp && hp->next != NULL)
      return hp->next;
    for (col++; col < tablesize; col++) {
-@@ -479,10 +593,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
+@@ -494,10 +608,12 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
    // null at end and reset to start
    col = -1;
    return NULL;
@@ -566,7 +550,7 @@ index 23421b5..cf05a56 100644
    // open dictionary file
    FileMgr* dict = new FileMgr(tpath, key);
    if (dict == NULL)
-@@ -613,12 +729,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
+@@ -628,12 +744,16 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
    }
  
    delete dict;
@@ -583,7 +567,7 @@ index 23421b5..cf05a56 100644
    unsigned long hv = 0;
    for (int i = 0; i < 4 && *word != 0; i++)
      hv = (hv << 8) | (*word++);
-@@ -627,6 +747,7 @@ int HashMgr::hash(const char* word) const {
+@@ -642,6 +762,7 @@ int HashMgr::hash(const char* word) const {
      hv ^= (*word++);
    }
    return (unsigned long)hv % tablesize;
@@ -591,7 +575,7 @@ index 23421b5..cf05a56 100644
  }
  
  int HashMgr::decode_flags(unsigned short** result, const std::string& flags, FileMgr* af) const {
-@@ -836,7 +957,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
+@@ -851,7 +972,12 @@ int HashMgr::load_config(const char* affpath, const char* key) {
    int firstline = 1;
  
    // open the affix file
@@ -604,7 +588,7 @@ index 23421b5..cf05a56 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1065,6 +1191,130 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1091,6 +1217,130 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -736,10 +720,10 @@ index 23421b5..cf05a56 100644
    return (aliasf != NULL);
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index da485d7..f048bc3 100644
+index a7dcf88..bf3f5db 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
-@@ -79,9 +79,22 @@
+@@ -79,6 +79,13 @@
  #include "filemgr.hxx"
  #include "w_char.hxx"
  
@@ -752,6 +736,10 @@ index da485d7..f048bc3 100644
 +
  enum flag { FLAG_CHAR, FLAG_LONG, FLAG_NUM, FLAG_UNI };
  
+ // morphological description of a dictionary item can contain
+@@ -88,6 +95,12 @@ enum flag { FLAG_CHAR, FLAG_LONG, FLAG_NUM, FLAG_UNI };
+ #define MORPH_PHON_RATIO 500
+ 
  class HashMgr {
 +#ifdef HUNSPELL_CHROME_CLIENT
 +  // Not owned by this class, owned by the Hunspell object.
@@ -762,8 +750,8 @@ index da485d7..f048bc3 100644
    int tablesize;
    struct hentry** tableptr;
    flag flag_mode;
-@@ -101,7 +114,23 @@ class HashMgr {
-   char** aliasm;
+@@ -111,7 +124,23 @@ class HashMgr {
+   std::vector<replentry> reptable;
  
   public:
 +#ifdef HUNSPELL_CHROME_CLIENT
@@ -786,7 +774,7 @@ index da485d7..f048bc3 100644
    ~HashMgr();
  
    struct hentry* lookup(const char*) const;
-@@ -132,6 +161,40 @@ class HashMgr {
+@@ -143,6 +172,40 @@ class HashMgr {
                 bool onlyupcase);
    int load_config(const char* affpath, const char* key);
    bool parse_aliasf(const std::string& line, FileMgr* af);

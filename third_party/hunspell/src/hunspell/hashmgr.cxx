@@ -311,8 +311,23 @@ int HashMgr::add_word(const std::string& in_word,
     } else {
       strcpy(hpw + word->size() + 1, desc->c_str());
     }
-    if (strstr(HENTRY_DATA(hp), MORPH_PHON))
+    if (strstr(HENTRY_DATA(hp), MORPH_PHON)) {
       hp->var += H_OPT_PHON;
+      // store ph: fields of a morphological description in reptable
+      if (reptable.capacity() < tablesize/MORPH_PHON_RATIO)
+          reptable.reserve(tablesize/MORPH_PHON_RATIO);
+      std::string fields = HENTRY_DATA(hp);
+      std::string::const_iterator iter = fields.begin();
+      std::string::const_iterator start_piece = mystrsep(fields, iter);
+      while (start_piece != fields.end()) {
+        if (std::string(start_piece, iter).find(MORPH_PHON) == 0) {
+          reptable.push_back(replentry());
+          reptable.back().pattern.assign(std::string(start_piece, iter).substr(3));
+          reptable.back().outstrings[0].assign(in_word);
+        }
+        start_piece = mystrsep(fields, iter);
+      }
+    }
   } else
     hp->var = 0;
 
@@ -1066,8 +1081,19 @@ int HashMgr::load_config(const char* affpath, const char* key) {
     if (line.compare(0, 15, "COMPLEXPREFIXES", 15) == 0)
       complexprefixes = 1;
 
+    /* parse in the typical fault correcting table */
+    if (line.compare(0, 3, "REP", 3) == 0) {
+      if (!parse_reptable(line, afflst)) {
+        delete afflst;
+        return 1;
+      }
+    }
+
+    // don't check the full affix file, yet
     if (((line.compare(0, 3, "SFX", 3) == 0) ||
-         (line.compare(0, 3, "PFX", 3) == 0)) && line.size() > 3 && isspace(line[3]))
+         (line.compare(0, 3, "PFX", 3) == 0)) &&
+            line.size() > 3 && isspace(line[3]) &&
+            !reptable.empty()) // (REP table is in the end of Afrikaans aff file)
       break;
   }
 
@@ -1440,4 +1466,104 @@ char* HashMgr::get_aliasm(int index) const {
     return aliasm[index - 1];
   HUNSPELL_WARNING(stderr, "error: bad morph. alias index: %d\n", index);
   return NULL;
+}
+
+/* parse in the typical fault correcting table */
+bool HashMgr::parse_reptable(const std::string& line, FileMgr* af) {
+  if (!reptable.empty()) {
+    HUNSPELL_WARNING(stderr, "error: line %d: multiple table definitions\n",
+                     af->getlinenum());
+    return false;
+  }
+  int numrep = -1;
+  int i = 0;
+  int np = 0;
+  std::string::const_iterator iter = line.begin();
+  std::string::const_iterator start_piece = mystrsep(line, iter);
+  while (start_piece != line.end()) {
+    switch (i) {
+      case 0: {
+        np++;
+        break;
+      }
+      case 1: {
+        numrep = atoi(std::string(start_piece, iter).c_str());
+        if (numrep < 1) {
+          HUNSPELL_WARNING(stderr, "error: line %d: incorrect entry number\n",
+                           af->getlinenum());
+          return false;
+        }
+        reptable.reserve(numrep);
+        np++;
+        break;
+      }
+      default:
+        break;
+    }
+    ++i;
+    start_piece = mystrsep(line, iter);
+  }
+  if (np != 2) {
+    HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
+                     af->getlinenum());
+    return false;
+  }
+
+  /* now parse the numrep lines to read in the remainder of the table */
+  for (int j = 0; j < numrep; ++j) {
+    std::string nl;
+    if (!af->getline(nl))
+      return false;
+    mychomp(nl);
+    reptable.push_back(replentry());
+    iter = nl.begin();
+    i = 0;
+    int type = 0;
+    start_piece = mystrsep(nl, iter);
+    while (start_piece != nl.end()) {
+      switch (i) {
+        case 0: {
+          if (nl.compare(start_piece - nl.begin(), 3, "REP", 3) != 0) {
+            HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
+                             af->getlinenum());
+            reptable.clear();
+            return false;
+          }
+          break;
+        }
+        case 1: {
+          if (*start_piece == '^')
+            type = 1;
+          reptable.back().pattern.assign(start_piece + type, iter);
+          mystrrep(reptable.back().pattern, "_", " ");
+          if (!reptable.back().pattern.empty() && reptable.back().pattern[reptable.back().pattern.size() - 1] == '$') {
+            type += 2;
+            reptable.back().pattern.resize(reptable.back().pattern.size() - 1);
+          }
+          break;
+        }
+        case 2: {
+          reptable.back().outstrings[type].assign(start_piece, iter);
+          mystrrep(reptable.back().outstrings[type], "_", " ");
+          break;
+        }
+        default:
+          break;
+      }
+      ++i;
+      start_piece = mystrsep(nl, iter);
+    }
+    if (reptable.back().pattern.empty() || reptable.back().outstrings[type].empty()) {
+      HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
+                       af->getlinenum());
+      reptable.clear();
+      return false;
+    }
+  }
+  return true;
+}
+
+// return replacing table
+const std::vector<replentry>& HashMgr::get_reptable() const {
+  return reptable;
 }
