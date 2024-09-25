@@ -49,8 +49,6 @@ constexpr char kWebRequestOnAuthRequiredEventName[] =
 constexpr char kEvalSuccessStr[] = "SUCCESS";
 constexpr char kExpectedPropertiesJsonPath[] =
     "controlled_frame/resources/expected_properties.json";
-constexpr char kExpectedCallbackError[] =
-    "Callback form deprecated, see API doc for correct usage.";
 
 std::string ReadTestDataFile(const std::string& test_data_relative_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -566,56 +564,6 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
   EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
   EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_frame));
   EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
-}
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, VerifyNoCallback) {
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(
-          web_app::ManifestBuilder().AddPermissionsPolicy(
-              blink::mojom::PermissionsPolicyFeature::kControlledFrame,
-              /*self=*/true,
-              /*origins=*/{}))
-          .AddHtml("/execute_script.input.js",
-                   "document.body.style.backgroundColor = 'red';")
-          .BuildBundle();
-  app->TrustSigningKey();
-  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->Install(profile()));
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-
-  // Verify that callback forms of the API are disabled.
-  EXPECT_EQ(
-      kEvalSuccessStr,
-      content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.request) {
-          reject('FAIL');
-          return;
-        }
-        let actual_error_message;
-        try {
-          frame.executeScript(
-            {code: "document.body.style.backgroundColor = 'red';"},
-            () => { reject('FAIL: Expected the callback to not be called.'); });
-          reject('FAIL: Call did not throw an error as expected.');
-          return;
-        } catch (e) {
-          actual_error_message = e.message;
-          if (actual_error_message !== $1) {
-            reject('FAIL: Unexpected error: ' + actual_error_message);
-            return;
-          }
-          resolve('SUCCESS');
-          return;
-        }
-        reject('FAIL: Unexpected error');
-      });
-  )",
-                                                    kExpectedCallbackError)));
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInDataIframe) {
