@@ -324,6 +324,7 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
   for (auto& observer : observers_) {
     observer.OnMediaItemUIDestroyed(id_);
   }
+  observers_.Clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

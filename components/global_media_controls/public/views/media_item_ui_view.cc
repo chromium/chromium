@@ -169,8 +169,10 @@ MediaItemUIView::MediaItemUIView(
 }
 
 MediaItemUIView::~MediaItemUIView() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaItemUIDestroyed(id_);
+  }
+  observers_.Clear();
 }
 
 void MediaItemUIView::AddedToWidget() {

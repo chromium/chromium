@@ -356,17 +356,9 @@ void MediaDialogView::OnMediaItemUIActionsChanged() {
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
   if (media_color_theme_.has_value()) {
-    auto iter = updated_items_.find(id);
-    CHECK(iter != updated_items_.end());
-
-    iter->second->RemoveObserver(this);
-    updated_items_.erase(iter);
+    updated_items_.erase(id);
   } else {
-    auto iter = observed_items_.find(id);
-    CHECK(iter != observed_items_.end());
-
-    iter->second->RemoveObserver(this);
-    observed_items_.erase(iter);
+    observed_items_.erase(id);
   }
 }
 
