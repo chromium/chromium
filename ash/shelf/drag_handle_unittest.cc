@@ -9,11 +9,13 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -107,6 +109,53 @@ INSTANTIATE_TEST_SUITE_P(
         TestAccessibilityFeature::kSpokenFeedback,
         TestAccessibilityFeature::kAutoclick,
         TestAccessibilityFeature::kSwitchAccess));
+
+TEST_P(DragHandleTest, AccessibleName) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  UpdateDisplay("800x700");
+  // Create a widget to transition to the in-app shelf.
+  TestWidgetBuilder()
+      .SetTestWidgetDelegate()
+      .SetBounds(gfx::Rect(0, 0, 800, 800))
+      .BuildOwnedByNativeWidget();
+
+  // If a11y feature is enabled, the drag handle button should behave like a
+  // button.
+  SetTestA11yFeatureEnabled(true /*enabled*/);
+  EXPECT_TRUE(drag_handle()->GetEnabled());
+
+  ui::AXNodeData data;
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringUTF16(IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME));
+
+  // Click on the drag handle should extend the hotseat.
+  ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(HotseatState::kExtended,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringUTF16(IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME));
+
+  // Click again should hide the hotseat.
+  ClickDragHandle();
+  data = ui::AXNodeData();
+  drag_handle()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(HotseatState::kHidden,
+            GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringUTF16(IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME));
+
+  // Exit a11y feature should disable drag handle.
+  SetTestA11yFeatureEnabled(false /*enabled*/);
+  EXPECT_FALSE(drag_handle()->GetEnabled());
+}
 
 TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);

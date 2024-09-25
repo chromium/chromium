@@ -492,6 +492,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
 
   UpdateAccessibleDescription();
+  UpdateAccessibleName();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -700,14 +701,6 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
     else
       ClearState(STATE_HOVERED);
   }
-}
-
-void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string accessible_name = GetViewAccessibility().GetCachedName();
-  node_data->SetName(!accessible_name.empty()
-                         ? accessible_name
-                         : shelf_view_->GetTitleForView(this));
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -1200,6 +1193,7 @@ void ShelfAppButton::UpdateState() {
   icon_view_->SetVerticalAlignment(is_horizontal_shelf
                                        ? views::ImageView::Alignment::kLeading
                                        : views::ImageView::Alignment::kCenter);
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -1454,6 +1448,23 @@ void ShelfAppButton::UpdateAccessibleDescription() {
     default:
       GetViewAccessibility().RemoveDescription();
       break;
+  }
+}
+
+void ShelfAppButton::UpdateAccessibleName() {
+  std::u16string accessible_name = GetViewAccessibility().GetCachedName();
+
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    accessible_name = shelf_view_->GetTitleForView(this);
+
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(accessible_name);
+    } else {
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
   }
 }
 

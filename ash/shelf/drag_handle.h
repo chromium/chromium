@@ -157,6 +157,8 @@ class ASH_EXPORT DragHandle : public views::Button,
   // Sets accessible states of the view.
   void UpdateExpandedCollapsedAccessibleState() const;
 
+  void UpdateAccessibleName();
+
   // Pointer to the shelf that owns the drag handle.
   const raw_ptr<Shelf> shelf_;
 

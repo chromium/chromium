@@ -1045,6 +1045,10 @@ void ShelfView::UpdateButton(ShelfAppButton* button, const ShelfItem& item) {
                                         item.badge_image);
   button->SetNotificationBadgeColor(item.notification_badge_color);
   button->GetViewAccessibility().SetName(item.accessible_name);
+  // If an empty accessible name of the item is provided, in such a case we want
+  // the cache to have the name corresponding to the implementation in
+  // `UpdateAccessibleName`
+  button->UpdateAccessibleName();
   button->SchedulePaint();
 }
 

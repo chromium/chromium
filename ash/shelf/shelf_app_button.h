@@ -125,7 +125,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // views::Button overrides:
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // views::View overrides:
@@ -175,6 +174,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   bool is_promise_app() const { return is_promise_app_; }
 
   ProgressIndicator* GetProgressIndicatorForTest() const;
+
+  void UpdateAccessibleName();
 
  protected:
   gfx::ImageSkia GetHostBadgeImageForTest() { return host_badge_image_; }
