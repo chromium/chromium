@@ -13,11 +13,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
@@ -165,8 +167,10 @@ void EnqueueLaunchParams(content::WebContents* contents,
 // and showing a navigation capturing IPH bubble, after the appropriate
 // app-scoped WebContents has been identified and prepared for navigation.
 void OnWebAppNavigationAfterWebContentsCreation(
-    web_app::AppNavigationResult& app_navigation_result,
-    const NavigateParams& params);
+    std::optional<web_app::AppNavigationResult> app_navigation_result,
+    const NavigateParams& params,
+    base::WeakPtr<content::NavigationHandle> navigation_handle,
+    WindowOpenDisposition original_disposition);
 
 }  // namespace web_app
 

@@ -198,6 +198,7 @@
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/link_capturing_redirect_navigation_throttle.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -5398,6 +5399,13 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
           handle, std::move(link_capturing_delegate));
   if (url_to_apps_throttle) {
     throttles.push_back(std::move(url_to_apps_throttle));
+  }
+
+  std::unique_ptr<content::NavigationThrottle>
+      link_capturing_redirect_nav_throttle =
+          web_app::LinkCapturingRedirectNavigationThrottle::MaybeCreate(handle);
+  if (link_capturing_redirect_nav_throttle) {
+    throttles.push_back(std::move(link_capturing_redirect_nav_throttle));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

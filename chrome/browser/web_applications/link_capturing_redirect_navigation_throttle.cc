@@ -4,9 +4,11 @@
 
 #include "chrome/browser/web_applications/link_capturing_redirect_navigation_throttle.h"
 
-#include "base/memory/ptr_util.h"
+#include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
+#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 
@@ -31,30 +33,14 @@ const char* LinkCapturingRedirectNavigationThrottle::GetNameForLogging() {
 }
 
 ThrottleCheckResult
-LinkCapturingRedirectNavigationThrottle::WillStartRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LOG(ERROR) << "WillStartRequest";
-  return HandleRequest();
-}
-
-ThrottleCheckResult
-LinkCapturingRedirectNavigationThrottle::WillRedirectRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LOG(ERROR) << "WillRedirectRequest";
-  return HandleRequest();
-}
-
-ThrottleCheckResult
 LinkCapturingRedirectNavigationThrottle::WillProcessResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LOG(ERROR) << "WillProcessResponse";
   return HandleRequest();
 }
 
 ThrottleCheckResult LinkCapturingRedirectNavigationThrottle::HandleRequest() {
-  content::NavigationHandle* handle = navigation_handle();
-
-  LOG(ERROR) << "HandleRequest (proceed): " << handle->GetURL().spec().c_str();
+  // TODO(crbug.com/351775835): This is where the final response of a navigation
+  // will be handled.
   return content::NavigationThrottle::PROCEED;
 }
 

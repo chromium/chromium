@@ -55,7 +55,9 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
+#include "chrome/browser/web_applications/navigation_capturing_navigation_handle_user_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -341,6 +343,15 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     }
   }
   return std::nullopt;
+}
+
+// TODO(crbug.com/336371044): Support apps that open in a browser tab.
+// `open_pwa_window_if_possible` can be set outside of navigation capturing flow
+// for web apps and shouldn't be used to trigger the IPH.
+bool ShouldPerformNavigationHandlingPostWebContentsCreation(
+    const NavigateParams& params) {
+  return params.browser && params.browser->app_controller() &&
+         !params.open_pwa_window_if_possible;
 }
 
 }  // namespace
@@ -1162,15 +1173,34 @@ void EnqueueLaunchParams(content::WebContents* contents,
 }
 
 void OnWebAppNavigationAfterWebContentsCreation(
-    web_app::AppNavigationResult& app_navigation_result,
-    const NavigateParams& params) {
-  base::Value::Dict& debug_value = app_navigation_result.debug_value;
+    std::optional<web_app::AppNavigationResult> app_navigation_result,
+    const NavigateParams& params,
+    base::WeakPtr<content::NavigationHandle> navigation_handle,
+    WindowOpenDisposition original_disposition) {
+  // Store the original disposition with the NavigationHandle or WebContents, in
+  // order to make behavior decisions after a redirection has happened for the
+  // current navigation.
+  if (navigation_handle) {
+    web_app::NavigationCapturingNavigationHandleUserData::
+        CreateForNavigationHandle(*navigation_handle, original_disposition);
+  } else {
+    CHECK(params.navigated_or_inserted_contents);
+    web_app::NavigationCapturingInformationForwarder::CreateForWebContents(
+        params.navigated_or_inserted_contents, original_disposition);
+  }
+
+  if (!app_navigation_result.has_value() ||
+      !ShouldPerformNavigationHandlingPostWebContentsCreation(params)) {
+    return;
+  }
+
+  base::Value::Dict& debug_value = app_navigation_result->debug_value;
   debug_value.Set("result.browser",
-                  base::ToString(app_navigation_result.browser));
-  debug_value.Set("result.tab_index", app_navigation_result.tab_index);
+                  base::ToString(app_navigation_result->browser));
+  debug_value.Set("result.tab_index", app_navigation_result->tab_index);
   debug_value.Set("result.enqueue_launch_params",
-                  app_navigation_result.enqueue_launch_params);
-  debug_value.Set("result.show_iph", app_navigation_result.show_iph);
+                  app_navigation_result->enqueue_launch_params);
+  debug_value.Set("result.show_iph", app_navigation_result->show_iph);
   debug_value.Set("params.navigated_or_inserted_contents",
                   base::ToString(params.navigated_or_inserted_contents));
   web_app::WebAppProvider* provider =
@@ -1178,23 +1208,10 @@ void OnWebAppNavigationAfterWebContentsCreation(
   provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
       base::Value(std::move(debug_value)));
 
-  // Exit early if the browser or the controller for the browser does not
-  // exist.
-  // TODO(crbug.com/336371044): Support apps that open in a browser tab.
-  if (!params.browser || !params.browser->app_controller()) {
-    return;
-  }
-
-  // `open_pwa_window_if_possible` can be set outside of navigation capturing
-  // flow for web apps and shouldn't be used to trigger the IPH.
-  if (params.open_pwa_window_if_possible) {
-    return;
-  }
-
   const webapps::AppId& app_id = params.browser->app_controller()->app_id();
 
   // Enqueue launch params if needed.
-  if (app_navigation_result.enqueue_launch_params) {
+  if (app_navigation_result->enqueue_launch_params) {
     EnqueueLaunchParams(params.navigated_or_inserted_contents, app_id,
                         params.url,
                         /*wait_for_navigation_to_complete=*/true);
@@ -1202,12 +1219,10 @@ void OnWebAppNavigationAfterWebContentsCreation(
 
   // TODO(crbug.com/359224477): Once WebAppLaunchProcess logic has been fixed,
   // revisit whether the show_iph bool is needed.
-  if (!app_navigation_result.show_iph) {
-    return;
+  if (app_navigation_result->show_iph) {
+    MaybeShowNavigationCaptureIph(app_id, params.initiating_profile,
+                                  params.browser);
   }
-
-  MaybeShowNavigationCaptureIph(app_id, params.initiating_profile,
-                                params.browser);
 }
 
 }  // namespace web_app

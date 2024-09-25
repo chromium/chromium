@@ -66,6 +66,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 class GURL;
 
@@ -512,5 +513,34 @@ bool WaitForIPHToShowIfAny(Browser* browser) {
       iph_future.GetCallback());
   return iph_future.Get();
 }
+
+namespace test {
+
+void SimulateClickOnElement(content::WebContents* contents,
+                            std::string element_id,
+                            ClickMethod click) {
+  gfx::Point element_center = gfx::ToFlooredPoint(
+      content::GetCenterCoordinatesOfElementWithId(contents, element_id));
+  int modifiers = 0;
+  blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
+  switch (click) {
+    case ClickMethod::kLeftClick:
+      modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
+      break;
+    case ClickMethod::kMiddleClick:
+#if BUILDFLAG(IS_MAC)
+      modifiers = blink::WebInputEvent::Modifiers::kMetaKey;
+#else
+      modifiers = blink::WebInputEvent::Modifiers::kControlKey;
+#endif  // BUILDFLAG(IS_MAC)
+      break;
+    case ClickMethod::kShiftClick:
+      modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
+      break;
+  }
+  content::SimulateMouseClickAt(contents, modifiers, button, element_center);
+}
+
+}  // namespace test
 
 }  // namespace web_app

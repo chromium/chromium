@@ -177,6 +177,19 @@ base::FilePath CreateTestFileWithExtension(std::string_view extension);
 // false based on whether the bubble showed up.
 bool WaitForIPHToShowIfAny(Browser* browser);
 
+namespace test {
+
+// Denote ways to simulate click on an element.
+enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
+
+// This function simulates a click on the middle of an element matching
+// `element_id` based on the type of click passed to it.
+void SimulateClickOnElement(content::WebContents* contents,
+                            std::string element_id,
+                            ClickMethod click);
+
+}  // namespace test
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_

@@ -33,9 +33,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "url/gurl.h"
+
+namespace web_app {
 
 namespace {
 constexpr char kStartPageScopeA[] =
@@ -45,7 +46,6 @@ constexpr char kDestinationPageScopeB[] =
 constexpr char kToSiteATargetBlankWithOpener[] = "id-LINK-A_TO_A-BLANK-OPENER";
 constexpr char kToSiteBTargetBlankNoopener[] = "id-LINK-A_TO_B-BLANK-NO_OPENER";
 constexpr char kToSiteBTargetBlankWithOpener[] = "id-LINK-A_TO_B-BLANK-OPENER";
-}  // namespace
 
 // Test to verify that the IPH is shown when navigations due to link capture
 // occurs.
@@ -79,35 +79,6 @@ class WebAppNavigationCapturingIPHPromoTest
   }
 
  protected:
-  // The method of interacting with the element:
-  enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
-
-  // This function simulates a click on the middle of an element matching
-  // `element_id` based on the type of click passed to it.
-  void SimulateClickOnElement(content::WebContents* contents,
-                              std::string element_id,
-                              ClickMethod click) {
-    gfx::Point element_center = gfx::ToFlooredPoint(
-        content::GetCenterCoordinatesOfElementWithId(contents, element_id));
-    int modifiers = 0;
-    blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-    switch (click) {
-      case ClickMethod::kLeftClick:
-        modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
-        break;
-      case ClickMethod::kMiddleClick:
-#if BUILDFLAG(IS_MAC)
-        modifiers = blink::WebInputEvent::Modifiers::kMetaKey;
-#else
-        modifiers = blink::WebInputEvent::Modifiers::kControlKey;
-#endif  // BUILDFLAG(IS_MAC)
-        break;
-      case ClickMethod::kShiftClick:
-        modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
-        break;
-    }
-    content::SimulateMouseClickAt(contents, modifiers, button, element_center);
-  }
 
   GURL GetStartUrl() {
     return embedded_test_server()->GetURL(kStartPageScopeA);
@@ -192,11 +163,11 @@ class WebAppNavigationCapturingIPHPromoTest
   }
 
   Browser* TriggerAppLaunchIphAndGetBrowser(content::WebContents* contents,
-                                            ClickMethod click,
+                                            test::ClickMethod click,
                                             const std::string& elementId) {
     ui_test_utils::BrowserChangeObserver browser_added_waiter(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-    SimulateClickOnElement(contents, elementId, click);
+    test::SimulateClickOnElement(contents, elementId, click);
 
     Browser* app_browser = browser_added_waiter.Wait();
     EXPECT_NE(browser(), app_browser);
@@ -234,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   ASSERT_NE(nullptr, app_browser);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
@@ -254,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kMiddleClick, kToSiteATargetBlankWithOpener);
+      contents, test::ClickMethod::kMiddleClick, kToSiteATargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
@@ -274,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kShiftClick, kToSiteBTargetBlankWithOpener);
+      contents, test::ClickMethod::kShiftClick, kToSiteBTargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id_b));
@@ -301,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, browser_b);
 
   SimulateClickOnElement(source_contents, kToSiteBTargetBlankNoopener,
-                         ClickMethod::kLeftClick);
+                         test::ClickMethod::kLeftClick);
 
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, browser_b, app_id));
@@ -322,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kLeftClick, kToSiteBTargetBlankWithOpener);
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
 
   EXPECT_FALSE(IsNavCapturingIphVisible(/*expect_visible=*/false, app_browser,
@@ -345,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
   EXPECT_EQ(
@@ -374,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
   EXPECT_EQ(
@@ -401,10 +372,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   ASSERT_NE(nullptr, contents);
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
-      contents, ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   EXPECT_TRUE(
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
   DismissIPH(app_browser);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "LinkCapturingIPHAppBubbleNotAccepted"));
 }
+
+}  // namespace
+
+}  // namespace web_app

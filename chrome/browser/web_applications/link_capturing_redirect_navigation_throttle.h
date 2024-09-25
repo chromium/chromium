@@ -8,9 +8,12 @@
 #include <memory>
 
 #include "content/public/browser/navigation_throttle.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 
+// Navigation throttle used to handle navigation capturing at the end of a
+// redirect chain.
 class LinkCapturingRedirectNavigationThrottle
     : public content::NavigationThrottle {
  public:
@@ -27,8 +30,9 @@ class LinkCapturingRedirectNavigationThrottle
 
   // content::NavigationHandle overrides:
   const char* GetNameForLogging() override;
-  ThrottleCheckResult WillStartRequest() override;
-  ThrottleCheckResult WillRedirectRequest() override;
+
+  // This is where the data stored via the
+  // `NavigationCapturingNavigationHandleUserData` is processed.
   ThrottleCheckResult WillProcessResponse() override;
 
  private:

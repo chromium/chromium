@@ -57,6 +57,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
@@ -732,6 +733,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   int singleton_index;
   std::optional<web_app::AppNavigationResult> app_navigation_result;
 #if !BUILDFLAG(IS_ANDROID)
+  // Store the disposition before modifications, for web_app navigation logic.
+  WindowOpenDisposition original_disposition = params->disposition;
   app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (app_navigation_result.has_value()) {
@@ -987,10 +990,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 // be non null, so perform tasks if the navigation has been captured by a web
 // app, like enqueueing launch params.
 #if !BUILDFLAG(IS_ANDROID)
-  if (app_navigation_result.has_value()) {
-    web_app::OnWebAppNavigationAfterWebContentsCreation(
-        app_navigation_result.value(), *params);
-  }
+  web_app::OnWebAppNavigationAfterWebContentsCreation(
+      std::move(app_navigation_result), *params, navigation_handle,
+      original_disposition);
 #endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }

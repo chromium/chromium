@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -55,9 +56,9 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
+
+namespace web_app {
 
 namespace {
 
@@ -209,16 +210,13 @@ std::string_view ToParamString(NavigationElement element) {
   }
 }
 
-// The method of interacting with the element:
-enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
-
-std::string_view ToParamString(ClickMethod click) {
+std::string_view ToParamString(test::ClickMethod click) {
   switch (click) {
-    case ClickMethod::kLeftClick:
+    case test::ClickMethod::kLeftClick:
       return "LeftClick";
-    case ClickMethod::kMiddleClick:
+    case test::ClickMethod::kMiddleClick:
       return "MiddleClick";
-    case ClickMethod::kShiftClick:
+    case test::ClickMethod::kShiftClick:
       return "ShiftClick";
   }
 }
@@ -306,7 +304,7 @@ using LinkCaptureTestParam =
                Destination,
                RedirectType,
                NavigationElement,
-               ClickMethod,
+               test::ClickMethod,
                OpenerMode,
                NavigationTarget>;
 
@@ -422,8 +420,7 @@ base::Value::Dict BrowserToJson(const Browser& browser) {
     CHECK(browser.app_controller());
     const webapps::AppId& app_id = browser.app_controller()->app_id();
     CHECK(!app_id.empty());
-    web_app::WebAppProvider* provider =
-        web_app::WebAppProvider::GetForTest(browser.profile());
+    WebAppProvider* provider = WebAppProvider::GetForTest(browser.profile());
     const GURL& app_scope = provider->registrar_unsafe().GetAppScope(app_id);
     if (app_scope.is_valid()) {
       dict.Set("app_scope", app_scope.path());
@@ -476,8 +473,6 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
   base::WeakPtr<content::WebContents> last_seen_web_contents_;
 };
 
-}  // namespace
-
 // This test verifies the navigation capture logic by testing by launching sites
 // inside app containers and tabs and test what happens when links are
 // left/middle clicked and window.open is used (whether browser objects are
@@ -505,7 +500,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 // --gtest_filter=*WebAppLinkCapturingParameterizedBrowserTest.* \
 // --rebaseline-link-capturing-test --run-all-tests --test-launcher-jobs=40
 class WebAppLinkCapturingParameterizedBrowserTest
-    : public web_app::WebAppBrowserTestBase,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
@@ -546,33 +541,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
-  // This function simulates a click on the middle of an element matching
-  // `element_id` based on the type of click passed to it.
-  void SimulateClickOnElement(content::WebContents* contents,
-                              std::string element_id,
-                              ClickMethod click) {
-    gfx::Point element_center = gfx::ToFlooredPoint(
-        content::GetCenterCoordinatesOfElementWithId(contents, element_id));
-    int modifiers = 0;
-    blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
-    switch (click) {
-      case ClickMethod::kLeftClick:
-        modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
-        break;
-      case ClickMethod::kMiddleClick:
-#if BUILDFLAG(IS_MAC)
-        modifiers = blink::WebInputEvent::Modifiers::kMetaKey;
-#else
-        modifiers = blink::WebInputEvent::Modifiers::kControlKey;
-#endif  // BUILDFLAG(IS_MAC)
-        break;
-      case ClickMethod::kShiftClick:
-        modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
-        break;
-    }
-    content::SimulateMouseClickAt(contents, modifiers, button, element_center);
-  }
-
   // The json file is of the following format:
   // { 'tests': {
   //   'TestName': { ... }
@@ -717,8 +685,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<NavigationElement>(GetParam());
   }
 
-  ClickMethod GetClickMethod() const {
-    return std::get<ClickMethod>(GetParam());
+  test::ClickMethod ClickMethod() const {
+    return std::get<test::ClickMethod>(GetParam());
   }
 
   OpenerMode GetOpenerMode() const { return std::get<OpenerMode>(GetParam()); }
@@ -743,15 +711,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   webapps::AppId InstallTestWebApp(const GURL& start_url) {
     auto web_app_info =
-        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-    web_app_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->launch_handler =
         blink::Manifest::LaunchHandler(GetClientMode());
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id =
-        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+        test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
@@ -943,7 +910,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
-    SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod());
+    test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -1000,9 +967,9 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationElement::kElementButton  // Navigate via button.
             ),
         testing::Values(
-            ClickMethod::kLeftClick,    // Simulate left-mouse click.
-            ClickMethod::kMiddleClick,  // Simulate middle-mouse click.
-            ClickMethod::kShiftClick    // Simulate shift click.
+            test::ClickMethod::kLeftClick,    // Simulate left-mouse click.
+            test::ClickMethod::kMiddleClick,  // Simulate middle-mouse click.
+            test::ClickMethod::kShiftClick    // Simulate shift click.
             ),
         testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
                         OpenerMode::kNoOpener  // Supply 'noopener' property.
@@ -1031,7 +998,7 @@ INSTANTIATE_TEST_SUITE_P(
                         Destination::kScopeA2B),  // Navigate A -> B.
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementServiceWorkerButton),
-        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
@@ -1054,7 +1021,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
-        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(test::ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
@@ -1119,3 +1086,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
            "up.";
   }
 }
+
+}  // namespace
+
+}  // namespace web_app
