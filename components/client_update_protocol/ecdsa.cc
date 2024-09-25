@@ -142,13 +142,8 @@ Ecdsa::RequestParameters Ecdsa::SignRequest(std::string_view request_body) {
   request_hash_ = SHA256HashStr(request_body);
 
   // Return the query string for the user to send with the request.
-  std::string request_hash_hex = base::HexEncode(request_hash_);
-  request_hash_hex = base::ToLowerASCII(request_hash_hex);
-
-  RequestParameters request_parameters;
-  request_parameters.query_cup2key = request_query_cup2key_;
-  request_parameters.hash_hex = request_hash_hex;
-  return request_parameters;
+  return {.query_cup2key = request_query_cup2key_,
+          .hash_hex = base::ToLowerASCII(base::HexEncode(request_hash_))};
 }
 
 bool Ecdsa::ValidateResponse(std::string_view response_body,
@@ -184,6 +179,8 @@ bool Ecdsa::ValidateResponse(std::string_view response_body,
   const std::vector<uint8_t> response_hash = SHA256HashStr(response_body);
 
   std::vector<uint8_t> signed_message;
+  signed_message.reserve(request_hash_.size() + response_hash.size() +
+                         request_query_cup2key_.size());
   signed_message.insert(signed_message.end(), request_hash_.begin(),
                         request_hash_.end());
   signed_message.insert(signed_message.end(), response_hash.begin(),
@@ -191,23 +188,18 @@ bool Ecdsa::ValidateResponse(std::string_view response_body,
   signed_message.insert(signed_message.end(), request_query_cup2key_.begin(),
                         request_query_cup2key_.end());
 
-  const std::vector<uint8_t> signed_message_hash =
-      SHA256HashVec(signed_message);
-
-  // Initialize the signature verifier.
+  // If the verification fails, that implies one of two outcomes:
+  // * The signature was modified.
+  // * The buffer that the server signed does not match the buffer that the
+  //   client assembled -- implying that either request body or response body
+  //   was modified, or a different nonce value was used.
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, signature,
                            public_key_)) {
     DVLOG(1) << "Couldn't init SignatureVerifier.";
     return false;
   }
-
-  // If the verification fails, that implies one of two outcomes:
-  // * The signature was modified
-  // * The buffer that the server signed does not match the buffer that the
-  //   client assembled -- implying that either request body or response body
-  //   was modified, or a different nonce value was used.
-  verifier.VerifyUpdate(signed_message_hash);
+  verifier.VerifyUpdate(SHA256HashVec(signed_message));
   return verifier.VerifyFinal();
 }
 
