@@ -122,8 +122,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // This means that it is safe to cast the `TrustedVaultClientBackend` to
   // `FakeTrustedVaultClientBackend` at runtime.
   static_cast<FakeTrustedVaultClientBackend*>(
-      TrustedVaultClientBackendFactory::GetForBrowserState(
-          browser_state_.get()))
+      TrustedVaultClientBackendFactory::GetForProfile(browser_state_.get()))
       ->SimulateUserCancel();
 
   // Test the completion block.

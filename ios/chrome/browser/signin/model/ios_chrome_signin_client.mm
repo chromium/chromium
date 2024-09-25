@@ -21,12 +21,12 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 IOSChromeSigninClient::IOSChromeSigninClient(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     scoped_refptr<HostContentSettingsMap> host_content_settings_map)
     : network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperIOS>()),
-      browser_state_(browser_state),
+      profile_(profile),
       cookie_settings_(cookie_settings),
       host_content_settings_map_(host_content_settings_map) {}
 
@@ -38,20 +38,20 @@ void IOSChromeSigninClient::Shutdown() {
 }
 
 PrefService* IOSChromeSigninClient::GetPrefs() {
-  return browser_state_->GetPrefs();
+  return profile_->GetPrefs();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 IOSChromeSigninClient::GetURLLoaderFactory() {
-  return browser_state_->GetSharedURLLoaderFactory();
+  return profile_->GetSharedURLLoaderFactory();
 }
 
 network::mojom::CookieManager* IOSChromeSigninClient::GetCookieManager() {
-  return browser_state_->GetCookieManager();
+  return profile_->GetCookieManager();
 }
 
 network::mojom::NetworkContext* IOSChromeSigninClient::GetNetworkContext() {
-  return browser_state_->GetNetworkContext();
+  return profile_->GetNetworkContext();
 }
 
 void IOSChromeSigninClient::DoFinalInit() {}
@@ -85,8 +85,8 @@ void IOSChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
 std::unique_ptr<GaiaAuthFetcher> IOSChromeSigninClient::CreateGaiaAuthFetcher(
     GaiaAuthConsumer* consumer,
     gaia::GaiaSource source) {
-  return std::make_unique<GaiaAuthFetcherIOS>(
-      consumer, source, GetURLLoaderFactory(), browser_state_);
+  return std::make_unique<GaiaAuthFetcherIOS>(consumer, source,
+                                              GetURLLoaderFactory(), profile_);
 }
 
 version_info::Channel IOSChromeSigninClient::GetClientChannel() {
@@ -108,8 +108,7 @@ void IOSChromeSigninClient::OnPrimaryAccountChanged(
       size_t groups_count = 0;
       size_t grouped_tabs_count = 0;
 
-      BrowserList* browser_list =
-          BrowserListFactory::GetForProfile(browser_state_);
+      BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
       for (Browser* browser : browser_list->BrowsersOfType(
                BrowserList::BrowserType::kRegularAndInactive)) {
         WebStateList* web_state_list = browser->GetWebStateList();

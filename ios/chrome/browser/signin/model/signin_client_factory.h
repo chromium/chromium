@@ -14,14 +14,10 @@
 class SigninClient;
 
 // Singleton that owns all SigninClients and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SigninClientFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static SigninClient* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static SigninClient* GetForProfile(ProfileIOS* profile);
-
   static SigninClientFactory* GetInstance();
 
   SigninClientFactory(const SigninClientFactory&) = delete;

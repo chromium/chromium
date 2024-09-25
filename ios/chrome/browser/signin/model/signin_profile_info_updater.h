@@ -17,25 +17,24 @@
 // This class listens to various signin events and updates the signin-related
 // fields of ProfileAttributesStorageIOS.
 // TODO(crbug.com/361040177): Rename this class to SigninProfileInfoUpdater.
-class SigninBrowserStateInfoUpdater : public KeyedService,
-                                      public SigninErrorController::Observer,
-                                      public signin::IdentityManager::Observer {
+class SigninProfileInfoUpdater : public KeyedService,
+                                 public SigninErrorController::Observer,
+                                 public signin::IdentityManager::Observer {
  public:
-  SigninBrowserStateInfoUpdater(signin::IdentityManager* identity_manager,
-                                SigninErrorController* signin_error_controller,
-                                const std::string& browser_state_name);
+  SigninProfileInfoUpdater(signin::IdentityManager* identity_manager,
+                           SigninErrorController* signin_error_controller,
+                           const std::string& profile_name);
 
-  SigninBrowserStateInfoUpdater(const SigninBrowserStateInfoUpdater&) = delete;
-  SigninBrowserStateInfoUpdater& operator=(
-      const SigninBrowserStateInfoUpdater&) = delete;
+  SigninProfileInfoUpdater(const SigninProfileInfoUpdater&) = delete;
+  SigninProfileInfoUpdater& operator=(const SigninProfileInfoUpdater&) = delete;
 
-  ~SigninBrowserStateInfoUpdater() override;
+  ~SigninProfileInfoUpdater() override;
 
  private:
   // KeyedService:
   void Shutdown() override;
 
-  // Updates the browser state info on signin and signout events.
+  // Updates the profile info on signin and signout events.
   void UpdateBrowserStateInfo();
 
   // SigninErrorController::Observer:
@@ -47,7 +46,7 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<SigninErrorController> signin_error_controller_ = nullptr;
-  const std::string browser_state_name_;
+  const std::string profile_name_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

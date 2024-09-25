@@ -31,12 +31,6 @@ AboutSigninInternalsFactory::AboutSigninInternalsFactory()
 AboutSigninInternalsFactory::~AboutSigninInternalsFactory() {}
 
 // static
-AboutSigninInternals* AboutSigninInternalsFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 AboutSigninInternals* AboutSigninInternalsFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<AboutSigninInternals*>(
@@ -52,14 +46,13 @@ AboutSigninInternalsFactory* AboutSigninInternalsFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 AboutSigninInternalsFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<AboutSigninInternals> service(new AboutSigninInternals(
-      IdentityManagerFactory::GetForProfile(chrome_browser_state),
-      SigninErrorControllerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(profile),
+      SigninErrorControllerFactory::GetForProfile(profile),
       signin::AccountConsistencyMethod::kMirror,
-      SigninClientFactory::GetForBrowserState(chrome_browser_state),
-      ios::AccountReconcilorFactory::GetForProfile(chrome_browser_state)));
+      SigninClientFactory::GetForProfile(profile),
+      ios::AccountReconcilorFactory::GetForProfile(profile)));
   return service;
 }
 

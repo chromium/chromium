@@ -12,47 +12,43 @@
 #import "ios/chrome/browser/signin/model/signin_profile_info_updater.h"
 
 // static
-SigninBrowserStateInfoUpdater*
-SigninBrowserStateInfoUpdaterFactory::GetForBrowserState(
-    ChromeBrowserState* chrome_browser_state) {
-  return static_cast<SigninBrowserStateInfoUpdater*>(
-      GetInstance()->GetServiceForBrowserState(chrome_browser_state, true));
+SigninProfileInfoUpdater* SigninProfileInfoUpdaterFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<SigninProfileInfoUpdater*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-SigninBrowserStateInfoUpdaterFactory*
-SigninBrowserStateInfoUpdaterFactory::GetInstance() {
-  static base::NoDestructor<SigninBrowserStateInfoUpdaterFactory> instance;
+SigninProfileInfoUpdaterFactory*
+SigninProfileInfoUpdaterFactory::GetInstance() {
+  static base::NoDestructor<SigninProfileInfoUpdaterFactory> instance;
   return instance.get();
 }
 
-SigninBrowserStateInfoUpdaterFactory::SigninBrowserStateInfoUpdaterFactory()
+SigninProfileInfoUpdaterFactory::SigninProfileInfoUpdaterFactory()
     : BrowserStateKeyedServiceFactory(
-          "SigninBrowserStateInfoUpdater",
+          "SigninProfileInfoUpdater",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::SigninErrorControllerFactory::GetInstance());
 }
 
-SigninBrowserStateInfoUpdaterFactory::~SigninBrowserStateInfoUpdaterFactory() {}
+SigninProfileInfoUpdaterFactory::~SigninProfileInfoUpdaterFactory() {}
 
 std::unique_ptr<KeyedService>
-SigninBrowserStateInfoUpdaterFactory::BuildServiceInstanceFor(
+SigninProfileInfoUpdaterFactory::BuildServiceInstanceFor(
     web::BrowserState* state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(state);
-  return std::make_unique<SigninBrowserStateInfoUpdater>(
-      IdentityManagerFactory::GetForProfile(chrome_browser_state),
-      ios::SigninErrorControllerFactory::GetForBrowserState(
-          chrome_browser_state),
-      chrome_browser_state->GetProfileName());
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
+  return std::make_unique<SigninProfileInfoUpdater>(
+      IdentityManagerFactory::GetForProfile(profile),
+      ios::SigninErrorControllerFactory::GetForProfile(profile),
+      profile->GetProfileName());
 }
 
-bool SigninBrowserStateInfoUpdaterFactory::ServiceIsCreatedWithBrowserState()
-    const {
+bool SigninProfileInfoUpdaterFactory::ServiceIsCreatedWithBrowserState() const {
   return true;
 }
 
-bool SigninBrowserStateInfoUpdaterFactory::ServiceIsNULLWhileTesting() const {
+bool SigninProfileInfoUpdaterFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

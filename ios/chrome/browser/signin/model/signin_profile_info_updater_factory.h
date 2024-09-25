@@ -9,31 +9,23 @@
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class SigninBrowserStateInfoUpdater;
+class SigninProfileInfoUpdater;
 
-// TODO(crbug.com/361040573): Rename this class to
-// SigninProfileInfoUpdaterFactory.
-class SigninBrowserStateInfoUpdaterFactory
-    : public BrowserStateKeyedServiceFactory {
+class SigninProfileInfoUpdaterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns nullptr if this browser state cannot have a
-  // SigninBrowserStateInfoUpdater (for example, if it is incognito).
-  static SigninBrowserStateInfoUpdater* GetForBrowserState(
-      ChromeBrowserState* chrome_browser_state);
+  static SigninProfileInfoUpdater* GetForProfile(ProfileIOS* profile);
+  static SigninProfileInfoUpdaterFactory* GetInstance();
 
-  // Returns an instance of the factory singleton.
-  static SigninBrowserStateInfoUpdaterFactory* GetInstance();
-
-  SigninBrowserStateInfoUpdaterFactory(
-      const SigninBrowserStateInfoUpdaterFactory&) = delete;
-  SigninBrowserStateInfoUpdaterFactory& operator=(
-      const SigninBrowserStateInfoUpdaterFactory&) = delete;
+  SigninProfileInfoUpdaterFactory(const SigninProfileInfoUpdaterFactory&) =
+      delete;
+  SigninProfileInfoUpdaterFactory& operator=(
+      const SigninProfileInfoUpdaterFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<SigninBrowserStateInfoUpdaterFactory>;
+  friend class base::NoDestructor<SigninProfileInfoUpdaterFactory>;
 
-  SigninBrowserStateInfoUpdaterFactory();
-  ~SigninBrowserStateInfoUpdaterFactory() override;
+  SigninProfileInfoUpdaterFactory();
+  ~SigninProfileInfoUpdaterFactory() override;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

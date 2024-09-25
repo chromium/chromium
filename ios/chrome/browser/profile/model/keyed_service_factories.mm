@@ -296,9 +296,9 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   SessionRestorationServiceFactory::GetInstance();
   SessionSyncServiceFactory::GetInstance();
   ShareExtensionServiceFactory::GetInstance();
-  SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
   SigninMetricsServiceFactory::GetInstance();
+  SigninProfileInfoUpdaterFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
   SupervisedUserServiceFactory::GetInstance();
   SupervisedUserSettingsServiceFactory::GetInstance();

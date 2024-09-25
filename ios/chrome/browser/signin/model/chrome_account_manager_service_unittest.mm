@@ -51,11 +51,11 @@ class ChromeAccountManagerServiceObserver
 class ChromeAccountManagerServiceTest : public PlatformTest {
  public:
   ChromeAccountManagerServiceTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
-    account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    account_manager_ =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   // Adds identities to the identity service.
@@ -80,7 +80,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_;
 };
 

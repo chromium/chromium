@@ -52,8 +52,8 @@ class MockObserver : public AccountProfileMapper::Observer {
 class AccountProfileMapperTest : public PlatformTest {
  public:
   AccountProfileMapperTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -82,7 +82,7 @@ class AccountProfileMapperTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<FakeSystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 };

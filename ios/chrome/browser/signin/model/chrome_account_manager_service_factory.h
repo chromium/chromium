@@ -12,7 +12,7 @@
 class ChromeAccountManagerService;
 
 // Singleton that owns all ChromeAccountManagerServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class ChromeAccountManagerServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:

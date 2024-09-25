@@ -15,12 +15,9 @@ class SigninErrorController;
 
 namespace ios {
 // Singleton that owns all SigninErrorControllers and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static SigninErrorController* GetForBrowserState(ProfileIOS* profile);
-
   static SigninErrorController* GetForProfile(ProfileIOS* profile);
   static SigninErrorControllerFactory* GetInstance();
 

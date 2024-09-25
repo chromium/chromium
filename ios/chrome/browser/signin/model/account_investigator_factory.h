@@ -17,12 +17,9 @@ class PrefRegistrySyncable;
 namespace ios {
 
 // Singleton that creates the AccountInvestigatorFactory(s) and associates those
-// services with browser states.
+// services with profiles.
 class AccountInvestigatorFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AccountInvestigator* GetForBrowserState(ProfileIOS* profile);
-
   // Returns null if this profile cannot have an AccountInvestigatorFactory (for
   // example, if it is incognito).
   static AccountInvestigator* GetForProfile(ProfileIOS* profile);

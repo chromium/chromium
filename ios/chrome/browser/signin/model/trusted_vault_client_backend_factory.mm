@@ -14,12 +14,6 @@
 #import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
 
 // static
-TrustedVaultClientBackend* TrustedVaultClientBackendFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 TrustedVaultClientBackend* TrustedVaultClientBackendFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<TrustedVaultClientBackend*>(

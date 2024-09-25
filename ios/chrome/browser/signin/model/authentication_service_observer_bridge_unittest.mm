@@ -17,17 +17,16 @@
 class AuthenticationServiceObserverBridgeTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+        AuthenticationServiceFactory::GetInstance()->GetForProfile(
+            profile_.get()));
   }
 
   AuthenticationService* GetAuthenticationService() { return auth_service_; }
@@ -35,7 +34,7 @@ class AuthenticationServiceObserverBridgeTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
 };
 

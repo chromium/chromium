@@ -137,14 +137,14 @@ using l10n_util::GetNSStringF;
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForBrowserState(
+          TrustedVaultClientBackendFactory::GetForProfile(
               self.browser->GetBrowserState())
               ->Reauthentication(self.identity, _securityDomainID,
                                  self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForBrowserState(
+          TrustedVaultClientBackendFactory::GetForProfile(
               self.browser->GetBrowserState())
               ->FixDegradedRecoverability(self.identity, _securityDomainID,
                                           self.baseViewController, callback);

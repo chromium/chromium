@@ -16,12 +16,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
-SigninMetricsService* SigninMetricsServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SigninMetricsService* SigninMetricsServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SigninMetricsService*>(
@@ -46,11 +40,9 @@ SigninMetricsServiceFactory::~SigninMetricsServiceFactory() {}
 std::unique_ptr<KeyedService>
 SigninMetricsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<SigninMetricsService>(
-      *IdentityManagerFactory::GetForProfile(chrome_browser_state),
-      *chrome_browser_state->GetPrefs(),
+      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
 }
 

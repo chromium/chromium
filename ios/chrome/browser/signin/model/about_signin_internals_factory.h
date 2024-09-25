@@ -18,9 +18,6 @@ namespace ios {
 // states.
 class AboutSigninInternalsFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AboutSigninInternals* GetForBrowserState(ProfileIOS* profile);
-
   static AboutSigninInternals* GetForProfile(ProfileIOS* profile);
   static AboutSigninInternalsFactory* GetInstance();
 

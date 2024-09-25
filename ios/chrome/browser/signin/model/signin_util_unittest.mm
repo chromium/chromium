@@ -22,12 +22,11 @@
 class SigninUtilTest : public PlatformTest {
  public:
   explicit SigninUtilTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    pref_service_ = chrome_browser_state_.get()->GetPrefs();
+    profile_ = TestProfileIOS::Builder().Build();
+    pref_service_ = profile_.get()->GetPrefs();
 
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   AccountInfo FakeAccountFull() {
@@ -65,7 +64,7 @@ class SigninUtilTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   PrefService* pref_service_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 

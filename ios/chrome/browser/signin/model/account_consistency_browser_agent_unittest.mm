@@ -25,9 +25,9 @@
 class AccountConsistencyBrowserAgentTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     application_commands_mock_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -60,7 +60,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<ApplicationCommands> application_commands_mock_;

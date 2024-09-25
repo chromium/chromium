@@ -20,13 +20,12 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildAuthenticationService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<AuthenticationService>(
-      browser_state->GetPrefs(),
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForProfile(browser_state),
-      SyncServiceFactory::GetForBrowserState(browser_state));
+      profile->GetPrefs(),
+      ChromeAccountManagerServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -52,12 +51,18 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
   return instance.get();
 }
 
-// static
 void AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
+    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
+  CreateAndInitializeForProfile(profile, std::move(delegate));
+}
+
+// static
+void AuthenticationServiceFactory::CreateAndInitializeForProfile(
+    ProfileIOS* profile,
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
   AuthenticationService* service = static_cast<AuthenticationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
   CHECK(service && !service->initialized());
   service->Initialize(std::move(delegate));
 }

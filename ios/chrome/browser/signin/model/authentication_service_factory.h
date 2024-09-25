@@ -19,7 +19,7 @@ class AuthenticationService;
 class AuthenticationServiceDelegate;
 
 // Singleton that owns all `AuthenticationServices` and associates them with
-// browser states. Listens for the `BrowserState`'s destruction notification and
+// profiles. Listens for the `BrowserState`'s destruction notification and
 // cleans up the associated `AuthenticationService`.
 class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
@@ -30,10 +30,15 @@ class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
   static AuthenticationServiceFactory* GetInstance();
 
   // Force the instantiation of AuthenticationService and initialize it with
-  // the given delegate. Must be called before GetForBrowserState (not doing
+  // the given delegate. Must be called before GetForProfile (not doing
   // so is a security issue and the app will terminate).
+  static void CreateAndInitializeForProfile(
+      ProfileIOS* profile,
+      std::unique_ptr<AuthenticationServiceDelegate> delegate);
+
+  // Deprecated, use CreateAndInitializeForProfile() instead.
   static void CreateAndInitializeForBrowserState(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
   // Returns the default factory used to build AuthenticationServices. Can be
