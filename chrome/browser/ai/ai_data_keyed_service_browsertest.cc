@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AxTreeUpdate) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabData) {
-  chrome::AddTabAt(browser(), GURL("foo.com"), -1, true);
-  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  chrome::AddTabAt(browser(), GURL("foo.com"), -1, false);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, false);
 
   auto* tab_group1 = browser()->GetTabStripModel()->group_model()->GetTabGroup(
       browser()->GetTabStripModel()->AddToNewGroup({0}));
@@ -134,9 +134,35 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabData) {
   LoadSimplePageAndData();
   ASSERT_TRUE(ai_data());
 
+  EXPECT_EQ(ai_data()->active_tab_id(), 0);
   EXPECT_EQ(ai_data()->tabs().size(), 3);
-  EXPECT_EQ(ai_data()->tabs()[0].title(), "about:blank");
+  EXPECT_EQ(ai_data()->tabs()[0].title(), "OK");
   EXPECT_EQ(ai_data()->pre_existing_tab_groups().size(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
+  chrome::AddTabAt(browser(), GURL("foo.com"), -1, false);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, false);
+
+  auto* tab_group1 = browser()->GetTabStripModel()->group_model()->GetTabGroup(
+      browser()->GetTabStripModel()->AddToNewGroup({0}));
+  auto vis_data1 = *tab_group1->visual_data();
+  vis_data1.SetTitle(u"ok");
+  tab_group1->SetVisualData(vis_data1);
+
+  auto* tab_group2 = browser()->GetTabStripModel()->group_model()->GetTabGroup(
+      browser()->GetTabStripModel()->AddToNewGroup({1, 2}));
+  auto vis_data2 = *tab_group1->visual_data();
+  vis_data2.SetTitle(u"ok");
+  tab_group2->SetVisualData(vis_data2);
+
+  LoadSimplePageAndData();
+  ASSERT_TRUE(ai_data());
+  EXPECT_EQ(ai_data()->active_tab_id(), 0);
+  EXPECT_EQ(ai_data()->tabs()[0].title(), "OK");
+  EXPECT_NE(ai_data()->tabs()[0].url().find("simple"), std::string::npos);
+  EXPECT_EQ(ai_data()->tabs()[0].page_context().inner_text(),
+            "Non empty simple page");
 }
 
 }  // namespace
