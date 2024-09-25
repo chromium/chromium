@@ -73,8 +73,8 @@ DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
 class InfobarModalOverlayCoordinatorTest : public PlatformTest {
  public:
   InfobarModalOverlayCoordinatorTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         request_(OverlayRequest::CreateWithConfig<ModalConfig>()),
         root_view_controller_([[UIViewController alloc] init]),
         coordinator_([[FakeInfobarModalOverlayCoordinator alloc]
@@ -87,7 +87,7 @@ class InfobarModalOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
   std::unique_ptr<OverlayRequest> request_;

@@ -31,8 +31,8 @@ const CGRect kWindowFrame = {{100.0, 100.0}, {100.0, 100.0}};
 class OverlayPresentationContextViewControllerTest : public PlatformTest {
  public:
   OverlayPresentationContextViewControllerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     view_controller_ = [[OverlayPresentationContextViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
@@ -65,7 +65,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayRequestCoordinatorDelegate delegate_;
   ScopedKeyWindow scoped_window_;

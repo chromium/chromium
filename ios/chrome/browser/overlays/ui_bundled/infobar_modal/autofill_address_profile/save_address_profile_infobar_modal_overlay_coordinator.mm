@@ -108,8 +108,8 @@ using autofill_address_profile_infobar_overlays::
   _autofillProfile =
       std::make_unique<autofill::AutofillProfile>(*(self.config->GetProfile()));
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
   self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager

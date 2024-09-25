@@ -44,8 +44,8 @@ std::unique_ptr<OverlayRequest> CreateAlertRequest() {
 class AlertOverlayCoordinatorTest : public PlatformTest {
  public:
   AlertOverlayCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     request_ = CreateAlertRequest();
     coordinator_ = [[AlertOverlayCoordinator alloc]
@@ -58,7 +58,7 @@ class AlertOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;

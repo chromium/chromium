@@ -24,8 +24,8 @@
 class SaveCardInfobarModalOverlayCoordinatorTest : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayCoordinatorTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         root_view_controller_([[UIViewController alloc] init]) {
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -61,7 +61,7 @@ class SaveCardInfobarModalOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile>

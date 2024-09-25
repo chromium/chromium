@@ -35,8 +35,8 @@ DEFINE_TEST_OVERLAY_REQUEST_CONFIG(kConfig);
 class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
  public:
   OverlayPresentationContextFullscreenDisablerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     disabler_ = std::make_unique<OverlayContainerFullscreenDisabler>(
         browser_.get(), kModality);
@@ -82,7 +82,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<OverlayContainerFullscreenDisabler> disabler_;
   FakeOverlayPresentationContext presentation_context_;
