@@ -23,6 +23,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -44,6 +45,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
@@ -62,6 +64,14 @@
 #endif
 
 namespace media {
+
+namespace {
+
+BASE_FEATURE(kAddScanoutUsageOnlyIfSupportedBySharedImage,
+             "AddScanoutUsageOnlyIfSupportedBySharedImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 // Implementation of a pool of mappable shared images(MappableSI) used to back
 // VideoFrames.
@@ -91,7 +101,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     // GpuMemoryBufferVideoFramePool in a thread safe manner.
     static std::atomic_uint32_t id = 0;
     pool_id_ = ++id;
-
   }
 
   PoolImpl(const PoolImpl&) = delete;
@@ -1285,8 +1294,35 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
 
     gpu::SharedImageUsageSet si_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    bool add_scanout_usage = true;
+
+    // SCANOUT usage was historically added unconditionally. However, it
+    // actually should be added only if scanout of SharedImages for this use
+    // case is supported. This CL makes that change under a killswitch.
+    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+    if (base::FeatureList::IsEnabled(
+            kAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+      auto si_caps = sii->GetCapabilities();
+
+#if BUILDFLAG(IS_WIN)
+      // On Windows, overlays are in general not supported. However, in some
+      // cases they are supported for the software video frame use case in
+      // particular. This cap details whether that support is present.
+      add_scanout_usage =
+          si_caps.supports_scanout_shared_images_for_software_video_frames;
+#else
+      // On all other platforms, whether scanout for SharedImages is supported
+      // for this particular use case is no different than the general case.
+      add_scanout_usage = si_caps.supports_scanout_shared_images;
+#endif
+    }
+
+    if (add_scanout_usage) {
+      si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40194712): Always add the flag once the
     // OzoneImageBacking is by default turned on.
