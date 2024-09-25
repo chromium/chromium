@@ -824,7 +824,7 @@ Style notes:
         Get started
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FREE_TRIAL_LABEL" desc="The text on the label used for showing a text to mention the user to get three months free trial of YouTube Music premium.">
-        Stay on track with personalized focus playlists. Get YouTube Music and YouTube, ad-free, with 3 months of YouTube Premium at no cost.
+        Stay on track with personalized focus playlists. Get YouTube Music and YouTube, ad-free, with 3 months of YouTube Premium at no cost. Terms apply.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FREE_TRIAL_BUTTON" desc="The text on the free trial button.">
         Get perk
