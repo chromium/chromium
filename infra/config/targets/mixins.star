@@ -507,6 +507,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromium-tester-service-account",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         service_account = "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
     ),
@@ -695,6 +696,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_4_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -708,6 +710,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_6_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -721,6 +724,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_pixel_6_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
@@ -792,6 +796,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu-swarming-pool",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "pool": "chromium.tests.gpu",
@@ -933,6 +938,7 @@ targets.mixin(
 
 targets.mixin(
     name = "limited_capacity_bot",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     # Some FYI bot configurations have a limited number of bots in the swarming
     # pool. Increase the default expiration_sec time from 1 hour to 6 hours to
     # prevent shards from timing out.
@@ -952,6 +958,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux-jammy",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "os": "Ubuntu-22.04",
@@ -990,6 +997,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_amd_rx_5500_xt",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "1002:7340-23.2.1",
@@ -1002,6 +1010,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_630_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "8086:9bc5-23.2.1",
@@ -1014,6 +1023,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_intel_uhd_630_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
@@ -1037,6 +1047,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "10de:2184-535.183.01",
@@ -1048,6 +1059,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
@@ -1318,6 +1330,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_mini_intel_gpu_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1330,6 +1343,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_mini_intel_gpu_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
@@ -1359,6 +1373,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_amd_gpu_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1373,6 +1388,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_amd_gpu_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1387,6 +1403,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_nvidia_gpu_experimental",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     # Currently the same as the stable version.
     swarming = targets.swarming(
         dimensions = {
@@ -1402,6 +1419,7 @@ targets.mixin(
 
 targets.mixin(
     name = "mac_retina_nvidia_gpu_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1474,6 +1492,7 @@ targets.mixin(
 
 targets.mixin(
     name = "no_gpu",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "gpu": "none",
@@ -1640,6 +1659,7 @@ targets.mixin(
 
 targets.mixin(
     name = "swarming_containment_auto",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         containment_type = "AUTO",
     ),
@@ -1673,6 +1693,7 @@ targets.mixin(
 
 targets.mixin(
     name = "timeout_15m",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         hard_timeout_sec = 900,
         io_timeout_sec = 900,
@@ -1837,6 +1858,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_gce_gpu_pool",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -1861,6 +1883,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_630_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -1873,6 +1896,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_intel_uhd_770_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
@@ -1897,6 +1921,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win10_nvidia_gtx_1660_stable",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     # TODO(crbug.com/40888390): The swarming dimensions for
     # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
     # must be kept manually in sync with the appropriate mixin; currently,
@@ -1982,6 +2007,7 @@ targets.mixin(
 
 targets.mixin(
     name = "x86-64",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",

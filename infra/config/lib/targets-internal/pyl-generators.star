@@ -297,6 +297,8 @@ def _generate_mixins_pyl(ctx):
     for n in graph.children(keys.project(), _targets_nodes.MIXIN.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
+        if not n.props.pyl_fail_if_unused:
+            formatter.add_line("'fail_if_unused': False,")
 
         _generate_mixin_values(formatter, mixin)
 

@@ -2639,6 +2639,21 @@ MIXIN_APPEND = """\
 }
 """
 
+MIXINS_FAIL_IF_UNUSED_FALSE = """\
+{
+  'test_mixin': {
+    'fail_if_unused': False,
+    'swarming': {
+      'value': 'test',
+    },
+  },
+  'unused_mixin': {
+    'fail_if_unused': False,
+    'args': ['--unused'],
+  },
+}
+"""
+
 # These mixins are invalid; if passed to check_input_file_consistency, they will
 # fail. These are used for output file consistency checks.
 SWARMING_MIXINS = """\
@@ -2857,6 +2872,15 @@ class MixinTests(TestCase):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_fail_if_unused_false(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_MIXIN,
+                    LUCI_MILO_CFG,
+                    mixins=MIXINS_FAIL_IF_UNUSED_FALSE)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_list(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_INVALID_LIST_MIXIN_WATERFALL,
@@ -2866,7 +2890,6 @@ class MixinTests(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
-
 
   def test_no_duplicate_keys(self):
     fbb = FakeBBGen(self.args,

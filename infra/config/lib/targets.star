@@ -479,7 +479,9 @@ def _mixin_values(
     )
     return {k: v for k, v in mixin_values.items() if v != None}
 
-def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
+_IGNORE_UNUSED = "ignore_unused"
+
+def _mixin(*, name = None, generate_pyl_entry = None, **kwargs):
     """Define a mixin used for defining tests.
 
     //infra/config/generated/testing/mixins.pyl will be generated from
@@ -488,14 +490,28 @@ def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
 
     Args:
         name: The name of the mixin.
-        generate_pyl_entry: If true and name is provided, then the
-            generated mixin.pyl file will contain an entry allowing this
-            mixin to be used by generate_buildbot_json.py.
+        generate_pyl_entry: If true, the generated mixin.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py. If set to targets.IGNORE_UNUSED,
+            then an entry will be generated that
+            generate_buildbot_json.py which won't cause an error if it
+            isn't used. This enables mixins to be generated to the pyl
+            file that are only used by the angle repo, which reuses the
+            generated mixins.pyl. By default, this will be True if name
+            is provided.
         **kwargs: The mixin values, see _mixin_values for allowed
             keywords and their meanings.
     """
+    if generate_pyl_entry not in (None, False, True, _IGNORE_UNUSED):
+        fail("unexpected value for generate_pyl_entry: {}".format(generate_pyl_entry))
+    if generate_pyl_entry == None:
+        generate_pyl_entry = name != None
+    elif generate_pyl_entry:
+        if name == None:
+            fail("pyl entries can't be generated for anonymous mixins")
     key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
+        pyl_fail_if_unused = generate_pyl_entry == True,
     ))
     if generate_pyl_entry and name != None:
         graph.add_edge(keys.project(), key)
@@ -782,6 +798,7 @@ targets = struct(
     legacy_matrix_compound_suite = _legacy_matrix_compound_suite,
     legacy_matrix_config = _legacy_matrix_config,
     mixin = _mixin,
+    IGNORE_UNUSED = _IGNORE_UNUSED,
     variant = _variant,
     cipd_package = _cipd_package,
     merge = _targets_common.merge,

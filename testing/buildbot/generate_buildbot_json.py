@@ -1283,6 +1283,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.variants = self.load_pyl_file(self.args.variants_pyl_path)
 
   def resolve_configuration_files(self):
+    self.resolve_mixins()
     self.resolve_test_names()
     self.resolve_isolate_names()
     self.resolve_dimension_sets()
@@ -1291,6 +1292,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.resolve_matrix_compound_test_suites()
     self.flatten_test_suites()
     self.link_waterfalls_to_test_suites()
+
+  def resolve_mixins(self):
+    for mixin in self.mixins.values():
+      mixin.pop('fail_if_unused', None)
 
   def resolve_test_names(self):
     for suite_name, suite in self.test_suites.get('basic_suites').items():
@@ -1719,7 +1724,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         variant = self.variants[variant]
       seen_mixins = seen_mixins.union(variant.get('mixins', set()))
 
-    missing_mixins = set(self.mixins.keys()) - seen_mixins
+    missing_mixins = set()
+    for name, mixin_value in self.mixins.items():
+      if name not in seen_mixins and mixin_value.get('fail_if_unused', True):
+        missing_mixins.add(name)
     if missing_mixins:
       raise BBGenErr('The following mixins are unreferenced: %s. They must be'
                      ' referenced in a waterfall, machine, or test suite.' % (

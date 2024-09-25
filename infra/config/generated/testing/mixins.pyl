@@ -258,6 +258,7 @@
     },
   },
   'chromium-tester-service-account': {
+    'fail_if_unused': False,
     'swarming': {
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
@@ -378,6 +379,7 @@
     },
   },
   'gpu-swarming-pool': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'pool': 'chromium.tests.gpu',
@@ -415,6 +417,7 @@
     },
   },
   'gpu_pixel_4_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'os': 'Android',
@@ -426,6 +429,7 @@
     },
   },
   'gpu_pixel_6_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'os': 'Android',
@@ -437,6 +441,7 @@
     },
   },
   'gpu_pixel_6_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'os': 'Android',
@@ -592,6 +597,7 @@
     },
   },
   'limited_capacity_bot': {
+    'fail_if_unused': False,
     'swarming': {
       'expiration': 21600,
     },
@@ -604,6 +610,7 @@
     },
   },
   'linux-jammy': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-22.04',
@@ -632,6 +639,7 @@
     },
   },
   'linux_amd_rx_5500_xt': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': '1002:7340-23.2.1',
@@ -642,6 +650,7 @@
     },
   },
   'linux_intel_uhd_630_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': '8086:9bc5-23.2.1',
@@ -652,6 +661,7 @@
     },
   },
   'linux_intel_uhd_630_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': '8086:9bc5-20.0.8|8086:9bc5-23.2.1',
@@ -671,6 +681,7 @@
     },
   },
   'linux_nvidia_gtx_1660_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': '10de:2184-535.183.01',
@@ -680,6 +691,7 @@
     },
   },
   'linux_nvidia_gtx_1660_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': '10de:2184-440.100',
@@ -875,6 +887,7 @@
     },
   },
   'mac_mini_intel_gpu_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -885,6 +898,7 @@
     },
   },
   'mac_mini_intel_gpu_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -906,6 +920,7 @@
     },
   },
   'mac_retina_amd_gpu_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -918,6 +933,7 @@
     },
   },
   'mac_retina_amd_gpu_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -930,6 +946,7 @@
     },
   },
   'mac_retina_nvidia_gpu_experimental': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -942,6 +959,7 @@
     },
   },
   'mac_retina_nvidia_gpu_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -995,6 +1013,7 @@
     },
   },
   'no_gpu': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'gpu': 'none',
@@ -1110,6 +1129,7 @@
     'run_cft': True,
   },
   'swarming_containment_auto': {
+    'fail_if_unused': False,
     'swarming': {
       'containment_type': 'AUTO',
     },
@@ -1124,6 +1144,7 @@
     },
   },
   'timeout_15m': {
+    'fail_if_unused': False,
     'swarming': {
       'hard_timeout': 900,
       'io_timeout': 900,
@@ -1262,6 +1283,7 @@
     },
   },
   'win10_gce_gpu_pool': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
@@ -1282,6 +1304,7 @@
     },
   },
   'win10_intel_uhd_630_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'display_attached': '1',
@@ -1292,6 +1315,7 @@
     },
   },
   'win10_intel_uhd_770_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'display_attached': '1',
@@ -1312,6 +1336,7 @@
     },
   },
   'win10_nvidia_gtx_1660_stable': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'display_attached': '1',
@@ -1366,6 +1391,7 @@
     },
   },
   'x86-64': {
+    'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
