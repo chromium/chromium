@@ -217,9 +217,10 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
 void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
     content::NavigationHandle& navigation_handle,
     LoadingPredictor& predictor) {
-  if (!blink::LcppEnabled() ||
-      !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get() ||
-      !navigation_handle.IsInOutermostMainFrame() ||
+  static const bool enabled =
+      base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
+      blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
+  if (!enabled || !navigation_handle.IsInOutermostMainFrame() ||
       navigation_handle.IsSameDocument()) {
     return;
   }

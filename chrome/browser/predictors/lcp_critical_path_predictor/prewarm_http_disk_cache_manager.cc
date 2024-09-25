@@ -97,15 +97,23 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   // Avoid making network service to be more busy during the browser startup.
-  if (blink::features::kHttpDiskCachePrewarmingSkipDuringBrowserStartup.Get() &&
+  static const bool skip_during_browser_startup =
+      blink::features::kHttpDiskCachePrewarmingSkipDuringBrowserStartup.Get();
+  if (skip_during_browser_startup &&
       !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
     return;
   }
 
+  static const bool prewarm_main_resource =
+      base::GetFieldTrialParamByFeatureAsBool(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_main_resource", true);
   url::Origin top_frame_origin =
       url::Origin::Create(top_frame_main_resource_url);
-  MaybeAddPrewarmJob(top_frame_origin, top_frame_main_resource_url,
-                     net::IsolationInfo::RequestType::kMainFrame);
+  if (prewarm_main_resource) {
+    MaybeAddPrewarmJob(top_frame_origin, top_frame_main_resource_url,
+                       net::IsolationInfo::RequestType::kMainFrame);
+  }
   for (const GURL& url : top_frame_subresource_urls) {
     MaybeAddPrewarmJob(top_frame_origin, url,
                        net::IsolationInfo::RequestType::kOther);
