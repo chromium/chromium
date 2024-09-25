@@ -391,7 +391,7 @@ MirroringActivity::~MirroringActivity() {
             // Don't record pause count if the cast session cannot be paused.
             if (pause_count > 0 ||
                 media_router::IsAccessCodeCastFreezeUiEnabled(
-                    ProfileManager::GetLastUsedProfile())) {
+                    ProfileManager::GetLastUsedProfileIfLoaded())) {
               AccessCodeCastMetrics::RecordMirroringPauseCount(pause_count);
             }
           },
