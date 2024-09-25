@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -114,6 +115,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
@@ -154,6 +156,7 @@
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     NotificationsSettingsObserverDelegate,
+    PriceTrackingPromoActionDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate>
@@ -203,6 +206,11 @@
   // The coordinator used to present a modal alert for the parcel tracking
   // module.
   AlertCoordinator* _parcelTrackingAlertCoordinator;
+
+  // Displays alert giving the user the option to turn notifications
+  // on for the app. This is for the third opt in flow where notifications
+  // have previously been turned off.
+  AlertCoordinator* _priceTrackingPromoAlertCoordinator;
 
   // The coordinator used to present an alert to enable Tips notifications.
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
@@ -362,6 +370,7 @@
     _priceTrackingPromoMediator.dispatcher =
         static_cast<id<ApplicationCommands, SnackbarCommands>>(
             self.browser->GetCommandDispatcher());
+    _priceTrackingPromoMediator.actionDelegate = self;
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
 
@@ -1053,6 +1062,75 @@
     // user's notification settings.
     [self refresh];
   }
+}
+
+#pragma mark - PriceTrackingPromoActionDelegate
+
+- (void)showPriceTrackingPromoAlertCoordinator {
+  __weak ContentSuggestionsCoordinator* weakSelf = self;
+  _priceTrackingPromoAlertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_TITLE)
+                         message:
+                             l10n_util::GetNSString(
+                                 IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_TEXT)];
+  [_priceTrackingPromoAlertCoordinator
+      addItemWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_ACCEPT)
+                action:^{
+                  NSString* settingURL = UIApplicationOpenSettingsURLString;
+                  if (@available(iOS 15.4, *)) {
+                    settingURL = UIApplicationOpenNotificationSettingsURLString;
+                  }
+
+                  [[UIApplication sharedApplication]
+                      openURL:[NSURL URLWithString:settingURL]
+                      options:{}
+                      completionHandler:^(BOOL res) {
+                        [NSNotificationCenter.defaultCenter
+                            addObserver:weakSelf
+                               selector:@selector(onReturnFromSettings:)
+                                   name:UIApplicationDidBecomeActiveNotification
+                                 object:nil];
+                      }];
+                  [weakSelf dismissAlertCoordinator];
+                }
+                 style:UIAlertActionStyleDefault];
+  [_priceTrackingPromoAlertCoordinator
+      addItemWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_DENY)
+                action:^{
+                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
+                  [strongSelf dismissAlertCoordinator];
+                  [strongSelf->_priceTrackingPromoMediator
+                          removePriceTrackingPromo];
+                }
+                 style:UIAlertActionStyleCancel];
+  [_priceTrackingPromoAlertCoordinator start];
+}
+
+- (void)onReturnFromSettings:(NSNotification*)notification {
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+          [self->_priceTrackingPromoMediator
+                  enablePriceTrackingSettingsAndShowSnackbar];
+        }
+        [self->_priceTrackingPromoMediator removePriceTrackingPromo];
+      }];
+}
+
+- (void)dismissAlertCoordinator {
+  [_priceTrackingPromoAlertCoordinator stop];
+  _priceTrackingPromoAlertCoordinator = nil;
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

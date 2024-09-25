@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -71,6 +72,15 @@
   return _priceTrackingPromoItem;
 }
 
+- (void)removePriceTrackingPromo {
+  [self.delegate removePriceTrackingPromo];
+}
+
+- (void)enablePriceTrackingSettingsAndShowSnackbar {
+  [self enablePriceTrackingNotificationsSettings];
+  [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
+}
+
 #pragma mark - Public
 
 - (void)disableModule {
@@ -85,26 +95,30 @@
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
     web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](__typeof(self) strongSelf, BOOL granted, NSError* error) {
-              [strongSelf requestPushNotificationDoneWithGranted:granted
-                                                           error:error];
-            },
-            weakSelf, granted, error));
+        FROM_HERE, base::BindOnce(
+                       [](__typeof(self) strongSelf, BOOL granted,
+                          BOOL promptShown, NSError* error) {
+                         [strongSelf
+                             requestPushNotificationDoneWithGranted:granted
+                                                        promptShown:promptShown
+                                                              error:error];
+                       },
+                       weakSelf, granted, promptShown, error));
   }];
-  // TODO(crbug.com/361107641) implement opt in flow C
 }
 
 #pragma mark - Private
 
 - (void)requestPushNotificationDoneWithGranted:(BOOL)granted
+                                   promptShown:(BOOL)promptShown
                                          error:(NSError*)error {
   if (granted && !error) {
     [self enablePriceTrackingNotificationsSettings];
     [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
+    [self.delegate removePriceTrackingPromo];
+  } else if (!granted && !promptShown && !error) {
+    [self.actionDelegate showPriceTrackingPromoAlertCoordinator];
   }
-  [self.delegate removePriceTrackingPromo];
 }
 
 // Enable push notifications and email notifications for price tracking.

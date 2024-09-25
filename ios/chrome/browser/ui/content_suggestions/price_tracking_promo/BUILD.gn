@@ -4,6 +4,7 @@
 
 source_set("price_tracking_promo") {
   sources = [
+    "price_tracking_promo_action_delegate.h",
     "price_tracking_promo_commands.h",
     "price_tracking_promo_item.h",
     "price_tracking_promo_item.mm",
@@ -59,6 +60,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/profile/test:test",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:model",
