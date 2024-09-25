@@ -37,6 +37,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/page_resource_monitor.h"
+#include "components/performance_manager/public/scenarios/loading_scenario_observer.h"
 #include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -113,6 +114,8 @@ ChromeBrowserMainExtraPartsPerformanceManager::GetInstance() {
 // static
 void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     performance_manager::Graph* graph) {
+  graph->PassToGraph(
+      std::make_unique<performance_manager::LoadingScenarioObserver>());
   graph->PassToGraph(
       std::make_unique<performance_manager::ProcessMetricsDecorator>());
   graph->PassToGraph(
