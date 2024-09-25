@@ -420,8 +420,6 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch 
 # jacuzzi produces the wrong aspect ratio image
 crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
-# Shader compilation failure on lacros device bots.
-crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLSadCanvas [ Failure ]
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
