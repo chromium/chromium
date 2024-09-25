@@ -1118,7 +1118,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1780273119488802839">Tuodaan kirjanmerkkejä...</translation>
 <translation id="1780572199786401845">Tee ilmoitus loukkaavasta/vaarallisesta sisällöstä.</translation>
 <translation id="178092663238929451">Ota lähijakaminen käyttöön, niin voit vastaanottaa ja lähettää tiedostoja lähelläsi olevien henkilöiden kanssa</translation>
-<translation id="1781164264587898620">Käytä taustahälyn vaimennusta ja audion parannuksia.</translation>
 <translation id="1781291988450150470">Nykyinen PIN-koodi</translation>
 <translation id="1781502536226964113">Avaa Uusi välilehti -sivu</translation>
 <translation id="1781553166608855614">Puheen kieli</translation>
@@ -3645,6 +3644,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3596414637720633074">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3599221874935822507">Korotettu</translation>
 <translation id="3600051066689725006">Verkkopyynnön tiedot</translation>
+<translation id="3600956933576601730">Sinun on tarkistettava ja hyväksyttävä ehdot, jotta voit käyttää näitä ominaisuuksia</translation>
 <translation id="3601374594714740284">Vapauta tilaa laitteelta, jotta äänenlaatu on parempi</translation>
 <translation id="360180734785106144">Sinulle voidaan tarjota uusia ominaisuuksia, kun ne tulevat saataville.</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
@@ -5992,6 +5992,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5297984209202974345">Viimeaikainen AI-teema <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Teeman loi</translation>
 <translation id="5298315677001348398">Haluatko jatkaa ja antaa ohjelmiston tehdä muutoksia laitteeseesi?</translation>
+<translation id="5298611529917615393">Sinun on tarkistettava ja hyväksyttävä ehdot, jotta voit käyttää tätä ominaisuutta</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Katso ja ylläpidä välilehtiryhmiä</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -11418,6 +11419,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="949807244219288032">Tämä välilehti on yhdistetty HID-laitteeseen</translation>
 <translation id="950079950995628542">Täältä: <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Käyttöönotto-opas</translation>
+<translation id="950728747178241190">Käytä taustahälyn vaimennusta ja audion parannuksia. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Järjestelmänvalvojan asentama</translation>
 <translation id="951991426597076286">Hylkää</translation>
 <translation id="952471655966876828">Laitteen yhteys muodostetaan automaattisesti, kun laite käynnistetään tai sitä käytetään</translation>

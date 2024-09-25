@@ -6914,7 +6914,7 @@ Nếu bạn không đặt chính sách này, một giá trị mặc định chun
 <translation id="6207607210601267301">Tắt chế độ xác thực không cần mã PIN đối với máy chủ truy cập từ xa</translation>
 <translation id="6208896993204286313">Báo cáo thông tin chính sách của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Báo cáo thông tin hệ điều hành và phiên bản của <ph name="PRODUCT_NAME" /></translation>
-<translation id="6215023506958127056">Kiểm soát quá trình cài đặt tiện ích bên ngoài.
+<translation id="6215023506958127056">Kiểm soát việc cài đặt tiện ích bên ngoài.
 
 Nếu bạn đặt chính sách này thành Bật, thì hệ thống sẽ không cho phép cài đặt tiện ích bên ngoài.
 

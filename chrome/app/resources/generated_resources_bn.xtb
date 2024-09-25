@@ -1120,7 +1120,6 @@
 <translation id="1780273119488802839">বুকমার্ক ইমপোর্ট করা হচ্ছে…</translation>
 <translation id="1780572199786401845">আপত্তিকর/নিরাপদ নয় বলে অভিযোগ করুন।</translation>
 <translation id="178092663238929451">আপনার আশেপাশের ব্যক্তিদের থেকে ফাইল রিসিভ করতে বা পাঠাতে 'নিয়ারবাই শেয়ার' সেট আপ করুন</translation>
-<translation id="1781164264587898620">নয়েজ ক্যানসেলেশন ও অডিও উন্নত করার সুবিধা প্রয়োগ করুন।</translation>
 <translation id="1781291988450150470">বর্তমান পিন</translation>
 <translation id="1781502536226964113">নতুন ট্যাব পৃষ্ঠাটি খুলুন</translation>
 <translation id="1781553166608855614">টেক্সট-টু-স্পিচ</translation>
@@ -3647,6 +3646,7 @@
 <translation id="3596414637720633074">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="3599221874935822507">উঁচু করা</translation>
 <translation id="3600051066689725006">ওয়েব অনুরোধ সংক্রান্ত তথ্য</translation>
+<translation id="3600956933576601730">এইসব ফিচার ব্যবহার করার জন্য আপনাকে শর্তাবলী পর্যালোচনা করে গ্রহণ করতে হবে</translation>
 <translation id="3601374594714740284">আরও ভালো কোয়ালিটির ভয়েস ডাউনলোড করতে, আপনার ডিভাইসে জায়গা খালি করুন</translation>
 <translation id="360180734785106144">নতুন ফিচার উপলভ্য হলেই তা অফার করে</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
@@ -5996,6 +5996,7 @@
 <translation id="5297984209202974345"><ph name="STYLE" /> স্টাইলে <ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম</translation>
 <translation id="5298219193514155779">থিম তৈরি করেছেন</translation>
 <translation id="5298315677001348398">আপনি কি চালিয়ে যেতে এবং এই সফ্টওয়্যারটিকে আপনার ডিভাইসে পরিবর্তন করার অনুমতি দিতে চান?</translation>
+<translation id="5298611529917615393">এই ফিচার ব্যবহার করার জন্য আপনাকে শর্তাবলী পর্যালোচনা করে গ্রহণ করতে হবে</translation>
 <translation id="5299109548848736476">ট্র্যাক করবেন না</translation>
 <translation id="5299558715747014286">আপনার ট্যাব গ্রুপ দেখুন ও ম্যানেজ করুন</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -11426,6 +11427,7 @@
 <translation id="949807244219288032">এই ট্যাবটি একটি HID ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />"-এর থেকে</translation>
 <translation id="950307215746360464">সেটআপ করার নির্দেশিকা</translation>
+<translation id="950728747178241190">নয়েজ ক্যানসেলেশন ও অডিও উন্নত করার সুবিধা প্রয়োগ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />। আপনার অ্যাডমিনিস্ট্রেটর ইনস্টল করেছেন</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="952471655966876828">ডিভাইসটি চালু হলে এবং ব্যবহার করা হলে অটোমেটিক ডিসকানেক্ট হয়ে যাবে</translation>

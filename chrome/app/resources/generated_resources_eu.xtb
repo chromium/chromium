@@ -1110,7 +1110,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1780273119488802839">Laster-markak inportatzen…</translation>
 <translation id="1780572199786401845">Salatu iraingarria edo ez-segurua dela.</translation>
 <translation id="178092663238929451">Inguruko jendearen fitxategiak jasotzeko eta haiei fitxategiak bidaltzeko, konfiguratu Nearby Share</translation>
-<translation id="1781164264587898620">Aplikatu zarata-murrizketa eta audio-hobekuntzak.</translation>
 <translation id="1781291988450150470">Oraingo PINa</translation>
 <translation id="1781502536226964113">Ireki fitxa berriaren orria</translation>
 <translation id="1781553166608855614">Hitz egiteko hizkuntza</translation>
@@ -3631,6 +3630,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="3599221874935822507">Goratua</translation>
 <translation id="3600051066689725006">Web-eskaerari buruzko informazioa</translation>
+<translation id="3600956933576601730">Eginbide hauek erabiltzeko, baldintzak berrikusi, eta onartu behar dituzu</translation>
 <translation id="3601374594714740284">Egin tokia gailuan kalitate handiagoko ahotsetarako</translation>
 <translation id="360180734785106144">Eskuratu eginbide berriak erabilgarri dauden bezain laster</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
@@ -5978,6 +5978,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5297984209202974345">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan</translation>
 <translation id="5298219193514155779">Gaiaren sortzailea:</translation>
 <translation id="5298315677001348398">Aurrera egin nahi duzu, eta software honi gailuan aldaketak egiteko baimena eman?</translation>
+<translation id="5298611529917615393">Eginbide hau erabiltzeko, baldintzak berrikusi, eta onartu behar dituzu</translation>
 <translation id="5299109548848736476">Ez egin jarraipenik</translation>
 <translation id="5299558715747014286">Ikusi eta kudeatu fitxa taldeak</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
@@ -11399,6 +11400,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="949807244219288032">Fitxa hau giza interfazeko gailu batekin konektatuta dago</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" telefonokoak</translation>
 <translation id="950307215746360464">Konfigurazio-gida</translation>
+<translation id="950728747178241190">Aplikatu zarata-murrizketa eta audio-hobekuntzak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administratzaileak instalatu du.</translation>
 <translation id="951991426597076286">Baztertu</translation>
 <translation id="952471655966876828">Gailua automatikoki konektatuko da piztuz gero edo norbaitek erabiltzen badu</translation>

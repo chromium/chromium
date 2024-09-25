@@ -1113,7 +1113,6 @@
 <translation id="1780273119488802839">Ідзе імпартаванне закладак...</translation>
 <translation id="1780572199786401845">Паскардзіцца на абразлівае або небяспечнае змесціва.</translation>
 <translation id="178092663238929451">Каб абменьвацца файламі з людзьмі побач, наладзьце Абагульванне паблізу</translation>
-<translation id="1781164264587898620">Прымяняць падаўленне шуму і функцыі паляпшэння аўдыя.</translation>
 <translation id="1781291988450150470">Бягучы PIN-код</translation>
 <translation id="1781502536226964113">Адкрыць старонку новай укладкі</translation>
 <translation id="1781553166608855614">Мова вуснага маўлення</translation>
@@ -3634,6 +3633,7 @@
 <translation id="3596414637720633074">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="3599221874935822507">Прыўзняты</translation>
 <translation id="3600051066689725006">Звесткі пра вэб-запыт</translation>
+<translation id="3600956933576601730">Каб карыстацца гэтай функцыяй, трэба азнаёміцца з умовамі і прыняць іх</translation>
 <translation id="3601374594714740284">Каб спампаваць галасавыя пакеты ў больш высокай якасці, вызваліце месца на прыладзе</translation>
 <translation id="360180734785106144">Прапаноўваць новыя функцыі, як толькі яны з’яўляюцца</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
@@ -5980,6 +5980,7 @@
 <translation id="5297984209202974345">Нядаўняя тэма <ph name="INDEX" />, створаная з дапамогай AI, тэма: <ph name="SUBJECT" />, стыль: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Аўтар тэмы</translation>
 <translation id="5298315677001348398">Працягнуць і дазволіць гэтаму праграмнаму забеспячэнню ўносіць змяненні на прыладзе?</translation>
+<translation id="5298611529917615393">Каб карыстацца гэтай функцыяй, трэба азнаёміцца з умовамі і прыняць іх</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Прагляд груп укладак і кіраванне імі</translation>
 <translation id="5300589172476337783">Паказаць</translation>
@@ -11411,6 +11412,7 @@
 <translation id="949807244219288032">Гэта ўкладка падключана да прылады HID</translation>
 <translation id="950079950995628542">З тэлефона "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Дапаможнік па наладжванні</translation>
+<translation id="950728747178241190">Прымяняць падаўленне шуму і функцыі паляпшэння аўдыя. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Усталявана вашым адміністратарам</translation>
 <translation id="951991426597076286">Адхіліць</translation>
 <translation id="952471655966876828">Прылада падключыцца аўтаматычна, калі яе ўключаць або будуць выкарыстоўваць</translation>

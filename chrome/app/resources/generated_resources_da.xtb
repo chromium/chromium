@@ -1120,7 +1120,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1780273119488802839">Importerer bogmærker...</translation>
 <translation id="1780572199786401845">Rapportér som stødende/usikkert.</translation>
 <translation id="178092663238929451">Konfigurer Deling tæt på for at modtage filer fra personer i nærheden samt sende filer til dem</translation>
-<translation id="1781164264587898620">Anvend støjreducering og lydforbedringer.</translation>
 <translation id="1781291988450150470">Aktuel pinkode</translation>
 <translation id="1781502536226964113">Åbn siden Ny fane</translation>
 <translation id="1781553166608855614">Talt sprog</translation>
@@ -3647,6 +3646,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
 <translation id="3599221874935822507">Hævet</translation>
 <translation id="3600051066689725006">Oplysninger om webanmodning</translation>
+<translation id="3600956933576601730">Du skal gennemgå og acceptere vilkårene for at bruge disse funktioner</translation>
 <translation id="3601374594714740284">Få stemmer i højere kvalitet ved at frigøre plads på din enhed</translation>
 <translation id="360180734785106144">Tilbyde nye funktioner, efterhånden som de bliver tilgængelige</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
@@ -5996,6 +5996,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5297984209202974345">Seneste AI-tema <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema oprettet af</translation>
 <translation id="5298315677001348398">Vil du fortsætte og tillade, at denne software foretager ændringer på din enhed?</translation>
+<translation id="5298611529917615393">Du skal gennemgå og acceptere vilkårene for at bruge denne funktion</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Se og administrer dine fanegupper</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -11426,6 +11427,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="949807244219288032">Denne fane er tilsluttet en HID-enhed</translation>
 <translation id="950079950995628542">Fra "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Konfigurationsvejledning</translation>
+<translation id="950728747178241190">Anvend støjreducering og lydforbedringer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installeret af din administrator</translation>
 <translation id="951991426597076286">Afvis</translation>
 <translation id="952471655966876828">Forbindelsen til enheden oprettes automatisk, når enheden tændes eller er i brug</translation>

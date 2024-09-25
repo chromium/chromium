@@ -1118,7 +1118,6 @@
 <translation id="1780273119488802839">匯入緊書籤…</translation>
 <translation id="1780572199786401845">舉報令人反感/不安全的內容。</translation>
 <translation id="178092663238929451">設定「咫尺共享」，即可與附近的使用者互相傳送檔案</translation>
-<translation id="1781164264587898620">套用消噪和音訊改善效果。</translation>
 <translation id="1781291988450150470">目前的 PIN</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
 <translation id="1781553166608855614">使用的語言</translation>
@@ -3643,6 +3642,7 @@
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3599221874935822507">凸出</translation>
 <translation id="3600051066689725006">網絡要求資料</translation>
+<translation id="3600956933576601730">你需要查閱並接受條款才能使用這些功能</translation>
 <translation id="3601374594714740284">如要使用高品質語音，請在裝置上騰出空間</translation>
 <translation id="360180734785106144">即時提供可用的新功能</translation>
 <translation id="3602290021589620013">預覽</translation>
@@ -5983,6 +5983,7 @@
 <translation id="5297984209202974345">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係 <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">主題製作者</translation>
 <translation id="5298315677001348398">要繼續並允許此軟件變更裝置嗎？</translation>
+<translation id="5298611529917615393">你需要查閱並接受條款才能使用此功能</translation>
 <translation id="5299109548848736476">不要追蹤</translation>
 <translation id="5299558715747014286">查看及管理分頁群組</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -11404,6 +11405,7 @@
 <translation id="949807244219288032">此分頁已連接至 HID 裝置</translation>
 <translation id="950079950995628542">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="950307215746360464">設定指南</translation>
+<translation id="950728747178241190">套用消噪功能並改善音訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />，已經由管理員安裝</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>

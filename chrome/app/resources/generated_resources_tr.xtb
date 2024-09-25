@@ -1110,7 +1110,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1780273119488802839">Yer işaretleri alınıyor...</translation>
 <translation id="1780572199786401845">Rahatsız edici/güvenli değil olarak bildirin.</translation>
 <translation id="178092663238929451">Etrafınızdaki kişilerle dosya alışverişi yapmak için Yakındakilerle Paylaş'ı kurun</translation>
-<translation id="1781164264587898620">Gürültü gidermeyi ve ses iyileştirmelerini uygulayın.</translation>
 <translation id="1781291988450150470">Mevcut PIN</translation>
 <translation id="1781502536226964113">Yeni Sekme sayfasını aç</translation>
 <translation id="1781553166608855614">Konuşma dili</translation>
@@ -3629,6 +3628,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3596414637720633074">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="3599221874935822507">Yükseltilmiş</translation>
 <translation id="3600051066689725006">Web istek bilgisi</translation>
+<translation id="3600956933576601730">Bu özellikleri kullanmak için şartları inceleyip kabul etmeniz gerekir</translation>
 <translation id="3601374594714740284">Daha yüksek kaliteli sesler için cihazınızda yer açın</translation>
 <translation id="360180734785106144">Kullanıma sunuldukça yeni özellikleri teklif etme</translation>
 <translation id="3602290021589620013">Önizleme</translation>
@@ -5977,6 +5977,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5297984209202974345"><ph name="STYLE" /> stiline sahip son <ph name="SUBJECT" /> yapay zeka temasından <ph name="INDEX" />.</translation>
 <translation id="5298219193514155779">Temayı oluşturan:</translation>
 <translation id="5298315677001348398">Devam etmek ve bu yazılımın cihazınızda değişiklik yapmasına izin vermek istiyor musunuz?</translation>
+<translation id="5298611529917615393">Bu özelliği kullanmak için şartları inceleyip kabul etmeniz gerekir</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Sekme gruplarınızı görüntüleyip yönetin</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -11404,6 +11405,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="949807244219288032">Bu sekme bir HID cihazına bağlı</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" telefondan</translation>
 <translation id="950307215746360464">Kurulum kılavuzu</translation>
+<translation id="950728747178241190">Gürültü gidermeyi ve ses iyileştirmelerini uygulayın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Yöneticiniz tarafından yüklendi</translation>
 <translation id="951991426597076286">Reddet</translation>
 <translation id="952471655966876828">Cihaz açık olduğunda ve kullanıldığında otomatik olarak bağlanır</translation>

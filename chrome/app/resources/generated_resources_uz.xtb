@@ -1108,7 +1108,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1780273119488802839">Bukmarklar import qilinmoqda...</translation>
 <translation id="1780572199786401845">Haqoratomuz yoki xavfli kontent haqida xabar bering</translation>
 <translation id="178092663238929451">Nearby Share funksiyasini sozlang va atrofdagi odamlar bilan fayl almashining</translation>
-<translation id="1781164264587898620">Shovqinsizlantirish va audio tuzatishlarni tatbiq qilish</translation>
 <translation id="1781291988450150470">Joriy PIN kod</translation>
 <translation id="1781502536226964113">Yangi varaq sahifasini ochish</translation>
 <translation id="1781553166608855614">Nutq tili</translation>
@@ -3633,6 +3632,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3596414637720633074">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="3599221874935822507">Qavariq</translation>
 <translation id="3600051066689725006">Veb soʻrovi haqida axborot</translation>
+<translation id="3600956933576601730">Bu funksiyalardan foydalanish uchun shartlar bilan tanishib, ularni qabul qiling</translation>
 <translation id="3601374594714740284">Yuqori sifatli ovoz paketlari uchun qurilma xotirasidan joy oching</translation>
 <translation id="360180734785106144">Yangi funksiyalar ularning chiqishiga taklif qilinadi</translation>
 <translation id="3602290021589620013">Razm solish</translation>
@@ -5981,6 +5981,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5297984209202974345">Oxirgi AI mavzusi: <ph name="INDEX" />/<ph name="SUBJECT" />, uslub: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Mavzu muallifi:</translation>
 <translation id="5298315677001348398">Bu dastur qurilmangizga oʻzgartirish kiritishiga ruxsat berib, davom ettirasizmi?</translation>
+<translation id="5298611529917615393">Bu funksiyadan foydalanish uchun shartlar bilan tanishib, ularni qabul qiling</translation>
 <translation id="5299109548848736476">Kuzatilmasin</translation>
 <translation id="5299558715747014286">Varaq guruhlarini koʻrish va boshqarish</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -11405,6 +11406,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="949807244219288032">Bu varaq HID qurilmaga ulangan</translation>
 <translation id="950079950995628542">“<ph name="PHONE_NAME" />” telefonidan</translation>
 <translation id="950307215746360464">Sozlash qoʻllanmasi</translation>
+<translation id="950728747178241190">Shovqinsizlantirish va audio tuzatishlarni tatbiq qilish <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Administrator oʻrnatgan</translation>
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="952471655966876828">Qurilma yoqilganda yoki ishlatilayotganda avtomatik ravishda ulanadi</translation>

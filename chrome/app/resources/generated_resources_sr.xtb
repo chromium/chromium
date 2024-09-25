@@ -1109,7 +1109,6 @@
 <translation id="1780273119488802839">Увоз обележивача...</translation>
 <translation id="1780572199786401845">Пријавите увредљив или небезбедан садржај.</translation>
 <translation id="178092663238929451">Подесите Дељење у близини да бисте примали и слали фајлове људима у близини</translation>
-<translation id="1781164264587898620">Примените поништавање буке и побољшања звука.</translation>
 <translation id="1781291988450150470">Актуелни PIN</translation>
 <translation id="1781502536226964113">Отвори нову картицу</translation>
 <translation id="1781553166608855614">Говорни језик</translation>
@@ -3631,6 +3630,7 @@
 <translation id="3596414637720633074">Блокира колачиће трећих страна у режиму без архивирања</translation>
 <translation id="3599221874935822507">Испупчено</translation>
 <translation id="3600051066689725006">Информације о веб-захтеву</translation>
+<translation id="3600956933576601730">Морате да прегледате и прихватите услове да бисте користили ове функције</translation>
 <translation id="3601374594714740284">Да бисте добили квалитетније гласове, ослободите простор на уређају</translation>
 <translation id="360180734785106144">да нуди нове функције када постану доступне</translation>
 <translation id="3602290021589620013">Преглед</translation>
@@ -5979,6 +5979,7 @@
 <translation id="5297984209202974345"><ph name="INDEX" />. недавна AI тема од <ph name="SUBJECT" /> у стилу <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Тему је направио/ла</translation>
 <translation id="5298315677001348398">Желите да наставите и дозволите овом софтверу да уноси измене на уређају?</translation>
+<translation id="5298611529917615393">Морате да прегледате и прихватите услове да бисте користили ову функцију</translation>
 <translation id="5299109548848736476">Не прати</translation>
 <translation id="5299558715747014286">Приказ група картица и управљање њима</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -11412,6 +11413,7 @@
 <translation id="949807244219288032">Ова картица је повезана са HID уређајем</translation>
 <translation id="950079950995628542">Са телефона <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Водич за подешавање</translation>
+<translation id="950728747178241190">Примените поништавање буке и побољшања звука. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Инсталирао је администратор</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952471655966876828">Веза са уређајем ће се аутоматски укључити када се уређај укључи или се користи</translation>

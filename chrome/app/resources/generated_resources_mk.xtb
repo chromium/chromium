@@ -1120,7 +1120,6 @@
 <translation id="1780273119488802839">Се увезуваат обележувачи…</translation>
 <translation id="1780572199786401845">Пријавување навредливи/небезбедни содржини.</translation>
 <translation id="178092663238929451">Поставете „Споделување во близина“ за да примате и испраќате датотеки до луѓето околу вас</translation>
-<translation id="1781164264587898620">Применувај „Поништување шум“ и аудиоподобрувања.</translation>
 <translation id="1781291988450150470">Тековен PIN</translation>
 <translation id="1781502536226964113">Отвори ја страницата Нова картичка</translation>
 <translation id="1781553166608855614">Говорен јазик</translation>
@@ -3647,6 +3646,7 @@
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
 <translation id="3599221874935822507">Со подигнат раб</translation>
 <translation id="3600051066689725006">Информации за веб-барањето</translation>
+<translation id="3600956933576601730">Треба да ги прегледате и да ги прифатите „Условите“ за да ги користите функцииве</translation>
 <translation id="3601374594714740284">За гласови со повисок квалитет, ослободете простор на уредот</translation>
 <translation id="360180734785106144">Да ви нуди нови функции кога ќе станат достапни</translation>
 <translation id="3602290021589620013">Преглед</translation>
@@ -5996,6 +5996,7 @@
 <translation id="5297984209202974345">Неодамнешна AI-тема: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Тема креирана од</translation>
 <translation id="5298315677001348398">Дали сакате да продолжите и да дозволите софтверов да изврши промени на вашиот уред?</translation>
+<translation id="5298611529917615393">Треба да ги прегледате и да ги прифатите „Условите“ за да ја користите функцијава</translation>
 <translation id="5299109548848736476">Немој да следиш</translation>
 <translation id="5299558715747014286">Прегледувајте ги и управувајте со групите картички</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -11427,6 +11428,7 @@
 <translation id="949807244219288032">Картичкава е поврзана со HID-уред</translation>
 <translation id="950079950995628542">Од „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Водич за поставување</translation>
+<translation id="950728747178241190">Применување „Поништување шум“ и аудиоподобрувања. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Инсталирано од администраторот</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952471655966876828">Уредот автоматски ќе се поврзе кога е вклучен или кога се користи</translation>

@@ -1120,7 +1120,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1780273119488802839">Importando favoritos...</translation>
 <translation id="1780572199786401845">Denunciar conteúdo ofensivo/não seguro.</translation>
 <translation id="178092663238929451">Ative o Compartilhar por proximidade para receber e enviar arquivos para pessoas à sua volta</translation>
-<translation id="1781164264587898620">Aplique o cancelamento de ruído e as melhorias de áudio.</translation>
 <translation id="1781291988450150470">PIN atual</translation>
 <translation id="1781502536226964113">Abrir Nova guia</translation>
 <translation id="1781553166608855614">Idioma falado</translation>
@@ -3647,6 +3646,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3599221874935822507">Em relevo</translation>
 <translation id="3600051066689725006">Informações sobre a solicitação da Web</translation>
+<translation id="3600956933576601730">Você precisa ler e aceitar os termos para usar estes recursos</translation>
 <translation id="3601374594714740284">Para ouvir vozes em maior qualidade, libere espaço no dispositivo</translation>
 <translation id="360180734785106144">Oferecer novos recursos à medida que sejam disponibilizados</translation>
 <translation id="3602290021589620013">Visualizar</translation>
@@ -5996,6 +5996,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5297984209202974345">Tema recente de IA <ph name="INDEX" /> de <ph name="SUBJECT" /> no estilo <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema criado por</translation>
 <translation id="5298315677001348398">Você quer continuar e permitir que esse software faça mudanças no seu dispositivo?</translation>
+<translation id="5298611529917615393">Você precisa ler e aceitar os termos para usar este recurso</translation>
 <translation id="5299109548848736476">Não rastrear</translation>
 <translation id="5299558715747014286">Ver e gerenciar seus grupos de guias</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -11427,6 +11428,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="949807244219288032">Esta guia está conectada a um dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
+<translation id="950728747178241190">Aplique o cancelamento de ruído e as melhorias de áudio. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalado pelo administrador</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952471655966876828">O dispositivo será conectado automaticamente quando estiver ligado e em uso</translation>

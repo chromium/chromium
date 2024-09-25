@@ -1119,7 +1119,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1780273119488802839">Mengimpor bookmark...</translation>
 <translation id="1780572199786401845">Laporkan konten menyinggung/tidak aman.</translation>
 <translation id="178092663238929451">Siapkan Berbagi Langsung untuk menerima dan mengirim file kepada orang di sekitar Anda</translation>
-<translation id="1781164264587898620">Terapkan peredam bising dan peningkatan audio.</translation>
 <translation id="1781291988450150470">PIN Saat Ini</translation>
 <translation id="1781502536226964113">Buka halaman Tab Baru</translation>
 <translation id="1781553166608855614">Bahasa lisan</translation>
@@ -1351,7 +1350,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1937774647013465102">Tidak dapat mengimpor jenis arsitektur container <ph name="ARCHITECTURE_CONTAINER" /> dengan perangkat ini yang menggunakan arsitektur <ph name="ARCHITECTURE_DEVICE" />. Anda dapat mencoba memulihkan container ini ke dalam perangkat berbeda, atau mengakses file di dalam gambar container ini dengan membukanya di aplikasi File.</translation>
 <translation id="1938351510777341717">External Command</translation>
 <translation id="1940221956626514677">Sesuaikan toolbar</translation>
-<translation id="1940546824932169984">Perangkat yang terhubung</translation>
+<translation id="1940546824932169984">Perangkat terhubung</translation>
 <translation id="1941410638996203291">Waktu mulai <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versi: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Administrator mengonfigurasi akun Anda agar terhubung ke Microsoft OneDrive secara otomatis, tetapi terjadi error.</translation>
@@ -3646,6 +3645,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3599221874935822507">Dinaikkan</translation>
 <translation id="3600051066689725006">Info permintaan web</translation>
+<translation id="3600956933576601730">Anda harus meninjau dan menyetujui persyaratan untuk menggunakan fitur ini</translation>
 <translation id="3601374594714740284">Untuk suara dengan kualitas lebih tinggi, kosongkan ruang penyimpanan di perangkat Anda</translation>
 <translation id="360180734785106144">Menawarkan fitur baru setelah tersedia</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
@@ -5995,6 +5995,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5297984209202974345">Tema AI terbaru <ph name="INDEX" /> dari <ph name="SUBJECT" />, dengan gaya <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema dibuat oleh</translation>
 <translation id="5298315677001348398">Ingin melanjutkan dan mengizinkan software ini melakukan perubahan pada perangkat Anda?</translation>
+<translation id="5298611529917615393">Anda harus meninjau dan menyetujui persyaratan untuk menggunakan fitur ini</translation>
 <translation id="5299109548848736476">Jangan Lacak</translation>
 <translation id="5299558715747014286">Melihat dan mengelola grup tab Anda</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -11421,6 +11422,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="949807244219288032">Tab ini terhubung ke perangkat HID</translation>
 <translation id="950079950995628542">Dari "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Panduan penyiapan</translation>
+<translation id="950728747178241190">Terapkan peredam bising dan peningkatan audio. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Diinstal oleh administrator Anda</translation>
 <translation id="951991426597076286">Tolak</translation>
 <translation id="952471655966876828">Perangkat akan otomatis terhubung saat diaktifkan dan sedang digunakan</translation>

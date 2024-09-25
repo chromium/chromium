@@ -1112,7 +1112,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1780273119488802839">Uvoz oznaka...</translation>
 <translation id="1780572199786401845">Prijavi uvredljivo/nesigurno.</translation>
 <translation id="178092663238929451">Postavite dijeljenje u blizini da biste primali datoteke od osoba u blizini i slali im datoteke</translation>
-<translation id="1781164264587898620">Primjenjuje uklanjanje buke i poboljšanje zvuka.</translation>
 <translation id="1781291988450150470">Trenutačni PIN</translation>
 <translation id="1781502536226964113">Otvori stranicu Nova kartica</translation>
 <translation id="1781553166608855614">Govorni jezik</translation>
@@ -3635,6 +3634,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3596414637720633074">Blokiranje kolačića trećih strana u anonimnom načinu</translation>
 <translation id="3599221874935822507">Izdignuto</translation>
 <translation id="3600051066689725006">Podaci o web-zahtjevu</translation>
+<translation id="3600956933576601730">Da biste upotrebljavali te značajke, morate pregledati i prihvatiti uvjete</translation>
 <translation id="3601374594714740284">Za kvalitetnije glasove oslobodite prostor na uređaju</translation>
 <translation id="360180734785106144">ponuditi nove značajke kad postanu dostupne</translation>
 <translation id="3602290021589620013">Pregled</translation>
@@ -5982,6 +5982,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5297984209202974345">Nedavna AI tema <ph name="INDEX" /> za <ph name="SUBJECT" /> u stilu <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Temu je stvorio autor</translation>
 <translation id="5298315677001348398">Želite li nastaviti i dopustiti ovom softveru da unosi izmjene na vaš uređaj?</translation>
+<translation id="5298611529917615393">Da biste upotrebljavali tu značajku, morate pregledati i prihvatiti uvjete</translation>
 <translation id="5299109548848736476">Nemoj pratiti</translation>
 <translation id="5299558715747014286">Pregled grupa kartica i upravljanje njima</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -11412,6 +11413,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="949807244219288032">Kartica je povezana s HID uređajem</translation>
 <translation id="950079950995628542">S uređaja <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Vodič za postavljanje</translation>
+<translation id="950728747178241190">Primjenjuje uklanjanje buke i poboljšanje zvuka. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalirao vaš administrator</translation>
 <translation id="951991426597076286">Odbijam</translation>
 <translation id="952471655966876828">Uređaj će se povezati automatski kad se uključi i upotrebljava</translation>

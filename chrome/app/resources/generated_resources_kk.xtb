@@ -1107,7 +1107,6 @@
 <translation id="1780273119488802839">Бетбелгілер импортталуда…</translation>
 <translation id="1780572199786401845">Намысқа тиетін/қауіпті контент туралы шағымдану.</translation>
 <translation id="178092663238929451">Маңайдағы пайдаланушылармен файл алмасу үшін Nearby Share функциясын реттеңіз.</translation>
-<translation id="1781164264587898620">Шуды басу және дыбысты жақсарту әсерлерін қолданыңыз.</translation>
 <translation id="1781291988450150470">Қолданыстағы PIN коды</translation>
 <translation id="1781502536226964113">Жаңа қойынды бетін ашу</translation>
 <translation id="1781553166608855614">Сөйлеу тілі</translation>
@@ -3628,6 +3627,7 @@
 <translation id="3596414637720633074">Инкогнито режимінде үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="3599221874935822507">Көтеріңкі</translation>
 <translation id="3600051066689725006">Веб-сұрау туралы ақпарат</translation>
+<translation id="3600956933576601730">Бұл функцияларды пайдалану үшін шарттарды тексеріп, қабылдау қажет.</translation>
 <translation id="3601374594714740284">Жоғары сапалы дауыстарды жүктеп алу үшін құрылғы жадын тазалаңыз</translation>
 <translation id="360180734785106144">Жаңа функцияларды бірден ұсыну</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
@@ -5975,6 +5975,7 @@
 <translation id="5297984209202974345">Келесі сипаттарға ие соңғы AI тақырыбы: <ph name="INDEX" />, <ph name="SUBJECT" />, <ph name="STYLE" /> стилі</translation>
 <translation id="5298219193514155779">Тақырыпты жасаған</translation>
 <translation id="5298315677001348398">Жалғастырып, осы бағдарламалық құралдың құрылғыңызға өзгеріс енгізуіне рұқсат бергіңіз келе ме?</translation>
+<translation id="5298611529917615393">Бұл функцияны пайдалану үшін шарттарды тексеріп, қабылдау қажет.</translation>
 <translation id="5299109548848736476">Бақыламау</translation>
 <translation id="5299558715747014286">Қойынды топтарын көру және басқару</translation>
 <translation id="5300589172476337783">Көрсету</translation>
@@ -11396,6 +11397,7 @@
 <translation id="949807244219288032">Бұл қойынды HID құрылғысына қосылған</translation>
 <translation id="950079950995628542">Кімнен: "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Реттеу нұсқаулығы</translation>
+<translation id="950728747178241190">Шуды басу және дыбысты жақсарту әсерлерін қолданыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Әкімшіңіз орнатты</translation>
 <translation id="951991426597076286">Қабылдамау</translation>
 <translation id="952471655966876828">Құрылғы қосылған немесе пайдаланылған кезде, автоматты түрде жалғанады.</translation>

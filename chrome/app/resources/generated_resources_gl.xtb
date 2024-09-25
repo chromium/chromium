@@ -1109,7 +1109,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1780273119488802839">Importando marcadores…</translation>
 <translation id="1780572199786401845">Informar de contido ofensivo ou inseguro.</translation>
 <translation id="178092663238929451">Configura Compartir por Nearby para recibir e enviar ficheiros con persoas preto de ti</translation>
-<translation id="1781164264587898620">Aplicaranse a cancelación de ruído e outras melloras de audio.</translation>
 <translation id="1781291988450150470">PIN actual</translation>
 <translation id="1781502536226964113">Abrir a páxina da pestana nova</translation>
 <translation id="1781553166608855614">Idioma falado</translation>
@@ -3632,6 +3631,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3600051066689725006">Información sobre solicitudes web</translation>
+<translation id="3600956933576601730">Revisa e acepta as condicións para poder usar estas funcións</translation>
 <translation id="3601374594714740284">Para descargar voces de alta calidade, libera espazo no teu dispositivo</translation>
 <translation id="360180734785106144">Ofrecerche funcións novas a medida que estean dispoñibles</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
@@ -5984,6 +5984,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5297984209202974345">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creado por</translation>
 <translation id="5298315677001348398">Queres continuar e permitir que este software faga cambios no teu dispositivo?</translation>
+<translation id="5298611529917615393">Revisa e acepta as condicións para poder usar esta función</translation>
 <translation id="5299109548848736476">Non realizar seguimento</translation>
 <translation id="5299558715747014286">Ver e xestionar os grupos de pestanas</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -11406,6 +11407,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="949807244219288032">Esta pestana está conectada a un dispositivo de interface humana</translation>
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guía de configuración</translation>
+<translation id="950728747178241190">Aplicaranse a cancelación de ruído e outras melloras de audio. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento instalado pola persoa administradora</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="952471655966876828">O dispositivo conectarase automaticamente cando se atope acendido e se estea utilizando</translation>

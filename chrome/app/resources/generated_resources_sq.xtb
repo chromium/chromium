@@ -1107,7 +1107,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1780273119488802839">Po importon faqeshënuesit...</translation>
 <translation id="1780572199786401845">Raporto si fyese/të pasigurt.</translation>
 <translation id="178092663238929451">Konfiguro Nearby Share për të marrë dhe dërguar skedarë me njerëzit rreth teje</translation>
-<translation id="1781164264587898620">Zbato anulimin e zhurmës dhe përmirësimet e audios.</translation>
 <translation id="1781291988450150470">Kodi PIN aktual</translation>
 <translation id="1781502536226964113">Hap faqen "Skedë e re"</translation>
 <translation id="1781553166608855614">Gjuha e folur</translation>
@@ -3629,6 +3628,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3596414637720633074">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="3599221874935822507">I ngritur</translation>
 <translation id="3600051066689725006">Informacionet e kërkesës së uebit</translation>
+<translation id="3600956933576601730">Duhet të rishikosh dhe të pranosh kushtet për të përdorur këto veçori</translation>
 <translation id="3601374594714740284">Për zëra me cilësi më të lartë, pastro hapësirën në pajisjen tënde</translation>
 <translation id="360180734785106144">Të ofrojë funksione të reja kur të mundësohen</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
@@ -5976,6 +5976,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5297984209202974345">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />"</translation>
 <translation id="5298219193514155779">Tema u krijua nga</translation>
 <translation id="5298315677001348398">Dëshiron që të vazhdosh dhe ta lejosh këtë softuer që të bëjë ndryshime në pajisjen tënde?</translation>
+<translation id="5298611529917615393">Duhet të rishikosh dhe të pranosh kushtet për të përdorur këtë veçori</translation>
 <translation id="5299109548848736476">Mos gjurmo</translation>
 <translation id="5299558715747014286">Shiko dhe menaxho grupet e skedave</translation>
 <translation id="5300589172476337783">Shfaq</translation>
@@ -11400,6 +11401,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="949807244219288032">Kjo skedë është e lidhur me një pajisje HID</translation>
 <translation id="950079950995628542">Nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>
+<translation id="950728747178241190">Zbato anulimin e zhurmës dhe përmirësimet e audios. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instaluar nga administratori yt</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="952471655966876828">Pajisja lidhet automatikisht kur ndizet dhe përdoret</translation>

@@ -1110,7 +1110,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1780273119488802839">Importazione dei preferiti in corso…</translation>
 <translation id="1780572199786401845">Segnala contenuti offensivi/non sicuri.</translation>
 <translation id="178092663238929451">Configura Condivisione nelle vicinanze per ricevere e inviare file con le persone intorno a te</translation>
-<translation id="1781164264587898620">Applica cancellazione del rumore e miglioramenti audio.</translation>
 <translation id="1781291988450150470">PIN attuale</translation>
 <translation id="1781502536226964113">Apri la pagina Nuova scheda</translation>
 <translation id="1781553166608855614">Lingua parlata</translation>
@@ -3633,6 +3632,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3596414637720633074">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="3599221874935822507">In rilievo</translation>
 <translation id="3600051066689725006">Informazioni sulla richiesta web</translation>
+<translation id="3600956933576601730">Devi esaminare e accettare i termini per utilizzare queste funzionalità</translation>
 <translation id="3601374594714740284">Per una qualità delle voci migliore, libera spazio sul tuo dispositivo</translation>
 <translation id="360180734785106144">Offrire nuove funzionalità quando diventano disponibili.</translation>
 <translation id="3602290021589620013">Anteprima</translation>
@@ -5981,6 +5981,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5297984209202974345">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creato da</translation>
 <translation id="5298315677001348398">Vuoi continuare e consentire al software di apportare modifiche al tuo dispositivo?</translation>
+<translation id="5298611529917615393">Devi esaminare e accettare i termini per utilizzare questa funzionalità</translation>
 <translation id="5299109548848736476">Do not track</translation>
 <translation id="5299558715747014286">Visualizza e gestisci i gruppi delle tue schede</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -11405,6 +11406,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="949807244219288032">La scheda è connessa a un dispositivo HID</translation>
 <translation id="950079950995628542">Di "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>
+<translation id="950728747178241190">Applica cancellazione del rumore e miglioramenti audio. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Elemento installato dall'amministratore</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>

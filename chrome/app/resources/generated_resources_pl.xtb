@@ -1112,7 +1112,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1780273119488802839">Importowanie zakładek...</translation>
 <translation id="1780572199786401845">Zgłoś jako obraźliwe/niebezpieczne.</translation>
 <translation id="178092663238929451">Aby móc odbierać pliki od osób w pobliżu i wysyłać pliki do nich, skonfiguruj Udostępnianie w pobliżu</translation>
-<translation id="1781164264587898620">Zastosuj redukcję szumów i ulepszenia dźwięku.</translation>
 <translation id="1781291988450150470">Obecny kod PIN</translation>
 <translation id="1781502536226964113">Otwórz stronę nowej karty</translation>
 <translation id="1781553166608855614">Język wypowiedzi</translation>
@@ -3613,6 +3612,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3599221874935822507">Uniesiony</translation>
 <translation id="3600051066689725006">Informacje o żądaniu internetowym</translation>
+<translation id="3600956933576601730">Aby korzystać z tych funkcji, musisz przeczytać i zaakceptować warunki</translation>
 <translation id="3601374594714740284">Aby korzystać z głosów wyższej jakości, zwolnij miejsce na urządzeniu</translation>
 <translation id="360180734785106144">Dowiadujesz się o nowych funkcjach, gdy tylko są dostępne</translation>
 <translation id="3602290021589620013">Podgląd</translation>
@@ -5960,6 +5960,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5297984209202974345">Ostatni motyw AI: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Motyw utworzony przez</translation>
 <translation id="5298315677001348398">Czy chcesz kontynuować i zezwolić temu oprogramowaniu na wprowadzanie zmian na urządzeniu?</translation>
+<translation id="5298611529917615393">Aby korzystać z tej funkcji, musisz przeczytać i zaakceptować warunki</translation>
 <translation id="5299109548848736476">Bez śledzenia</translation>
 <translation id="5299558715747014286">Wyświetlanie grup kart i zarządzanie nimi</translation>
 <translation id="5300589172476337783">Pokaż</translation>
@@ -11384,6 +11385,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="949807244219288032">Ta karta jest połączona z urządzeniem HID</translation>
 <translation id="950079950995628542">Z telefonu „<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Przewodnik po konfiguracji</translation>
+<translation id="950728747178241190">Zastosuj redukcję szumów i ulepszenia dźwięku. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />, zainstalowane przez administratora</translation>
 <translation id="951991426597076286">Odrzuć</translation>
 <translation id="952471655966876828">Gdy urządzenie zostanie włączone i będzie używane, automatycznie się połączy</translation>

@@ -1122,7 +1122,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1780273119488802839">Uvažanje zaznamkov ...</translation>
 <translation id="1780572199786401845">Prijavi kot žaljivo/nevarno.</translation>
 <translation id="178092663238929451">Nastavite Deljenje v bližini, če si želite z osebami okoli sebe izmenjevati datoteke.</translation>
-<translation id="1781164264587898620">Uporaba izločanja hrupa in izboljšav zvoka.</translation>
 <translation id="1781291988450150470">Trenutna koda PIN</translation>
 <translation id="1781502536226964113">Odpri nov zavihek s povezavami</translation>
 <translation id="1781553166608855614">Govorjeni jezik</translation>
@@ -3649,6 +3648,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3596414637720633074">Blokiranje piškotkov drugih mest v anonimnem načinu</translation>
 <translation id="3599221874935822507">Dvignjeno</translation>
 <translation id="3600051066689725006">Podatki o spletni zahtevi</translation>
+<translation id="3600956933576601730">Če želite uporabljati te funkcije, morate prebrati in sprejeti pogoje</translation>
 <translation id="3601374594714740284">Za boljšo kakovost glasov počistite prostor v napravi</translation>
 <translation id="360180734785106144">Ponujanje novih funkcij, ko so na voljo</translation>
 <translation id="3602290021589620013">Predogled</translation>
@@ -5998,6 +5998,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5297984209202974345">Nedavna tema, ustvarjena z umetno inteligenco, št. <ph name="INDEX" /> za »<ph name="SUBJECT" />«, v slogu <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Avtor teme</translation>
 <translation id="5298315677001348398">Ali želite nadaljevati in tej programski opremi dovoliti, da spreminja napravo?</translation>
+<translation id="5298611529917615393">Če želite uporabljati to funkcijo, morate pregledati in sprejeti pogoje</translation>
 <translation id="5299109548848736476">Ne sledi</translation>
 <translation id="5299558715747014286">Ogled in upravljanje skupin zavihkov</translation>
 <translation id="5300589172476337783">Pokaži</translation>
@@ -11436,6 +11437,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="949807244219288032">Ta zavihek je povezan z napravo HID</translation>
 <translation id="950079950995628542">Iz telefona »<ph name="PHONE_NAME" />«</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>
+<translation id="950728747178241190">Uporaba izločanja hrupa in izboljšav zvoka. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Namestil skrbnik</translation>
 <translation id="951991426597076286">Zavrni</translation>
 <translation id="952471655966876828">Naprava samodejno vzpostavi povezavo, ko je vklopljena in je v uporabi.</translation>
