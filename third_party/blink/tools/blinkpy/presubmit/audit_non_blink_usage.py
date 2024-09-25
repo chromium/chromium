@@ -984,16 +984,6 @@ _CONFIG = [
             'viz::SurfaceId',
         ],
     },
-    { # Needed for display-state CSS media query
-        'paths': [
-            'third_party/blink/renderer/core/frame',
-            'third_party/blink/renderer/core/css'
-        ],
-        'allowed': [
-            'ui::WindowShowState',
-            'ui::SHOW_STATE_.+',
-        ],
-    },
     {
         'paths': ['third_party/blink/renderer/core/exported/web_form_control_element.cc'],
         'allowed': [
@@ -1196,6 +1186,8 @@ _CONFIG = [
             # The Blink public API is shared between non-Blink and Blink code
             # and must use the regular variants.
             'mojom::.+',
+            'ui::mojom::WindowShowState',
+            'ui::mojom::WindowShowState::.+',
 
             # Metadata for the Storage Access API.
             'net::StorageAccessApiStatus',
