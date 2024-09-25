@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.PREF_KEY_ENABLE_CARD_BENEFIT;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
@@ -84,9 +85,9 @@ public class AutofillCardBenefitsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only enable/disable benefits
-        // toggle with enabled status.
-        Assert.assertEquals(1, getPreferenceScreen(activity).getPreferenceCount());
+        // Verify that the preferences on the initial screen map are only enable/disable benefits
+        // toggle with enabled status and learn about link.
+        Assert.assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
         ChromeSwitchPreference benefitTogglePreference =
                 (ChromeSwitchPreference)
                         getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
@@ -113,9 +114,9 @@ public class AutofillCardBenefitsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only enable/disable benefits
-        // toggle with disabled status.
-        Assert.assertEquals(1, getPreferenceScreen(activity).getPreferenceCount());
+        // Verify that the preferences on the initial screen map are only enable/disable benefits
+        // toggle with disabled status and learn about link.
+        Assert.assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
         ChromeSwitchPreference benefitTogglePreference =
                 (ChromeSwitchPreference)
                         getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
@@ -153,6 +154,24 @@ public class AutofillCardBenefitsFragmentTest {
                             getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
                     Assert.assertTrue(benefitTogglePreference.isChecked());
                 });
+    }
+
+    // Test to verify that learn more text contains the expected text content.
+    @Test
+    @MediumTest
+    public void testCardBenefitsPreferenceScreen_learnMoreLink() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preferences on the initial screen map to card benefits toggle + learn
+        // about link preference.
+        Assert.assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
+
+        Preference linkPreference = getPreferenceScreen(activity).getPreference(1);
+        Assert.assertEquals(
+                linkPreference.getSummary().toString(),
+                activity.getString(
+                                R.string.autofill_settings_page_card_benefits_learn_about_link_text)
+                        .replaceAll("<.?link>", ""));
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

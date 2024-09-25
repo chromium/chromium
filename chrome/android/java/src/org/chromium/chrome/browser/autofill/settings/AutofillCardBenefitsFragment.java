@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -20,11 +24,16 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.ui.text.SpanApplier;
 
 /** Preferences fragment to allow users to manage card benefits linked to their credit cards. */
 public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver,
                 Preference.OnPreferenceChangeListener {
+    public static final String LEARN_MORE_URL =
+            "https://support.google.com/googlepay?p=card_benefits_chrome";
+
     @VisibleForTesting static final String PREF_KEY_ENABLE_CARD_BENEFIT = "enable_card_benefit";
 
     private static Callback<Fragment> sObserverForTest;
@@ -64,6 +73,7 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().setOrderingAsAdded(true);
 
         createCardBenefitSwitch();
+        createLearnAboutCardBenefitsLink();
     }
 
     private Context getStyledContext() {
@@ -83,6 +93,35 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         cardBenefitSwitch.setChecked(mPersonalDataManager.isCardBenefitEnabled());
         cardBenefitSwitch.setOnPreferenceChangeListener(this);
         getPreferenceScreen().addPreference(cardBenefitSwitch);
+    }
+
+    private void createLearnAboutCardBenefitsLink() {
+        TextMessagePreference learnAboutLinkPreference =
+                new TextMessagePreference(getStyledContext(), /* attrs= */ null);
+        learnAboutLinkPreference.setSummary(
+                SpanApplier.applySpans(
+                        getString(
+                                R.string
+                                        .autofill_settings_page_card_benefits_learn_about_link_text),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        openUrlInCct(LEARN_MORE_URL);
+                                    }
+                                })));
+        learnAboutLinkPreference.setDividerAllowedAbove(false);
+        learnAboutLinkPreference.setDividerAllowedBelow(false);
+        getPreferenceScreen().addPreference(learnAboutLinkPreference);
+    }
+
+    private void openUrlInCct(String url) {
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(getContext(), Uri.parse(url));
     }
 
     @Override

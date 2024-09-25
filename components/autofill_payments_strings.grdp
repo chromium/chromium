@@ -1021,6 +1021,9 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUMMARY" desc="Summary for the toggle switch in the card benefits settings page, which allows user enable/disable the card benefit from showing in the payments autofill card selection bottomsheet." formatter_data="android_java">
       Show which rewards and benefits are available for your cards at checkout
     </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LEARN_ABOUT_LINK_TEXT" desc="A label with a link to a help page in the card benefits settings page, which allows users to view help page for card benefits in a new tab." formatter_data="android_java">
+      <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph> about card benefits
+    </message>
   </if>
 
   <!-- Credit card and promo code offers and rewards-related strings -->
