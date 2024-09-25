@@ -52,6 +52,8 @@
 // For getsockopt() call.
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
+
+#include "net/socket/tcp_socket_io_completion_port_win.h"
 #else  // !BUILDFLAG(IS_WIN)
 #include <sys/socket.h>
 #endif  //  !BUILDFLAG(IS_WIN)
@@ -447,47 +449,71 @@ TEST_P(TCPSocketTest, AcceptIPv6) {
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 }
 
+namespace {
+
+void TestReadWrite(std::unique_ptr<TCPSocket> socket1,
+                   std::unique_ptr<TCPSocket> socket2) {
+  const std::string message("test message");
+  const auto drainable_write_buffer = base::MakeRefCounted<DrainableIOBuffer>(
+      base::MakeRefCounted<StringIOBuffer>(message), message.size());
+
+  while (drainable_write_buffer->BytesRemaining() > 0) {
+    TestCompletionCallback write_callback;
+    int write_result = socket1->Write(
+        drainable_write_buffer.get(), drainable_write_buffer->BytesRemaining(),
+        write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+    write_result = write_callback.GetResult(write_result);
+    ASSERT_GE(write_result, 0);
+    ASSERT_LE(write_result, drainable_write_buffer->BytesRemaining());
+    drainable_write_buffer->DidConsume(write_result);
+  }
+
+  const auto read_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(message.size());
+  const auto drainable_read_buffer =
+      base::MakeRefCounted<DrainableIOBuffer>(read_buffer, read_buffer->size());
+
+  while (drainable_read_buffer->BytesRemaining() > 0) {
+    TestCompletionCallback read_callback;
+    int read_result = socket2->Read(drainable_read_buffer.get(),
+                                    drainable_read_buffer->BytesRemaining(),
+                                    read_callback.callback());
+    read_result = read_callback.GetResult(read_result);
+    ASSERT_GE(read_result, 0);
+    ASSERT_LE(read_result, drainable_read_buffer->BytesRemaining());
+    drainable_read_buffer->DidConsume(read_result);
+  }
+
+  const std::string received_message(read_buffer->data(), read_buffer->size());
+  EXPECT_EQ(message, received_message);
+}
+
+}  // namespace
+
 TEST_P(TCPSocketTest, ReadWrite) {
   ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
-  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
-
-  const std::string message("test message");
-  std::vector<char> buffer(message.size());
-
-  size_t bytes_written = 0;
-  while (bytes_written < message.size()) {
-    scoped_refptr<IOBufferWithSize> write_buffer =
-        base::MakeRefCounted<IOBufferWithSize>(message.size() - bytes_written);
-    memmove(write_buffer->data(), message.data() + bytes_written,
-            message.size() - bytes_written);
-
-    TestCompletionCallback write_callback;
-    int write_result = accepted_socket->Write(
-        write_buffer.get(), write_buffer->size(), write_callback.callback(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-    write_result = write_callback.GetResult(write_result);
-    ASSERT_TRUE(write_result >= 0);
-    bytes_written += write_result;
-    ASSERT_TRUE(bytes_written <= message.size());
-  }
-
-  size_t bytes_read = 0;
-  while (bytes_read < message.size()) {
-    scoped_refptr<IOBufferWithSize> read_buffer =
-        base::MakeRefCounted<IOBufferWithSize>(message.size() - bytes_read);
-    TestCompletionCallback read_callback;
-    int read_result = connecting_socket->Read(
-        read_buffer.get(), read_buffer->size(), read_callback.callback());
-    read_result = read_callback.GetResult(read_result);
-    ASSERT_TRUE(read_result >= 0);
-    ASSERT_TRUE(bytes_read + read_result <= message.size());
-    memmove(&buffer[bytes_read], read_buffer->data(), read_result);
-    bytes_read += read_result;
-  }
-
-  std::string received_message(buffer.begin(), buffer.end());
-  ASSERT_EQ(message, received_message);
+  auto [socket1, socket2] = CreateIPv4SocketPair();
+  TestReadWrite(std::move(socket1), std::move(socket2));
 }
+
+#if BUILDFLAG(IS_WIN)
+// Same test as above, but exercises the code used when
+// `FILE_SKIP_COMPLETION_PORT_ON_SUCCESS` is not supported.
+TEST_P(TCPSocketTest, ReadWriteNoSkipCompletionPortOnSuccess) {
+  if (!IsTcpSocketIoCompletionPortWinEnabled()) {
+    // FILE_SKIP_COMPLETION_PORT_ON_SUCCESS is only used by
+    // `TcpSocketIoCompletionPortWin`.
+    return;
+  }
+
+  TcpSocketIoCompletionPortWin::DisableSkipCompletionPortOnSuccessForTesting
+      disable_skip_completion_port_on_success;
+
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [socket1, socket2] = CreateIPv4SocketPair();
+  TestReadWrite(std::move(socket1), std::move(socket2));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Destroy a TCPSocket while there's a pending read, and make sure the read
 // IOBuffer that the socket was holding on to is destroyed.

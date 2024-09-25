@@ -24,6 +24,18 @@ class SocketPerformanceWatcher;
 // TCPSocketDefaultWin.
 class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
  public:
+  // Disables usage of FILE_SKIP_COMPLETION_PORT_ON_SUCCESS in a scope. This
+  // only affect sockets on which `Read()` or `Write()` hasn't been called yet.
+  class NET_EXPORT DisableSkipCompletionPortOnSuccessForTesting {
+   public:
+    DisableSkipCompletionPortOnSuccessForTesting();
+    ~DisableSkipCompletionPortOnSuccessForTesting();
+    DisableSkipCompletionPortOnSuccessForTesting(
+        const DisableSkipCompletionPortOnSuccessForTesting&) = delete;
+    DisableSkipCompletionPortOnSuccessForTesting& operator=(
+        const DisableSkipCompletionPortOnSuccessForTesting&) = delete;
+  };
+
   TcpSocketIoCompletionPortWin(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
@@ -57,9 +69,10 @@ class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
  private:
   class CoreImpl;
 
-  // Ensures that `core_` is registered as an IO handler for `socket_`, i.e. it
-  // will be notified when an I/O completion packet for `socket_` is processed.
-  void EnsureRegisteredAsIOHandler();
+  // Ensures that overlapped IO is initialized for `socket_`. This entails:
+  // - Registering `core_` as an IO handler.
+  // - Attempting to activate `FILE_SKIP_COMPLETION_PORT_ON_SUCCESS`.
+  void EnsureOverlappedIOInitialized();
 
   // Handles a completed read/write operation on `socket_`. `bytes_transferred`
   // is the number of bytes actually read/written. `error` is the error code for
@@ -81,6 +94,10 @@ class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
 
   // Number of read operations waiting for an I/O completion packet.
   int num_pending_reads_ = 0;
+
+  // Whether queuing a completion packet is skipped when an operation on
+  // `socket_` succeeds immediately.
+  bool skip_completion_port_on_success_ = false;
 };
 
 }  // namespace net
