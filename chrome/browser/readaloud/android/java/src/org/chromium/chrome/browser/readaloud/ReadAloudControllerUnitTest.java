@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -117,6 +116,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -133,11 +133,14 @@ public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL sTestRedirectGURL = JUnitTestGURLs.URL_1_WITH_PATH;
     private static final long KNOWN_READABLE_TRIAL_PTR = 12345678L;
+    private static final Locale EN_US = new Locale("en", "US");
+    private static final Locale FR_FR = new Locale("fr", "FR");
 
     private MockTab mTab;
     private ReadAloudController mController;
     private ReadAloudController mController2;
     private Activity mActivity;
+    private Locale mDefaultLocale;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -208,6 +211,8 @@ public class ReadAloudControllerUnitTest {
 
     @Before
     public void setUp() {
+        mDefaultLocale = Locale.getDefault();
+
         MockitoAnnotations.initMocks(this);
         ShadowPostTask.setTestImpl(
                 new TestImpl() {
@@ -332,6 +337,7 @@ public class ReadAloudControllerUnitTest {
 
     @After
     public void tearDown() {
+        Locale.setDefault(mDefaultLocale);
         mUserActionTester.tearDown();
         ReadAloudFeatures.shutdown();
         mController.destroy();
@@ -1043,7 +1049,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testPlayTranslatedTab_tabLanguageEmpty() {
-        AppLocaleUtils.setAppLanguagePref("fr-FR");
+        Locale.setDefault(FR_FR);
 
         mFakeTranslateBridge.setIsPageTranslated(true);
         mFakeTranslateBridge.setCurrentLanguage("");
@@ -1052,6 +1058,8 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
+        // Without translate bridge reporting a language for the page, fall back to the system
+        // language.
         verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
         assertEquals("fr", mPlaybackArgsCaptor.getValue().getLanguage());
     }
@@ -1059,7 +1067,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPlayTranslatedTab_unsupportedLanguage() {
         doReturn(List.of()).when(mPlaybackHooks).getVoicesFor(anyString());
-        mFakeTranslateBridge.setCurrentLanguage("pl-PL");
+        mFakeTranslateBridge.setCurrentLanguage("zz-ZZ");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
@@ -1071,7 +1079,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testPlayTranslatedTab_tabLanguageUnd() {
-        AppLocaleUtils.setAppLanguagePref("fr-FR");
+        Locale.setDefault(FR_FR);
 
         mFakeTranslateBridge.setIsPageTranslated(true);
         mFakeTranslateBridge.setCurrentLanguage("und");
@@ -1080,14 +1088,14 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
+        // Without translate bridge reporting a language for the page, fall back to the system
+        // language.
         verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
         assertEquals("fr", mPlaybackArgsCaptor.getValue().getLanguage());
     }
 
     @Test
     public void testPlayUntranslatedTab() {
-        AppLocaleUtils.setAppLanguagePref("fr-FR");
-
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("fr");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
@@ -1095,6 +1103,8 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
+        // If page isn't translated, don't send a language and instead let the server decide the
+        // language.
         verify(mPlaybackHooks).createPlayback(mPlaybackArgsCaptor.capture(), any());
         assertEquals(null, mPlaybackArgsCaptor.getValue().getLanguage());
     }

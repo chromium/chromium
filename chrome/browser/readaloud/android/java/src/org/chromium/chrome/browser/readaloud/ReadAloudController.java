@@ -40,7 +40,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -82,6 +81,7 @@ import org.chromium.url.GURL;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -1217,7 +1217,7 @@ public class ReadAloudController
         String language =
                 webContents == null ? null : TranslateBridge.getCurrentLanguage(webContents);
         if (language == null || language.isEmpty() || language.equals("und")) {
-            language = AppLocaleUtils.getAppLanguagePref();
+            language = Locale.getDefault().getLanguage();
         }
 
         if (language == null) {
