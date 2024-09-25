@@ -36,9 +36,11 @@ import {$$} from './utils.js';
 export interface HorizontalCarouselElement {
   $: {
     backButton: HTMLElement,
+    backButtonContainer: HTMLElement,
     carouselContainer: HTMLElement,
     endProbe: HTMLElement,
     forwardButton: HTMLElement,
+    forwardButtonContainer: HTMLElement,
     slottedTable: HTMLSlotElement,
     startProbe: HTMLElement,
   };
@@ -88,12 +90,14 @@ export class HorizontalCarouselElement extends CrLitElement {
   protected showBackButton_: boolean = false;
 
   private intersectionObserver_: IntersectionObserver|null = null;
+  private resizeObserver_: ResizeObserver|null = null;
   private scrolledToEnd_: boolean = false;
   private scrolledToStart_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.intersectionObserver_ = this.getIntersectionObserver_();
+    this.intersectionObserver_ = this.createIntersectionObserver_();
+    this.resizeObserver_ = this.createResizeObserver_();
   }
 
   override disconnectedCallback() {
@@ -101,6 +105,10 @@ export class HorizontalCarouselElement extends CrLitElement {
     if (this.intersectionObserver_) {
       this.intersectionObserver_.disconnect();
       this.intersectionObserver_ = null;
+    }
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
     }
   }
 
@@ -112,7 +120,7 @@ export class HorizontalCarouselElement extends CrLitElement {
     this.$.carouselContainer.scrollBy({left: this.columnOffsetWidth_});
   }
 
-  private getIntersectionObserver_(): IntersectionObserver {
+  private createIntersectionObserver_(): IntersectionObserver {
     const observer = new IntersectionObserver(entries => {
       let tmpCanScroll = false;
       entries.forEach(entry => {
@@ -133,6 +141,29 @@ export class HorizontalCarouselElement extends CrLitElement {
     }, {root: this.$.carouselContainer});
     observer.observe(this.$.startProbe);
     observer.observe(this.$.endProbe);
+    return observer;
+  }
+
+  private createResizeObserver_(): ResizeObserver {
+    const observer = new ResizeObserver(() => {
+      const carouselHeight =
+          this.$.carouselContainer.getBoundingClientRect().height;
+      const carouselOffset =
+          this.$.carouselContainer.getBoundingClientRect().top;
+      if (carouselHeight > window.innerHeight - carouselOffset) {
+        // Reset to CSS defined style.
+        this.$.backButtonContainer.attributeStyleMap.delete('top');
+        this.$.forwardButtonContainer.attributeStyleMap.delete('top');
+        return;
+      }
+
+      // Force the carousel arrows to appear in the middle of the table, since
+      // the percentage value uses the nearest scrolling ancestor's height.
+      const buttonTopPx = carouselOffset + carouselHeight * 0.44;
+      this.$.backButtonContainer.style.top = `${buttonTopPx}px`;
+      this.$.forwardButtonContainer.style.top = `${buttonTopPx}px`;
+    });
+    observer.observe(this.$.carouselContainer);
     return observer;
   }
 

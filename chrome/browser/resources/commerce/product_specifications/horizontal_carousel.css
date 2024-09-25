@@ -34,7 +34,7 @@
 .carousel-button-container {
   height: 0;
   position: sticky;
-  top: min(44vh, 44%);
+  top: 44%;
   width: 0;
   z-index: 1; /* Buttons should display on top of any overflowing text. */
 }
