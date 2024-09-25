@@ -1766,7 +1766,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'e6ad499c1788e4d344e3d4d7c47e5cb691f99290',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '5e9bf802696b2c0e0dad5085af9915cc80e0b54c',
     'condition': 'checkout_src_internal',
   },
 
