@@ -1,6 +1,6 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 957950b792fb0fda8fa95983434be265729bb75b
+Version: 3dd8f233551432ea3e5a4eaf689890c6fc9db357
 CPEPrefix: cpe:/a:hunspell_project:hunspell:1.6.2
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: COPYING.MPL
@@ -8,7 +8,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell 957950b792fb0fda8fa95983434be265729bb75b with
+This is a partial copy of Hunspell 3dd8f233551432ea3e5a4eaf689890c6fc9db357 with
 the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
@@ -33,7 +33,7 @@ steps, or simply run update_google_patch.sh from the commandline.
 1) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout 957950b792fb0fda8fa95983434be265729bb75b
+   $ git checkout 3dd8f233551432ea3e5a4eaf689890c6fc9db357
 2) Apply the existing patch:
    $ patch -p1 -i ~/src/third_party/hunspell/google.patch
 3) Make your new changes inside the git hunspell directory.
