@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -22,15 +21,12 @@
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
-#include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -84,10 +80,6 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment1[] = {
 constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
     gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
-
-base::FilePath GetInkTestDataFilePath(std::string_view filename) {
-  return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
-}
 
 class FakeClient : public PdfInkModuleClient {
  public:
@@ -481,27 +473,6 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     return ink_module().GetVisibleStrokesInputPositionsForTesting();
   }
 
-  void DrawWithSizeAndCompare(const gfx::Size& bitmap_size,
-                              std::string_view expected_png_filename) {
-    // Uses MakeN32Premul() and clear the canvas just like
-    // PdfViewWebPlugin::Paint().
-    SkBitmap bitmap;
-    bitmap.allocPixels(
-        SkImageInfo::MakeN32Premul(bitmap_size.width(), bitmap_size.height()));
-    SkCanvas canvas(bitmap);
-    canvas.clear(SK_ColorTRANSPARENT);
-    ink_module().Draw(canvas);
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER) || !defined(NDEBUG)
-    // Some build configs may not have a pixel-perfect match.
-    EXPECT_TRUE(FuzzyMatchesPngFile(
-        bitmap.asImage().get(), GetInkTestDataFilePath(expected_png_filename)));
-#else
-    EXPECT_TRUE(MatchesPngFile(bitmap.asImage().get(),
-                               GetInkTestDataFilePath(expected_png_filename)));
-#endif
-  }
-
  private:
   void ApplyStrokeWithMouseAtPointsMaybeHandled(
       const gfx::PointF& mouse_down_point,
@@ -583,13 +554,27 @@ TEST_F(PdfInkModuleStrokeTest, DrawRenderTransform) {
 
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  constexpr gfx::Size kBitmapSize(100, 100);
-  DrawWithSizeAndCompare(kBitmapSize,
-                         "draw_render_transform_simple_stroke.png");
+  // Simulate drawing the strokes, and verify that the expected transform was
+  // used.
+  std::vector<ink::AffineTransform> draw_render_transforms;
+  ink_module().SetDrawRenderTransformCallbackForTesting(
+      base::BindLambdaForTesting([&](const ink::AffineTransform& transform) {
+        draw_render_transforms.push_back(transform);
+      }));
+  SkCanvas canvas;
+  ink_module().Draw(canvas);
 
-  // But if the one and only page is not visible, then Draw() does nothing.
+  // Just one transform provided, to match the captured stroke.
+  EXPECT_THAT(draw_render_transforms,
+              ElementsAre(InkAffineTransformEq(-1.0f, 0.0f, 54.0f, 0.0f, -1.0f,
+                                               44.0f)));
+
+  // But if the one and only page is not visible, then Draw() does no transform
+  // calculations.
+  draw_render_transforms.clear();
   client().set_page_visibility(0, false);
-  DrawWithSizeAndCompare(kBitmapSize, "draw_render_transform_blank.png");
+  ink_module().Draw(canvas);
+  EXPECT_TRUE(draw_render_transforms.empty());
 }
 
 TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {

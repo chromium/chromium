@@ -124,6 +124,9 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
     const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
     const ink::AffineTransform transform =
         GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
+    if (draw_render_transform_callback_for_testing_) {
+      draw_render_transform_callback_for_testing_.Run(transform);
+    }
 
     SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
     canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
@@ -146,6 +149,9 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
         client_->GetPageContentsRect(state.page_index);
     const ink::AffineTransform transform =
         GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
+    if (draw_render_transform_callback_for_testing_) {
+      draw_render_transform_callback_for_testing_.Run(transform);
+    }
 
     SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
     canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
@@ -273,6 +279,11 @@ PdfInkModule::GetVisibleStrokesInputPositionsForTesting() const {
   }
 
   return all_strokes_points;
+}
+
+void PdfInkModule::SetDrawRenderTransformCallbackForTesting(
+    RenderTransformCallback callback) {
+  draw_render_transform_callback_for_testing_ = std::move(callback);
 }
 
 bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
