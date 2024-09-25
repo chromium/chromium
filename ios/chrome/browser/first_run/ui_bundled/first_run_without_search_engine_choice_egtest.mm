@@ -71,26 +71,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector
-            (testHistorySyncShownWithEquallyWeightedButtons)] ||
-      [self isRunningTest:@selector
-            (testHistorySyncShownWithoutMinorModeRestrictions)] ||
-      [self
-          isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
-              )] ||
-      [self
-          isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeoutThenDeclined
-              )]) {
-    config.features_enabled.push_back(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-  if ([self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
-    config.features_disabled.push_back(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
   if ([self isRunningTest:@selector
             (testHistorySyncShownWithEquallyWeightedButtons)]) {
     config.features_enabled.push_back(switches::kAlwaysLoadDeviceAccounts);

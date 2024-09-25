@@ -6,8 +6,6 @@ import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
   sources = [
-    "account_capabilities_latency_tracker.h",
-    "account_capabilities_latency_tracker.mm",
     "authentication_flow.h",
     "authentication_flow.mm",
     "authentication_flow_performer.h",

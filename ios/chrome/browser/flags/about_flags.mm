@@ -1575,11 +1575,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableColorLensAndVoiceIconsInHomeScreenWidget)},
-    {"minor-mode-restrictions-for-history-sync-opt-in",
-     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
-     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
     {"autofill-enable-card-benefits-for-american-express",
      flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
      flag_descriptions::

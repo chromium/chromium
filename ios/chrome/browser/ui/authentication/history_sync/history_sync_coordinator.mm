@@ -8,7 +8,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -271,12 +270,6 @@
 #pragma mark - Private
 
 - (void)recordActionButtonTappedWithHistorySyncCompleted:(BOOL)completed {
-  if (!(base::FeatureList::GetInstance() &&
-        base::FeatureList::GetInstance()->IsFeatureOverridden(
-            switches::kMinorModeRestrictionsForHistorySyncOptIn.name))) {
-    return;
-  }
-
   std::optional<signin_metrics::SyncButtonClicked> buttonClicked;
   switch (_viewController.actionButtonsVisibility) {
     case ActionButtonsVisibility::kDefault:

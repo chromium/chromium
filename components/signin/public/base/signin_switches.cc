@@ -137,21 +137,6 @@ bool IsImprovedSigninUIOnDesktopEnabled() {
 }
 
 #if BUILDFLAG(IS_IOS)
-
-BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
-             "MinorModeRestrictionsForHistorySyncOptIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Based on Signin.AccountCapabilities.UserVisibleLatency
-constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs = 500;
-
-const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs{
-    &kMinorModeRestrictionsForHistorySyncOptIn,
-    /*name=*/"MinorModeRestrictionsFetchDeadlineMs",
-    kMinorModeRestrictionsFetchDeadlineDefaultValueMs};
-#endif
-
-#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableClearCut,
              "EnableClearcut",
              base::FEATURE_ENABLED_BY_DEFAULT);

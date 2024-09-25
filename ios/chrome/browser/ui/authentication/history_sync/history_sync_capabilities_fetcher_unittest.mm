@@ -7,7 +7,6 @@
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -17,6 +16,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -34,8 +34,6 @@ class HistorySyncCapabilitiesFetcherTest
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
     browser_state_ = std::move(builder).Build();
-    feature_list_.InitAndEnableFeature(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }
 
   void TearDown() override {
@@ -74,7 +72,6 @@ class HistorySyncCapabilitiesFetcherTest
  protected:
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   HistorySyncCapabilitiesFetcher* fetcher_ = nil;
 };
@@ -181,8 +178,7 @@ TEST_P(HistorySyncCapabilitiesFetcherTest, TestCapabilityFetchDeadline) {
   fetcher_ = BuildHistorySyncCapabilitiesFetcher();
 
   [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
-  scoped_clock.Advance(base::Milliseconds(
-      switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
+  scoped_clock.Advance(kMinorModeRestrictionsFetchDeadline);
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(

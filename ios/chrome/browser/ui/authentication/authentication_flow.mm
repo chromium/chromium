@@ -14,7 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
@@ -625,9 +624,7 @@ bool HasMachineLevelPolicies() {
 
 // Return YES if capabilities should be fetched for the History Sync screen.
 - (BOOL)shouldFetchCapabilities {
-  if (!self.precedingHistorySync ||
-      !base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+  if (!self.precedingHistorySync) {
     return NO;
   }
 

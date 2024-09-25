@@ -6,11 +6,9 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
@@ -18,7 +16,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -43,9 +40,6 @@
   raw_ptr<syncer::SyncService> _syncService;
   // `YES` if the user's email should be shown in the footer text.
   BOOL _showUserEmail;
-  // Records the latency of capabilities fetch for this view.
-  std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
-      _accountCapabilitiesLatencyTracker;
   // Capabilities fetcher to determine minor mode restriction.
   HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
   // This boolean should help to understand CHECK failure with
@@ -73,22 +67,14 @@
                                                                 self);
     _syncService = syncService;
     _showUserEmail = showUserEmail;
-
-    if ([self useMinorModeRestrictions]) {
-      _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-          initWithIdentityManager:identityManager];
-    } else {
-      _accountCapabilitiesLatencyTracker =
-          std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
-              identityManager);
-    }
+    _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
+        initWithIdentityManager:identityManager];
   }
 
   return self;
 }
 
 - (void)disconnect {
-  _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   [_capabilitiesFetcher shutdown];
@@ -147,11 +133,9 @@
           : l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
   [_consumer setFooterText:footerText];
 
-  if ([self useMinorModeRestrictions]) {
-    [self.consumer
-        displayButtonsWithRestrictionCapability:
-            [_capabilitiesFetcher canShowUnrestrictedOptInsCapability]];
-  }
+  [self.consumer
+      displayButtonsWithRestrictionCapability:
+          [_capabilitiesFetcher canShowUnrestrictedOptInsCapability]];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -177,12 +161,6 @@
   }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  if (![self useMinorModeRestrictions]) {
-    _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
-  }
-}
-
 #pragma mark - Private
 
 // Updates the avatar image for the consumer from `identity`.
@@ -199,11 +177,6 @@
         stringWithFormat:@"%@ %@", identity.userFullName, identity.userEmail];
   }
   [self.consumer setPrimaryIdentityAvatarAccessibilityLabel:accessibilityLabel];
-}
-
-- (BOOL)useMinorModeRestrictions {
-  return base::FeatureList::IsEnabled(
-      switches::kMinorModeRestrictionsForHistorySyncOptIn);
 }
 
 @end

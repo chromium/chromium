@@ -571,11 +571,6 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
-// Title and Description for the flag that controls the view mode for (history)
-// sync screen.
-extern const char kMinorModeRestrictionsForHistorySyncOptInName[];
-extern const char kMinorModeRestrictionsForHistorySyncOptInDescription[];
-
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
 extern const char kMetrickitNonCrashReportName[];
