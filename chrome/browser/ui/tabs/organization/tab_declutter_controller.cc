@@ -15,6 +15,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -110,6 +111,20 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
   }
 
   return tabs;
+}
+
+void TabDeclutterController::DeclutterTabs(
+    std::vector<tabs::TabModel*> tab_models) {
+  for (tabs::TabModel* tab_model : tab_models) {
+    if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
+        TabStripModel::kNoTab) {
+      continue;
+    }
+
+    tab_strip_model_->CloseWebContentsAt(
+        tab_strip_model_->GetIndexOfWebContents(tab_model->GetContents()),
+        TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  }
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(

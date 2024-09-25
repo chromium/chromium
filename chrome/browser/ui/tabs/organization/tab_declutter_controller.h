@@ -64,6 +64,9 @@ class TabDeclutterController {
   virtual std::vector<tabs::TabModel*> GetStaleTabs();
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
+  // Closes the tabs from the tabstrip if they are present.
+  void DeclutterTabs(std::vector<tabs::TabModel*> tab_models);
+
  private:
   void StartDeclutterTimer();
   bool DeclutterNudgeCriteriaMet(const std::vector<tabs::TabModel*> stale_tabs);

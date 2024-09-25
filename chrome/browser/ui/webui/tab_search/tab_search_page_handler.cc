@@ -267,11 +267,28 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 }
 
 void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
-  // TODO(crbug.com/358382903): Route this through TabDeclutterService and add
-  // metrics logging. Potentially also invoke IPH pending UX.
-  for (auto id : tab_ids) {
-    CloseTab(id);
+  // TODO(crbug.com/358382903): Add metrics logging.
+  // Potentially also invoke IPH pending UX.
+  tabs::TabDeclutterController* controller = GetTabDeclutterController();
+  if (!controller) {
+    return;
   }
+
+  std::vector<tabs::TabModel*> tab_models;
+
+  // Add tabs that are present in the current browser.
+  for (auto tab_id : tab_ids) {
+    std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
+    if (!optional_details || optional_details->tab_strip_model.get() !=
+                                 controller->tab_strip_model()) {
+      continue;
+    }
+
+    const int tab_index = optional_details->index;
+    tab_models.push_back(
+        controller->tab_strip_model()->GetTabAtIndex(tab_index));
+  }
+  controller->DeclutterTabs(tab_models);
 }
 
 void TabSearchPageHandler::AcceptTabOrganization(

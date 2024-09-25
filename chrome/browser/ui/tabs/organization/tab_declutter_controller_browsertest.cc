@@ -18,6 +18,7 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -302,4 +303,45 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   EXPECT_EQ(tab_declutter_controller()->next_nudge_valid_time_ticks(),
             task_runner->GetMockTickClock()->NowTicks() +
                 tab_declutter_controller()->nudge_timer_interval_minutes());
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
+  // Add 12 tabs that are 2 days old (not stale) and 4 tabs that are 8 days old
+  // (stale).
+  AddTabsWithLastActiveTime(12, 2);
+  AddTabsWithLastActiveTime(4, 8);
+
+  std::vector<tabs::TabModel*> stale_tabs =
+      tab_declutter_controller()->GetStaleTabs();
+
+  int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int stale_tab_count = stale_tabs.size();
+  tab_declutter_controller()->DeclutterTabs(stale_tabs);
+
+  // Verify that the number of tabs has decreased by the number of stale tabs.
+  int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
+  EXPECT_EQ(remaining_tab_count, initial_tab_count - stale_tab_count);
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestDoesNotDeclutterTabForAnotherBrowser) {
+  Browser* browser_two =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  chrome::AddTabAt(browser_two, GURL(), -1, true);
+
+  // Add 12 tabs that are 2 days old (not stale) and 4 tabs that are 8 days old
+  // (stale) in browser_one.
+  AddTabsWithLastActiveTime(12, 2);
+  AddTabsWithLastActiveTime(4, 8);
+
+  std::vector<tabs::TabModel*> stale_tabs =
+      tab_declutter_controller()->GetStaleTabs();
+
+  EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
+  browser_two->browser_window_features()
+      ->tab_declutter_controller()
+      ->DeclutterTabs(stale_tabs);
+
+  // Verify that the number of tabs has not decreased in second browser.
+  EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
 }
