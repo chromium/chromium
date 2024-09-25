@@ -168,9 +168,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
-    private ReadAloudIPHController mReadAloudIPHController;
-    private ReadLaterIPHController mReadLaterIPHController;
-    private DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
+    private ReadAloudIPHController mReadAloudIphController;
+    private ReadLaterIPHController mReadLaterIphController;
+    private DesktopSiteSettingsIPHController mDesktopSiteSettingsIphController;
     private RtlGestureNavIphController mRtlGestureNavIphController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
@@ -454,8 +454,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mToolbarButtonInProductHelpController.destroy();
         }
 
-        if (mReadAloudIPHController != null) {
-            mReadAloudIPHController.destroy();
+        if (mReadAloudIphController != null) {
+            mReadAloudIphController.destroy();
         }
 
         if (mWebFeedFollowIntroController != null) {
@@ -491,9 +491,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mNotificationPermissionController = null;
         }
 
-        if (mDesktopSiteSettingsIPHController != null) {
-            mDesktopSiteSettingsIPHController.destroy();
-            mDesktopSiteSettingsIPHController = null;
+        if (mDesktopSiteSettingsIphController != null) {
+            mDesktopSiteSettingsIphController.destroy();
+            mDesktopSiteSettingsIphController = null;
         }
 
         if (mRtlGestureNavIphController != null) {
@@ -686,7 +686,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         SupplierUtils.waitForAll(
                 mCallbackController.makeCancelable(
                         () -> {
-                            initializeIPH(
+                            initializeIph(
                                     mProfileSupplier.get().getOriginalProfile(),
                                     mIntentMetadataOneshotSupplier.get().getIsIntentWithEffect());
                         }),
@@ -829,26 +829,26 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    boolean maybeTriggerPSDialogSuppression(Profile profile) {
+    boolean maybeTriggerPsDialogSuppression(Profile profile) {
         // Handles whether the PS Dialog should be suppressed, logs whether it was suppressed and
         // returns whether a promo was triggered
         Tab tab = mActivityTabProvider.get();
 
         boolean isTabLaunchedFromExternalApp =
                 tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
-        boolean shouldSuppressPSDialogForExternalAppLaunches =
+        boolean shouldSuppressPsDialogForExternalAppLaunches =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
                         "suppress-dialog-for-external-app-launches",
                         true);
-        boolean shouldSuppressPSDialog =
-                isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
+        boolean shouldSuppressPsDialog =
+                isTabLaunchedFromExternalApp && shouldSuppressPsDialogForExternalAppLaunches;
 
         String histogramName =
                 "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
-        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
+        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPsDialog);
 
-        if (!shouldSuppressPSDialog) {
+        if (!shouldSuppressPsDialog) {
             return PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                     mActivity, profile, SurfaceType.BR_APP, mWindowAndroid);
         }
@@ -857,11 +857,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean maybeTriggerPrivacySandboxPrompt(Profile profile) {
-        return maybeTriggerPSDialogSuppression(profile);
+        return maybeTriggerPsDialogSuppression(profile);
     }
 
     // Private class methods
-    private void initializeIPH(Profile profile, boolean intentWithEffect) {
+    private void initializeIph(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController =
                 new ToolbarButtonInProductHelpController(
@@ -874,7 +874,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mIsInOverviewModeSupplier,
                         mToolbarManager.getMenuButtonView(),
                         mToolbarManager.getSecurityIconView());
-        mReadAloudIPHController =
+        mReadAloudIphController =
                 new ReadAloudIPHController(
                         mActivity,
                         profile,
@@ -883,7 +883,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivityTabProvider,
                         mReadAloudControllerSupplier,
                         /* showAppMenuTextBubble= */ true);
-        mReadLaterIPHController =
+        mReadLaterIphController =
                 new ReadLaterIPHController(
                         mActivity,
                         profile,
@@ -903,7 +903,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
-            mReadLaterIPHController.showColdStartIPH();
+            mReadLaterIphController.showColdStartIPH();
             if (MultiWindowUtils.instanceSwitcherEnabled()
                     && MultiWindowUtils.shouldShowManageWindowsMenu()) {
                 MultiInstanceIphController.maybeShowInProductHelp(
@@ -987,13 +987,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!didTriggerPromo && PageZoomCoordinator.shouldShowMenuItem()) {
             // Page Zoom IPH should only show if the menu item is visible, and not on NTP or CCT.
             if (tab != null && tab.getWebContents() != null && !tab.isNativePage()) {
-                PageZoomIPHController mPageZoomIPHController =
+                PageZoomIPHController mPageZoomIphController =
                         new PageZoomIPHController(
                                 mActivity,
                                 profile,
                                 mAppMenuCoordinator.getAppMenuHandler(),
                                 mToolbarManager.getMenuButtonView());
-                mPageZoomIPHController.showColdStartIPH();
+                mPageZoomIphController.showColdStartIPH();
             }
         }
     }
@@ -1193,7 +1193,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
         // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
-        mReadLaterIPHController.onCopyContextMenuItemClicked();
+        mReadLaterIphController.onCopyContextMenuItemClicked();
     }
 
     /**
