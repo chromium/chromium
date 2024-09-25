@@ -662,11 +662,18 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   CanvasElement().SetResourceProviderForTesting(
       std::move(provider),
       std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  ASSERT_TRUE(CanvasElement().IsResourceValid());
 
   EXPECT_FALSE(Context2D()
                    ->GetImage(FlushReason::kTesting)
                    ->PaintImageForCurrentFrame()
                    .IsTextureBacked());
+
+  // The GetImage() call should have preserved the rasterization mode as well as
+  // the validity of the resource.
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
 }
 
 TEST_P(CanvasRenderingContext2DTest, GetImageAfterContextLoss) {
@@ -733,6 +740,7 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAcceleration) {
       std::move(provider),
       std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  ASSERT_TRUE(CanvasElement().IsResourceValid());
 
   // Verify that CanvasRenderingContext2D::GetImage() creates an accelerated
   // image given that the underlying CanvasResourceProvider does so.
@@ -741,8 +749,10 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAcceleration) {
                   ->PaintImageForCurrentFrame()
                   .IsTextureBacked());
 
-  // The GetImage() call should have preserved GPU rasterization.
+  // The GetImage() call should have preserved the rasterization mode as well as
+  // the validity of the resource.
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
 }
 
 TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
