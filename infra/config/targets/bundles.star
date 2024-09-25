@@ -372,7 +372,6 @@ targets.bundle(
         "cast_audio_backend_unittests",
         "cast_base_unittests",
         "cast_cast_core_unittests",
-        "cast_crash_unittests",
         "cast_display_settings_unittests",
         "cast_media_unittests",
         "cast_shell_unittests",
@@ -423,6 +422,7 @@ targets.bundle(
 targets.bundle(
     name = "chromium_linux_cast_receiver_gtests",
     targets = [
+        "cast_crash_unittests",
         "cast_graphics_unittests",
         "cast_receiver_gtests",
         "cast_shell_browsertests",
