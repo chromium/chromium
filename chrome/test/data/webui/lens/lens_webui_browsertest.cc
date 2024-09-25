@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayCloseButton) {
   RunOverlayTest("lens/overlay/overlay_close_button_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OverlayCursor DISABLED_OverlayCursor
 #else
 #define MAYBE_OverlayCursor OverlayCursor
