@@ -1071,7 +1071,7 @@
   {
     "name": "block-insecure-private-network-requests",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {  "name": "blue-dot-on-tools-menu-button",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
@@ -7294,27 +7294,27 @@
   {
     "name": "private-network-access-ignore-navigation-errors",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "private-network-access-ignore-worker-errors",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "private-network-access-permission-prompt",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 136
   },
   {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "private-network-access-respect-preflight-results",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "private-state-tokens-dev-ui",
