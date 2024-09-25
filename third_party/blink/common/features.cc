@@ -186,6 +186,10 @@ BASE_FEATURE(kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe,
              "AvoidForcedLayoutOnInitialEmptyDocumentInSubframe",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBFCacheOpenBroadcastChannel,
+             "BFCacheOpenBroadcastChannel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -447,6 +451,13 @@ BASE_FEATURE(kCacheStorageCodeCacheHintHeader,
 const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
     &kCacheStorageCodeCacheHintHeader, "name", "x-CacheStorageCodeCacheHint"};
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+// Enables camera preview in permission bubble and site settings.
+BASE_FEATURE(kCameraMicPreview,
+             "CameraMicPreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Temporarily disabled due to issues:
 // - PDF blank previews
 // - Canvas corruption on ARM64 macOS
@@ -455,23 +466,15 @@ BASE_FEATURE(kCanvas2DHibernation,
              "Canvas2DHibernation",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-// Enables camera preview in permission bubble and site settings.
-BASE_FEATURE(kCameraMicPreview,
-             "CameraMicPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Defers device selection until after permission is granted.
-BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
-             "GetUserMediaDeferredDeviceSettingsSelection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // When hibernating, make sure that the just-used transfer memory (to transfer
 // the snapshot) is freed.
 BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
              "Canvas2DHibernationReleaseTransferMemory",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCanvasSharedBitmapToSharedImage,
+             "CanvasSharedBitmapToSharedImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to capture the source location of JavaScript execution, which is one
 // of the renderer eviction reasons for Back/Forward Cache.
@@ -834,6 +837,25 @@ BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
 const base::FeatureParam<double> kMinimumEntropyForLCP{
     &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
 
+BASE_FEATURE(kExpandCompositedCullRect,
+             "ExpandCompositedCullRect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kCullRectPixelDistanceToExpand,
+                   &kExpandCompositedCullRect,
+                   "pixels",
+                   4000);
+BASE_FEATURE_PARAM(double,
+                   kCullRectExpansionDPRCoef,
+                   &kExpandCompositedCullRect,
+                   "dpr_coef",
+                   0);
+BASE_FEATURE_PARAM(bool,
+                   kSmallScrollersUseMinCullRect,
+                   &kExpandCompositedCullRect,
+                   "small_scroller_opt",
+                   false);
+
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin
@@ -1104,6 +1126,13 @@ BASE_FEATURE(kFrequencyCappingForOverlayPopupDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGMSCoreEmoji, "GMSCoreEmoji", base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+// Defers device selection until after permission is granted.
+BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
+             "GetUserMediaDeferredDeviceSettingsSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kHiddenSelectionBounds,
              "HiddenSelectionBounds",
@@ -1737,8 +1766,12 @@ BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBFCacheOpenBroadcastChannel,
-             "BFCacheOpenBroadcastChannel",
+BASE_FEATURE(kNoThrottlingVisibleAgent,
+             "NoThrottlingVisibleAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOptimizeLoadingDataUrls,
+             "OptimizeLoadingDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
@@ -2080,6 +2113,10 @@ const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
     "max-fcp-delay",
     100);
 
+BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
+             "RenderSizeInScoreAdBrowserSignals",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kResamplingInputEvents,
              "ResamplingInputEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2253,6 +2290,10 @@ BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSimplifyLoadingTransparentPlaceholderImage,
+             "SimplifyLoadingTransparentPlaceholderImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSkipTouchEventFilterTypeParamName[] = "type";
 const char kSkipTouchEventFilterTypeParamValueDiscrete[] = "discrete";
 const char kSkipTouchEventFilterTypeParamValueAll[] = "all";
@@ -2409,6 +2450,10 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
+             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes behavior of User-Agent Client Hints to send blank headers when the
@@ -2663,52 +2708,18 @@ bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
          type == blink::features::kLinkPreviewTriggerType.Get();
 }
 
-BASE_FEATURE(kExpandCompositedCullRect,
-             "ExpandCompositedCullRect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kCullRectPixelDistanceToExpand,
-                   &kExpandCompositedCullRect,
-                   "pixels",
-                   4000);
-BASE_FEATURE_PARAM(double,
-                   kCullRectExpansionDPRCoef,
-                   &kExpandCompositedCullRect,
-                   "dpr_coef",
-                   0);
-BASE_FEATURE_PARAM(bool,
-                   kSmallScrollersUseMinCullRect,
-                   &kExpandCompositedCullRect,
-                   "small_scroller_opt",
-                   false);
-
-BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
-             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSimplifyLoadingTransparentPlaceholderImage,
-             "SimplifyLoadingTransparentPlaceholderImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNoThrottlingVisibleAgent,
-             "NoThrottlingVisibleAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
-             "RenderSizeInScoreAdBrowserSignals",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOptimizeLoadingDataUrls,
-             "OptimizeLoadingDataUrls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCanvasSharedBitmapToSharedImage,
-             "CanvasSharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsCanvasSharedBitmapConversionEnabled() {
   return base::FeatureList::IsEnabled(
       features::kCanvasSharedBitmapToSharedImage);
 }
+
+// DO NOT ADD NEW FEATURES HERE.
+//
+// The section above is for helper functions for querying feature status. The
+// section below should have nothing. Please add new features in the giant block
+// of features that already exist in this file, trying to keep newly-added
+// features in sorted order.
+//
+// DO NOT ADD NEW FEATURES HERE.
 
 }  // namespace blink::features

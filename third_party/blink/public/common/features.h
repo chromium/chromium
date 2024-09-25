@@ -135,6 +135,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvifGainmapHdrImages);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe);
 
+// If enabled, open broadcast channels do not block back/forward cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
@@ -252,14 +255,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCameraMicPreview);
-// Defers device selection until after permission is granted.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kGetUserMediaDeferredDeviceSettingsSelection);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kCanvas2DHibernationReleaseTransferMemory);
+
+// Enable the Shared Bitmap to Shared Image conversion for Canvas.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasSharedBitmapToSharedImage);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCaptureJSExecutionLocation);
 
@@ -471,6 +474,24 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kMinimumEntropyForLCP;
 
+// Number of pixels to expand in root layout coordinates for cull rect under
+// scroll translation or other composited transform:
+//   kCullRectPixelDistanceToExpand *
+//   (1 + (device_pixel_ratio - 1) * kCullRectExpansionDPRCoef)
+// If kCullRectExpansionDPRCoef equals 0 (the default), the expansion will be
+// kCullRectPixelDistanceToExpand in local coordinates.
+// If kCullRectExpansionDPRCoef equals 1, the expansion will be
+// kCullRectPixelDistanceToExpand in device coordinates.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kCullRectPixelDistanceToExpand);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                               kCullRectExpansionDPRCoef);
+// If this is enabled, a non-root scroller with an area below a threshold will
+// use a minimal cull rect expansion instead of the above expansion.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kSmallScrollersUseMinCullRect);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -636,6 +657,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+// Defers device selection until after permission is granted.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kGetUserMediaDeferredDeviceSettingsSelection);
+#endif
 // Record the bounds of a selection even when there is no selection handle.
 // This allows providing more information to the IME, but was disabled because
 // of https://crbug.com/1441243.
@@ -663,6 +689,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputPredictorTypeChoice);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIntensiveWakeUpThrottling);
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[];
+
+// Don't require FCP for the page to turn interactive. Useful for testing.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 
 // Backend storage + kill switch for Interest Group API origin trials.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInterestGroupStorage);
@@ -1142,8 +1171,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Disables forced frame updates for web tests. Used by web test runner only.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 
-// If enabled, open broadcast channels do not block back/forward cache.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
+// Don't throttle frames that are same-agent with with a visible frame.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
+
+// Optimize loading data: URLs.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeLoadingDataUrls);
 
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
@@ -1392,6 +1424,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
 
+// Kill-switch for removing Authorization header upon cross origin redirects.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRemoveAuthroizationOnCrossOriginRedirect);
+
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
@@ -1401,6 +1437,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // Max milliseconds that font are allowed to delay of FCP.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMaxFCPDelayMsForRenderBlockingFonts;
+
+// Enable the optional renderSize field in the browserSignals parameter of
+// scoreAd function of Protected Audience API.
+// See explainer:
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
 
 // Enables resampling input events on main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
@@ -1570,6 +1612,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // database backend.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIEnableWALForDatabase);
 
+// Optimize loading 1x1 transparent placeholder images.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSimplifyLoadingTransparentPlaceholderImage);
+
 // Parameters for blink::features::kSkipTouchEventFilter.
 // Which event types will be always forwarded is controlled by the "type"
 // FeatureParam, which can be either "discrete" (default) or "all".
@@ -1653,6 +1699,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // If enabled, the HTMLDocumentParser will use a budget based on elapsed time
 // rather than token count.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTimedHTMLParserBudget);
+
+// Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
+// RFC 9111.
+// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
+// while on stable channels.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 
@@ -1777,57 +1830,16 @@ BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
     LinkPreviewTriggerType type);
 
-// Kill-switch for removing Authorization header upon cross origin redirects.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRemoveAuthroizationOnCrossOriginRedirect);
-
-// Number of pixels to expand in root layout coordinates for cull rect under
-// scroll translation or other composited transform:
-//   kCullRectPixelDistanceToExpand *
-//   (1 + (device_pixel_ratio - 1) * kCullRectExpansionDPRCoef)
-// If kCullRectExpansionDPRCoef equals 0 (the default), the expansion will be
-// kCullRectPixelDistanceToExpand in local coordinates.
-// If kCullRectExpansionDPRCoef equals 1, the expansion will be
-// kCullRectPixelDistanceToExpand in device coordinates.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kCullRectPixelDistanceToExpand);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
-                                               kCullRectExpansionDPRCoef);
-// If this is enabled, a non-root scroller with an area below a threshold will
-// use a minimal cull rect expansion instead of the above expansion.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                               kSmallScrollersUseMinCullRect);
-
-// Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
-// RFC 9111.
-// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
-// while on stable channels.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink);
-
-// Don't require FCP for the page to turn interactive. Useful for testing.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
-
-// Optimize loading 1x1 transparent placeholder images.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSimplifyLoadingTransparentPlaceholderImage);
-
-// Don't throttle frames that are same-agent with with a visible frame.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
-
-// Enable the optional renderSize field in the browserSignals parameter of
-// scoreAd function of Protected Audience API.
-// See explainer:
-// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
-
-// Optimize loading data: URLs.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeLoadingDataUrls);
-
-// Enable the Shared Bitmap to Shared Image conversion for Canvas.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasSharedBitmapToSharedImage);
 BLINK_COMMON_EXPORT bool IsCanvasSharedBitmapConversionEnabled();
+
+// DO NOT ADD NEW FEATURES HERE.
+//
+// The section above is for helper functions for querying feature status. The
+// section below should have nothing. Please add new features in the giant block
+// of features that already exist in this file, trying to keep newly-added
+// features in sorted order.
+//
+// DO NOT ADD NEW FEATURES HERE.
 
 }  // namespace features
 }  // namespace blink
