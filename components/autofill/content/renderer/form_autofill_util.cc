@@ -271,7 +271,7 @@ bool IsTextInput(const WebFormControlElement& element) {
   return IsTextInput(element.DynamicTo<WebInputElement>());
 }
 
-bool IsMonthInput(const WebInputElement& element) {
+bool IsMonthInput(const WebFormControlElement& element) {
   return element && element.FormControlTypeForAutofill() ==
                         blink::mojom::FormControlType::kInputMonth;
 }
@@ -1277,43 +1277,40 @@ void FillFormField(const FormFieldData::FillData& data,
                    bool is_initiating_node,
                    WebFormControlElement& field,
                    FieldDataManager& field_data_manager) {
-  WebInputElement input_element = field.DynamicTo<WebInputElement>();
+  // Fill fields for text input, textarea and select fields.
+  // Filling not supported for checkboxes and radio buttons.
+  if (!IsTextInput(field) && !IsMonthInput(field) &&
+      !IsTextAreaElement(field) && !IsSelectOrSelectListElement(field)) {
+    return;
+  }
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kAutofilled
                                             : WebAutofillState::kNotFilled;
 
-  std::u16string value = data.value;
-  if (IsTextInput(input_element) || IsMonthInput(input_element)) {
-    // If the maxlength attribute contains a negative value, maxLength()
-    // returns the default maxlength value.
-    value = std::move(value).substr(0, input_element.MaxLength());
-  }
-  if (IsTextInput(input_element)) {
-    field_data_manager.UpdateFieldDataMap(GetFieldRendererId(field), value,
-                                          FieldPropertiesFlags::kAutofilled);
-  }
-  if (IsTextInput(input_element) || IsMonthInput(input_element) ||
-      IsTextAreaElement(field) || IsSelectOrSelectListElement(field)) {
-    field.SetAutofillValue(WebString::FromUTF16(value), new_autofill_state);
-    // Changing the field's value might trigger JavaScript, which is capable of
-    // destroying the frame.
-    if (!field.GetDocument().GetFrame()) {
-      return;
-    }
+  if (IsTextInput(field)) {
+    field_data_manager.UpdateFieldDataMap(
+        GetFieldRendererId(field), data.value.substr(0, field.MaxLength()),
+        FieldPropertiesFlags::kAutofilled);
   }
 
-  if (is_initiating_node &&
-      (IsTextInput(input_element) || IsMonthInput(input_element) ||
-       IsTextAreaElement(field))) {
-    auto length = base::checked_cast<unsigned>(field.Value().length());
-    field.SetSelectionRange(length, length);
-    // selectionchange event is capable of destroying the frame.
-    if (!field.GetDocument().GetFrame()) {
-      return;
-    }
-    // Clear the current IME composition (the underline), if there is one.
-    field.GetDocument().GetFrame()->UnmarkText();
+  field.SetAutofillValue(WebString::FromUTF16(data.value), new_autofill_state);
+  // Changing the field's value might trigger JavaScript, which is capable
+  // of destroying the frame.
+  if (!field.GetDocument().GetFrame()) {
+    return;
   }
+
+  if (!is_initiating_node || IsSelectOrSelectListElement(field)) {
+    return;
+  }
+  auto length = base::checked_cast<unsigned>(field.Value().length());
+  field.SetSelectionRange(length, length);
+  // selectionchange event is capable of destroying the frame.
+  if (!field.GetDocument().GetFrame()) {
+    return;
+  }
+  // Clear the current IME composition (the underline), if there is one.
+  field.GetDocument().GetFrame()->UnmarkText();
 }
 
 // Sets the |field|'s "suggested" (non JS visible) value to the value in |data|.
@@ -1321,23 +1318,18 @@ void FillFormField(const FormFieldData::FillData& data,
 void PreviewFormField(const FormFieldData::FillData& data,
                       WebFormControlElement& field,
                       FieldDataManager& field_data_manager) {
-  // Preview input, textarea and select fields. For input fields, excludes
-  // checkboxes and radio buttons, as there is no provision for
-  // setSuggestedCheckedValue in WebInputElement.
-  WebInputElement input_element = field.DynamicTo<WebInputElement>();
+  // Preview text input, textarea and select fields.
+  // Preview not supported for checkboxes and radio buttons.
+  if (!IsTextInput(field) && !IsMonthInput(field) &&
+      !IsTextAreaElement(field) && !IsSelectOrSelectListElement(field)) {
+    return;
+  }
+
+  field.SetSuggestedValue(WebString::FromUTF16(data.value));
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kPreviewed
                                             : WebAutofillState::kNotFilled;
-  if (IsTextInput(input_element) || IsMonthInput(input_element)) {
-    // If the maxlength attribute contains a negative value, maxLength()
-    // returns the default maxlength value.
-    input_element.SetSuggestedValue(
-        WebString::FromUTF16(data.value.substr(0, input_element.MaxLength())));
-    input_element.SetAutofillState(new_autofill_state);
-  } else if (IsTextAreaElement(field) || IsSelectOrSelectListElement(field)) {
-    field.SetSuggestedValue(WebString::FromUTF16(data.value));
-    field.SetAutofillState(new_autofill_state);
-  }
+  field.SetAutofillState(new_autofill_state);
 }
 
 // A less-than comparator for FormFieldData's pointer by their FieldRendererId.

@@ -144,6 +144,36 @@ INSTANTIATE_TEST_SUITE_P(
     Values("<input type='text' id=testElement value='test value'>",
            "<textarea id=testElement>test value</textarea>"));
 
+TEST_F(WebFormControlElementTest,
+       SetAutofillAndSuggestedValueMaxLengthForInput) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<input type='text' id=testElement maxlength='5'>");
+
+  auto element = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("testElement"))));
+
+  element.SetSuggestedValue("valueTooLong");
+  EXPECT_EQ(element.SuggestedValue().Ascii(), "value");
+
+  element.SetAutofillValue("valueTooLong");
+  EXPECT_EQ(element.Value().Ascii(), "value");
+}
+
+TEST_F(WebFormControlElementTest,
+       SetAutofillAndSuggestedValueMaxLengthForTextarea) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<textarea id=testElement maxlength='5'></textarea>");
+
+  auto element = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("testElement"))));
+
+  element.SetSuggestedValue("valueTooLong");
+  EXPECT_EQ(element.SuggestedValue().Ascii(), "value");
+
+  element.SetAutofillValue("valueTooLong");
+  EXPECT_EQ(element.Value().Ascii(), "value");
+}
+
 // <button type=selectlist> should not be confused with <selectlist> for
 // autofill.
 TEST_F(WebFormControlElementTest, ButtonTypeSelectlist) {
