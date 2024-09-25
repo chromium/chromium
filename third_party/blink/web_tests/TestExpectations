@@ -3878,6 +3878,9 @@ crbug.com/757165 [ Win ] external/wpt/preload/download-resources.html [ Crash Fa
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-accelerated-child-with-filter-child.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerated-layer.html [ Crash Failure Pass Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5874285
+crbug.com/368222753 http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.js [ Failure Pass ]
+
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
 
