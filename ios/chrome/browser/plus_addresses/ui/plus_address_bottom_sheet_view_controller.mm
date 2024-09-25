@@ -329,6 +329,18 @@ UIImageView* BrandingImageView() {
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  BOOL shouldShowRefresh = [_delegate isRefreshEnabled];
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled) &&
+      [_reservedPlusAddress
+          isEqualToString:
+              l10n_util::GetNSString(
+                  IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS)]) {
+    shouldShowRefresh = NO;
+    [cell showActivityIndicator];
+  } else {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   [cell setLeadingIconImage:CustomSymbolTemplateWithPointSize(
                                 kGooglePlusAddressSymbol,
@@ -339,7 +351,10 @@ UIImageView* BrandingImageView() {
                                 kMailFillSymbol, kPlusAddressSheetCellImageSize)
               withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
 #endif
-  if ([_delegate isRefreshEnabled]) {
+  [cell hideActivityIndicator];
+  }
+
+  if (shouldShowRefresh) {
     [cell setTrailingButtonImage:CustomSymbolTemplateWithPointSize(
                                      kArrowClockWiseSymbol,
                                      kPlusAddressSheetCellImageSize)
@@ -347,6 +362,7 @@ UIImageView* BrandingImageView() {
          accessibilityIdentifier:
              kPlusAddressRefreshButtonAccessibilityIdentifier];
   }
+
   cell.textLabel.text = _reservedPlusAddress;
   cell.textLabel.accessibilityIdentifier =
       kPlusAddressLabelAccessibilityIdentifier;

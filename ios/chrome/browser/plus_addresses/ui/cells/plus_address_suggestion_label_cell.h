@@ -37,6 +37,10 @@
 // with a `tintColor`.
 - (void)setLeadingIconImage:(UIImage*)image withTintColor:(UIColor*)tintColor;
 
+// Called to show or hide the activity indicators.
+- (void)showActivityIndicator;
+- (void)hideActivityIndicator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_CELLS_PLUS_ADDRESS_SUGGESTION_LABEL_CELL_H_
