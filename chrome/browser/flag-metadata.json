@@ -5701,16 +5701,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "launcher-apps-collections",
-    "owners": ["anasalazar@chromium.org", "tbarzic@chromium.org"],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "launcher-apps-collections-force-user-eligibility",
-    "owners": ["anasalazar@chromium.org", "tbarzic@chromium.org"],
-    "expiry_milestone": 128
-  },
-  {
     "name": "launcher-continue-section-with-recents",
     "owners": ["tbarzic@chromium.org", "mmourgos@chromium.org"],
     "expiry_milestone": 130

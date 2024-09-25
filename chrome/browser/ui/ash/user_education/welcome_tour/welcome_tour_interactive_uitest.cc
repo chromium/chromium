@@ -106,9 +106,7 @@ class WelcomeTourInteractiveUiTest
          {ash::features::kWelcomeTourCounterfactualArm,
           IsWelcomeTourCounterfactuallyEnabled()},
          {ash::features::kWelcomeTourHoldbackArm, false},
-         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()},
-         {app_list_features::kForceShowAppsCollections,
-          IsAppsCollectionsEnabled()}});
+         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()}});
 
     // TODO(http://b/277091006): Remove after preventing app launches.
     // Prevent the browser from launching as it is not needed to fully exercise
@@ -121,6 +119,9 @@ class WelcomeTourInteractiveUiTest
   // InteractiveBrowserTest:
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    ash::AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
+        IsAppsCollectionsEnabled());
 
     // Install system apps.
     // NOTE: This test requires the "Help" and "Settings" apps to be installed.
