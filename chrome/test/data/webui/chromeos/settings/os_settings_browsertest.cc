@@ -10,7 +10,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/chromeos/lacros_only_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -240,66 +239,6 @@ INSTANTIATE_TEST_SUITE_P(
     OSSettingsRevampMochaTestFlashNotificationsEnabled,
     testing::Bool(),
     OSSettingsRevampMochaTestFlashNotificationsEnabled::DescribeParams);
-
-class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
- protected:
-  OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
-    set_test_loader_host(chrome::kChromeUIOSSettingsHost);
-  }
-
-  void RunSettingsTest(const std::string& test_path) {
-    // All OS Settings test files are located in the directory
-    // chromeos/settings/.
-    const std::string path_with_parent_directory = base::StrCat({
-        "chromeos/settings/",
-        test_path,
-    });
-    RunTest(path_with_parent_directory, "mocha.run()");
-  }
-};
-
-class OSSettingsMochaTestRevampAndLacrosOnlyDisabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsMochaTestRevampAndLacrosOnlyDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            ash::standalone_browser::features::kLacrosOnly,
-            ash::features::kOsSettingsRevampWayfinding,
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class OSSettingsMochaTestLacrosEnabledRevampDisabled
-    : public OSSettingsMochaTestLacrosOnlyEnabled {
- protected:
-  OSSettingsMochaTestLacrosEnabledRevampDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kOsSettingsRevampWayfinding);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class OSSettingsMochaTestLacrosAndRevampEnabled
-    : public OSSettingsMochaTestLacrosOnlyEnabled {
- protected:
-  OSSettingsMochaTestLacrosAndRevampEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {ash::features::kOsSettingsRevampWayfinding},
-        /*disabled=*/
-        {ash::features::kSecondaryAccountAllowedInArcPolicy});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 class OSSettingsRevampMochaTestAppParentalControlsEnabled
     : public OSSettingsRevampMochaTest {
@@ -1746,25 +1685,13 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
                        OsPeoplePageAccountManagerSubpage) {
-  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTestLacrosEnabledRevampDisabled,
-    OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled) {
   RunSettingsTest("os_people_page/account_manager_subpage_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsPeoplePageAdditionalAccountsSettingsCard) {
-  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTestLacrosAndRevampEnabled,
-    OsPeoplePageAdditionalAccountsSettingsCardWithLacrosEnabled) {
   RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
 }
 

@@ -911,8 +911,6 @@ static_library("test_support") {
       "base/browser_process_platform_part_test_api_chromeos.h",
       "base/chromeos/ash_browser_test_starter.cc",
       "base/chromeos/ash_browser_test_starter.h",
-      "base/chromeos/lacros_only_mocha_browser_test.cc",
-      "base/chromeos/lacros_only_mocha_browser_test.h",
 
       # Only used for Chromevox tests, so only included on Chrome OS.
       "base/ash/extension_js_browser_test.cc",
@@ -4754,7 +4752,6 @@ if (!is_android) {
         "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
         "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
-        "base/chromeos/demo_ash_requires_lacros_browsertest.cc",
       ]
       data += [
         # TODO(GYP): figure out which of these things are
