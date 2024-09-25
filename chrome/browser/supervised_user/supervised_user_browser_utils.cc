@@ -40,8 +40,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
@@ -155,12 +153,6 @@ void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
   }
   if (!user && ash::ProfileHelper::IsUserProfile(profile)) {
     LOG(FATAL) << "User instance not found while setting child account flag.";
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool is_child_session = chromeos::BrowserParamsProxy::Get()->SessionType() ==
-                          crosapi::mojom::SessionType::kChildSession;
-  if (is_child_session != is_child) {
-    LOG(FATAL) << "User child flag has changed: " << is_child;
   }
 #endif
 }

@@ -19,10 +19,6 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 supervised_user::WebContentHandler::LocalApprovalResult
@@ -64,23 +60,6 @@ void HandleChromeOSErrorResult(
       return;
   }
 }
-
-// Returns whether website approvals are supported on the current ChromeOS
-// platform.
-bool IsWebsiteApprovalSupported() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  CHECK(service);
-  const int version =
-      service->GetInterfaceVersion<crosapi::mojom::ParentAccess>();
-  if (version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
-                        kGetWebsiteParentApprovalMinVersion}) {
-    return false;
-  }
-#endif
-  return true;
-}
-
 }  // namespace
 
 SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
@@ -120,10 +99,6 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
               ->GetProfileKey());
-
-  // Website approval is supported in Lacros from the version 0 and ash does not
-  // have version skew.
-  CHECK(IsWebsiteApprovalSupported());
 
   crosapi::mojom::ParentAccess* parent_access =
       supervised_user::GetParentAccessApi();

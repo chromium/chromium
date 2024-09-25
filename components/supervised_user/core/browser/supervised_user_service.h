@@ -237,8 +237,6 @@ class SupervisedUserService : public KeyedService {
   bool signout_required_after_supervision_enabled_ = false;
 #endif
 
-  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
-  // LaCrOS.
   // When there is change between WebFilterType::kTryToBlockMatureSites and
   // WebFilterType::kCertainSites, both
   // prefs::kDefaultSupervisedUserFilteringBehavior and

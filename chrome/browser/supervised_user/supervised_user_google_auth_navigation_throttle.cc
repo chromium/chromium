@@ -229,11 +229,6 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     }
   }
   return content::NavigationThrottle::DEFER;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, we do not currently provide the same guarantees that a
-  // user must be signed in for relevant domains.
-  // Allow the navigation to proceed even in an unauthenticated state.
-  return content::NavigationThrottle::PROCEED;
 #else
 #error Unsupported platform
 #endif
