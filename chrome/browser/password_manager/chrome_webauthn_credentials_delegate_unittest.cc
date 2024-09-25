@@ -55,6 +55,8 @@ namespace {
 using password_manager::PasskeyCredential;
 using OnPasskeySelectedCallback =
     password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback;
+using SecurityKeyOrHybridFlowAvailable =
+    ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable;
 
 constexpr uint8_t kUserId[] = {'1', '2', '3', '4'};
 constexpr char kUserName1[] = "John.Doe@example.com";
@@ -206,20 +208,20 @@ class ChromeWebAuthnCredentialsDelegateTest
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   std::vector<PasskeyCredential> credentials{passkey1, passkey2};
   credentials_delegate()->OnCredentialsReceived(
-      credentials, /*offer_passkey_from_another_device=*/true);
+      credentials, SecurityKeyOrHybridFlowAvailable(true));
 
   auto passkeys = credentials_delegate()->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
   EXPECT_EQ(*passkeys, credentials);
-  EXPECT_TRUE(credentials_delegate()->OfferPasskeysFromAnotherDeviceOption());
+  EXPECT_TRUE(credentials_delegate()->IsSecurityKeyOrHybridFlowAvailable());
 }
 
 TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        DontOfferPasskeysFromAnotherDevice) {
   credentials_delegate()->OnCredentialsReceived(
-      {}, /*offer_passkey_from_another_device=*/false);
+      {}, SecurityKeyOrHybridFlowAvailable(false));
 
-  EXPECT_FALSE(credentials_delegate()->OfferPasskeysFromAnotherDeviceOption());
+  EXPECT_FALSE(credentials_delegate()->IsSecurityKeyOrHybridFlowAvailable());
 }
 
 // Testing retrieving suggestions when the credentials are not received until
@@ -227,8 +229,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
   std::vector<PasskeyCredential> credentials{passkey1, passkey2};
   credentials_delegate()->OnCredentialsReceived(
-      credentials,
-      /*offer_passkey_from_another_device=*/true);
+      credentials, SecurityKeyOrHybridFlowAvailable(true));
 
   auto passkeys = credentials_delegate()->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
@@ -251,8 +252,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   SetCredList({user1, user2});
 
   credentials_delegate()->OnCredentialsReceived(
-      {passkey1, passkey2},
-      /*offer_passkey_from_another_device=*/true);
+      {passkey1, passkey2}, SecurityKeyOrHybridFlowAvailable(true));
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
@@ -276,8 +276,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 // Test aborting a request.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
   credentials_delegate()->OnCredentialsReceived(
-      {passkey1},
-      /*offer_passkey_from_another_device=*/true);
+      {passkey1}, SecurityKeyOrHybridFlowAvailable(true));
   credentials_delegate()->NotifyWebAuthnRequestAborted();
   EXPECT_FALSE(credentials_delegate()->GetPasskeys());
 }
@@ -298,8 +297,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
   SetCredList({user1});
   credentials_delegate()->OnCredentialsReceived(
-      {passkey1},
-      /*offer_passkey_from_another_device=*/true);
+      {passkey1}, SecurityKeyOrHybridFlowAvailable(true));
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(1);
   credentials_delegate()->SelectPasskey(base::Base64Encode(kCredId1),
@@ -324,8 +322,7 @@ TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
   SetCredList({userGpm});
   credentials_delegate()->OnCredentialsReceived(
-      {passkeyGpm},
-      /*offer_passkey_from_another_device=*/true);
+      {passkeyGpm}, SecurityKeyOrHybridFlowAvailable(true));
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(0);
   credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
@@ -339,8 +336,7 @@ TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
   SetCredList({userGpm});
   credentials_delegate()->OnCredentialsReceived(
-      {passkeyGpm},
-      /*offer_passkey_from_another_device=*/true);
+      {passkeyGpm}, SecurityKeyOrHybridFlowAvailable(true));
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(0);
   credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
@@ -352,8 +348,7 @@ TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
   SetCredList({userGpm});
   credentials_delegate()->OnCredentialsReceived(
-      {passkeyGpm},
-      /*offer_passkey_from_another_device=*/true);
+      {passkeyGpm}, SecurityKeyOrHybridFlowAvailable(true));
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(0);
   credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
@@ -370,12 +365,3 @@ TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
   task_environment()->FastForwardBy(base::Milliseconds(350));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeWebAuthnCredentialsDelegateTest, AndroidHybridAvailability) {
-  EXPECT_FALSE(credentials_delegate()->IsAndroidHybridAvailable());
-  credentials_delegate()->SetAndroidHybridAvailable(
-      ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(true));
-  EXPECT_TRUE(credentials_delegate()->IsAndroidHybridAvailable());
-}
-#endif  // BUILDFLAG(IS_ANDROID)

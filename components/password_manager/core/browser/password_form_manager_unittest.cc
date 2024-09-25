@@ -502,8 +502,7 @@ class PasswordFormManagerTest : public testing::Test,
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(ReturnRef(passkeys_));
-    ON_CALL(webauthn_credentials_delegate_,
-            OfferPasskeysFromAnotherDeviceOption)
+    ON_CALL(webauthn_credentials_delegate_, IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(Return(true));
 #if BUILDFLAG(IS_ANDROID)
     webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(

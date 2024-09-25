@@ -26,7 +26,7 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
   MockWebAuthnCredentialsDelegate& operator=(
       const MockWebAuthnCredentialsDelegate&) = delete;
 
-  MOCK_METHOD(void, LaunchWebAuthnFlow, (), (override));
+  MOCK_METHOD(void, LaunchSecurityKeyOrHybridFlow, (), (override));
   MOCK_METHOD(void,
               SelectPasskey,
               (const std::string&,
@@ -36,13 +36,9 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               GetPasskeys,
               (),
               (const override));
-  MOCK_METHOD(bool, OfferPasskeysFromAnotherDeviceOption, (), (const override));
+  MOCK_METHOD(bool, IsSecurityKeyOrHybridFlowAvailable, (), (const override));
   MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
   MOCK_METHOD(bool, HasPendingPasskeySelection, (), (override));
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void, ShowAndroidHybridSignIn, (), (override));
-  MOCK_METHOD(bool, IsAndroidHybridAvailable, (), (const override));
-#endif
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 
  private:

@@ -1809,18 +1809,18 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE, *priority_phone_name));
     }
   }
-  bool offer_passkey_from_another_device;
+  bool is_security_key_or_hybrid_flow_available;
   switch (transport_availability_.conditional_ui_treatment) {
     case TransportAvailabilityInfo::ConditionalUITreatment::kDefault:
-      offer_passkey_from_another_device = true;
+      is_security_key_or_hybrid_flow_available = true;
       break;
     case TransportAvailabilityInfo::ConditionalUITreatment::
         kDontShowEmptyConditionalUI:
-      offer_passkey_from_another_device = !credentials.empty();
+      is_security_key_or_hybrid_flow_available = !credentials.empty();
       break;
     case TransportAvailabilityInfo::ConditionalUITreatment::
         kNeverOfferPasskeyFromAnotherDevice:
-      offer_passkey_from_another_device = false;
+      is_security_key_or_hybrid_flow_available = false;
       break;
   }
   ReportConditionalUiPasskeyCount(credentials.size());
@@ -1849,7 +1849,9 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
   if (webauthn_credentials_delegate_factory) {
     // May be null on tests.
     webauthn_credentials_delegate_factory->OnCredentialsReceived(
-        std::move(credentials), offer_passkey_from_another_device);
+        std::move(credentials),
+        ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+            is_security_key_or_hybrid_flow_available));
   }
   SetCurrentStep(Step::kConditionalMediation);
 }

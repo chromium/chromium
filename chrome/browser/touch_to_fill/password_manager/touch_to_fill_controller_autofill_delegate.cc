@@ -197,7 +197,7 @@ void TouchToFillControllerAutofillDelegate::OnHybridSignInSelected(
     return;
   }
 
-  webauthn_delegate_->ShowAndroidHybridSignIn();
+  webauthn_delegate_->LaunchSecurityKeyOrHybridFlow();
 
   CleanUpFillerAndReportOutcome(TouchToFillOutcome::kHybridSignInSelected,
                                 /*show_virtual_keyboard=*/false);

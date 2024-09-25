@@ -70,8 +70,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     }
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(testing::ReturnRef(passkeys_));
-    ON_CALL(webauthn_credentials_delegate_,
-            OfferPasskeysFromAnotherDeviceOption)
+    ON_CALL(webauthn_credentials_delegate_, IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(testing::Return(true));
 
     // Initializes and configures prefs.

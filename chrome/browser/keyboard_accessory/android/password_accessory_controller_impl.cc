@@ -437,8 +437,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
                 WebAuthnCredentialsDelegate* credentials_delegate =
                     password_client_->GetWebAuthnCredentialsDelegateForDriver(
                         driver)) {
-          CHECK(credentials_delegate->IsAndroidHybridAvailable());
-          credentials_delegate->ShowAndroidHybridSignIn();
+          CHECK(credentials_delegate->IsSecurityKeyOrHybridFlowAvailable());
+          credentials_delegate->LaunchSecurityKeyOrHybridFlow();
         }
       }
       return;
@@ -635,7 +635,7 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
       has_passkeys |= credentials_delegate->GetPasskeys() &&
                       !credentials_delegate->GetPasskeys()->empty();
-      if (credentials_delegate->IsAndroidHybridAvailable()) {
+      if (credentials_delegate->IsSecurityKeyOrHybridFlowAvailable()) {
         std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
         footer_commands_to_add.emplace_back(

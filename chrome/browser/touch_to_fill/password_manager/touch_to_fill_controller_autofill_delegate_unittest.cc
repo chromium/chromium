@@ -836,7 +836,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowAndSelectHybrid) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(true)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
-  EXPECT_CALL(webauthn_credentials_delegate(), ShowAndroidHybridSignIn());
+  EXPECT_CALL(webauthn_credentials_delegate(), LaunchSecurityKeyOrHybridFlow());
   touch_to_fill_controller().OnHybridSignInSelected();
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.Outcome",

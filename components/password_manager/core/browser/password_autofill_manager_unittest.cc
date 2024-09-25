@@ -1781,7 +1781,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkey_list));
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              OfferPasskeysFromAnotherDeviceOption)
+              IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
 
   // Show password suggestions including WebAuthn credentials.
@@ -1862,7 +1862,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              OfferPasskeysFromAnotherDeviceOption)
+              IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
 
   // Show password suggestions including WebAuthn credentials.
@@ -1896,7 +1896,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              OfferPasskeysFromAnotherDeviceOption)
+              IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(false));
 
   // Show password suggestions including WebAuthn credentials.
@@ -1943,7 +1943,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              OfferPasskeysFromAnotherDeviceOption)
+              IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
 
   // Show webauthn suggestions with the correct favicon.
@@ -1983,7 +1983,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              OfferPasskeysFromAnotherDeviceOption)
+              IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
 
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -2009,7 +2009,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Check that selecting the button reports back to the client.
-  EXPECT_CALL(*webauthn_credentials_delegate_, LaunchWebAuthnFlow());
+  EXPECT_CALL(*webauthn_credentials_delegate_, LaunchSecurityKeyOrHybridFlow());
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(
                   autofill::SuggestionHidingReason::kAcceptSuggestion));

@@ -303,7 +303,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->LaunchWebAuthnFlow();
+          ->LaunchSecurityKeyOrHybridFlow();
       break;
     default:
       metrics_util::LogPasswordDropdownItemSelected(

@@ -387,7 +387,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(webauthn_credentials_delegate()));
     ON_CALL(*password_client(), GetWebAuthnCredManDelegateForDriver)
         .WillByDefault(Return(cred_man_delegate()));
-    ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
+    ON_CALL(*webauthn_credentials_delegate(),
+            IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(Return(false));
     ON_CALL(*password_client()->GetPasswordFeatureManager(),
             IsOptedInForAccountStorage)
@@ -1603,11 +1604,12 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectCredManReentryOption) {
       autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
 }
 
-// Verify that when WebAuthnCredentialsDelegate::IsAndroidHybridAvailable
-// returns true, the hybrid passkey option shows on the sheet, and selecting
-// it triggers hybrid passkey sign-in invocation.
+// Verify that when
+// WebAuthnCredentialsDelegate::IsSecurityKeyOrHybridFlowAvailable returns true,
+// the hybrid passkey option shows on the sheet, and selecting it triggers
+// hybrid passkey sign-in invocation.
 TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
-  ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
+  ON_CALL(*webauthn_credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
       .WillByDefault(Return(true));
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1627,7 +1629,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
 
-  EXPECT_CALL(*webauthn_credentials_delegate(), ShowAndroidHybridSignIn);
+  EXPECT_CALL(*webauthn_credentials_delegate(), LaunchSecurityKeyOrHybridFlow);
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
@@ -1696,8 +1698,9 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
   controller()->OnPasskeySelected(kTestPasskey.credential_id());
 }
 
-// Verify that when WebAuthnCredentialsDelegate::IsAndroidHybridAvailable
-// returns false, the hybrid passkey option is not shown on the sheet.
+// Verify that when
+// WebAuthnCredentialsDelegate::IsSecurityKeyOrHybridFlowAvailable returns
+// false, the hybrid passkey option is not shown on the sheet.
 TEST_F(PasswordAccessoryControllerTest,
        HybridPasskeyOptionNotShownWhenUnavailable) {
   CreateSheetController();

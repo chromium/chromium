@@ -360,7 +360,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (uses_passkeys && delegate->OfferPasskeysFromAnotherDeviceOption()) {
+  if (uses_passkeys && delegate->IsSecurityKeyOrHybridFlowAvailable()) {
     bool listed_passkeys = delegate->GetPasskeys().has_value() &&
                            delegate->GetPasskeys()->size() > 0;
     suggestions.emplace_back(CreateWebAuthnEntry(listed_passkeys));
