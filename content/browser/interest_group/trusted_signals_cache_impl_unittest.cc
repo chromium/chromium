@@ -244,7 +244,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   // Callback to handle coordinator key requests by the base
   // TrustedSignalsCacheImpl class.
   void GetCoordinatorKey(
-      std::optional<url::Origin> coordinator,
+      const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
     switch (get_coordinator_key_mode_) {

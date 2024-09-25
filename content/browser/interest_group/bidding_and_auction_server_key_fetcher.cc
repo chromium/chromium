@@ -104,9 +104,7 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     if (key_url.is_valid()) {
       PerCoordinatorFetcherState state;
       state.key_url = std::move(key_url);
-      url::Origin coordinator = url::Origin::Create(
-          GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
-      fetcher_state_map_.insert_or_assign(std::move(coordinator),
+      fetcher_state_map_.insert_or_assign(default_gcp_coordinator_,
                                           std::move(state));
     }
   }
@@ -136,10 +134,11 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
 }
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
-    std::optional<url::Origin> maybe_coordinator,
+    const std::optional<url::Origin>& maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
-  url::Origin coordinator = maybe_coordinator.value_or(
-      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)));
+  const url::Origin& coordinator = maybe_coordinator.has_value()
+                                       ? *maybe_coordinator
+                                       : default_gcp_coordinator_;
   auto it = fetcher_state_map_.find(coordinator);
   if (it == fetcher_state_map_.end()) {
     std::move(callback).Run(
@@ -192,7 +191,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeys(
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
-    const url::Origin coordinator,
+    const url::Origin& coordinator,
     std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
         expiration_and_keys) {
   if (expiration_and_keys.second.empty() ||

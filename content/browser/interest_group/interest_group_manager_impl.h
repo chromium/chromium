@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -487,7 +486,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
   void GetBiddingAndAuctionServerKey(
-      std::optional<url::Origin> coordinator,
+      const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
 

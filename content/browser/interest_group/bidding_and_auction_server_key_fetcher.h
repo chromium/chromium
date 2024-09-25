@@ -62,7 +62,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // GetOrFetchKey provides a key in the callback if necessary. If the key is
   // immediately available then the callback may be called synchronously.
-  void GetOrFetchKey(std::optional<url::Origin> maybe_coordinator,
+  void GetOrFetchKey(const std::optional<url::Origin>& maybe_coordinator,
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
@@ -103,7 +103,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
                  BiddingAndAuctionServerKeyFetcherCallback callback);
 
   void OnFetchKeysFromDatabaseComplete(
-      const url::Origin coordinator,
+      const url::Origin& coordinator,
       std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>> keys);
 
   void FetchKeysFromNetwork(const url::Origin& coordinator);
@@ -138,6 +138,9 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // BiddingAndAuctionServerKeyFetcher. Used as an intermediary to talk to the
   // database.
   raw_ptr<InterestGroupManagerImpl> manager_;
+
+  const url::Origin default_gcp_coordinator_ =
+      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
 
   base::WeakPtrFactory<BiddingAndAuctionServerKeyFetcher> weak_ptr_factory_{
       this};
