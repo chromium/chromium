@@ -304,7 +304,9 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)onContainerViewControllerPresented {
-  BOOL shouldShowConsentFlow = !self.termsOfServiceAccepted;
+  BOOL shouldShowConsentFlow =
+      !self.termsOfServiceAccepted ||
+      base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
   if (shouldShowConsentFlow) {
     if (self.isResultsBottomSheetOpen) {
       [self stopResultPage];

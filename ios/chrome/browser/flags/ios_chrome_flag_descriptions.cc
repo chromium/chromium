@@ -644,6 +644,12 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+extern const char kLensOverlayForceShowOnboardingScreenName[] =
+    "Force show Lens overlay onboarding screen";
+extern const char kLensOverlayForceShowOnboardingScreenDescription[] =
+    "When enabled, it forces showing the onboarding screen everytime lens "
+    "overlay is open";
+
 const char kLensTranslateToggleModeEnabledName[] =
     "Lens translate toggle mode enabled";
 const char kLensTranslateToggleModeEnabledDescription[] =

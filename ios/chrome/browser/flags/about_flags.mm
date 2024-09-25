@@ -1919,6 +1919,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSegmentationTipsManagerName,
      flag_descriptions::kSegmentationTipsManagerDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSegmentationTipsManager)},
+    {"lens-overlay-force-show-onboarding-screen",
+     flag_descriptions::kLensOverlayForceShowOnboardingScreenName,
+     flag_descriptions::kLensOverlayForceShowOnboardingScreenDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensOverlayForceShowOnboardingScreen)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

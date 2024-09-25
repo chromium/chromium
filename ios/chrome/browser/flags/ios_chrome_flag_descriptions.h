@@ -543,6 +543,11 @@ extern const char kIPHForSafariSwitcherDescription[];
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
+// Title and description for the flag to force show lens overlay onboarding
+// screen.
+extern const char kLensOverlayForceShowOnboardingScreenName[];
+extern const char kLensOverlayForceShowOnboardingScreenDescription[];
+
 // Title and description for the flag to enable the Lens translate toggle mode.
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];

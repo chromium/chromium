@@ -5809,6 +5809,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-overlay-force-show-onboarding-screen",
+    "owners": [ "ameurhosni@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "lens-translate-toogle-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
