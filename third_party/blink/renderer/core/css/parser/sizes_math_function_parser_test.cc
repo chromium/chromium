@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/sizes_math_function_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -182,7 +177,6 @@ TEST(SizesMathFunctionParserTest, Basic) {
       {"clamp(1px 1px 1px)", 0, false, false},
       // Unbalanced )-token.
       {"calc(1px + 2px) )", 0, false, false},
-      {nullptr, 0, true, false}  // Do not remove the terminator line.
   };
 
   MediaValuesCached::MediaValuesCachedData data;
@@ -200,24 +194,23 @@ TEST(SizesMathFunctionParserTest, Basic) {
   data.display_mode = blink::mojom::DisplayMode::kBrowser;
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    CSSParserTokenStream stream(test_cases[i].input);
+  for (const SizesCalcTestCase& test_case : test_cases) {
+    CSSParserTokenStream stream(test_case.input);
     SizesMathFunctionParser calc_parser(stream, media_values);
     bool is_valid = calc_parser.IsValid() && stream.AtEnd();
-    SCOPED_TRACE(test_cases[i].input);
-    ASSERT_EQ(test_cases[i].valid, is_valid);
+    SCOPED_TRACE(test_case.input);
+    ASSERT_EQ(test_case.valid, is_valid);
     if (is_valid) {
-      EXPECT_APPROX_EQ(test_cases[i].output, calc_parser.Result());
+      EXPECT_APPROX_EQ(test_case.output, calc_parser.Result());
     }
   }
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    if (test_cases[i].dont_run_in_css_calc) {
+  for (const SizesCalcTestCase& test_case : test_cases) {
+    if (test_case.dont_run_in_css_calc) {
       continue;
     }
-    VerifyCSSCalc(test_cases[i].input, test_cases[i].output,
-                  test_cases[i].valid, data.em_size, data.viewport_width,
-                  data.viewport_height);
+    VerifyCSSCalc(test_case.input, test_case.output, test_case.valid,
+                  data.em_size, data.viewport_width, data.viewport_height);
   }
 }
 
