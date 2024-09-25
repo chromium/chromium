@@ -199,10 +199,4 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
 }
-
-base::ObserverList<BocaSessionManager::Observer>&
-BocaSessionManager::GetObserversForTesting() {
-  return observers_;
-}
-
 }  // namespace ash::boca

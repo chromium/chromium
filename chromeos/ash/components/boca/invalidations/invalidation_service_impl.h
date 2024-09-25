@@ -45,6 +45,8 @@ class InvalidationServiceImpl : public InvalidationsListener,
 
   void OnTokenUploaded(base::expected<bool, google_apis::ApiErrorCode> result);
 
+  virtual void ShutDown();
+
   FCMHandler* fcm_handler() { return fcm_handler_.get(); }
 
  private:

@@ -73,4 +73,9 @@ void InvalidationServiceImpl::OnTokenUploaded(
   }
 }
 
+void InvalidationServiceImpl::ShutDown() {
+  if (fcm_handler_->IsListening()) {
+    fcm_handler_->StopListeningPermanently();
+  }
+}
 }  // namespace ash::boca

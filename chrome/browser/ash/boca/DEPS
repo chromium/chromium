@@ -37,6 +37,7 @@ include_rules = [
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/test/base/browser_with_test_window_test.h",
-  "+components/sessions/core/session_id.h"
-
+  "+components/sessions/core/session_id.h",
+  "+chrome/browser/gcm/gcm_profile_service_factory.h",
+  "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
 ]
