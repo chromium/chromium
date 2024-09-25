@@ -650,4 +650,19 @@ TEST_F(DnsTaskResultsManagerTest, Aliases) {
               UnorderedElementsAre(kHostName, kAliasTarget1, kAliasTarget2));
 }
 
+// Regression test for crbug.com/369232963. An IPv4 mapped IPv6 address should
+// be handled without crashing.
+TEST_F(DnsTaskResultsManagerTest, Ipv4MappedIpv6) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  auto ip_address = *IPAddress::FromIPLiteral("::ffff:192.0.2.1");
+  IPEndPoint endpoint(ConvertIPv4MappedIPv6ToIPv4(ip_address), /*port=*/0);
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(CreateDataResult(kHostName, {endpoint}, DnsQueryType::AAAA));
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results);
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty())));
+}
+
 }  // namespace net
