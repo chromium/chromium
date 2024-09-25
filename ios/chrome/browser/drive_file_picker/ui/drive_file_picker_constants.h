@@ -10,6 +10,22 @@
 // Accessibility identifier of the Drive file picker.
 extern NSString* const kDriveFilePickerAccessibilityIdentifier;
 
+// Different types of collection which can be displayed in the file picker.
+enum class DriveFilePickerCollectionType {
+  // Main collection with "My Drive", "Shared Drives", "Computers", etc.
+  kRoot,
+  // Folder collection i.e. items are files and folders contained in a folder.
+  kFolder,
+  // Collection where items are shared drives.
+  kSharedDrives,
+  // Collection of all starred items.
+  kStarred,
+  // Collection of all items sorted by recency.
+  kRecent,
+  // Collection of all items shared with the user.
+  kSharedWithMe,
+};
+
 // Enum values for the drive download status.
 enum class DriveFileDownloadStatus {
   kNotStarted = 0,

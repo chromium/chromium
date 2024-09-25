@@ -135,57 +135,44 @@ NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
   return types;
 }
 
-// Returns a copy of `original_query` updated to account for `filter`,
-// `sorting_criteria`, `sorting_direction`, `search_text` and `page_token`.
-DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
-                               DriveFilePickerFilter filter,
-                               DriveItemsSortingType sorting_criteria,
-                               DriveItemsSortingOrder sorting_direction,
-                               NSString* search_text,
-                               NSString* page_token) {
-  // Update ordering.
-  NSString* updated_order_by = original_query.order_by;
-  if (!updated_order_by) {
-    NSString* sorting_criteria_str;
-    switch (sorting_criteria) {
-      case DriveItemsSortingType::kName:
-        sorting_criteria_str = kQueryOrderNameType;
-        break;
-      case DriveItemsSortingType::kOpeningTime:
-        sorting_criteria_str = kQueryOrderOpeningType;
-        break;
-      case DriveItemsSortingType::kModificationTime:
-        sorting_criteria_str = kQueryOrderModifiedType;
-        break;
-    }
-    NSString* sorting_direction_str;
-    switch (sorting_direction) {
-      case DriveItemsSortingOrder::kAscending:
-        sorting_direction_str = kAscendingQueryOrder;
-        break;
-      case DriveItemsSortingOrder::kDescending:
-        sorting_direction_str = kDescendingQueryOrder;
-        break;
-    }
-    if (search_text.length == 0) {
-      // If this is not a search query, present folders first.
-      updated_order_by =
-          [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
-                                     sorting_direction_str];
-    } else {
-      // If this is a search query, respect the selected sorting criteria and
-      // direction but folders do not necessarily appear first.
-      updated_order_by =
-          [NSString stringWithFormat:@"%@ %@", sorting_criteria_str,
-                                     sorting_direction_str];
-    }
+// Sets the value of `query.order_by` according to query parameters.
+void ApplySortToQuery(DriveItemsSortingType sorting_criteria,
+                      DriveItemsSortingOrder sorting_direction,
+                      bool folders_first,
+                      DriveListQuery& query) {
+  NSString* sorting_criteria_str;
+  switch (sorting_criteria) {
+    case DriveItemsSortingType::kName:
+      sorting_criteria_str = kQueryOrderNameType;
+      break;
+    case DriveItemsSortingType::kOpeningTime:
+      sorting_criteria_str = kQueryOrderOpeningType;
+      break;
+    case DriveItemsSortingType::kModificationTime:
+      sorting_criteria_str = kQueryOrderModifiedType;
+      break;
   }
+  NSString* sorting_direction_str;
+  switch (sorting_direction) {
+    case DriveItemsSortingOrder::kAscending:
+      sorting_direction_str = kAscendingQueryOrder;
+      break;
+    case DriveItemsSortingOrder::kDescending:
+      sorting_direction_str = kDescendingQueryOrder;
+      break;
+  }
+  if (folders_first) {
+    query.order_by =
+        [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
+                                   sorting_direction_str];
+  } else {
+    query.order_by = [NSString
+        stringWithFormat:@"%@ %@", sorting_criteria_str, sorting_direction_str];
+  }
+}
 
-  // Update extra terms.
-  NSMutableArray<NSString*>* extra_terms = [NSMutableArray array];
-  if (original_query.extra_term) {
-    [extra_terms addObject:original_query.extra_term];
-  }
+// Appends extra terms to `query.extra_term` to account for `filter`.
+void ApplyFilterToQuery(DriveFilePickerFilter filter, DriveListQuery& query) {
   NSString* filter_extra_term = nil;
   switch (filter) {
     case DriveFilePickerFilter::kOnlyShowArchives:
@@ -207,21 +194,81 @@ DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
       filter_extra_term = nil;
       break;
   }
-  if (filter_extra_term) {
-    [extra_terms addObject:filter_extra_term];
+  if (!filter_extra_term) {
+    return;
   }
-  NSString* update_extra_term = [extra_terms componentsJoinedByString:@" and "];
+  if (query.extra_term) {
+    query.extra_term = [NSString
+        stringWithFormat:@"(%@) and (%@)", query.extra_term, filter_extra_term];
+  } else {
+    query.extra_term = filter_extra_term;
+  }
+}
 
-  DriveListQuery updated_query = original_query;
-  if (search_text.length != 0) {
-    // Search queries are performed globally, not within a specific folder.
-    updated_query.folder_identifier = nil;
+// Creates a query accounting for `collection_type`, `folder_identifier`,
+// `filter`, `sorting_criteria`, `sorting_direction`, `search_text` and
+// `page_token`.
+DriveListQuery CreateQuery(DriveFilePickerCollectionType collection_type,
+                           NSString* folder_identifier,
+                           DriveFilePickerFilter filter,
+                           DriveItemsSortingType sorting_criteria,
+                           DriveItemsSortingOrder sorting_direction,
+                           BOOL should_show_search_items,
+                           NSString* search_text,
+                           NSString* page_token) {
+  DriveListQuery query;
+
+  // Set page size and page token.
+  query.page_size = page_token ? kNextPageSize : kFirstPageSize;
+  query.page_token = page_token;
+
+  // Handling search independently of the collection type.
+  if (should_show_search_items) {
+    if (search_text.length == 0) {
+      // Zero-state of search is showing items sorted by recency.
+      query.extra_term = kRecentExtraTerm;
+      query.order_by = kRecentOrderBy;
+    } else {
+      query.filename_prefix = search_text;
+      ApplySortToQuery(sorting_criteria, sorting_direction,
+                       /* folders_first= */ false, query);
+    }
+    ApplyFilterToQuery(filter, query);
+    return query;
   }
-  updated_query.order_by = updated_order_by;
-  updated_query.extra_term = update_extra_term;
-  updated_query.filename_prefix = search_text;
-  updated_query.page_token = page_token;
-  return updated_query;
+
+  switch (collection_type) {
+    case DriveFilePickerCollectionType::kRoot:
+      // The root collection cannot be obtained using a query.
+      NOTREACHED_NORETURN();
+    case DriveFilePickerCollectionType::kSharedDrives:
+      // For "Shared Drives", there are no parameters to set.
+      break;
+    case DriveFilePickerCollectionType::kFolder:
+      query.folder_identifier = folder_identifier;
+      ApplySortToQuery(sorting_criteria, sorting_direction,
+                       /* folders_first= */ true, query);
+      ApplyFilterToQuery(filter, query);
+      break;
+    case DriveFilePickerCollectionType::kStarred:
+      query.extra_term = kStarredExtraTerm;
+      ApplySortToQuery(sorting_criteria, sorting_direction,
+                       /* folders_first= */ false, query);
+      ApplyFilterToQuery(filter, query);
+      break;
+    case DriveFilePickerCollectionType::kRecent:
+      query.extra_term = kRecentExtraTerm;
+      query.order_by = kRecentOrderBy;
+      ApplyFilterToQuery(filter, query);
+      break;
+    case DriveFilePickerCollectionType::kSharedWithMe:
+      query.extra_term = kSharedWithMeExtraTerm;
+      query.order_by = kSharedWithMeOrderBy;
+      ApplyFilterToQuery(filter, query);
+      break;
+  }
+
+  return query;
 }
 
 // Returns whether an item can be selected in the picker.
@@ -302,8 +349,10 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   std::unique_ptr<DriveList> _driveList;
   std::unique_ptr<DriveFileDownloader> _driveDownloader;
   NSString* _title;
-  // Original query for this collection. Should not be changed.
-  DriveListQuery _originalQuery;
+  // Type of collection presented in the consumer (outside search).
+  DriveFilePickerCollectionType _collectionType;
+  // If `_collectionType` is `kFolder`, identifier of that folder.
+  NSString* _folderIdentifier;
   std::vector<DriveItem> _fetchedDriveItems;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveFilePickerItem`'s image data.
@@ -338,17 +387,14 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   base::OneShotTimer _fetchTimer;
   // The page token to use to continue the current list/search.
   NSString* _pageToken;
-  // Whether this mediator is the root mediator of the file picker, in which
-  // case file selection in the WebState should be stopped when disconnected.
-  BOOL _isRoot;
 }
 
 - (instancetype)
          initWithWebState:(web::WebState*)webState
-                   isRoot:(BOOL)isRoot
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
-                    query:(DriveListQuery)query
+           collectionType:(DriveFilePickerCollectionType)collectionType
+         folderIdentifier:(NSString*)folderIdentifier
                    filter:(DriveFilePickerFilter)filter
       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
           sortingCriteria:(DriveItemsSortingType)sortingCriteria
@@ -363,12 +409,12 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     CHECK(identity);
     CHECK(accountManagerService);
     _webState = webState->GetWeakPtr();
-    _isRoot = isRoot;
     _identity = identity;
     _driveService = driveService;
     _accountManagerService = accountManagerService;
     _title = [title copy];
-    _originalQuery = query;
+    _collectionType = collectionType;
+    _folderIdentifier = [folderIdentifier copy];
     _filter = filter;
     _ignoreAcceptedTypes = ignoreAcceptedTypes;
     _sortingCriteria = sortingCriteria;
@@ -385,7 +431,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)disconnect {
-  if (_isRoot && _webState && !_webState->IsBeingDestroyed()) {
+  if (_collectionType == DriveFilePickerCollectionType::kRoot && _webState &&
+      !_webState->IsBeingDestroyed()) {
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
     if (tab_helper->IsChoosingFiles()) {
@@ -448,65 +495,69 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     [self clearSelection];
   }
 
-  DriveListQuery itemQuery;
   if (driveItem && driveItem->is_folder) {
     // If this is a real folder, then browse this folder.
-    itemQuery.folder_identifier = driveItem->identifier;
-    [self.delegate browseDriveCollectionWithMediator:self
-                                               title:driveItem->name
-                                               query:itemQuery
-                                              filter:_filter
-                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                     sortingCriteria:_sortingCriteria
-                                    sortingDirection:_sortingDirection];
+    [self.delegate
+        browseDriveCollectionWithMediator:self
+                                    title:driveItem->name
+                           collectionType:DriveFilePickerCollectionType::kFolder
+                         folderIdentifier:driveItem->identifier
+                                   filter:_filter
+                      ignoreAcceptedTypes:_ignoreAcceptedTypes
+                          sortingCriteria:_sortingCriteria
+                         sortingDirection:_sortingDirection];
     return;
   } else if ([driveItemIdentifier
                  isEqual:[DriveFilePickerItem myDriveItem].identifier]) {
-    itemQuery.folder_identifier = kMyDriveFolderIdentifier;
     DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
-    [self.delegate browseDriveCollectionWithMediator:self
-                                               title:myDriveItem.title
-                                               query:itemQuery
-                                              filter:_filter
-                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                     sortingCriteria:_sortingCriteria
-                                    sortingDirection:_sortingDirection];
+    [self.delegate
+        browseDriveCollectionWithMediator:self
+                                    title:myDriveItem.title
+                           collectionType:DriveFilePickerCollectionType::kFolder
+                         folderIdentifier:kMyDriveFolderIdentifier
+                                   filter:_filter
+                      ignoreAcceptedTypes:_ignoreAcceptedTypes
+                          sortingCriteria:_sortingCriteria
+                         sortingDirection:_sortingDirection];
   } else if ([driveItemIdentifier
                  isEqual:[DriveFilePickerItem starredItem].identifier]) {
-    itemQuery.extra_term = kStarredExtraTerm;
     DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
-    [self.delegate browseDriveCollectionWithMediator:self
-                                               title:starredItem.title
-                                               query:itemQuery
-                                              filter:_filter
-                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                     sortingCriteria:_sortingCriteria
-                                    sortingDirection:_sortingDirection];
+    [self.delegate
+        browseDriveCollectionWithMediator:self
+                                    title:starredItem.title
+                           collectionType:DriveFilePickerCollectionType::
+                                              kStarred
+                         folderIdentifier:nil
+                                   filter:_filter
+                      ignoreAcceptedTypes:_ignoreAcceptedTypes
+                          sortingCriteria:_sortingCriteria
+                         sortingDirection:_sortingDirection];
   } else if ([driveItemIdentifier
                  isEqual:[DriveFilePickerItem recentItem].identifier]) {
-    itemQuery.extra_term = kRecentExtraTerm;
-    itemQuery.order_by = kRecentOrderBy;
     DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
-    [self.delegate browseDriveCollectionWithMediator:self
-                                               title:recentItem.title
-                                               query:itemQuery
-                                              filter:_filter
-                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                     sortingCriteria:_sortingCriteria
-                                    sortingDirection:_sortingDirection];
+    [self.delegate
+        browseDriveCollectionWithMediator:self
+                                    title:recentItem.title
+                           collectionType:DriveFilePickerCollectionType::kRecent
+                         folderIdentifier:nil
+                                   filter:_filter
+                      ignoreAcceptedTypes:_ignoreAcceptedTypes
+                          sortingCriteria:_sortingCriteria
+                         sortingDirection:_sortingDirection];
   } else if ([driveItemIdentifier
                  isEqual:[DriveFilePickerItem sharedWithMeItem].identifier]) {
-    itemQuery.extra_term = kSharedWithMeExtraTerm;
-    itemQuery.order_by = kSharedWithMeOrderBy;
     DriveFilePickerItem* sharedWithMeItem =
         [DriveFilePickerItem sharedWithMeItem];
-    [self.delegate browseDriveCollectionWithMediator:self
-                                               title:sharedWithMeItem.title
-                                               query:itemQuery
-                                              filter:_filter
-                                 ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                     sortingCriteria:_sortingCriteria
-                                    sortingDirection:_sortingDirection];
+    [self.delegate
+        browseDriveCollectionWithMediator:self
+                                    title:sharedWithMeItem.title
+                           collectionType:DriveFilePickerCollectionType::
+                                              kSharedWithMe
+                         folderIdentifier:nil
+                                   filter:_filter
+                      ignoreAcceptedTypes:_ignoreAcceptedTypes
+                          sortingCriteria:_sortingCriteria
+                         sortingDirection:_sortingDirection];
   } else {
     // TODO(crbug.com/344813593): Add support for Shared Drives.
   }
@@ -742,20 +793,9 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 
   _driveList = _driveService->CreateList(_identity);
 
-  DriveListQuery query;
-  if (_shouldShowSearchItems && _searchText.length == 0) {
-    // Zero-state search is treated separately and does not account for the
-    // original query parameters, filtering and sorting parameters.
-    query.order_by = kRecentOrderBy;
-    query.extra_term = kRecentExtraTerm;
-    query.page_token = _pageToken;
-  } else {
-    query = GetUpdatedQuery(_originalQuery, _filter, _sortingCriteria,
-                            _sortingDirection, _searchText, _pageToken);
-  }
-
-  // Set page size according to whether this is the first page or not.
-  query.page_size = append ? kNextPageSize : kFirstPageSize;
+  DriveListQuery query = CreateQuery(
+      _collectionType, _folderIdentifier, _filter, _sortingCriteria,
+      _sortingDirection, _shouldShowSearchItems, _searchText, _pageToken);
 
   __weak __typeof(self) weakSelf = self;
   _driveList->ListFiles(query, base::BindOnce(^(const DriveListResult& result) {

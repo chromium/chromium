@@ -44,8 +44,11 @@
   // inner folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
 
-  // The query to execute to fetch this collection of items.
-  DriveListQuery _query;
+  // The type of collection presented in this coordinator.
+  DriveFilePickerCollectionType _collectionType;
+
+  // If the collection is a folder, the identifier of that folder.
+  NSString* _folderIdentifier;
 
   // Title of this collection of items.
   NSString* _title;
@@ -76,7 +79,9 @@
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
-                                   query:(DriveListQuery)query
+                          collectionType:
+                              (DriveFilePickerCollectionType)collectionType
+                        folderIdentifier:(NSString*)folderIdentifier
                                   filter:(DriveFilePickerFilter)filter
                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
@@ -92,7 +97,8 @@
     _baseNavigationController = baseNavigationController;
     _webState = webState;
     _title = [title copy];
-    _query = query;
+    _collectionType = collectionType;
+    _folderIdentifier = folderIdentifier;
     _filter = filter;
     _ignoreAcceptedTypes = ignoreAcceptedTypes;
     _sortingCriteria = sortingCriteria;
@@ -115,10 +121,10 @@
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
-                     isRoot:NO
                    identity:_identity
                       title:_title
-                      query:_query
+             collectionType:_collectionType
+           folderIdentifier:_folderIdentifier
                      filter:_filter
         ignoreAcceptedTypes:_ignoreAcceptedTypes
             sortingCriteria:_sortingCriteria
@@ -148,7 +154,6 @@
   _viewController = nil;
 
   _identity = nil;
-  _query = {};
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
@@ -156,7 +161,9 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query
+                           collectionType:
+                               (DriveFilePickerCollectionType)collectionType
+                         folderIdentifier:(NSString*)folderIdentifier
                                    filter:(DriveFilePickerFilter)filter
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                           sortingCriteria:(DriveItemsSortingType)sortingCriteria
@@ -167,7 +174,8 @@
                                    browser:self.browser
                                   webState:_webState
                                      title:title
-                                     query:query
+                            collectionType:collectionType
+                          folderIdentifier:folderIdentifier
                                     filter:filter
                        ignoreAcceptedTypes:ignoreAcceptedTypes
                            sortingCriteria:sortingCriteria

@@ -16,7 +16,9 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query
+                           collectionType:
+                               (DriveFilePickerCollectionType)collectionType
+                         folderIdentifier:(NSString*)folderIdentifier
                                    filter:(DriveFilePickerFilter)filter
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                           sortingCriteria:(DriveItemsSortingType)sortingCriteria

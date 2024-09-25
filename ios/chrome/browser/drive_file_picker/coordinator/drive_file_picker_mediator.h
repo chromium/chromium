@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
 @protocol DriveFilePickerMediatorDelegate;
-struct DriveListQuery;
 @protocol SystemIdentity;
 @protocol DriveFilePickerConsumer;
 @protocol DriveFilePickerCommands;
@@ -43,10 +42,10 @@ class ChromeAccountManagerService;
 // Initializes the mediator with a given `webState`.
 - (instancetype)
          initWithWebState:(web::WebState*)webState
-                   isRoot:(BOOL)isRoot
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
-                    query:(DriveListQuery)query
+           collectionType:(DriveFilePickerCollectionType)collectionType
+         folderIdentifier:(NSString*)folderIdentifier
                    filter:(DriveFilePickerFilter)filter
       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
           sortingCriteria:(DriveItemsSortingType)sortingCriteria

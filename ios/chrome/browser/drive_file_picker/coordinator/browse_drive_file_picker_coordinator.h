@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol BrowseDriveFilePickerCoordinatorDelegate;
-struct DriveListQuery;
 @protocol SystemIdentity;
 
 namespace web {
@@ -31,7 +30,9 @@ class WebState;
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
-                                   query:(DriveListQuery)query
+                          collectionType:
+                              (DriveFilePickerCollectionType)collectionType
+                        folderIdentifier:(NSString*)folderIdentifier
                                   filter:(DriveFilePickerFilter)filter
                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                          sortingCriteria:(DriveItemsSortingType)sortingCriteria

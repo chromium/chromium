@@ -77,10 +77,10 @@
       initWithRootViewController:_viewController];
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
-                     isRoot:YES
                    identity:_currentIdentity
                       title:nil
-                      query:{}
+             collectionType:DriveFilePickerCollectionType::kRoot
+           folderIdentifier:nil
                      filter:DriveFilePickerFilter::kShowAllFiles
         ignoreAcceptedTypes:NO
             sortingCriteria:DriveItemsSortingType::kName
@@ -154,7 +154,9 @@
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                                     title:(NSString*)title
-                                    query:(DriveListQuery)query
+                           collectionType:
+                               (DriveFilePickerCollectionType)collectionType
+                         folderIdentifier:(NSString*)folderIdentifier
                                    filter:(DriveFilePickerFilter)filter
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                           sortingCriteria:(DriveItemsSortingType)sortingCriteria
@@ -165,7 +167,8 @@
                                    browser:self.browser
                                   webState:_webState
                                      title:title
-                                     query:query
+                            collectionType:collectionType
+                          folderIdentifier:folderIdentifier
                                     filter:filter
                        ignoreAcceptedTypes:ignoreAcceptedTypes
                            sortingCriteria:sortingCriteria

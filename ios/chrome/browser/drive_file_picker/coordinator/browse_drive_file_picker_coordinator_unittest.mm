@@ -40,7 +40,9 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
                                      browser:browser_.get()
                                     webState:fake_web_state_->GetWeakPtr()
                                        title:@"Collection title"
-                                       query:{}
+                              collectionType:DriveFilePickerCollectionType::
+                                                 kFolder
+                            folderIdentifier:nil
                                       filter:DriveFilePickerFilter::
                                                  kShowAllFiles
                          ignoreAcceptedTypes:NO
