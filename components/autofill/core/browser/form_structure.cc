@@ -19,7 +19,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -714,7 +714,10 @@ void FormStructure::AssignBestFieldTypes(
 
   // Fields can share the same field signature. This map records for each
   // signature how many fields with the same signature have been observed.
-  std::map<FieldSignature, size_t> field_rank_map;
+  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
+      fields_, std::less<>(), [](const std::unique_ptr<AutofillField>& field) {
+        return std::make_pair(field->GetFieldSignature(), 0);
+      });
   for (const auto& field : fields_) {
     auto iter = field_type_map.find(field->global_id());
     if (iter == field_type_map.end())
@@ -723,15 +726,14 @@ void FormStructure::AssignBestFieldTypes(
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
 
-    ++field_rank_map[field->GetFieldSignature()];
+    const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
         .field_type = field->heuristic_type(heuristic_source),
         .heuristic_source = heuristic_source,
         .is_active_heuristic_source =
             GetActiveHeuristicSource() == heuristic_source,
-        .rank_in_field_signature_group =
-            field_rank_map[field->GetFieldSignature()],
+        .rank_in_field_signature_group = field_rank,
     });
   }
 }
