@@ -13903,13 +13903,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
             Choose another language
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
-            Page is not in <ph name="language">$1<ex>French</ex></ph>
+            Page not in <ph name="language">$1<ex>French</ex></ph>
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="Text to show for the translate bubble menu item that opens language settings.">
             Open language settings
           </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the partial translate bubble menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
-            Selection is not in <ph name="language">$1<ex>French</ex></ph>
+            Selection not in <ph name="language">$1<ex>French</ex></ph>
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_ACCEPT" desc="Text to show for the translate bubble button to accept translation.">
             Translate
@@ -13971,13 +13971,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
             Choose Another Language...
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the translate bubble menu item which invokes the source language menu.">
-            Page Is Not in <ph name="language">$1<ex>French</ex></ph>
+            Page Not in <ph name="language">$1<ex>French</ex></ph>
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="In Title Case: Text to show for the translate bubble menu item that opens language settings.">
             Open Language Settings
           </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the partial translate bubble menu item which invokes the source language menu.">
-            Selection Is Not in <ph name="language">$1<ex>French</ex></ph>
+            Selection Not in <ph name="language">$1<ex>French</ex></ph>
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_ACCEPT" desc="In Title Case: Text to show for the translate bubble button to accept translation.">
             Translate
