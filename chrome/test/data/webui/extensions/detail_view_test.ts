@@ -860,6 +860,93 @@ suite('ExtensionDetailViewTest', function() {
         keepAction, 'dismissMv2DeprecationNoticeForExtension', [id]);
   });
 
+  test('Mv2DeprecationMessage_Unsupported_Visbility', async function() {
+    // Message is hidden for experiment on stage 3 (unsupported) when extension
+    // is not affected by the MV2 deprecation.
+    loadTimeData.overrideValues({MV2ExperimentStage: 3});
+    setupElement();
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is hidden for experiment on stage 3 (unsupported) when extension
+    // is affected by the MV2 deprecation but it's not disabled due to
+    // unsupported manifest version.
+    item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is visible for experiment on stage 3 (unsupported) when extension
+    // is affected by the MV2 deprecation and extension is disabled due to
+    // unsupported manifest version.
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+  });
+
+  test('Mv2DeprecationMessage_Unsupported_Content', async function() {
+    // Show the message for experiment on stage 3 (unsupported) by setting the
+    // corresponding properties.
+    loadTimeData.overrideValues({MV2ExperimentStage: 3});
+    setupElement();
+    item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Find alternative button is always hidden.
+    const findAlternativeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.find-alternative-button');
+    assertTrue(!!findAlternativeButton);
+    assertFalse(isVisible(findAlternativeButton));
+
+    // Remove button is always visible.
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.remove-button');
+    assertTrue(!!removeButton);
+    assertTrue(isVisible(removeButton));
+
+    // Click on the remove button, and verify it triggered the correct delegate
+    // call.
+    await mockDelegate.testClickingCalls(
+        removeButton, 'deleteItem', [extensionData.id]);
+
+    // Action menu is hidden when the extension doesn't have a recommendations
+    // url.
+    const actionMenu =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('#actionMenuButton');
+    assertTrue(!!actionMenu);
+    assertFalse(isVisible(actionMenu));
+
+    // Add a recommendations url to the extension.
+    const id = 'a'.repeat(32);
+    const recommendationsUrl =
+        `https://chromewebstore.google.com/detail/${id}` +
+        `/related-recommendations`;
+    item.set('data.recommendationsUrl', recommendationsUrl);
+    flush();
+
+    // Action menu is visible when the extension has a recommendations url.
+    assertTrue(isVisible(actionMenu));
+
+    // Open the action menu to verify its items.
+    actionMenu.click();
+
+    // Find alternative action is visible.
+    const findAlternativeAction =
+        item.shadowRoot!.querySelector<HTMLElement>('#findAlternativeAction');
+    assertTrue(!!findAlternativeAction);
+    assertTrue(isVisible(findAlternativeAction));
+
+    // Click on the find alternative action, and verify it triggered the
+    // correct delegate call.
+    await mockDelegate.testClickingCalls(
+        findAlternativeAction, 'openUrl', [recommendationsUrl]);
+  });
+
   test('PinnedToToolbar', async function() {
     assertFalse(
         isVisible(item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(

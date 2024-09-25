@@ -10600,12 +10600,31 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension.DetailPage">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the find alternative button in the extension's detailed
+    page in chrome://extensions during the MV2 'unsupported' experiment stage.
+  </description>
+</action>
+
 <action name="Extensions.Mv2Deprecation.Unsupported.RemoveExtension">
   <owner>emiliapaz@chomium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
     The user clicked on the remove button for an extension in
     chrome://extensions during the MV2 unsupported experiment stage.
+  </description>
+</action>
+
+<action name="Extensions.Mv2Deprecation.Unsupported.RemoveExtension.DetailPage">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the remove button in the extension's detailed page in
+    chrome://extensions during the MV2 'unsupported' experiment stage.
   </description>
 </action>
 

@@ -272,11 +272,12 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       </cr-icon-button>
       <cr-action-menu id="actionMenu">
         <button class="dropdown-item" id="findAlternativeAction"
-            hidden="[[!data.recommendationsUrl]]"
+            hidden="[[!showMv2DeprecationFindAlternativeAction_]]"
             on-click="onFindAlternativeActionClick_">
           $i18n{mv2DeprecationPanelFindAlternativeButton}
         </button>
         <button class="dropdown-item" id="keepAction"
+            hidden="[[!showMv2DeprecationKeepAction_]]"
             on-click="onKeepActionClick_">
           $i18n{mv2DeprecationPanelKeepForNowButton}
         </button>

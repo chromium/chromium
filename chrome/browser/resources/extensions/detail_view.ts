@@ -142,7 +142,27 @@ export class ExtensionsDetailViewElement extends
       /** Whether the action menu in the mv2 deprecation message is shown. */
       showMv2DeprecationActionMenu_: {
         type: Boolean,
-        computed: 'computeShowMv2DeprecationActionMenu_(mv2ExperimentStage_)',
+        computed: 'computeShowMv2DeprecationActionMenu_(' +
+          'mv2ExperimentStage_, showMv2DeprecationFindAlternativeAction_)',
+      },
+
+      /**
+       * Whether the find alternative button in the mv2 deprecation message
+       * action menu is shown.
+       */
+      showMv2DeprecationFindAlternativeAction_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationFindAlternativeAction_(' +
+          'mv2ExperimentStage_, data.recommendationsUrl)',
+      },
+
+      /**
+       * Whether the keep button in the mv2 deprecation message action menu is
+       * shown.
+       */
+      showMv2DeprecationKeepAction_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationKeepAction_(mv2ExperimentStage_)',
       },
 
       /** Whether the extensions blocklist text is shown. */
@@ -187,6 +207,8 @@ export class ExtensionsDetailViewElement extends
   private showMv2DeprecationFindAlternativeButton_: boolean;
   private showMv2DeprecationRemoveButton_: boolean;
   private showMv2DeprecationActionMenu_: boolean;
+  private showMv2DeprecationFindAlternativeAction_: boolean;
+  private showMv2DeprecationKeepAction_: boolean;
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
@@ -384,8 +406,20 @@ export class ExtensionsDetailViewElement extends
    * Triggers the extension's removal.
    */
   private onRemoveButtonClick_(): void {
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.DisableWithReEnable.Remove');
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        assertNotReached();
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.RemoveExtension.DetailPage');
+        break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Unsupported.RemoveExtension.DetailPage');
+        break;
+    }
+
     this.delegate.deleteItem(this.data.id);
   }
 
@@ -537,8 +571,11 @@ export class ExtensionsDetailViewElement extends
         return this.data.isAffectedByMV2Deprecation &&
             this.data.disableReasons.unsupportedManifestVersion &&
             !this.data.didAcknowledgeMV2DeprecationNotice;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return this.data.isAffectedByMV2Deprecation &&
+          this.data.disableReasons.unsupportedManifestVersion;
       default:
-        return false;
+        assertNotReached();
     }
   }
 
@@ -556,15 +593,51 @@ export class ExtensionsDetailViewElement extends
    * displayed.
    */
   private computeShowMv2DeprecationRemoveButton_(): boolean {
+    // TODO(crbug.com/339061151): We should only show remove button if extension
+    // can be uninstalled.
     return this.mv2ExperimentStage_ ===
-        Mv2ExperimentStage.DISABLE_WITH_REENABLE;
+        Mv2ExperimentStage.DISABLE_WITH_REENABLE ||
+        this.mv2ExperimentStage_ === Mv2ExperimentStage.UNSUPPORTED;
   }
 
   /**
-   * Returns whether the remove button in the mv2 deprecation message should be
-   * displayed.
+   * Returns whether the action menu button in the mv2 deprecation message
+   * should be displayed.
    */
   private computeShowMv2DeprecationActionMenu_(): boolean {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        return false;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return true;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        // 'Find alternative' is the only action for this stage. Thus, we only
+        // show the menu if the action should be visible
+        return this.showMv2DeprecationFindAlternativeAction_;
+    }
+  }
+
+  /**
+   * Returns whether the find alternative button in mv2 deprecation message
+   * action menu should be displayed.
+   */
+  private computeShowMv2DeprecationFindAlternativeAction_(): boolean {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        return false;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
+        return !!this.data.recommendationsUrl;
+    }
+  }
+
+  /**
+   * Returns whether the keep button in mv2 deprecation message action menu
+   * should be displayed.
+   */
+  private computeShowMv2DeprecationKeepAction_(): boolean {
     return this.mv2ExperimentStage_ ===
         Mv2ExperimentStage.DISABLE_WITH_REENABLE;
   }
@@ -611,8 +684,20 @@ export class ExtensionsDetailViewElement extends
    * extension.
    */
   private onFindAlternativeActionClick_(): void {
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        assertNotReached();
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension.DetailPage');
+        break;
+      case Mv2ExperimentStage.UNSUPPORTED:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension.DetailPage');
+        break;
+    }
+
     this.$.actionMenu.close();
 
     const recommendationsUrl: string|undefined = this.data.recommendationsUrl;
@@ -643,6 +728,7 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.WARNING:
         return this.i18n('mv2DeprecationMessageWarningHeader');
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
         return this.i18n('mv2DeprecationMessageDisabledHeader');
       default:
         assertNotReached();
@@ -664,6 +750,7 @@ export class ExtensionsDetailViewElement extends
               ['https://chromewebstore.google.com/category/extensions'],
         });
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
         return this.i18nAdvanced('mv2DeprecationMessageDisabledSubtitle', {
           substitutions: [
             'https://support.google.com/chrome_webstore' +
@@ -684,6 +771,7 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.WARNING:
         return 'extensions-icons:my_extensions';
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
         return 'extensions-icons:extension_off';
       default:
         assertNotReached();
