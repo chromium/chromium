@@ -210,35 +210,35 @@ std::vector<const EpochTopics*> BrowsingTopicsState::EpochsForSite(
     const std::string& top_domain) const {
   DCHECK(loaded_);
 
+  if (epochs_.empty()) {
+    return {};
+  }
+
   const size_t kNumberOfEpochsToExpose = static_cast<size_t>(
       blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get());
 
   DCHECK_GT(kNumberOfEpochsToExpose, 0u);
 
-  // Derive a per-user per-site time delta in the range of
+  // Derive a per-user per-site per-epoch time delta in the range of
   // [0, `kBrowsingTopicsMaxEpochIntroductionDelay`). The latest epoch will only
-  // be used after `site_sticky_time_delta` has elapsed since the last
+  // be used after `site_epoch_sticky_time_delta` has elapsed since the last
   // calculation finish time (i.e. `next_scheduled_calculation_time_` -
   // `kBrowsingTopicsTimePeriodPerEpoch`). This way, each site will see a
   // different epoch switch time.
-  base::TimeDelta site_sticky_time_delta =
+  base::TimeDelta site_epoch_sticky_time_delta =
       CalculateSiteStickyTimeDelta(top_domain);
 
   size_t end_epoch_index = 0;
   if (base::Time::Now() <=
       next_scheduled_calculation_time_ -
           blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get() +
-          site_sticky_time_delta) {
+          site_epoch_sticky_time_delta) {
     if (epochs_.size() < 2) {
       return {};
     }
 
     end_epoch_index = epochs_.size() - 2;
   } else {
-    if (epochs_.empty()) {
-      return {};
-    }
-
     end_epoch_index = epochs_.size() - 1;
   }
 
@@ -261,8 +261,11 @@ bool BrowsingTopicsState::HasScheduledSaveForTesting() const {
 
 base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
     const std::string& top_domain) const {
+  CHECK(!epochs_.empty());
+
   uint64_t epoch_switch_time_decision_hash =
-      HashTopDomainForEpochSwitchTimeDecision(hmac_key_, top_domain);
+      HashTopDomainForEpochSwitchTimeDecision(
+          hmac_key_, epochs_.back().calculation_time(), top_domain);
 
   // Currently the browser can only reasonably support configurations where the
   // random-over period is less or equal to an epoch, because 1) we only store
@@ -281,8 +284,7 @@ base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
 
   // If the latest epoch was manually triggered, make the latest epoch
   // immediately available for testing purposes.
-  if (!epochs_.empty() &&
-      epochs_.back().from_manually_triggered_calculation()) {
+  if (epochs_.back().from_manually_triggered_calculation()) {
     return base::Seconds(0);
   }
 

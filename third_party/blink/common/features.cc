@@ -339,8 +339,8 @@ BASE_FEATURE_PARAM(int,
                    "use_random_topic_probability_percent",
                    5);
 // Maximum duration between when a epoch is calculated and when a site starts
-// using that new epoch's topics. The time chosen is a per-site random point in
-// time between [calculation time, calculation time + max duration).
+// using that new epoch's topics. The time chosen is a per-site per-epoch random
+// point in time between [calculation time, calculation time + max duration).
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kBrowsingTopicsMaxEpochIntroductionDelay,
                    &kBrowsingTopicsParameters,

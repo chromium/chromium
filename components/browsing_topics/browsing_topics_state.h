@@ -117,9 +117,11 @@ class BrowsingTopicsState
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
-                           EpochsForSite_OneEpoch_SwitchTimeNotArrived);
+                           EpochsForSite_OneEpoch_SwitchTime);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
-                           EpochsForSite_OneEpoch_SwitchTimeArrived);
+                           EpochsForSite_OneEpoch_SwitchTime2);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_ThreeEpochs_SwitchTime);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
                            EpochsForSite_OneEpoch_ManuallyTriggered);
 
