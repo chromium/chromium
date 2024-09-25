@@ -754,20 +754,16 @@ LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
-  WritingDirectionMode writing_direction = style_->GetWritingDirection();
-  if (style_->ResolvedIsRowFlexDirection()) {
-    return writing_direction.InlineEnd();
-  }
-  DCHECK(style_->ResolvedIsColumnFlexDirection());
-  return writing_direction.BlockEnd();
+  const WritingDirectionMode writing_direction = style_->GetWritingDirection();
+  return style_->ResolvedIsColumnFlexDirection()
+             ? writing_direction.BlockEnd()
+             : writing_direction.InlineEnd();
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::CrossAxisDirection() const {
-  WritingDirectionMode mode = style_->GetWritingDirection();
-  if (!style_->ResolvedIsColumnFlexDirection()) {
-    return mode.BlockEnd();
-  }
-  return mode.InlineEnd();
+  const WritingDirectionMode writing_direction = style_->GetWritingDirection();
+  return style_->ResolvedIsColumnFlexDirection() ? writing_direction.InlineEnd()
+                                                 : writing_direction.BlockEnd();
 }
 
 // static

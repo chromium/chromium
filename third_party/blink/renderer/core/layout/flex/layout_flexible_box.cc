@@ -23,32 +23,45 @@ namespace blink {
 
 LayoutFlexibleBox::LayoutFlexibleBox(Element* element) : LayoutBlock(element) {}
 
-bool LayoutFlexibleBox::HasTopOverflow() const {
-  const auto& style = StyleRef();
-  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  if (style.GetWritingDirection().BlockStart() == PhysicalDirection::kUp) {
-    return style.ResolvedIsColumnReverseFlexDirection() ||
-           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse);
+namespace {
+
+LogicalToPhysical<bool> GetOverflowConverter(const ComputedStyle& style) {
+  const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
+  const bool is_direction_reverse = style.ResolvedIsReverseFlexDirection();
+
+  bool inline_start = false;
+  bool inline_end = true;
+  bool block_start = false;
+  bool block_end = true;
+
+  if (style.ResolvedIsColumnFlexDirection()) {
+    if (is_direction_reverse) {
+      std::swap(block_start, block_end);
+    }
+    if (is_wrap_reverse) {
+      std::swap(inline_start, inline_end);
+    }
+  } else {
+    if (is_direction_reverse) {
+      std::swap(inline_start, inline_end);
+    }
+    if (is_wrap_reverse) {
+      std::swap(block_start, block_end);
+    }
   }
 
-  return (style.GetWritingDirection().InlineStart() ==
-          PhysicalDirection::kUp) ==
-         (style.ResolvedIsRowReverseFlexDirection() ||
-          (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
+  return LogicalToPhysical(style.GetWritingDirection(), inline_start,
+                           inline_end, block_start, block_end);
+}
+
+}  // namespace
+
+bool LayoutFlexibleBox::HasTopOverflow() const {
+  return GetOverflowConverter(StyleRef()).Top();
 }
 
 bool LayoutFlexibleBox::HasLeftOverflow() const {
-  const auto& style = StyleRef();
-  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  if (style.IsHorizontalWritingMode()) {
-    return style.IsLeftToRightDirection() ==
-           (style.ResolvedIsRowReverseFlexDirection() ||
-            (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
-  }
-  return (style.GetWritingDirection().BlockStart() ==
-          PhysicalDirection::kLeft) ==
-         (style.ResolvedIsColumnReverseFlexDirection() ||
-          (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
+  return GetOverflowConverter(StyleRef()).Left();
 }
 
 namespace {

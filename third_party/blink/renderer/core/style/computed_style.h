@@ -1018,20 +1018,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return FlexDirection() == EFlexDirection::kColumn ||
            FlexDirection() == EFlexDirection::kColumnReverse;
   }
-  bool ResolvedIsColumnReverseFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
-      return BoxOrient() == EBoxOrient::kVertical &&
-             BoxDirection() == EBoxDirection::kReverse;
-    }
-    return FlexDirection() == EFlexDirection::kColumnReverse;
-  }
-  bool ResolvedIsRowFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
-      return BoxOrient() == EBoxOrient::kHorizontal;
-    }
-    return FlexDirection() == EFlexDirection::kRow ||
-           FlexDirection() == EFlexDirection::kRowReverse;
-  }
   bool ResolvedIsRowReverseFlexDirection() const {
     if (IsDeprecatedWebkitBox()) {
       return BoxOrient() == EBoxOrient::kHorizontal &&
