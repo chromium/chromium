@@ -149,7 +149,8 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
   auto caps = base::HeapArray<BYTE>::Uninit(byte_size);
   for (int i = 0; i < count; ++i) {
     VideoCaptureDeviceWin::ScopedMediaType media_type;
-    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.data());
+    hr = stream_config->GetStreamCaps(
+        i, &media_type.Receive()->AsEphemeralRawAddr(), caps.data());
     // GetStreamCaps() may return S_FALSE, so don't use FAILED() or SUCCEED()
     // macros here since they'll trigger incorrectly.
     if (hr != S_OK || !media_type.get()) {
@@ -281,7 +282,7 @@ void VideoCaptureDeviceWin::ScopedMediaType::Free() {
   media_type_ = nullptr;
 }
 
-AM_MEDIA_TYPE** VideoCaptureDeviceWin::ScopedMediaType::Receive() {
+raw_ptr<AM_MEDIA_TYPE>* VideoCaptureDeviceWin::ScopedMediaType::Receive() {
   DCHECK(!media_type_);
   return &media_type_;
 }
@@ -461,7 +462,8 @@ void VideoCaptureDeviceWin::AllocateAndStart(
   // GetStreamCaps can return S_FALSE which we consider an error. Therefore the
   // FAILED macro can't be used.
   hr = stream_config->GetStreamCaps(found_capability.media_type_index,
-                                    media_type.Receive(), caps.data());
+                                    &media_type.Receive()->AsEphemeralRawAddr(),
+                                    caps.data());
   if (hr != S_OK) {
     SetErrorState(media::VideoCaptureError::
                       kWinDirectShowFailedToGetCaptureDeviceCapabilities,
