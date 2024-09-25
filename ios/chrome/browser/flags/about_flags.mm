@@ -1919,6 +1919,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayForceShowOnboardingScreenDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensOverlayForceShowOnboardingScreen)},
+    {"tips-magic-stack", flag_descriptions::kTipsMagicStackName,
+     flag_descriptions::kTipsMagicStackDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTipsMagicStack)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

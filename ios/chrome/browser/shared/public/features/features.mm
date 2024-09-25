@@ -53,6 +53,10 @@ BASE_FEATURE(kOmahaServiceRefactor,
              "OmahaServiceRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTipsMagicStack,
+             "TipsMagicStack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
@@ -329,6 +333,10 @@ int SafetyCheckNotificationsImpressionLimit() {
       kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionLimit,
       /*default_value=*/
       3);
+}
+
+bool IsTipsMagicStackEnabled() {
+  return base::FeatureList::IsEnabled(kTipsMagicStack);
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,

@@ -8792,6 +8792,11 @@
     "expiry_milestone": -1
   },
   {
+      "name": "tips-magic-stack",
+      "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-get-set-up@google.com"],
+      "expiry_milestone": 134
+  },
+  {
     "name": "toolbar-phone-cleanup",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 135

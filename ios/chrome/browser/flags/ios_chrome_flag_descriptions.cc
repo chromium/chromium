@@ -1075,6 +1075,10 @@ const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "
     "page's theme color. Disabled when a dynamic color flag is enabled.";
 
+const char kTipsMagicStackName[] = "Enable Tips (Magic Stack)";
+const char kTipsMagicStackDescription[] =
+    "When enabled, the Tips module will be displayed in the Magic Stack.";
+
 const char kIOSLargeFakeboxName[] = "Enable Large Fakebox on Home";
 const char kIOSLargeFakeboxDescription[] =
     "When enabled, the Fakebox on Home appears larger and has an updated "

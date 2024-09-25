@@ -962,6 +962,11 @@ extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 extern const char kThemeColorInTopToolbarName[];
 extern const char kThemeColorInTopToolbarDescription[];
 
+// Title and description for the flag to enable the Tips module in the Magic
+// Stack.
+extern const char kTipsMagicStackName[];
+extern const char kTipsMagicStackDescription[];
+
 // Title and description for the flag to enable the iOS Large Fakebox feature
 extern const char kIOSLargeFakeboxName[];
 extern const char kIOSLargeFakeboxDescription[];

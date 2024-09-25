@@ -104,6 +104,9 @@ enum class SafetyCheckNotificationsImpressionTrigger {
   kAlways = 1,
 };
 
+// Feature flag to add the Tips module to the Magic Stack.
+BASE_DECLARE_FEATURE(kTipsMagicStack);
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -346,6 +349,9 @@ bool ShouldHideSafetyCheckModuleIfNoIssues();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();
+
+// Whether the Tips module should be shown in the Magic Stack.
+bool IsTipsMagicStackEnabled();
 
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();
