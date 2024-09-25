@@ -1332,6 +1332,17 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   return gfx::GpuMemoryBufferHandle();
 }
 
+int VideoFrame::GetMappableGpuBufferId() const {
+  // Note that |this| VideoFrame and |wrapped_frame_| VideoFrame both have
+  // same MappableGpuBuffer but have different |unique_id_| as it's generated in
+  // VideoFrame constructor. Hence use the id from the |wrapped_frame_| which
+  // has the MappableGpuBuffer.
+  if (wrapped_frame_) {
+    return wrapped_frame_->GetMappableGpuBufferId();
+  }
+  return static_cast<int>(unique_id_.value());
+}
+
 bool VideoFrame::IsSameAllocation(VideoPixelFormat format,
                                   const gfx::Size& coded_size,
                                   const gfx::Rect& visible_rect,

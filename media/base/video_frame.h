@@ -585,6 +585,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // usage of GpuMemoryBuffer.
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() const;
 
+  // Returns an id which is unique for every MappableGpuBuffer(GpuMemoryBuffer
+  // or MappableSI). This id is unique in a given process.
+  int GetMappableGpuBufferId() const;
+
   // Returns true if the video frame was created with the given parameters.
   bool IsSameAllocation(VideoPixelFormat format,
                         const gfx::Size& coded_size,
@@ -819,14 +823,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                     const gfx::Size& natural_size);
 
  private:
-  // Friend class and methods which are currently using
-  // VideoFrame::GetGpuMemorybuffer() until they are fully converted to use
+  // Friend class VideoEncodeAcceleratorAdapter is currently using
+  // VideoFrame::GetGpuMemorybuffer() until it is fully converted to use
   // MappableSI.
   // TODO(crbug.com/40263579): Remove below friends as well as
   // ::GetGpuMemoryBuffer() and ::GetGpuMemoryBufferForTesting() once all
   // friends and tests are converted.
   friend class VideoEncodeAcceleratorAdapter;
-  friend gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame);
 
   // The constructor of VideoFrame should use IsValidConfigInternal()
   // instead of the public IsValidConfig() to check the config, because we can

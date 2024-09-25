@@ -470,8 +470,8 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
 }
 
 gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame) {
-  if (auto* gmb = frame.GetGpuMemoryBuffer()) {
-    return gmb->GetId();
+  if (frame.HasMappableGpuBuffer()) {
+    return gfx::GenericSharedMemoryId(frame.GetMappableGpuBufferId());
   }
   if (frame.HasDmaBufs()) {
     return gfx::GenericSharedMemoryId(frame.GetDmabufFd(0));
