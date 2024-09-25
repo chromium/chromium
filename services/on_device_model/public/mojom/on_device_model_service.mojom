@@ -51,9 +51,6 @@ struct LoadModelParams {
 
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
-
-  // DEPRECATED: This is ignored, models always support multiple sessions.
-  bool support_multiple_sessions;
 };
 
 struct TextSafetyModelAssets {
