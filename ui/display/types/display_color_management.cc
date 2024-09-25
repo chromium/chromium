@@ -68,7 +68,7 @@ float EvaluateLut(float x,
 }  // namespace
 
 GammaCurve::GammaCurve() = default;
-GammaCurve::GammaCurve(const std::vector<GammaRampRGBEntry>& lut)
+GammaCurve::GammaCurve(std::vector<GammaRampRGBEntry>&& lut)
     : lut_(std::move(lut)) {}
 GammaCurve::GammaCurve(GammaCurve&& other)
     : lut_(std::move(other.lut_)), pre_curve_(std::move(other.pre_curve_)) {}

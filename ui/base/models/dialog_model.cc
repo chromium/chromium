@@ -60,7 +60,7 @@ DialogModel::Button::Button(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModel::Button::Params& params)
     : DialogModelField(kCustom, params.id_, params.accelerators_, params),
-      label_(std::move(params.label_)),
+      label_(params.label_),
       style_(params.style_),
       is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {
