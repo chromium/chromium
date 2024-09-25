@@ -162,6 +162,7 @@ private:
                     const std::string& src,
                     int* pcaptype,
                     size_t* pabbrev);
+  void clean_ignore(std::string& dest, const std::string& src);
   void mkinitcap(std::string& u8);
   int mkinitcap2(std::string& u8, std::vector<w_char>& u16);
   int mkinitsmall2(std::string& u8, std::vector<w_char>& u16);
@@ -265,6 +266,26 @@ int HunspellImpl::add_dic(const char* dpath, const char* key) {
 }
 #endif
 
+
+// make a copy of src at dest while removing all characters
+// specified in IGNORE rule
+void HunspellImpl::clean_ignore(std::string& dest,
+                                const std::string& src) {
+  dest.clear();
+  dest.assign(src);
+  const char* ignoredchars = pAMgr ? pAMgr->get_ignore() : NULL;
+  if (ignoredchars != NULL) {
+    if (utf8) {
+      const std::vector<w_char>& ignoredchars_utf16 =
+          pAMgr->get_ignore_utf16();
+      remove_ignored_chars_utf(dest, ignoredchars_utf16);
+    } else {
+      remove_ignored_chars(dest, ignoredchars);
+    }
+  }
+}
+
+
 // make a copy of src at destination while removing all leading
 // blanks and removing any trailing periods after recording
 // their presence with the abbreviation flag
@@ -280,7 +301,11 @@ size_t HunspellImpl::cleanword2(std::string& dest,
   dest.clear();
   dest_utf.clear();
 
-  const char* q = src.c_str();
+  // remove IGNORE characters from the string
+  std::string w2;
+  clean_ignore(w2, src);
+
+  const char* q = w2.c_str();
 
   // first skip over any leading blanks
   while (*q == ' ')
@@ -795,23 +820,12 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
   const char* word;
   int len;
 
-  const char* ignoredchars = pAMgr ? pAMgr->get_ignore() : NULL;
-  if (ignoredchars != NULL && !has_no_ignored_chars(w, ignoredchars)) {
-    w2.assign(w);
-    if (utf8) {
-      const std::vector<w_char>& ignoredchars_utf16 =
-          pAMgr->get_ignore_utf16();
-      remove_ignored_chars_utf(w2, ignoredchars_utf16);
-    } else {
-      remove_ignored_chars(w2, ignoredchars);
-    }
-    word = w2.c_str();
-    len = w2.size();
-    usebuffer = true;
-  } else {
-    word = w.c_str();
-    len = w.size();
-  }
+  // remove IGNORE characters from the string
+  clean_ignore(w2, w);
+
+  word = w2.c_str();
+  len = w2.size();
+  usebuffer = true;
 
   if (!len)
     return NULL;

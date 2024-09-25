@@ -839,7 +839,7 @@ index 76228c4..28981e8 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index bdd3aef..57f5c16 100644
+index 7ec4eab..f696dac 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -77,19 +77,28 @@
@@ -894,7 +894,7 @@ index bdd3aef..57f5c16 100644
  private:
    std::vector<std::string> analyze_internal(const std::string& word);
    bool spell_internal(const std::string& word, int* info = NULL, std::string* root = NULL);
-@@ -168,18 +184,34 @@ private:
+@@ -169,18 +185,34 @@ private:
    HunspellImpl& operator=(const HunspellImpl&);
  };
  
@@ -929,7 +929,7 @@ index bdd3aef..57f5c16 100644
  
    /* get the preferred try string and the dictionary */
    /* encoding from the Affix Manager for that dictionary */
-@@ -193,7 +225,11 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
+@@ -194,7 +226,11 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
    wordbreak = pAMgr->get_breaktable();
  
    /* and finally set up the suggestion manager */
@@ -941,7 +941,7 @@ index bdd3aef..57f5c16 100644
    if (try_string)
      free(try_string);
  }
-@@ -209,11 +245,17 @@ HunspellImpl::~HunspellImpl() {
+@@ -210,11 +246,17 @@ HunspellImpl::~HunspellImpl() {
    delete[] csconv;
  #endif
    csconv = NULL;
@@ -959,15 +959,15 @@ index bdd3aef..57f5c16 100644
  // load extra dictionaries
  int HunspellImpl::add_dic(const char* dpath, const char* key) {
    if (!affixpath)
-@@ -221,6 +263,7 @@ int HunspellImpl::add_dic(const char* dpath, const char* key) {
+@@ -222,6 +264,7 @@ int HunspellImpl::add_dic(const char* dpath, const char* key) {
    m_HMgrs.push_back(new HashMgr(dpath, affixpath, key));
    return 0;
  }
 +#endif
  
- // make a copy of src at destination while removing all leading
- // blanks and removing any trailing periods after recording
-@@ -425,6 +468,9 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root)
+ 
+ // make a copy of src at dest while removing all characters
+@@ -450,6 +493,9 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root)
  }
  
  bool HunspellImpl::spell_internal(const std::string& word, int* info, std::string* root) {
@@ -977,7 +977,7 @@ index bdd3aef..57f5c16 100644
    struct hentry* rv = NULL;
  
    int info2 = 0;
-@@ -770,6 +816,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+@@ -784,6 +830,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
    if (!len)
      return NULL;
  
@@ -991,7 +991,7 @@ index bdd3aef..57f5c16 100644
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
      if (!usebuffer) {
-@@ -970,6 +1023,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
+@@ -984,6 +1037,9 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
  
  std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
          bool& capwords, size_t& abbv, int& captype) {
@@ -1001,7 +1001,7 @@ index bdd3aef..57f5c16 100644
    std::vector<std::string> slst;
  
    int onlycmpdsug = 0;
-@@ -2002,18 +2058,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2016,18 +2072,25 @@ int HunspellImpl::input_conv(const char* word, char* dest, size_t destsize) {
    return 0;
  }
  
@@ -1027,7 +1027,7 @@ index bdd3aef..57f5c16 100644
  
  bool Hunspell::spell(const std::string& word, int* info, std::string* root) {
    return m_Impl->spell(word, info, root);
-@@ -2140,22 +2203,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
+@@ -2154,22 +2217,32 @@ int Hunspell::input_conv(const char* word, char* dest, size_t destsize) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
