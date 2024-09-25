@@ -2735,6 +2735,11 @@ BASE_FEATURE(kScalableShelfPods,
              "ScalableShelfPods",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the scanner dogfood update.
+BASE_FEATURE(kScannerDogfood,
+             "ScannerDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the scanner update.
 BASE_FEATURE(kScannerUpdate,
              "ScannerUpdate",
