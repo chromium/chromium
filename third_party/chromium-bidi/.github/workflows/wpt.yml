@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation sharded without generating report or updating expectations.
 
-name: WPT quick
+name: WPT
 
 # Declare default permissions as read only.
 permissions: read-all
