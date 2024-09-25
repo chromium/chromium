@@ -242,6 +242,14 @@ class LensOverlayQueryController {
   // Creates the endpoint fetcher and send the full image request to the server.
   void PerformFullImageRequest();
 
+  // Handles the endpoint fetch response for the full image request.
+  void FullImageFetchResponseHandler(
+      int request_sequence_id,
+      std::unique_ptr<EndpointResponse> response);
+
+  // Runs the full image callback with empty response data, for errors.
+  void RunFullImageCallbackForError();
+
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
 
@@ -272,11 +280,6 @@ class LensOverlayQueryController {
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
       std::optional<lens::ImageCrop> image_crop);
 
-  // Handles the endpoint fetch response for the full image request.
-  void FullImageFetchResponseHandler(
-      int request_sequence_id,
-      std::unique_ptr<EndpointResponse> response);
-
   // Handles the response from a latency gen204 request.
   void OnLatencyGen204LoaderComplete(
       std::unique_ptr<std::string> response_body);
@@ -284,9 +287,6 @@ class LensOverlayQueryController {
   // Handles the response from a task completion gen204 request.
   void OnTaskCompletionGen204LoaderComplete(
       std::unique_ptr<std::string> response_body);
-
-  // Runs the full image callback with empty response data, for errors.
-  void RunFullImageCallbackForError();
 
   // Handles the endpoint fetch response for an interaction request.
   void InteractionFetchResponseHandler(
