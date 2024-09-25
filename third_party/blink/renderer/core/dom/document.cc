@@ -9322,6 +9322,7 @@ void Document::ScheduleSelectionchangeEvent() {
 // static
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html) {
+  UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   Document* doc = DocumentInit::Create()
                       .WithTypeFrom(keywords::kTextHtml)
                       .WithExecutionContext(context)

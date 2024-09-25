@@ -177,6 +177,7 @@ enum WebDXFeature {
   kKeyboardLock = 119,
   kHTMLSearchElement = 120,
   kAsyncClipboard = 121,
+  kHTMLUnsafeMethods = 122,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

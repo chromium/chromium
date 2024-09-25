@@ -10976,6 +10976,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8PublicKeyCredential_SignalCurrentUserDetails_Method"/>
   <int value="5107" label="V8AIAssistant_CountPromptTokens_Method"/>
   <int value="5108" label="HTMLSearchElement"/>
+  <int value="5109" label="HTMLUnsafeMethods"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33951,6 +33952,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="119" label="KeyboardLock"/>
   <int value="120" label="HTMLSearchElement"/>
   <int value="121" label="AsyncClipboard"/>
+  <int value="122" label="HTMLUnsafeMethods"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

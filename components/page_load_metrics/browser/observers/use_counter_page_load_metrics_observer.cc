@@ -352,6 +352,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kElementCheckVisibility,
            WebDXFeature::kElementCheckVisibility},
           {WebFeature::kHTMLSearchElement, WebDXFeature::kHTMLSearchElement},
+          {WebFeature::kHTMLUnsafeMethods, WebDXFeature::kHTMLUnsafeMethods},
           {WebFeature::kDialogElement, WebDXFeature::kDialog},
           {WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
            WebDXFeature::kDocumentPictureInPicture},

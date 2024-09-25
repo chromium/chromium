@@ -10609,6 +10609,7 @@ Element* Element::ImplicitAnchorElement() const {
 
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
 }
