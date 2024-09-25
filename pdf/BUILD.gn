@@ -225,6 +225,8 @@ if (enable_pdf) {
         "pdf_ink_transform.h",
         "pdf_ink_undo_redo_model.cc",
         "pdf_ink_undo_redo_model.h",
+        "pdfium/pdfium_ink_writer.cc",
+        "pdfium/pdfium_ink_writer.h",
       ]
 
       public_deps += [ "//third_party/ink" ]
@@ -480,6 +482,7 @@ if (enable_pdf) {
         "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
+        "pdfium/pdfium_ink_writer_unittest.cc",
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
