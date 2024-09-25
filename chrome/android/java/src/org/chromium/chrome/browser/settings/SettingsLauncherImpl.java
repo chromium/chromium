@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -139,5 +140,10 @@ public class SettingsLauncherImpl implements SettingsLauncher {
         }
         assert false;
         return null;
+    }
+
+    @Override
+    public void finishCurrentFragment(Activity activity) {
+        ((SettingsActivity) activity).finishCurrentFragment();
     }
 }

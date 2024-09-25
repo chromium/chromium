@@ -391,16 +391,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
-            if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                if (fragmentManager.getBackStackEntryCount() == 0) {
-                    finish();
-                } else {
-                    fragmentManager.popBackStack();
-                }
-            } else {
-                finish();
-            }
+            finishCurrentFragment();
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -483,6 +474,28 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     protected ModalDialogManager createModalDialogManager() {
         return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
+    }
+
+    /**
+     * Finishes the current fragment.
+     *
+     * <p>This method asks the activity to show the previous fragment. If the back stack is empty,
+     * the activity itself is finished.
+     *
+     * <p>This method is package-private because it is used by {@link SettingsLauncherImpl}. Use
+     * {@link SettingsLauncher} to call this method from fragments, instead of calling it directly.
+     */
+    void finishCurrentFragment() {
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                finish();
+            } else {
+                fragmentManager.popBackStack();
+            }
+        } else {
+            finish();
+        }
     }
 
     private class TitleUpdater extends FragmentManager.FragmentLifecycleCallbacks {

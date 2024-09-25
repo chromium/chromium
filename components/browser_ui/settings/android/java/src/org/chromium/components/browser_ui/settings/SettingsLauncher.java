@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -125,4 +126,14 @@ public interface SettingsLauncher {
      */
     Intent createSettingsActivityIntent(
             Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs);
+
+    /**
+     * Finishes the current settings fragment.
+     *
+     * <p>Call this method when the user is done with the current fragment and should go back to the
+     * previous fragment (e.g. selected a language from the language list).
+     *
+     * @param activity The current activity.
+     */
+    void finishCurrentFragment(Activity activity);
 }
