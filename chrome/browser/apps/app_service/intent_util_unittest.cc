@@ -43,7 +43,6 @@
 #include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/test/base/testing_browser_process.h"

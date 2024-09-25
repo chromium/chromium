@@ -17,10 +17,10 @@ static_library("default_pinned_apps") {
   deps = [
     "//ash/constants",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/web_applications",
     "//chrome/common/extensions",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/constants",
     "//extensions/common:common_constants",
   ]

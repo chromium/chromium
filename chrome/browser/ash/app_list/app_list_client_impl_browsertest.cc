@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"

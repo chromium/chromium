@@ -61,6 +61,7 @@ source_set("app_service") {
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chromeos/ash/components/file_manager:constants",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",
       "//extensions/browser/api/file_handlers",

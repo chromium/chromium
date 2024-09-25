@@ -123,13 +123,13 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"  // nogncheck
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"

@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"

@@ -45,6 +45,7 @@ static_library("new_window") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/file_manager:constants",
     "//components/services/app_service",
     "//components/sessions",
     "//components/url_formatter",

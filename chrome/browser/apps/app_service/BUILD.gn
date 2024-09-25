@@ -294,6 +294,7 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/settings/app_management",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
       "//chromeos/components/mgs",

@@ -22,7 +22,6 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/select_file_dialog_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"

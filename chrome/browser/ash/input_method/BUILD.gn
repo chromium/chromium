@@ -209,6 +209,7 @@ static_library("input_method") {
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/language_preferences",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/federated/public/mojom",

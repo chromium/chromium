@@ -44,8 +44,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #endif
 
 namespace extensions {

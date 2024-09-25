@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"

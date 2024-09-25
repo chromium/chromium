@@ -89,6 +89,7 @@ static_library("app_list") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/constants",
     "//components/app_constants",

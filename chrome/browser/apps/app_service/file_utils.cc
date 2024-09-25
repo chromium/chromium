@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_service/file_utils.h"
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"

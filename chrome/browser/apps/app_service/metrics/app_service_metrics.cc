@@ -23,8 +23,8 @@
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

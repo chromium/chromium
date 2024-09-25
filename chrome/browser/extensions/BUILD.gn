@@ -1272,6 +1272,7 @@ source_set("extensions") {
       "//chromeos/ash/components/disks",
       "//chromeos/ash/components/enhanced_network_tts",
       "//chromeos/ash/components/enhanced_network_tts/mojom",
+      "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/language_packs",
       "//chromeos/ash/components/language_packs/public/mojom",
       "//chromeos/ash/components/login/auth",

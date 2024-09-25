@@ -8,7 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("file_manager") {
   sources = [
-    "app_id.h",
     "app_service_file_tasks.cc",
     "app_service_file_tasks.h",
     "cloud_upload_prefs_watcher.cc",
@@ -169,6 +168,7 @@ static_library("file_manager") {
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/components/disks:prefs",
     "//chromeos/constants",
     "//chromeos/dbus/power",
@@ -340,6 +340,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/trash_service",
     "//chromeos/ash/components/trash_service/public/cpp",
@@ -481,6 +482,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs:test_support",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/smbfs",
     "//chromeos/ash/components/smbfs/mojom",
@@ -560,6 +562,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/ash/default_pinned_apps",
       "//chrome/test:test_support_ui",
       "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/ash/components/file_manager:constants",
       "//content/test:test_support",
       "//extensions/browser",
       "//testing/gtest",

@@ -60,6 +60,10 @@ component("file_manager") {
   ]
 }
 
+static_library("constants") {
+  sources = [ "app_id.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [

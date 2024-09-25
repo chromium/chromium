@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 
 #include "base/files/file_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"

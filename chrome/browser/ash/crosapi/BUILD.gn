@@ -463,6 +463,7 @@ static_library("crosapi") {
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/login_state",

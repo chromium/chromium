@@ -27,8 +27,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

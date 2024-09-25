@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service/metrics",
   "+chrome/browser/ash/app_list",
-  "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/system_web_apps/test_support",
   "+chrome/browser/browser_process.h",

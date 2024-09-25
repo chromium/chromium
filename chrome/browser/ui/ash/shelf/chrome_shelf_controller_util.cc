@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"

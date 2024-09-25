@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"

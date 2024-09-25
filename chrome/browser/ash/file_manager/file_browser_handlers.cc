@@ -19,7 +19,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"

@@ -27,7 +27,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
