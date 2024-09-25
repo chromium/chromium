@@ -1894,6 +1894,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.IOS.RepeatedResponseCalled"
+    enum="BooleanSubsequentResponse" expires_after="2025-01-05">
+  <owner>ajuma@chromium.org</owner>
+  <owner>joemerramos@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether a subsequent Safe Browsing navigation response without a
+    matching call to ShouldAllowRequest was called. Logs on each subsequent
+    navigation response policy callback.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.IOS.TotalDelay" units="ms"
     expires_after="2025-03-09">
   <owner>ajuma@chromium.org</owner>

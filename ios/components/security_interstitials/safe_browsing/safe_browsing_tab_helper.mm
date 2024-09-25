@@ -349,7 +349,19 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  DCHECK(pending_main_frame_query_);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (!pending_main_frame_query_) {
+      base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled",
+                                true);
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Allow());
+    }
+  } else {
+    DCHECK(pending_main_frame_query_);
+  }
+  base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", false);
+
   // When there's a server redirect, a ShouldAllowRequest call sometimes
   // doesn't happen for the target of the redirection. This seems to be fixed
   // in trunk WebKit.

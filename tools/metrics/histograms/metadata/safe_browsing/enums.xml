@@ -138,6 +138,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received"/>
 </enum>
 
+<enum name="BooleanSubsequentResponse">
+  <int value="0" label="Initial Response"/>
+  <int value="1" label="Subsequent Response"/>
+</enum>
+
 <enum name="BooleanTransferred">
   <int value="0" label="Did not transfer"/>
   <int value="1" label="Transferred"/>
