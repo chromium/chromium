@@ -146,7 +146,7 @@ public class ReadAloudControllerUnitTest {
     private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Profile mMockIncognitoProfile;
-    @Mock private ReadAloudReadabilityHooks mHooksImpl;
+    @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock private ReadAloudPlaybackHooks mPlaybackHooks;
     @Mock private Player mPlayerCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
