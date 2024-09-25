@@ -53,7 +53,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   void SetUp() override {
     auto testing_prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(testing_prefs->registry());
+    RegisterProfilePrefs(testing_prefs->registry());
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),

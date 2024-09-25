@@ -18,9 +18,12 @@ class PrefRegistrySyncable;
 // Registers all prefs that will be used via the local state PrefService.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-// Registers all prefs that will be used via a PrefService attached to a
-// browser state.
+// TODO(crbug.com/367245358) To be removed.
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+// Registers all prefs that will be used via a PrefService attached to a
+// profile.
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Migrate/cleanup deprecated prefs in local state. Over time, long deprecated
 // prefs should be removed as new ones are added, but this call should never go
@@ -28,12 +31,12 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry);
 // *the* place to drop deprecated local state prefs at.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs);
 
-// Migrate/cleanup deprecated prefs in the browser state's pref store. Over
+// Migrate/cleanup deprecated prefs in the profile's pref store. Over
 // time, long deprecated prefs should be removed as new ones are added, but this
 // call should never go away (even if it becomes an empty call for some time) as
-// it should remain *the* place to drop deprecated browser state's prefs at.
-void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
-                                      PrefService* prefs);
+// it should remain *the* place to drop deprecated profile's prefs at.
+void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
+                                 PrefService* prefs);
 
 // Migrate/cleanup deprecated prefs from the standard NSUserDefault store. Over
 // time, long deprecated prefs should be removed as new ones are added, but this

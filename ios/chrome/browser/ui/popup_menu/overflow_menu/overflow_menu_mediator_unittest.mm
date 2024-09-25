@@ -147,7 +147,7 @@ std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
   scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
   std::unique_ptr<PrefServiceSyncable> prefs =
       factory.CreateSyncable(registry.get());
-  RegisterBrowserStatePrefs(registry.get());
+  RegisterProfilePrefs(registry.get());
   return prefs;
 }
 

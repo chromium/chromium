@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   user_prefs::PrefRegistrySyncable* registry = prefs->registry();
-  RegisterBrowserStatePrefs(registry);
+  RegisterProfilePrefs(registry);
   return prefs;
 }
 

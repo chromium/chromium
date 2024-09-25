@@ -40,8 +40,8 @@ inline constexpr char kBottomOmniboxByDefault[] =
 inline constexpr char kBrowserLockdownModeEnabled[] =
     "ios.browser_lockdown_mode_enabled";
 
-// A map of browser state data directory to cached information. This cache can
-// be used to display information about browser states without actually having
+// A map of profile data directory to cached information. This cache can
+// be used to display information about profiles without actually having
 // to load them.
 inline constexpr char kProfileInfoCache[] = "profile.info_cache";
 
@@ -56,17 +56,17 @@ inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
 // Total number of profile created for this Chrome installation.
 inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 
-// A map of a scene and a browser state.
+// A map of a scene and a profile.
 inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 
-// A string of NSUUID used to access the WebKit storage per BrowserState.
+// A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
 
 // A dictionary mapping content notification enrollment eligibilities. This is
-// stored in BrowserState prefs.
+// stored in Profile prefs.
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
     "ios.content_notification.enrollment_eligibility";
 
@@ -94,7 +94,7 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
     "follow.first_follow_update_ui_modal_count";
 
 // A dictionary mapping push notification enabled features to their permission
-// to send notifications to the user. This is stored in BrowserState prefs.
+// to send notifications to the user. This is stored in Profile prefs.
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 

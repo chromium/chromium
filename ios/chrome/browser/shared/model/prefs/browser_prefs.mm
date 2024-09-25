@@ -537,7 +537,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   PushNotificationService::RegisterLocalStatePrefs(registry);
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
 
-  // Preferences related to the browser state manager.
+  // Preferences related to the profile manager.
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
 
   [MemoryDebuggerManager registerLocalState:registry];
@@ -703,7 +703,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 
-  // Prefs migrated to browserState prefs.
+  // Prefs migrated to profile prefs.
   registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterStringPref(
@@ -770,7 +770,12 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 0);
 }
 
+// TODO(crbug.com/367245358) To be removed.
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  RegisterProfilePrefs(registry);
+}
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
@@ -1163,8 +1168,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 }
 
 // This method should be periodically pruned of year+ old migrations.
-void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
-                                      PrefService* prefs) {
+void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
+                                 PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
@@ -1247,8 +1252,8 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 01/2024.
   // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to BrowserState pref and before clearing it the
-  // BrowserState pref needs to be updated.
+  // moved from LocalState pref to Profile pref and before clearing it the
+  // Profile pref needs to be updated.
   MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
       tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, prefs);
 
@@ -1305,15 +1310,15 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 07/2024.
   // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to BrowserState pref and before clearing it the
-  // BrowserState pref needs to be updated.
+  // moved from LocalState pref to Profile pref and before clearing it the
+  // Profile pref needs to be updated.
   MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosSafetyCheckManagerPasswordCheckResult, prefs);
 
   // Added 07/2024.
   // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to BrowserState pref and before clearing it the
-  // BrowserState pref needs to be updated.
+  // moved from LocalState pref to Profile pref and before clearing it the
+  // Profile pref needs to be updated.
   MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts, prefs);
 

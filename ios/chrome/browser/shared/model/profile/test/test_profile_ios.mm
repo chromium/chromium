@@ -183,7 +183,7 @@ void TestChromeBrowserState::Init() {
         CreateIncognitoBrowserStatePrefs(original_browser_state_->prefs_.get());
   } else {
     testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable();
-    RegisterBrowserStatePrefs(testing_prefs_->registry());
+    RegisterProfilePrefs(testing_prefs_->registry());
     prefs_.reset(testing_prefs_);
   }
   user_prefs::UserPrefs::Set(this, prefs_.get());

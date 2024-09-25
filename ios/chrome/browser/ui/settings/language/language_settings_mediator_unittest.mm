@@ -135,7 +135,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
     scoped_refptr<PrefRegistrySyncable> registry = new PrefRegistrySyncable();
     // Registers Translate and Language related prefs.
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     PrefServiceMockFactory factory;
     return factory.CreateSyncable(registry.get());
   }

@@ -109,13 +109,13 @@ void RegisterPathProvider() {
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);
 }
 
-void GetUserCacheDirectory(const base::FilePath& browser_state_dir,
+void GetUserCacheDirectory(const base::FilePath& profile_dir,
                            base::FilePath* result) {
-  // If the browser state directory is under ~/Library/Application Support,
+  // If the profile directory is under ~/Library/Application Support,
   // use a suitable cache directory under ~/Library/Caches.
 
   // Default value in cases where any of the following fails.
-  *result = browser_state_dir;
+  *result = profile_dir;
 
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_APP_DATA, &app_data_dir))
@@ -123,8 +123,9 @@ void GetUserCacheDirectory(const base::FilePath& browser_state_dir,
   base::FilePath cache_dir;
   if (!base::PathService::Get(base::DIR_CACHE, &cache_dir))
     return;
-  if (!app_data_dir.AppendRelativePath(browser_state_dir, &cache_dir))
+  if (!app_data_dir.AppendRelativePath(profile_dir, &cache_dir)) {
     return;
+  }
 
   *result = cache_dir;
 }

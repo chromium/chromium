@@ -97,7 +97,7 @@ class AuthenticationFlowTest : public PlatformTest {
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs =
         factory.CreateSyncable(registry.get());
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     return prefs;
   }
 

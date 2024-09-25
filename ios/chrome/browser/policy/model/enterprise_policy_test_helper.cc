@@ -54,7 +54,7 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
       browser_policy_connector_.get(), /*user_policy_provider=*/nullptr);
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry(
       new user_prefs::PrefRegistrySyncable);
-  RegisterBrowserStatePrefs(pref_registry.get());
+  RegisterProfilePrefs(pref_registry.get());
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
       CreateBrowserStatePrefs(
           state_directory_path,

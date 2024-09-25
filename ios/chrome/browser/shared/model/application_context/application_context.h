@@ -93,7 +93,7 @@ class ApplicationContext {
 
   // Invoked when application enters foreground. Cancels the effect of
   // OnAppEnterBackground(), in particular removes the boolean preference
-  // indicating that the ChromeBrowserStates have been shutdown.
+  // indicating that the Profiles have been shutdown.
   virtual void OnAppEnterForeground() = 0;
 
   // Invoked when application enters background. Saves any state that must be

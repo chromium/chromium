@@ -35,7 +35,7 @@ class PrivacySafeBrowsingViewControllerTest
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     user_prefs::PrefRegistrySyncable* registry = prefs->registry();
-    RegisterBrowserStatePrefs(registry);
+    RegisterProfilePrefs(registry);
     return prefs;
   }
 

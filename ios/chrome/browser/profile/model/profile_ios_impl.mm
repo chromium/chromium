@@ -190,8 +190,8 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       BuildBrowserStatePolicyConnector(policy_schema_registry_.get(), connector,
                                        user_cloud_policy_manager_.get());
 
-  // Register BrowserState preferences.
-  RegisterBrowserStatePrefs(pref_registry_.get());
+  // Register Profile preferences.
+  RegisterProfilePrefs(pref_registry_.get());
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
 
@@ -366,7 +366,7 @@ void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
   }
 
   // Migrate obsolete prefs.
-  MigrateObsoleteBrowserStatePrefs(GetStatePath(), prefs_.get());
+  MigrateObsoleteProfilePrefs(GetStatePath(), prefs_.get());
 
   // Initialize `storage_uuid_` from the prefs. In case of a new BrowserState,
   // generate a new value (this avoid losing data when migrating from an old

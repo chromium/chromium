@@ -123,7 +123,7 @@ TEST_F(SupervisedUserServiceFactoryTest,
           /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
           base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),
           std::make_unique<PrefNotifierImpl>());
-  RegisterBrowserStatePrefs(testing_prefs->registry());
+  RegisterProfilePrefs(testing_prefs->registry());
 
   TestProfileIOS::Builder builder;
   builder.SetPrefService(std::move(testing_prefs));

@@ -81,7 +81,7 @@ class TabOpenerTest : public PlatformTest {
       sync_preferences::PrefServiceMockFactory factory;
       scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
           new user_prefs::PrefRegistrySyncable);
-      RegisterBrowserStatePrefs(registry.get());
+      RegisterProfilePrefs(registry.get());
 
       TestChromeBrowserState::Builder builder;
       builder.SetPrefService(factory.CreateSyncable(registry.get()));

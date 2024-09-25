@@ -40,7 +40,7 @@ class BandwidthManagementTableViewControllerTest
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(std::move(prefs));
     chrome_browser_state_ = std::move(test_cbs_builder).Build();

@@ -25,10 +25,10 @@ class BrowserPrefsTest : public PlatformTest {
 
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(pref_service_->registry());
+    RegisterProfilePrefs(pref_service_->registry());
 
     // TODO(crbug.com/40282890): Remove this line ~one year after full launch.
-    // Manually register IdentityManagerFactory preferences as BrowserPrefs do
+    // Manually register IdentityManagerFactory preferences as ProfilePrefs do
     // not register KeyedService factories prefs.
     signin::IdentityManager::RegisterProfilePrefs(pref_service_->registry());
   }
@@ -51,7 +51,7 @@ class BrowserPrefsTest : public PlatformTest {
 
 // Check that the migration of a pref from profile prefService to
 // localState prefService is performed correctly.
-TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
+TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   base::Time now = base::Time::Now();
 
   // Simulate registering a value different from default in profile prefService.
@@ -105,7 +105,7 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
       local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
       0);
 
-  MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
+  MigrateObsoleteProfilePrefs(base::FilePath(), pref_service());
 
   // Verify that the prefs were migrated successfully.
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), false);
@@ -198,7 +198,7 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
 
-  MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
+  MigrateObsoleteProfilePrefs(base::FilePath(), pref_service());
 
   // Verify that the prefs were migrated successfully.
   EXPECT_EQ(

@@ -135,7 +135,7 @@ class PredictionManagerTestBase : public PlatformTest {
 
     auto testing_prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(testing_prefs->registry());
+    RegisterProfilePrefs(testing_prefs->registry());
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
