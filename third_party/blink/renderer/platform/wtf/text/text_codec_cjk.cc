@@ -1228,19 +1228,13 @@ Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
 
 std::string TextCodecCJK::Encode(base::span<const UChar> characters,
                                  UnencodableHandling handling) {
-  Vector<uint8_t> v = EncodeCommon(
-      StringView(characters.data(),
-                 base::checked_cast<wtf_size_t>(characters.size())),
-      handling);
+  Vector<uint8_t> v = EncodeCommon(StringView(characters), handling);
   return std::string(v.begin(), v.end());
 }
 
 std::string TextCodecCJK::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
-  Vector<uint8_t> v = EncodeCommon(
-      StringView(characters.data(),
-                 base::checked_cast<wtf_size_t>(characters.size())),
-      handling);
+  Vector<uint8_t> v = EncodeCommon(StringView(characters), handling);
   return std::string(v.begin(), v.end());
 }
 

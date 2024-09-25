@@ -551,8 +551,8 @@ void String::WriteIntoTrace(perfetto::TracedValue context) const {
   // Avoid the default String to StringView conversion since it calls
   // AddRef() on the StringImpl and this method is sometimes called in
   // places where that triggers DCHECKs.
-  StringUTF8Adaptor adaptor(Is8Bit() ? StringView(Characters8(), length())
-                                     : StringView(Characters16(), length()));
+  StringUTF8Adaptor adaptor(Is8Bit() ? StringView(Span8())
+                                     : StringView(Span16()));
   std::move(context).WriteString(adaptor.data(), adaptor.size());
 }
 

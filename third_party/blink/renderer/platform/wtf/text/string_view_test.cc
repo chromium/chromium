@@ -17,8 +17,9 @@
 namespace WTF {
 
 const char kChars[] = "12345";
+const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
-const UChar* const kChars16 = reinterpret_cast<const UChar*>(u"12345");
+const UChar* const kChars16 = reinterpret_cast<const UChar*>(kCharsU);
 
 TEST(StringViewTest, ConstructionStringImpl8) {
   scoped_refptr<StringImpl> impl8_bit = StringImpl::Create(kChars8, 5);
@@ -377,6 +378,26 @@ TEST(StringViewTest, ConstructionLiteral16) {
             StringView(kChars16, 2u));
   EXPECT_EQ(2u, StringView(kChars16, 2u).length());
   EXPECT_EQ(String("12"), StringView(kChars16, 2u));
+}
+
+TEST(StringViewTest, ConstructionSpan8) {
+  // StringView(base::span<const LChar> chars);
+  const auto kCharsSpan8 = base::byte_span_from_cstring(kChars);
+  ASSERT_TRUE(StringView(kCharsSpan8).Is8Bit());
+  EXPECT_FALSE(StringView(kCharsSpan8).IsNull());
+  EXPECT_EQ(kChars8, StringView(kCharsSpan8).Characters8());
+  EXPECT_EQ(5u, StringView(kCharsSpan8).length());
+  EXPECT_EQ(kChars, StringView(kCharsSpan8));
+}
+
+TEST(StringViewTest, ConstructionSpan16) {
+  // StringView(base::span<const UChar> chars);
+  const auto kCharsSpan16 = base::span_from_cstring(kCharsU);
+  ASSERT_FALSE(StringView(kCharsSpan16).Is8Bit());
+  EXPECT_FALSE(StringView(kCharsSpan16).IsNull());
+  EXPECT_EQ(kChars16, StringView(kCharsSpan16).Characters16());
+  EXPECT_EQ(5u, StringView(kCharsSpan16).length());
+  EXPECT_EQ(String(kChars16), StringView(kCharsSpan16));
 }
 
 #if ENABLE_SECURITY_ASSERT

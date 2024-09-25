@@ -139,6 +139,10 @@ class WTF_EXPORT StringView {
   // From a literal string or LChar buffer:
   StringView(const LChar* chars, unsigned length)
       : impl_(StringImpl::empty_), bytes_(chars), length_(length) {}
+  explicit StringView(base::span<const LChar> chars)
+      : impl_(StringImpl::empty_),
+        bytes_(chars.data()),
+        length_(base::checked_cast<wtf_size_t>(chars.size())) {}
   StringView(const char* chars, unsigned length)
       : StringView(reinterpret_cast<const LChar*>(chars), length) {}
   StringView(const LChar* chars)
@@ -152,6 +156,10 @@ class WTF_EXPORT StringView {
   // From a wide literal string or UChar buffer.
   StringView(const UChar* chars, unsigned length)
       : impl_(StringImpl::empty16_bit_), bytes_(chars), length_(length) {}
+  explicit StringView(base::span<const UChar> chars)
+      : impl_(StringImpl::empty16_bit_),
+        bytes_(chars.data()),
+        length_(base::checked_cast<wtf_size_t>(chars.size())) {}
   StringView(const UChar* chars);
 
 #if DCHECK_IS_ON()

@@ -143,8 +143,7 @@ class PLATFORM_EXPORT TextRun final {
   }
 
   StringView ToStringView() const {
-    return Is8Bit() ? StringView(data_.characters8, len_)
-                    : StringView(data_.characters16, len_);
+    return Is8Bit() ? StringView(Span8()) : StringView(Span16());
   }
 
   UChar32 CodepointAt(unsigned i) const {
