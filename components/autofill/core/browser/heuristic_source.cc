@@ -19,9 +19,10 @@ HeuristicSource GetActiveHeuristicSource() {
     return HeuristicSource::kMachineLearning;
   }
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  return GetActiveRegexFeatures().empty()
-             ? HeuristicSource::kDefaultRegexes
-             : HeuristicSource::kExperimentalRegexes;
+  static const HeuristicSource active_source =
+      GetActiveRegexFeatures().empty() ? HeuristicSource::kDefaultRegexes
+                                       : HeuristicSource::kExperimentalRegexes;
+  return active_source;
 #else
   return HeuristicSource::kLegacyRegexes;
 #endif
