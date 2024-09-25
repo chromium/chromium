@@ -56,7 +56,7 @@ void NonTabPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // Time from request to LCP and FCP. These metrics exclude the time when the
   // preloaded WebUI is in the background.
   const std::optional<base::TimeTicks> request_time =
-      WebUIContentsPreloadManager().GetInstance()->GetRequestTime(
+      WebUIContentsPreloadManager::GetInstance()->GetRequestTime(
           GetDelegate().GetWebContents());
   if (!request_time.has_value()) {
     return;

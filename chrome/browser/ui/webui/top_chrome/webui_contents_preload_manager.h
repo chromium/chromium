@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -55,7 +56,6 @@ class WebUIContentsPreloadManager : public ProfileObserver,
     bool is_ready_to_show;
   };
 
-  WebUIContentsPreloadManager();
   ~WebUIContentsPreloadManager() override;
 
   WebUIContentsPreloadManager(const WebUIContentsPreloadManager&) = delete;
@@ -88,6 +88,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   void DisableNavigationForTesting();
 
  private:
+  WebUIContentsPreloadManager();
+  friend class base::NoDestructor<WebUIContentsPreloadManager>;
   friend class WebUIContentsPreloadManagerTestAPI;
   class WebUIControllerEmbedderStub;
   class PendingPreload;
