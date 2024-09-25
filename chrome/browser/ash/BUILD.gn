@@ -32,7 +32,6 @@ source_set("unit_tests") {
     "../policy/default_geolocation_policy_handler_unittest.cc",
     "../ui/browser_finder_chromeos_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
-    "proxy_config_service_impl_unittest.cc",
   ]
 
   deps = [
