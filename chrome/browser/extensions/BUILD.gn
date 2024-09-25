@@ -253,6 +253,8 @@ source_set("extensions") {
     "api/reading_list/reading_list_api_constants.h",
     "api/reading_list/reading_list_event_router.cc",
     "api/reading_list/reading_list_event_router.h",
+    "api/reading_list/reading_list_event_router_factory.cc",
+    "api/reading_list/reading_list_event_router_factory.h",
     "api/reading_list/reading_list_util.cc",
     "api/reading_list/reading_list_util.h",
     "api/runtime/chrome_runtime_api_delegate.cc",

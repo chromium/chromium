@@ -13,8 +13,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
-class ProfileKeyedServiceFactory;
-
 namespace extensions {
 
 // The ReadingListEventRouter listens for reading list events and notifies
@@ -26,10 +24,6 @@ class ReadingListEventRouter : public KeyedService,
   ReadingListEventRouter(const ReadingListEventRouter&) = delete;
   ReadingListEventRouter& operator=(const ReadingListEventRouter&) = delete;
   ~ReadingListEventRouter() override;
-
-  static ReadingListEventRouter* Get(content::BrowserContext* browser_context);
-
-  static ProfileKeyedServiceFactory* GetFactoryInstance();
 
  private:
   // ReadingListModelObserver:
