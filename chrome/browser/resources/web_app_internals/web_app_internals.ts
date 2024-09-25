@@ -245,6 +245,7 @@ async function iwaDevFetchUpdateManifest() {
     const installResult: InstallIsolatedWebAppResult =
         (await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
           webBundleUrl: selectedVersionEntry.webBundleUrl,
+          updateManifestUrl,
         })).result;
     if (installResult.success) {
       iwaInstallMessageDiv.innerText = `Installing version ${
@@ -342,6 +343,9 @@ function formatDevModeLocation(location: IwaDevModeLocation): string {
   if (location.bundlePath) {
     return filePathToText(location.bundlePath);
   }
+  if (location.updateManifestUrl) {
+    return location.updateManifestUrl.url;
+  }
   assertNotReached();
 }
 
@@ -371,32 +375,41 @@ async function refreshDevModeAppList() {
 
       const updateBtn = document.createElement('button');
       updateBtn.className = 'iwa-dev-update-button';
-      updateBtn.innerText = 'Perform update now';
-      updateBtn.onclick = async () => {
-        const oldText = updateBtn.innerText;
-        try {
-          updateBtn.disabled = true;
-          updateBtn.innerText =
-              'Performing update... (close the IWA if it is currently open!)';
 
-          if (location.bundlePath) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler
-                    .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
-            updateMsg.innerText = result;
-          } else if (location.proxyOrigin) {
-            const {result}: {result: string} =
-                await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
-                    appId);
-            updateMsg.innerText = result;
-          } else {
-            assertNotReached();
+      if (location.updateManifestUrl) {
+        // TODO(crbug.com/369051617): Implement an update routine for this.
+        updateBtn.disabled = true;
+        updateBtn.innerText =
+            'Updates for manifest installations are not yet supported.';
+      } else {
+        updateBtn.innerText = 'Perform update now';
+        updateBtn.onclick = async () => {
+          const oldText = updateBtn.innerText;
+          try {
+            updateBtn.disabled = true;
+            updateBtn.innerText =
+                'Performing update... (close the IWA if it is currently open!)';
+
+            if (location.bundlePath) {
+              const {result}: {result: string} =
+                  await webAppInternalsHandler
+                      .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
+              updateMsg.innerText = result;
+            } else if (location.proxyOrigin) {
+              const {result}: {result: string} =
+                  await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
+                      appId);
+              updateMsg.innerText = result;
+            } else {
+              // TODO(crbug.com/369051617): Handle location.updateManifestUrl.
+              assertNotReached();
+            }
+          } finally {
+            updateBtn.innerText = oldText;
+            updateBtn.disabled = false;
           }
-        } finally {
-          updateBtn.innerText = oldText;
-          updateBtn.disabled = false;
-        }
-      };
+        };
+      }
 
       li.appendChild(updateBtn);
       li.appendChild(updateMsg);

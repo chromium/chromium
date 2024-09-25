@@ -47,6 +47,12 @@ namespace web_app {
 
 namespace {
 
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Pointee;
+
 constexpr char kBadIconErrorTemplate[] = R"({
    "!url": "$1banners/manifest_test_page.html",
    "background_installation": false,
@@ -235,10 +241,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
   auto* handler = OpenWebAppInternals();
 
+  const GURL& update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
+      test::GetDefaultEd25519WebBundleId());
   base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
       um_future;
-  handler->ParseUpdateManifestFromUrl(update_server_mixin_.GetUpdateManifestUrl(
-                                          test::GetDefaultEd25519WebBundleId()),
+  handler->ParseUpdateManifestFromUrl(update_manifest_url,
                                       um_future.GetCallback());
 
   auto um_result = um_future.Take();
@@ -246,12 +253,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
   const auto& update_manifest = *um_result->get_update_manifest();
 
-  ASSERT_THAT(
-      update_manifest,
-      testing::Field(
-          &::mojom::UpdateManifest::versions,
-          testing::ElementsAre(testing::Pointee(testing::Field(
-              &::mojom::VersionEntry::version, testing::Eq("1.0.0"))))));
+  ASSERT_THAT(update_manifest,
+              Field(&::mojom::UpdateManifest::versions,
+                    ElementsAre(Pointee(
+                        Field(&::mojom::VersionEntry::version, Eq("1.0.0"))))));
 
   const GURL& web_bundle_url = update_manifest.versions[0]->web_bundle_url;
 
@@ -259,16 +264,19 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
       install_future;
   auto params = ::mojom::InstallFromBundleUrlParams::New();
   params->web_bundle_url = web_bundle_url;
+  params->update_manifest_url = update_manifest_url;
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());
 
-  EXPECT_THAT(
+  ASSERT_OK_AND_ASSIGN(
+      const WebApp& iwa,
       GetIsolatedWebAppById(provider().registrar_unsafe(),
                             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                                 test::GetDefaultEd25519WebBundleId())
-                                .app_id()),
-      base::test::HasValue());
+                                .app_id()));
+
+  EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
