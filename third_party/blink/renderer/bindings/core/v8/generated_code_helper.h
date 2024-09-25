@@ -38,11 +38,11 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
   STACK_ALLOCATED();
 
  public:
-  ExceptionToRejectPromiseScope(const v8::FunctionCallbackInfo<v8::Value>& info,
-                                ExceptionState& exception_state)
-      : info_(info), exception_state_(exception_state) {}
+  explicit ExceptionToRejectPromiseScope(
+      const v8::FunctionCallbackInfo<v8::Value>& info)
+      : info_(info), try_catch_(info.GetIsolate()) {}
   ~ExceptionToRejectPromiseScope() {
-    if (!exception_state_.HadException()) [[likely]] {
+    if (!try_catch_.HasCaught()) [[likely]] {
       return;
     }
 
@@ -53,7 +53,7 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
   void ConvertExceptionToRejectPromise();
 
   const v8::FunctionCallbackInfo<v8::Value>& info_;
-  ExceptionState& exception_state_;
+  v8::TryCatch try_catch_;
 };
 
 CORE_EXPORT bool IsCallbackFunctionRunnable(

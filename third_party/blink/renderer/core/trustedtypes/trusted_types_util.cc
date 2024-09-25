@@ -270,15 +270,12 @@ String GetStringFromScriptHelper(
   //   function.
   v8::HandleScope handle_scope(context->GetIsolate());
   ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
-  ExceptionState exception_state(context->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, interface_name,
-                                 property_name);
+  DummyExceptionStateForTesting exception_state;
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);
   if (!default_policy) {
     if (TrustedTypeFail(violation_kind, context, interface_name, property_name,
                         exception_state, script)) {
-      exception_state.ClearException();
       return String();
     }
     return script;
@@ -289,8 +286,7 @@ String GetStringFromScriptHelper(
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
       exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+  if (!result) {
     return String();
   }
 
@@ -298,7 +294,6 @@ String GetStringFromScriptHelper(
     if (TrustedTypeFail(violation_kind_when_default_policy_failed, context,
                         interface_name, property_name, exception_state,
                         script)) {
-      exception_state.ClearException();
       return String();
     }
     return script;

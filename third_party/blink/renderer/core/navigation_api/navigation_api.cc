@@ -482,15 +482,11 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     v8::ExceptionContext::kOperation,
-                                     "Navigation", "navigate");
-      serialized_state = SerializeState(options->state(), exception_state);
-      if (exception_state.HadException()) {
-        NavigationResult* result =
-            EarlyErrorResult(script_state, exception_state.GetException());
-        exception_state.ClearException();
-        return result;
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      serialized_state = SerializeState(
+          options->state(), PassThroughException(script_state->GetIsolate()));
+      if (try_catch.HasCaught()) {
+        return EarlyErrorResult(script_state, try_catch.Exception());
       }
     }
   }
@@ -546,15 +542,11 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     v8::ExceptionContext::kOperation,
-                                     "Navigation", "reload");
-      serialized_state = SerializeState(options->state(), exception_state);
-      if (exception_state.HadException()) {
-        NavigationResult* result =
-            EarlyErrorResult(script_state, exception_state.GetException());
-        exception_state.ClearException();
-        return result;
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      serialized_state = SerializeState(
+          options->state(), PassThroughException(script_state->GetIsolate()));
+      if (try_catch.HasCaught()) {
+        return EarlyErrorResult(script_state, try_catch.Exception());
       }
     } else if (NavigationHistoryEntry* current_entry = currentEntry()) {
       serialized_state = current_entry->GetSerializedState();

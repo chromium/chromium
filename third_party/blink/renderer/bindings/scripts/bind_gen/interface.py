@@ -399,11 +399,15 @@ def bind_callback_local_vars(code_node, cg_context):
     # exception_state
     def create_exception_state(symbol_node):
         node = SymbolDefinitionNode(symbol_node)
-        pattern = ("{exception_state_type} ${exception_state}({init_args});"
-                   "{exception_to_reject_promise}")
+
+        if cg_context.is_return_type_promise_type:
+            node.append(
+                T("ExceptionToRejectPromiseScope reject_promise_scope(${info});"
+                  ))
+
+        pattern = ("{exception_state_type} ${exception_state}({init_args});")
         exception_state_type = "ExceptionState"
         init_args = ["${isolate}", "${exception_context_type}"]
-        exception_to_reject_promise = ""
         if cg_context.is_legacy_factory_function:
             init_args.append("\"{}\"".format(cg_context.property_.identifier))
         else:
@@ -418,16 +422,10 @@ def bind_callback_local_vars(code_node, cg_context):
         elif (cg_context.property_ and cg_context.property_.identifier
               and not cg_context.constructor_group):
             init_args.append("${property_name}")
-        if cg_context.is_return_type_promise_type:
-            exception_to_reject_promise = (
-                "\n"
-                "ExceptionToRejectPromiseScope reject_promise_scope"
-                "(${info}, ${exception_state});")
         node.append(
             F(pattern,
               exception_state_type=exception_state_type,
-              init_args=", ".join(init_args),
-              exception_to_reject_promise=exception_to_reject_promise))
+              init_args=", ".join(init_args)))
         return node
 
     local_vars.append(

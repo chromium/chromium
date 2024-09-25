@@ -548,10 +548,10 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
     for (JSONValue* raw_pattern : raw_patterns) {
       URLPattern* pattern =
           ParseRawPattern(execution_context->GetIsolate(), raw_pattern,
-                          base_url, exception_state, out_error);
-      // If those steps throw, catch the exception and return null.
-      if (exception_state.HadException()) {
-        exception_state.ClearException();
+                          base_url, IGNORE_EXCEPTION, out_error);
+      // If those steps throw, `pattern` will be null. Ignore the exception and
+      // return null.
+      if (!pattern) {
         SetParseErrorMessage(
             out_error,
             String::Format(
@@ -559,8 +559,6 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
                 raw_pattern->ToJSONString().Latin1().c_str()));
         return nullptr;
       }
-      if (!pattern)
-        return nullptr;
       // Append pattern to patterns.
       patterns.push_back(pattern);
     }

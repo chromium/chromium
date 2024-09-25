@@ -79,8 +79,6 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     void Trace(Visitor*) const;
 
    private:
-    void ReportException(ExceptionState*);
-
     Member<CSSLayoutDefinition> definition_;
     TraceWrapperV8Reference<v8::Value> instance_;
   };

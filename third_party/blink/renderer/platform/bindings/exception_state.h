@@ -152,8 +152,6 @@ class PLATFORM_EXPORT ExceptionState {
   // that V8ThrowDOMException::CreateOrEmpty may return an empty handle.
   bool HadException() const { return code_; }
 
-  virtual void ClearException();
-
   ExceptionCode Code() const { return code_; }
 
   template <typename T>
@@ -174,8 +172,6 @@ class PLATFORM_EXPORT ExceptionState {
  protected:
   // Methods for use by subclasses.
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
-  void SetExceptionCode(ExceptionCode);
-  v8::Isolate* GetIsolate() { return isolate_; }
 
   // Methods to be overridden by subclasses. These are not called directly by
   // users of ExceptionState, but instead indirected via the non-virtual methods
@@ -283,10 +279,8 @@ class PLATFORM_EXPORT TryRethrowScope {
   (::blink::DummyExceptionStateForTesting().ReturnThis())
 #endif
 
-// DummyExceptionStateForTesting ignores all thrown exceptions. You should not
-// use DummyExceptionStateForTesting in production code, where you need to
-// handle all exceptions properly. If you really need to ignore exceptions in
-// production code for some special reason, explicitly call clearException().
+// DummyExceptionStateForTesting ignores all thrown exceptions.
+// TODO(japhet/caseq): Rename this. It has some legitimate non-test usage.
 class PLATFORM_EXPORT DummyExceptionStateForTesting final
     : public ExceptionState {
  public:
@@ -295,12 +289,6 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
                        v8::ExceptionContext::kUnknown,
                        nullptr,
                        nullptr) {}
-  ~DummyExceptionStateForTesting() {
-    // Prevent the base class throw an exception.
-    if (HadException()) {
-      ClearException();
-    }
-  }
 
   ExceptionState& ReturnThis() { return *this; }
   v8::Local<v8::Value> GetException() override {

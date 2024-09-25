@@ -33,9 +33,6 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   ScriptState* script_state = settings_object->GetScriptState();
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "ModuleScriptLoader",
-                                 "CreateCSSWrapperSyntheticModuleScript");
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
@@ -46,23 +43,23 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   // DevTools as the CSS source URL. This is fine since these two values
   // are always the same for CSS module scripts.
   DCHECK_EQ(params.BaseURL(), params.SourceURL());
-  CSSStyleSheet* style_sheet = CSSStyleSheet::Create(
-      *context_window->document(), params.BaseURL(), init, exception_state);
+
+  v8::TryCatch try_catch(isolate);
+  CSSStyleSheet* style_sheet =
+      CSSStyleSheet::Create(*context_window->document(), params.BaseURL(), init,
+                            PassThroughException(isolate));
   style_sheet->SetIsForCSSModuleScript();
-  if (exception_state.HadException()) {
-    v8::Local<v8::Value> error = exception_state.GetException();
-    exception_state.ClearException();
+  if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
         v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
-        ScriptFetchOptions(), error);
+        ScriptFetchOptions(), try_catch.Exception());
   }
-  style_sheet->replaceSync(params.GetSourceText().ToString(), exception_state);
-  if (exception_state.HadException()) {
-    v8::Local<v8::Value> error = exception_state.GetException();
-    exception_state.ClearException();
+  style_sheet->replaceSync(params.GetSourceText().ToString(),
+                           PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     return ValueWrapperSyntheticModuleScript::CreateWithError(
         v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
-        ScriptFetchOptions(), error);
+        ScriptFetchOptions(), try_catch.Exception());
   }
 
   v8::Local<v8::Value> v8_value_stylesheet =
@@ -85,10 +82,6 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   v8::Local<v8::String> original_json =
       V8String(isolate, params.GetSourceText());
   v8::Local<v8::Value> parsed_json;
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "ModuleScriptLoader",
-                                 "CreateJSONWrapperSyntheticModuleScript");
-  TryRethrowScope rethrow_scope(isolate, exception_state);
   UseCounter::Count(ExecutionContext::From(settings_object->GetScriptState()),
                     WebFeature::kCreateJSONModuleScript);
   // Step 1. "Let script be a new module script that this algorithm will
@@ -104,13 +97,12 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   // If this throws an exception, set script's parse error to that exception,
   // and return script."
   // [spec text]
+  v8::TryCatch try_catch(isolate);
   if (!v8::JSON::Parse(context, original_json).ToLocal(&parsed_json)) {
-    DCHECK(rethrow_scope.HasCaught());
-    v8::Local<v8::Value> error = rethrow_scope.GetException();
-    rethrow_scope.SwallowException();
+    DCHECK(try_catch.HasCaught());
     return ValueWrapperSyntheticModuleScript::CreateWithError(
         parsed_json, settings_object, params.SourceURL(), KURL(),
-        ScriptFetchOptions(), error);
+        ScriptFetchOptions(), try_catch.Exception());
   } else {
     return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
         parsed_json, settings_object, params.SourceURL(), KURL(),

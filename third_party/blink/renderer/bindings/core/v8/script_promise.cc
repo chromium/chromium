@@ -211,16 +211,6 @@ ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,
                               RejectRaw(script_state, value));
 }
 
-ScriptPromiseUntyped ScriptPromiseUntyped::Reject(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  DCHECK(exception_state.HadException());
-  ScriptPromiseUntyped promise =
-      Reject(script_state, exception_state.GetException());
-  exception_state.ClearException();
-  return promise;
-}
-
 v8::Local<v8::Promise> ScriptPromiseUntyped::ResolveRaw(
     ScriptState* script_state,
     v8::Local<v8::Value> value) {

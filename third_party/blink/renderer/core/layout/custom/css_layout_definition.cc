@@ -134,9 +134,6 @@ bool CSSLayoutDefinition::Instance::Layout(
     }
   }
 
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "CSSLayoutAPI", "Layout");
-
   v8::Local<v8::Value> v8_return_value = return_value.V8Value();
   if (v8_return_value.IsEmpty() || !v8_return_value->IsPromise()) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -163,11 +160,6 @@ bool CSSLayoutDefinition::Instance::Layout(
     microtask_queue->PerformCheckpoint(isolate);
   }
 
-  if (exception_state.HadException()) {
-    ReportException(&exception_state);
-    return false;
-  }
-
   v8::Local<v8::Promise> v8_result_promise =
       v8::Local<v8::Promise>::Cast(v8_return_value);
 
@@ -182,13 +174,13 @@ bool CSSLayoutDefinition::Instance::Layout(
   v8::Local<v8::Value> inner_value = v8_result_promise->Result();
 
   // Attempt to convert the result.
+  v8::TryCatch try_catch(isolate);
   fragment_result_options =
       NativeValueTraits<FragmentResultOptions>::NativeValue(
-          isolate, inner_value, exception_state);
+          isolate, inner_value, PassThroughException(isolate));
 
-  if (exception_state.HadException()) {
-    V8ScriptRunner::ReportException(isolate, exception_state.GetException());
-    exception_state.ClearException();
+  if (try_catch.HasCaught()) {
+    V8ScriptRunner::ReportException(isolate, try_catch.Exception());
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kInfo,
@@ -208,12 +200,11 @@ bool CSSLayoutDefinition::Instance::Layout(
         isolate, fragment_result_options->data().V8Value(),
         SerializedScriptValue::SerializeOptions(
             SerializedScriptValue::kForStorage),
-        exception_state);
+        PassThroughException(isolate));
   }
 
-  if (exception_state.HadException()) {
-    V8ScriptRunner::ReportException(isolate, exception_state.GetException());
-    exception_state.ClearException();
+  if (try_catch.HasCaught()) {
+    V8ScriptRunner::ReportException(isolate, try_catch.Exception());
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kInfo,
@@ -271,9 +262,6 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     }
   }
 
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "CSSLayoutAPI", "IntrinsicSizes");
-
   v8::Local<v8::Value> v8_return_value = return_value.V8Value();
   if (v8_return_value.IsEmpty() || !v8_return_value->IsPromise()) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -301,11 +289,6 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     microtask_queue->PerformCheckpoint(isolate);
   }
 
-  if (exception_state.HadException()) {
-    ReportException(&exception_state);
-    return false;
-  }
-
   v8::Local<v8::Promise> v8_result_promise =
       v8::Local<v8::Promise>::Cast(v8_return_value);
 
@@ -320,13 +303,13 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
   v8::Local<v8::Value> inner_value = v8_result_promise->Result();
 
   // Attempt to convert the result.
+  v8::TryCatch try_catch(isolate);
   *intrinsic_sizes_result_options =
       NativeValueTraits<IntrinsicSizesResultOptions>::NativeValue(
-          isolate, inner_value, exception_state);
+          isolate, inner_value, PassThroughException(isolate));
 
-  if (exception_state.HadException()) {
-    V8ScriptRunner::ReportException(isolate, exception_state.GetException());
-    exception_state.ClearException();
+  if (try_catch.HasCaught()) {
+    V8ScriptRunner::ReportException(isolate, try_catch.Exception());
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kInfo,
@@ -336,22 +319,6 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
   }
 
   return true;
-}
-
-void CSSLayoutDefinition::Instance::ReportException(
-    ExceptionState* exception_state) {
-  ScriptState* script_state = definition_->GetScriptState();
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-
-  // We synchronously report and clear the exception as we may never enter V8
-  // again (as the callbacks are invoked directly by the UA).
-  V8ScriptRunner::ReportException(isolate, exception_state->GetException());
-  exception_state->ClearException();
-  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kJavaScript,
-      mojom::ConsoleMessageLevel::kInfo,
-      "The layout function failed, falling back to block layout."));
 }
 
 CSSLayoutDefinition::Instance* CSSLayoutDefinition::CreateInstance() {

@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
@@ -50,14 +49,14 @@ void PaymentRequestRespondWithObserver::OnResponseRejected(
 void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
     const ScriptValue& value,
-    const ExceptionContext& exception_context) {
+    const ExceptionContext&) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
+  v8::TryCatch try_catch(script_state->GetIsolate());
   PaymentHandlerResponse* response =
       NativeValueTraits<PaymentHandlerResponse>::NativeValue(
-          script_state->GetIsolate(), value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+          script_state->GetIsolate(), value.V8Value(),
+          PassThroughException(script_state->GetIsolate()));
+  if (try_catch.HasCaught()) {
     OnResponseRejected(mojom::ServiceWorkerResponseError::kNoV8Instance);
     return;
   }

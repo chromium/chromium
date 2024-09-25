@@ -73,9 +73,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     return CustomElement::CreateFailedElement(document, tag_name);
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
-
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "CustomElement");
+  v8::TryCatch try_catch(isolate);
 
   // Create an element with the synchronous custom elements flag set.
   // https://dom.spec.whatwg.org/#concept-create-element
@@ -85,25 +83,23 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
 
   Element* element = nullptr;
   {
-    TryRethrowScope rethrow_scope(script_state_->GetIsolate(), exception_state);
     element = CallConstructor();
-    if (rethrow_scope.HasCaught()) {
+    if (try_catch.HasCaught()) {
       // 6.1."If any of these subsubsteps threw an exception".1
       // Report the exception.
-      V8ScriptRunner::ReportException(isolate, rethrow_scope.GetException());
-      rethrow_scope.SwallowException();
+      V8ScriptRunner::ReportException(isolate, try_catch.Exception());
       // ... .2 Return HTMLUnknownElement.
       return CustomElement::CreateFailedElement(document, tag_name);
     }
   }
 
   // 6.1.3. through 6.1.9.
-  CheckConstructorResult(element, document, tag_name, exception_state);
-  if (exception_state.HadException()) {
+  CheckConstructorResult(element, document, tag_name,
+                         PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     // 6.1."If any of these subsubsteps threw an exception".1
     // Report the exception.
-    V8ScriptRunner::ReportException(isolate, exception_state.GetException());
-    exception_state.ClearException();
+    V8ScriptRunner::ReportException(isolate, try_catch.Exception());
     // ... .2 Return HTMLUnknownElement.
     return CustomElement::CreateFailedElement(document, tag_name);
   }

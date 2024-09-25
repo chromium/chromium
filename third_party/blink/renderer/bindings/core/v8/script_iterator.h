@@ -70,17 +70,15 @@ class ExecutionContext;
 //     // one.
 //     void GetNextValue() {
 //       DCHECK(!iterator_.IsNull());
-//       ExceptionState exception_state = ...;
+//       v8::Isolate* isolate = script_state->GetIsolate();
+//       v8::TryCatch try_catch(sisolate);
 //       ExecutionContext* execution_context = ...;
 //
-//       iterator_.Next(execution_context, exception_state);
+//       iterator_.Next(execution_context, PassThroughException();
 //
-//       if (exception_state.HadException()) {
-//         v8::Local<v8::Value> v8_exception = exception_state.GetException();
-//         exception_state.ClearException();
-//
-//         next_promise_ =
-//             ScriptPromise<IDLAny>::Reject(script_state, v8_exception);
+//       if (try_catch.HasCaught()) {
+//         next_promise_ = ScriptPromise<IDLAny>::Reject(
+//             script_state, try_catch.Exception());
 //       } else {
 //         next_promise_ = ToResolvedPromise<IDLAny>(
 //             script_state, iterator_.GetValue().ToLocalChecked());

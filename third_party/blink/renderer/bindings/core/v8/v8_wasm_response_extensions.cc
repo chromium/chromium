@@ -458,14 +458,13 @@ class WasmDataLoaderClient final
 // hence we receive the shared_ptr by reference and clear it.
 void PropagateExceptionToWasmStreaming(
     ScriptState* script_state,
-    ExceptionState& exception_state,
+    v8::Local<v8::Value> exception,
     std::shared_ptr<v8::WasmStreaming>& streaming) {
-  DCHECK(exception_state.HadException());
-  ApplyContextToException(script_state, exception_state.GetException(),
-                          exception_state.GetContext());
-  streaming->Abort(exception_state.GetException());
+  ApplyContextToException(script_state, exception,
+                          ExceptionContext(v8::ExceptionContext::kOperation,
+                                           "WebAssembly", "compile"));
+  streaming->Abort(exception);
   streaming.reset();
-  exception_state.ClearException();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
@@ -503,9 +502,6 @@ void StreamFromResponseCallback(
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "v8.wasm.streamFromResponseCallback",
                        TRACE_EVENT_SCOPE_THREAD);
-  ExceptionState exception_state(args.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "WebAssembly", "compile");
   std::shared_ptr<v8::WasmStreaming> streaming =
       v8::WasmStreaming::Unpack(args.GetIsolate(), args.Data());
 
@@ -541,18 +537,20 @@ void StreamFromResponseCallback(
   if (!response) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kNoResponse);
-    exception_state.ThrowTypeError(
+    auto exception = V8ThrowException::CreateTypeError(
+        args.GetIsolate(),
         "An argument must be provided, which must be a "
         "Response or Promise<Response> object");
-    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }
 
   if (!response->ok()) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kResponseNotOK);
-    exception_state.ThrowTypeError("HTTP status code is not ok");
-    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
+    auto exception = V8ThrowException::CreateTypeError(
+        args.GetIsolate(), "HTTP status code is not ok");
+    PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }
 
@@ -562,18 +560,20 @@ void StreamFromResponseCallback(
   if (!EqualIgnoringASCIICase(response->ContentType(), "application/wasm")) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kWrongMimeType);
-    exception_state.ThrowTypeError(
+    auto exception = V8ThrowException::CreateTypeError(
+        args.GetIsolate(),
         "Incorrect response MIME type. Expected 'application/wasm'.");
-    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }
 
   if (response->IsBodyLocked() || response->IsBodyUsed()) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kReponseLocked);
-    exception_state.ThrowTypeError(
+    auto exception = V8ThrowException::CreateTypeError(
+        args.GetIsolate(),
         "Cannot compile WebAssembly.Module from an already read Response");
-    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }
 
@@ -582,8 +582,9 @@ void StreamFromResponseCallback(
                                   WasmStreamingInputType::kReponseEmpty);
     // Since the status is 2xx (ok), this must be status 204 (No Content),
     // status 205 (Reset Content) or a malformed status 200 (OK).
-    exception_state.ThrowWasmCompileError("Empty WebAssembly module");
-    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
+    auto exception = V8ThrowException::CreateWasmCompileError(
+        args.GetIsolate(), "Empty WebAssembly module");
+    PropagateExceptionToWasmStreaming(script_state, exception, streaming);
     return;
   }
 
@@ -624,14 +625,13 @@ void StreamFromResponseCallback(
         });
   }
 
-  DCHECK(!exception_state.HadException());
   FetchDataLoaderForWasmStreaming* loader =
       MakeGarbageCollected<FetchDataLoaderForWasmStreaming>(
           url, std::move(streaming), script_state, cache_handler,
           code_caching_callback);
   response->BodyBuffer()->StartLoading(
       loader, MakeGarbageCollected<WasmDataLoaderClient>(loader),
-      exception_state);
+      PassThroughException(args.GetIsolate()));
 }
 
 }  // namespace

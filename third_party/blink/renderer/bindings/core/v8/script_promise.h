@@ -105,8 +105,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
 
   static ScriptPromiseUntyped Reject(ScriptState*, const ScriptValue&);
   static ScriptPromiseUntyped Reject(ScriptState*, v8::Local<v8::Value>);
-  // Rejects with a given exception. The ExceptionState gets cleared.
-  static ScriptPromiseUntyped Reject(ScriptState*, ExceptionState&);
 
   // Constructs and returns a ScriptPromiseUntyped to be resolved when all
   // |promises| are resolved. If one of |promises| is rejected, the returned

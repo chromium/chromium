@@ -148,12 +148,6 @@ NOINLINE void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
   try_catch.ReThrow();
 }
 
-void ExceptionState::ClearException() {
-  code_ = 0;
-  message_ = String();
-  exception_.Reset();
-}
-
 void ExceptionState::SetException(ExceptionCode exception_code,
                                   const String& message,
                                   v8::Local<v8::Value> exception) {
@@ -167,13 +161,6 @@ void ExceptionState::SetException(ExceptionCode exception_code,
     DCHECK(isolate_);
     exception_.Reset(isolate_, exception);
   }
-}
-
-void ExceptionState::SetExceptionCode(ExceptionCode exception_code) {
-  CHECK(exception_code);
-  DCHECK(message_.empty());
-  DCHECK(exception_.IsEmpty());
-  code_ = exception_code;
 }
 
 void ExceptionState::DoThrowDOMException(DOMExceptionCode exception_code,

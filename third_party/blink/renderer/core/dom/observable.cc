@@ -736,19 +736,17 @@ class OperatorCatchSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
   OperatorCatchSubscribeDelegate(Observable* source_observable,
-                                 V8CatchCallback* catch_callback,
-                                 const ExceptionContext& exception_context)
+                                 V8CatchCallback* catch_callback)
       : source_observable_(source_observable),
-        catch_callback_(catch_callback),
-        exception_context_(exception_context) {}
+        catch_callback_(catch_callback) {}
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
     SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
     options->setSignal(subscriber->signal());
 
     source_observable_->SubscribeWithNativeObserver(
         script_state,
-        MakeGarbageCollected<SourceInternalObserver>(
-            subscriber, script_state, catch_callback_, exception_context_),
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     catch_callback_),
         options);
   }
 
@@ -764,12 +762,10 @@ class OperatorCatchSubscribeDelegate final
    public:
     SourceInternalObserver(Subscriber* outer_subscriber,
                            ScriptState* script_state,
-                           V8CatchCallback* catch_callback,
-                           const ExceptionContext& exception_context)
+                           V8CatchCallback* catch_callback)
         : outer_subscriber_(outer_subscriber),
           script_state_(script_state),
-          catch_callback_(catch_callback),
-          exception_context_(exception_context) {
+          catch_callback_(catch_callback) {
       CHECK(outer_subscriber_);
       CHECK(script_state_);
       CHECK(catch_callback_);
@@ -798,17 +794,17 @@ class OperatorCatchSubscribeDelegate final
 
       // Since we handled the exception case above, `mapped_value` must not be
       // `v8::Nothing`.
-      ExceptionState exception_state(script_state_->GetIsolate(),
-                                     exception_context_);
-      Observable* inner_observable = Observable::from(
-          script_state_, mapped_value.ToChecked(), exception_state);
-      if (exception_state.HadException()) {
-        ApplyContextToException(script_state_, exception_state.GetException(),
-                                exception_state.GetContext());
-        outer_subscriber_->error(script_state_,
-                                 ScriptValue(script_state_->GetIsolate(),
-                                             exception_state.GetException()));
-        exception_state.ClearException();
+      Observable* inner_observable =
+          Observable::from(script_state_, mapped_value.ToChecked(),
+                           PassThroughException(script_state_->GetIsolate()));
+      if (try_catch.HasCaught()) {
+        ApplyContextToException(
+            script_state_, try_catch.Exception(),
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "catch"));
+        outer_subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
         return;
       }
 
@@ -865,7 +861,6 @@ class OperatorCatchSubscribeDelegate final
     Member<Subscriber> outer_subscriber_;
     Member<ScriptState> script_state_;
     Member<V8CatchCallback> catch_callback_;
-    ExceptionContext exception_context_;
   };
 
   // The `Observable` which `this` will mirror, when `this` is subscribed to.
@@ -875,7 +870,6 @@ class OperatorCatchSubscribeDelegate final
   // created for each new subscription.
   Member<Observable> source_observable_;
   Member<V8CatchCallback> catch_callback_;
-  ExceptionContext exception_context_;
 };
 
 // This is the subscribe delegate for the `inspect()` operator. It allows one to
@@ -1145,19 +1139,16 @@ class OperatorSwitchMapSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
   OperatorSwitchMapSubscribeDelegate(Observable* source_observable,
-                                     V8Mapper* mapper,
-                                     const ExceptionContext& exception_context)
-      : source_observable_(source_observable),
-        mapper_(mapper),
-        exception_context_(exception_context) {}
+                                     V8Mapper* mapper)
+      : source_observable_(source_observable), mapper_(mapper) {}
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
     SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
     options->setSignal(subscriber->signal());
 
     source_observable_->SubscribeWithNativeObserver(
         script_state,
-        MakeGarbageCollected<SourceInternalObserver>(
-            subscriber, script_state, mapper_, exception_context_),
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     mapper_),
         options);
   }
 
@@ -1173,12 +1164,10 @@ class OperatorSwitchMapSubscribeDelegate final
    public:
     SourceInternalObserver(Subscriber* outer_subscriber,
                            ScriptState* script_state,
-                           V8Mapper* mapper,
-                           const ExceptionContext& exception_context)
+                           V8Mapper* mapper)
         : outer_subscriber_(outer_subscriber),
           script_state_(script_state),
-          mapper_(mapper),
-          exception_context_(exception_context) {
+          mapper_(mapper) {
       CHECK(outer_subscriber_);
       CHECK(script_state_);
       CHECK(mapper_);
@@ -1236,15 +1225,17 @@ class OperatorSwitchMapSubscribeDelegate final
 
       // Since we handled the exception case above, `mapped_value` must not be
       // `v8::Nothing`.
-      ExceptionState exception_state(script_state_->GetIsolate(),
-                                     exception_context_);
-      Observable* inner_observable = Observable::from(
-          script_state_, mapped_value.ToChecked(), exception_state);
-      if (exception_state.HadException()) {
-        outer_subscriber_->error(script_state_,
-                                 ScriptValue(script_state_->GetIsolate(),
-                                             exception_state.GetException()));
-        exception_state.ClearException();
+      Observable* inner_observable =
+          Observable::from(script_state_, mapped_value.ToChecked(),
+                           PassThroughException(script_state_->GetIsolate()));
+      if (try_catch.HasCaught()) {
+        ApplyContextToException(
+            script_state_, try_catch.Exception(),
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "map"));
+        outer_subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
         return;
       }
 
@@ -1327,7 +1318,6 @@ class OperatorSwitchMapSubscribeDelegate final
     Member<Subscriber> outer_subscriber_;
     Member<ScriptState> script_state_;
     Member<V8Mapper> mapper_;
-    ExceptionContext exception_context_;
 
     Member<AbortController> active_inner_abort_controller_ = nullptr;
 
@@ -1348,7 +1338,6 @@ class OperatorSwitchMapSubscribeDelegate final
   // created for each new subscription.
   Member<Observable> source_observable_;
   Member<V8Mapper> mapper_;
-  ExceptionContext exception_context_;
 };
 
 // This class is the subscriber delegate for Observables returned by
@@ -1373,19 +1362,16 @@ class OperatorFlatMapSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
   OperatorFlatMapSubscribeDelegate(Observable* source_observable,
-                                   V8Mapper* mapper,
-                                   const ExceptionContext& exception_context)
-      : source_observable_(source_observable),
-        mapper_(mapper),
-        exception_context_(exception_context) {}
+                                   V8Mapper* mapper)
+      : source_observable_(source_observable), mapper_(mapper) {}
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
     SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
     options->setSignal(subscriber->signal());
 
     source_observable_->SubscribeWithNativeObserver(
         script_state,
-        MakeGarbageCollected<SourceInternalObserver>(
-            subscriber, script_state, mapper_, exception_context_),
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state,
+                                                     mapper_),
         options);
   }
 
@@ -1401,12 +1387,10 @@ class OperatorFlatMapSubscribeDelegate final
    public:
     SourceInternalObserver(Subscriber* outer_subscriber,
                            ScriptState* script_state,
-                           V8Mapper* mapper,
-                           const ExceptionContext& exception_context)
+                           V8Mapper* mapper)
         : outer_subscriber_(outer_subscriber),
           script_state_(script_state),
-          mapper_(mapper),
-          exception_context_(exception_context) {
+          mapper_(mapper) {
       CHECK(outer_subscriber_);
       CHECK(script_state_);
       CHECK(mapper_);
@@ -1474,15 +1458,17 @@ class OperatorFlatMapSubscribeDelegate final
 
       // Since we handled the exception case above, `mapped_value` must not be
       // `v8::Nothing`.
-      ExceptionState exception_state(script_state_->GetIsolate(),
-                                     exception_context_);
-      Observable* inner_observable = Observable::from(
-          script_state_, mapped_value.ToChecked(), exception_state);
-      if (exception_state.HadException()) {
-        outer_subscriber_->error(script_state_,
-                                 ScriptValue(script_state_->GetIsolate(),
-                                             exception_state.GetException()));
-        exception_state.ClearException();
+      Observable* inner_observable =
+          Observable::from(script_state_, mapped_value.ToChecked(),
+                           PassThroughException(script_state_->GetIsolate()));
+      if (try_catch.HasCaught()) {
+        ApplyContextToException(
+            script_state_, try_catch.Exception(),
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "flatMap"));
+        outer_subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
         return;
       }
 
@@ -1560,7 +1546,6 @@ class OperatorFlatMapSubscribeDelegate final
     Member<Subscriber> outer_subscriber_;
     Member<ScriptState> script_state_;
     Member<V8Mapper> mapper_;
-    ExceptionContext exception_context_;
 
     // This queue stores all of the values that the "outer" subscription emits
     // while there is an active inner subscription (captured by the member below
@@ -1592,7 +1577,6 @@ class OperatorFlatMapSubscribeDelegate final
   // created for each new subscription.
   Member<Observable> source_observable_;
   Member<V8Mapper> mapper_;
-  ExceptionContext exception_context_;
 };
 
 // This delegate is used by the `Observer#from()` operator, in the case where
@@ -1611,11 +1595,9 @@ class OperatorFromAsyncIterableSubscribeDelegate final
   //   2. In `OnSubscribe()` we still have to confirm that fact, because in
   //      between the constructor and `OnSubscribe()` running, that could have
   //      changed.
-  OperatorFromAsyncIterableSubscribeDelegate(
-      ScriptValue async_iterable,
-      const ExceptionContext& exception_context)
-      : async_iterable_(async_iterable),
-        exception_context_(exception_context) {}
+  explicit OperatorFromAsyncIterableSubscribeDelegate(
+      ScriptValue async_iterable)
+      : async_iterable_(async_iterable) {}
 
   // "Return a new Observable whose subscribe callback is an algorithm that
   // takes a Subscriber |subscriber| and does the following:"
@@ -1633,8 +1615,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
     // `SubscriptionRunner::next_promise_` is kept alive by the script that owns
     // the resolver.
     MakeGarbageCollected<SubscriptionRunner>(
-        async_iterable_.V8Value().As<v8::Object>(), subscriber, script_state,
-        exception_context_);
+        async_iterable_.V8Value().As<v8::Object>(), subscriber, script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -1655,13 +1636,9 @@ class OperatorFromAsyncIterableSubscribeDelegate final
    public:
     SubscriptionRunner(v8::Local<v8::Object> v8_async_iterable,
                        Subscriber* subscriber,
-                       ScriptState* script_state,
-                       ExceptionContext exception_context)
-        : subscriber_(subscriber),
-          script_state_(script_state),
-          exception_context_(exception_context) {
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context_);
+                       ScriptState* script_state)
+        : subscriber_(subscriber), script_state_(script_state) {
+      v8::TryCatch try_catch(script_state->GetIsolate());
 
       // "Let |iteratorRecord| be GetIterator(value, async)."
       //
@@ -1669,16 +1646,17 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       // all of the exception-throwing cases in this method, we always catch the
       // exception, clear it, and report it properly through `subscriber`.
       iterator_ = ScriptIterator::FromIterable(
-          script_state->GetIsolate(), v8_async_iterable, exception_state,
+          script_state->GetIsolate(), v8_async_iterable,
+          PassThroughException(script_state_->GetIsolate()),
           ScriptIterator::Kind::kAsync);
 
       // "If |iteratorRecord| is a throw completion, then run |subscriber|'s
       // error() method, given |iteratorRecord|'s [[Value]]."
-      if (exception_state.HadException()) {
-        v8::Local<v8::Value> v8_exception = exception_state.GetException();
-        exception_state.ClearException();
+      if (try_catch.HasCaught()) {
+        // Don't ApplyContextToException(), because FromIterable() might return
+        // a user-defined exception, which we shouldn't modify.
         subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
-                                                    v8_exception));
+                                                    try_catch.Exception()));
         return;
       }
 
@@ -1705,7 +1683,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       //
       // [1]: https://tc39.es/ecma262/#sec-getiterator
       if (iterator_.IsNull()) {
-        DCHECK(!exception_state.HadException());
+        DCHECK(!try_catch.HasCaught());
         // The object failed to convert to an async or sync iterable.
         v8::Local<v8::Value> type_error = V8ThrowException::CreateTypeError(
             script_state->GetIsolate(), "Object must be iterable");
@@ -1731,27 +1709,27 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       }
 
       DCHECK(!iterator_.IsNull());
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context_);
       ExecutionContext* execution_context =
           ExecutionContext::From(script_state);
 
       // "Let |nextRecord| be IteratorNext(|iteratorRecord|)."
-      const bool is_done_because_exception_was_thrown =
-          !iterator_.Next(execution_context, exception_state);
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      const bool is_done_because_exception_was_thrown = !iterator_.Next(
+          execution_context, PassThroughException(script_state->GetIsolate()));
 
       // "If |nextRecord| is a throw completion:"
-      if (exception_state.HadException()) {
-        v8::Local<v8::Value> v8_exception = exception_state.GetException();
-        exception_state.ClearException();
-
+      if (try_catch.HasCaught()) {
         // Assert: |iteratorRecord|'s [[Done]] is true.
         CHECK(is_done_because_exception_was_thrown);
 
         // Set |nextPromise| to a promise rejected with |nextRecord|'s
         // [[Value]].
+        ApplyContextToException(
+            script_state_, try_catch.Exception(),
+            ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                             "from"));
         next_promise_ =
-            ScriptPromise<IDLAny>::Reject(script_state, v8_exception);
+            ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
       } else {
         // "Otherwise, if |nextRecord| is normal completion, then set
         // |nextPromise| to a promise resolved with |nextRecord|'s [[Value]].
@@ -1793,7 +1771,9 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       // The abort algorithm is only set up once the `iterator_` is established.
       DCHECK(!iterator_.IsNull());
       iterator_.CloseAsync(
-          script_state_, exception_context_,
+          script_state_,
+          ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
+                           "from"),
           subscriber_->signal()->reason(script_state_).V8Value());
     }
 
@@ -1817,7 +1797,6 @@ class OperatorFromAsyncIterableSubscribeDelegate final
     // `iterator_`, as they are asynchronously emitted.
     Member<Subscriber> subscriber_;
     Member<ScriptState> script_state_;
-    ExceptionContext exception_context_;
     // The `ScriptIterator` that this subscription is associated with. Per the
     // Observable specification's conversion semantics [1], each subscription
     // from an Observable that was created from an async iterable, will be
@@ -1952,7 +1931,6 @@ class OperatorFromAsyncIterableSubscribeDelegate final
   // The iterable that `this` synchronously pushes values from, for the
   // subscription that `this` represents.
   ScriptValue async_iterable_;
-  ExceptionContext exception_context_;
 };
 
 // This delegate is used by the `Observer#from()` operator, in the case where
@@ -1970,10 +1948,8 @@ class OperatorFromIterableSubscribeDelegate final
   //   2. In `OnSubscribe()` we still have to confirm that fact, because in
   //      between the constructor and `OnSubscribe()` running, that could have
   //      changed.
-  OperatorFromIterableSubscribeDelegate(
-      ScriptValue iterable,
-      const ExceptionContext& exception_context)
-      : iterable_(iterable), exception_context_(exception_context) {}
+  explicit OperatorFromIterableSubscribeDelegate(ScriptValue iterable)
+      : iterable_(iterable) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
     if (subscriber->signal()->aborted()) {
@@ -1981,8 +1957,7 @@ class OperatorFromIterableSubscribeDelegate final
     }
 
     MakeGarbageCollected<SubscriptionRunner>(
-        iterable_.V8Value().As<v8::Object>(), subscriber, script_state,
-        exception_context_);
+        iterable_.V8Value().As<v8::Object>(), subscriber, script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -1996,16 +1971,11 @@ class OperatorFromIterableSubscribeDelegate final
    public:
     SubscriptionRunner(v8::Local<v8::Object> v8_iterable,
                        Subscriber* subscriber,
-                       ScriptState* script_state,
-                       ExceptionContext exception_context)
-        : signal_(subscriber->signal()),
-          script_state_(script_state),
-          exception_context_(exception_context) {
+                       ScriptState* script_state)
+        : signal_(subscriber->signal()), script_state_(script_state) {
       CHECK(subscriber);
       CHECK(script_state);
 
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context);
 
       ExecutionContext* execution_context =
           ExecutionContext::From(script_state);
@@ -2014,13 +1984,15 @@ class OperatorFromIterableSubscribeDelegate final
       // This invokes script, so we have to check if there was an exception. In
       // all of the exception-throwing cases in this method, we always catch the
       // exception, clear it, and report it properly through `subscriber`.
-      iterator_ = ScriptIterator::FromIterable(script_state->GetIsolate(),
-                                               v8_iterable, exception_state,
+      v8::TryCatch try_catch(isolate);
+      iterator_ = ScriptIterator::FromIterable(isolate, v8_iterable,
+                                               PassThroughException(isolate),
                                                ScriptIterator::Kind::kSync);
-      if (exception_state.HadException()) {
-        v8::Local<v8::Value> v8_exception = exception_state.GetException();
-        exception_state.ClearException();
-        subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+      if (try_catch.HasCaught()) {
+        // Don't ApplyContextToException(), because FromIterable() might return
+        // a user-defined exception, which we shouldn't modify.
+        subscriber->error(script_state,
+                          ScriptValue(isolate, try_catch.Exception()));
         return;
       }
 
@@ -2034,8 +2006,9 @@ class OperatorFromIterableSubscribeDelegate final
       abort_algorithm_handle_ = subscriber->signal()->AddAlgorithm(this);
 
       if (!iterator_.IsNull()) {
-        while (iterator_.Next(execution_context, exception_state)) {
-          CHECK(!exception_state.HadException());
+        while (
+            iterator_.Next(execution_context, PassThroughException(isolate))) {
+          CHECK(!try_catch.HasCaught());
 
           v8::Local<v8::Value> value = iterator_.GetValue().ToLocalChecked();
           subscriber->next(ScriptValue(isolate, value));
@@ -2049,11 +2022,12 @@ class OperatorFromIterableSubscribeDelegate final
       // If any call to `ScriptIterator::Next()` above throws an error, then the
       // loop will break, and we'll need to catch any exceptions here and
       // properly report the error to the `subscriber`.
-      if (exception_state.HadException()) {
-        v8::Local<v8::Value> v8_exception = exception_state.GetException();
-        exception_state.ClearException();
+      if (try_catch.HasCaught()) {
+        // Don't ApplyContextToException(), because Next() might return
+        // a user-defined exception, which we shouldn't modify.
         ClearAbortAlgorithm();
-        subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+        subscriber->error(script_state,
+                          ScriptValue(isolate, try_catch.Exception()));
         return;
       }
 
@@ -2078,9 +2052,10 @@ class OperatorFromIterableSubscribeDelegate final
     void Run() override {
       // The abort algorithm is only set up once the `iterator_` is established.
       DCHECK(!iterator_.IsNull());
-      ExceptionState exception_state(script_state_->GetIsolate(),
-                                     exception_context_);
-      iterator_.CloseSync(script_state_, exception_state,
+      // Don't ApplyContextToException(), because CloseSync() might return
+      // a user-defined exception, which we shouldn't modify.
+      iterator_.CloseSync(script_state_,
+                          PassThroughException(script_state_->GetIsolate()),
                           signal_->reason(script_state_).V8Value());
     }
 
@@ -2089,13 +2064,11 @@ class OperatorFromIterableSubscribeDelegate final
     ScriptIterator iterator_;
     Member<AbortSignal> signal_;
     Member<ScriptState> script_state_;
-    ExceptionContext exception_context_;
   };
 
   // The iterable that `this` synchronously pushes values from, for the
   // subscription that `this` represents.
   ScriptValue iterable_;
-  ExceptionContext exception_context_;
 };
 
 class OperatorDropSubscribeDelegate final
@@ -2678,17 +2651,15 @@ Observable* Observable::from(ScriptState* script_state,
   v8::Local<v8::Value> v8_value = value.V8Value();
 
   // 1. Try to convert to an Observable.
-  if (Observable* converted = NativeValueTraits<Observable>::NativeValue(
-          isolate, v8_value, exception_state)) {
-    return converted;
-  }
-
   // In the failed conversion case, the native bindings layer throws an
   // exception to indicate the conversion cannot be done. This is not an
   // exception thrown by web author code, it's a native exception that only
-  // signals conversion failure, so we must (and can safely) swallow it and let
+  // signals conversion failure, so we must (and can safely) ignore it and let
   // other conversion attempts below continue.
-  exception_state.ClearException();
+  if (Observable* converted = NativeValueTraits<Observable>::NativeValue(
+          isolate, v8_value, IGNORE_EXCEPTION)) {
+    return converted;
+  }
 
   // 2. Try to convert to an AsyncIterable.
   //
@@ -2735,7 +2706,7 @@ Observable* Observable::from(ScriptState* script_state,
       return MakeGarbageCollected<Observable>(
           ExecutionContext::From(script_state),
           MakeGarbageCollected<OperatorFromAsyncIterableSubscribeDelegate>(
-              value, exception_state.GetContext()));
+              value));
     }
 
     // From iterable: "Let |iteratorMethodRecord| be ? GetMethod(value,
@@ -2766,8 +2737,7 @@ Observable* Observable::from(ScriptState* script_state,
       // See the continued documentation in below classes.
       return MakeGarbageCollected<Observable>(
           ExecutionContext::From(script_state),
-          MakeGarbageCollected<OperatorFromIterableSubscribeDelegate>(
-              value, exception_state.GetContext()));
+          MakeGarbageCollected<OperatorFromIterableSubscribeDelegate>(value));
     }
   }
 
@@ -2835,8 +2805,7 @@ Observable* Observable::flatMap(ScriptState*,
                                 ExceptionState& exception_state) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
-      MakeGarbageCollected<OperatorFlatMapSubscribeDelegate>(
-          this, mapper, exception_state.GetContext()));
+      MakeGarbageCollected<OperatorFlatMapSubscribeDelegate>(this, mapper));
   return return_observable;
 }
 
@@ -2845,8 +2814,7 @@ Observable* Observable::switchMap(ScriptState*,
                                   ExceptionState& exception_state) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
-      MakeGarbageCollected<OperatorSwitchMapSubscribeDelegate>(
-          this, mapper, exception_state.GetContext()));
+      MakeGarbageCollected<OperatorSwitchMapSubscribeDelegate>(this, mapper));
   return return_observable;
 }
 
@@ -2902,8 +2870,7 @@ Observable* Observable::catchImpl(ScriptState*,
                                   ExceptionState& exception_state) {
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
-      MakeGarbageCollected<OperatorCatchSubscribeDelegate>(
-          this, callback, exception_state.GetContext()));
+      MakeGarbageCollected<OperatorCatchSubscribeDelegate>(this, callback));
   return return_observable;
 }
 

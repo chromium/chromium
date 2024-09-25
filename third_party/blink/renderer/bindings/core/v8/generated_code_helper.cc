@@ -97,15 +97,8 @@ void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
   // promises must also be created in the current realm while regular promises
   // are created in the relevant realm of the context object.
   ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
-  // If the exception state is rethrowing via a v8::TryCatch, we have either
-  // already applied context information, or intentionally skipped it, so don't
-  // add it here.
-  if (!exception_state_.DidRethrowViaV8TryCatch()) {
-    ApplyContextToException(script_state, exception_state_.GetException(),
-                            exception_state_.GetContext());
-  }
-  bindings::V8SetReturnValue(
-      info_, ScriptPromiseUntyped::Reject(script_state, exception_state_));
+  bindings::V8SetReturnValue(info_, ScriptPromiseUntyped::Reject(
+                                        script_state, try_catch_.Exception()));
 }
 
 namespace bindings {
@@ -242,11 +235,9 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
   ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  exception_state.ThrowTypeError("The provided value '" + value +
-                                 "' is not a valid enum value of type " +
-                                 enum_type_name + ".");
-  String message = exception_state.Message();
-  exception_state.ClearException();
+  String message = "The provided value '" + value +
+                   "' is not a valid enum value of type " + enum_type_name +
+                   ".";
 
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,

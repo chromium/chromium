@@ -328,22 +328,24 @@ ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
 
   v8::Isolate* isolate = script_state->GetIsolate();
   ArrayBufferContents buffer_contents;
+  DOMException* dom_exception = nullptr;
   // Detach the audio array buffer from the main thread and start
   // async decoding of the data.
   if (!audio_data->IsDetachable(isolate) || audio_data->IsDetached()) {
     // If audioData is already detached (neutered) we need to reject the
     // promise with an error.
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                      "Cannot decode detached ArrayBuffer");
+    dom_exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataCloneError,
+        "Cannot decode detached ArrayBuffer");
     // Fall through in order to invoke the error_callback.
-  } else if (!audio_data->Transfer(isolate, buffer_contents, exception_state)) {
+  } else if (!audio_data->Transfer(isolate, buffer_contents,
+                                   IGNORE_EXCEPTION)) {
     // Transfer may throw a TypeError, which is not a DOMException. However, the
-    // spec requires throwing a DOMException with kDataCloneError. Hence
-    // re-throw a DOMException.
+    // spec requires throwing a DOMException with kDataCloneError. Hence ignore
+    // that exception and throw a DOMException instead.
     // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-decodeaudiodata
-    exception_state.ClearException();
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                      "Cannot transfer the ArrayBuffer");
+    dom_exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataCloneError, "Cannot transfer the ArrayBuffer");
     // Fall through in order to invoke the error_callback.
   } else {  // audio_data->Transfer succeeded.
     DOMArrayBuffer* audio = DOMArrayBuffer::Create(buffer_contents);
@@ -359,20 +361,13 @@ ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
   }
 
   // Forward the exception to the callback.
-  DCHECK(exception_state.HadException());
+  DCHECK(dom_exception);
   if (error_callback) {
-    // Use of NonThrowableExceptionState:
-    // 1. The exception being thrown must be a DOMException, hence no chance
-    //   for NativeValueTraits<T>::NativeValue to fail.
-    // 2. `exception_state` already holds an exception being thrown and it's
-    //   wrong to throw another exception in `exception_state`.
-    DOMException* dom_exception = NativeValueTraits<DOMException>::NativeValue(
-        isolate, exception_state.GetException(),
-        NonThrowableExceptionState().ReturnThis());
     error_callback->InvokeAndReportException(this, dom_exception);
   }
 
-  return EmptyPromise();
+  return ScriptPromise<AudioBuffer>::RejectWithDOMException(script_state,
+                                                            dom_exception);
 }
 
 void BaseAudioContext::HandleDecodeAudioData(
@@ -399,20 +394,11 @@ void BaseAudioContext::HandleDecodeAudioData(
     }
   } else {
     // Reject the promise and run the error callback
-    ExceptionState exception_state(resolver_script_state->GetIsolate(),
-                                   exception_context);
-    // Create DOM exception from the exception state since it gives more info
-    // and return it using resolver as it's expected by interface specification.
-    exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                      "Unable to decode audio data");
-    v8::Local<v8::Value> error = exception_state.GetException();
-    exception_state.ClearException();
-    resolver->Reject(error);
+    auto* dom_exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kEncodingError, "Unable to decode audio data");
+    resolver->Reject(dom_exception);
     if (error_callback) {
-      error_callback->InvokeAndReportException(
-          this,
-          NativeValueTraits<DOMException>::NativeValue(
-              resolver_script_state->GetIsolate(), error, exception_state));
+      error_callback->InvokeAndReportException(this, dom_exception);
     }
   }
 

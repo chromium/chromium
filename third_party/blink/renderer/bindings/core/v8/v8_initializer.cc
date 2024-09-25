@@ -426,20 +426,17 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
                                 v8::Local<v8::Value> source,
                                 bool is_code_like) {
   v8::Isolate* isolate = context->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "eval", "");
-
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
       !V8TrustedScript::HasInstance(isolate, source)) {
     return {true, v8::MaybeLocal<v8::String>()};
   }
 
+  v8::TryCatch try_catch(isolate);
   V8UnionStringOrTrustedScript* string_or_trusted_script =
       NativeValueTraits<V8UnionStringOrTrustedScript>::NativeValue(
-          context->GetIsolate(), source, exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+          isolate, source, PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     // The input was a string or TrustedScript but the conversion failed.
     // Block, just in case.
     return {false, v8::MaybeLocal<v8::String>()};
@@ -452,9 +449,8 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
 
   String stringified_source = TrustedTypesCheckForScript(
       string_or_trusted_script, ToExecutionContext(context), "eval", "",
-      exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+      PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     return {false, v8::MaybeLocal<v8::String>()};
   }
 

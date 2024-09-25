@@ -873,11 +873,13 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         source2_(source2) {}
 
   ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState& exception_state) override {
+                             ExceptionState&) override {
+    v8::TryCatch try_catch(script_state->GetIsolate());
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
-        script_state, stream1_, exception_state);
-    if (exception_state.HadException()) {
-      return ScriptPromiseUntyped::Reject(script_state, exception_state);
+        script_state, stream1_,
+        PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
+      return ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
     }
     DCHECK(reader_for_stream1_);
     return ToResolvedUndefinedPromise(script_state);
@@ -904,21 +906,22 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     if (has_finished_reading_stream1_) {
       return source2_->Cancel(script_state, reason, exception_state);
     }
-    ScriptPromiseUntyped cancel_promise1 =
-        reader_for_stream1_->cancel(script_state, reason, exception_state);
-    if (exception_state.HadException()) {
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    ScriptPromiseUntyped cancel_promise1 = reader_for_stream1_->cancel(
+        script_state, reason, PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
       cancel_promise1 =
-          ScriptPromiseUntyped::Reject(script_state, exception_state);
+          ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
     }
 
     ReadableStream* dummy_stream =
         ReadableStream::CreateWithCountQueueingStrategy(script_state, source2_,
                                                         /*high_water_mark=*/0);
-    ScriptPromiseUntyped cancel_promise2 =
-        dummy_stream->cancel(script_state, reason, exception_state);
-    if (exception_state.HadException()) {
+    ScriptPromiseUntyped cancel_promise2 = dummy_stream->cancel(
+        script_state, reason, PassThroughException(script_state->GetIsolate()));
+    if (try_catch.HasCaught()) {
       cancel_promise2 =
-          ScriptPromiseUntyped::Reject(script_state, exception_state);
+          ScriptPromiseUntyped::Reject(script_state, try_catch.Exception());
     }
 
     return ScriptPromiseUntyped::All(script_state,
