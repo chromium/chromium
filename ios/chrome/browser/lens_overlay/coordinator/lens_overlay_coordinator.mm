@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -333,6 +335,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)destroyLensUI:(BOOL)animated {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
@@ -462,6 +465,8 @@ const CGFloat kMenuSymbolSize = 18;
       prefs::kLensOverlayConditionsAccepted, accepted);
 
   if (accepted) {
+    RecordAction(
+        base::UserMetricsAction("Mobile.LensOverlay.Consent.Accepted"));
     // consentViewController is still presented, so the strong reference can be
     // removed here.
     _consentViewController = nil;
@@ -473,6 +478,7 @@ const CGFloat kMenuSymbolSize = 18;
                              [weakSelf handleConsentViewControllerDismissed];
                            }];
   } else {
+    RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Denied"));
     [self destroyLensUI:YES];
   }
 }
@@ -757,6 +763,7 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)showConsentViewController {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Show"));
   // Block user interaction with the lens UI
   UIView* containerView = _containerViewController.view;
   UIView* blocker = [[UIView alloc] init];

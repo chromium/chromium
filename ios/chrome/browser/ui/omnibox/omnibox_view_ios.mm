@@ -771,6 +771,7 @@ void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
 
 void OmniboxViewIOS::AcceptThumbnailEdits() {
   if (thumbnail_deleted_) {
+    base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
     thumbnail_image_before_edit_ = nil;
     thumbnail_deleted_ = NO;
     if (OmniboxClient* client = controller()->client()) {

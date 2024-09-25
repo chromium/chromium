@@ -20848,6 +20848,53 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensOverlay.Back">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user taps the back button in the Lens Overlay.
+  </description>
+</action>
+
+<action name="Mobile.LensOverlay.Closed">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>Recorded when the Lens Overlay is closed.</description>
+</action>
+
+<action name="Mobile.LensOverlay.Consent.Accepted">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user accepts the Lens Overlay consent dialog.
+  </description>
+</action>
+
+<action name="Mobile.LensOverlay.Consent.Denied">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user denies the Lens Overlay consent dialog.
+  </description>
+</action>
+
+<action name="Mobile.LensOverlay.Consent.Shown">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the Lens Overlay consent dialog is shown.
+  </description>
+</action>
+
+<action name="Mobile.LensOverlay.NewResult">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user generates new results with a new selection or by
+    tapping the back button.
+  </description>
+</action>
+
 <action name="Mobile.Omnibox.iOS.PastedValidURL">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -20929,6 +20976,14 @@ should be able to be added at any place in this file.
   <description>
     User tapped the paste button in Omnibox's keyboard accessory to search for
     text.
+  </description>
+</action>
+
+<action name="Mobile.OmniboxThumbnail.Deleted">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <description>
+    User removed the image search thumbnail in the omnibox.
   </description>
 </action>
 
@@ -25985,6 +26040,12 @@ should be able to be added at any place in this file.
   <owner>pavely@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <description>User tapped on IdentityDisc button on toolbar.</description>
+</action>
+
+<action name="MobileToolbarLensOverlayTap">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>User tapped on Lens Overlay button on toolbar.</description>
 </action>
 
 <action name="MobileToolbarModelSelected">
