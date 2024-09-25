@@ -16,7 +16,7 @@ namespace device::features {
 // Enables access to articulated hand tracking sensor input.
 BASE_FEATURE(kWebXrHandInput,
              "WebXRHandInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables access to experimental WebXR features.
 BASE_FEATURE(kWebXrIncubations,

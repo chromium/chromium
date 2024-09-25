@@ -127,6 +127,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.CAPTURED_SURFACE_CONTROL);
     }
 
+    if (loadTimeData.getBoolean('enableHandTrackingContentSetting')) {
+      this.categoryList_.push(ContentSettingsTypes.HAND_TRACKING);
+    }
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 

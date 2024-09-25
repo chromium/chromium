@@ -4852,7 +4852,7 @@
       name: "WebXRHandInput",
       depends_on: ["WebXR"],
       public: true,
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {
