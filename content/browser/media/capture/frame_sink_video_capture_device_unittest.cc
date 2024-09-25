@@ -32,10 +32,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 using testing::_;
 using testing::ByRef;
 using testing::Eq;
@@ -444,12 +440,6 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
  protected:
   // See the threading notes at top of this file.
   BrowserTaskEnvironment task_environment_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
-
   NiceMock<MockFrameSinkVideoCapturer> capturer_;
   std::unique_ptr<FrameSinkVideoCaptureDevice> device_;
 };

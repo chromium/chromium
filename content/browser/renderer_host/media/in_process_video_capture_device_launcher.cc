@@ -51,9 +51,6 @@
 #include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "content/browser/media/capture/video_capture_device_proxy_lacros.h"
-#endif
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -349,17 +346,6 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       }
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                           "UsingDesktopCaptureLacrosV2",
-                           TRACE_EVENT_SCOPE_THREAD);
-      start_capture_closure = base::BindOnce(
-          &InProcessVideoCaptureDeviceLauncher::
-              DoStartDesktopCaptureWithReceiverOnDeviceThread,
-          base::Unretained(this), desktop_id, params, std::move(receiver),
-          std::move(after_start_capture_callback));
-      break;
-#else
       // All cases other than tab capture or Aura desktop/window capture.
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                            "UsingDesktopCapturer", TRACE_EVENT_SCOPE_THREAD);
@@ -372,7 +358,6 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
                              std::move(receiver_on_io_thread)),
           std::move(after_start_capture_callback));
       break;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
@@ -534,23 +519,6 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   std::move(result_callback).Run(std::move(video_capture_device));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void InProcessVideoCaptureDeviceLauncher::
-    DoStartDesktopCaptureWithReceiverOnDeviceThread(
-        const DesktopMediaID& device_id,
-        const media::VideoCaptureParams& params,
-        std::unique_ptr<media::VideoFrameReceiver> receiver,
-        ReceiveDeviceCallback result_callback) {
-  DCHECK(device_task_runner_->BelongsToCurrentThread());
-
-  std::unique_ptr<VideoCaptureDeviceProxyLacros> video_capture_device =
-      std::make_unique<VideoCaptureDeviceProxyLacros>(device_id);
-  video_capture_device->AllocateAndStartWithReceiver(params,
-                                                     std::move(receiver));
-  IncrementDesktopCaptureCounters(device_id);
-  std::move(result_callback).Run(std::move(video_capture_device));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void InProcessVideoCaptureDeviceLauncher::

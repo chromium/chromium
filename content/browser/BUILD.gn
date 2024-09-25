@@ -2821,18 +2821,6 @@ source_set("browser") {
       ]
       deps += [ "//ash" ]
     }
-    if (is_chromeos_lacros) {
-      sources += [
-        "media/capture/desktop_capturer_lacros.cc",
-        "media/capture/desktop_capturer_lacros.h",
-        "media/capture/desktop_frame_skia.cc",
-        "media/capture/desktop_frame_skia.h",
-        "media/capture/receiver_media_to_crosapi_adapter.cc",
-        "media/capture/receiver_media_to_crosapi_adapter.h",
-        "media/capture/video_capture_device_proxy_lacros.cc",
-        "media/capture/video_capture_device_proxy_lacros.h",
-      ]
-    }
   }
 
   if (is_chromeos_lacros) {

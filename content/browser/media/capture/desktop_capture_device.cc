@@ -56,10 +56,6 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/gfx/icc_profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "content/browser/media/capture/desktop_capturer_lacros.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -815,16 +811,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(crbug.com/40135428): Handle options.
-      std::unique_ptr<webrtc::DesktopCapturer> screen_capturer =
-          std::make_unique<DesktopCapturerLacros>(
-              DesktopCapturerLacros::CaptureType::kScreen,
-              webrtc::DesktopCaptureOptions());
-#else
       std::unique_ptr<webrtc::DesktopCapturer> screen_capturer(
           webrtc::DesktopCapturer::CreateScreenCapturer(options));
-#endif
       if (screen_capturer && screen_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(screen_capturer), options);
@@ -837,14 +825,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     }
 
     case DesktopMediaID::TYPE_WINDOW: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      std::unique_ptr<webrtc::DesktopCapturer> window_capturer(
-          new DesktopCapturerLacros(DesktopCapturerLacros::CaptureType::kWindow,
-                                    webrtc::DesktopCaptureOptions()));
-#else
       std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
           webrtc::DesktopCapturer::CreateWindowCapturer(options);
-#endif
       if (window_capturer && window_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(window_capturer), options);
