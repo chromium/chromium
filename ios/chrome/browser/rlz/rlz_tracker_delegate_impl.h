@@ -25,9 +25,9 @@ class RLZTrackerDelegateImpl : public rlz::RLZTrackerDelegate {
 
   ~RLZTrackerDelegateImpl() override;
 
-  static bool IsGoogleDefaultSearch(ChromeBrowserState* browser_state);
-  static bool IsGoogleHomepage(ChromeBrowserState* browser_state);
-  static bool IsGoogleInStartpages(ChromeBrowserState* browser_state);
+  static bool IsGoogleDefaultSearch(ProfileIOS* profile);
+  static bool IsGoogleHomepage(ProfileIOS* profile);
+  static bool IsGoogleInStartpages(ProfileIOS* profile);
 
  private:
   // RLZTrackerDelegate implementation.

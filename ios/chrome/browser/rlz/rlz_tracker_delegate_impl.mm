@@ -25,11 +25,10 @@ RLZTrackerDelegateImpl::RLZTrackerDelegateImpl() {}
 RLZTrackerDelegateImpl::~RLZTrackerDelegateImpl() {}
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(ProfileIOS* profile) {
   bool is_google_default_search = false;
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   if (template_url_service) {
     const TemplateURL* url_template =
         template_url_service->GetDefaultSearchProvider();
@@ -41,15 +40,13 @@ bool RLZTrackerDelegateImpl::IsGoogleDefaultSearch(
 }
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleHomepage(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleHomepage(ProfileIOS* profile) {
   // iOS does not have a notion of home page.
   return false;
 }
 
 // static
-bool RLZTrackerDelegateImpl::IsGoogleInStartpages(
-    ChromeBrowserState* browser_state) {
+bool RLZTrackerDelegateImpl::IsGoogleInStartpages(ProfileIOS* profile) {
   // iOS does not have a notion of start pages.
   return false;
 }
