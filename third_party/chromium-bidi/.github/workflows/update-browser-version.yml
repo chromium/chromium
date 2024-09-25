@@ -7,8 +7,8 @@ permissions: read-all
 
 on:
   schedule:
-    # Run hourly at xx:30.
-    - cron: '30 * * * *'
+    # Run every 12 hours
+    - cron: '0 */12 * * *'
   workflow_dispatch:
 
 jobs:
