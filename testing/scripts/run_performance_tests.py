@@ -740,16 +740,13 @@ class CrossbenchTest(object):
       if benchmark not in self.BENCHMARK_FILESERVERS:
         raise ValueError(f'fileserver does not support {benchmark}')
       fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
-    # The fileserver localhost port number is set to 8000. See:
-    # third_party/crossbench/crossbench/network/local_fileserver.py
-    http_port = 8000
     fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
     # Replacing --fileserver with --network.
     self.options.passthrough_args.remove(arg)
     return [
         self._create_network_json('local',
                                   path=fileserver_relative_path,
-                                  url=f'http://localhost:{http_port}')
+                                  url='http://localhost:0')
     ]
 
   def _create_wpr_network(self, args):
