@@ -16,10 +16,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/auto_reset.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -463,6 +465,28 @@ TEST_F(SunfishTest, SwitchBehaviorTypes) {
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   VerifyActiveBehavior(BehaviorType::kSunfish);
+}
+
+class SunfishWithScannerTest : public SunfishTest {
+ public:
+  SunfishWithScannerTest() = default;
+  SunfishWithScannerTest(const SunfishWithScannerTest&) = delete;
+  SunfishWithScannerTest& operator=(const SunfishWithScannerTest&) = delete;
+  ~SunfishWithScannerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
+  base::AutoReset<bool> ignore_scanner_update_secret_key_ =
+      switches::SetIgnoreScannerUpdateSecretKeyForTest();
+};
+
+// Tests that a Scanner session is created when a Sunfish session begins.
+TEST_F(SunfishWithScannerTest, CreatesScannerSession) {
+  CaptureModeController::Get()->StartSunfishSession();
+
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->HasActiveSessionForTesting());
 }
 
 }  // namespace ash

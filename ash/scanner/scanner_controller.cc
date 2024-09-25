@@ -39,4 +39,8 @@ void ScannerController::OnSessionUIClosed() {
   scanner_session_ = nullptr;
 }
 
+bool ScannerController::HasActiveSessionForTesting() const {
+  return !!scanner_session_;
+}
+
 }  // namespace ash

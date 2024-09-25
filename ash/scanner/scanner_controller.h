@@ -38,6 +38,8 @@ class ASH_EXPORT ScannerController {
   // scanner session.
   void OnSessionUIClosed();
 
+  bool HasActiveSessionForTesting() const;
+
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
 
