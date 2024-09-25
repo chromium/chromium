@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -133,7 +134,6 @@ public class ReadAloudController
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
-    @Nullable private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
     @Nullable private ReadAloudPlaybackHooks mPlaybackHooks;
     @Nullable private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
     @Nullable private Highlighter mHighlighter;
@@ -549,10 +549,13 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onProfileAvailable(Profile profile) {
         TraceEvent.begin("ReadAloudController#onProfileAvailable");
-        mReadabilityHooks =
-                sReadabilityHooksForTesting != null
-                        ? sReadabilityHooksForTesting
-                        : new ReadAloudReadabilityHooksImpl(mActivity, profile);
+        ReadAloudReadabilityHooksFactory factory =
+                ServiceLoaderUtil.maybeCreate(ReadAloudReadabilityHooksFactory.class);
+        if (factory != null) {
+            mReadabilityHooks = factory.create(mActivity, profile);
+        } else {
+            mReadabilityHooks = new ReadAloudReadabilityHooksImpl(mActivity, profile);
+        }
         if (mReadabilityHooks.isEnabled()) {
             boolean isAllowed = ReadAloudFeatures.isAllowed(profile);
             ReadAloudMetrics.recordIsUserEligible(isAllowed);
@@ -1748,8 +1751,8 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setReadabilityHooks(ReadAloudReadabilityHooks hooks) {
-        sReadabilityHooksForTesting = hooks;
-        ResettersForTesting.register(() -> sReadabilityHooksForTesting = null);
+        ServiceLoaderUtil.setInstanceForTesting(
+                ReadAloudReadabilityHooksFactory.class, (a, b) -> hooks);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
