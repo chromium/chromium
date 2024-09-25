@@ -1603,16 +1603,7 @@
   },
   "telemetry_unittests": {
     "label": "//chrome/test:telemetry_unittests",
-    "type": "script",
-    "script": "//testing/scripts/run_telemetry_as_googletest.py",
-    "args": [
-      "--xvfb",
-      "../../tools/perf/run_telemetry_tests",
-      "-v",
-      "--jobs=1",
-      "--chrome-root",
-      "../../",
-    ],
+    "type": "generated_script",
   },
   "test_cpp_including_rust_unittests": {
     "label": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",

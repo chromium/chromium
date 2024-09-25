@@ -1738,20 +1738,9 @@ targets.binaries.generated_script(
     label = "//chrome/test:telemetry_perf_unittests_android_monochrome",
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_unittests",
     label = "//chrome/test:telemetry_unittests",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "--xvfb",
-        "../../tools/perf/run_telemetry_tests",
-        "-v",
-        # TODO(nedn, eyaich): Remove this flag once crbug.com/549140 is fixed &
-        # Telemetry no longer downloads files in parallel. (crbug.com/661434#c24)
-        "--jobs=1",
-        "--chrome-root",
-        "../../",
-    ],
 )
 
 targets.binaries.console_test_launcher(

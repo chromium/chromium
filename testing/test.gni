@@ -33,6 +33,7 @@ if (is_fuchsia) {
 }
 
 if (is_android) {
+  import("//build/android/test_wrapper/logdog_wrapper.gni")
   import("//build/config/android/config.gni")
   import("//build/config/android/create_unwind_table.gni")
   import("//build/config/android/extract_unwind_tables.gni")
@@ -1188,44 +1189,102 @@ template("test") {
 # the runtime_deps for the target to
 # $root_build_dir/${target_name}.runtime_deps, as per the conventions listed in
 # the [test wrapper API](//docs/testing/test_wrapper_api.md).
+#
+# Variables:
+#   script: Path to underlying test script.
+#   args: Args to the test script.
+#   enable_android_wrapper: (optional) If true, the test will get wrapped in the
+#       logdog_wrapper on Android, which will stream logcats from the device.
+#   enable_cros_wrapper: (optional) If true, the test will get wrapped by the
+#       cros_test_wrapper on ChromeOS, which will prep the device for testing.
 template("script_test") {
-  generate_wrapper(target_name) {
-    testonly = true
-    wrapper_script = "${root_build_dir}/bin/run_${target_name}"
+  _enable_logdog_wrapper = defined(invoker.enable_android_wrapper) &&
+                           invoker.enable_android_wrapper && is_android
+  _enable_cros_wrapper =
+      defined(invoker.enable_cros_wrapper) && invoker.enable_cros_wrapper &&
+      is_chromeos_ash && is_chromeos_device
+  assert(!(_enable_logdog_wrapper && _enable_cros_wrapper),
+         "The logdog and cros_test wrappers are mutually exclusive")
 
-    executable = "//testing/test_env.py"
+  _shared_data = [ invoker.script ]
+  if (defined(invoker.data)) {
+    _shared_data += invoker.data
+  }
+  if (tests_have_location_tags) {
+    _shared_data += [ "//testing/location_tags.json" ]
+  }
 
-    executable_args =
-        [ "@WrappedPath(" + rebase_path(invoker.script, root_build_dir) + ")" ]
-    if (defined(invoker.args)) {
-      executable_args += invoker.args
+  _shared_data_deps = [ "//testing:test_scripts_shared" ]
+  if (defined(invoker.data_deps)) {
+    _shared_data_deps += invoker.data_deps
+  }
+
+  _wrapped_script =
+      "@WrappedPath(" + rebase_path(invoker.script, root_build_dir) + ")"
+  if (_enable_logdog_wrapper) {
+    logdog_wrapper_script_test(target_name) {
+      testonly = true
+      args = [ _wrapped_script ]
+      if (defined(invoker.args)) {
+        args += invoker.args
+      }
+      data = _shared_data
+      data_deps = _shared_data_deps
+
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "args",
+                                   "data",
+                                   "data_deps",
+                                   "script",
+                                 ])
     }
+  } else if (_enable_cros_wrapper) {
+    cros_test_wrapper_script_test(target_name) {
+      args = [ _wrapped_script ]
+      if (defined(invoker.args)) {
+        args += invoker.args
+      }
+      data = _shared_data
+      data_deps = _shared_data_deps
 
-    data = [ invoker.script ]
-
-    if (defined(invoker.data)) {
-      data += invoker.data
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "args",
+                                   "data",
+                                   "data_deps",
+                                   "script",
+                                 ])
     }
-    if (tests_have_location_tags) {
-      data += [ "//testing/location_tags.json" ]
+  } else {
+    generate_wrapper(target_name) {
+      testonly = true
+      wrapper_script = "${root_build_dir}/bin/run_${target_name}"
+
+      executable = "//testing/test_env.py"
+
+      executable_args = [ _wrapped_script ]
+      if (defined(invoker.args)) {
+        executable_args += invoker.args
+      }
+
+      data = _shared_data
+      data_deps = _shared_data_deps
+
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "args",
+                                   "data",
+                                   "data_deps",
+                                   "script",
+                                 ])
+      forward_variables_from(invoker, [ "visibility" ])
+
+      write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
     }
-
-    data_deps = [ "//testing:test_scripts_shared" ]
-    if (defined(invoker.data_deps)) {
-      data_deps += invoker.data_deps
-    }
-
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + [
-                                 "args",
-                                 "data",
-                                 "data_deps",
-                                 "script",
-                               ])
-    forward_variables_from(invoker, [ "visibility" ])
-
-    write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
   }
 }
 
