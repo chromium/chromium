@@ -168,7 +168,7 @@ void IwaKeyDistributionInfoProvider::RemoveObserver(Observer* observer) {
 }
 
 void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
-    base::PassKey<WebAppInternalsHandler>,
+    base::PassKey<IwaInternalsHandler>,
     const std::string& web_bundle_id,
     const std::optional<std::vector<uint8_t>>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,

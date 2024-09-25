@@ -1839,6 +1839,8 @@ static_library("ui") {
       "webui/theme_handler.h",
       "webui/theme_source.cc",
       "webui/theme_source.h",
+      "webui/web_app_internals/iwa_internals_handler.cc",
+      "webui/web_app_internals/iwa_internals_handler.h",
       "webui/web_app_internals/web_app_internals_handler.cc",
       "webui/web_app_internals/web_app_internals_handler.h",
       "webui/web_app_internals/web_app_internals_ui.cc",
