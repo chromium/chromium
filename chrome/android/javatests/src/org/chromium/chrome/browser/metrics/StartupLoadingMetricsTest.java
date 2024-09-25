@@ -67,8 +67,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
             "Startup.Android.Cold.TimeToFirstVisibleContent2";
-    private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM3 =
-            "Startup.Android.Cold.TimeToFirstVisibleContent3";
+    private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4 =
+            "Startup.Android.Cold.TimeToFirstVisibleContent4";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
@@ -158,10 +158,10 @@ public class StartupLoadingMetricsTest {
                 isTabbedSuffix ? expectedCount : 0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
 
-        int coldStartFirstCommit3Samples =
+        int coldStartFirstCommit4Samples =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_HISTOGRAM3 + histogramSuffix);
-        Assert.assertTrue(coldStartFirstCommit3Samples < 2);
+        Assert.assertTrue(coldStartFirstCommit4Samples < 2);
 
         int coldStartFirstContentfulPaintSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_CONTENTFUL_PAINT_HISTOGRAM3);
@@ -208,9 +208,9 @@ public class StartupLoadingMetricsTest {
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM2));
             Assert.assertEquals(
-                    coldStartFirstCommit3Samples,
+                    coldStartFirstCommit4Samples,
                     RecordHistogram.getHistogramTotalCountForTesting(
-                            FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM3));
+                            FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4));
         }
     }
 

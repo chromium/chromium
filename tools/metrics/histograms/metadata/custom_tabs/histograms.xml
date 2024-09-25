@@ -706,6 +706,10 @@ chromium-metrics-reviews@google.com.
     It is recommended to limit analysis of data to Android P+ because on prior
     versions the cold start detection is less robust.
 
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
+
     {suffix}.
   </summary>
   <token key="suffix">
@@ -734,6 +738,10 @@ chromium-metrics-reviews@google.com.
 
     It is recommended to limit analysis of data to Android P+ because on prior
     versions the cold start detection is less robust.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
 
     {suffix}.
   </summary>

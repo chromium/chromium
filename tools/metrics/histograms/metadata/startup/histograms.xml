@@ -96,6 +96,10 @@ chromium-metrics-reviews@google.com.
     Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed, utilizing
     ColdStartTracker. Only logged if the URL of the first navigation is checked
     by SafeBrowsing API.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
   </summary>
 </histogram>
 
@@ -144,6 +148,10 @@ chromium-metrics-reviews@google.com.
     Startup.Android.Experimental.FirstContentfulPaint.Tabbed. It otherwise
     preserves the same semantics and aims to replace the original v1 metric as
     well.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
   </summary>
 </histogram>
 
@@ -214,6 +222,10 @@ chromium-metrics-reviews@google.com.
     is currently being used to diagnose A/B problems running in the field so the
     new metric will replace it and the v2 metric once it approximately reaches
     the counts of the Experimental one on Chrome Stable.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
   </summary>
   <token key="ActivityType">
     <variant name="Tabbed"/>
@@ -356,8 +368,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent3" units="ms"
-    expires_after="2025-01-26">
+<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent4" units="ms"
+    expires_after="2025-03-20">
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -389,6 +401,10 @@ chromium-metrics-reviews@google.com.
     TimeToFirstNavigationCommit3.Tabbed, utilizes ColdStartTracker for its lower
     maintenance risks, and preservation of the good properties from v2, all
     while providing 5x more samples.
+
+    The v4 metric comes with a fix to how BrowserProcessCreationReason is
+    recorded starting with Pixel 6+ on Android 14+ which resulted in incorrect
+    downstream behaviour with ColdStartTracker.
   </summary>
 </histogram>
 
@@ -580,6 +596,10 @@ chromium-metrics-reviews@google.com.
     creation reason. Therefore, it is recommended to limit analysis of the data
     to Android P+ because on prior versions the cold start detection is
     time-based and therefore less robust.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream.
   </summary>
 </histogram>
 
