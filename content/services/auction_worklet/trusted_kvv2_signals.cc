@@ -66,6 +66,38 @@ std::unique_ptr<TrustedKVv2Signals> TrustedKVv2Signals::LoadKVv2BiddingSignals(
   return trusted_kvv2_signals;
 }
 
+std::unique_ptr<TrustedKVv2Signals> TrustedKVv2Signals::LoadKVv2ScoringSignals(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        devtools_pending_remote,
+    std::set<std::string> render_urls,
+    std::set<std::string> ad_component_render_urls,
+    const GURL& trusted_scoring_signals_url,
+    std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+        request_helper_builder,
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    LoadKVv2SignalsCallback load_kvv2_signals_callback) {
+  DCHECK(!render_urls.empty());
+
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> request_helper =
+      request_helper_builder->Build();
+
+  std::unique_ptr<TrustedKVv2Signals> trusted_kvv2_signals =
+      base::WrapUnique(new TrustedKVv2Signals(
+          /*interest_group_names=*/std::nullopt,
+          /*bidding_signals_keys=*/std::nullopt, std::move(render_urls),
+          std::move(ad_component_render_urls), trusted_scoring_signals_url,
+          request_helper->TakeOHttpRequestContext(),
+          std::move(devtools_pending_remote), std::move(v8_helper),
+          std::move(load_kvv2_signals_callback)));
+
+  trusted_kvv2_signals->StartKVv2Download(
+      url_loader_factory, trusted_scoring_signals_url,
+      request_helper->TakePostRequestBody());
+
+  return trusted_kvv2_signals;
+}
+
 TrustedKVv2Signals::TrustedKVv2Signals(
     std::optional<std::set<std::string>> interest_group_names,
     std::optional<std::set<std::string>> bidding_signals_keys,
@@ -189,6 +221,26 @@ void TrustedKVv2Signals::HandleKVv2DownloadResultOnV8Thread(
             ParseBiddingSignalsFetchResultToResultMap(
                 v8_helper.get(), interest_group_names.value(),
                 bidding_signals_keys.value(), maybe_fetch_result.value());
+
+    if (!maybe_result_map.has_value()) {
+      PostKVv2CallbackToUserThread(
+          std::move(user_thread_task_runner), weak_instance,
+          /*result_map=*/std::nullopt,
+          std::move(maybe_result_map).error().error_msg);
+      return;
+    }
+
+    PostKVv2CallbackToUserThread(
+        std::move(user_thread_task_runner), weak_instance,
+        std::move(maybe_result_map).value(), std::move(error_msg));
+  } else {
+    // Handle scoring signals case.
+    CHECK(render_urls.has_value());
+    TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
+        maybe_result_map = TrustedSignalsKVv2ResponseParser::
+            ParseScoringSignalsFetchResultToResultMap(
+                v8_helper.get(), render_urls.value(),
+                ad_component_render_urls.value(), maybe_fetch_result.value());
 
     if (!maybe_result_map.has_value()) {
       PostKVv2CallbackToUserThread(

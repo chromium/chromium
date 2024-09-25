@@ -71,6 +71,19 @@ class CONTENT_EXPORT TrustedKVv2Signals {
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadKVv2SignalsCallback load_kvv2_signals_callback);
 
+  // Just like LoadKVv2BiddingSignals() above, but for fetching seller signals.
+  static std::unique_ptr<TrustedKVv2Signals> LoadKVv2ScoringSignals(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          auction_network_events_handler,
+      std::set<std::string> render_urls,
+      std::set<std::string> ad_component_render_urls,
+      const GURL& trusted_scoring_signals_url,
+      std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+          request_helper_builder,
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      LoadKVv2SignalsCallback load_kvv2_signals_callback);
+
  private:
   // The `context` is generated during the encryption process in the request
   // builder and is saved for decrypting the response body.

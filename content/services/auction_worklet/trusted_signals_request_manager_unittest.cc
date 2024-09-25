@@ -2695,13 +2695,6 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
   }
 
  protected:
-  static std::string BuildResponseBody(const std::string& hex_string) {
-    std::vector<uint8_t> bytes;
-    CHECK(base::HexStringToBytes(hex_string, &bytes));
-
-    return test::CreateKVv2ResponseBody(base::as_string_view(bytes));
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != kTrustedKVv2BiddingSignalsPath) {
@@ -2790,8 +2783,8 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
         cbor::Writer::Write(body_value);
     CHECK(maybe_body_bytes);
 
-    std::string response_body =
-        BuildResponseBody(base::HexEncode(std::move(maybe_body_bytes).value()));
+    std::string response_body = test::CreateKVv2ResponseBody(
+        base::as_string_view(std::move(maybe_body_bytes).value()));
 
     auto response_context =
         std::move(received_request).value().ReleaseContext();
