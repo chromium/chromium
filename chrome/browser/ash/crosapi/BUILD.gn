@@ -661,8 +661,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "ash_requires_lacros_extension_apitest.cc",
-    "ash_requires_lacros_extension_apitest.h",
     "fake_browser_manager.cc",
     "fake_browser_manager.h",
     "input_method_test_interface_ash.cc",
