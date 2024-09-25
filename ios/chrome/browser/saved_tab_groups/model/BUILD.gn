@@ -17,6 +17,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/data_sharing/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/saved_tab_groups:core",
