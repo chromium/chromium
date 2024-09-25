@@ -2401,6 +2401,7 @@ static struct lang_map lang2enc[] =
     {{"ar", LANG_ar},    {"az", LANG_az},
      {"az_AZ", LANG_az},  // for back-compatibility
      {"bg", LANG_bg},    {"ca", LANG_ca},
+     {"crh", LANG_crh},
      {"cs", LANG_cs},    {"da", LANG_da},
      {"de", LANG_de},    {"el", LANG_el},
      {"en", LANG_en},    {"es", LANG_es},
@@ -2458,7 +2459,7 @@ unsigned short unicodetoupper(unsigned short c, int langnum) {
   // In Azeri and Turkish, I and i dictinct letters:
   // There are a dotless lower case i pair of upper `I',
   // and an upper I with dot pair of lower `i'.
-  if (c == 0x0069 && ((langnum == LANG_az) || (langnum == LANG_tr)))
+  if (c == 0x0069 && ((langnum == LANG_az) || (langnum == LANG_tr) || (langnum == LANG_crh)))
     return 0x0130;
 #ifdef OPENOFFICEORG
   return static_cast<unsigned short>(u_toupper(c));
@@ -2475,7 +2476,7 @@ unsigned short unicodetolower(unsigned short c, int langnum) {
   // In Azeri and Turkish, I and i dictinct letters:
   // There are a dotless lower case i pair of upper `I',
   // and an upper I with dot pair of lower `i'.
-  if (c == 0x0049 && ((langnum == LANG_az) || (langnum == LANG_tr)))
+  if (c == 0x0049 && ((langnum == LANG_az) || (langnum == LANG_tr) || (langnum == LANG_crh)))
     return 0x0131;
 #ifdef OPENOFFICEORG
   return static_cast<unsigned short>(u_tolower(c));

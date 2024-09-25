@@ -613,11 +613,15 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root) 
       }
     }
     case INITCAP: {
-
+      // handle special capitalization of dotted I
+      bool Idot = (utf8 && (unsigned char) scw[0] == 0xc4 && (unsigned char) scw[1] == 0xb0);
       *info += SPELL_ORIGCAP;
-      mkallsmall2(scw, sunicw);
-      std::string u8buffer(scw);
-      mkinitcap2(scw, sunicw);
+      if (captype == ALLCAP) {
+          mkallsmall2(scw, sunicw);
+          mkinitcap2(scw, sunicw);
+          if (Idot)
+             scw.replace(0, 1, "\xc4\xb0");
+      }
       if (captype == INITCAP)
         *info += SPELL_INITCAP;
       rv = checkword(scw, info, root);
@@ -632,8 +636,12 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root) 
       }
       if (rv && is_keepcase(rv) && (captype == ALLCAP))
         rv = NULL;
-      if (rv)
+      if (rv || (Idot && langnum != LANG_az && langnum != LANG_tr && langnum != LANG_crh))
         break;
+
+      mkallsmall2(scw, sunicw);
+      std::string u8buffer(scw);
+      mkinitcap2(scw, sunicw);
 
       rv = checkword(u8buffer, info, root);
       if (abbv && !rv) {
@@ -676,7 +684,7 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root) 
   }
 
   // recursive breaking at break points
-  if (!wordbreak.empty()) {
+  if (!wordbreak.empty() && !(*info & SPELL_FORBIDDEN)) {
 
     int nbr = 0;
     wl = scw.size();
@@ -1122,7 +1130,11 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
             wspace.append("-");
             wspace.append(scw.substr(dash_pos + 1));
           }
-          insert_sug(slst, wspace);
+          int info = 0;
+          if (pAMgr && pAMgr->get_forbiddenword())
+            checkword(wspace, &info, NULL);
+          if (!(info & SPELL_FORBIDDEN))
+            insert_sug(slst, wspace);
         }
         nodashsug = 0;
       }

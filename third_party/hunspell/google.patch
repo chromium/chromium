@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index ffce7bb..c6a3243 100644
+index 52c7fa5..de197a9 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -84,11 +84,19 @@
@@ -177,7 +177,7 @@ index ffce7bb..c6a3243 100644
  
    return 0;
  }
-@@ -4386,7 +4464,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
+@@ -4389,7 +4467,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
        case '^': {
          if (*(k - 1) == ']')
            neg = 1;
@@ -186,7 +186,7 @@ index ffce7bb..c6a3243 100644
            *(k - 1) = *k;
          break;
        }
-@@ -4484,6 +4562,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4487,6 +4565,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;
          aflag = pHMgr->decode_flag(std::string(start_piece, iter).c_str());
@@ -194,7 +194,7 @@ index ffce7bb..c6a3243 100644
          if (((at == 'S') && (dupflags[aflag] & dupSFX)) ||
              ((at == 'P') && (dupflags[aflag] & dupPFX))) {
            HUNSPELL_WARNING(
-@@ -4492,6 +4571,7 @@ bool AffixMgr::parse_affix(const std::string& line,
+@@ -4495,6 +4574,7 @@ bool AffixMgr::parse_affix(const std::string& line,
                af->getlinenum());
          }
          dupflags[aflag] += (char)((at == 'S') ? dupSFX : dupPFX);
@@ -849,7 +849,7 @@ index 8f66a00..3afa59f 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index 1ef11df..d71f1ac 100644
+index 76e61b1..0dad69e 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -76,19 +76,28 @@
@@ -996,7 +996,7 @@ index 1ef11df..d71f1ac 100644
    struct hentry* rv = NULL;
  
    int info2 = 0;
-@@ -718,6 +769,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
+@@ -726,6 +777,13 @@ struct hentry* HunspellImpl::checkword(const std::string& w, int* info, std::str
    if (!len)
      return NULL;
  
@@ -1010,7 +1010,7 @@ index 1ef11df..d71f1ac 100644
    // word reversing wrapper for complex prefixes
    if (complexprefixes) {
      if (!usebuffer) {
-@@ -830,6 +888,9 @@ std::vector<std::string> Hunspell::suggest(const std::string& word) {
+@@ -838,6 +896,9 @@ std::vector<std::string> Hunspell::suggest(const std::string& word) {
  }
  
  std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
@@ -1020,7 +1020,7 @@ index 1ef11df..d71f1ac 100644
    std::vector<std::string> slst;
  
    int onlycmpdsug = 0;
-@@ -1875,22 +1936,32 @@ int Hunspell::generate(char*** slst, const char* word, const char* pattern) {
+@@ -1887,22 +1948,32 @@ int Hunspell::generate(char*** slst, const char* word, const char* pattern) {
  }
  
  Hunhandle* Hunspell_create(const char* affpath, const char* dpath) {
