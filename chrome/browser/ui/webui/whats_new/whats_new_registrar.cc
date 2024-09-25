@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace whats_new {
@@ -22,6 +23,10 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule("GooglePayReauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
+  // 131
+  registry->RegisterModule(WhatsNewModule(
+      history_embeddings::kHistoryEmbeddings, "mahmadi@google.com",
+      BrowserCommand::KOpenHistorySearchSettings));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {

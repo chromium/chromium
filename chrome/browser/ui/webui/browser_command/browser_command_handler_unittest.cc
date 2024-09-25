@@ -51,6 +51,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenAISettings,
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
+    Command::KOpenHistorySearchSettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -708,4 +709,20 @@ TEST_F(BrowserCommandHandlerTest, OpenPaymentsSettingsCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPaymentsSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenHistorySearchSettingsCommand) {
+  // By default, opening the History Search subpage is allowed.
+  EXPECT_TRUE(CanExecuteCommand(Command::KOpenHistorySearchSettings));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The KOpenHistorySearchSettings command opens a new settings window with the
+  // History Search settings and the correct disposition.
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kHistorySearchSubpage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(
+      ExecuteCommand(Command::KOpenHistorySearchSettings, std::move(info)));
 }

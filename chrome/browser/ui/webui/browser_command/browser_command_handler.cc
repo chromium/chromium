@@ -128,6 +128,9 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenPaymentsSettings:
       can_execute = true;
       break;
+    case Command::KOpenHistorySearchSettings:
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -210,6 +213,10 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kOpenPaymentsSettings:
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
+                    disposition);
+      break;
+    case Command::KOpenHistorySearchSettings:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kHistorySearchSubpage)),
                     disposition);
       break;
     default:

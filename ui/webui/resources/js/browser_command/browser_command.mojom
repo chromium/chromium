@@ -30,6 +30,7 @@ enum Command {
   kOpenAISettings = 12,
   kOpenSafetyCheckFromWhatsNew = 13,
   kOpenPaymentsSettings = 14,
+  KOpenHistorySearchSettings = 15,
 };
 
 // Click information needed to determine user's desired window disposition using

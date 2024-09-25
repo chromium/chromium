@@ -146,6 +146,7 @@ void WhatsNewUI::CreateBrowserCommandHandler(
         supported_commands.end(),
         {
             browser_command::mojom::Command::kOpenPaymentsSettings,
+            browser_command::mojom::Command::KOpenHistorySearchSettings,
         });
   }
 

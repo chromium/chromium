@@ -69,6 +69,8 @@ chromium-metrics-reviews@google.com.
   <variant name="GoogleLens" summary="the module for Google Lens"/>
   <variant name="GooglePayReauth" summary="the module for Google Pay Re-auth"/>
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
+  <variant name="HistoryEmbeddings"
+      summary="the module for History Embeddings Search"/>
   <variant name="SafetyCheck" summary="the module for Safety Check"/>
   <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
   <variant name="SearchBoxSuggestions"
