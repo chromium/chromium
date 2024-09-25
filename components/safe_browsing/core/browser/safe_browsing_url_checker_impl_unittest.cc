@@ -1797,6 +1797,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   histogram_tester_.ExpectBucketCount(
       /*name=*/
+      "SafeBrowsing.URTAndBackgroundHPRT.Result",
+      /*sample=*/3,  // UrtSafeAndHprtUnsafe
+      /*expected_count=*/1);
+
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/
       "SafeBrowsing.CheckUrl."
       "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
       /*sample=*/1,
@@ -1856,6 +1862,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   histogram_tester_.ExpectBucketCount(
       /*name=*/
+      "SafeBrowsing.URTAndBackgroundHPRT.Result",
+      /*sample=*/4,  // UrtUnsafeAndHprtSafe
+      /*expected_count=*/1);
+
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/
       "SafeBrowsing.CheckUrl."
       "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
       /*sample=*/1,
@@ -1909,6 +1921,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   histogram_tester_.ExpectBucketCount(
       /*name=*/
+      "SafeBrowsing.URTAndBackgroundHPRT.Result",
+      /*sample=*/5,  // UrtUnsafeAndHprtUnsafe
+      /*expected_count=*/1);
+
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/
       "SafeBrowsing.CheckUrl."
       "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
       /*sample=*/1,
@@ -1957,6 +1975,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/
+      "SafeBrowsing.URTAndBackgroundHPRT.Result",
+      /*sample=*/0,  // UrtSafeAndHprtUnfinished
+      /*expected_count=*/1);
 
   histogram_tester_.ExpectBucketCount(
       /*name=*/

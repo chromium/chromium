@@ -702,6 +702,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The trigger is in monitoring mode"/>
 </enum>
 
+<enum name="URTAndBackgroundHPRTResult">
+  <int value="0" label="UrtSafeAndHprtUnfinished"/>
+  <int value="1" label="UrtUnsafeAndHprtUnfinished"/>
+  <int value="2" label="UrtSafeAndHprtSafe"/>
+  <int value="3" label="UrtSafeAndHprtUnsafe"/>
+  <int value="4" label="UrtUnsafeAndHprtSafe"/>
+  <int value="5" label="UrtUnsafeAndHprtUnsafe"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -3002,6 +3002,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.URTAndBackgroundHPRT.Result"
+    enum="URTAndBackgroundHPRTResult" expires_after="2025-03-19">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Tracks the the URL lookup verdicts from URL real-time lookups and the
+    background HPRT lookups.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
     expires_after="2025-03-09">
   <owner>vakh@chromium.org</owner>

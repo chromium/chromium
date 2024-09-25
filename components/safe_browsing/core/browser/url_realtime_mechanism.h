@@ -164,11 +164,15 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // will be used when the URL real-time lookup completes.
   std::optional<SBThreatType> hash_realtime_lookup_result_threat_type_;
 
+  // A helper method to log background HPRT related metrics and construct CSBRR
+  // reports.
+  void LogBackgroundHprtLookupResults(SBThreatType urt_threat_type);
+
   // Converts a |SBThreatType| to the one used for
   // the UrlRealTimeAndHashRealTimeDiscrepancyInfo threat type CSBRR.
   static ClientSafeBrowsingReportRequest::
       UrlRealTimeAndHashRealTimeDiscrepancyInfo::LookupThreatType
-      getDiscrepancyThreatType(SBThreatType threat_type);
+      GetDiscrepancyThreatType(SBThreatType threat_type);
 
   // This will be populated in cases where the sampled HPRT lookup should be
   // sent.
