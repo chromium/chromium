@@ -869,18 +869,12 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVAVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
-  mock_gpu_factories_->SetVideoFrameOutputFormat(
-      media::GpuVideoAcceleratorFactories::OutputFormat::RGBA);
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
       software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
 
   RunUntilIdle();
 
-  EXPECT_NE(software_frame.get(), frame.get());
-  EXPECT_EQ(PIXEL_FORMAT_ABGR, frame->format());
-  EXPECT_TRUE(frame->HasTextures());
-  EXPECT_EQ(1u, sii_->shared_image_count());
-  EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+  EXPECT_EQ(software_frame.get(), frame.get());
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
@@ -1108,36 +1102,6 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, AbortCopies) {
   EXPECT_EQ(0u, copy_task_runner_->NumPendingTasks());
   RunUntilIdle();
   ASSERT_FALSE(frame_2);
-}
-
-// Tests that an I420 VideoFrame after an I420A is ignored, i.e. passed through.
-// See e.g. https://crbug.com/875158.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, VideoFrameChangesPixelFormat) {
-  scoped_refptr<VideoFrame> software_frame_1 = CreateTestYUVAVideoFrame(10);
-  scoped_refptr<VideoFrame> frame_1;
-  mock_gpu_factories_->SetVideoFrameOutputFormat(
-      media::GpuVideoAcceleratorFactories::OutputFormat::RGBA);
-  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
-      software_frame_1,
-      base::BindOnce(MaybeCreateHardwareFrameCallback, &frame_1));
-  RunUntilIdle();
-
-  EXPECT_NE(software_frame_1.get(), frame_1.get());
-  EXPECT_EQ(PIXEL_FORMAT_ABGR, frame_1->format());
-  EXPECT_TRUE(frame_1->HasTextures());
-  EXPECT_EQ(1u, sii_->shared_image_count());
-  EXPECT_TRUE(frame_1->metadata().read_lock_fences_enabled);
-
-  scoped_refptr<VideoFrame> software_frame_2 = CreateTestYUVVideoFrame(10);
-  mock_gpu_factories_->SetVideoFrameOutputFormat(
-      media::GpuVideoAcceleratorFactories::OutputFormat::YV12);
-  scoped_refptr<VideoFrame> frame_2;
-  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
-      software_frame_2,
-      base::BindOnce(MaybeCreateHardwareFrameCallback, &frame_2));
-  RunUntilIdle();
-
-  EXPECT_EQ(software_frame_2.get(), frame_2.get());
 }
 
 }  // namespace media

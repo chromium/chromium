@@ -308,15 +308,9 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       return viz::SinglePlaneFormat::kBGRA_1010102;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return viz::SinglePlaneFormat::kRGBA_1010102;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      return viz::SinglePlaneFormat::kBGRA_8888;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 VideoPixelFormat VideoFormat(
@@ -328,19 +322,13 @@ VideoPixelFormat VideoFormat(
       return PIXEL_FORMAT_NV12;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return PIXEL_FORMAT_P010LE;
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      return PIXEL_FORMAT_ARGB;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-      return PIXEL_FORMAT_ABGR;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
       return PIXEL_FORMAT_XR30;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return PIXEL_FORMAT_XB30;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return PIXEL_FORMAT_UNKNOWN;
 }
 
 // The number of output rows to be copied in each iteration.
@@ -570,67 +558,6 @@ void CopyRowsToRGB10Buffer(bool is_rgba,
                            matrix, width, rows);
 }
 
-void CopyRowsToRGBABuffer(bool is_rgba,
-                          int first_row,
-                          int rows,
-                          int width,
-                          const VideoFrame* source_frame,
-                          uint8_t* output,
-                          int dest_stride) {
-  TRACE_EVENT2("media", "CopyRowsToRGBABuffer", "bytes_per_row", width * 2,
-               "rows", rows);
-
-  if (!output)
-    return;
-
-  DCHECK_NE(dest_stride, 0);
-  DCHECK_LE(width, std::abs(dest_stride / 2));
-  DCHECK_EQ(0, first_row % 2);
-  DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_I420A);
-
-  const auto* y_plane = reinterpret_cast<const uint8_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kY) +
-      first_row * source_frame->stride(VideoFrame::Plane::kY));
-  const auto* u_plane = reinterpret_cast<const uint8_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kU) +
-      first_row / 2 * source_frame->stride(VideoFrame::Plane::kU));
-  const auto* v_plane = reinterpret_cast<const uint8_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kV) +
-      first_row / 2 * source_frame->stride(VideoFrame::Plane::kV));
-  const auto* a_plane = reinterpret_cast<const uint8_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kA) +
-      first_row * source_frame->stride(VideoFrame::Plane::kA));
-
-  size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY);
-  size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU);
-  size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV);
-  size_t a_plane_stride = source_frame->stride(VideoFrame::Plane::kA);
-
-  uint8_t* dest_rgb = output + first_row * dest_stride;
-
-  SkYUVColorSpace yuv_cs = kRec601_Limited_SkYUVColorSpace;
-  source_frame->ColorSpace().ToSkYUVColorSpace(source_frame->BitDepth(),
-                                               &yuv_cs);
-
-  // libyuv uses little-endian for RGBx formats, whereas here we use big
-  // endian.
-  const bool is_libyuv_abgr = is_rgba;
-  const auto* matrix = GetYuvContantsForColorSpace(
-      yuv_cs, /*output_argb_matrix=*/!is_libyuv_abgr);
-  if (is_libyuv_abgr) {
-    std::swap(u_plane, v_plane);
-    std::swap(u_plane_stride, v_plane_stride);
-  }
-
-  // Note: We always use I420AlphaToARGBMatrix() here since `matrix` and
-  // parameter order is changed based on whether we need to output ARGB or ABGR.
-  libyuv::I420AlphaToARGBMatrix(
-      y_plane, y_plane_stride, u_plane, u_plane_stride, v_plane, v_plane_stride,
-      a_plane, a_plane_stride, dest_rgb, dest_stride, matrix, width, rows,
-      // Textures are expected to be premultiplied by GL and compositors.
-      1 /* attenuate, meaning premultiply */);
-}
-
 gfx::Size CodedSize(const VideoFrame* video_frame,
                     GpuVideoAcceleratorFactories::OutputFormat output_format) {
   DCHECK(gfx::Rect(video_frame->coded_size())
@@ -653,8 +580,6 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
       output = gfx::Size(base::bits::AlignUp(width, size_t{2}), height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
@@ -687,8 +612,6 @@ gfx::ColorSpace GetOutputColorSpace(
 
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
       // We've converted the YUV data to RGB, fix the color space.
       return source_cs.GetAsFullRangeRGB();
 
@@ -744,11 +667,14 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
       break;
     // Unsupported cases.
+    case PIXEL_FORMAT_I420A:
+      // We don't have YUVA overlays and RGBA conversion at this stage
+      // compromises on color and breaks some WebGL cases.
+      // See https://crbug.com/355923583 and https://crbug.com/367746309
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV21:
@@ -1041,15 +967,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
       break;
     }
 
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA: {
-      const bool is_rgba =
-          output_format == GpuVideoAcceleratorFactories::OutputFormat::RGBA;
-      CopyRowsToRGBABuffer(is_rgba, row, rows_to_copy, coded_size.width(),
-                           video_frame, memory_ptr0, stride0);
-      break;
-    }
-
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       NOTREACHED_IN_MIGRATION();
   }
@@ -1204,10 +1121,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       // TODO(crbug.com/41350508): Enable this for ChromeOS.
       allow_overlay = false;
 #endif
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      allow_overlay = true;
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       break;

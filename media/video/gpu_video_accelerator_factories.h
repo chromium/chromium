@@ -71,8 +71,11 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
     // NV12_DUAL_GMB = 3,  // One R8, one RG88 GMB
     XR30 = 4,  // 10:10:10:2 BGRX in one GMB (Usually Mac)
     XB30 = 5,  // 10:10:10:2 RGBX in one GMB
-    RGBA = 6,  // One 8:8:8:8 RGBA
-    BGRA = 7,  // One 8:8:8:8 BGRA (Usually Mac)
+    // DEPRECATED: These are only used for I420A, but converting to RGBA at this
+    // stage compromises color accuracy and complicates WebGL.
+    // See https://crbug.com/355923583 and https://crbug.com/367746309
+    // RGBA = 6,  // One 8:8:8:8 RGBA
+    // BGRA = 7,  // One 8:8:8:8 BGRA (Usually Mac)
     P010 = 8,  // One P010 GMB.
     YV12 = 9,  // One YV12 GMB.
     kMaxValue = YV12
