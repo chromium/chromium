@@ -726,15 +726,14 @@ Node* Node::moveBefore(Node* new_child,
   DCHECK(new_child);
 
   // Only perform a state-preserving atomic move if the child is ALREADY
-  // connected to this document, and doesn't cross shadow boundaries.
-  // If the child is NOT connected to this document, then script can run during
-  // the node's initial post-insertion steps (i.e.,
+  // connected to this document, and its document is the same as `this`'s. If
+  // the child is NOT connected to this document, then script can run during the
+  // node's initial post-insertion steps (i.e.,
   // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
       isConnected() && new_child->isConnected() && GetDocument().IsActive() &&
-      (GetTreeScope() == new_child->GetTreeScope()) &&
-      new_child->IsElementNode();
+      (GetDocument() == new_child->GetDocument()) && new_child->IsElementNode();
 
   if (perform_state_preserving_atomic_move) {
     // When `moveBefore()` is called, AND we're actually performing a
@@ -743,12 +742,6 @@ Node* Node::moveBefore(Node* new_child,
     // occur. Assert that no atomic move is already in progress.
     DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
     GetDocument().SetStatePreservingAtomicMoveInProgress(true);
-  } else if (GetTreeScope() != new_child->GetTreeScope() &&
-             GetDocument() == new_child->GetDocument()) {
-    // Currently we disable atomic move for same-document cross-shadow use
-    // cases, but this UseCounter can help use discern if this is an interesting
-    // use case in the future.
-    UseCounter::Count(&GetDocument(), WebFeature::kCrossShadowAtomicMove);
   }
 
   // Mutation events are disabled during the `moveBefore()` API.
