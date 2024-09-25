@@ -139,6 +139,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "overflow_button.icon",
     "overflow_button_touch.icon",
     "paintbrush.icon",
+    "password_field.icon",
     "paste_menu.icon",
     "payments/save_card_and_vcn_success_confirmation.icon",
     "payments/save_card_and_vcn_success_confirmation_dark.icon",

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -65,7 +66,7 @@ AmbientSigninBubbleView::AmbientSigninBubbleView(
   UseCompactMargins();
   set_close_on_deactivate(false);
   SetShowIcon(true);
-  SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon));
+  SetIcon(ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
   SetShowTitle(true);
   // TODO(crbug.com/358119268): Make sure to  translate the final string.
   SetTitle(l10n_util::GetStringFUTF16(IDS_WEBAUTHN_AMBIENT_BUBBLE_TITLE,
@@ -195,8 +196,8 @@ std::unique_ptr<views::View> AmbientSigninBubbleView::CreatePasswordRow(
       base::BindRepeating(&AmbientSigninBubbleView::OnPasswordSelected,
                           weak_ptr_factory_.GetWeakPtr(), form),
       /*icon_view=*/
-      std::make_unique<views::ImageView>(
-          ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, kIconSize)),
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kPasswordFieldIcon, ui::kColorIcon, kIconSize)),
       /*title=*/form->username_value,
       /*subtitle=*/
       std::u16string(form->password_value.length(),
