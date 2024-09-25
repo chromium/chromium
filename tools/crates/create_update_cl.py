@@ -56,7 +56,7 @@ BRANCH_BASENAME += f"--{timestamp.year}{timestamp.month:02}{timestamp.day:02}"
 BRANCH_BASENAME += f"-{timestamp.hour:02}{timestamp.minute:02}"
 
 
-def RunCommandAndCheckForErrors(args, check_stdout: bool):
+def RunCommandAndCheckForErrors(args, check_stdout: bool, check_exitcode: bool):
     """Runs a command and returns its output."""
     args = list(args)
     assert args
@@ -74,7 +74,9 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool):
                             text=True,
                             shell=is_win)
 
-    success = result.returncode == 0
+    success = True
+    if check_exitcode:
+        success &= (result.returncode == 0)
     if check_stdout:
         success &= re.search(r'\bwarning\b', result.stdout.lower()) is None
         success &= re.search(r'\berror\b', result.stdout.lower()) is None
@@ -87,7 +89,9 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool):
 
 def Git(*args) -> str:
     """Runs a git command."""
-    return RunCommandAndCheckForErrors(['git'] + list(args), False)
+    return RunCommandAndCheckForErrors(['git'] + list(args),
+                                       check_stdout=False,
+                                       check_exitcode=True)
 
 
 def GitAddRustFiles():
@@ -97,7 +101,9 @@ def GitAddRustFiles():
 
 def Gnrt(*args) -> str:
     """Runs a gnrt command."""
-    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args), True)
+    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args),
+                                       check_stdout=True,
+                                       check_exitcode=True)
 
 
 def GetCurrentCrateIds() -> Set[str]:
@@ -487,7 +493,9 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     GitAddRustFiles()
     # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
     # earlier `Git("add"...)` above.  Please don't reorder/coalesce the `add`.
-    new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT], False)
+    new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT],
+                                              check_stdout=False,
+                                              check_exitcode=True)
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
@@ -534,7 +542,9 @@ def CheckoutInitialBranch(branch):
 
     # Ensure the //third_party/rust-toolchain version matches the branch.
     print("Running //tools/rust/update_rust.py (hopefully a no-op)...")
-    RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT], False)
+    RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT],
+                                check_stdout=False,
+                                check_exitcode=True)
 
 
 def GitClUpload(*args):
@@ -692,7 +702,11 @@ def ManualUpdate(args):
         old_target = ConvertCrateIdToGnLabel(update.old_crate_id)
         new_target = ConvertCrateIdToGnLabel(update.new_crate_id)
         if old_target == new_target: continue
-        grep = Git("grep", "-l", old_target, "--", "*/BUILD.gn")
+        # `check_exitcode=False` to gracefully handle no hits.
+        grep = RunCommandAndCheckForErrors(
+            ["git", "grep", "-l", old_target, "--", "*/BUILD.gn"],
+            check_stdout=False,
+            check_exitcode=False)
         for path in grep.splitlines():
             if not path: continue
             if "third_party/rust" in path: continue
