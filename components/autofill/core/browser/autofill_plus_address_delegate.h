@@ -74,6 +74,12 @@ class AutofillPlusAddressDelegate {
   // - `origin` is not a blocked origin.
   virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
 
+  // Returns a list of plus addresses for the `origin` and all affiliated
+  // domains.
+  virtual void GetAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
+
   // Returns the suggestions to show for the given origin and
   // `focused_field_value`. If `trigger_source` indicates that this is a manual
   // fallback (e.g. the suggestions were triggered from the context menu on

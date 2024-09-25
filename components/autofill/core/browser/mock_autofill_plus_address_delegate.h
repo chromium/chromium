@@ -24,6 +24,11 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (const url::Origin& origin),
               (const override));
   MOCK_METHOD(void,
+              GetAffiliatedPlusAddresses,
+              (const url::Origin& origin,
+               base::OnceCallback<void(std::vector<std::string>)> callback),
+              (override));
+  MOCK_METHOD(void,
               GetSuggestions,
               (const url::Origin&,
                bool,

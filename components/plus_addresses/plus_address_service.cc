@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
@@ -121,6 +122,11 @@ bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
   }
 
   return excluded_sites.contains(GetEtldPlusOne(origin));
+}
+
+std::string GetPlusAddressFromPlusProfile(
+    const PlusProfile& affiliated_profile) {
+  return affiliated_profile.plus_address.value();
 }
 
 }  // namespace
@@ -282,6 +288,23 @@ bool PlusAddressService::IsPlusAddressFillingEnabled(
   // Check that the feature is enabled and the origin is supported (not opaque,
   // in the `excluded_sites_`, or is non http/https scheme)
   return IsEnabled() && IsSupportedOrigin(origin);
+}
+
+void PlusAddressService::GetAffiliatedPlusAddresses(
+    const url::Origin& origin,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  plus_address_match_helper_.GetAffiliatedPlusProfiles(
+      OriginToFacet(origin),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::vector<std::string>)> inner_callback,
+             std::vector<PlusProfile> affiliated_profiles) {
+            std::vector<std::string> plus_addresses = base::ToVector(
+                affiliated_profiles, GetPlusAddressFromPlusProfile);
+            std::move(inner_callback).Run(std::move(plus_addresses));
+          },
+          std::move(callback)));
 }
 
 void PlusAddressService::GetSuggestions(

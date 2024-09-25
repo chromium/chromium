@@ -1911,6 +1911,23 @@ class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
                : (testing::AssertionFailure() << "Error fetching suggestions.");
   }
 
+  testing::AssertionResult ExpectServiceToReturnAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      const auto& matcher) {
+    base::MockCallback<base::OnceCallback<void(std::vector<std::string>)>>
+        callback;
+    int calls = 0;
+    ON_CALL(callback, Run)
+        .WillByDefault([&](std::vector<std::string> plus_addresses) {
+          EXPECT_THAT(plus_addresses, matcher);
+          ++calls;
+        });
+    service().GetAffiliatedPlusAddresses(origin, callback.Get());
+    return calls == 1 ? testing::AssertionSuccess()
+                      : (testing::AssertionFailure()
+                         << "Error fetching plus addresses.");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2155,6 +2172,73 @@ TEST_F(PlusAddressAffiliationsTest,
 
   ExpectServiceToReturnAffiliatedPlusProfiles(
       origin, UnorderedElementsAre(group_profile));
+}
+
+// Verifies that affiliated plus addresses are returned.
+TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLPlusAddresses) {
+  PlusProfile profile1 = PlusProfile(
+      /*profile_id=*/"123",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://one.foo.example.com"),
+      PlusAddress("plus+one@plus.plus"),
+      /*is_confirmed=*/true);
+  PlusProfile profile2 = PlusProfile(
+      /*profile_id=*/"234",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://two.foo.example.com"),
+      PlusAddress("plus+foo@plus.plus"),
+      /*is_confirmed=*/true);
+  PlusProfile profile3 = PlusProfile(
+      /*profile_id=*/"345",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://bar.example.com"),
+      PlusAddress("plus+bar@plus.plus"),
+      /*is_confirmed=*/true);
+
+  service().SavePlusProfile(profile1);
+  service().SavePlusProfile(profile2);
+  service().SavePlusProfile(profile3);
+  ASSERT_THAT(service().GetPlusProfiles(),
+              UnorderedElementsAre(profile1, profile2, profile3));
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
+
+  // Empty affiliation group.
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(profile1.facet);
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // Request the same URL as the `profile1.facet`.
+  const url::Origin origin =
+      url::Origin::Create(GURL(profile1.facet.canonical_spec()));
+
+  // Note that `profile3` is not a PSL match due to the PSL extensions list.
+  ExpectServiceToReturnAffiliatedPlusAddresses(
+      origin, UnorderedElementsAre("plus+one@plus.plus", "plus+foo@plus.plus"));
+}
+
+// Verifies that the service returns plus addresses from affiliated group
+// domains.
+TEST_F(PlusAddressAffiliationsTest, AffiliatedPlusAddressesForGroupMatches) {
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  service().SavePlusProfile(group_profile);
+  ASSERT_THAT(service().GetPlusProfiles(), UnorderedElementsAre(group_profile));
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  // Prepares the `group_profile` facet to be returned as part of the
+  // affiliation group.
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(group_profile.facet);
+
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://bar.example.com"));
+
+  ExpectServiceToReturnAffiliatedPlusAddresses(
+      origin, UnorderedElementsAre("https://group.affiliated.com"));
 }
 
 }  // namespace
