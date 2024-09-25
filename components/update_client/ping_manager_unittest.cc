@@ -365,7 +365,7 @@ TEST_P(PingManagerTest, SendPing) {
 
   // Tests the presence of the `domain joined` in the ping request.
   {
-    for (const auto is_managed : std::initializer_list<std::optional<bool>>{
+    for (const auto& is_managed : std::initializer_list<std::optional<bool>>{
              std::nullopt, false, true}) {
       config_->SetIsMachineExternallyManaged(is_managed);
       EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));

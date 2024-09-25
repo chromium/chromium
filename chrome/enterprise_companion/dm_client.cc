@@ -321,7 +321,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       const policy::CloudPolicyClient::ResponseMap& responses) {
     FetchedPolicyValidator::Status last_result =
         FetchedPolicyValidator::VALIDATION_OK;
-    for (auto const& [key, response] : responses) {
+    for (const auto& [key, response] : responses) {
       std::unique_ptr<FetchedPolicyValidator::ValidationResult>
           validation_result = policy_fetch_response_validator_.Run(
               dm_storage_->GetDmToken(), dm_storage_->GetDeviceID(),

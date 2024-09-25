@@ -1361,7 +1361,7 @@ std::ostream& operator<<(std::ostream& stream,
   stream << "TaskInfo: name: " << t.name << ", description: " << t.description
          << ", exec_actions: ";
 
-  for (auto exec_action : t.exec_actions) {
+  for (const auto& exec_action : t.exec_actions) {
     stream << ", exec_action: " << exec_action;
   }
 

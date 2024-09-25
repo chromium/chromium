@@ -279,7 +279,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
   // included logs are of the CTLog type, but include only the information
   // required by Chrome to enforce its CT policy. Non Chrome used fields are
   // left unset.
-  for (auto log : proto->log_list().logs()) {
+  for (const auto& log : proto->log_list().logs()) {
     std::string decoded_id;
     if (!base::Base64Decode(log.log_id(), &decoded_id)) {
       continue;
@@ -381,7 +381,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
 
   network::mojom::PinListPtr pinlist_ptr = network::mojom::PinList::New();
 
-  for (auto pinset : proto->pinsets()) {
+  for (const auto& pinset : proto->pinsets()) {
     network::mojom::PinSetPtr pinset_ptr = network::mojom::PinSet::New();
     pinset_ptr->name = pinset.name();
     pinset_ptr->static_spki_hashes =
@@ -394,7 +394,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     pinlist_ptr->pinsets.push_back(std::move(pinset_ptr));
   }
 
-  for (auto info : proto->host_pins()) {
+  for (const auto& info : proto->host_pins()) {
     network::mojom::PinSetInfoPtr pininfo_ptr =
         network::mojom::PinSetInfo::New();
     pininfo_ptr->hostname = info.hostname();

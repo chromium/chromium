@@ -1350,7 +1350,7 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
 }
 
 TEST_P(UpdateCheckerTest, DomainJoined) {
-  for (const auto is_managed :
+  for (const auto& is_managed :
        std::initializer_list<std::optional<bool>>{std::nullopt, false, true}) {
     EXPECT_TRUE(post_interceptor_->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),

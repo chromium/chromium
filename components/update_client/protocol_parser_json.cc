@@ -257,7 +257,7 @@ bool ParseApp(const base::Value& app_node_val,
     return false;
   }
   const base::Value::Dict& app_node = app_node_val.GetDict();
-  for (const auto* cohort_key :
+  for (const auto& cohort_key :
        {ProtocolParser::Result::kCohort, ProtocolParser::Result::kCohortHint,
         ProtocolParser::Result::kCohortName}) {
     const std::string* cohort_value = app_node.FindString(cohort_key);

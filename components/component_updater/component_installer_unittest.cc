@@ -566,7 +566,7 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
   base_dir = base_dir.AppendASCII("select_component_version_test");
 
-  for (const auto* n : {"1", "2", "3", "4", "5", "6", "7"}) {
+  for (const auto& n : {"1", "2", "3", "4", "5", "6", "7"}) {
     CreateComponentDirectory(base_dir, "test_component",
                              base::StrCat({n, ".0.0.0"}), "0.0.1");
   }

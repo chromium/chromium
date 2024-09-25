@@ -86,7 +86,8 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateEmptyTextFiles() {
-    for (auto filename : ZxcvbnDataComponentInstallerPolicy::kFileNames) {
+    for (const auto& filename :
+         ZxcvbnDataComponentInstallerPolicy::kFileNames) {
       base::WriteFile(GetPath().Append(filename), "");
     }
   }
