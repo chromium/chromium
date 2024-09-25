@@ -1461,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
     enum="ModemfwdCheckForWedgedModemResult" expires_after="2025-03-02">
   <owner>andrewlassalle@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Result of the |CheckForWedgedModem| function. The function checks the modem
     state after modemfwd starts, and tries to recover the modem if the modem is
@@ -1494,14 +1494,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Modemfwd.FWInstallResult"
     enum="ModemfwdFWInstallResult" expires_after="2025-03-09">
   <owner>andrewlassalle@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>The result of each modem FW install attempt.</summary>
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWInstallTime" units="seconds"
     expires_after="2025-09-17">
   <owner>ujjwalpande@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Metric to track time taken by modemfwd helpers in seconds to flash the
     firmwares to modem. Values will be reported only for successful flashing
@@ -1514,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Modemfwd.FWUpdateLocation"
     enum="ModemfwdFWUpdateLocation" expires_after="2025-03-09">
   <owner>andrewlassalle@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The location that modemfwd uses for the FW install. After modemfwd
     determines if a DLC will be used or not, a metric is logged with the
@@ -1525,7 +1525,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Modemfwd.ModemRecoveryState"
     enum="ModemfwdModemRecoveryState" expires_after="2025-01-26">
   <owner>ujjwalpande@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Report state of modem recovery operation.</summary>
 </histogram>
 

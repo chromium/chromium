@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
     name="OOBE.HidDetectionScreen.BluetoothPairing.Duration.{PairingResult}"
     units="ms" expires_after="2025-08-23">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for a pairing attempt, initiated automatically
     during the OOBE HID detection screen, to finish. If the user needed to go
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
     enum="HidDetectionBluetoothPairingResult" expires_after="2025-08-31">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records if a HID pairing attempt (initiated automatically by the OOBE HID
     detection screen) paired successfully via Bluetooth or did not pair
@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairing.TimeoutExceeded"
     enum="BooleanSuccess" expires_after="2025-08-31">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records success each time a pairing session times out while on the OOBE HID
     detection page.
@@ -873,7 +873,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
     units="attempts" expires_after="2025-02-10">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the total number of pairing attempts with Bluetooth human interface
     devices (HID). This metric is emitted after the HID detection screen exits
@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.HidConnected" enum="HidType"
     expires_after="2025-08-23">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the type of a connected human interface device (HID). This metric is
     emitted each time a HID is connected during the HID detection screen in
@@ -897,7 +897,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.HidDisconnected" enum="HidType"
     expires_after="2025-03-23">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the type of a connected human interface device (HID) that is
     disconnected. This metric is emitted each time a HID is disconnected during
@@ -909,7 +909,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="OOBE.HidDetectionScreen.InitialHidsMissing" enum="HidsMissing"
     expires_after="2025-02-10">
   <owner>chadduffin@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the types of human interface devices (HIDs) that are not connected
     when OOBE starts. This metric is not emitted for Chrome OS devices that have

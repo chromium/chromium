@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2025-05-30">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the number of times the connection toast is shown to user in the
     24-hour period, starting at local midnight. Fires at system start or on
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"
     enum="BluetoothDeviceType" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records {ConnectionType}. Emitted when any succesful bluetooth device
     connection occurs, or when a unique bluetooth device connection per session
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.DeviceDisconnect"
     enum="BluetoothDeviceType" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Emitted each time a Bluetooth device is disconnected.</summary>
 </histogram>
 
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}.NotPaired{BluetoothTransportTypes}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}{BluetoothPairedStates}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.DisconnectHidWarningDialog.Source"
     enum="HidWarningDialogSource" expires_after="2025-02-20">
   <owner>tjohnsonkanu@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the surface used to toggle Bluetooth each time the user attempts to
     disable Bluetooth and the HID warning dialog is shown.
@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.DisconnectHidWarningDialog.UserAction"
     enum="HidWarningUserAction" expires_after="2025-02-20">
   <owner>tjohnsonkanu@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the button selected by the user on the HID warning dialog.
   </summary>
@@ -1572,7 +1572,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"
     expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Emitted each time a device forget attempt completes.</summary>
 </histogram>
 
@@ -1580,7 +1580,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.Pairing.Duration.Failure{BluetoothTransportTypes}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for a failed pairing attempt, initiated from
     Bluetooth Settings or System Tray, to finish. If the user needed to go
@@ -1596,7 +1596,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.Pairing.Duration.Success{BluetoothTransportTypes}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how long it takes for a successful pairing attempt, initiated from
     Bluetooth Settings or System Tray, to finish. If the user needed to go
@@ -1612,7 +1612,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.Pairing.Result.FailureReason{BluetoothTransportTypes}"
     enum="BluetoothConnectionFailureReason" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Breaks down why a pairing attempt to a peripheral failed (see
     'Bluetooth.ChromeOS.Pairing.Result').
@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.Pairing.Result.FilteredFailureReason{BluetoothTransportTypes}"
     enum="BluetoothConnectionFailureReason" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Breaks down why a pairing attempt to a peripheral failed (see
     'Bluetooth.ChromeOS.Pairing.Result'). Emits the result of pairing attempts
@@ -1649,7 +1649,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.Pairing.Result.UserErrorsFiltered2"
     enum="BooleanSuccess" expires_after="2025-02-20">
   <owner>nikhilcn@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records success or failure of a pairing attempt (initiated in the UI) to a
     peripheral after the user taps that device in the list of discovered
@@ -1662,7 +1662,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.Pairing.Result{BluetoothTransportTypes}"
     enum="BooleanSuccess" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records success or failure of a pairing attempt (initiated in the UI) to a
     peripheral after the user taps that device in the list of discovered
@@ -1680,7 +1680,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.Pairing.TransportType"
     enum="BluetoothTransportType" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     An enumerated histogram which captures the transport type of devices which
     are paired with. Reports of transport types other than classic, BLE, or dual
@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.PoweredState" enum="BooleanEnabled"
     expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Metric emitted when the user logs in on a device which supports Bluetooth as
     well as when the Bluetooth adapter powered state changes (i.e., from off to
@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.PoweredState.Disable.HidWarningDialogBehavior"
     enum="HidWarningDialogDisabledBehavior" expires_after="2025-02-20">
   <owner>tjohnsonkanu@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the HID warning dialog is shown each time Bluetooth is
     attempted to be disabled.
@@ -1713,7 +1713,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.PoweredState.{Operation}.Result"
     enum="BooleanSuccess" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Record emitted when an {Operation}.</summary>
   <token key="Operation">
     <variant name="Disable"
@@ -1725,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.SetNickname.Result"
     enum="SetNicknameResult" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Emitted each time a nickname change attempt completes.</summary>
 </histogram>
 
@@ -1733,7 +1733,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-30">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the time interval between consecutive Bluetooth connections. Fires
     once for each successful, consecutive connection of any device when the time
@@ -1744,7 +1744,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.ChromeOS.UiSurfaceDisplayed"
     enum="BluetoothUiSurface" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Metric emmitted each time a UI surface is shown.</summary>
 </histogram>
 
@@ -1752,7 +1752,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.UserInitiatedDisconnect.Result{BluetoothTransportTypes}"
     enum="DisconnectResult" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Emitted each time a user attempted disconnection completes.
     {BluetoothTransportTypes}
@@ -1766,7 +1766,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure{BluetoothTransportTypes}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Measures the amount of time taken to connect to a device when initiated via
     user interaction with the UI. {BluetoothTransportTypes}
@@ -1780,7 +1780,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success{BluetoothTransportTypes}"
     units="ms" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Measures the amount of time taken to connect to a device when initiated via
     user interaction with the UI. {BluetoothTransportTypes}
@@ -1794,7 +1794,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Breaks down why a user-initiated reconnection attempt to a peripheral failed
     (see 'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result').
@@ -1814,7 +1814,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSuccess" expires_after="2025-08-20">
   <owner>nikhilcn@google.com</owner>
   <owner>tjohnsonkanu@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records success or failure of a user initiated reconnection to a peripheral
     after the user taps that device in the list of discovered peripherals in
@@ -1828,7 +1828,7 @@ chromium-metrics-reviews@google.com.
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{UserInitiatedReconnectionUISurfaces}"
     enum="BooleanSuccess" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records success or failure of a reconnection attempt to an already paired
     peripheral after the user taps that device in the list of peripherals in

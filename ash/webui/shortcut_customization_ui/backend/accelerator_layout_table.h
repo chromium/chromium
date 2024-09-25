@@ -25,7 +25,7 @@
 // Key Shortcuts app, please follow the instructions below:
 //    1.    Determine the correct category and subcategory the accelerator
 //          belongs to. You can view the categories at `accelerator_info.mojom`.
-//          Reach out to cros-peripherals@ if you are unsure about which
+//          Reach out to cros-device-enablement@ if you are unsure about which
 //          category to use.
 //    2.    If you are adding a browser/ambient [1] accelerator, add a new
 //          enum to `NonConfigurableActions`. Then add an entry to

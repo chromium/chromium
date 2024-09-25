@@ -85,7 +85,7 @@
     "owners": [
       "gordonseto@google.com",
       "hsuregan@google.com",
-      "cros-connectivity@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 134
   },
@@ -129,12 +129,12 @@
   },
   {
     "name": "allow-scroll-settings",
-    "owners": [ "zhangwenyu@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "alt-click-and-six-pack-customization",
-    "owners": [ "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -231,12 +231,12 @@
   },
   {
     "name": "apn-policies",
-    "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 134
   },
   {
     "name": "apn-revamp",
-    "owners": [ "nikhilcn@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "nikhilcn@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 134
   },
   {
@@ -464,7 +464,7 @@
     "owners": [
       "dpad@google.com",
       "wangdanny@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -472,7 +472,7 @@
     "name": "ash-modifier-split-feature-key",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -518,7 +518,7 @@
     "name": "ash-split-keyboard-refactor",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -574,7 +574,7 @@
   },
   {
     "name": "audio-selection-improvement",
-    "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -1094,7 +1094,7 @@
   },
   {
     "name": "bluetooth-disconnect-warning",
-    "owners": [ "tjohnsonkanu@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "tjohnsonkanu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 132
   },
   {
@@ -1476,14 +1476,14 @@
   },
   {
     "name": "cellular-bypass-esim-installation-connectivity-check",
-    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jiajunz@chromium.org", "cros-connectivity@google.com" ],
+    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jiajunz@chromium.org", "cros-device-enablement@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server
     // on a network without an external connection to the internet to be able to install eSIM.
     "expiry_milestone": -1
   },
   {
     "name": "cellular-use-second-euicc",
-    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "cros-connectivity@google.com" ],
+    "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "cros-device-enablement@google.com" ],
     // Never expires. This used in ChromeOS to switch to removable EUICC for
     // all eSIM operations. This is useful for debugging with test SIM cards.
     "expiry_milestone": -1
@@ -2067,7 +2067,7 @@
     "name": "deprecate-alt-click",
     "owners": [
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -2256,7 +2256,7 @@
   },
   {
     "name": "display-alignment-assistance",
-    "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -2376,7 +2376,7 @@
   },
   {
     "name": "eap-gtc-wifi-authentication",
-    "owners": [ "cros-connectivity@google.com" ],
+    "owners": [ "cros-device-enablement@google.com" ],
     "expiry_milestone": 120
   },
   {
@@ -2665,7 +2665,7 @@
     "owners": [
       "cambickel@google.com",
       "longbowei@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3123,7 +3123,7 @@
     "owners": [
       "jimmyxgong@chromium.org",
       "michaelcheco@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3377,7 +3377,7 @@
   },
   {
     "name": "enable-hostname-setting",
-    "owners": [ "khorimoto@chromium.org", "cros-connectivity@google.com" ],
+    "owners": [ "khorimoto@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -3394,7 +3394,7 @@
     "name": "enable-input-device-settings-split",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3469,7 +3469,7 @@
     "owners": [
       "dpad@google.com",
       "longbowei@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3738,7 +3738,7 @@
     "name": "enable-peripheral-customization",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3746,7 +3746,7 @@
     "name": "enable-peripheral-notification",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3755,7 +3755,7 @@
     "owners": [
       "dpad@google.com",
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -3924,7 +3924,7 @@
   },
   {
     "name": "enable-search-customizable-shortcuts-in-launcher",
-    "owners": [ "xiangdongkong@chromium.org", "cros-peripherals@google.com"],
+    "owners": [ "xiangdongkong@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -3961,7 +3961,7 @@
     "name": "enable-shortcut-customization",
     "owners": [
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 130
   },
@@ -4037,7 +4037,7 @@
     "name": "enable-suspend-state-machine",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -4150,7 +4150,7 @@
   },
   {
     "name": "enable-touchscreen-mapping",
-    "owners": [ "dpad@google.org", "cros-peripherals@google.com" ],
+    "owners": [ "dpad@google.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -4352,7 +4352,7 @@
     "name": "enable-welcome-experience",
     "owners": [
       "michaelcheco@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -4360,7 +4360,7 @@
     "name": "enable-welcome-experience-test-unsupported-devices",
     "owners": [
       "michaelcheco@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -4803,7 +4803,7 @@
     "name": "firmware-update-ui-v2",
     "owners": [
       "//ash/webui/firmware_update_ui/OWNERS",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -5256,7 +5256,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -5617,7 +5617,7 @@
   },
   {
     "name": "lacros-extension-printing",
-    "owners": [ "xiangdongkong@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "xiangdongkong@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -5866,7 +5866,7 @@
   },
   {
     "name": "mac-address-randomization",
-    "owners": [ "chadduffin@chromium.org", "cros-connectivity@google.com"],
+    "owners": [ "chadduffin@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 135
   },
   {
@@ -6864,7 +6864,7 @@
   {
     "name": "os-feedback-dialog",
     "owners": [
-      "xiangdongkong@chromium.org", "cros-peripherals@google.com"
+      "xiangdongkong@chromium.org", "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -7034,7 +7034,7 @@
   },
   {
     "name": "pcie-billboard-notification",
-    "owners": [ "jimmyxgong@chromium.org", "cros-peripherals@google.com"],
+    "owners": [ "jimmyxgong@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -7213,7 +7213,7 @@
     "owners": [
       "jimmyxgong@chromium.org",
       "gavinwill@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -7222,7 +7222,7 @@
     "owners": [
       "jimmyxgong@chromium.org",
       "gavinwill@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -7786,14 +7786,14 @@
   },
   {
     "name": "reset-audio-selection-improvement-pref",
-    "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140
   },
   {
     "name": "reset-shortcut-customizations",
     "owners": [
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -8150,14 +8150,14 @@
   },
   {
     "name": "shimless-rma-apro-update-rootfs",
-    "owners": [ "gavinwill@chromium.org", "kevinptt@chromium.org", "cros-peripherals@google.com", "cros-shimless-tpe-eng@google.com" ],
+    "owners": [ "gavinwill@chromium.org", "kevinptt@chromium.org", "cros-device-enablement@google.com", "cros-shimless-tpe-eng@google.com" ],
     "expiry_milestone": 132
   },
   {
     "name": "shimless-rma-os-update",
     "owners": [
       "gavinwill@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -8217,7 +8217,7 @@
   },
   {
     "name": "show-metered-toggle",
-    "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-connectivity@google.com" ],
+    "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 127
   },
   {
@@ -8464,7 +8464,7 @@
   },
   {
     "name": "support-f11-and-f12-shortcuts",
-    "owners": [ "michaelcheco@chromium.org", "cros-peripherals@google.com"],
+    "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -8554,7 +8554,7 @@
     "name": "system-shortcut-behavior",
     "owners": [
       "dpad@google.com",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
@@ -8757,7 +8757,7 @@
   },
   {
     "name": "tethering-experimental-functionality",
-    "owners": [ "jiajunz@google.com" , "cros-connectivity@google.com" ],
+    "owners": [ "jiajunz@google.com" , "cros-device-enablement@google.com" ],
     // This flag is used for developing and testing tethering on experimental
     // carriers, modem and modem FW.
     "expiry_milestone": -1
@@ -8889,12 +8889,12 @@
   },
   {
     "name": "traffic-counters",
-    "owners": ["khorimoto@chromium.org", "cros-connectivity@google.com"],
+    "owners": ["khorimoto@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 132
   },
   {
     "name": "traffic-counters-for-wifi-testing",
-    "owners": ["khegde@google.com", "cros-connectivity@google.com"],
+    "owners": ["khegde@google.com", "cros-device-enablement@google.com"],
     "expiry_milestone": 132
   },
   {
@@ -8982,7 +8982,7 @@
   {
     "name": "use-android-staging-smds",
     "owners": [
-      "cros-connectivity@google.com",
+      "cros-device-enablement@google.com",
       "chadduffin@chromium.org"
     ],
     // This flag is required for cellular tests that involve SM-DS to be able
@@ -9115,13 +9115,13 @@
     "name": "use-search-click-for-right-click",
     "owners": [
       "jimmyxgong@chromium.org",
-      "cros-peripherals@google.com"
+      "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 140
   },
   {
     "name": "use-stork-smds-server-address",
-    "owners": [ "cros-connectivity@google.com", "hsuregan@chromium.org"],
+    "owners": [ "cros-device-enablement@google.com", "hsuregan@chromium.org"],
     // This flag is required for dev testing via Stork profiles which can be quickly
     // created at go/stork-profile and managed at go/stork-batch.
     "expiry_milestone": -1
@@ -9566,7 +9566,7 @@
   },
   {
     "name": "wifi-concurrency",
-    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "jiajunz@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 137
   },
   {
@@ -9576,7 +9576,7 @@
   },
   {
     "name": "wifi-direct",
-    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "jiajunz@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135
   },
   {

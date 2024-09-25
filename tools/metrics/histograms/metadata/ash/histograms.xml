@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which shortcuts are being used for an action. Fires when the use
     perform an action using a keyboard shortcut. A shortcut is encoded as an int
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
     enum="ActivateDeskByIndex" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which desk the user switches to. Fires when the user switches desk to
     a specific index using a keyboard shortcut.
@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Accelerators.Rotation.Usage"
     enum="ScreenRotationAcceleratorAction" expires_after="2023-10-08">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Captures the result of a user using the rotation accelerator -
     Ctrl+Shift+Refresh. This histogram shows how frequently users accidentally
@@ -509,7 +509,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Accelerators.TogglePicker.Action"
     enum="TogglePickerAction" expires_after="2025-08-14">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Action triggered by pressing toggle picker accelerator.</summary>
 </histogram>
 
@@ -3545,7 +3545,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Display.{DisplayType}.ActiveEffectiveDPI" units="dpi"
     expires_after="2025-03-09">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The effective DPI of the {DisplayType} computed from active effective
     resolution and display physical size. The bucket value ranges from 50 to 500
@@ -5842,7 +5842,7 @@ chromium-metrics-reviews@google.com.
     enum="AshNightLightScheduleType" expires_after="2025-06-28">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>The selected Night Light schedule type. Emitted on login.</summary>
 </histogram>
 
@@ -5861,7 +5861,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-06-28">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The current Night Light color temperature. Low temperatures are cooler,
     higher temperature are warmer. Emitted on login.
@@ -6882,7 +6882,7 @@ chromium-metrics-reviews@google.com.
     enum="PeripheralConnectivityResult" expires_after="2024-08-21">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>jthies@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The connectivity results of when the user plugs in a Thunderbolt/USB4
     peripheral to their Chrome OS device. This is recorded for only devices that
@@ -7427,7 +7427,7 @@ chromium-metrics-reviews@google.com.
     enum="CriticalNotificationOutcome" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the outcome after a critical battery notification appears.
   </summary>
@@ -7438,7 +7438,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the time interval from when a critical battery notification appears
     to when an outcome such as plugging in, user-initiated shutdown, automatic
@@ -7451,7 +7451,7 @@ chromium-metrics-reviews@google.com.
     units="seconds" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the remaining battery time when the status changes to critical and
     the corresponding notification is displayed. This metric is recorded only
@@ -7463,7 +7463,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the remaining battery time when the device transitions from a
     critical state to charging state upon connecting the charger. Fires at the
@@ -8618,7 +8618,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.AddAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which accelerator is added by the user for {ActionName}. This metric
     also includes accelerators added from editing an accelerator. A shortcut is
@@ -8631,7 +8631,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.AddAcceleratorSubactions"
     enum="ShortcutCustomizationSubactions" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the subactions that can occur when the user attempts to add a custom
     accelerator.
@@ -8641,7 +8641,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.CustomizationAction"
     enum="ShortcutCustomizationAction" expires_after="2025-02-23">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the number of times a shortcut customization action has taken place
     from the Key Shortcuts App.
@@ -8651,7 +8651,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.CustomizationsBeforeResetAll"
     units="count" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the number of customizations before the user resets their shortcuts
     to default.
@@ -8661,7 +8661,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.CustomizationsLoadedOnStartup"
     units="count" expires_after="2025-02-23">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the number of customized accelerator modifications on startup.
   </summary>
@@ -8670,7 +8670,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.EditAcceleratorSubactions"
     enum="ShortcutCustomizationSubactions" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the subactions that can occur when the user attempts to edit an
     accelerator.
@@ -8681,7 +8681,7 @@ chromium-metrics-reviews@google.com.
     enum="ShortcutCustomizationEditDialogCompletedActions"
     expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the actions done in the accelerator edit dialog before it was closed.
     If an action has been done at least once it will count towards the
@@ -8694,7 +8694,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.MainCategoryNavigation"
     enum="ShortcutCustomizationMainCategory" expires_after="2024-12-24">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks the number of times a user navigates to a main category in the side
     panel of the Key Shortcuts app.
@@ -8704,7 +8704,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.ShortcutCustomization.ModifyType.{ActionName}"
     enum="ShortcutCustomizationModificationType" expires_after="2025-02-23">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record what modification actions that were done for {ActionName}.
   </summary>
@@ -8715,7 +8715,7 @@ chromium-metrics-reviews@google.com.
     name="Ash.ShortcutCustomization.RemoveDefaultAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2024-12-30">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record which default accelerator is removed by the user for {ActionName}. A
     shortcut is encoded as an int where the high 16 bits represent all the

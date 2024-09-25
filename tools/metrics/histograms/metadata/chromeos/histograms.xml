@@ -54,15 +54,15 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
     <owner>zhangwenyu@google.com</owner>
     <owner>jimmyxgong@chromium.org</owner>
-    <owner>cros-peripherals@google.com</owner>
+    <owner>cros-device-enablement@google.com</owner>
   </variant>
   <variant name="EnterpriseESim" summary="enterprise eSIM">
     <owner>chadduffin@chromium.org</owner>
-    <owner>cros-connectivity@google.com</owner>
+    <owner>cros-device-enablement@google.com</owner>
   </variant>
   <variant name="ESim" summary="eSIM">
     <owner>hsuregan@chromium.org</owner>
-    <owner>cros-connectivity@google.com</owner>
+    <owner>cros-device-enablement@google.com</owner>
   </variant>
   <variant name="FakeKeyboardHeuristic" summary="Fake Keyboard Heuristic">
     <owner>wmahon@chromium.org</owner>
@@ -1293,7 +1293,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-10-20">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
     {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
@@ -1311,7 +1311,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="CrosDiagnosticsDataError" expires_after="2025-02-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
     not met error when receiving system information including battery info,
@@ -1329,7 +1329,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records requested initial screen when opening the Diagnostics App.
   </summary>
@@ -1340,7 +1340,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>dpad@chromium.org</owner>
   <owner>michaelcheco@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the user spent in the Keyboard Tester. Emitted
     when the user closes the keyboard tester.
@@ -1352,7 +1352,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the Memory Routine took to complete. Emitted when
     the routine completes successfully.
@@ -1364,7 +1364,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open. emitted when the app
     is closed.
@@ -1376,7 +1376,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of routines run while the Chrome OS Diagnostics App was
     open. Begins at zero each time the app is open and recorded each time the
@@ -1389,7 +1389,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open for a given page view.
     Emitted when the active page changes or when the app is closed. Cumulatively
@@ -1410,7 +1410,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
   <token key="RoutineType">
     <variant name="BatteryCharge"/>
@@ -1438,7 +1438,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="BooleanEnabled" expires_after="2025-03-01">
   <owner>longbowei@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the status of the display ambient light sensor at startup. Fires when
     the device boots up and the login screen is displayed.
@@ -1449,7 +1449,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Display.TimeUntilFirstBrightnessChange.{Time}.{BrightnessAction}Brightness.{PowerSource}Power"
     units="ms" expires_after="2025-03-01">
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     When a user {BrightnessAction} the brightness of the internal display for
     the first time since last reboot, records an event with the number of
@@ -1503,7 +1503,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="ms" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     When a firmware install fails while waiting for user action (i.e. a device
     request), record the duration of that request. This metric attempts to
@@ -1517,7 +1517,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="FirmwareUpdateFwupdStatus" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the most recent FwupdStatus when a firmware install fails for any
     reason.
@@ -1528,7 +1528,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="FirmwareUpdateDeviceRequestID" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the ID and {Kind} of request received from fwupd. A request is an
     instruction for the user to perform some action necessary to continue the
@@ -1547,7 +1547,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="ms" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration of a successful device request. Requests are considered
     successful when the installation continues after a request is received.
@@ -1560,7 +1560,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Method}Result"
     enum="FirmwareUpdateMethodResult" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the result of a {Method} call. Recorded once per {Method} and the
     histogram is emitted either when the {Method} is completed or when a failure
@@ -1579,7 +1579,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
     units="devices" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the total number of devices found. OnStartup is recorded when a user
     first logs in and OnRefresh is recorded for any subsequent request. The
@@ -1599,7 +1599,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.{Severity}UpdateCount"
     units="updates" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the total number of {Severity} firmware updates found for all of the
     peripherals currently connected. The histogram is emitted once we've
@@ -1943,7 +1943,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2025-03-09">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the device forms (Keyboard, Mouse, Pointing Stick, etc) of {Type}
     devices, when they are connected. As one physical device can be multiple
@@ -1963,7 +1963,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2025-03-09">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the connection types (Internal, Bluetooth, Usb, etc) of {Form}
     devices, when they are connected. As one physical device can be multiple
@@ -1985,7 +1985,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.AutoRepeatUsage" units="key_event"
     expires_after="2025-02-10">
   <owner>dpad@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records a hash of a keycode + modifier keys pressed everytime a user event
     is repeated due to auto repeat. This also includes events which are
@@ -2000,7 +2000,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="ComboDeviceClassification" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the classification given by ChromeOS to a given keyboard/mouse combo
     device. These devices could either be keyboards, mice, or devices that
@@ -2012,7 +2012,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.DoubleTap{ShiftLocation}ShiftDuration"
     units="ms" expires_after="2025-02-10">
   <owner>dpad@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the duration between two consecutive {ShiftLocation}Shift keypresses
     (within a 500ms window).
@@ -2027,7 +2027,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="microseconds" expires_after="2025-02-10">
   <owner>wangdanny@chromium.org</owner>
   <owner>dpad@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the event rewriter latency metric every time a key is pressed.
 
@@ -2041,7 +2041,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="keys" expires_after="2025-01-21">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of top-row keys on a user's internal keyboard, if their
     device's keyboard has a custom top-row layout.
@@ -2053,7 +2053,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="KeyboardTopRowActionKeys" expires_after="2025-03-02">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the specific keys present on a user's internal keyboard, if their
     device's keyboard has a custom top-row layout.
@@ -2064,7 +2064,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="keys" expires_after="2025-10-28">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of top-row keys on a user's internal keyboard.
   </summary>
@@ -2074,7 +2074,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="KeyboardTopRowActionKeys" expires_after="2025-10-28">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the specific keys present on a user's internal keyboard.
   </summary>
@@ -2084,7 +2084,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="KeyboardTopRowLayoutWithExtraSublayout" expires_after="2025-01-21">
   <owner>dpad@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the type of top-row keyboard layout a user's internal keyboard has.
   </summary>
@@ -2093,7 +2093,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.Keyboard.ModifierPressed.{KeyboardType}"
     enum="ModifierKeyDomCodes" expires_after="2025-02-10">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of times modifier keys are pressed before any modifier
     remapping takes place on {KeyboardType} keyboards.
@@ -2110,7 +2110,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Inputs.Keyboard.RemappedModifierPressed.{KeyboardType}"
     enum="ModifierKeyDomCodes" expires_after="2025-03-10">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of times modifier keys are pressed after modifier
     remappings takes place on {KeyboardType} keyboards.
@@ -2126,7 +2126,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.Keyboard.{FunctionKeyPressed}"
     enum="InputKeyEventToFunctionKey" expires_after="2025-01-23">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the source input key event that is rewritten to a Function key
     {FunctionKeyPressed}.
@@ -2153,7 +2153,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.KeyUsage.Internal.{KeyboardKey}"
     enum="KeyUsageCategory" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records when the {KeyboardKey} key is pressed or if it is recognized on the
     internal keyboard. This is used to get usage statistics on keyboard key
@@ -2197,7 +2197,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.ModifierKeyCombo.{KeyboardType}" units="hash"
     expires_after="2025-02-10">
   <owner>dpad@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records how users use their physical {KeyboardType} keyboards. It groups
     keys into common categories such as &quot;Alpha&quot; and
@@ -2216,7 +2216,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.Mouse.InvalidRegistration" units="Vkey"
     expires_after="2025-08-04">
   <owner>dpad@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records everytime a mouse attempts to register a button for peripheral
     customization and it is blocked by the customization restriction.
@@ -2227,7 +2227,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="Vkey" expires_after="2025-08-04">
   <owner>wangdanny@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records everytime if the mouse which tries the invalid registration is
     recognized as a {DeviceType}.
@@ -2252,7 +2252,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Inputs.SuspendStateMachine"
     enum="SuspendStateMachineEvent" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records actions of the suspend state machine once it is triggered to start
     tracking key releases. Result can either be cancelled or successfully
@@ -2264,7 +2264,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="TouchscreenConfiguration" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record various configurations of internal and external touchscreens
     connected to a ChromeOS devices. Fires when connected touchscreen
@@ -2276,7 +2276,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="touchscreens" expires_after="2025-05-01">
   <owner>dpad@google.com</owner>
   <owner>longbowei@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the number of external touchscreens connected on a ChromeOS device,
     excluding cases with zero touchscreens. Fires when connected touchscreen
@@ -2315,7 +2315,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2025-03-10">
   <owner>wangdanny@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Records the number of metadata tiers on {DeviceType}.</summary>
   <token key="DeviceType">
     <variant name="GraphicsTablet"/>
@@ -2417,7 +2417,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2025-03-29">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the keyboard has a backlight. This state is determined once
     per boot and the metric is also recorded only once per boot.
@@ -2428,7 +2428,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="BooleanEnabled" expires_after="2025-03-01">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the status of the keyboard ambient light sensor at startup. Fires
     when the device boots up and the login screen is displayed.
@@ -2440,7 +2440,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="ms" expires_after="2025-05-01">
   <owner>longbowei@google.com</owner>
   <owner>cambickel@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     When a user {BrightnessAction} the brightness of the keyboard for the first
     time since last reboot, records an event with the number of milliseconds
@@ -2954,7 +2954,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="PrintManagementLaunchSourceType" expires_after="2024-01-23">
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks the source element that triggers navigation to Printer settings from
     Print Management SWA. It attempts to capture the state of Print Management
@@ -3060,7 +3060,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether or not RGB keyboard is supported for the current device.
     Most devices will return RgbKeyboardCapabilityType::None since RGB keyboard
@@ -3075,7 +3075,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Records the source of RGB backlight change for a device.</summary>
 <!-- This must be kept current with RgbKeyboardCapabilityType located in
   tools/metrics/histograms/enums.xml. RgbKeyboardCapabilityType::None is omitted
@@ -3454,7 +3454,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="PeripheralCustomizationMetricsType" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the device type for users who remapped buttons when the device is
     initialized to know overall feature usage.
@@ -3465,7 +3465,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="PeripheralCustomizationMetricsType" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the pressed event of button remapping when it's emitted due to the
     device button presses.
@@ -3476,7 +3476,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     expires_after="2025-03-29">
   <owner>longbowei@google.com</owner>
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether the device has a ambient light sensor. This state is
     determined once per login, and the metric is also recorded only once per
@@ -3487,7 +3487,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.{State}"
     units="ms" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the delay before auto repeat starts when the setting is {State}.
   </summary>
@@ -3500,7 +3500,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatEnabled.{State}"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the whether auto repeat is enabled when the setting is {State}.
   </summary>
@@ -3513,7 +3513,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatInterval.{State}"
     units="ms" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the interval between auto repeated keys when the setting is {State}.
   </summary>
@@ -3527,7 +3527,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.Hash"
     units="hash" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping set on {KeyboardType} keyboard for
     all modifiers as a hash.
@@ -3543,7 +3543,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.NumberOfKeysReset"
     units="keys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of modifier keys reset everytime the modifier remappings
     are reset to default on the {KeyboardType} keyboard, if the number is not
@@ -3560,7 +3560,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.NumberOfRemappedKeysOnStart"
     units="keys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of non default modifier key remappings when the
     {KeyboardType} keyboard is first initialized.
@@ -3576,7 +3576,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.{Modifier}RemappedTo.Changed"
     enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Modifier} key when the
     {KeyboardType} keyboard is updated.
@@ -3601,7 +3601,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.{Modifier}RemappedTo.Initial"
     enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Modifier} key when the
     {KeyboardType} keyboard is first initialized.
@@ -3626,7 +3626,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Changed"
     enum="SixPackKeyModifier" expires_after="2025-03-22">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Key} key when the
     {KeyboardType} keyboard is updated.
@@ -3650,7 +3650,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Initial"
     enum="SixPackKeyModifier" expires_after="2025-03-22">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the configured modifier remapping for the {Key} key when the
     {KeyboardType} keyboard is first initialized.
@@ -3674,7 +3674,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Changed"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {KeyboardSetting} setting when the {KeyboardType}
     keyboard is updated.
@@ -3694,7 +3694,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Initial"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {KeyboardSetting} setting when the {KeyboardType}
     keyboard is first initialized.
@@ -3714,7 +3714,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{Key}.{State}"
     enum="ExtendedFkeysModifier" expires_after="2025-09-12">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {Key} setting for the {KeyboardType} keyboard when
     the setting is {State}.
@@ -3738,7 +3738,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Changed"
     enum="SimulateRightClickModifier" expires_after="2025-01-26">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the simulate right-click setting when the
     {TouchpadType} touchpad is updated.
@@ -3753,7 +3753,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Initial"
     enum="SimulateRightClickModifier" expires_after="2025-01-26">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the simulate right-click setting when the
     {TouchpadType} touchpad is first initialized.
@@ -3768,7 +3768,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Changed"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {TouchpadSetting} settings when the {TouchpadType}
     touchpad settings are updated.
@@ -3790,7 +3790,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Initial"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {TouchpadSetting} settings when the {TouchpadType}
     touchpad is first initialized.
@@ -3812,7 +3812,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.{Difference}"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value {Difference} when {TouchpadSetting} settings on
     {TouchpadType} touchpad are updated.
@@ -3835,7 +3835,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSpeedSettings}.Changed"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {TouchpadSpeedSettings} setting when the
     {TouchpadType} touchpad settings are updated.
@@ -3854,7 +3854,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSpeedSettings}.Initial"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {TouchpadSpeedSettings} setting when the
     {TouchpadType} touchpad is first initialized.
@@ -3872,7 +3872,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Settings.Device.{DeviceType}.SetSettingsSucceeded"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records if the {DeviceType} settings are set successfully. Set settings will
     fail if the id or the settings object is invalid.
@@ -3889,7 +3889,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FirstEver.{TimePeriod}"
     units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of times settings were updated for the first ever
     connected {DeviceType} within the given time period of {TimePeriod}.
@@ -3902,7 +3902,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FromDefaults.{TimePeriod}"
     units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of times {DeviceType} settings were updated when they
     were initially taken from the user's defaults within the time period of
@@ -3916,7 +3916,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.Synced.{TimePeriod}"
     units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of times {DeviceType} settings were updated when the
     settings were taken from synced settings within the time period of
@@ -3930,7 +3930,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Changed"
     enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping AcceleratorAction property when
     the {Peripheral} device button_remapping is changed.
@@ -3946,7 +3946,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Initial"
     enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping AcceleratorAction property when
     the {Peripheral} device button_remapping is first initialized.
@@ -3962,7 +3962,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Pressed"
     enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping AcceleratorAction property when
     it's emitted due to the {Peripheral} device button presses.
@@ -3978,7 +3978,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.DefaultRemapping.CustomizableButton"
     enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.CustomizableButton property when the
     {Peripheral} device button_remapping is first initialized and the button has
@@ -3995,7 +3995,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.DefaultRemapping.Vkey"
     units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.Vkey property when the {Peripheral} device
     button_remapping is first initialized and the button has its default
@@ -4012,7 +4012,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Changed"
     units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping KeyEvent property when the
     {Peripheral} device button_remapping is changed. A KeyEvent is encoded as an
@@ -4032,7 +4032,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Initial"
     units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping KeyEvent property when the
     {Peripheral} device button_remapping is first initialized. A KeyEvent is
@@ -4052,7 +4052,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Pressed"
     units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping KeyEvent property when the it's
     emiited due to {Peripheral} device button presses. A KeyEvent is encoded as
@@ -4072,7 +4072,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Name.Changed.CustomizableButton"
     enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.CustomizableButton property when the
     {Peripheral} device button remapping name changes.
@@ -4088,7 +4088,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Name.Changed.Vkey"
     units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.Vkey property when the {Peripheral} device
     button remapping name changes. To lookup the Vkey value from UMA, convert
@@ -4106,7 +4106,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Registered.CustomizableButton"
     enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.CustomizableButton property when the user
     presses the button on a {Peripheral} device to remap that button for the
@@ -4123,7 +4123,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Registered.Vkey"
     units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the Button.Vkey property when the user presses the
     button on a {Peripheral} device to remap that button for the first time.
@@ -4139,7 +4139,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Changed"
     enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping StaticShortcutAction property when
     the {Peripheral} device button_remapping is changed.
@@ -4155,7 +4155,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Initial"
     enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping StaticShortcutAction property when
     the {Peripheral} device button_remapping is first initialized.
@@ -4171,7 +4171,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Pressed"
     enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the button_remapping StaticShortcutAction property when
     it's emitted due the {Peripheral} device button presses.
@@ -4187,7 +4187,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.External.NumConnectedLast28Days"
     units="devices" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of {Peripheral} devices seen in the last 28 days.
     Recorded everytime a user connects an external {Peripheral}.
@@ -4203,7 +4203,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Changed"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {PeripheralSetting} settings when the {Peripheral}
     device settings are updated.
@@ -4224,7 +4224,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Initial"
     enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {PeripheralSetting} settings when the {Peripheral}
     device is first initialized.
@@ -4245,7 +4245,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Changed"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {SensitivityType} setting when the {Peripheral}
     device settings are updated. The value ranges from 1 to 5.
@@ -4264,7 +4264,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Initial"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value of the {SensitivityType} setting when the {Peripheral}
     device is is first initialized. The value ranges from 1 to 5.
@@ -4283,7 +4283,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.{Difference}"
     enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the value {Difference} when {SensitivityType} setting on
     {Peripheral} device is updated.
@@ -4782,7 +4782,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.WelcomeExperienceCompanionAppState"
     enum="CompanionAppState" expires_after="2025-06-30">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether companion apps are available or installed on connected
     devices. This metric is recorded once per user session for each connected
@@ -4793,7 +4793,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.WelcomeExperienceNotificationEvent"
     enum="WelcomeExperienceNotificationEventType" expires_after="2025-06-30">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Recorded when the user is shown or interacts with the first-time connection
     notification.

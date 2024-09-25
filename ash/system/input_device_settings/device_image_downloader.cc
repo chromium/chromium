@@ -44,7 +44,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     destination: GOOGLE_OWNED_SERVICE
     internal {
       contacts {
-          email: "cros-peripherals@google.com"
+          email: "cros-device-enablement@google.com"
       }
     }
     user_data {

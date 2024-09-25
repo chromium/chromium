@@ -340,8 +340,8 @@ InteractiveAshTest::CompleteAddWifiDialog(
 
   if (config.security_type !=
       ::chromeos::network_config::mojom::SecurityType::kNone) {
-    // TODO(cros-connectivity@google.com): Add logic for selecting security type
-    // and filling out the relevant fields.
+    // TODO(cros-device-enablement@google.com): Add logic for selecting security
+    // type and filling out the relevant fields.
     NOTREACHED();
   }
 
@@ -364,8 +364,8 @@ InteractiveAshTest::CompleteAddWifiDialog(
                     ash::settings::wifi::ConfigureWifiDialogShareToggle())));
     }
   } else {
-    // TODO(cros-connectivity@google.com): Add logic for marking the network as
-    // that it is shared.
+    // TODO(cros-device-enablement@google.com): Add logic for marking the
+    // network as that it is shared.
     NOTREACHED();
   }
 

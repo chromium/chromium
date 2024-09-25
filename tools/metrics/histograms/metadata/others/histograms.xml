@@ -3627,7 +3627,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DisplayManager.InternalDisplayZoomPercentage" units="%"
     expires_after="2025-03-09">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The zoom percentage that the user has set on the internal display and is
     actively using. This is emitted when the zoom factor has been updated in
@@ -3651,7 +3651,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
     expires_after="2025-02-23">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The types of mirror mode in which the displays connected to the device are
     in. This is emitted once when the normal or mixed mirror mode is enabled
@@ -3666,7 +3666,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DisplayManager.MultiDisplayMode" enum="MultiDisplayModes"
     expires_after="2025-02-23">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The mode in which the connected displays to the device are in. This is
     emitted once when displays are added or removed, or when the user changes
@@ -3677,7 +3677,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
     enum="MultiDisplayModeDisplayCountRanges" expires_after="2025-02-23">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The number of displays connected to the device when Unified Desktop mode is
     on. This is emitted when Unified Desktop mode is turned on, or the displays
@@ -3688,7 +3688,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DisplayManager.UpdateDisplayConfigurationTask.Success"
     enum="BooleanSuccess" expires_after="2025-04-15">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether or not the display configuration was successfully updated.
     Emitted when the update-display-configuration task finishes, successfully or
@@ -5977,7 +5977,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mouse.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2025-09-22">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting changes by the user. This replaces the old
     Mouse.Sensitivity.Changed metric. Only reported on Chrome OS.
@@ -5987,7 +5987,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mouse.PointerSensitivity.Started" enum="PointerSensitivity"
     expires_after="2024-11-03">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting on startup. This replaces the old
     Mouse.Sensitivity.Started metric. Only reported on Chrome OS.
@@ -5999,7 +5999,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mouse.PrimaryButtonRight.Changed" enum="PrimaryButtonRight"
     expires_after="2024-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks mouse PrimaryButtonRight setting. Only reported on Chrome OS.
   </summary>
@@ -6008,7 +6008,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mouse.PrimaryButtonRight.Started" enum="PrimaryButtonRight"
     expires_after="2024-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks mouse PrimaryButtonRight setting on startup. Only reported on Chrome
     OS.
@@ -6020,7 +6020,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Whether mouse scroll acceleration is enabled. Only reported on Chrome OS.
 
@@ -6034,7 +6034,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Mouse scroll sensitivity value. Only reported on Chrome OS.
 
@@ -7283,7 +7283,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
     expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Acceleration setting for pointing sticks (typically TrackPoints, the
     miniature red joysticks found in some laptop keyboards). Only reported on
@@ -7296,7 +7296,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="PointingStick.PointerSensitivity"
     enum="PointerSensitivity" expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Sensitivity value for pointing sticks (typically TrackPoints, the miniature
     red joysticks found in some laptop keyboards). Only reported on Chrome OS.
@@ -7308,7 +7308,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="PointingStick.PrimaryButtonRight"
     enum="PointerPrimaryButton" expires_after="2025-06-11">
   <owner>dpad@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Setting for the primary button of pointing sticks (typically TrackPoints,
     the miniature red joysticks found in some laptop keyboards). Only reported
@@ -9316,7 +9316,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.HapticClickSensitivity.Changed"
     enum="HapticClickSensitivity" expires_after="2024-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks touchpad haptic click sensitivity setting changes by the user. Only
     reported on Chrome OS.
@@ -9326,7 +9326,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.HapticClickSensitivity.Started"
     enum="HapticClickSensitivity" expires_after="2024-02-11">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks touchpad haptic click sensitivity setting on startup. Only reported
     on Chrome OS.
@@ -9336,7 +9336,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.HapticFeedback.Changed" enum="BooleanEnabled"
     expires_after="2025-09-01">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks touchpad haptic feedback setting changes by the user. Only reported
     on Chrome OS.
@@ -9346,7 +9346,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.HapticFeedback.Started" enum="BooleanEnabled"
     expires_after="2025-09-01">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@chromium.org</owner>
+  <owner>cros-device-enablement@chromium.org</owner>
   <summary>
     Tracks touchpad haptic feedback setting on startup. Only reported on Chrome
     OS.
@@ -9356,7 +9356,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.NaturalScroll.Changed" enum="BooleanEnabled"
     expires_after="2024-11-03">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad natural scroll setting changes by the user. Only reported on
     Chrome OS.
@@ -9369,7 +9369,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.NaturalScroll.Started" enum="BooleanEnabled"
     expires_after="2024-11-03">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad natural scroll setting on startup. Only reported on Chrome
     OS.
@@ -9379,7 +9379,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2024-12-24">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting changes by the user. This replaces the
     old Touchpad.Sensitivity.Changed metric. Only reported on Chrome OS.
@@ -9392,7 +9392,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.PointerSensitivity.Started" enum="PointerSensitivity"
     expires_after="2025-03-31">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting on startup. This replaces the old
     Touchpad.Sensitivity.Started metric. Only reported on Chrome OS.
@@ -9407,7 +9407,7 @@ features through Chrome Labs. -->
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Whether touchpad scroll acceleration is enabled. Only reported on Chrome OS.
 
@@ -9421,7 +9421,7 @@ features through Chrome Labs. -->
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Touchpad scroll sensitivity value. Only reported on Chrome OS.
 
@@ -9433,7 +9433,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.TapDragging.Changed" enum="BooleanEnabled"
     expires_after="2025-02-11">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting changes by the user. Only reported on
     Chrome OS.
@@ -9446,7 +9446,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.TapDragging.Started" enum="BooleanEnabled"
     expires_after="2025-02-11">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting on startup. Only reported on Chrome OS.
 
@@ -9458,7 +9458,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.TapToClick.Changed" enum="BooleanEnabled"
     expires_after="2025-02-11">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad TapToClick setting changes by the user. Only reported on
     Chrome OS.
@@ -9471,7 +9471,7 @@ features through Chrome Labs. -->
 <histogram name="Touchpad.TapToClick.Started" enum="BooleanEnabled"
     expires_after="2025-02-11">
   <owner>zhangwenyu@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Tracks touchpad TapToClick setting changes by the user. Only reported on
     Chrome OS.

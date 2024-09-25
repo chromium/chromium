@@ -2331,7 +2331,7 @@ chromium-metrics-reviews@google.com.
     enum="DefaultAppName" expires_after="2025-02-10">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <component>1389907</component>
   <summary>
     Records when a user attempts to launch a particular Chrome OS app.

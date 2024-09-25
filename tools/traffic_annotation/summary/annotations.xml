@@ -459,7 +459,7 @@ Refer to README.md for content description and update process.
  <item id="youtube_music_integration" added_in_milestone="126" content_hash_code="0168e5a0" os_list="chromeos" file_path="ash/system/focus_mode/sounds/youtube_music/youtube_music_client.cc" />
  <item id="personalized_recommended_apps_download" added_in_milestone="127" content_hash_code="0216d0f6" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_apps_service/oobe_apps_almanac_endpoint.cc" />
  <item id="focus_sounds_configuration" added_in_milestone="127" content_hash_code="02bcde5b" os_list="chromeos" file_path="ash/system/focus_mode/sounds/soundscape/soundscapes_downloader.cc" />
- <item id="device_image_downloader" added_in_milestone="127" content_hash_code="025a84c8" os_list="chromeos" file_path="ash/system/input_device_settings/device_image_downloader.cc" />
+ <item id="device_image_downloader" added_in_milestone="127" content_hash_code="04c18c2c" os_list="chromeos" file_path="ash/system/input_device_settings/device_image_downloader.cc" />
  <item id="data_sharing_service_create_group" added_in_milestone="127" content_hash_code="0364db3a" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
  <item id="data_sharing_service_read_groups" added_in_milestone="127" content_hash_code="0324f200" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
  <item id="data_sharing_service_delete_groups" added_in_milestone="127" content_hash_code="073cd77e" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
@@ -470,7 +470,7 @@ Refer to README.md for content description and update process.
  <item id="nearby_connections_wifi_direct" added_in_milestone="127" content_hash_code="00cec3a0" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/wifi_direct_socket.cc" />
  <item id="chrome_commerce_comparable_products" added_in_milestone="127" content_hash_code="07478997" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/compare/cluster_server_proxy.cc" />
  <item id="autofill_password_favicon_fetch" added_in_milestone="128" content_hash_code="00df689d" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/autofill/popup/password_favicon_loader.cc" />
- <item id="peripherals_companion_app" added_in_milestone="128" content_hash_code="07d8b2f2" os_list="chromeos" file_path="chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.cc" />
+ <item id="peripherals_companion_app" added_in_milestone="128" content_hash_code="06414ac5" os_list="chromeos" file_path="chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.cc" />
  <item id="enterprise_companion_event_logging" added_in_milestone="128" content_hash_code="06883e8e" os_list="linux,windows" file_path="chrome/enterprise_companion/event_logger.cc" />
  <item id="get_locale_oauth2_people_api_call" added_in_milestone="128" type="partial" second_id="oauth2_api_call_flow" content_hash_code="021bb5c6" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,7" file_path="chrome/browser/ash/login/screens/locale_switch_screen.cc" />
  <item id="boca_classroom_integration" added_in_milestone="128" content_hash_code="056b9402" os_list="chromeos" file_path="ash/webui/boca_ui/provider/classroom_page_handler_impl.cc" />

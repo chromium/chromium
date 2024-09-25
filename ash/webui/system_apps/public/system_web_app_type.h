@@ -55,7 +55,7 @@ enum class SystemWebAppType {
   // You can find information about this SWA at: http://go/shimless-ux.
   //
   // Source: //ash/webui/shimless_rma/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   SHIMLESS_RMA = 17,
 
   // A System Web App that launches on Demo Mode startup, to display animated
@@ -98,7 +98,7 @@ enum class SystemWebAppType {
   // firmwares in one place.
   // You can find information about this SWA at: http://go/fwupd-app.
   // Source: //ash/webui/firmware_update/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   FIRMWARE_UPDATE = 22,
 
   // OsFlags is called by Lacros to show the chrome://flags page as
@@ -118,7 +118,7 @@ enum class SystemWebAppType {
 
   // CrOS implementation of the print preview surface.
   // Source: //ash/webui/print_preview_cros/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   PRINT_PREVIEW_CROS = 26,
 
   // Boca implementation.

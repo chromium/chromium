@@ -746,7 +746,7 @@ should be able to be added at any place in this file.
 
 <action name="Accel_Keyboard_Backlight">
   <owner>rtinkoff@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>User pressed the keyboard backlight toggle key.</description>
 </action>
 
@@ -945,7 +945,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Open_Calculator">
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Records when the calculator is launched from an accelerator.
   </description>
@@ -957,7 +957,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Open_Diagnostics">
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Records how often diagnostics is launched from accelerator.
   </description>
@@ -6519,7 +6519,7 @@ should be able to be added at any place in this file.
   <owner>khorimoto@chromium.org</owner>
   <owner>tjohnsonkanu@chromium.org</owner>
   <owner>chadduffin@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user clicks on the settings button in Network view within
     systems tray.
@@ -35664,7 +35664,7 @@ should be able to be added at any place in this file.
 
 <action name="ShortcutCustomization_OpenEditAcceleratorDialog">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     User clicks on an editable accelerator to modify it.
   </description>
@@ -35672,13 +35672,13 @@ should be able to be added at any place in this file.
 
 <action name="ShortcutCustomization_RemoveAccelerator">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>User has removed an accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_ResetAction">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     User has clicked on the restore default button for an action.
   </description>
@@ -35686,7 +35686,7 @@ should be able to be added at any place in this file.
 
 <action name="ShortcutCustomization_ResetAll">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     User has clicked on the restore default for all actions button.
   </description>
@@ -35694,19 +35694,19 @@ should be able to be added at any place in this file.
 
 <action name="ShortcutCustomization_StartAddAccelerator">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>User has begun adding a new accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_StartReplaceAccelerator">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>User has begun replacing an accelerator.</description>
 </action>
 
 <action name="ShortcutCustomization_SuccessfullyModified">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     User has successfully added or replaced an accelerator.
   </description>
@@ -35840,7 +35840,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowGraphicsTabletSettingsPage">
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the graphics tablet settings subpage by
     clicking on the notification shown when a graphics tablet with customizable
@@ -35880,7 +35880,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowKeyboardSettingsPage">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the keyboard settings subpage by clicking
     on the notification shown when a mouse with customizable buttons is
@@ -35895,7 +35895,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowMouseSettingsPage">
   <owner>wangdanny@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the mouse settings subpage by clicking on
     the notification shown when a mouse with customizable buttons is connected
@@ -35920,7 +35920,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowPointingStickSettingsPage">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the pointing stick settings subpage by
     clicking on the notification shown when a mouse with customizable buttons is
@@ -35935,7 +35935,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowRemapKeysSettingsSubpage">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the remap keys settings subpage by
     clicking on the notification shown when they attempted to rewrite a key
@@ -35961,7 +35961,7 @@ should be able to be added at any place in this file.
 
 <action name="ShowTouchpadSettingsPage">
   <owner>michaelcheco@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <description>
     Recorded when a user navigates to the touchpad settings subpage by clicking
     on the notification shown when they attempted to simulate a right-click

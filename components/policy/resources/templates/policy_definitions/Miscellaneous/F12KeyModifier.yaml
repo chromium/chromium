@@ -26,7 +26,7 @@ items:
   value: 3
 owners:
 - michaelcheco@google.com
-- cros-peripherals@google.com
+- cros-device-enablement@google.com
 schema:
   enum:
   - 0
