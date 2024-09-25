@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
 #include <memory>
@@ -136,7 +131,6 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"(max-device-aspect-ratio: 0.6/0.5)", true},
     {"(min-device-aspect-ratio: 1/2)", true},
     {"(max-device-aspect-ratio: 1.5)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_display_state_test_cases[] = {
@@ -149,7 +143,6 @@ MediaQueryEvaluatorTestCase g_display_state_test_cases[] = {
     {"(display-state: @normal)", false},
     {"(display-state: 'normal')", false},
     {"(display-state: @junk normal)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_resizable_test_cases[] = {
@@ -161,13 +154,11 @@ MediaQueryEvaluatorTestCase g_resizable_test_cases[] = {
     {"(resizable: 'true')", false},
     {"(resizable: \"true\")", false},
     {"(resizable: @junk true)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_monochrome_test_cases[] = {
     {"(color)", false},
     {"(monochrome)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_viewport_test_cases[] = {
@@ -199,7 +190,6 @@ MediaQueryEvaluatorTestCase g_viewport_test_cases[] = {
     {"(max-aspect-ratio: 4294967296/1)", true},
     {"(max-aspect-ratio: calc(4294967296) / calc(1)", true},
     {"(min-aspect-ratio: 1/4294967295)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_float_viewport_test_cases[] = {
@@ -223,7 +213,6 @@ MediaQueryEvaluatorTestCase g_float_viewport_test_cases[] = {
     {"(height: 700.141px)", false},
     {"(height: 700.109px)", false},
     {"(height: 701px)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_float_non_friendly_viewport_test_cases[] = {
@@ -235,7 +224,6 @@ MediaQueryEvaluatorTestCase g_float_non_friendly_viewport_test_cases[] = {
     {"(height: 821px)", true},
     {"(width: 100vw)", true},
     {"(height: 100vh)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_print_test_cases[] = {
@@ -243,7 +231,6 @@ MediaQueryEvaluatorTestCase g_print_test_cases[] = {
     {"print and (min-resolution: calc(100dpi - 4dpi))", true},
     {"print and (min-resolution: 118dpcm)", true},
     {"print and (min-resolution: 119dpcm)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 // Tests when the output device is print.
@@ -251,7 +238,6 @@ MediaQueryEvaluatorTestCase g_update_with_print_device_test_cases[] = {
     {"(update)", false},       {"(update: none)", true},
     {"(update: slow)", false}, {"(update: fast)", false},
     {"update: fast", false},   {"(update: ?)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 // Tests when the output device is slow.
@@ -259,7 +245,6 @@ MediaQueryEvaluatorTestCase g_update_with_slow_device_test_cases[] = {
     {"(update)", true},       {"(update: none)", false},
     {"(update: slow)", true}, {"(update: fast)", false},
     {"update: fast", false},  {"(update: ?)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 // Tests when the output device is slow.
@@ -267,19 +252,16 @@ MediaQueryEvaluatorTestCase g_update_with_fast_device_test_cases[] = {
     {"(update)", true},        {"(update: none)", false},
     {"(update: slow)", false}, {"(update: fast)", true},
     {"update: fast", false},   {"(update: ?)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_forcedcolors_active_cases[] = {
     {"(forced-colors: active)", true},
     {"(forced-colors: none)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_forcedcolors_none_cases[] = {
     {"(forced-colors: active)", false},
     {"(forced-colors: none)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
@@ -288,7 +270,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
     {"(prefers-contrast: less)", false},
     {"(prefers-contrast: no-preference)", true},
     {"(prefers-contrast: custom)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
@@ -297,7 +278,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
     {"(prefers-contrast: less)", false},
     {"(prefers-contrast: no-preference)", false},
     {"(prefers-contrast: custom)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
@@ -306,7 +286,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
     {"(prefers-contrast: less)", true},
     {"(prefers-contrast: no-preference)", false},
     {"(prefers-contrast: custom)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_preferscontrast_custom_cases[] = {
@@ -315,7 +294,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_custom_cases[] = {
     {"(prefers-contrast: less)", false},
     {"(prefers-contrast: no-preference)", false},
     {"(prefers-contrast: custom)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_prefersreducedtransparency_nopreference_cases[] =
@@ -323,26 +301,22 @@ MediaQueryEvaluatorTestCase g_prefersreducedtransparency_nopreference_cases[] =
         {"(prefers-reduced-transparency)", false},
         {"(prefers-reduced-transparency: reduce)", false},
         {"(prefers-reduced-transparency: no-preference)", true},
-        {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_prefersreducedtransparency_reduce_cases[] = {
     {"(prefers-reduced-transparency)", true},
     {"(prefers-reduced-transparency: reduce)", true},
     {"(prefers-reduced-transparency: no-preference)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_navigationcontrols_back_button_cases[] = {
     {"(navigation-controls: back-button)", true},
     {"(navigation-controls: none)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_navigationcontrols_none_cases[] = {
     {"(navigation-controls: back-button)", false},
     {"(navigation-controls: none)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_single_horizontal_viewport_segment_cases[] = {
@@ -353,7 +327,6 @@ MediaQueryEvaluatorTestCase g_single_horizontal_viewport_segment_cases[] = {
     {"(horizontal-viewport-segments: none)", false},
     {"(horizontal-viewport-segments: 1px)", false},
     {"(horizontal-viewport-segments: 16/9)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_double_horizontal_viewport_segment_cases[] = {
@@ -361,7 +334,6 @@ MediaQueryEvaluatorTestCase g_double_horizontal_viewport_segment_cases[] = {
     {"(horizontal-viewport-segments: 1)", false},
     {"(horizontal-viewport-segments: 2)", true},
     {"(horizontal-viewport-segments: 3)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_single_vertical_viewport_segment_cases[] = {
@@ -371,7 +343,6 @@ MediaQueryEvaluatorTestCase g_single_vertical_viewport_segment_cases[] = {
     {"(vertical-viewport-segments: none)", false},
     {"(vertical-viewport-segments: 1px)", false},
     {"(vertical-viewport-segments: 16/9)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_double_vertical_viewport_segment_cases[] = {
@@ -379,7 +350,6 @@ MediaQueryEvaluatorTestCase g_double_vertical_viewport_segment_cases[] = {
     {"(vertical-viewport-segments: 1)", false},
     {"(vertical-viewport-segments: 2)", true},
     {"(vertical-viewport-segments: 3)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_none_cases[] = {
@@ -389,63 +359,54 @@ MediaQueryEvaluatorTestCase g_device_posture_none_cases[] = {
     {"(device-posture: 15)", false},
     {"(device-posture: 2px)", false},
     {"(device-posture: 16/9)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_folded_cases[] = {
     {"(device-posture)", true},
     {"(device-posture: continuous)", false},
     {"(device-posture: folded)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_folded_over_cases[] = {
     {"(device-posture)", true},
     {"(device-posture: continuous)", false},
     {"(device-posture: folded)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_standard_cases[] = {
     {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", false},
     {"(dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_high_cases[] = {
     {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", true},
     {"(dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_feature_disabled_cases[] = {
     {"(dynamic-range: standard)", false},
     {"(dynamic-range: high)", false},
     {"(dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_standard_cases[] = {
     {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", false},
     {"(video-dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_high_cases[] = {
     {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", true},
     {"(video-dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_feature_disabled_cases[] = {
     {"(video-dynamic-range: standard)", false},
     {"(video-dynamic-range: high)", false},
     {"(video-dynamic-range: invalid)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 // Tests when the output device is print.
@@ -457,7 +418,6 @@ MediaQueryEvaluatorTestCase g_overflow_with_print_device_test_cases[] = {
     {"(overflow-block: paged)", true},
     {"(overflow-inline: scroll)", false},
     {"(overflow-block: scroll)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 // Tests when the output device is scrollable.
@@ -469,21 +429,18 @@ MediaQueryEvaluatorTestCase g_overflow_with_scrollable_device_test_cases[] = {
     {"(overflow-block: paged)", false},
     {"(overflow-inline: scroll)", true},
     {"(overflow-block: scroll)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_invertedcolors_none_cases[] = {
     {"(inverted-colors)", false},
     {"(inverted-colors: inverted)", false},
     {"(inverted-colors: none)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_invertedcolors_inverted_cases[] = {
     {"(inverted-colors)", true},
     {"(inverted-colors: inverted)", true},
     {"(inverted-colors: none)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_scripting_none_cases[] = {
@@ -491,7 +448,6 @@ MediaQueryEvaluatorTestCase g_scripting_none_cases[] = {
     {"(scripting: none)", true},
     {"(scripting: initial-only)", false},
     {"(scripting: enabled)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_scripting_initial_only_cases[] = {
@@ -499,7 +455,6 @@ MediaQueryEvaluatorTestCase g_scripting_initial_only_cases[] = {
     {"(scripting: none)", false},
     {"(scripting: initial-only)", true},
     {"(scripting: enabled)", false},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
 MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
@@ -507,28 +462,27 @@ MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
     {"(scripting: none)", false},
     {"(scripting: initial-only)", false},
     {"(scripting: enabled)", true},
-    {nullptr, false}  // Do not remove the terminator line.
 };
 
-void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
+void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
                      const MediaQueryEvaluator* media_query_evaluator,
                      CSSParserMode mode) {
   MediaQuerySet* query_set = nullptr;
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    if (String(test_cases[i].input).empty()) {
+  for (const MediaQueryEvaluatorTestCase& test_case : test_cases) {
+    if (String(test_case.input).empty()) {
       query_set = MediaQuerySet::Create();
     } else {
-      StringView str(test_cases[i].input);
+      StringView str(test_case.input);
       CSSParserTokenStream stream(str);
       query_set =
           MediaQueryParser::ParseMediaQuerySetInMode(stream, mode, nullptr);
     }
-    EXPECT_EQ(test_cases[i].output, media_query_evaluator->Eval(*query_set))
-        << "Query: " << test_cases[i].input;
+    EXPECT_EQ(test_case.output, media_query_evaluator->Eval(*query_set))
+        << "Query: " << test_case.input;
   }
 }
 
-void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
+void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
                      const MediaQueryEvaluator* media_query_evaluator) {
   TestMQEvaluator(test_cases, media_query_evaluator, kHTMLStandardMode);
 }
@@ -1429,7 +1383,6 @@ TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
       {"(width >= 500px) and (not (499px > width))", true},
       {"(width >= 500px) and ((499px > width) or (not (width = 500px)))",
        false},
-      {nullptr, false}  // Do not remove the terminator line.
   };
 
   TestMQEvaluator(test_cases, media_query_evaluator);
