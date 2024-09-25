@@ -41,6 +41,10 @@ std::wstring GetLocalizedStringF(
 // metainstaller `exit_code`/`windows_error`.
 std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
                                                   DWORD windows_error);
+
+// Returns a localized string to show in the metainstaller splash screen.
+std::wstring GetLocalizedSplashScreenString();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_UI_L10N_UTIL_H_

@@ -129,4 +129,8 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
 #undef METAINSTALLER_ERROR_SWITCH_ENTRY
 }
 
+std::wstring GetLocalizedSplashScreenString() {
+  return GetLocalizedString(IDS_INITIALIZING_BASE);
+}
+
 }  // namespace updater
