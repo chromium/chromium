@@ -91,6 +91,26 @@ void RecordProfileSizeTask(const base::FilePath& path) {
   UMA_HISTOGRAM_COUNTS_10000("Profile.ExtensionSize", size_MB);
 }
 
+// Returns the names of the recently active profiles.
+std::set<std::string> GetRecentlyActiveProfiles(PrefService* local_state) {
+  std::set<std::string> profiles;
+  for (const auto& value : local_state->GetList(prefs::kLastActiveProfiles)) {
+    if (value.is_string()) {
+      const std::string& name = value.GetString();
+      if (!name.empty()) {
+        profiles.insert(name);
+      }
+    }
+  }
+
+  std::string last_used = local_state->GetString(prefs::kLastUsedProfile);
+  if (!last_used.empty()) {
+    profiles.insert(last_used);
+  }
+
+  return profiles;
+}
+
 }  // namespace
 
 // Stores information about a single Profile.
@@ -180,43 +200,18 @@ void ProfileManagerIOSImpl::RemoveObserver(
 
 void ProfileManagerIOSImpl::LoadProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<std::string> last_active_profile_names;
-  for (const base::Value& profile_name :
-       local_state_->GetList(prefs::kLastActiveProfiles)) {
-    if (profile_name.is_string()) {
-      last_active_profile_names.insert(profile_name.GetString());
-    }
+  std::set<std::string> profiles = GetRecentlyActiveProfiles(local_state_);
+
+  // LoadProfiles() must load at least one profile, so if there is no
+  // recently active Profile, create one with a default name.
+  if (profiles.empty()) {
+    profiles.insert(kIOSChromeInitialBrowserState);
   }
 
-  // Ensure that the last used Profile is loaded (since client code does not
-  // expect GetLastUsedProfileDeprecatedDoNotUse() to return null).
-  //
-  // See https://crbug.com/345478758 for exemple of crashes happening when the
-  // last used Profile is not loaded.
-  last_active_profile_names.insert(GetLastUsedProfileName());
-
-  // Create and load test profiles if experiment enabling Switch Profile
-  // developer UI is enabled.
-  std::optional<int> load_test_profiles =
-      experimental_flags::DisplaySwitchProfile();
-  if (load_test_profiles.has_value()) {
-    for (int i = 0; i < load_test_profiles; i++) {
-      last_active_profile_names.insert("TestProfile" +
-                                       base::NumberToString(i + 1));
-    }
-  }
-
-  for (const std::string& profile_name : last_active_profile_names) {
-    ProfileIOS* profile = CreateProfile(profile_name);
+  for (const std::string& name : profiles) {
+    ProfileIOS* profile = CreateProfile(name);
     DCHECK(profile != nullptr);
   }
-}
-
-ProfileIOS* ProfileManagerIOSImpl::GetLastUsedProfileDeprecatedDoNotUse() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ProfileIOS* profile = GetProfileWithName(GetLastUsedProfileName());
-  CHECK(profile);
-  return profile;
 }
 
 ProfileIOS* ProfileManagerIOSImpl::GetProfileWithName(std::string_view name) {
@@ -365,17 +360,6 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
       observer.OnProfileLoaded(this, profile);
     }
   }
-}
-
-std::string ProfileManagerIOSImpl::GetLastUsedProfileName() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string last_used_profile_name =
-      local_state_->GetString(prefs::kLastUsedProfile);
-  if (last_used_profile_name.empty()) {
-    last_used_profile_name = kIOSChromeInitialBrowserState;
-  }
-  CHECK(!last_used_profile_name.empty());
-  return last_used_profile_name;
 }
 
 bool ProfileManagerIOSImpl::ProfileWithNameExists(std::string_view name) {

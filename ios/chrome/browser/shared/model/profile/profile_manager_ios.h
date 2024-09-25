@@ -34,13 +34,6 @@ class ProfileManagerIOS {
   // Loads the last active profiles. *Deprecated*.
   virtual void LoadProfiles() = 0;
 
-  // Returns the Profile that was last used. Only use this method for the very
-  // specific purpose of finding which of the several available browser states
-  // was used last. Do *not* use it as a singleton getter to fetch "the"
-  // profile. Always assume there could be profiles and use GetLoadedProfiles()
-  // instead.
-  virtual ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() = 0;
-
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
   virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;

@@ -32,7 +32,6 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadProfiles() override;
-  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
   std::vector<ProfileIOS*> GetLoadedProfiles() override;
   bool LoadProfileAsync(std::string_view name,
@@ -55,9 +54,6 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
 
   // The path in which the Profiles' data are stored.
   const base::FilePath profile_data_dir_;
-
-  // The name of the last used Profile (i.e. the first registered).
-  std::string last_used_profile_name_;
 
   // Mapping of name to TestProfileIOS instances.
   std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>

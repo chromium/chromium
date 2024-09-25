@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
+#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
@@ -1638,15 +1639,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
     if (profileName.empty()) {
       // TODO(crbug.com/41492447): provide an API to mark a profile as the
       // profile to use by default when a new SceneState is open.
-      const std::string& lastActiveProfileName =
-          GetApplicationContext()
-              ->GetProfileManager()
-              ->GetLastUsedProfileDeprecatedDoNotUse()
-              ->GetProfileName();
+      profileName = GetApplicationContext()->GetLocalState()->GetString(
+          prefs::kLastUsedProfile);
+      if (profileName.empty()) {
+        profileName = kIOSChromeInitialBrowserState;
+      }
 
-      profileName = lastActiveProfileName;
-      iterator = _profileControllers.find(lastActiveProfileName);
-      storage->SetProfileNameForSceneID(sceneID, lastActiveProfileName);
+      iterator = _profileControllers.find(profileName);
+      storage->SetProfileNameForSceneID(sceneID, profileName);
     }
 
     DCHECK(!profileName.empty());

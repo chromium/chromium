@@ -41,7 +41,6 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   void LoadProfiles() override;
-  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
   std::vector<ProfileIOS*> GetLoadedProfiles() override;
   bool LoadProfileAsync(std::string_view name,
@@ -68,10 +67,6 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
 
   using CreationMode = ProfileIOS::CreationMode;
   using ProfileMap = std::map<std::string, ProfileInfo, std::less<>>;
-
-  // Get the name of the last used profile, or if that's undefined, the default
-  // profile.
-  std::string GetLastUsedProfileName() const;
 
   // Returns whether a Profile with `name` exists on disk.
   bool ProfileWithNameExists(std::string_view name);

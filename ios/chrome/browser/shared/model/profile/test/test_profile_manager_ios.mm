@@ -47,10 +47,6 @@ void TestProfileManagerIOS::RemoveObserver(
 
 void TestProfileManagerIOS::LoadProfiles() {}
 
-ProfileIOS* TestProfileManagerIOS::GetLastUsedProfileDeprecatedDoNotUse() {
-  return GetProfileWithName(last_used_profile_name_);
-}
-
 ProfileIOS* TestProfileManagerIOS::GetProfileWithName(std::string_view name) {
   auto iterator = profiles_map_.find(name);
   return iterator != profiles_map_.end() ? iterator->second.get() : nullptr;
@@ -123,9 +119,6 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   DCHECK(insertion_success);
 
   profile_attributes_storage_.AddProfile(profile_name);
-  if (last_used_profile_name_.empty()) {
-    last_used_profile_name_ = profile_name;
-  }
 
   for (auto& observer : observers_) {
     observer.OnProfileCreated(this, iterator->second.get());

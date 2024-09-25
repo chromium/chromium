@@ -186,11 +186,6 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles) {
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
   // name `kIOSChromeInitialBrowserState`.
-  ProfileIOS* profile =
-      profile_manager().GetLastUsedProfileDeprecatedDoNotUse();
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetProfileName(), kIOSChromeInitialBrowserState);
   EXPECT_EQ(GetLoadedProfileNames(),
             (std::set<std::string>{kIOSChromeInitialBrowserState}));
 }
@@ -218,12 +213,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_1) {
   profile_manager().LoadProfiles();
 
   // Exactly two Profile must be loaded, named `kProfileName1` and
-  // `kProfileName2`, and the last used Profile is the one named `kProfile1`.
-  ProfileIOS* profile =
-      profile_manager().GetLastUsedProfileDeprecatedDoNotUse();
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetProfileName(), kProfileName1);
+  // `kProfileName2`.
   EXPECT_EQ(GetLoadedProfileNames(),
             (std::set<std::string>{kProfileName1, kProfileName2}));
 }
@@ -251,11 +241,6 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_2) {
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
   // name `kProfileName1`.
-  ProfileIOS* profile =
-      profile_manager().GetLastUsedProfileDeprecatedDoNotUse();
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetProfileName(), kProfileName1);
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName1}));
 }
 
@@ -281,17 +266,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_3) {
 
   profile_manager().LoadProfiles();
 
-  // Exactly two Profile must be loaded, named `kProfileName2` and
-  // `kIOSChromeInitialBrowserState`, and the last used Profile is the one named
-  // `kIOSChromeInitialBrowserState`.
-  ProfileIOS* profile =
-      profile_manager().GetLastUsedProfileDeprecatedDoNotUse();
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetProfileName(), kIOSChromeInitialBrowserState);
-  EXPECT_EQ(
-      GetLoadedProfileNames(),
-      (std::set<std::string>{kProfileName2, kIOSChromeInitialBrowserState}));
+  // Exactly one Profile must be loaded, named `kProfileName2`.
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName2}));
 }
 
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that

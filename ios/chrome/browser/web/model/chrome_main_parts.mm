@@ -328,8 +328,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
   // initialize for every profile.
-  ProfileIOS* last_used_profile =
-      profile_manager->GetLastUsedProfileDeprecatedDoNotUse();
+  std::vector<ProfileIOS*> profiles = profile_manager->GetLoadedProfiles();
+  ProfileIOS* last_used_profile = profiles.at(0);
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.
@@ -403,13 +403,12 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // Ensure that Safe Browsing is initialized.
   SafeBrowsingService* safe_browsing_service =
       application_context_->GetSafeBrowsingService();
-  base::FilePath user_data_path;
-  CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
   safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
       SafeBrowsingMetricsCollectorFactory::GetForProfile(last_used_profile);
-  safe_browsing_service->Initialize(last_used_profile->GetPrefs(),
-                                    user_data_path,
-                                    safe_browsing_metrics_collector);
+  safe_browsing_service->Initialize(
+      last_used_profile->GetPrefs(),
+      base::PathService::CheckedGet(ios::DIR_USER_DATA),
+      safe_browsing_metrics_collector);
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {
