@@ -1152,6 +1152,22 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
+     * @return Whether the card benefit showing feature is enabled.
+     */
+    public boolean isCardBenefitEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS);
+    }
+
+    /**
+     * Enables or disables the card benefit showing feature.
+     *
+     * @param enable True to enable showing card benefits, false otherwise.
+     */
+    public void setCardBenefit(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS, enable);
+    }
+
+    /**
      * @return Whether the Autofill feature is managed.
      */
     public boolean isAutofillManaged() {

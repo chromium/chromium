@@ -137,7 +137,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
         Assert.assertEquals(
                 cardBenefitsPref.getTitle(),
-                activity.getString(R.string.autofill_settings_page_card_benefits_preference_label));
+                activity.getString(R.string.autofill_settings_page_card_benefits_label));
         Assert.assertEquals(
                 cardBenefitsPref.getSummary(),
                 activity.getString(

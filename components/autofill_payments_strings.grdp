@@ -997,15 +997,31 @@
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for educating the user on the existence of card benefits.">
     Now you can see card benefits before you pay
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_PREFERENCE_LABEL" desc="Label for the card benefits preference on the payments settings page, helping users access the card benefits settings." formatter_data="android_java">
-    Card benefits
+  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL" desc="Label for the card benefits preferences in both the payments settings page and card benefits settings page. These preferences help users access the card benefits settings." formatter_data="android_java">
+      Card benefits
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_PREFERENCE_SUMMARY" desc="Summary text for the card benefits preference on the payments settings page, helping users access the card benefits settings." formatter_data="android_java">
-    Choose whether you see your card benefits at checkout (bank terms apply)
-  </message>
-  <message name="IDS_AUTOFILL_CARD_BENEFITS_SETTINGS_PAGE_TITLE" desc="Title for the card benefits settings page." formatter_data="android_java">
-    Card benefits
-  </message>
+  <if expr="not is_android">
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK" desc="Sublabel for the payments settings page card benefits toggle, including a hyperlinked text to learn about card benefits.">
+      Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN">&lt;a href="#" aria-description="$1"&gt;</ph>Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END">&lt;/a&gt;</ph>
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has associated benefits and a product terms URL. It is also a hyperlink text which opens the product terms page.">
+      See card benefit terms
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_ARIA_LABEL" desc="Screenreader text for the benefits terms link on a credit card entry in the Autofill settings page.">
+      See terms here for <ph name="CREDIT_CARD_NAME">$1</ph>
+    </message>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CARD_BENEFITS_SETTINGS_PAGE_TITLE" desc="Title for the card benefits settings page." formatter_data="android_java">
+      Card benefits
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_PREFERENCE_SUMMARY" desc="Summary text for the card benefits preference on the payments settings page, helping users access the card benefits settings." formatter_data="android_java">
+      Choose whether you see your card benefits at checkout (bank terms apply)
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUMMARY" desc="Summary for the toggle switch in the card benefits settings page, which allows user enable/disable the card benefit from showing in the payments autofill card selection bottomsheet." formatter_data="android_java">
+      Show which rewards and benefits are available for your cards at checkout
+    </message>
+  </if>
 
   <!-- Credit card and promo code offers and rewards-related strings -->
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
@@ -1168,12 +1184,6 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_WITH_DELETE_LINK_SUBLABEL" desc="Sublabel for the payments settings page that would bulk delete all the CVCs when clicked on it. that enables the user to store and use CVC for payments autofill. There is also a hyperlinked text which bulk deletes all the CVC data. This sublabel is used when we have CVC data present on the local DB.">
       Check out faster when your CVCs are saved. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Delete saved security codes<ph name="LINK_END">&lt;/a&gt;</ph>
     </message>
-    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_LABEL" desc="Label for the payments settings page card benefits toggle that helps users enable or disable card benefits.">
-      Card benefits
-    </message>
-    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK" desc="Sublabel for the payments settings page card benefits toggle, including a hyperlinked text to learn about card benefits.">
-      Show which rewards and benefits are available for your cards at checkout <ph name="CARD_BENEFIT_HELP_LINK_BEGIN">&lt;a href="#" aria-description="$1"&gt;</ph>Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END">&lt;/a&gt;</ph>
-    </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE" desc="Title for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
       Delete saved security codes?
     </message>
@@ -1182,12 +1192,6 @@
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has a cvc saved to it.">
       CVC saved
-    </message>
-    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has associated benefits and a product terms URL. It is also a hyperlink text which opens the product terms page.">
-      See card benefit terms
-    </message>
-    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_ARIA_LABEL" desc="Screenreader text for the benefits terms link on a credit card entry in the Autofill settings page.">
-      See terms here for <ph name="CREDIT_CARD_NAME">$1</ph>
     </message>
   </if>
   <if expr="is_android">

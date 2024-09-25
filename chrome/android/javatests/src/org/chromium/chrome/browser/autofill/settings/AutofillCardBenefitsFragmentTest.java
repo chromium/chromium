@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.PREF_KEY_ENABLE_CARD_BENEFIT;
+
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
@@ -14,14 +16,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeoutException;
 
@@ -63,7 +71,95 @@ public class AutofillCardBenefitsFragmentTest {
                 activity.getString(R.string.autofill_card_benefits_settings_page_title));
     }
 
+    // Test to verify that the Preference screen is displayed and the enable benefits toggle is
+    // visible as expected when benefit is enabled.
+    @Test
+    @MediumTest
+    public void testCardBenefitsPreferenceScreen_ToggleShownAndEnabled() throws Exception {
+        // Initial state, card benefits is enabled by default.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only enable/disable benefits
+        // toggle with enabled status.
+        Assert.assertEquals(1, getPreferenceScreen(activity).getPreferenceCount());
+        ChromeSwitchPreference benefitTogglePreference =
+                (ChromeSwitchPreference)
+                        getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
+        Assert.assertEquals(
+                benefitTogglePreference.getTitle(),
+                activity.getString(R.string.autofill_settings_page_card_benefits_label));
+        Assert.assertEquals(
+                benefitTogglePreference.getSummary(),
+                activity.getString(R.string.autofill_settings_page_card_benefits_toggle_summary));
+        Assert.assertTrue(benefitTogglePreference.isEnabled());
+        Assert.assertTrue(benefitTogglePreference.isChecked());
+    }
+
+    // Test to verify that the Preference screen is displayed and the enable benefits toggle is
+    // visible as expected when benefit is disabled.
+    @Test
+    @MediumTest
+    public void testCardBenefitsPreferenceScreen_ToggleShownAndDisabled() throws Exception {
+        // Initial state, card benefits is enabled by default.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only enable/disable benefits
+        // toggle with disabled status.
+        Assert.assertEquals(1, getPreferenceScreen(activity).getPreferenceCount());
+        ChromeSwitchPreference benefitTogglePreference =
+                (ChromeSwitchPreference)
+                        getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
+        Assert.assertTrue(benefitTogglePreference.isEnabled());
+        Assert.assertFalse(benefitTogglePreference.isChecked());
+    }
+
+    // Test to verify that the toggle status is linked with the correct preference and user
+    // interaction.
+    @Test
+    @MediumTest
+    public void testCardBenefitsPreferenceScreen_toggleClicked() throws Exception {
+        // Initial state, card benefits is enabled by default.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference benefitTogglePreference =
+                (ChromeSwitchPreference)
+                        getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
+
+        // Simulate clicks to turn off and back on benefits.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    benefitTogglePreference.performClick();
+                    Assert.assertFalse(
+                            getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
+                    Assert.assertFalse(benefitTogglePreference.isChecked());
+
+                    benefitTogglePreference.performClick();
+                    Assert.assertTrue(
+                            getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
+                    Assert.assertTrue(benefitTogglePreference.isChecked());
+                });
+    }
+
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
         return ((AutofillCardBenefitsFragment) activity.getMainFragment()).getPreferenceScreen();
+    }
+
+    private static PrefService getPrefService() {
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 }

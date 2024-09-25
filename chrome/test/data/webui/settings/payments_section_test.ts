@@ -596,7 +596,7 @@ suite('PaymentsSection', function() {
 
     assertTrue(!!cardBenefitsToggle);
     assertEquals(
-        loadTimeData.getString('cardBenefitsToggleLabel'),
+        loadTimeData.getString('cardBenefitsLabel'),
         cardBenefitsToggle.label.toString());
     assertEquals(
         loadTimeData.getString('cardBenefitsToggleSublabel'),

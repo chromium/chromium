@@ -244,8 +244,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         || ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE))) {
             Preference cardBenefitsPref = new Preference(getStyledContext());
-            cardBenefitsPref.setTitle(
-                    R.string.autofill_settings_page_card_benefits_preference_label);
+            cardBenefitsPref.setTitle(R.string.autofill_settings_page_card_benefits_label);
             cardBenefitsPref.setSummary(
                     R.string.autofill_settings_page_card_benefits_preference_summary);
             cardBenefitsPref.setKey(PREF_CARD_BENEFITS);
