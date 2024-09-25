@@ -7,10 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-namespace commerce {
-class ShoppingService;
-}
-
 extern NSString* const kMostVisitedSectionIdentifier;
 extern NSString* const kMagicStackSectionIdentifier;
 extern NSString* const kMagicStackEditSectionIdentifier;
@@ -46,13 +42,5 @@ extern NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier;
 
 // Represents the Edit Button in the Magic Stack.
 extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
-
-// Returns the amount that MagicStack modules are narrower than the ScrollView,
-// in order to allow peeking at the sides.
-CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
-    UITraitCollection* traitCollection);
-
-// True if the price tracking notification card feature is enabled.
-bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_CONSTANTS_H_

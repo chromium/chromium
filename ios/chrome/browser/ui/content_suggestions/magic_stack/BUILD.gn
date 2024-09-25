@@ -28,6 +28,7 @@ source_set("ranking_model") {
     ":constants",
     ":magic_stack",
     ":public",
+    ":utils",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/prefs",
@@ -57,16 +58,25 @@ source_set("ranking_model") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("constants") {
+source_set("utils") {
   sources = [
-    "magic_stack_constants.h",
-    "magic_stack_constants.mm",
+    "magic_stack_utils.h",
+    "magic_stack_utils.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/segmentation_platform/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "magic_stack_constants.h",
+    "magic_stack_constants.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -132,6 +142,7 @@ source_set("magic_stack") {
     ":cells",
     ":constants",
     ":public",
+    ":utils",
     "//base",
     "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",

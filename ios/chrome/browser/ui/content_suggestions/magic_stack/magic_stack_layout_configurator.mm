@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 
 @implementation MagicStackLayoutConfigurator {
   UICollectionViewCompositionalLayout* _magicStackLayout;
