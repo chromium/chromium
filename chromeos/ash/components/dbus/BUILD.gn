@@ -104,13 +104,6 @@ config("system_api_proto_include_cfg") {
   include_dirs = [ "${root_gen_dir}/chromeos/ash/components/dbus" ]
 }
 
-proto_library("metrics_event_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
-
-  proto_out_dir = "chromeos/ash/components/dbus/metrics_event"
-}
-
 proto_library("plugin_vm_service_proto") {
   sources = [ "//third_party/cros_system_api/dbus/plugin_vm_service/plugin_vm_service.proto" ]
 
