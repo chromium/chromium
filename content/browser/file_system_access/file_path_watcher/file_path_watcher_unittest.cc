@@ -314,6 +314,10 @@ class AccumulatingEventExpecter {
     return testing::ContainerEq(expected_events_);
   }
 
+  EventListMatcher GetFailureMatcher() {
+    return testing::Not(testing::IsSubsetOf(expected_events_));
+  }
+
   ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait() {
     auto temp = expected_events_since_last_wait_;
     expected_events_since_last_wait_ = ExpectedEventsSinceLastWait::kNone;
@@ -385,10 +389,12 @@ class TestDelegate final : public TestDelegateBase {
     received_events_.clear();
   }
 
-  // Spin the event loop until `received_events_` match `matcher`, or we time
-  // out.
+  // Spin the event loop until `received_events_` matches `matcher`,
+  // `received_events_` matches `failure_matcher`, or we time out. The
+  // `failure_matcher` matches when its not possible for `matcher` to match.
   void RunUntilEventsMatch(
       const EventListMatcher& matcher,
+      const EventListMatcher& failure_matcher,
       ExpectedEventsSinceLastWait expected_events_since_last_wait,
       const base::Location& location = FROM_HERE) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -400,10 +406,26 @@ class TestDelegate final : public TestDelegateBase {
 
     EXPECT_TRUE(base::test::RunUntil([&]() {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      return testing::Matches(matcher)(received_events_);
-    })) << "Timed out attemping to match events at "
+      return testing::Matches(matcher)(received_events_) ||
+             testing::Matches(failure_matcher)(received_events_);
+    })) << "Timed out attempting to match events at "
         << location.file_name() << ":" << location.line_number() << std::endl
         << Explain(matcher, received_events_);
+    EXPECT_TRUE(testing::Matches(matcher)(received_events_))
+        << "Failed to match events at " << location.file_name() << ":"
+        << location.line_number() << std::endl
+        << Explain(matcher, received_events_);
+  }
+
+  // Convenience method for above.
+  void RunUntilEventsMatch(
+      const EventListMatcher& matcher,
+      ExpectedEventsSinceLastWait expected_events_since_last_wait,
+      const base::Location& location = FROM_HERE) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    RunUntilEventsMatch(matcher, testing::SizeIs(-1),
+                        expected_events_since_last_wait, location);
   }
 
   // Convenience method for above.
@@ -420,7 +442,7 @@ class TestDelegate final : public TestDelegateBase {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return RunUntilEventsMatch(
-        event_expecter.GetMatcher(),
+        event_expecter.GetMatcher(), event_expecter.GetFailureMatcher(),
         event_expecter.GetAndResetExpectedEventsSinceLastWait(), location);
   }
 
@@ -2847,7 +2869,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, CreateLink) {
 
   FilePathWatcher watcher;
   TestDelegate delegate;
-  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(SetupWatchWithChangeInfo(test_link(), &watcher, &delegate,
                                        GetWatchOptions()));
 
