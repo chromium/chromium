@@ -2172,6 +2172,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.QueryAnswerable" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Indicates query was answerable and passed to answerer. Logged each time a
+    query could be passed to the answerer, i.e. when search is complete and top
+    passages are ready to provide the context.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.QueryEmbeddingSucceeded" enum="Boolean"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

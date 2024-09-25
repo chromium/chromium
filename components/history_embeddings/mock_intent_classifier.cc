@@ -4,6 +4,7 @@
 
 #include "components/history_embeddings/mock_intent_classifier.h"
 
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace history_embeddings {
@@ -18,8 +19,15 @@ int64_t MockIntentClassifier::GetModelVersion() {
 void MockIntentClassifier::ComputeQueryIntent(
     std::string query,
     ComputeQueryIntentCallback callback) {
+  std::vector<std::string> query_intent_indicating_words(
+      {"can ", "who ", "what ", "when ", "where ", "why ", "does ", "how ",
+       "do "});
+  query = base::ToLowerASCII(query);
   bool is_query_answerable =
-      query == "can this query be answered, please and thank you?";
+      query.ends_with('?') ||
+      std::ranges::any_of(
+          query_intent_indicating_words,
+          [&](std::string_view start) { return query.starts_with(start); });
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ComputeIntentStatus::SUCCESS,

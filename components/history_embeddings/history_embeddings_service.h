@@ -328,9 +328,15 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Called on main sequence after the history worker thread finalizes
   // the initial search result with URL rows. Calls the `callback` and
-  // then proceeds to v2 answer generation if enabled.
+  // then proceeds to intent check and v2 answer generation if needed.
   void OnPrimarySearchResultReady(SearchResultCallback callback,
                                   SearchResult result);
+
+  // Invoked after the intent classifier computes query answerability.
+  void OnQueryIntentComputed(SearchResultCallback callback,
+                             SearchResult result,
+                             ComputeIntentStatus status,
+                             bool query_is_answerable);
 
   // Called after the answerer finishes computing an answer. Combines
   // the `answer_result` into `search_result` and invokes `callback`

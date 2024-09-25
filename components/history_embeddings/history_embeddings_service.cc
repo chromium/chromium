@@ -961,8 +961,6 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
     return;
   }
 
-  // Use the callback task mechanism for simplicity and easier control with
-  // other standard async machinery.
   history_service_->ScheduleDBTaskForUI(base::BindOnce(
       &FinishSearchResultWithHistory,
       base::SequencedTaskRunner::GetCurrentDefault(),
@@ -975,26 +973,56 @@ void HistoryEmbeddingsService::OnPrimarySearchResultReady(
     SearchResultCallback callback,
     SearchResult result) {
   callback.Run(result.Clone());
-  if (answerer_) {
-    Answerer::Context context(result.session_id);
-    for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
-      std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
-          0, kContextPassagesMinimumWordCount.Get());
-      std::vector<std::string>& best_passages =
-          context.url_passages_map[scored_url_row.row.url().spec()];
-      best_passages.reserve(best_indices.size());
-      for (size_t index : best_indices) {
-        best_passages.push_back(
-            scored_url_row.passages_embeddings.url_passages.passages.passages(
-                index));
-      }
-    }
-    answerer_->ComputeAnswer(
-        result.query, std::move(context),
-        base::BindOnce(&HistoryEmbeddingsService::OnAnswerComputed,
+
+  // TODO(b/369446266): Intent classification can execute in parallel with
+  //  initial query embedding computation and search. This doesn't make
+  //  much difference when the mock is used but could save time when the
+  //  real ML intent classifier is working.
+  if (answerer_ && intent_classifier_) {
+    std::string query = result.query;
+    intent_classifier_->ComputeQueryIntent(
+        std::move(query),
+        base::BindOnce(&HistoryEmbeddingsService::OnQueryIntentComputed,
                        weak_ptr_factory_.GetWeakPtr(), callback,
                        std::move(result)));
+  } else {
+    // Intent classification is explicitly disabled; bypass to answerer.
+    OnQueryIntentComputed(callback, std::move(result),
+                          ComputeIntentStatus::SUCCESS,
+                          /*query_is_answerable=*/true);
   }
+}
+
+void HistoryEmbeddingsService::OnQueryIntentComputed(
+    SearchResultCallback callback,
+    SearchResult result,
+    ComputeIntentStatus status,
+    bool query_is_answerable) {
+  const bool answerable = status == ComputeIntentStatus::SUCCESS &&
+                          query_is_answerable && answerer_;
+  base::UmaHistogramBoolean("History.Embeddings.QueryAnswerable", answerable);
+  if (!answerable) {
+    return;
+  }
+
+  Answerer::Context context(result.session_id);
+  for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
+    std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
+        0, kContextPassagesMinimumWordCount.Get());
+    std::vector<std::string>& best_passages =
+        context.url_passages_map[scored_url_row.row.url().spec()];
+    best_passages.reserve(best_indices.size());
+    for (size_t index : best_indices) {
+      best_passages.push_back(
+          scored_url_row.passages_embeddings.url_passages.passages.passages(
+              index));
+    }
+  }
+  answerer_->ComputeAnswer(
+      result.query, std::move(context),
+      base::BindOnce(&HistoryEmbeddingsService::OnAnswerComputed,
+                     weak_ptr_factory_.GetWeakPtr(), callback,
+                     std::move(result)));
 }
 
 void HistoryEmbeddingsService::OnAnswerComputed(

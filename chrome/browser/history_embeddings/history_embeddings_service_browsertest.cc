@@ -4,8 +4,10 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -19,7 +21,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_embedder.h"
+#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -55,7 +59,8 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
                   context, std::make_unique<MockEmbedder>(),
-                  /*answerer=*/nullptr, /*intent_classfier=*/nullptr);
+                  std::make_unique<MockAnswerer>(),
+                  std::make_unique<MockIntentClassifier>());
         }));
 
     InProcessBrowserTest::SetUpOnMainThread();
@@ -485,6 +490,62 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.NumMatchedUrlsVisible", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
+                       SearchReceivesAnswerWhenQueryIsAnswerable) {
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Search with an answerable query by ending it with '?'.
+    base::test::TestFuture<SearchResult> search_future;
+    service()->Search(nullptr, "A B C D?", {}, 1,
+                      search_future.GetRepeatingCallback());
+    SearchResult first_result = search_future.Take();
+    EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+    EXPECT_TRUE(first_result.AnswerText().empty());
+
+    // Second published search result includes answer.
+    SearchResult second_result = search_future.Take();
+    EXPECT_EQ(second_result.scored_url_rows.size(), 1u);
+    EXPECT_FALSE(second_result.AnswerText().empty());
+
+    histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                        true, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    // Search with a query that does not signal query intent (not answerable).
+    base::test::TestFuture<SearchResult> search_future;
+    service()->Search(nullptr, "A B C D", {}, 1,
+                      search_future.GetRepeatingCallback());
+    SearchResult first_result = search_future.Take();
+    EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+    EXPECT_TRUE(first_result.AnswerText().empty());
+
+    // Second search result with answer will never be published, and the
+    // histogram being logged indicates the service finished without consulting
+    // the answerer.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(
+                 "History.Embeddings.QueryAnswerable", false) > 0;
+    }));
+    histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                        false, 1);
+  }
 }
 
 }  // namespace history_embeddings

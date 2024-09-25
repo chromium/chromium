@@ -118,7 +118,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         page_content_annotations_service_.get(),
         /*optimization_guide_decider=*/nullptr,
         std::make_unique<MockEmbedder>(), std::make_unique<MockAnswerer>(),
-        /*intent_classifier=*/nullptr);
+        std::make_unique<MockIntentClassifier>());
 
     ASSERT_TRUE(listener()->filter_words_hashes().empty());
     listener()->OnSearchStringsUpdate(
@@ -302,8 +302,10 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
   };
 
   base::test::TestFuture<SearchResult> future;
-  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                              scored_url_rows);
+  SearchResult initial_result;
+  initial_result.query = "this is a question!?";
+  service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                              std::move(initial_result), scored_url_rows);
 
   // No answer on initial search result.
   SearchResult first_result = future.Take();
@@ -636,11 +638,10 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, IntentClassifierMocked) {
-  MockIntentClassifier intent_classifier;
-  EXPECT_EQ(intent_classifier.GetModelVersion(), 1);
+  EXPECT_EQ(GetIntentClassifier()->GetModelVersion(), 1);
   {
     base::test::TestFuture<ComputeIntentStatus, bool> future;
-    intent_classifier.ComputeQueryIntent(
+    GetIntentClassifier()->ComputeQueryIntent(
         "can this query be answered, please and thank you?",
         future.GetCallback());
     auto [status, is_query_answerable] = future.Take();
@@ -649,8 +650,8 @@ TEST_F(HistoryEmbeddingsServiceTest, IntentClassifierMocked) {
   }
   {
     base::test::TestFuture<ComputeIntentStatus, bool> future;
-    intent_classifier.ComputeQueryIntent("any other query",
-                                         future.GetCallback());
+    GetIntentClassifier()->ComputeQueryIntent("any other query",
+                                              future.GetCallback());
     auto [status, is_query_answerable] = future.Take();
     EXPECT_EQ(status, ComputeIntentStatus::SUCCESS);
     EXPECT_EQ(is_query_answerable, false);
