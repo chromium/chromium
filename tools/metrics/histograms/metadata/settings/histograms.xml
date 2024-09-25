@@ -175,6 +175,9 @@ chromium-metrics-reviews@google.com.
     SettingsActivity. For evaluating popularity and priorities for Android
     settings GUI. The name is hashed using String.hashCode.
 
+    Notes: SingleCategorySettings powers all permission related pages in
+    SiteSettings (e.g. Location, Camera, ...).
+
     For Desktop settings usage check WebUI.Settings.PathVisited.
   </summary>
 </histogram>
