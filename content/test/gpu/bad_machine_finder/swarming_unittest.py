@@ -208,11 +208,17 @@ WITH
     FROM
       mixin_name_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      mixin_name_stats
   )
 SELECT
   *
 FROM
-  mixin_name_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
 
@@ -309,11 +315,17 @@ WITH
     FROM
       mixin_name_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      mixin_name_stats
   )
 SELECT
   *
 FROM
-  mixin_name_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
     # pylint: enable=line-too-long
@@ -448,12 +460,22 @@ WITH
     FROM
       nvidia_mixin_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      amd_mixin_stats
+    UNION ALL
+    SELECT
+      *
+    FROM
+      nvidia_mixin_stats
   )
 SELECT
   *
 FROM
-  amd_mixin_stats,
-  nvidia_mixin_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
 
@@ -594,12 +616,22 @@ WITH
     FROM
       nvidia_mixin_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      amd_mixin_stats
+    UNION ALL
+    SELECT
+      *
+    FROM
+      nvidia_mixin_stats
   )
 SELECT
   *
 FROM
-  amd_mixin_stats,
-  nvidia_mixin_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
     # pylint: enable=line-too-long
