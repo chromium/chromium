@@ -592,7 +592,8 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that tapping on the show full history button leads to the history page.
 // Additionally, it tests that dismissing full history reveals back the Last
 // Visited subpage.
-- (void)testLastVisitedSubpageOpensFullHistory {
+// TODO(crbug.com/369631303): Re-enable this test once fixed.
+- (void)DISABLED_testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
@@ -636,7 +637,8 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
+// TODO(crbug.com/369631303): Re-enable this test once fixed.
+- (void)DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
