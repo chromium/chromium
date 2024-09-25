@@ -4715,7 +4715,7 @@
     },
     {
       name: "WebHIDOnDedicatedWorkers",
-      status: "experimental",
+      status: "stable",
       depends_on: ["WebHID"],
     },
     {
