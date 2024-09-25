@@ -1524,6 +1524,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "clank-default-browser-promo2",
+    "owners": [ "eirage@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "classify-url-on-process-response-event",
     "owners": [ "tju@chromium.org", "chrome-kids-eng@chromium.org" ],
     "expiry_milestone": 131

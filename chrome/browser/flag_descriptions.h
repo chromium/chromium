@@ -2598,6 +2598,9 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
+extern const char kClankDefaultBrowserPromoName[];
+extern const char kClankDefaultBrowserPromoDescription[];
+
 extern const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[];
 extern const char kClearLoginDatabaseForAllMigratedUPMUsersName[];
 

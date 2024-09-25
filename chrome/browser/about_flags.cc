@@ -12016,6 +12016,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kSeparateLocalAndAccountThemes)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"clank-default-browser-promo2",
+     flag_descriptions::kClankDefaultBrowserPromoName,
+     flag_descriptions::kClankDefaultBrowserPromoDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDefaultBrowserPromoAndroid2)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

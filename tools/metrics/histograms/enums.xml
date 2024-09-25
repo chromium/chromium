@@ -20384,6 +20384,7 @@ from previous Chrome versions.
   <int value="48666910" label="ClipboardHistoryLongpress:disabled"/>
   <int value="48850808" label="AutocorrectUseReplaceSurroundingText:enabled"/>
   <int value="50643563" label="MBIMode:enabled"/>
+  <int value="50976151" label="DefaultBrowserPromoAndroid2:enabled"/>
   <int value="51793504" label="protect-sync-credential-on-reauth:disabled"/>
   <int value="52150780" label="OsSettingsPolymer3:disabled"/>
   <int value="52186948"
@@ -24605,6 +24606,7 @@ from previous Chrome versions.
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783679416" label="PhoneHubOnboardingNotifierRevamp:disabled"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>
+  <int value="1783944340" label="DefaultBrowserPromoAndroid2:disabled"/>
   <int value="1783967606" label="PageContentAnnotations:enabled"/>
   <int value="1784129660" label="OmniboxDocumentProviderNoSetting:enabled"/>
   <int value="1784514956" label="QuickAnswersForMoreLocales:enabled"/>

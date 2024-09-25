@@ -4453,6 +4453,12 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
+const char kClankDefaultBrowserPromoName[] = "Clank default browther promo";
+const char kClankDefaultBrowserPromoDescription[] =
+    "When enabled, show additional non-intrusive entry points to allow users "
+    "to set Chrome as their default browser, if the trigger conditions are "
+    "met.";
+
 const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[] =
     "This feature clears LoginDatabase for all users when UPM is properly "
     "enabled and the credentials were migrated to GMS Core.";
