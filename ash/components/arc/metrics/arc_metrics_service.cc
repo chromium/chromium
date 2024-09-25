@@ -52,6 +52,8 @@ constexpr base::TimeDelta kUmaMinTime = base::Milliseconds(1);
 constexpr base::TimeDelta kUmaMaxTime = base::Seconds(60);
 constexpr int kUmaNumBuckets = 50;
 constexpr int kUmaPriAbiMigMaxFailedAttempts = 10;
+constexpr int kUmaDataSizeInMBMin = 1;
+constexpr int kUmaDataSizeInMBMax = 1000000;  // 1 TB.
 
 constexpr base::TimeDelta kRequestProcessListPeriod = base::Minutes(5);
 constexpr char kArcProcessNamePrefix[] = "org.chromium.arc.";
@@ -129,6 +131,49 @@ const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
   }
   NOTREACHED();
 }
+
+// Converts mojom::AndroidAppCategory to AndroidAppCategories in
+// tools/metrics/histograms/metadata/arc/histograms.xml
+const char* AndroidAppCategoryToString(mojom::AndroidAppCategory input) {
+  switch (input) {
+    case mojom::AndroidAppCategory::kOther:
+      return "Other";
+    case mojom::AndroidAppCategory::kAudio:
+      return "Audio";
+    case mojom::AndroidAppCategory::kGame:
+      return "Game";
+    case mojom::AndroidAppCategory::kImage:
+      return "Image";
+    case mojom::AndroidAppCategory::kProductivity:
+      return "Productivity";
+    case mojom::AndroidAppCategory::kSocial:
+      return "Social";
+    case mojom::AndroidAppCategory::kVideo:
+      return "Video";
+  }
+  NOTREACHED();
+}
+
+// Converts mojom::AndroidDataDirectory to AndroidDataDirectories in
+// tools/metrics/histograms/metadata/arc/histograms.xml
+const char* AndroidDataDirectoryToString(mojom::AndroidDataDirectory input) {
+  switch (input) {
+    case mojom::AndroidDataDirectory::kData:
+      return "Data";
+    case mojom::AndroidDataDirectory::kDataApp:
+      return "DataApp";
+    case mojom::AndroidDataDirectory::kDataData:
+      return "DataData";
+    case mojom::AndroidDataDirectory::kDataMedia:
+      return "DataMedia";
+    case mojom::AndroidDataDirectory::kDataMediaAndroid:
+      return "DataMediaAndroid";
+    case mojom::AndroidDataDirectory::kDataUserDE:
+      return "DataUserDE";
+  }
+  NOTREACHED();
+}
+
 struct LoadAverageHistogram {
   const char* name;
   base::TimeDelta duration;
@@ -804,6 +849,31 @@ void ArcMetricsService::ReportAppErrorDialogType(
 void ArcMetricsService::ReportApkCacheHit(bool hit) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramBoolean("Arc.AppInstall.CacheHit", hit);
+}
+
+void ArcMetricsService::ReportAppCategoryDataSizeList(
+    std::vector<mojom::AppCategoryDataSizePtr> list) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto& item : list) {
+    const std::string metrics =
+        base::StringPrintf("Arc.Data.AppCategory.%s.DataSize",
+                           AndroidAppCategoryToString(item->category));
+    base::UmaHistogramCustomCounts(metrics, item->data_size_in_mb,
+                                   kUmaDataSizeInMBMin, kUmaDataSizeInMBMax,
+                                   kUmaNumBuckets);
+  }
+}
+
+void ArcMetricsService::ReportDataDirectorySizeList(
+    std::vector<mojom::DataDirectorySizePtr> list) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto& item : list) {
+    const std::string metrics = base::StringPrintf(
+        "Arc.Data.Dir.%s.Size", AndroidDataDirectoryToString(item->directory));
+    base::UmaHistogramCustomCounts(metrics, item->size_in_mb,
+                                   kUmaDataSizeInMBMin, kUmaDataSizeInMBMax,
+                                   kUmaNumBuckets);
+  }
 }
 
 void ArcMetricsService::OnWindowActivated(

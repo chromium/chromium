@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 35
+// Next MinVersion: 36
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -378,10 +378,47 @@ enum AppErrorDialogType {
   kAnrProcess = 8,
 };
 
+// Maps to AndroidAppCategories in
+// tools/metrics/histograms/metadata/arc/histograms.xml
+[Extensible]
+enum AndroidAppCategory {
+  [Default] kOther = 0,
+  kAudio = 1,
+  kGame = 2,
+  kImage = 3,
+  kProductivity = 4,
+  kSocial = 5,
+  kVideo = 6,
+};
+
+// Describes combined application data size for the specified app category.
+struct AppCategoryDataSize {
+  AndroidAppCategory category;
+  uint32 data_size_in_mb;
+};
+
+// Maps to AndroidDataDirectories in
+// tools/metrics/histograms/metadata/arc/histograms.xml
+[Extensible]
+enum AndroidDataDirectory {
+  [Default] kData = 0,
+  kDataApp = 1,
+  kDataData = 2,
+  kDataMedia = 3,
+  kDataMediaAndroid = 4,
+  kDataUserDE = 5,
+};
+
+// Describes size for the specified Android data directory.
+struct DataDirectorySize {
+  AndroidDataDirectory directory;
+  uint32 size_in_mb;
+};
+
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
 // Deprecated method IDs: 8, 14, 15, 18, 25, 26, 27, 28, 29
-// Next method ID: 39
+// Next method ID: 41
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -493,6 +530,17 @@ interface MetricsHost {
 
   // Reports the result of apk cache lookup for an app install.
   [MinVersion=34] ReportApkCacheHit@38(bool hit);
+
+  // Reports combined application data sizes for Android app categories.
+  // Maps to Arc.Data.AppCategory.{Target}.DataSize in
+  // tools/metrics/histograms/metadata/arc/histograms.xml
+  [MinVersion=35] ReportAppCategoryDataSizeList@39(
+      array<AppCategoryDataSize> list);
+
+  // Reports sizes for Android data directories.
+  // Maps to Arc.Data.Dir.{Target}.Size in
+  // tools/metrics/histograms/metadata/arc/histograms.xml
+  [MinVersion=35] ReportDataDirectorySizeList@40(array<DataDirectorySize> list);
 };
 
 // Deprecated method IDs: 0
