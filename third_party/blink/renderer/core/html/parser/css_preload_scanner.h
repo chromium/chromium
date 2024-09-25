@@ -78,8 +78,7 @@ class CSSPreloadScanner {
   };
 
   template <typename Char>
-  void ScanCommon(const Char* begin,
-                  const Char* end,
+  void ScanCommon(base::span<const Char>,
                   const SegmentedString&,
                   PreloadRequestStream&,
                   const KURL&,

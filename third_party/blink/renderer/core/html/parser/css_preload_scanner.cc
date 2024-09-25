@@ -25,11 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/css_preload_scanner.h"
 
 #include <memory>
@@ -38,6 +33,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -57,8 +53,7 @@ void CSSPreloadScanner::Reset() {
 
 template <typename Char>
 void CSSPreloadScanner::ScanCommon(
-    const Char* begin,
-    const Char* end,
+    base::span<const Char> data,
     const SegmentedString& source,
     PreloadRequestStream& requests,
     const KURL& predicted_base_element_url,
@@ -67,9 +62,10 @@ void CSSPreloadScanner::ScanCommon(
   predicted_base_element_url_ = &predicted_base_element_url;
   exclusion_info_ = exclusion_info;
 
-  for (const Char* it = begin; it != end && state_ != kDoneParsingImportRules;
-       ++it)
+  for (auto it = data.begin();
+       it != data.end() && state_ != kDoneParsingImportRules; ++it) {
     Tokenize(*it, source);
+  }
 
   if (state_ == kRuleValue || state_ == kAfterRuleValue ||
       state_ == kAfterMaybeLayerValue)
@@ -86,8 +82,8 @@ void CSSPreloadScanner::Scan(
     PreloadRequestStream& requests,
     const KURL& predicted_base_element_url,
     const PreloadRequest::ExclusionInfo* exclusion_info) {
-  ScanCommon(data.data(), data.data() + data.size(), source, requests,
-             predicted_base_element_url, exclusion_info);
+  ScanCommon(base::span(data), source, requests, predicted_base_element_url,
+             exclusion_info);
 }
 
 void CSSPreloadScanner::Scan(
@@ -96,15 +92,10 @@ void CSSPreloadScanner::Scan(
     PreloadRequestStream& requests,
     const KURL& predicted_base_element_url,
     const PreloadRequest::ExclusionInfo* exclusion_info) {
-  if (tag_name.Is8Bit()) {
-    const LChar* begin = tag_name.Characters8();
-    ScanCommon(begin, begin + tag_name.length(), source, requests,
-               predicted_base_element_url, exclusion_info);
-    return;
-  }
-  const UChar* begin = tag_name.Characters16();
-  ScanCommon(begin, begin + tag_name.length(), source, requests,
-             predicted_base_element_url, exclusion_info);
+  WTF::VisitCharacters(tag_name, [&](auto chars) {
+    ScanCommon(chars, source, requests, predicted_base_element_url,
+               exclusion_info);
+  });
 }
 
 void CSSPreloadScanner::SetReferrerPolicy(
