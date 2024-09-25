@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -642,10 +644,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   GURL frame_url = https_server()->GetURL("/banners/isolated/simple.html");
   auto* non_app_main_frame = ui_test_utils::NavigateToURL(browser(), frame_url);
 
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   web_app::CreateIframe(app_frame, "child", frame_url,
@@ -718,15 +724,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a same-origin iframe on the page that does not specify an
   // allow attribute, and expect that usb is accessible on the main frame, as
   // well as in the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "";
-  web_app::CreateIframe(app_frame, "child", GURL("/index.html"),
-                        permissions_policy);
+  web_app::CreateIframe(app_frame, "child", GURL("/"), permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
@@ -753,15 +761,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a same-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'self', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'self'";
-  web_app::CreateIframe(app_frame, "child", GURL("/index.html"),
-                        permissions_policy);
+  web_app::CreateIframe(app_frame, "child", GURL("/"), permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
@@ -790,10 +800,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'src', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL non_app_url =
@@ -830,10 +843,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // attribute allowing usb with the 'none' token, and expect that usb is
   // accessible on the main frame, but is blocked by permissions policy in the
   // iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'none'";
@@ -858,10 +874,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // attribute allowing usb for the iframe by explicitly listing the iframe
   // origin in the allowlist, and expect that usb is accessible on the main
   // frame as well as in the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL non_app_url =
@@ -887,10 +906,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // Create a same-origin iframe on the page that does not specify an allow
   // attribute, and expect that usb is not accessible on the main frame or in
   // the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .AddFileFromDisk("/usb_none.html",
+                           "web_apps/simple_isolated_app/usb_none.html")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_none.html");
@@ -928,10 +952,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // same-origin iframe on the page that does not specify an allow attribute,
   // and expect that usb is accessible on the main frame, as well as in the
   // iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .AddFileFromDisk("/usb_self.html",
+                           "web_apps/simple_isolated_app/usb_self.html")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_self.html");
@@ -966,10 +995,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // header which allows usb on any origin. Create a same-origin iframe on the
   // page that does not specify an allow attribute, and expect that usb is
   // accessible on the main frame, as well as in the iframe.
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+              blink::mojom::PermissionsPolicyFeature::kUsb))
+          .AddFileFromDisk("/usb_all.html",
+                           "web_apps/simple_isolated_app/usb_all.html")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   GURL app_url = url_info.origin().GetURL().Resolve("/usb_all.html");
@@ -999,11 +1033,18 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Usb_Unrestricted_CrossOrigin_Iframe) {
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(
-          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kUsb)
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Create a fake device with protected class and grant permission.
@@ -1060,11 +1101,19 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                        PermissionsPolicy_Usb_Unrestricted_Iframe) {
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
-      CreateAndStartServer(
-          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kUsb)
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted)
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated))
+          .AddHtml("/empty.html", "Empty Page")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Create a fake device with protected class and grant permission.
