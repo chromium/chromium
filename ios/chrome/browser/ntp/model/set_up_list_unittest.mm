@@ -47,24 +47,22 @@ using set_up_list_prefs::SetUpListItemState;
 class SetUpListTest : public PlatformTest {
  public:
   SetUpListTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-    prefs_ = GetBrowserState()->GetPrefs();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    prefs_ = GetProfile()->GetPrefs();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(GetProfile());
     content_notification_feature_enabled_ = false;
   }
 
   ~SetUpListTest() override { [set_up_list_ disconnect]; }
 
-  // Get the test BrowserState.
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  // Get the test profile.
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   // Get the LocalState prefs.
   PrefService* GetLocalState() {
@@ -77,8 +75,8 @@ class SetUpListTest : public PlatformTest {
     set_up_list_ =
         [SetUpList buildFromPrefs:prefs_
                             localState:GetLocalState()
-                           syncService:SyncServiceFactory::GetForBrowserState(
-                                           GetBrowserState())
+                           syncService:SyncServiceFactory::GetForProfile(
+                                           GetProfile())
                  authenticationService:auth_service_
             contentNotificationEnabled:content_notification_feature_enabled_];
   }
@@ -97,7 +95,7 @@ class SetUpListTest : public PlatformTest {
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
-            browser_state_->GetProfileName(),
+            profile_->GetProfileName(),
             base::BindOnce(
                 [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
                   attr.SetAuthenticationInfo(
@@ -182,7 +180,7 @@ class SetUpListTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<AuthenticationService> auth_service_;
   SetUpList* set_up_list_;

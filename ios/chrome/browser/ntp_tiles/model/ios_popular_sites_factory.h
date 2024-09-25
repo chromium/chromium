@@ -16,7 +16,7 @@ class PopularSites;
 class IOSPopularSitesFactory {
  public:
   static std::unique_ptr<ntp_tiles::PopularSites> NewForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_POPULAR_SITES_FACTORY_H_

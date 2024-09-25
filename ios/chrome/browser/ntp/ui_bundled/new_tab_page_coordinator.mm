@@ -322,7 +322,7 @@
   [sceneState addObserver:self];
 
   // Configures incognito NTP if user is in incognito mode.
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     DCHECK(!self.incognitoViewController);
     UrlLoadingBrowserAgent* URLLoader =
         UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -357,7 +357,7 @@
           supervised_user::
               kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
+        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
     signin::Tribool capability =
         supervised_user::IsPrimaryAccountSubjectToParentalControls(
             identityManager);
@@ -393,7 +393,7 @@
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
 
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     self.incognitoViewController = nil;
     self.started = NO;
     return;
@@ -515,7 +515,7 @@
 }
 
 - (void)reload {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
   [self.contentSuggestionsCoordinator refresh];
@@ -540,7 +540,7 @@
 }
 
 - (void)constrainNamedGuideForFeedIPH {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
   UIView* viewToConstrain =
@@ -588,7 +588,7 @@
 }
 
 - (BOOL)isFakeboxPinned {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     return YES;
   }
   return self.NTPViewController.isFakeboxPinned;
@@ -626,12 +626,12 @@
 
 #pragma mark - Initializers
 
-// Gets all NTP services from the browser state.
+// Gets all NTP services from the profile.
 - (void)initializeServices {
   ProfileIOS* profile = self.browser->GetProfile();
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(profile);
+  self.authService = AuthenticationServiceFactory::GetForProfile(profile);
   self.templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   self.discoverFeedService = DiscoverFeedServiceFactory::GetForProfile(profile);
   self.prefService = profile->GetPrefs();
 }
@@ -649,7 +649,7 @@
 
   // Start observing IdentityManager.
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
   _identityObserverBridge =
       std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                               self);
@@ -865,7 +865,7 @@
 
 - (UIViewController*)viewController {
   DCHECK(self.started);
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     return self.incognitoViewController;
   } else {
     return self.containerViewController;
@@ -1151,10 +1151,9 @@
     return;
   }
 
-  BOOL hasUserIdentities =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->HasIdentities();
+  BOOL hasUserIdentities = ChromeAccountManagerServiceFactory::GetForProfile(
+                               self.browser->GetProfile())
+                               ->HasIdentities();
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -1179,15 +1178,14 @@
     return;
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   // If there are 0 identities, kInstantSignin requires less taps.
-  auto operation =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
-              ->HasIdentities()
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kInstantSignin;
+  auto operation = ChromeAccountManagerServiceFactory::GetForProfile(profile)
+                           ->HasIdentities()
+                       ? AuthenticationOperation::kSigninOnly
+                       : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
             accessPoint:signin_metrics::AccessPoint::
@@ -1762,7 +1760,7 @@
   self.visible = visible;
   self.NTPViewController.NTPVisible = visible;
 
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
 
@@ -1824,8 +1822,7 @@
 
 // Returns whether the user policies allow them to sync.
 - (BOOL)isSyncAllowedByPolicy {
-  return !SyncServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState())
+  return !SyncServiceFactory::GetForProfile(self.browser->GetProfile())
               ->HasDisableReason(
                   syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
@@ -1860,8 +1857,7 @@
   _customizationCoordinator.delegate = self;
   [_customizationCoordinator start];
   [_customizationCoordinator presentCustomizationMenuPage:page];
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
+  feature_engagement::TrackerFactory::GetForProfile(self.browser->GetProfile())
       ->NotifyEvent(feature_engagement::events::kHomeCustomizationMenuUsed);
 }
 

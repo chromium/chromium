@@ -21,22 +21,20 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
-IOSMostVisitedSitesFactory::NewForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
   return std::make_unique<ntp_tiles::MostVisitedSites>(
-      browser_state->GetPrefs(),
-      IdentityManagerFactory::GetForProfile(browser_state),
-      SupervisedUserServiceFactory::GetForProfile(browser_state),
-      ios::TopSitesFactory::GetForBrowserState(browser_state),
-      IOSPopularSitesFactory::NewForBrowserState(browser_state),
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      SupervisedUserServiceFactory::GetForProfile(profile),
+      ios::TopSitesFactory::GetForProfile(profile),
+      IOSPopularSitesFactory::NewForBrowserState(profile),
       /*custom_links=*/nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           ios::FaviconServiceFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::IMPLICIT_ACCESS),
-          IOSChromeLargeIconServiceFactory::GetForBrowserState(browser_state),
+              profile, ServiceAccessType::IMPLICIT_ACCESS),
+          IOSChromeLargeIconServiceFactory::GetForProfile(profile),
           std::make_unique<image_fetcher::ImageFetcherImpl>(
               image_fetcher::CreateIOSImageDecoder(),
-              browser_state->GetSharedURLLoaderFactory()),
+              profile->GetSharedURLLoaderFactory()),
           /*data_decoder=*/nullptr),
       false);
 }

@@ -33,16 +33,16 @@ class FeedTopSectionMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    fake_browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        fake_browser_state_.get(),
+    fake_profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        fake_profile_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     fake_authentication_service_ = GetAuthenticationService();
-    fake_pref_service_ = fake_browser_state_->GetPrefs();
+    fake_pref_service_ = fake_profile_->GetPrefs();
     feature_list_.InitAndEnableFeatureWithParameters(
         kContentPushNotifications,
         {{kContentPushNotificationsExperimentType, "1"}});
@@ -51,9 +51,9 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
         initWithConsumer:[[FeedTopSectionViewController alloc] init]
          identityManager:IdentityManagerFactory::GetForProfile(
-                             fake_browser_state_.get())
+                             fake_profile_.get())
              authService:fake_authentication_service_
-             isIncognito:fake_browser_state_.get()->IsOffTheRecord()
+             isIncognito:fake_profile_.get()->IsOffTheRecord()
              prefService:fake_pref_service_];
     feed_top_section_view_controller_.feedTopSectionMutator =
         feed_top_section_mediator_;
@@ -61,8 +61,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
   }
 
   AuthenticationService* GetAuthenticationService() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        fake_browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(fake_profile_.get());
   }
 
  protected:
@@ -70,7 +69,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
   AuthenticationService* fake_authentication_service_;
   PrefService* fake_pref_service_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> fake_browser_state_;
+  std::unique_ptr<TestProfileIOS> fake_profile_;
   FeedTopSectionMediator* feed_top_section_mediator_;
   FeedTopSectionViewController* feed_top_section_view_controller_;
   base::test::ScopedFeatureList feature_list_;

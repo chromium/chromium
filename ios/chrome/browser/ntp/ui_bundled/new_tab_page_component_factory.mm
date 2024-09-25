@@ -70,7 +70,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
 - (NewTabPageHeaderViewController*)headerViewControllerForBrowser:
     (Browser*)browser {
-  PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = browser->GetProfile()->GetPrefs();
   NSInteger lensNewBadgeShowCount =
       prefService->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
 
@@ -111,14 +111,13 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                         (id<UserAccountImageUpdateDelegate>)imageUpdater {
   ProfileIOS* profile = browser->GetProfile();
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(profile);
+      AuthenticationServiceFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
@@ -126,7 +125,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                      authService:authService
                  identityManager:IdentityManagerFactory::GetForProfile(profile)
            accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForBrowserState(profile)
+                                     GetForProfile(profile)
         identityDiscImageUpdater:imageUpdater
                      isIncognito:profile->IsOffTheRecord()
              discoverFeedService:discoverFeedService

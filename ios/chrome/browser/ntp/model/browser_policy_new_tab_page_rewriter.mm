@@ -22,9 +22,8 @@ bool WillHandleWebBrowserNewTabPageURLForPolicy(
   }
 
   // Extract value of kNewTabPageLocationOverride.
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  PrefService* prefs = profile->GetPrefs();
   std::string new_tab_page_location_override =
       prefs->GetString(prefs::kNewTabPageLocationOverride);
 

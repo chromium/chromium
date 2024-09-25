@@ -62,18 +62,17 @@ using feed::FeedUserActionType;
 class NewTabPageMediatorTest : public PlatformTest {
  public:
   NewTabPageMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(test_cbs_builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
@@ -87,22 +86,19 @@ class NewTabPageMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
     auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            chrome_browser_state_.get()));
-    identity_manager_ =
-        IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
+        AuthenticationServiceFactory::GetInstance()->GetForProfile(
+            profile_.get()));
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
-    bool is_incognito = chrome_browser_state_.get()->IsOffTheRecord();
+    bool is_incognito = profile_.get()->IsOffTheRecord();
     DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForProfile(chrome_browser_state_.get());
-    PrefService* prefs = chrome_browser_state_->GetPrefs();
+        DiscoverFeedServiceFactory::GetForProfile(profile_.get());
+    PrefService* prefs = profile_->GetPrefs();
     mediator_ = [[NewTabPageMediator alloc]
         initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                       GetForBrowserState(
-                                           chrome_browser_state_.get())
+                                       GetForProfile(profile_.get())
                          URLLoader:url_loader_
                        authService:auth_service_
                    identityManager:identity_manager_
@@ -129,7 +125,7 @@ class NewTabPageMediatorTest : public PlatformTest {
       const GURL& url,
       CGFloat scroll_position = 0.0) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(chrome_browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     NewTabPageTabHelper::CreateForWebState(web_state.get());
     web_state->SetVisibleURL(url);
     // Force the DidStopLoading callback.
@@ -148,8 +144,7 @@ class NewTabPageMediatorTest : public PlatformTest {
 
   void SetCustomSearchEngine() {
     TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     // A custom search engine will have a `prepopulate_id` of 0.
     const int kCustomSearchEnginePrepopulateId = 0;
     TemplateURLData template_url_data;
@@ -168,7 +163,7 @@ class NewTabPageMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> initial_web_state_;
   id header_consumer_;
