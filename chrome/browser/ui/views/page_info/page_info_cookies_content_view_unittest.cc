@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -228,7 +229,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -265,7 +266,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -302,7 +303,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 
   // Manage cookies button:
   EXPECT_EQ(GetManageButtonSubtitle(content_view()),
@@ -330,7 +331,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -366,7 +367,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -401,7 +402,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -437,7 +438,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -474,7 +475,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -511,7 +512,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
   EXPECT_STREQ(GetVectorIconName(third_party_cookies_enforced_icon()),
@@ -728,7 +729,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE));
 }
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -748,7 +749,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 }
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -769,7 +770,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE));
 }
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -791,7 +792,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -812,7 +813,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -840,7 +841,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
           IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION));
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -861,7 +862,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
@@ -882,7 +883,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_EQ(third_party_cookies_toggle_subtitle()->GetText(),
             l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_ALLOWED));
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
