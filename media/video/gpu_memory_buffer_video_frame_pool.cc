@@ -92,22 +92,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     static std::atomic_uint32_t id = 0;
     pool_id_ = ++id;
 
-    // Moving the common shared image usage here as a member. This can be moved
-    // back to local code where MappableSI is created after the GMB path is
-    // full removed.
-    si_usage_ = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                gpu::SHARED_IMAGE_USAGE_SCANOUT;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40194712): Always add the flag once the
-    // OzoneImageBacking is by default turned on.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableUnsafeWebGPU)) {
-      // This SharedImage may be used for zero-copy import into WebGPU.
-      si_usage_ |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-    }
-#endif
   }
 
   PoolImpl(const PoolImpl&) = delete;
@@ -293,7 +277,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // Unique Id generated each time a MappableSI is created. This is
   // used to identify the shared image.
   uint32_t buffer_id_ = 0;
-  gpu::SharedImageUsageSet si_usage_;
 };
 
 namespace {
@@ -1300,9 +1283,22 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
     // shared image. https://issues.chromium.org/339546249.
     SetPrefersExternalSampler(si_format);
 
+    gpu::SharedImageUsageSet si_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/40194712): Always add the flag once the
+    // OzoneImageBacking is by default turned on.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableUnsafeWebGPU)) {
+      // This SharedImage may be used for zero-copy import into WebGPU.
+      si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+    }
+#endif
     // Create a Mappable shared image.
     frame_resource->shared_image =
-        sii->CreateSharedImage({si_format, size, color_space, si_usage_,
+        sii->CreateSharedImage({si_format, size, color_space, si_usage,
                                 "MediaGmbVideoFramePoolMappableSI"},
                                gpu::kNullSurfaceHandle, usage);
     return frame_resource;
