@@ -94,11 +94,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
   }
 }
 
-SupervisedUserVerificationPage::~SupervisedUserVerificationPage() {
-  if (is_reauth_complete_) {
-    RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
-  }
-}
+SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPage::GetTypeForTesting() {
@@ -130,9 +126,7 @@ void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
     return;
   }
 
-  // Record the re-authentication metrics in the destructor, since this method
-  // maybe be invoked more than once.
-  is_reauth_complete_ = true;
+  RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
   if (base::FeatureList::IsEnabled(
           supervised_user::kCloseSignTabsFromReauthenticationInterstitial)) {
     CloseSignInTabs();
