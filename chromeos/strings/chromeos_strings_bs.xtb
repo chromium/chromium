@@ -79,7 +79,7 @@
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
 <translation id="1343442362630695901">slano jezero</translation>
 <translation id="1348657754632799065">Traka snimanja</translation>
-<translation id="1350909945461913813">Ne zaboravite spremiti svoj rad</translation>
+<translation id="1350909945461913813">Ne zaboravite sačuvati rad</translation>
 <translation id="1367951781824006909">Odaberite fajl</translation>
 <translation id="1371650399987522809">Povratne informacije za pozadinsku sliku koju omogućava Google AI</translation>
 <translation id="1374385338586507108">Definicija</translation>
@@ -238,7 +238,7 @@
 <translation id="2011174342667534258">Verzija SDK:</translation>
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2041627599411887437">Odaberite temu, a zatim podcrtane riječi da biste personalizirali svoje AI slike.</translation>
+<translation id="2041627599411887437">Odaberite temu, a zatim podvučene riječi da personalizirate AI slike.</translation>
 <translation id="2045814230297767491">Pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da vidite čuvara ekrana.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -320,7 +320,7 @@
 <translation id="242825218556404975">Nije otkriven nijedan govor</translation>
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
-<translation id="2468124392950503650">Odaberite upit da biste izradili sliku ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="2468124392950503650">Odaberite upit da kreirate ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Koristite Pomoć za pisanje koju omogućava Google AI da kreirate nedovršenu verziju ili poboljšajte postojeći rad.</translation>
 <translation id="2480572840229215612">Rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
@@ -513,7 +513,6 @@
 <translation id="3588034708467091142">Provjerite jeste li povezani s internetom i pokušajte ponovo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je naziv pogodan za korisnike za aplikaciju <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
-<translation id="3600063043775287169">Kada je zvuk Chromebooka uključen, Diktafon snima sve zvukove koji se reproduciraju na uređaju. Odlučite želite li snimati sve zvukove.</translation>
 <translation id="3600339377155080675">Preslikavanje ekrana</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -978,7 +977,7 @@
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="5938286923316838007">Nije moguće kreirati nazive snimaka za ovaj sadržaj</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
-<translation id="5942727615796467094">Administrator usluge <ph name="MANAGER" /> odredio je kada se <ph name="DEVICE_TYPE" /> može upotrebljavati</translation>
+<translation id="5942727615796467094">Administrator web lokacije <ph name="MANAGER" /> je postavio kada se ovaj <ph name="DEVICE_TYPE" /> može koristiti</translation>
 <translation id="594552776027197022">Generiraj nasumično odabrani par ključeva</translation>
 <translation id="5946538341867151940">Još uvijek se niste povezali. Ako mobilni operater preporučuje prilagođeni APN, unesite informacije o APN-u odabirom dugmeta "Dodaj novi APN"</translation>
 <translation id="5947266287934282605">Ako je posljednji dan mjeseca prije ovog datuma, podaci će se poništiti posljednjeg dana mjeseca</translation>
@@ -1070,7 +1069,7 @@
 <translation id="6352210854422428614">drugačija planeta</translation>
 <translation id="6359706544163531585">Onemogući svijetlu temu</translation>
 <translation id="6359919876285606596">Radnja je trajna i ne može se opozvati</translation>
-<translation id="6368342879959028556">Kad odaberete Izradite pomoću AI-ja, napišite prilagođeni upit. Možete odabrati i opciju AI pozadine da biste odabrali temu, a zatim podcrtane riječi kako biste personalizirali svoju AI pozadinu.</translation>
+<translation id="6368342879959028556">Kada odaberete "Kreirajte putem AI-ja", napišite prilagođeni upit. Ili možete odabrati "AI pozadinske slike" da odaberete temu, a zatim odaberite podvučene riječi da personalizirate AI pozadinsku sliku.</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
 <translation id="6373461326814131011">Ribnjak</translation>
 <translation id="6379086450106841622">Ekran na dodir</translation>
@@ -1094,7 +1093,7 @@
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
 <translation id="6462978824459367242">Dugme za dodavanje APN-a je sada omogućeno</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
-<translation id="6468146470109254228">Vaša tri najnovija upita i rezultata obrade. Možete im pristupiti samo dok upotrebljavate pozadine i stilove.</translation>
+<translation id="6468146470109254228">Vaša 3 posljednja upita i odgovora. Možete im pristupiti samo dok koristite pozadinsku sliku i stil.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">Brodovi</translation>
 <translation id="64778964625672495">tamnocrvena</translation>
@@ -1143,13 +1142,13 @@
 <translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Odaberite Nadahni me da biste dobili jedinstvenije i raznolikije opcije AI slika.
+          Odaberite "Inspiriraj me" da dobijete više jedinstvenih i raznolikih opcija AI slika.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Kad izrađujete sadržaj pomoću AI-ja, poslužiteljima Googleovog AI-ja šalje se upit radi generiranja slika i poboljšanja proizvoda, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Kada kreirate pomoću AI-ja, upit će se poslati na servere Google AI-ja radi generiranja slika i poboljšanja proizvoda podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generativni AI u eksperimentalnoj je fazi ranog razvoja, a dostupnost je trenutačno ograničena.</translation>
+          Generativni AI je eksperimentalan, u ranoj je fazi razvoja i trenutno je njegova dostupnost ograničena.</translation>
 <translation id="6673898378497337661">povećavanje osvjetljenja tastature</translation>
 <translation id="6692996468359469499">Primajte informacije u vezi s vašim odabirom</translation>
 <translation id="6694534975463174713">brava</translation>

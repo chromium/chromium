@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
 <translation id="1273910660700874265">„<ph name="TITLE_OF_GROUP" />“ skirtukų grupės parinktys</translation>
+<translation id="1293272072740285747">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba ištrinkite, jei jos nebereikia.
+
+Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<ph name="TITLE_OF_GROUP" />“ ir ji bus ištrinta iš visų įrenginių.</translation>
 <translation id="1340839264183302272">Išeiti iš grupės</translation>
 <translation id="1419023007528516122">Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio</translation>
 <translation id="1486715732399361704">Visas skirtukų grupes rasite čia</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
+<translation id="5615302411300498438">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba išeikite.
+
+Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="5627941783489838464">Nėra skirtukų atnaujinimų</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Atkurti skirtuką}one{Atkurti skirtukus}few{Atkurti skirtukus}many{Atkurti skirtukus}other{Atkurti skirtukus}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nuoroda iš „Chrome“}one{<ph name="TABS_COUNT_MANY" /> nuoroda iš „Chrome“}few{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}many{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}other{<ph name="TABS_COUNT_MANY" /> nuorodų iš „Chrome“}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}few{Pridėti <ph name="MANY_ADDED" /> skirtukai, uždaryta: <ph name="ANY_CLOSED" />}many{Pridėta <ph name="MANY_ADDED" /> skirtuko, uždaryta: <ph name="ANY_CLOSED" />}other{Pridėta <ph name="MANY_ADDED" /> skirtukų, uždaryta: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>
 <translation id="8633025649649592204">Naujausia veikla</translation>
+<translation id="8635399646025169806">Išsaugoti skirtukų grupę?</translation>
 <translation id="870736955561925754">Uždaryti skirtuką ir ištrinti grupę?</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8730999928494395583">Jūsų veikla šiuose inkognito skirtukuose bus pašalinta iš šio įrenginio</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Sukurta prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
+<translation id="8804742093141782941">Palikti grupę</translation>
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>

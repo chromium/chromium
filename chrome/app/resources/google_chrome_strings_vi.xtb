@@ -300,7 +300,7 @@
 <translation id="4680828127924988555">Huỷ cài đặt</translation>
 <translation id="469553575393225953">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chrome đề xuất chỉ cài đặt những mục trên qua Cửa hàng Chrome trực tuyến</translation>
 <translation id="4710245680469034439">Cá nhân hoá trình duyệt với các giao diện lấy cảm hứng từ thiên nhiên, bộ sưu tập của nghệ sĩ và nhiều chủ đề khác</translation>
-<translation id="4720851490453439956">Dịch vụ nội bộ Trình cập nhật Google</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Không cài đặt được do lỗi giao thức không được hỗ trợ.</translation>
 <translation id="4728575227883772061">Không cài đặt được do lỗi chưa xác định. Nếu Google Chrome hiện đang chạy, vui lòng đóng Google Chrome và thử lại.</translation>
 <translation id="4741235124132242877">Đã ghim! Bạn có thể sử dụng lại Google Ống kính trên thanh công cụ</translation>
@@ -462,7 +462,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6885412569789873916">Ứng dụng Chrome Beta</translation>
 <translation id="6893363893008038481">Loại bỏ tài khoản khỏi Chrome</translation>
 <translation id="6896758677409633944">Sao chép</translation>
-<translation id="6930294499209825">Hãy luôn cập nhật phần mềm Google của bạn. Nếu dịch vụ này bị vô hiệu hoá hoặc bị dừng, phần mềm Google của bạn sẽ không được cập nhật. Điều này có nghĩa là lỗ hổng bảo mật có thể xuất hiện sẽ không thể khắc phục được và các tính năng có thể không hoạt động. Dịch vụ này sẽ tự gỡ cài đặt khi không được phần mềm Google nào sử dụng.</translation>
+<translation id="6930294499209825">Dịch vụ này giúp cập nhật phần mềm Google của bạn. Nếu dịch vụ này bị vô hiệu hoá hoặc bị dừng, phần mềm Google của bạn sẽ không được cập nhật. Điều này nghĩa là lỗ hổng bảo mật phát sinh sẽ không thể khắc phục được và các tính năng có thể không hoạt động. Dịch vụ này sẽ tự gỡ cài đặt khi không được phần mềm Google nào dùng.</translation>
 <translation id="6933858244219479645">Hệ thống ChromeOS</translation>
 <translation id="6938166777909186039">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.1.</translation>
 <translation id="6943584222992551122">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chrome bằng <ph name="USER_EMAIL" />.</translation>

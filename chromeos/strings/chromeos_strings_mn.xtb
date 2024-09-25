@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
 <translation id="1343442362630695901">давст нуур</translation>
 <translation id="1348657754632799065">Бичлэгийн хэсэг</translation>
+<translation id="1350909945461913813">Аливаа ажлаа хадгалахаа мартуузай</translation>
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1371650399987522809">Google AI-аар дэмжигдсэн дэлгэцийн зургийн санал хүсэлт</translation>
 <translation id="1374385338586507108">Тодорхойлох</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK хувилбар:</translation>
 <translation id="2016697457005847575">Асуудал шийдэх алхмуудыг турших</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Загвар сонгоод, дараа нь ХОУ-аар үүсгэсэн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгоно уу.</translation>
 <translation id="2045814230297767491">хутганы хэрэгсэл</translation>
 <translation id="2047316797244836561">Дэлгэц амраагчийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Яриа илэрсэнгүй</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
+<translation id="2468124392950503650">Үүсгэх заавар сонгох эсвэл <ph name="BEGIN_LINK_PROMPTING_GUIDE" />зааврын хөтчийг<ph name="END_LINK_PROMPTING_GUIDE" /> харна уу</translation>
 <translation id="2472215337771558851">Ноорог үүсгэх эсвэл одоо байгаа ажлыг боловсронгуй болгоход Google AI-аар дэмжигдсэн Надад бичихэд тусал онцлогийг ашиглана уу</translation>
 <translation id="2480572840229215612">хавчнууд</translation>
 <translation id="248546197012830854">Төхөөрөмж офлайн байна. Тусламжийн контент харахын тулд Wi-Fi сүлжээнд холбогдоно уу.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Та интернэтэд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> нь <ph name="APN_NAME" />-д зориулсан хэрэглэгчид-ээлтэй нэр юм.</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
-<translation id="3600063043775287169">Chromebook-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ. Та бүх дуу чимээг бичих хүсэлтэй байгаа эсэхээ баталгаажуулна уу.</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="4486524074141928967">Таныг <ph name="TIME" />-д гаргана</translation>
 <translation id="4500722292849917410">Товчлол боломжгүй байна. Тохируулагч товчийг (ctrl, alt, shift эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
 <translation id="4500966230243561393">Интерфейсийн өнгө</translation>
 <translation id="4503223151711056411">Зүүн сум</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">саарал</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> товчлуурыг туршиж үзсэн</translation>
+<translation id="5613201299517339763">Таныг гаргалаа</translation>
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">хураангуй</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
 <translation id="5938286923316838007">Энэ контентод бичлэгийн нэр үүсгэх боломжгүй</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
+<translation id="5942727615796467094">Энэ <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг <ph name="MANAGER" />-н администратор тохируулсан</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5946538341867151940">Та одоогоор холбогдоогүй байна. Хэрэв таны мобайл оператор компани захиалгат APN-г зөвлөж байвал "+ Шинэ APN"-г сонгосноор APN-н мэдээллийг оруулна уу</translation>
 <translation id="5947266287934282605">Хэрэв сарын сүүлийн өдөр нь энэ өдрийн өмнө бол өгөгдлийг сарын сүүлийн өдөр шинэчилнэ</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">өөр гараг</translation>
 <translation id="6359706544163531585">Цайвар загварыг идэвхгүй болгох</translation>
 <translation id="6359919876285606596">Энэ үйлдэл бүрмөсөн бөгөөд буцаах боломжгүй</translation>
+<translation id="6368342879959028556">Та “ХОУ-аар үүсгэх”-ийг сонгохдоо захиалгат заавар бичнэ үү. Эсвэл та загвар сонгохын тулд “ХОУ-аар үүсгэсэн дэлгэцийн зураг” гэснийг сонгож, дараа нь ХОУ-аар үүсгэсэн дэлгэцийн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгож болно.</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
 <translation id="6373461326814131011">цөөрөм</translation>
 <translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>
 <translation id="6462978824459367242">APN нэмэх товчлуурыг одоо идэвхжүүлсэн</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх үү?}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}}</translation>
+<translation id="6468146470109254228">Таны хамгийн сүүлийн 3 заавар болон гаралт. Та Дэлгэцийн зураг ба загварыг ашиглаж байхдаа л эдгээрт хандах боломжтой.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">завинууд</translation>
 <translation id="64778964625672495">гүн улаан</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659594942844771486">Таб</translation>
 <translation id="66621959568103627">шүрний ягаан</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ХОУ-аар үүсгэсэн зургийн илүү өвөрмөц, ялгаатай сонголтуудыг авахын тулд "Надад урам өг" гэснийг сонгоно уу.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Таныг ХОУ-аар үүсгэхэд зааврыг <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н Нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу зураг үүсгэх, бүтээгдэхүүнийг сайжруулахын тулд Google-н ХОУ-ы серверүүд рүү илгээдэг.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Үүсгэгч ХОУ нь туршилтынх, мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.</translation>
 <translation id="6673898378497337661">гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6694534975463174713">түгжих</translation>

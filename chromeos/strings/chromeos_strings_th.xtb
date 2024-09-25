@@ -513,7 +513,6 @@
 <translation id="3588034708467091142">ตรวจสอบว่าคุณได้เชื่อมต่ออินเทอร์เน็ตแล้ว และลองอีกครั้ง</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> คือชื่อที่เรียกง่ายของ <ph name="APN_NAME" /></translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
-<translation id="3600063043775287169">เมื่อเสียง Chromebook เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้ ตรวจสอบว่าคุณต้องการบันทึกเสียงทั้งหมด</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3603829704940252505">รูปโปรไฟล์</translation>
@@ -1588,6 +1587,7 @@
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8882789155418924367">นกฮูก</translation>
 <translation id="8892443466059986410">ยกเลิกการแก้ไขทางลัด</translation>
+<translation id="8897043028305808902">เปลี่ยนชื่อไฟล์แล้ว</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8909114361904403025">ลูกศรขึ้น</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>

@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
+<translation id="2242389809734574253">IBAN 저장이 닫혔습니다.</translation>
 <translation id="2246264294482514010">10x12인치</translation>
 <translation id="2246480341630108201">아직 부모님이 허락하지 않았습니다.</translation>
 <translation id="2247789808226901522">카드가 만료됨</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />자리 인증 코드 입력</translation>
 <translation id="3272643614306383237">1MB 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="3273738040255912340">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chromium 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">IBAN 저장이 전체 높이로 열렸습니다.</translation>
 <translation id="3281350579597955952">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> 조직에서 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>
 <translation id="3286372614333682499">세로 모드</translation>
@@ -2125,6 +2127,7 @@
 <translation id="4881695831933465202">열기</translation>
 <translation id="4881808915112408168">24x31.5인치</translation>
 <translation id="4882314601499260499">적용된 사용자 정책이 없습니다. 사용자 정책을 추가하려면 조직에서 <ph name="LINK_BEGIN" />도메인을 확인<ph name="LINK_END" />해야 합니다.</translation>
+<translation id="4883911187498618061">질문 또는 프롬프트를 입력하세요.</translation>
 <translation id="4885030148564729407">신혼 여행 및 낭만적인 여행</translation>
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
@@ -2584,6 +2587,7 @@
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723873695528696965">MIDI 기기 제어 및 다시 프로그래밍</translation>
 <translation id="5725297205162868298">단축어는 @ 문자로 시작할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">고급 프린터 기능 사용을 요청할 수 있음</translation>
 <translation id="5729442113829771034">조기교육</translation>
 <translation id="5730040223043577876">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
@@ -2595,6 +2599,7 @@
 <translation id="5743684619253032786">네일케어 제품</translation>
 <translation id="5745733273847572235">위치를 요청할 수 있음</translation>
 <translation id="5750869797196646528">손 추적</translation>
+<translation id="5752327398324808817">단어를 1~2개 입력하세요.</translation>
 <translation id="5759751709240058861">카메라 사용 및 이동</translation>
 <translation id="5763042198335101085">올바른 이메일 주소를 입력하세요.</translation>
 <translation id="5764725887548570807">원본 형식이 잘못되었습니다.</translation>
@@ -3090,6 +3095,7 @@
 <translation id="6671169470640320959">자동차 금융</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6677351035258626477">패스트푸드</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}other{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}}</translation>
 <translation id="6681790815630918386">CVC 저장됨</translation>
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6687230248707087982">봉투(일반)</translation>
@@ -3106,6 +3112,7 @@
 <translation id="6696575039575740785">웹 앱 설치가 허용되지 않음</translation>
 <translation id="6698097747703777657">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">생성됨:</translation>
+<translation id="6698769547327354196">Chrome에서 PIX를 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="67007264085648978">시간 슬라이더</translation>
 <translation id="6702851555558236418">오디오 및 음악 소프트웨어</translation>
 <translation id="6702919718839027939">발표</translation>
@@ -3261,6 +3268,7 @@
 <translation id="6978236010531171013">무시하고 공유</translation>
 <translation id="6978722349058177832">이 기기를 공유하는 경우, 자동 완성으로 결제할 때마다 Chromium에서 인증을 요청할 수 있습니다.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">서드 파티 쿠키의 액세스를 관리</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
 <translation id="6984270784814146224">라벨이 없는 이미지입니다. Google AI를 기반으로 텍스트를 추출하고 있습니다</translation>
 <translation id="6987806006823772670">봉투(코팅)</translation>
@@ -3407,6 +3415,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">비즈니스 운영</translation>
+<translation id="7244061187185055290">무엇을 검색하고자 하는지 간단히 설명해 주세요</translation>
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>

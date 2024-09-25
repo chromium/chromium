@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
 <translation id="1343442362630695901">Salzsee</translation>
 <translation id="1348657754632799065">Aufnahmeleiste</translation>
+<translation id="1350909945461913813">Bitte speichere deine Arbeit</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1371650399987522809">Feedback zu einem Hintergrund, der auf Google AI basiert</translation>
 <translation id="1374385338586507108">Definieren</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-Version:</translation>
 <translation id="2016697457005847575">Schritte zur Fehlerbehebung ausprobieren</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Wähle ein Design und dann die unterstrichenen Wörter aus, um deine KI‑Bilder zu personalisieren.</translation>
 <translation id="2045814230297767491">Essbesteck</translation>
 <translation id="2047316797244836561">Stelle eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Bildschirmschoner anzusehen.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Es wurde kein gesprochener Text erkannt</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
+<translation id="2468124392950503650">Prompt zum Erstellen auswählen oder <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung für Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> aufrufen</translation>
 <translation id="2472215337771558851">Mit der Funktion „Formuliere für mich“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
 <translation id="2480572840229215612">Krebse</translation>
 <translation id="248546197012830854">Das Gerät ist offline. Stelle eine WLAN-Verbindung her, um Hilfeinhalte zu sehen.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Achte darauf, dass du mit dem Internet verbunden bist, und versuche es noch einmal.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ ist der nutzerfreundliche Name für „<ph name="APN_NAME" />“.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
-<translation id="3600063043775287169">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet. Prüfe, ob du alle Audioinhalte aufzeichnen möchtest.</translation>
 <translation id="3600339377155080675">Display spiegeln</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="4486524074141928967">Du wirst um <ph name="TIME" /> abgemeldet</translation>
 <translation id="4500722292849917410">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung einer Modifikatortaste (Strg, Alt, Umschalttaste oder <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Farbe der Benutzeroberfläche</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">grauen</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600027863942488546">Die Taste „<ph name="KEY_NAME" />“ wurde getestet</translation>
+<translation id="5613201299517339763">Du wurdest abgemeldet</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">Zusammenfassung</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5938286923316838007">Für diesen Inhalt können keine Aufzeichnungsnamen erstellt werden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
+<translation id="5942727615796467094">Der Administrator von <ph name="MANAGER" /> gibt vor, wann dieser Gerätetyp (<ph name="DEVICE_TYPE" />) verwendet werden kann</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5946538341867151940">Du bist noch nicht verbunden. Wenn dein Mobilfunkanbieter einen benutzerdefinierten APN empfiehlt, wähle die Option „Neuer APN“ aus, um die APN-Informationen einzugeben.</translation>
 <translation id="5947266287934282605">Wenn der letzte Tag des Monats vor diesem Tag liegt, werden die Daten am letzten Tag des Monats zurückgesetzt</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">anderer Planet</translation>
 <translation id="6359706544163531585">Helles Design deaktivieren</translation>
 <translation id="6359919876285606596">Die Aktion kann nicht rückgängig gemacht werden</translation>
+<translation id="6368342879959028556">Wenn du „Mit KI erstellen“ auswählst, schreibe einen eigenen Prompt. Du kannst auch „KI‑Hintergründe“ auswählen, um ein Design und dann die unterstrichenen Wörter auszuwählen, um deinen KI‑Hintergrund zu personalisieren.</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6373461326814131011">Teich</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
 <translation id="6462978824459367242">Schaltfläche „APN hinzufügen“ ist jetzt aktiviert</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
+<translation id="6468146470109254228">Dies sind deine letzten 3 Prompts und Ausgaben. Du kannst nur darauf zugreifen, wenn du „Hintergrund &amp; Stil“ verwendest.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">Boote</translation>
 <translation id="64778964625672495">dunkelrot</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">korallrosa</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Du kannst „Inspiriere mich“ anklicken, um weitere einzigartige KI‑Bilder erstellen zu lassen.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Wenn du Bilder mithilfe von KI erstellst, wird dein Prompt an Google AI-Server gesendet, um Inhalte zu erstellen und das Produkt gemäß der <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="6673898378497337661">Tastaturhelligkeit erhöhen</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6694534975463174713">Schloss</translation>

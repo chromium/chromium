@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">පරිවර්තනය කරමින්…</translation>
 <translation id="2249119578464404734">තිරයෙහි ඉහළින්, සෙවීම් නිරූපකය තට්ටු කරන්න</translation>
 <translation id="2251686759395008410">මෙනුව → ඉතිහාසය</translation>
-<translation id="2252674110805316998">වෙබ් සෙවීම</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> සඳහා Drive තුළ සුරැකීම.</translation>
 <translation id="2256933947031277845">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි.</translation>
 <translation id="2257567812274161158">සමමුහූර්ත කිරීම ක්‍රියා නොකරයි.</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3982893814825393515">ගැටලුවක් වාර්තා කරන්න…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> ලෙස පුරනය වී ඇත. ගිණුම් මෙනුව විවෘත කරන්න.</translation>
+<translation id="3986739045730058129">පටිත්ත වෙත යන්න</translation>
 <translation id="3987993985790029246">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="3992684624889376114">මෙම පිටුව පිළිබඳ</translation>
 <translation id="3994422733891749358">ඔබට ලැබීමට අවශ්‍ය දැනුම්දීම් තෝරා ගන්න</translation>
@@ -671,7 +671,6 @@
 <translation id="4286718549648564014">ලිපිනය ඔබේ ගිණුමට <ph name="USER_EMAIL" /> ගෙන ගියා</translation>
 <translation id="4287172530684295552">කියවූ ලෙස සලකුණු කරන්න</translation>
 <translation id="428768789042547925">අලුත් මොනවාද</translation>
-<translation id="4293080268407233932">සෙවීම</translation>
 <translation id="4302061870579014542">පිහිටීම සකසන්න</translation>
 <translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
 <translation id="4309403553630140242">වැඩිදුර තොරතුරු සඳහා දෙවරක් තට්ටු කරන්න</translation>
@@ -758,6 +757,7 @@
 <translation id="4699172675775169585">අනුරූ සහ ගොනු කෑෂ් කරන්න</translation>
 <translation id="4717844083556844785">වත්මන් වෙබ් පිටු අප්‍රසිද්ධ මත තිබේ</translation>
 <translation id="4719927025381752090">පරිවර්තනය කිරීමට පිරිනමන්න</translation>
+<translation id="4720530280568305198">ඔබේ තේරීම නව පටිත්තක විවෘත විය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4742407542027196863">මුරපද කළමනාකරණය කරන්න…</translation>
 <translation id="4742897645503301228">මිල නිරීක්ෂණය සඟවන්න</translation>

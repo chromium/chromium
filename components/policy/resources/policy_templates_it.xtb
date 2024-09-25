@@ -6728,6 +6728,27 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6102449843040973938">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="610892566190435199">Attiva i report sullo stato di alimentazione del dispositivo</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
+<translation id="6112524153927257380">Se il criterio viene impostato, gli utenti non potranno aggirare le decisioni relative alla sicurezza dei download.
+
+      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Dannosi, come segnalato dal server di Navigazione sicura
+      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
+      * Un tipo di file pericoloso (ad esempio tutti i download SWF e tanti download EXE)
+
+      Se il criterio viene impostato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
+
+      0: Nessuna limitazione speciale (opzione predefinita).
+
+      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
+
+      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
+
+      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
 <translation id="6119207979839638596">Questo criterio è stato rimosso da M75 dopo la rimozione del criterio della versione TLS massima da <ph name="PRODUCT_NAME" />.
 
@@ -10452,27 +10473,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Sui nuovi dispositivi è impostato il fuso orario della costa del Pacifico degli Stati Uniti. Il formato del valore segue quello dei nomi nello IANA Time Zone Database (https://en.wikipedia.org/wiki/Tz_database). Se viene inserito un valore non valido, per il criterio viene usato il fuso orario GMT.
 
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
-<translation id="8875202330803089599">Se il criterio viene configurato, gli utenti non potranno bypassare le decisioni relative alla sicurezza dei download.
-
-      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
-
-      * Dannosi, come segnalato dal server di Navigazione sicura
-      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
-      * Un tipo di file pericoloso (ad es. tutti i download SWF e diversi download EXE)
-
-      Se il criterio viene configurato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
-
-      0: Nessuna limitazione speciale. Valore predefinito.
-
-      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
-
-      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
-
-      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi. Opzione consigliata.
-
-      Nota: queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Scarica link…. Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8880146422959594776">Consente ad alcuni servizi su <ph name="PRODUCT_OS_FLEX_NAME" /> di inviare dati hardware aggiuntivi.
 
 Questi dati hardware vengono utilizzati per migliorare il rendimento generale di <ph name="PRODUCT_OS_FLEX_NAME" />.

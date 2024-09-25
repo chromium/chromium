@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2239100178324503013">Одоо илгээх</translation>
 <translation id="2241693394036365668">Файлыг татдаг</translation>
+<translation id="2242389809734574253">IBAN-г хадгалах хүснэгтийг хаасан.</translation>
 <translation id="2246264294482514010">10 x 12 инч</translation>
 <translation id="2246480341630108201">Таны эцэг эх одоогоор БОЛНО гэж хэлээгүй байна</translation>
 <translation id="2247789808226901522">Картын хугацаа дууссан</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> оронтой баталгаажуулах код оруулна уу</translation>
 <translation id="3272643614306383237">1 МБ-аас бага. Таныг дараагийн удаа зочлоход зарим сайт илүү удаан ачаалж магадгүй.</translation>
 <translation id="3273738040255912340">Танай администратор профайл, хөтчид тань зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chromium-с гадуур удирдаж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Бүтэн өндрөөр нээсэн IBAN-г хадгална уу.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администраторын бодлого энэ файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}other{Администраторын бодлого эдгээр файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}}</translation>
 <translation id="3282085321714087552">Танай байгууллага, <ph name="ENROLLMENT_DOMAIN" /> дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
 <translation id="3286372614333682499">хөрөг зураг</translation>
@@ -2126,6 +2128,7 @@
 <translation id="4881695831933465202">Нээх</translation>
 <translation id="4881808915112408168">24 x 31.5 инч</translation>
 <translation id="4882314601499260499">Хэрэглэгчийн ямар ч бодлого хэрэгжүүлээгүй. Хэрэглэгчийн бодлого нэмэхийн тулд танай байгууллага <ph name="LINK_BEGIN" />домэйнийг тань баталгаажуулах<ph name="LINK_END" /> ёстой.</translation>
+<translation id="4883911187498618061">Асуулт эсвэл заавраа оруулна уу</translation>
 <translation id="4885030148564729407">Бал сар, романтик амралтууд</translation>
 <translation id="4885256590493466218">Тооцоо хийхдээ <ph name="CARD_DETAIL" />-р төлөөрэй</translation>
 <translation id="4887406273302438710">Windows Hello-н тусламжтай нууц үгнүүдээ хамгаалаарай</translation>
@@ -2585,6 +2588,7 @@
 <translation id="572328651809341494">Саяхан нээсэн табууд</translation>
 <translation id="5723873695528696965">Таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлах</translation>
 <translation id="5725297205162868298">Товчлол нь @ тэмдэгтээр эхлэх боломжгүй: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">Хэвлэгчийн дэвшилтэт онцлогуудыг ашиглахыг хүсэх боломжтой</translation>
 <translation id="5729442113829771034">Сургуулийн өмнөх насны хүүхдийн боловсрол</translation>
 <translation id="5730040223043577876">Хэрэв та нууц үгээ бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="5732392974455271431">Таны эцэг эх үүнийг блокоос гаргах боломжтой</translation>
@@ -2596,6 +2600,7 @@
 <translation id="5743684619253032786">Хумс арчилгааны бүтээгдэхүүнүүд</translation>
 <translation id="5745733273847572235">Таны байршлыг хүсэх боломжтой</translation>
 <translation id="5750869797196646528">Гар хянах</translation>
+<translation id="5752327398324808817">Нэг эсвэл хоёр үг оруулна уу</translation>
 <translation id="5759751709240058861">Таны камерыг ашиглах, хөдөлгөх</translation>
 <translation id="5763042198335101085">Зөв имэйл хаяг оруулна уу</translation>
 <translation id="5764725887548570807">Эхийн формат буруу байна.</translation>
@@ -3090,6 +3095,7 @@
 <translation id="6671169470640320959">Автомашины санхүүжүүлэлт</translation>
 <translation id="6671697161687535275">Маягтын зөвлөмжийг Chromium-с устгах уу?</translation>
 <translation id="6677351035258626477">Түргэн хоол</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Та Chrome-д худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}other{Та Chrome-д худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}}</translation>
 <translation id="6681790815630918386">Карт баталгаажуулалтын кодыг хадгалсан</translation>
 <translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6687230248707087982">Дугтуй (энгийн)</translation>
@@ -3106,6 +3112,7 @@
 <translation id="6696575039575740785">Веб аппликэйшнүүдийг суулгахыг зөвшөөрөөгүй</translation>
 <translation id="6698097747703777657">Кодоо хүлээн аваагүй юү? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Үүсгэсэн:</translation>
+<translation id="6698769547327354196">Pix-г Chrome-д унтраахын тулд <ph name="BEGIN_LINK1" />төлбөрийн тохиргоо<ph name="END_LINK1" /> руугаа очно уу</translation>
 <translation id="67007264085648978">Хугацаа гүйлгэгч</translation>
 <translation id="6702851555558236418">Аудио, хөгжмийн программ хангамж</translation>
 <translation id="6702919718839027939">Үзүүлэн</translation>
@@ -3261,6 +3268,7 @@
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
 <translation id="6978722349058177832">Хэрэв та энэ төхөөрөмжийг дундаа ашигладаг бол Chromium таныг автоматаар бөглөх хэсгийг ашиглан төлөх бүрд баталгаажуулахыг хүснэ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">гуравдагч талын күүкинүүдийн хандалтыг удирдах</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
 <translation id="6984270784814146224">Шошголоогүй зураг. Текстийг задалж байна. Google AI-аар дэмжигдсэн</translation>
 <translation id="6987806006823772670">Дугтуй (бүрсэн)</translation>
@@ -3406,6 +3414,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Бизнесийн үйл ажиллагаанууд</translation>
+<translation id="7244061187185055290">Хайж буй зүйлээ цөөн хэдэн үгээр тайлбарлана уу</translation>
 <translation id="7251437084390964440">Сүлжээний тохируулга ONC-н стандартад нийцэхгүй байна. Тохируулгын зарим хэсгийг импортлохгүй байж болзошгүй.
 Нэмэлт дэлгэрэнгүй мэдээлэл:
 <ph name="DEBUG_INFO" /></translation>

@@ -266,6 +266,7 @@
 <translation id="2278052315791335171">ဤစကားဝှက်ကို ဖျက်ခြင်းဖြင့် <ph name="SITE" /> ရှိ သင့်အကောင့်ကို ဖျက်မည်မဟုတ်ပါ</translation>
 <translation id="2286841657746966508">ငွေတောင်းခံလွှာပို့ရန် လိပ်စာ</translation>
 <translation id="228704530595896923">မျှဝေရန် ရွေးချယ်စရာစာရင်း။</translation>
+<translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
 <translation id="2297822946037605517">ဤစာမျက်နှာကို မျှဝေရန်</translation>
 <translation id="22981027763501686">သင့်အခြားစက်များတွင် သင်၏ လိပ်စာများ၊ မှတ်တမ်း စသည်တို့ကို ရယူရန် စင့်ခ်လုပ်ပါ</translation>
 <translation id="230115972905494466">ကိုက်ညီမှုရှိသည့် စက်ပစ္စည်းများ မတွေ့ပါ</translation>
@@ -1299,6 +1300,7 @@
 <translation id="6964300328304469089"><ph name="NAME" />၊ <ph name="EMAIL" /> ကို လောလောဆယ် ရွေးထားသည်။ အကောင့်ရွေးပါ။</translation>
 <translation id="696447261358045621">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
 <translation id="6971862865055170158">ခွင့်မပြုပါ</translation>
 <translation id="6978717888677691380">သင်ပိတ်ထားသည့် ဝဘ်ဆိုက်များ</translation>
 <translation id="6979737339423435258">အားလုံး</translation>
@@ -1513,6 +1515,7 @@
 <translation id="7896724475402191389">ငယ်ရွယ်သူများအတွက် အကြောင်းအရာ - ပိတ်</translation>
 <translation id="7903184275147100332">တစ်မိနစ်ခန့် ကြာနိုင်သည်</translation>
 <translation id="7907478394153853634">အဓိပ္ပာယ်မဲ့ စာသား</translation>
+<translation id="7913993612870913335">{FILE_COUNT,plural, =1{၁ ခုကို သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}other{# ခုကို သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်}}</translation>
 <translation id="7914399737746719723">အက်ပ်ထည့်သွင်းပြီးပြီ</translation>
 <translation id="7919123827536834358">ဤဘာသာစကားများကို အလိုအလျောက် ပြန်ဆိုပါ</translation>
 <translation id="7926975587469166629">ကတ်နာမည်ပြောင်</translation>
@@ -1806,6 +1809,7 @@
 <translation id="9218430445555521422">မူရင်းအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="92381315203627188">ဝဘ်ဆိုက်က ၎င်းတို့၏ စာမျက်နှာတွင် လင့်ခ်များကို သီးသန့် ကြိုဖွင့်ရန် မေးပါက Chrome သည် Google ဆာဗာများမှတစ်ဆင့် ကွတ်ကီးများ မပါဘဲ စာမျက်နှာများကို အသွင်ဝှက်ပြီး ကြိုဖွင့်ပေးပါသည်။ ၎င်းက ကြိုဖွင့်ထားသော ဝဘ်ဆိုက်မှ သင့်အထောက်အထားကို ဖျောက်ပေးသည်။</translation>
+<translation id="924447568950697217">Chrome ကို သင့်မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်ပါ</translation>
 <translation id="926205370408745186">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ဖယ်ရှားခြင်း</translation>
 <translation id="927968626442779827">Google Chrome တွင် အပေါ့စားမုဒ် သုံးရန်</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>

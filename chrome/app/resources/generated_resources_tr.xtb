@@ -1123,6 +1123,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1794212650797661990"><ph name="DOMAIN" /> şifresini gizle</translation>
 <translation id="1794791083288629568">Bu sorunu düzeltmemize yardımcı olmak için geri bildirim gönderin.</translation>
 <translation id="1795214765651529549">Klasik Temayı Kullan</translation>
+<translation id="1795668164971917185">Google Güvenli Tarama bundan sonra şüpheli bir indirme işlemi bulduğunda, seçtiğiniz <ph name="LINK" /> kapsamında bunu otomatik olarak tarar</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1797117170091578105">Chromebook klavyenizi kullanarak oynayın. Tuşları, belirli işlemler için özelleştirebilirsiniz.</translation>
 <translation id="1798335429200675510">Metin kutusunu sağ tıklayıp Google Yapay Zeka desteğinden faydalanarak yeni bir taslak oluşturun veya mevcut taslağınızı iyileştirin. Bu özellik şu anda sınırlı sayıda kullanıcıya sunulmaktadır.</translation>
@@ -5906,6 +5907,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5263656105659419083">Yan panele kolayca dönmek için sağ üst taraftaki Sabitle'yi tıklayın</translation>
 <translation id="5264148714798105376">Bu işlem bir dakika kadar sürebilir.</translation>
 <translation id="5264252276333215551">Uygulamanızı kiosk modunda başlatmak için lütfen İnternet'e bağlanın.</translation>
+<translation id="526539328530966548">gelişmiş koruma</translation>
 <translation id="5265797726250773323">Yükleme sırasında hata oluştu</translation>
 <translation id="5266113311903163739">Sertifika Yetkilisi İçe Aktarma Hatası</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> ile ilgili diğer işlemler</translation>

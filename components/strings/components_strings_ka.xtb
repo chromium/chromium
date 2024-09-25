@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">ტელევიზია და ვიდეო</translation>
 <translation id="1658918301167915956">Bluetooth მოწყობილობები</translation>
 <translation id="1662550410081243962">გადახდის მეთოდების შენახვა და შევსება</translation>
+<translation id="1662980953334786797">იგივე მიმდევრობა</translation>
 <translation id="1663943134801823270">ბარათებისა და მისამართების შესახებ ინფორმაცია მიღებულია Chrome-იდან. მათი მართვა შეგიძლიათ <ph name="BEGIN_LINK" />პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">ფლექსოგრაფიული ფოტოპოლიმერი</translation>
 <translation id="166624440456221306">შედარების ცხრილის წაშლა</translation>
@@ -1659,6 +1660,7 @@
 <translation id="4023431997072828269">ვინაიდან ეს ფორმა იგზავნება დაუცველი კავშირით, თქვენი ინფორმაცია ხილული იქნება სხვებისთვის.</translation>
 <translation id="4025325634010721551">წესები ხელახლა ჩაიტვირთა</translation>
 <translation id="4025338605225449265">ვალუტა და ვალუტის გადაცვლა</translation>
+<translation id="4025777154208238692">შებრუნებული მდევრობა</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />თავდამსხმელებს შეუძლიათ, ნახონ და შეცვალონ<ph name="END_STRONG" /> ინფორმაცია, რომელსაც უგზავნით ამ საიტს, ან მისგან იღებთ.
       <ph name="LIST_ITEM" />თუ საჯარო ქსელს იყენებთ, <ph name="BEGIN_STRONG" />უფრო უსაფრთხო იქნება, თუ ამ საიტს მოგვიანებით ეწვევით<ph name="END_STRONG" />. სანდო ქსელის (მაგალითად, სახლის ან სამსახურის Wi-Fi) გამოყენებისას ნაკლები რისკია.

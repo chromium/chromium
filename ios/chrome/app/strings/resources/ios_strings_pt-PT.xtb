@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">A traduzir…</translation>
 <translation id="2249119578464404734">Na parte superior do ecrã, toque no ícone Pesquisar</translation>
 <translation id="2251686759395008410">Menu → Histórico</translation>
-<translation id="2252674110805316998">Pesquisa Web do Google</translation>
 <translation id="2252749852083403809">A guardar no Drive de <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">A sua organização permite-lhe iniciar sessão apenas com determinadas contas.</translation>
 <translation id="2257567812274161158">A sincronização não está a funcionar.</translation>
@@ -606,6 +605,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3982893814825393515">Comunicar um problema…</translation>
 <translation id="398604237578616937">Com sessão iniciada como <ph name="USER_EMAIL" />. Abra o menu da conta.</translation>
+<translation id="3986739045730058129">Aceder ao separador</translation>
 <translation id="3987993985790029246">Cop. link</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="3994422733891749358">Escolha as notificações que quer receber</translation>
@@ -671,7 +671,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4286718549648564014">Morada movida para a sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
-<translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4309403553630140242">Toque duas vezes para obter mais informações.</translation>
@@ -759,6 +758,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4699172675775169585">Imagens e ficheiros em cache</translation>
 <translation id="4717844083556844785">A página Web atual está na Navegação anónima</translation>
 <translation id="4719927025381752090">Propor tradução</translation>
+<translation id="4720530280568305198">A sua seleção foi aberta num novo separador</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4742407542027196863">Gerir palavras-passe…</translation>
 <translation id="4742897645503301228">Ocultar Monitorizar preço</translation>

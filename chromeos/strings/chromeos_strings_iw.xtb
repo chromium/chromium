@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1343442362630695901">אגם מלח</translation>
 <translation id="1348657754632799065">סרגל ההקלטה</translation>
+<translation id="1350909945461913813">חשוב לשמור את העבודה</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1371650399987522809">‏משוב לגבי טפט שמבוסס על AI מבית Google</translation>
 <translation id="1374385338586507108">הגדרה</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">‏גרסת SDK:</translation>
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">‏כדי להתאים אישית את התמונות שנוצרו על ידי AI, בוחרים עיצוב ואז בוחרים את המילים שמסומנות בקו תחתון.</translation>
 <translation id="2045814230297767491">סכו"ם</translation>
 <translation id="2047316797244836561">כדי לצפות בשומר המסך, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">לא זוהה דיבור</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
+<translation id="2468124392950503650">אפשר לבחור הנחיה ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
 <translation id="2480572840229215612">סרטנים</translation>
 <translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">צריך לוודא שיש חיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> הוא השם הידידותי-למשתמש של <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
-<translation id="3600063043775287169">‏כשהאודיו של Chromebook מופעל, מכשיר ההקלטה מקליט את כל האודיו שמופעל במכשיר הזה. כדאי לוודא שרוצים להקליט את כל הצלילים.</translation>
 <translation id="3600339377155080675">שיקוף מסך</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3603829704940252505">דמות</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4486524074141928967">המערכת תוציא אותך מהחשבון בשעה <ph name="TIME" /></translation>
 <translation id="4500722292849917410">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל מקש צירוף (Ctrl,‏ Alt,‏ Shift או <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">צבע הממשק</translation>
 <translation id="4503223151711056411">חץ שמאלה</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">אפור</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5600027863942488546">בוצעה בדיקה של המקש <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">התנתקת מהחשבון</translation>
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5630438231335788050">באוהאוס</translation>
 <translation id="5631759159893697722">תקציר</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5938286923316838007">אי אפשר ליצור שמות להקלטות של התוכן הזה</translation>
 <translation id="5939518447894949180">איפוס</translation>
+<translation id="5942727615796467094">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה</translation>
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
 <translation id="5946538341867151940">‏אין עדיין חיבור. אם לפי הספק הסלולרי מומלץ להשתמש ב-APN בהתאמה אישית, צריך להזין את פרטי ה-APN. לשם כך בוחרים באפשרות '+ APN חדש'.</translation>
 <translation id="5947266287934282605">במקרה שהיום האחרון בחודש הוא לפני היום הזה, הנתונים יתאפסו ביום האחרון של החודש</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">כוכב לכת אחר</translation>
 <translation id="6359706544163531585">השבתת העיצוב הבהיר</translation>
 <translation id="6359919876285606596">המחיקה היא סופית ואי אפשר לבטל אותה.</translation>
+<translation id="6368342879959028556">‏כשבוחרים באפשרות 'יצירה באמצעות AI', צריך לכתוב הנחיה מותאמת אישית. אפשר גם לבחור באפשרות 'טפטים מבוססי-AI', לבחור עיצוב ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6373461326814131011">אגם קטן</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
 <translation id="6462978824459367242">‏הלחצן 'הוספת ה-APN' מופעל עכשיו</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">‫3 ההנחיות והתוצאות האחרונות שלך. אפשר לגשת אליהן רק כשמשתמשים ב'טפט וסגנון'.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">סירות</translation>
 <translation id="64778964625672495">בצבע אדום כהה</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6659594942844771486">כרטיסייה</translation>
 <translation id="66621959568103627">ורוד קורל</translation>
+<translation id="6667885109186363316">‏<ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות 'אני רוצה לקבל השראה'.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          כשיוצרים באמצעות AI, נשלחת לשרתים של AI‏ מבית Google הנחיה ליצור תמונות ולשפר את המוצר, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים וכרגע הזמינות שלה מוגבלת.</translation>
 <translation id="6673898378497337661">הגברת הבהירות של המקלדת</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6694534975463174713">מנעול</translation>

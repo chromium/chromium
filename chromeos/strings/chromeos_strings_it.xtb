@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
 <translation id="1343442362630695901">lago salato</translation>
 <translation id="1348657754632799065">Barra di registrazione</translation>
+<translation id="1350909945461913813">Assicurati di salvare il tuo lavoro</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1371650399987522809">Feedback per lo sfondo con IA di Google integrata</translation>
 <translation id="1374385338586507108">Definisci</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Versione SDK:</translation>
 <translation id="2016697457005847575">Prova i passaggi per la risoluzione dei problemi</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.</translation>
 <translation id="2045814230297767491">posate</translation>
 <translation id="2047316797244836561">Connettiti a una rete e ricarica la pagina per visualizzare il salvaschermo.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nessun discorso rilevato</translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2468124392950503650">Seleziona il prompt per creare o visualizzare la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guida ai prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilizza Aiutami a scrivere per creare una bozza o perfezionare il lavoro esistente con l'IA di Google integrata</translation>
 <translation id="2480572840229215612">granchi</translation>
 <translation id="248546197012830854">Il dispositivo è offline. Connettiti alla rete Wi-Fi per vedere i contenuti di assistenza.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Assicurati di avere una connessione a internet attiva e riprova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> è il nome facile da usare per <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
-<translation id="3600063043775287169">Quando l'audio del Chromebook è attivo, Registratore acquisisce tutto l'audio riprodotto su questo dispositivo. Assicurati di voler registrare tutti i suoni.</translation>
 <translation id="3600339377155080675">Mirroring dello schermo</translation>
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Nessun risultato corrispondente</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
+<translation id="4486524074141928967">Il tuo account verrà disconnesso alle ore <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando un tasto di modifica (Ctrl, Alt, Maiusc o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Colore interfaccia</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">grigio</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5600027863942488546">Tasto <ph name="KEY_NAME" /> testato</translation>
+<translation id="5613201299517339763">Account disconnesso</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">File non trovato</translation>
 <translation id="5938286923316838007">Impossibile creare nomi di registrazioni per questi contenuti</translation>
 <translation id="5939518447894949180">Reimposta</translation>
+<translation id="5942727615796467094">L'amministratore di <ph name="MANAGER" /> ha impostato il periodo di utilizzo di <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5946538341867151940">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, inserisci le relative informazioni selezionando "+ Nuovo APN"</translation>
 <translation id="5947266287934282605">Se l'ultimo giorno del mese è precedente a questa data, i dati verranno reimpostati sull'ultimo giorno del mese</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">un altro pianeta</translation>
 <translation id="6359706544163531585">Disabilita il tema chiaro</translation>
 <translation id="6359919876285606596">Questa azione è definitiva e non può essere annullata</translation>
+<translation id="6368342879959028556">Quando selezioni "Crea con l'AI", scrivi un prompt personalizzato. In alternativa, puoi selezionare "Sfondi AI" per scegliere un tema e poi selezionare le parole sottolineate per personalizzare il tuo sfondo creato dall'AI.</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6373461326814131011">stagno</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
 <translation id="6462978824459367242">Il pulsante Aggiungi APN è ora attivo</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">I tuoi 3 prompt e output più recenti. Puoi accedervi solo quando usi Sfondo e stile.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">barche</translation>
 <translation id="64778964625672495">rosso scuro</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Scheda</translation>
 <translation id="66621959568103627">rosa corallo</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini create dall'AI univoche e diversificate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando crei contenuti con l'AI, ai server di Google AI viene inviata una richiesta di generazione di immagini e miglioramento del prodotto, ai sensi delle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          L'AI generativa è sperimentale, in fase di sviluppo iniziale, e attualmente ha una disponibilità limitata.</translation>
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6694534975463174713">serratura</translation>
@@ -1570,6 +1587,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8881098542468797602">Test effettuato correttamente</translation>
 <translation id="8882789155418924367">gufi</translation>
 <translation id="8892443466059986410">Annulla la modifica della scorciatoia</translation>
+<translation id="8897043028305808902">File rinominato</translation>
 <translation id="8898840733695078011">Intensità del segnale</translation>
 <translation id="8909114361904403025">Freccia su</translation>
 <translation id="8910721771319628100">la rete predefinita è al di sopra della soglia di latenza</translation>

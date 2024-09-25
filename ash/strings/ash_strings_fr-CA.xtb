@@ -398,6 +398,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2412593942846481727">Mise à jour disponible</translation>
 <translation id="2416438829169535743">Quitter l'affichage?</translation>
 <translation id="2417486498593892439">Connectez-vous au réseau</translation>
+<translation id="2423619675829330672">Trop de tentatives de saisie du NIP. Attendez <ph name="TIME_LEFT" />, puis réessayez.</translation>
 <translation id="2426051945783024481">Cadre de l'appareil photo centré automatiquement</translation>
 <translation id="2427507373259914951">Clic gauche</translation>
 <translation id="2429753432712299108">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer avec votre appareil. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
@@ -1576,6 +1577,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6337159624125741244">La Loupe en mode Plein écran est activée</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Si vous avez oublié votre NIP, essayez de récupérer cet utilisateur.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connecté</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" />, puis <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
@@ -1632,6 +1634,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6539852571005954999">Téléchargement en cours d'analyse : <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Diffusion sur <ph name="RECEIVER_NAME" /> en cours…</translation>
 <translation id="6542891623636520977">Émojis, GIF et plus encore</translation>
+<translation id="6545382064335350438">Votre NIP n'a toujours pas pu être vérifié. Réessayez.</translation>
 <translation id="6555373427270923730">Entrez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
@@ -2028,6 +2031,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> appareils connectés</translation>
+<translation id="7921565901396407357">Votre NIP n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="7923534281713082605">Météo</translation>
 <translation id="7926080067315048321">Afficher toutes les tâches dans Google Tâches sur le Web</translation>
 <translation id="7930731167419639574">La langue suivante est maintenant traitée localement et la fonctionnalité Dictée fonctionne hors ligne</translation>

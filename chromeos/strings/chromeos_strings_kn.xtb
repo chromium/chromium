@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">ಸ್ಕ್ಯಾನ್ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1343442362630695901">ಸಾಲ್ಟ್ ಲೇಕ್</translation>
 <translation id="1348657754632799065">ರೆಕಾರ್ಡಿಂಗ್‌ ಬಾರ್‌</translation>
+<translation id="1350909945461913813">ಯಾವುದೇ ಕೆಲಸವನ್ನು ಸೇವ್‌ ಮಾಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1367951781824006909">ಫೈಲ್‌ವೊಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="1371650399987522809">Google AI ನಿಂದ ಬೆಂಬಲಿತವಾದ ವಾಲ್‌ಪೇಪರ್‌ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="1374385338586507108">ವಿವರಿಸಿ</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK ಆವೃತ್ತಿ:</translation>
 <translation id="2016697457005847575">ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಮಾಡುವ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">ನಿಮ್ಮ AI ಚಿತ್ರಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು, ಥೀಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಅಂಡರ್‌ಲೈನ್ ಮಾಡಲಾದ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="2045814230297767491">ಕಟ್ಲೆರಿ</translation>
 <translation id="2047316797244836561">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">ಯಾವುದೇ ಧ್ವನಿ ಪತ್ತೆಯಾಗಿಲ್ಲ</translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ಪ್ರಾಂಪ್ಟ್‌ ಮಾರ್ಗದರ್ಶಿಯನ್ನು<ph name="END_LINK_PROMPTING_GUIDE" /> ರಚಿಸಲು ಅಥವಾ ನೋಡಲು ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2472215337771558851">Google AI ನಿಂದ ಚಾಲಿತ, ಡ್ರಾಫ್ಟ್ ರಚಿಸಲು ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಕೆಲಸವನ್ನು ರೀಫೈನ್ ಮಾಡುವುದಕ್ಕೆ ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ ಎಂಬುದನ್ನು ಬಳಸಿ</translation>
 <translation id="2480572840229215612">ಏಡಿಗಳು</translation>
 <translation id="248546197012830854">ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ. ಸಹಾಯ ವಿಷಯವನ್ನು ನೋಡಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ಎಂಬುದು <ph name="APN_NAME" /> ನ ಬಳಕೆದಾರ ಸ್ನೇಹಿ ಹೆಸರಾಗಿದೆ.</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
-<translation id="3600063043775287169">Chromebook ಆಡಿಯೋ ಆನ್ ಆಗಿರುವಾಗ, ರೆಕಾರ್ಡರ್ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಆಗುತ್ತಿರುವ ಎಲ್ಲಾ ಆಡಿಯೊವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುತ್ತದೆ. ನೀವು ಎಲ್ಲಾ ಧ್ವನಿಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3600339377155080675">ಸ್ಕ್ರೀನ್ ಮಿರರ್</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3603829704940252505">ಅವತಾರ್</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4486524074141928967">ನಿಮ್ಮನ್ನು <ph name="TIME" /> ಗೆ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಗುತ್ತದೆ</translation>
 <translation id="4500722292849917410">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಮಾರ್ಪಡಿಸುವ ಕೀಯನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, shift ಅಥವಾ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ಇಂಟರ್‌ಫೇಸ್ ಬಣ್ಣ</translation>
 <translation id="4503223151711056411">ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">ಬೂದು</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ಕೀ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="5613201299517339763">ನೀವು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5630438231335788050">ಬೌಹೌಸ್</translation>
 <translation id="5631759159893697722">ಸಾರಾಂಶ</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">ಫೈಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5938286923316838007">ಈ ಕಂಟೆಂಟ್‌ಗಾಗಿ ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
+<translation id="5942727615796467094">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಯಾವಾಗ ಬಳಸಬಹುದೆಂದು <ph name="MANAGER" /> ನಿರ್ವಾಹಕರು ಸೆಟ್‌ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="594552776027197022">ರ‍್ಯಾಂಡಮ್ ಕೀ ಜೋಡಿಯನ್ನು ರಚಿಸಿ</translation>
 <translation id="5946538341867151940">ನೀವು ಇನ್ನೂ ಕನೆಕ್ಟ್ ಮಾಡಿಲ್ಲ. ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಕಸ್ಟಮ್ APN ಅನ್ನು ಶಿಫಾರಸು ಮಾಡಿದರೆ, "+ ಹೊಸ APN" ಅನ್ನು ಆಯ್ಕೆಮಾಡುವ ಮೂಲಕ APN ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5947266287934282605">ತಿಂಗಳ ಕೊನೆಯ ದಿನವು ಈ ದಿನದ ಮೊದಲು ಇದ್ದರೆ, ತಿಂಗಳ ಕೊನೆಯ ದಿನದಂದು ಡೇಟಾವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">ವಿಭಿನ್ನ ಗ್ರಹ</translation>
 <translation id="6359706544163531585">ಲೈಟ್ ಥೀಮ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6359919876285606596">ಈ ಕ್ರಿಯೆಯು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ರದ್ದುಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="6368342879959028556">ನೀವು "AI ಜೊತೆಗೆ ರಚಿಸಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿದಾಗ, ಕಸ್ಟಮ್‌ ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಬರೆಯಿರಿ. ಅಥವಾ ನೀವು ಥೀಮ್‌ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು "AI ವಾಲ್‌ಪೇಪರ್‌ಗಳನ್ನು" ಆಯ್ಕೆ ಮಾಡಬಹುದು ಮತ್ತು ನಂತರ ನಿಮ್ಮ AI ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು ಅಂಡರ್‌ಲೈನ್‌ ಮಾಡಿದ ಪದಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
 <translation id="6373461326814131011">ಕೊಳ</translation>
 <translation id="6379086450106841622">ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">ಖಾತೆಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="6462978824459367242">APN ಸೇರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}}</translation>
+<translation id="6468146470109254228">ನಿಮ್ಮ 3 ಇತ್ತೀಚಿನ ಪ್ರಾಂಪ್ಟ್‌ಗಳು ಮತ್ತು ಔಟ್‌ಪುಟ್‌ಗಳು. ನೀವು ವಾಲ್‌ಪೇಪರ್‌ ಮತ್ತು ಶೈಲಿಯನ್ನು ಬಳಸುವಾಗ ಮಾತ್ರ ನೀವು ಇವುಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಬಹುದು.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ದೋಣಿಗಳು</translation>
 <translation id="64778964625672495">ಕಡುಗೆಂಪು</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6659594942844771486">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್</translation>
 <translation id="66621959568103627">ಕೋರಲ್ ಗುಲಾಬಿ</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಇನ್ನಷ್ಟು ಅನನ್ಯ ಹಾಗೂ ವೈವಿಧ್ಯಮಯ AI ಚಿತ್ರಗಳ ಆಯ್ಕೆಗಳನ್ನು ಪಡೆಯಲು "ನನಗೆ ಸ್ಫೂರ್ತಿ ನೀಡಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ನೀವು AI ಮೂಲಕ ರಚಿಸಿದಾಗ, ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲು ಹಾಗೂ ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಅದು<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಗೌಪ್ಯತೆ ನೀತಿಗೆ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ, ಅಭಿವೃದ್ಧಿಯ ಆರಂಭಿಕ ಹಂತದಲ್ಲಿದೆ ಹಾಗೂ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="6673898378497337661">ಕೀ ಬೋರ್ಡ್ ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6694534975463174713">ಲಾಕ್</translation>

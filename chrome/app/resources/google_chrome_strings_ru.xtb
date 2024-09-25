@@ -165,6 +165,7 @@
 <translation id="2945997411976714835">Произошла ошибка. Не удалось начать установку.</translation>
 <translation id="2969728957078202736">"<ph name="PAGE_TITLE" />" – вход в сеть – Chrome</translation>
 <translation id="2970681950995291301">Чтобы удалить из браузера аккаунт Google, выйдите из Chrome на странице настроек</translation>
+<translation id="2994465299455873643">Предоставляет сервисы шифрования и безопасный метод восстановления браузера "<ph name="BROWSER_NAME" />", если браузер устареет. Если этот сервис отключен, возможно <ph name="BROWSER_NAME" /> потеряет доступ к зашифрованным данным и браузеру "<ph name="BROWSER_NAME" />" не удастся восстановиться.</translation>
 <translation id="3018957014024118866">Также удалить данные из Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Перезапустить и обновить &amp;Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome работает в фоновом режиме</translation>
@@ -221,6 +222,7 @@
 <translation id="3673813398384385993">Браузер Chrome обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
 <translation id="3695446226812920698">Подробнее</translation>
 <translation id="3697952514309507634">Другие профили Chrome</translation>
+<translation id="3700276346088749847">удалите данные Chrome из аккаунта</translation>
 <translation id="3703994572283698466">Chrome OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
@@ -291,6 +293,7 @@
 <translation id="4575717501879784448">Чтобы повысить производительность браузера Chrome и удобство работы в нем, эти вкладки можно сделать неактивными.</translation>
 <translation id="459622048091363950">Когда вы предоставите доступ Chrome, веб-сайты также смогут запрашивать у вас доступ.</translation>
 <translation id="4600710005438004015">Не удалось установить последнюю версию Chrome, в которой добавлены новые функции и обновления системы безопасности.</translation>
+<translation id="4601439950572737842">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>
 <translation id="4624065194742029982">Режим инкогнито в Chrome</translation>
 <translation id="4627412468266359539">Автоматически отправлять данные об использовании и диагностике в Google, чтобы помогать нам повышать производительность и улучшать функции Chrome OS Flex (необязательно)</translation>
 <translation id="4633000520311261472">Чтобы обеспечить безопасность ваших данных, некоторые расширения Chrome были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них, то есть эти компоненты могли быть установлены без вашего ведома.</translation>

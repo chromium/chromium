@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">ဘာသာပြန်နေပါသည်…</translation>
 <translation id="2249119578464404734">ဖန်သားပြင်ထိပ်၌ ‘ရှာဖွေရန်’ သင်္ကေတကို တို့ပါ</translation>
 <translation id="2251686759395008410">မီနူး → မှတ်တမ်း</translation>
-<translation id="2252674110805316998">ဝဘ်ပေါ်တွင် ရှာရန်</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> အတွက် Drive တွင် သိမ်းနေသည်။</translation>
 <translation id="2256933947031277845">အကောင့်အချို့ဖြင့်သာ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက ခွင့်ပြုထားသည်။</translation>
 <translation id="2257567812274161158">စင့်ခ်လုပ်၍ မရပါ။</translation>
@@ -606,6 +605,7 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3982893814825393515">ပြဿနာကို အကြောင်းကြားရန်…</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ အကောင့်မီနူး ဖွင့်ပါ။</translation>
+<translation id="3986739045730058129">တဘ်သို့သွားရန်</translation>
 <translation id="3987993985790029246">လင့်ခ်ကူးယူမည်</translation>
 <translation id="3992684624889376114">ဤစာမျက်နှာ အကြောင်း</translation>
 <translation id="3994422733891749358">သင်ရယူလိုသည့် အကြောင်းကြားချက်များကို ရွေးပါ</translation>
@@ -671,7 +671,6 @@
 <translation id="4286718549648564014">လိပ်စာကို သင့်အကောင့် <ph name="USER_EMAIL" /> သို့ရွှေ့လိုက်သည်</translation>
 <translation id="4287172530684295552">ဖတ်ပြီးဟု မှတ်ရန်</translation>
 <translation id="428768789042547925">အသစ်ပါဝင်မှု</translation>
-<translation id="4293080268407233932">ရှာရန်</translation>
 <translation id="4302061870579014542">နေရာသတ်မှတ်ရန်</translation>
 <translation id="4304713468139749426">စကားဝှက်မန်နေဂျာ</translation>
 <translation id="4309403553630140242">နောက်ထပ်အချက်အလက်အတွက် နှစ်ချက်တို့ပါ</translation>
@@ -758,6 +757,7 @@
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4717844083556844785">လက်ရှိဝဘ်စာမျက်နှာကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
+<translation id="4720530280568305198">သင်၏ရွေးချယ်မှုကို တဘ်အသစ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4742407542027196863">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="4742897645503301228">ဈေးနှုန်း ‘စောင့်ကြည့်ရန်’ ကို ဖျောက်ရန်</translation>

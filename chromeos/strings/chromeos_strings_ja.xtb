@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1343442362630695901">塩湖</translation>
 <translation id="1348657754632799065">録音バー</translation>
+<translation id="1350909945461913813">作業内容を保存してください</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
 <translation id="1371650399987522809">Google AI による壁紙に関するフィードバック</translation>
 <translation id="1374385338586507108">定義</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK のバージョン:</translation>
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">テーマを選択した後、下線付きの単語を選択して AI 画像をカスタマイズします。</translation>
 <translation id="2045814230297767491">カトラリー</translation>
 <translation id="2047316797244836561">スクリーンセーバーを表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">会話は検出されませんでした</translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
+<translation id="2468124392950503650">プロンプトを選択して作成するか、<ph name="BEGIN_LINK_PROMPTING_GUIDE" />プロンプト ガイド<ph name="END_LINK_PROMPTING_GUIDE" />をご覧ください</translation>
 <translation id="2472215337771558851">文書作成サポートを使用すると、Google AI の活用により文章の下書きを作成したり既存の文章を改良したりできます</translation>
 <translation id="2480572840229215612">カニ</translation>
 <translation id="248546197012830854">デバイスはオフラインです。ヘルプ コンテンツを表示するには、Wi-Fi ネットワークに接続してください。</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">インターネットに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> は、<ph name="APN_NAME" /> の名称をわかりやすくしたものです。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
-<translation id="3600063043775287169">Chromebook オーディオがオンの場合、レコーダーはこのデバイスで再生されるすべての音声を録音します。すべての音声を録音するかどうかを確認してください。</translation>
 <translation id="3600339377155080675">画面のミラーリング</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3603829704940252505">アバター</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4486524074141928967"><ph name="TIME" /> にログアウトします</translation>
 <translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
 <translation id="4503223151711056411">左矢印</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">灰色</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
+<translation id="5613201299517339763">ログアウトしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5938286923316838007">このコンテンツの録音名を作成できません</translation>
 <translation id="5939518447894949180">リセット</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
 <translation id="5946538341867151940">まだ接続されていません。携帯通信会社がカスタム APN を推奨している場合は、[+ 新しい APN] を選択して APN 情報を入力します。</translation>
 <translation id="5947266287934282605">月の最終日がこの日より前の場合、データはその月の最終日にリセットされます</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">別の惑星</translation>
 <translation id="6359706544163531585">ライトモードを無効にする</translation>
 <translation id="6359919876285606596">この操作は元に戻せません</translation>
+<translation id="6368342879959028556">[AI を使用して作成] を選択した場合は、カスタム プロンプトを入力します。または、[AI 壁紙] を選択してテーマを選んでから、下線付きの単語を選択して AI 壁紙をカスタマイズすることもできます。</translation>
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6373461326814131011">池</translation>
 <translation id="6379086450106841622">タッチスクリーン</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">アカウント設定に移動</translation>
 <translation id="6462978824459367242">[APN を追加] ボタンが有効になりました</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ページを再スキャンしますか？}=1{ページ {PAGE_NUMBER} を再スキャンしますか？}other{ページ {PAGE_NUMBER} を再スキャンしますか？}}</translation>
+<translation id="6468146470109254228">最近使用したプロンプトと出力を 3 つ表示しています。[壁紙とスタイル] の使用時のみアクセスできます。</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ボート</translation>
 <translation id="64778964625672495">ダークレッド</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659594942844771486">タブ</translation>
 <translation id="66621959568103627">コーラルピンク</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          [ひらめきがほしい] を選択すると、より個性的で多様な AI 画像オプションが表示されます。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI を使用した画像作成では、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google のプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってプロンプトが Google AI サーバーに送信され、画像の生成とサービスの改善に使用されます。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成 AI は試験運用版で開発の初期段階のため、現時点では限定的にご利用いただけます。</translation>
 <translation id="6673898378497337661">キーボードの明るさを上げる</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6694534975463174713">ロック</translation>
@@ -1570,6 +1587,7 @@
 <translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8882789155418924367">フクロウ</translation>
 <translation id="8892443466059986410">ショートカットの編集をキャンセル</translation>
+<translation id="8897043028305808902">ファイルの名前を変更しました</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8909114361904403025">上矢印</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>

@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">По области сканирования</translation>
 <translation id="1343442362630695901">соленое озеро</translation>
 <translation id="1348657754632799065">Панель записи</translation>
+<translation id="1350909945461913813">Не забудьте сохранить данные.</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1371650399987522809">Отзыв об обоях, созданных при помощи технологий ИИ от Google</translation>
 <translation id="1374385338586507108">Определение</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Версия SDK:</translation>
 <translation id="2016697457005847575">Инструкции по устранению неполадок</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Выберите тему, а затем используйте подчеркнутые слова для персонализации ИИ-изображений.</translation>
 <translation id="2045814230297767491">столовые приборы</translation>
 <translation id="2047316797244836561">Чтобы просмотреть заставку, подключитесь к сети и обновите страницу.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Речь не распознана.</translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2468124392950503650">Выберите запрос или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство по его составлению<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
 <translation id="2480572840229215612">крабы</translation>
 <translation id="248546197012830854">Устройство не подключено к интернету. Подключитесь к сети Wi-Fi, чтобы посмотреть справочный контент.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Проверьте подключение к интернету и попробуйте снова.</translation>
 <translation id="3594280220611906414">"<ph name="USER_FRIENDLY_APN_NAME" />" – это удобное название точки доступа "<ph name="APN_NAME" />".</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
-<translation id="3600063043775287169">Когда включен параметр "Аудио Chromebook", Диктофон записывает все звуки, которые воспроизводятся на устройстве. Имейте это в виду при настройке записи.</translation>
 <translation id="3600339377155080675">Дублирование экрана</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
+<translation id="4486524074141928967">В <ph name="TIME" /> запланирован выход из системы</translation>
 <translation id="4500722292849917410">Недопустимое сочетание клавиш. Выберите новое с клавишей-модификатором: Ctrl, Alt, Shift или <ph name="META_KEY" />.</translation>
 <translation id="4500966230243561393">Цвет интерфейса</translation>
 <translation id="4503223151711056411">Стрелка влево</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">серый</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5600027863942488546">Клавиша <ph name="KEY_NAME" /> протестирована</translation>
+<translation id="5613201299517339763">Вы вышли из системы</translation>
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">Файл не найден.</translation>
 <translation id="5938286923316838007">Не удалось создать названия записей для этого контента.</translation>
 <translation id="5939518447894949180">Сбросить</translation>
+<translation id="5942727615796467094">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5946538341867151940">Подключение не установлено. Если ваш оператор мобильной связи рекомендует использовать определенную точку доступа, введите необходимую информацию, выбрав "Новая точка доступа".</translation>
 <translation id="5947266287934282605">Данные будут сброшены в последний день месяца, если этот день предшествует выбранному</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">другая планета</translation>
 <translation id="6359706544163531585">Отключить светлую тему</translation>
 <translation id="6359919876285606596">Отменить это действие нельзя.</translation>
+<translation id="6368342879959028556">После того как вы нажали "Создать с помощью ИИ", понадобится написать свой запрос. Также можно выбрать "ИИ-обои". Тогда нужно будет указать тему, а затем использовать подчеркнутые слова для персонализации ИИ-изображения.</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="6373461326814131011">пруд</translation>
 <translation id="6379086450106841622">Сенсорный экран</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
 <translation id="6462978824459367242">Доступна кнопка "Добавить точку доступа"</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}many{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">Ваши последние 3 запроса и полученные результаты. Они доступны, только когда вы используете функцию "Обои и стиль".</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6472979596862005515">лодки</translation>
 <translation id="64778964625672495">темно-красный</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">кораллово-розовый</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Чтобы получить больше уникальных и разнообразных изображений, нажмите "Случайные обои".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когда вы создаете контент с помощью искусственного интеллекта, запрос отправляется на серверы ИИ от Google. Это позволяет сгенерировать изображения и улучшить продукт. В отношении данных действует <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.</translation>
 <translation id="6673898378497337661">увеличить яркость клавиатуры</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6694534975463174713">Блокировка</translation>

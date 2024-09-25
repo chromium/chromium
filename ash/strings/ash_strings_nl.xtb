@@ -398,6 +398,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2412593942846481727">Update beschikbaar</translation>
 <translation id="2416438829169535743">Weergave sluiten?</translation>
 <translation id="2417486498593892439">Inloggen bij netwerk</translation>
+<translation id="2423619675829330672">Te veel pincodepogingen. Wacht <ph name="TIME_LEFT" /> en probeer het opnieuw.</translation>
 <translation id="2426051945783024481">Cameraframe automatisch gecentreerd</translation>
 <translation id="2427507373259914951">Klik met linkermuisknop</translation>
 <translation id="2429753432712299108">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Bevestig vóór het accepteren dat de volgende toegangscode op dat apparaat wordt getoond: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
 <translation id="6337159624125741244">Vergrootglas voor volledig scherm staat aan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Als je je pincode bent vergeten, probeer je deze gebruiker te herstellen.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gekoppeld</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
@@ -1633,6 +1635,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6539852571005954999"><ph name="FILENAME" /> scannen voor downloaden</translation>
 <translation id="6542521951477560771">Er wordt gecast naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji's, gifjes en meer</translation>
+<translation id="6545382064335350438">Je pincode kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="6555373427270923730">Typ een webadres in de adresbalk en druk dan op <ph name="MODIFIER" /> en <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nieuwe installatie</translation>
@@ -2029,6 +2032,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7904094684485781019">De beheerder van dit account heeft toegang tot meerdere accounts niet toegestaan.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> verbonden apparaten</translation>
+<translation id="7921565901396407357">Je pincode kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="7923534281713082605">Weer</translation>
 <translation id="7926080067315048321">Alle taken in Google Tasks op internet bekijken</translation>
 <translation id="7930731167419639574">Spraak wordt nu lokaal verwerkt en Dicteren werkt offline</translation>

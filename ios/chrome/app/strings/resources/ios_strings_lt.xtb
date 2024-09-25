@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">Verčiama…</translation>
 <translation id="2249119578464404734">Ekrano viršuje palieskite paieškos piktogramą</translation>
 <translation id="2251686759395008410">Meniu → „Istorija“</translation>
-<translation id="2252674110805316998">Žiniatinklio paieška</translation>
 <translation id="2252749852083403809">Išsaugoma Diske (<ph name="USER_EMAIL" />).</translation>
 <translation id="2256933947031277845">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras.</translation>
 <translation id="2257567812274161158">Sinchronizavimas neveikia.</translation>
@@ -606,6 +605,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3982893814825393515">Pranešimas apie problemą…</translation>
 <translation id="398604237578616937">Prisijungta kaip <ph name="USER_EMAIL" />. Atidaryti paskyros meniu.</translation>
+<translation id="3986739045730058129">Eikite į skirtuką</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
 <translation id="3994422733891749358">Pasirinkite, kuriuos pranešimus norite gauti</translation>
@@ -671,10 +671,10 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4286718549648564014">Adresas perkeltas į paskyrą <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Žymėti raudonai</translation>
 <translation id="428768789042547925">Kas naujo</translation>
-<translation id="4293080268407233932">Ieškoti</translation>
 <translation id="4302061870579014542">Nustatyti poziciją</translation>
 <translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
+<translation id="4320848494125124980">Naujausi</translation>
 <translation id="4324735664183300693">Įjungti pranešimus</translation>
 <translation id="4328843285884395590">Mano Diskas</translation>
 <translation id="4331177082088332784">Tai galite valdyti skiltyje BEGIN_LINK„Turinio nustatymai“END_LINK</translation>
@@ -758,6 +758,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
 <translation id="4717844083556844785">Dabartinis tinklalapis atidarytas inkognito režimu</translation>
 <translation id="4719927025381752090">Siūlyti versti</translation>
+<translation id="4720530280568305198">Pasirinkimas atidarytas naujame skirtuke</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4742407542027196863">Tvarkyti slaptažodžius…</translation>
 <translation id="4742897645503301228">Slėpti parinktį „Stebėti kainą“</translation>

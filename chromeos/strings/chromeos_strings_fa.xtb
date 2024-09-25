@@ -513,7 +513,6 @@
 <translation id="3588034708467091142">مطمئن شوید به اینترنت متصل هستید و دوباره امتحان کنید.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> نام کاربرپسند برای <ph name="APN_NAME" /> است.</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
-<translation id="3600063043775287169">‏وقتی صدای Chromebook روش باشد، برنامه «ضبط‌صوت» همه صداهای درحال پخش در این دستگاه را ضبط می‌کند. مطمئن شوید که می‌خواهید همه صداها را ضبط کنید.</translation>
 <translation id="3600339377155080675">قرینه صفحه‌نمایش</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3603829704940252505">چهرک</translation>
@@ -858,7 +857,7 @@
 <translation id="5286263799730375393">رنگ نور پس‌زمینه</translation>
 <translation id="5292579816060236070">کاغذدیواری طلوع آفتاب</translation>
 <translation id="5294769550414936029">نسخه <ph name="MILESTONE_VERSION" /></translation>
-<translation id="5300814202279832142">انتقال پنجره به میزکار</translation>
+<translation id="5300814202279832142">انتقال پنجره به میز کار</translation>
 <translation id="5302048478445481009">زبان</translation>
 <translation id="5303837385540978511">کاغذدیواری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>

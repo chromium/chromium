@@ -398,6 +398,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
 <translation id="2416438829169535743">Ansicht schließen?</translation>
 <translation id="2417486498593892439">Im Netzwerk anmelden</translation>
+<translation id="2423619675829330672">Zu viele PIN‑Eingabeversuche. Warte <ph name="TIME_LEFT" /> und versuche es dann noch einmal.</translation>
 <translation id="2426051945783024481">Bildausschnitt automatisch zentriert</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
@@ -1577,6 +1578,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6330012934079202188">Fenster von allen Desktops werden angezeigt – drücke den Aufwärtspfeil, um die Fenster vom aktuellen Desktop anzuzeigen</translation>
 <translation id="6337159624125741244">Bedienungshilfe „Vollbildlupe“ aktiviert</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ ist eine verwaltete Sitzung, die von <ph name="MANAGER" /> verwaltet wird</translation>
+<translation id="6340148837564298498">Wenn du deine PIN vergessen hast, versuche, dieses Konto wiederherzustellen.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> verbunden</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, dann <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> oder <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP-VORSCHLÄGE</translation>
@@ -1633,6 +1635,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6539852571005954999">Download angehalten. <ph name="FILENAME" /> wird gescannt.</translation>
 <translation id="6542521951477560771">Inhalte werden an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="6542891623636520977">Emojis, GIFs und mehr</translation>
+<translation id="6545382064335350438">Deine PIN konnte noch immer nicht bestätigt werden. Versuche es noch einmal.</translation>
 <translation id="6555373427270923730">Webadresse in Adressleiste eingeben und <ph name="MODIFIER" /> + <ph name="KEY" /> drücken</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Neuinstallation</translation>
@@ -2029,6 +2032,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7904094684485781019">Der Administrator dieses Kontos hat keine Mehrfachanmeldung zugelassen.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> Geräte verbunden</translation>
+<translation id="7921565901396407357">Deine PIN konnte nicht bestätigt werden. Versuche es noch einmal.</translation>
 <translation id="7923534281713082605">Wetter</translation>
 <translation id="7926080067315048321">Alle Aufgaben in Google Tasks im Web ansehen</translation>
 <translation id="7930731167419639574">Die Sprachdateien werden nun lokal verarbeitet und die Spracheingabe funktioniert offline</translation>

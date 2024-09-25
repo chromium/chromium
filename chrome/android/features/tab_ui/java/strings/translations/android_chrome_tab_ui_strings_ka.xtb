@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />-ის ჩანართის ჯგუფის ვარიანტები</translation>
+<translation id="1293272072740285747">შეინარჩუნეთ ეს ჯგუფი, რომ მოგვიანებით დაამატოთ ჩანართები, ან წაშალეთ, თუ აღარ გჭირდებათ.
+
+თუ წაშლით, ყველა დაუყოვნებლივ დაკარგავს წვდომა ჩანართების ჯგუფზე „<ph name="TITLE_OF_GROUP" />“ და ის ყველა მოწყობილობიდანაც წაიშლება.</translation>
 <translation id="1340839264183302272">ჯგუფიდან გასვლა</translation>
 <translation id="1419023007528516122">ამ მოქმედებით თქვენი მოწყობილობა სამუდამოდ ამოიშლება ჯგუფიდან</translation>
 <translation id="1486715732399361704">ჩანართების ყველა ჯგუფს აქ ნახავთ</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
+<translation id="5615302411300498438">შეინარჩუნეთ ეს ჯგუფი, რომ მოგვიანებით დაამატოთ ჩანართები, ან დატოვეთ ის.
+
+თუ დატოვებთ, ჩანართების ჯგუფზე „<ph name="TITLE_OF_GROUP" />“ წვდომას დაუყოვნებლივ დაკარგავთ.</translation>
 <translation id="5627941783489838464">ჩანართის შესახებ განახლებები არ არის</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ჩანართის აღდგენა}other{ჩანართების აღდგენა}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ბმული Chrome-იდან}other{<ph name="TABS_COUNT_MANY" /> ბმული Chrome-იდან}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CLOSED" /> დაიხურა}other{<ph name="MANY_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CLOSED" /> დაიხურა}}</translation>
 <translation id="8631711675211020168">ყველა მყისიერად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“, ხოლო ის ამოიშლება ყველა მოწყობილობიდან.</translation>
 <translation id="8633025649649592204">ბოლოდროინდელი აქტივობა</translation>
+<translation id="8635399646025169806">გსურთ ჩანართების ჯგუფის შენარჩუნება?</translation>
 <translation id="870736955561925754">დაიხუროს ჩანართი და წაიშალოს ჯგუფი?</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8730999928494395583">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა წაიშლება ამ მოწყობილობიდან</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{შეიქმნა <ph name="NUM_MONTHS_ONE" /> თვის წინ}other{შეიქმნა <ph name="NUM_MONTHS_MANY" /> თვის წინ}}</translation>
+<translation id="8804742093141782941">ჯგუფის შენარჩუნება</translation>
 <translation id="8820741577754260431">იხილეთ ინფორმაცია ფასების დაწევის შესახებ თქვენს ჩანართებზე</translation>
 <translation id="8887921976452567404">თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან.</translation>
 <translation id="8915916167043355778">ყველას დახურვა</translation>

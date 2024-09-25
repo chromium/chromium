@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">ทีวีและวิดีโอ</translation>
 <translation id="1658918301167915956">อุปกรณ์บลูทูธ</translation>
 <translation id="1662550410081243962">บันทึกและกรอกวิธีการชำระเงิน</translation>
+<translation id="1662980953334786797">ลำดับเดียวกัน</translation>
 <translation id="1663943134801823270">ข้อมูลบัตรและที่อยู่มาจาก Chrome คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="1664389769577564606">เฟล็กโซโฟโต้โพลิเมอร์</translation>
 <translation id="166624440456221306">ลบตารางเปรียบเทียบ</translation>
@@ -1658,6 +1659,7 @@
 <translation id="4023431997072828269">เนื่องจากแบบฟอร์มนี้ส่งผ่านการเชื่อมต่อที่ไม่ปลอดภัย ผู้อื่นอาจมองเห็นข้อมูลของคุณ</translation>
 <translation id="4025325634010721551">โหลดนโยบายซ้ำแล้ว</translation>
 <translation id="4025338605225449265">สกุลเงินและการแลกเปลี่ยนเงินตราต่างประเทศ</translation>
+<translation id="4025777154208238692">กลับลำดับ</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />ผู้โจมตีสามารถดูและเปลี่ยนแปลง<ph name="END_STRONG" />ข้อมูลที่คุณส่งหรือรับจากเว็บไซต์ได้
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />ควรเข้าชมเว็บไซต์นี้ในภายหลัง<ph name="END_STRONG" /> หรือเมื่อใช้เครือข่ายสาธารณะจึงจะปลอดภัยที่สุด เครือข่ายที่เชื่อถือได้ เช่น Wi-Fi ที่บ้านหรือที่ทำงานจะมีความเสี่ยงน้อยกว่า

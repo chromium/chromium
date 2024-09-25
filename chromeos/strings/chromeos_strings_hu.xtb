@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Igazítás a beolvasási területhez</translation>
 <translation id="1343442362630695901">sóstó</translation>
 <translation id="1348657754632799065">A Hangfelvevő sávja</translation>
+<translation id="1350909945461913813">Ne felejtse el elmenteni a munkáját.</translation>
 <translation id="1367951781824006909">Válasszon egy fájlt</translation>
 <translation id="1371650399987522809">Visszajelzés a Google AI által működtetett háttérképről</translation>
 <translation id="1374385338586507108">Definiálás</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK-verzió:</translation>
 <translation id="2016697457005847575">Problémamegoldási lépések kipróbálása</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Válasszon egy témát, majd válassza ki az aláhúzott szavakat az AI-képek személyre szabásához.</translation>
 <translation id="2045814230297767491">evőeszközök</translation>
 <translation id="2047316797244836561">A képernyővédő megtekintéséhez csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nem észlelhető beszéd</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
+<translation id="2468124392950503650">Válassza ki a létrehozáshoz a kívánt utasítást, vagy tekintse meg az <ph name="BEGIN_LINK_PROMPTING_GUIDE" />utasításírási útmutatót<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">A (Google AI által működtetett) Segítség az íráshoz funkció használatával vázlatokat hozhat létre, és finomhangolhatja a meglévő munkákat.</translation>
 <translation id="2480572840229215612">rákok</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Ellenőrizze, hogy csatlakozik-e az internethez, majd próbálkozzon újra.</translation>
 <translation id="3594280220611906414">A(z) <ph name="USER_FRIENDLY_APN_NAME" /> a(z) <ph name="APN_NAME" /> felhasználóbarát neve.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
-<translation id="3600063043775287169">Amikor be van kapcsolva A Chromebook hangja beállítás, a Hangfelvevő az eszközön lejátszott összes hangot rögzíti. Győződjön meg arról, hogy az összes hangot rögzíteni szeretné.</translation>
 <translation id="3600339377155080675">Képernyőtükrözés</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Nincs egyezés</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nem sikerült a nem alapértelmezett hálózati átjáró pingelése</translation>
+<translation id="4486524074141928967">A rendszer ki fogja jelentkezteti Önt ekkor: <ph name="TIME" /></translation>
 <translation id="4500722292849917410">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot egy módosító billentyű (Ctrl, Alt, Shift vagy <ph name="META_KEY" />) használatával.</translation>
 <translation id="4500966230243561393">Kezelőfelület színe</translation>
 <translation id="4503223151711056411">Balra nyíl</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">szürke</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5600027863942488546">A következő gomb tesztelve: <ph name="KEY_NAME" /></translation>
+<translation id="5613201299517339763">A rendszer kijelentkeztette Önt</translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">absztrakt</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">A fájl nem található</translation>
 <translation id="5938286923316838007">Nem lehet felvételnevet létrehozni ehhez a tartalomhoz</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
+<translation id="5942727615796467094">A(z) <ph name="MANAGER" /> adminisztrátora meghatározta, hogy mikor használható ez a(z) <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5946538341867151940">Még nem csatlakozott. Ha mobilszolgáltatója egyéni APN-t javasol, adja meg az APN adatait. Ehhez válassza a „+ Új APN” lehetőséget.</translation>
 <translation id="5947266287934282605">Ha a hónap utolsó napja e nap előtt van, akkor az adatok a hónap utolsó napján alaphelyzetbe állnak</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">másik bolygó</translation>
 <translation id="6359706544163531585">Világos téma kikapcsolása</translation>
 <translation id="6359919876285606596">Ez a művelet végleges, és nem vonható vissza.</translation>
+<translation id="6368342879959028556">Írhat egyéni utasítást a „Létrehozás AI használatával” lehetőséget választva. Másik lehetőségként kiválaszthatja az „AI-háttérképek” lehetőséget, majd választhat egy témát, és az aláhúzott szavak kiválasztásával személyre szabhatja az AI-háttérképet.</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6373461326814131011">tavacska</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
 <translation id="6462978824459367242">Az APN hozzáadása gomb mostantól engedélyezve van</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Beolvassa újra az oldalt?}=1{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}other{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}}</translation>
+<translation id="6468146470109254228">Az Ön három legutóbbi utasítása és generált eredménye. Ezekhez csak a Háttérkép és stílus funkció használata közben férhet hozzá.</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6472979596862005515">csónakok</translation>
 <translation id="64778964625672495">sötétpiros</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659594942844771486">Lap</translation>
 <translation id="66621959568103627">korallrózsaszín</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Amikor AI-jal hoz létre tartalmat, a rendszer elküldi az utasítást a Google AI szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A generatív AI egy kísérleti szolgáltatás, korai fejlesztési fázisban van, és jelenleg korlátozottan áll rendelkezésre.</translation>
 <translation id="6673898378497337661">billentyűzet fényerejének növelése</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
 <translation id="6694534975463174713">zárolás</translation>

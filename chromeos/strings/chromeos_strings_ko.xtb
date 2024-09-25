@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1343442362630695901">염호</translation>
 <translation id="1348657754632799065">녹음 바</translation>
+<translation id="1350909945461913813">잊지 말고 작업을 저장하세요</translation>
 <translation id="1367951781824006909">파일 선택</translation>
 <translation id="1371650399987522809">Google AI 기반 배경화면에 관한 의견</translation>
 <translation id="1374385338586507108">정의</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK 버전:</translation>
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">테마를 선택한 후 밑줄이 그어진 단어를 선택해 AI 이미지를 맞춤설정하세요.</translation>
 <translation id="2045814230297767491">식사용 날붙이</translation>
 <translation id="2047316797244836561">화면 보호기를 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">음성 인식 실패</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
 <translation id="2448312741937722512">유형</translation>
+<translation id="2468124392950503650">프롬프트를 선택하여 만들거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 확인하세요.</translation>
 <translation id="2472215337771558851">작성 지원 기능을 사용하여 Google AI를 기반으로 초안을 작성하거나 기존 과제물을 다듬어 보세요.</translation>
 <translation id="2480572840229215612">게</translation>
 <translation id="248546197012830854">기기가 오프라인 상태입니다. 도움말 콘텐츠를 보려면 Wi-Fi 네트워크에 연결하세요.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">인터넷에 연결되어 있는지 확인한 후 다시 시도하세요.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />은(는) <ph name="APN_NAME" />의 사용자 친화적인 이름입니다.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
-<translation id="3600063043775287169">Chromebook 오디오가 켜져 있으면 녹음기가 이 기기에서 재생되는 모든 오디오를 캡처합니다. 모든 소리를 녹음하시겠습니까?</translation>
 <translation id="3600339377155080675">화면 미러링</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3603829704940252505">아바타</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">일치하는 결과가 없습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4486524074141928967"><ph name="TIME" />에 로그아웃됩니다</translation>
 <translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">회색</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> 키는 테스트했습니다.</translation>
+<translation id="5613201299517339763">로그아웃했습니다</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5630438231335788050">바우하우스</translation>
 <translation id="5631759159893697722">초록</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="5938286923316838007">이 콘텐츠의 녹화 이름을 만들 수 없음</translation>
 <translation id="5939518447894949180">초기화</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> 관리자가 <ph name="DEVICE_TYPE" /> 유형의 기기를 사용할 수 있는 시기를 설정했습니다.</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
 <translation id="5946538341867151940">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 '+ 새 APN'을 선택하여 APN 정보를 입력합니다.</translation>
 <translation id="5947266287934282605">해당 월의 마지막 날이 이 날짜 이전이면 해당 월의 마지막 날에 데이터가 재설정됩니다.</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">다른 행성</translation>
 <translation id="6359706544163531585">밝은 테마 사용 중지</translation>
 <translation id="6359919876285606596">이 작업은 영구적이며, 되돌릴 수 없습니다.</translation>
+<translation id="6368342879959028556">'AI로 만들기'를 선택한 경우 맞춤 프롬프트를 작성하세요. 또는 'AI 배경화면'을 선택하여 테마를 선택한 후 밑줄이 그어진 단어를 선택해 AI 배경화면을 맞춤설정하세요.</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6373461326814131011">연못</translation>
 <translation id="6379086450106841622">터치스크린</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">계정 설정으로 이동</translation>
 <translation id="6462978824459367242">이제 APN 추가 버튼이 사용 설정되었습니다</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{페이지를 다시 스캔하시겠습니까?}=1{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}other{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}}</translation>
+<translation id="6468146470109254228">최근의 프롬프트 3개 및 결과입니다. 배경화면/스타일을 사용하는 동안에만 액세스할 수 있습니다.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">보트</translation>
 <translation id="64778964625672495">진한 빨간색</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6659594942844771486">탭</translation>
 <translation id="66621959568103627">코랄 핑크색</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          '아이디어 얻기'를 선택하면 더욱 다양하고 고유한 AI 생성 이미지 옵션이 제공됩니다.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI로 만들면 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google AI 서버로 전송됩니다.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          생성형 AI는 실험 단계의 기술로, 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="6673898378497337661">키보드 밝기를 높입니다</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6694534975463174713">잠금</translation>

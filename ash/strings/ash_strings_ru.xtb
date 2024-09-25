@@ -398,6 +398,7 @@
 <translation id="2412593942846481727">Доступно обновление</translation>
 <translation id="2416438829169535743">Выйти из обучения?</translation>
 <translation id="2417486498593892439">Регистрация в сети</translation>
+<translation id="2423619675829330672">Слишком много попыток ввода PIN-кода. Попробуйте снова, когда пройдет время: <ph name="TIME_LEFT" />.</translation>
 <translation id="2426051945783024481">Центрировано автоматически.</translation>
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
@@ -1577,6 +1578,7 @@
 <translation id="6330012934079202188">Показаны окна со всех рабочих столов. Чтобы показать окна текущего рабочего стола, нажмите на стрелку вверх.</translation>
 <translation id="6337159624125741244">Полноэкранная лупа включена</translation>
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Если вы забыли PIN-код, попробуйте восстановить аккаунт этого пользователя.</translation>
 <translation id="6344138931392227467">Подключено устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затем <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРЕДЛАГАЕМЫЕ ПРИЛОЖЕНИЯ</translation>
@@ -1633,6 +1635,7 @@
 <translation id="6539852571005954999">Выполняется проверка скачиваемого файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6542891623636520977">Эмодзи, GIF и не только</translation>
+<translation id="6545382064335350438">Снова не удалось подтвердить PIN-код. Повторите попытку.</translation>
 <translation id="6555373427270923730">Введите веб-адрес в адресной строке и нажмите <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835">"<ph name="APP_NAME" />"
 Новое приложение</translation>
@@ -2029,6 +2032,7 @@
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422">Подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
+<translation id="7921565901396407357">Не удалось подтвердить PIN-код. Повторите попытку.</translation>
 <translation id="7923534281713082605">Погода</translation>
 <translation id="7926080067315048321">Посмотреть все задачи на сайте "Google Задачи"</translation>
 <translation id="7930731167419639574">Речь теперь обрабатывается на устройстве. Вы можете пользоваться голосовым вводом офлайн.</translation>

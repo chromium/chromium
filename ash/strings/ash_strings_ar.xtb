@@ -399,6 +399,7 @@
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
 <translation id="2416438829169535743">هل تريد الخروج من العرض؟</translation>
 <translation id="2417486498593892439">تسجيل الدخول إلى الشبكة</translation>
+<translation id="2423619675829330672">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا. يُرجى الانتظار لمدة <ph name="TIME_LEFT" /> وإعادة المحاولة.</translation>
 <translation id="2426051945783024481">تم توسيط إطار الكاميرا تلقائيًا.</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
@@ -1579,6 +1580,7 @@
 <translation id="6330012934079202188">يتم الآن عرض النوافذ المفتوحة في جميع أسطح المكتب، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في سطح المكتب الحالي.</translation>
 <translation id="6337159624125741244">"المكبِّر بملء الشاشة" مفعَّل</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> هي جلسة تتم إدارتها من خلال <ph name="MANAGER" />.</translation>
+<translation id="6340148837564298498">إذا نسيت رقم التعريف الشخصي، جرِّب استرداد حساب هذا المستخدم.</translation>
 <translation id="6344138931392227467">تم توصيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="6348449481487610270">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ثم ‎<ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> أو <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">اقتراحات التطبيقات</translation>
@@ -1635,6 +1637,7 @@
 <translation id="6539852571005954999">جارٍ فحص الملف <ph name="FILENAME" /> لتنزيله</translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">‏رموز الإيموجي وصور GIF والمزيد</translation>
+<translation id="6545382064335350438">يتعذَّر حتى الآن تأكيد صحة رقم التعريف الشخصي. يُرجى إعادة المحاولة.</translation>
 <translation id="6555373427270923730">‏اكتب عنوان الويب في شريط العناوين، ثم اضغط على ‎<ph name="MODIFIER" /><ph name="KEY" />.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 مثبَّت حديثًا</translation>
@@ -2032,6 +2035,7 @@
 <translation id="7904094684485781019">لقد حظر مشرف هذا الحساب إمكانية الدخول المتعدد.</translation>
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
 <translation id="7917760201509801422">هناك <ph name="DEVICECOUNT" /> جهاز متصل.</translation>
+<translation id="7921565901396407357">تعذَّر تأكيد صحة رقم التعريف الشخصي. يُرجى إعادة المحاولة.</translation>
 <translation id="7923534281713082605">الطقس</translation>
 <translation id="7926080067315048321">‏الاطّلاع على جميع المهام في تطبيق "مهام Google" على الإنترنت</translation>
 <translation id="7930731167419639574">ميزة "التعرّف على الكلام" جاهزة للعمل الآن على جهازك، كما تعمل ميزة "الإملاء" بلا اتصال بالإنترنت.</translation>

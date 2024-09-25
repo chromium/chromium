@@ -6885,6 +6885,27 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6102449843040973938">Não evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
 <translation id="610892566190435199">Ativar relatórios de status de energia do dispositivo</translation>
 <translation id="6111936128861357925">Permitir jogo easter egg de dinossauro</translation>
+<translation id="6112524153927257380">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
+
+      Há muitos tipos de alertas de download no Chrome, que os divide nas categorias a seguir. Saiba mais sobre os vereditos do Navegação segura (https://support.google.com/chrome/?p=ib_download_blocked).
+
+      * Malicioso, conforme sinalizado pelo servidor do Navegação segura
+      * Incomum ou indesejado, conforme sinalizado pelo servidor do Navegação segura
+      * Perigoso (por exemplo, todos os downloads de arquivos SWF e muitos downloads de arquivos EXE)
+
+      Se a política for definida, vários subconjuntos dessas categorias serão bloqueados, dependendo do valor:
+
+      0: nenhuma restrição especial (padrão).
+
+      1: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      2: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, bloqueia arquivos incomuns ou indesejados sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      3: bloqueia todos os downloads. Não recomendado, exceto em casos de uso especiais.
+
+      4: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, não bloqueia tipos de arquivo perigosos (recomendado).
+
+      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6118226055960302400">Restaurar o comportamento de permissões.</translation>
 <translation id="6119207979839638596">Essa política foi removida na versão M75 após a remoção da política de versão máxima do TLS do produto <ph name="PRODUCT_NAME" />.
 

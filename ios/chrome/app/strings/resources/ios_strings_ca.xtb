@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">S'està traduint…</translation>
 <translation id="2249119578464404734">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
-<translation id="2252674110805316998">Cerca web</translation>
 <translation id="2252749852083403809">S'està desant a Drive per a <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">La teva organització només et permet iniciar la sessió amb determinats comptes.</translation>
 <translation id="2257567812274161158">La sincronització no funciona.</translation>
@@ -606,6 +605,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3982893814825393515">Informa d'un problema…</translation>
 <translation id="398604237578616937">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Obre el menú del compte.</translation>
+<translation id="3986739045730058129">Ves a la pestanya</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
 <translation id="3994422733891749358">Tria les notificacions que vols rebre</translation>
@@ -671,10 +671,10 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4286718549648564014">L'adreça s'ha mogut al compte <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Marca com a llegit</translation>
 <translation id="428768789042547925">Novetats</translation>
-<translation id="4293080268407233932">Cerca</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
+<translation id="4320848494125124980">Recents</translation>
 <translation id="4324735664183300693">Activa les notificacions</translation>
 <translation id="4328843285884395590">La meva unitat</translation>
 <translation id="4331177082088332784">Pots gestionar aquesta opció a BEGIN_LINKConfiguració del contingutEND_LINK</translation>
@@ -758,6 +758,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4717844083556844785">La pàgina web actual està en mode d'incògnit</translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
+<translation id="4720530280568305198">La teva selecció s'ha obert en una pestanya nova</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4742407542027196863">Gestiona les contrasenyes…</translation>
 <translation id="4742897645503301228">Amaga l'opció Fes un seguiment del preu</translation>

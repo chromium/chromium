@@ -699,6 +699,7 @@
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2239100178324503013">ಈಗ ಕಳುಹಿಸಿ</translation>
 <translation id="2241693394036365668">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆದಾಗ</translation>
+<translation id="2242389809734574253">IBAN ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಎಂಬುದನ್ನು ಸೇವ್‌ ಮಾಡಿ.</translation>
 <translation id="2246264294482514010">10 x 12 ಇಂಚು</translation>
 <translation id="2246480341630108201">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಸರಿ ಎಂದು ಹೇಳಿಲ್ಲ</translation>
 <translation id="2247789808226901522">ಕಾರ್ಡ್ ಅವಧಿ ಮೀರಿದೆ</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ಅಂಕಿಯ ಪರಿಶೀಲನೆ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3272643614306383237">1 MB ಗಿಂತ ಕಡಿಮೆ. ನೀವು ಮುಂದಿನ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಕೆಲವು ಸೈಟ್‌ಗಳು ನಿಧಾನವಾಗಿ ಲೋಡ್ ಆಗಬಹುದು.</translation>
 <translation id="3273738040255912340">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ದೂರದಿಂದಲೇ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಬ್ರೌಸರ್‌ಗೆ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು, ವರದಿ ಮಾಡುವ ಮೂಲಕ ಬ್ರೌಸರ್ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಬಹುದು ಮತ್ತು ಇತರ ಅಗತ್ಯ ಕಾರ್ಯಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನ ಹೊರಗೆ ಸಹ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾದ IBAN ಅನ್ನು ಸೇವ್‌ ಮಾಡಿ.</translation>
 <translation id="3281350579597955952">{0,plural, =1{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="3282085321714087552">ನಿಮ್ಮ ಸಂಸ್ಥೆ <ph name="ENROLLMENT_DOMAIN" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ ಕಾರ್ಯನೀತಿಗಳಂತಹ ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ಈ ಕೆಳಗಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕಳುಹಿಸಿದೆ.</translation>
 <translation id="3286372614333682499">ಪೋರ್ಟ್ರೇಟ್</translation>
@@ -2122,6 +2124,7 @@
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="4881808915112408168">24 x 31.5 ಇಂಚು</translation>
 <translation id="4882314601499260499">ಯಾವುದೇ ಬಳಕೆದಾರರ ನೀತಿಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗಿಲ್ಲ. ಬಳಕೆದಾರರ ನೀತಿಗಳನ್ನು ಸೇರಿಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಯು <ph name="LINK_BEGIN" />ನಿಮ್ಮ ಡೊಮೇನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬೇಕು<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ಪ್ರಾಂಪ್ಟ್‌ ಮಾಡಿ</translation>
 <translation id="4885030148564729407">ಮಧುಚಂದ್ರ ಮತ್ತು ರೊಮ್ಯಾಂಟಿಕ್ ಗೆಟ್‌ಅವೇಗಳು</translation>
 <translation id="4885256590493466218">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ <ph name="CARD_DETAIL" /> ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="4887406273302438710">Windows Hello ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
@@ -2581,6 +2584,7 @@
 <translation id="572328651809341494">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="5723873695528696965">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಿ</translation>
 <translation id="5725297205162868298">@ ಅಕ್ಷರದಿಂದ ಶಾರ್ಟ್‌ಕಟ್ ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="5728246486828755318">ಸುಧಾರಿತ ಪ್ರಿಂಟರ್‌ ಫಿಚರ್‌ಗಳನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="5729442113829771034">ಆರಂಭಿಕ ಬಾಲ್ಯ ಶಿಕ್ಷಣ</translation>
 <translation id="5730040223043577876">ನೀವು ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಿದ್ದಲ್ಲಿ Chrome ನಿಮ್ಮ ಪಾಸವರ್ಡ್ ಅನ್ನು ಮರುಹೊಂದಿಸಲು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="5732392974455271431">ನಿಮ್ಮ ಪೋಷಕರು ನಿಮಗಾಗಿ ಅದನ್ನು ಅನಿರ್ಬಂಧಿಸಬಹುದಾಗಿದೆ</translation>
@@ -2592,6 +2596,7 @@
 <translation id="5743684619253032786">ಉಗುರಿನ ಆರೈಕೆಯ ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="5745733273847572235">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="5750869797196646528">ಹ್ಯಾಂಡ್‌ ಟ್ರ್ಯಾಕಿಂಗ್‌</translation>
+<translation id="5752327398324808817">ಒಂದು ಅಥವಾ ಎರಡು ಪದಗಳನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5759751709240058861">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ ಮತ್ತು ಸರಿಸಿ</translation>
 <translation id="5763042198335101085">ಮಾನ್ಯವಾದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5764725887548570807">ಅಮಾನ್ಯ ಮೂಲ ಫಾರ್ಮ್ಯಾಟ್.</translation>
@@ -2701,7 +2706,7 @@
 <translation id="5975083100439434680">ಝೂಮ್ ಔಟ್</translation>
 <translation id="5979084224081478209">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5984570616552610254">ಚೇಂಬರ್ ತೇವಾಂಶ</translation>
-<translation id="598637245381783098">ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="598637245381783098">ಪಾವತಿ ಆ್ಯಪ್ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5989320800837274978">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಆಗಲಿ ಅಥವಾ .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಿಲ್ಲ.</translation>
 <translation id="5992691462791905444">ಇಂಜಿನಿಯರಿಂಗ್ ಝೆಡ್ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
 <translation id="5992805036496113940">ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಬಳಸಿದ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ</translation>
@@ -3086,6 +3091,7 @@
 <translation id="6671169470640320959">ಆಟೋಮೋಟಿವ್ ಹಣಕಾಸು</translation>
 <translation id="6671697161687535275">Chromium ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="6677351035258626477">ಫಾಸ್ಟ್ ಫುಡ್</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಯಾಗಿ ನೋಡಿ}one{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}other{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}}</translation>
 <translation id="6681790815630918386">CVC ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6687230248707087982">ಎನ್ವಲಪ್ (ಖಾಲಿ)</translation>
@@ -3103,6 +3109,7 @@
 <translation id="6696575039575740785">ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6698097747703777657">ನಿಮ್ಮ ಕೋಡ್ ಅನ್ನು ಸ್ವೀಕರಿಸಿಲ್ಲವೇ? <ph name="BEGIN_LINK" />ಹೊಸ ಕೋಡ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ರಚಿಸಲಾಗಿದೆ:</translation>
+<translation id="6698769547327354196">Chrome ನಲ್ಲಿ Pix ಅನ್ನು ಆಫ್‌ ಮಾಡಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK1" />ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK1" /> ಹೋಗಿ</translation>
 <translation id="67007264085648978">ಸಮಯದ ಸ್ಕ್ರಬ್ಬರ್</translation>
 <translation id="6702851555558236418">ಆಡಿಯೋ ಮತ್ತು ಸಂಗೀತದ ಸಾಫ್ಟ್‌ವೇರ್</translation>
 <translation id="6702919718839027939">ಪ್ರೆಸೆಂಟೇಷನ್ ಮೋಡ್</translation>
@@ -3258,6 +3265,7 @@
 <translation id="6978236010531171013">ಹೇಗಾದರೂ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6978722349058177832">ನೀವು ಈ ಸಾಧನವನ್ನು ಹಂಚಿಕೊಂಡಿದ್ದರೆ, ಆಟೋಫಿಲ್ ಬಳಸಿಕೊಂಡು ನೀವು ಪ್ರತಿ ಬಾರಿ ಪಾವತಿಸುವಾಗ Chromium ನಿಮಗೆ ಪರಿಶೀಲಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979302985396162258">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="6984270784814146224">ಲೇಬಲ್ ಮಾಡದ ಚಿತ್ರ. Google AI ನಿಂದ ಚಾಲಿತ ಪಠ್ಯವನ್ನು ಎಕ್ಸ್‌ಟ್ರ್ಯಾಕ್ಟ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6987806006823772670">ಎನ್ವಲಪ್ (ಲೇಪಿತ)</translation>
@@ -3404,6 +3412,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">ವ್ಯಾಪಾರ ಕಾರ್ಯಾಚರಣೆಗಳು</translation>
+<translation id="7244061187185055290">ಕೆಲವು ಪದಗಳಲ್ಲಿ, ನೀವು ಹುಡುಕುತ್ತಿರುವುದನ್ನು ವಿವರಿಸಿ</translation>
 <translation id="7251437084390964440">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರೇಶನ್, ONC ಮಾನದಂಡಕ್ಕೆ ಅನುಗುಣವಾಗಿಲ್ಲ. ಕಾನ್ಫಿಗರೇಶನ್‌ನಲ್ಲಿನ ಕೆಲವು ಭಾಗಗಳನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು.
 ಹೆಚ್ಚುವರಿ ವಿವರಗಳು:
 <ph name="DEBUG_INFO" /></translation>
@@ -4478,7 +4487,7 @@
 <translation id="9210825002219699214">ವಿಮಾನ ಪ್ರಯಾಣ</translation>
 <translation id="9211461151375991073">ಹುಡುಕಲು @ ನಮೂದಿಸಿ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
-<translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chromeನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
+<translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chrome ನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
 <translation id="92178312226016010">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="9218430445555521422">ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="9219103736887031265">Images</translation>

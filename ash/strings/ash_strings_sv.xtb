@@ -398,6 +398,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
 <translation id="2416438829169535743">Vill du stänga vyn?</translation>
 <translation id="2417486498593892439">Logga in på nätverket</translation>
+<translation id="2423619675829330672">För många försök att ange pinkoden. Vänta <ph name="TIME_LEFT" /> och försök igen.</translation>
 <translation id="2426051945783024481">Kameraramen har centrerats automatiskt</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6330012934079202188">Visar fönster från alla skrivbord, tryck på uppåtpilen för att visa fönster från det aktuella skrivbordet</translation>
 <translation id="6337159624125741244">Helskärmsförstoring är aktiverat</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> är en hanterad session som hanteras av <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Om du har glömt pinkoden kan du testa att återställa den här användaren.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> har anslutits</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> följt av <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APPFÖRSLAG</translation>
@@ -1633,6 +1635,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6539852571005954999">Genomsökning av filen <ph name="FILENAME" /> som laddas ned</translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, giffar med mera</translation>
+<translation id="6545382064335350438">Det gick fortfarande inte att verifiera pinkoden. Försök igen.</translation>
 <translation id="6555373427270923730">Ange en webbadress i adressfältet och tryck sedan på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nyligen installerad</translation>
@@ -2029,6 +2032,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7904094684485781019">Administratören för kontot tillåter inte multiinloggning.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> enheter är anslutna</translation>
+<translation id="7921565901396407357">Det gick inte att verifiera pinkoden. Försök igen.</translation>
 <translation id="7923534281713082605">Väder</translation>
 <translation id="7926080067315048321">Visa alla uppgifter i Google Tasks på webben</translation>
 <translation id="7930731167419639574">Nu bearbetas tal lokalt och diktering kan användas offline.</translation>

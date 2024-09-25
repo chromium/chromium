@@ -700,6 +700,7 @@
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2239100178324503013">Отправить</translation>
 <translation id="2241693394036365668">Скачан файл</translation>
+<translation id="2242389809734574253">Экран для ввода кода IBAN закрыт.</translation>
 <translation id="2246264294482514010">10 x 12 дюймов</translation>
 <translation id="2246480341630108201">Твой родитель пока не одобрил этот сайт.</translation>
 <translation id="2247789808226901522">Срок действия карты истек</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3272112314896217187">Введите код подтверждения из <ph name="NUMBER_OF_DIGITS" /> цифр</translation>
 <translation id="3272643614306383237">Менее 1 МБ. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
 <translation id="3273738040255912340">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="3273757719652748628">Экран для сохранения кода IBAN открыт полностью.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
@@ -2124,6 +2126,7 @@
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйма</translation>
 <translation id="4882314601499260499">Нет правил для пользователей. Чтобы добавить их, организация должна <ph name="LINK_BEGIN" />подтвердить ваш домен<ph name="LINK_END" />.</translation>
+<translation id="4883911187498618061">Напишите вопрос или запрос</translation>
 <translation id="4885030148564729407">Свадебные и романтические туры</translation>
 <translation id="4885256590493466218">Оплатите с помощью <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защитите пароли с помощью Windows Hello</translation>
@@ -2583,6 +2586,7 @@
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723873695528696965">Управление MIDI-устройствами и их перепрограммирование.</translation>
 <translation id="5725297205162868298">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна начинаться с символа @.</translation>
+<translation id="5728246486828755318">Может запрашивать разрешение на использование дополнительных возможностей принтера</translation>
 <translation id="5729442113829771034">Дошкольное образование</translation>
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="5732392974455271431">Для разблокировки обратитесь к родителям.</translation>
@@ -2594,6 +2598,7 @@
 <translation id="5743684619253032786">Товары для ухода за ногтями</translation>
 <translation id="5745733273847572235">Разрешено отправлять запрос на доступ к информации о местоположении</translation>
 <translation id="5750869797196646528">Отслеживание рук</translation>
+<translation id="5752327398324808817">Напишите что-нибудь</translation>
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
@@ -3089,6 +3094,7 @@
 <translation id="6671169470640320959">Автокредиты</translation>
 <translation id="6671697161687535275">Удалить подсказку из Chromium?</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
+<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{При совершении покупок в Chrome вам доступен вариант "<ph name="FINANCIAL_ACCOUNT_TYPES" />"}one{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}few{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}many{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}other{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}}</translation>
 <translation id="6681790815630918386">CVC-код сохранен</translation>
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6687230248707087982">Конверт (обычный)</translation>
@@ -3105,6 +3111,7 @@
 <translation id="6696575039575740785">Установка веб-приложений запрещена</translation>
 <translation id="6698097747703777657">Не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создано:</translation>
+<translation id="6698769547327354196">Чтобы отключить Pix в Chrome, перейдите в <ph name="BEGIN_LINK1" />платежные настройки<ph name="END_LINK1" />.</translation>
 <translation id="67007264085648978">Ползунок времени</translation>
 <translation id="6702851555558236418">ПО для работы со звуком и музыкой</translation>
 <translation id="6702919718839027939">Режим презентации</translation>
@@ -3260,6 +3267,7 @@
 <translation id="6978236010531171013">Все равно поделиться</translation>
 <translation id="6978722349058177832">Если устройством пользуется кто-то ещё, при каждой покупке с использованием автозаполнения Chromium будет запрашивать подтверждение способа оплаты.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
+<translation id="6979302985396162258">настроить доступ к сторонним файлам cookie</translation>
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
 <translation id="6984270784814146224">Изображение без описания. Извлекаем текст с помощью технологий ИИ от Google…</translation>
 <translation id="6987806006823772670">Конверт (с покрытием)</translation>
@@ -3406,6 +3414,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Коммерческая деятельность</translation>
+<translation id="7244061187185055290">Кратко опишите, что вы хотите найти</translation>
 <translation id="7251437084390964440">Некоторые элементы сетевой конфигурации невозможно импортировать, поскольку она не соответствует стандарту ONC.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>

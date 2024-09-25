@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
 <translation id="1273910660700874265">Opções do grupo de separadores <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Mantenha este grupo para adicionar separadores mais tarde ou elimine-o se já não precisar dele.
+
+Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="TITLE_OF_GROUP" />" e este vai ser eliminado de todos os dispositivos.</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
 <translation id="1419023007528516122">Esta ação elimina permanentemente o grupo do seu dispositivo</translation>
 <translation id="1486715732399361704">Pode encontrar todos os seus grupos de separadores aqui</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
+<translation id="5615302411300498438">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo.
+
+Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar separador}other{Restaurar separadores}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> separador adicionado, <ph name="ANY_CLOSED" /> fechado(s)}other{<ph name="MANY_ADDED" /> separadores adicionados, <ph name="ANY_CLOSED" /> fechado(s)}}</translation>
 <translation id="8631711675211020168">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores <ph name="GROUP_NAME" /> e este vai ser eliminado de todos os dispositivos</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
+<translation id="8635399646025169806">Manter o grupo de separadores?</translation>
 <translation id="870736955561925754">Fechar o separador e eliminar o grupo?</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8730999928494395583">A sua atividade nestes separadores de navegação anónima vai ser removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8804742093141782941">Manter grupo</translation>
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
 <translation id="8887921976452567404">É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores.</translation>
 <translation id="8915916167043355778">Fechar tudo</translation>

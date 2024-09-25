@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Tosheza kwenye sehemu ya kuchanganua</translation>
 <translation id="1343442362630695901">ziwa lenye chumvi</translation>
 <translation id="1348657754632799065">Upau wa kurekodi</translation>
+<translation id="1350909945461913813">Hakikisha unahifadhi kazi yoyote</translation>
 <translation id="1367951781824006909">Chagua faili</translation>
 <translation id="1371650399987522809">Maoni kuhusu mandhari yanayoendeshwa na Google AI</translation>
 <translation id="1374385338586507108">Fafanua</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Toleo la SDK:</translation>
 <translation id="2016697457005847575">Jaribu hatua za utatuzi</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Chagua mandhari kisha uchague maneno yaliyopigiwa mistari ili uwekee mapendeleo picha zako zinazotayarishwa kwa AI.</translation>
 <translation id="2045814230297767491">vyombo vya kulia mezani</translation>
 <translation id="2047316797244836561">Tafadhali unganisha kwenye mtandao na upakie upya ukurasa ili uangalie taswira ya skrini.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Hakuna matamshi yaliyogunduliwa</translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha namba</translation>
 <translation id="2448312741937722512">Aina</translation>
+<translation id="2468124392950503650">Chagua kidokezo ili ubuni au uangalie <ph name="BEGIN_LINK_PROMPTING_GUIDE" />mwongozo wa kidokezo<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Tumia kipengele cha Nisaidie kuandika ili utayarishe rasimu au uboreshe kazi iliyopo, kinaendeshwa na Google AI</translation>
 <translation id="2480572840229215612">kaa</translation>
 <translation id="248546197012830854">Kifaa hakipo mtandaoni. Unganisha kwenye mtandao wa Wi-Fi ili uone maudhui ya usaidizi.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Hakikisha kuwa kifaa kimeunganishwa kwenye intaneti kisha ujaribu tena.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ni jina rahisi kutumia kwa <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
-<translation id="3600063043775287169">Iwapo kipengele cha sauti ya Chromebook kimewashwa, Kinasa sauti hurekodi sauti zote zinazochezwa kwenye kifaa hiki. Hakikisha kuwa ungependa kurekodi sauti zote.</translation>
 <translation id="3600339377155080675">Kitufe cha uakisi wa skrini</translation>
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3603829704940252505">Ishara</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Hakuna matokeo yanayolingana</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
+<translation id="4486524074141928967">Utaondolewa kwenye akaunti <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia kitufe cha kurekebisha (ctrl, alt, shift au <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Rangi ya kiolesura</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">rangi ya kijivu</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5600027863942488546">Kitufe cha <ph name="KEY_NAME" /> kimejaribishwa</translation>
+<translation id="5613201299517339763">Umeondolewa kwenye akaunti</translation>
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">ikisiri</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">Faili haijapatikana</translation>
 <translation id="5938286923316838007">Imeshindwa kutunga majina ya rekodi ya maudhui haya</translation>
 <translation id="5939518447894949180">Weka upya</translation>
+<translation id="5942727615796467094">Msimamizi wa <ph name="MANAGER" /> amebainisha wakati <ph name="DEVICE_TYPE" /> inaweza kutumiwa</translation>
 <translation id="594552776027197022">Zalisha jozi ya funguo nasibu</translation>
 <translation id="5946538341867151940">Bado hujaunganishwa. Ikiwa mtoa huduma za simu anapendekeza APN maalum, weka maelezo ya APN kwa kuchagua "+ APN Mpya"</translation>
 <translation id="5947266287934282605">Ikiwa siku ya mwisho ya mwezi ni kabla ya siku hii, data itawekwa upya siku ya mwisho ya mwezi</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">sayari tofauti</translation>
 <translation id="6359706544163531585">Zima mandhari meupe</translation>
 <translation id="6359919876285606596">Hatua hii ni ya kudumu na haiwezi kutenduliwa</translation>
+<translation id="6368342879959028556">Unapochagua “Tayarisha kwa kutumia AI,” andika kidokezo maalum. Au unaweza kuchagua “mandhari ya AI,” ili uchague mandhari kisha uchague maneno yaliyopigiwa mstari ili uwekee mapendeleo mandhari yako ya AI.</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="6373461326814131011">dimbwi</translation>
 <translation id="6379086450106841622">Skrini ya kugusa</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>
 <translation id="6462978824459367242">Kitufe cha "Ongeza APN" sasa kimewashwa</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ungependa kuchanganua ukurasa huu upya?}=1{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}other{Ungependa kuchanganua ukurasa wa {PAGE_NUMBER} upya?}}</translation>
+<translation id="6468146470109254228">Vidokezo na matokeo yako 3 ya hivi majuzi. Unaweza tu kufikia hivi ikiwa unatumia Mandhari na mtindo.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">mashua</translation>
 <translation id="64778964625672495">rangi nyekundu iliyokoza</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6659594942844771486">Kichupo</translation>
 <translation id="66621959568103627">marijani ya waridi</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+           Chagua 'Nihamasishe' ili upate chaguo tofauti na za kipekee zaidi za picha za AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Unapotayarisha ukitumia AI, kidokezo hutumwa kwenye seva za Google AI ili kutayarisha picha na kuboresha bidhaa, kwa mujibu wa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI Zalishi inafanyiwa majaribio, iko katika hatua za mwanzo za kubuniwa na kwa sasa upatikanaji wake unadhibitiwa.</translation>
 <translation id="6673898378497337661">kuongeza mwangaza wa kibodi</translation>
 <translation id="6692996468359469499">Pata maelezo yanayohusiana na chaguo lako</translation>
 <translation id="6694534975463174713">funga</translation>

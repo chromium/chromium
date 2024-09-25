@@ -323,6 +323,7 @@
 <translation id="122082903575839559">خوارزمية التوقيع على الشهادة</translation>
 <translation id="1221024147024329929">‏PKCS #1 MD2 مع ترميز RSA</translation>
 <translation id="1221825588892235038">التحديد فقط</translation>
+<translation id="1222835797152767346">اضبط رقم تعريف شخصي لتسهيل تسجيل الدخول</translation>
 <translation id="1223484782328004593">يتطلّب <ph name="APP_NAME" /> ترخيصًا</translation>
 <translation id="1223853788495130632">يوصي المشرف بقيمة محددة لهذا الإعداد.</translation>
 <translation id="1225177025209879837">جارٍ معالجة الطلب...</translation>
@@ -1126,6 +1127,7 @@
 <translation id="1794212650797661990">إخفاء كلمة المرور لـ <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">يمكنك إرسال ملاحظات لمساعدتنا في إصلاح هذه المشكلة.</translation>
 <translation id="1795214765651529549">استخدام المظهر الكلاسيكي</translation>
+<translation id="1795668164971917185">‏في المرة القادمة التي ترصد فيها ميزة "التصفّح الآمن من Google" عملية تنزيل مريبة، سيتم فحصها تلقائيًا كجزء من مستوى <ph name="LINK" /> الذي اخترته</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1797117170091578105">‏يمكنك اللعب باستخدام لوحة مفاتيح Chromebook. ويمكنك تخصيص مفاتيح لتنفيذ إجراءات محدَّدة.</translation>
 <translation id="1798335429200675510">‏انقر بزر الماوس الأيمن في مربّع نص لإنشاء مسودة أو تحسين نص حالي، وذلك باستخدام تكنولوجيات الذكاء الاصطناعي من Google. تتوفّر هذه الميزة حاليًا بشكل محدود.</translation>
@@ -5913,6 +5915,7 @@
 <translation id="5263656105659419083">للرجوع بسهولة إلى اللوحة الجانبية، انقر على "تثبيت" في أعلى يسار الصفحة.</translation>
 <translation id="5264148714798105376">قد يستغرق ذلك دقيقة أو نحو ذلك.</translation>
 <translation id="5264252276333215551">يُرجى الاتصال بالإنترنت لتشغيل التطبيق في وضع الكشك.</translation>
+<translation id="526539328530966548">الحماية المحسَّنة</translation>
 <translation id="5265797726250773323">حدث خطأ أثناء التثبيت</translation>
 <translation id="5266113311903163739">خطأ استيراد مرجع مصدق</translation>
 <translation id="526622169288322445">مزيد من الإجراءات للعنوان <ph name="ADDRESS_SUMMARY" /></translation>
@@ -6398,6 +6401,7 @@
 <translation id="5624959475330585145">طلب الإذن قبل استخدام الاتصالات غير الآمنة</translation>
 <translation id="5625225435499354052">‏تعديل المعلومات في Google Pay</translation>
 <translation id="5626134646977739690">الاسم:</translation>
+<translation id="5626172233890210551">استخدام كلمة المرور بدلاً من ذلك</translation>
 <translation id="5627832140542566187">اتجاه العرض</translation>
 <translation id="5628434207686266338">ضبط كلمة مرور الجهاز</translation>
 <translation id="562935524653278697">لقد أوقف مشرفك مزامنة الإشارات المرجعية والسجل وكلمات المرور والإعدادات الأخرى.</translation>
@@ -7173,6 +7177,7 @@
 <translation id="6207937957461833379">البلد/المنطقة</translation>
 <translation id="6208521041562685716">جارٍ تفعيل بيانات الجوّال</translation>
 <translation id="6208725777148613371">تعذّر الحفظ في <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" />.</translation>
+<translation id="6209767197996242814">في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6209838773933913227">جارٍ تعديل المكوِّن</translation>
 <translation id="6209908325007204267">‏يتضمّن جهازك "ترقية Chrome Enterprise"، ولكن اسم المستخدم الخاص بك غير مرتبط بحساب مؤسسة. يُرجى إنشاء حساب مؤسسة من خلال الانتقال إلى g.co/ChromeEnterpriseAccount على جهاز ثانوي.</translation>
 <translation id="6210282067670792090">في شريط العناوين، استخدِم اختصار لوحة المفاتيح هذا مع الاختصارات المخصّصة لمحركات البحث وميزة البحث في الموقع الإلكتروني.</translation>
@@ -10750,6 +10755,7 @@
 <translation id="8791534160414513928">‏إرسال طلب "Do Not Track" مع زيارات التصفح</translation>
 <translation id="8793390639824829328">تستخدم المواقع الإلكترونية هذه الميزة بهدف الانتقال بين أجزاء علامات التبويب التي تمّت مشاركتها، وتكبيرها أو تصغيرها</translation>
 <translation id="879413103056696865">أثناء تشغيل نقطة الاتصال، سينفّذ جهاز <ph name="PHONE_NAME" /> ما يلي:</translation>
+<translation id="8794548468611058947">‏بدلاً من إدخال كلمة مرور حسابك على Google لتسجيل الدخول، يمكنك إنشاء رقم تعريف شخصي لجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="8795916974678578410">نافذة جديدة</translation>
 <translation id="8796919761992612392">‏ت&amp;خصيص Chrome</translation>
 <translation id="8797459392481275117">عدم ترجمة هذا الموقع مطلقًا</translation>

@@ -1120,6 +1120,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1794212650797661990">Ocultar contraseña de <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Enviar comentarios para ayudarnos a solucionar este problema</translation>
 <translation id="1795214765651529549">Usar el tema clásico</translation>
+<translation id="1795668164971917185">La próxima vez que la Navegación segura de Google encuentre una descarga sospechosa, la analizará automáticamente como parte del archivo <ph name="LINK" /> que elijas</translation>
 <translation id="1796588414813960292">No se habilitarán las funciones que necesitan sonido.</translation>
 <translation id="1797117170091578105">Juega con el teclado de la Chromebook. Puedes personalizar las teclas para que realicen acciones específicas.</translation>
 <translation id="1798335429200675510">Haz clic con el botón derecho en el cuadro de texto para crear un borrador o mejorar el trabajo existente con la tecnología de IA de Google. Actualmente tiene disponibilidad limitada.</translation>
@@ -5907,6 +5908,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar en la parte superior derecha</translation>
 <translation id="5264148714798105376">Esta acción puede tardar unos minutos.</translation>
 <translation id="5264252276333215551">Conéctate a Internet para iniciar tu aplicación en modo kiosco.</translation>
+<translation id="526539328530966548">protección mejorada</translation>
 <translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
 <translation id="5266113311903163739">Error en la importación de Entidad de certificación</translation>
 <translation id="526622169288322445">Más acciones para <ph name="ADDRESS_SUMMARY" /></translation>

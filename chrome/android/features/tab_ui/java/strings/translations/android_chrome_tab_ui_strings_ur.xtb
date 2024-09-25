@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کے اختیارات</translation>
+<translation id="1293272072740285747">اس گروپ کو بعد میں ٹیبز شامل کرنے کیلئے برقرار رکھیں یا اگر آپ کو اس کی مزید ضرورت نہیں ہے تو اسے حذف کریں۔
+
+اگر آپ اسے حذف کرتے ہیں تو ہر کوئی فوری طور پر "<ph name="TITLE_OF_GROUP" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا۔</translation>
 <translation id="1340839264183302272">گروپ چھوڑیں</translation>
 <translation id="1419023007528516122">یہ آپ کے آلے سے گروپ کو مستقل طور پر حذف کر دے گا</translation>
 <translation id="1486715732399361704">آپ اپنے تمام ٹیب گروپس کو یہاں تلاش کر سکتے ہیں</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}}</translation>
 <translation id="5556417849629758491">اسٹور کی معلومات دیکھنے کا اختیار اسکرین کے اوپری حصے کے قریپ دستیاب ہے</translation>
+<translation id="5615302411300498438">اس گروپ کو بعد میں ٹیبز شامل کرنے کیلئے برقرار رکھیں یا چھوڑ دیں۔
+
+اگر آپ چھوڑتے ہیں تو آپ فوری طور پر "<ph name="TITLE_OF_GROUP" />" ٹیب گروپ تک رسائی سے محروم ہو حائیں گے۔</translation>
 <translation id="5627941783489838464">کوئی ٹیب اپ ڈیٹ نہیں ہے</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ٹیب کو بحال کریں}other{ٹیبز کو بحال کریں}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏Chrome سے <ph name="TABS_COUNT_ONE" /> لنک}other{‏Chrome سے <ph name="TABS_COUNT_MANY" /> لنکس}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ٹیب شامل کیا گیا، <ph name="ANY_CLOSED" /> بند ہو گیا}other{<ph name="MANY_ADDED" /> ٹیبز شامل کیے گئے، <ph name="ANY_CLOSED" /> بند ہو گئے}}</translation>
 <translation id="8631711675211020168">ہر کوئی فوری طور پر <ph name="GROUP_NAME" /> ٹیب گروپ تک رسائی سے محروم ہو جائے گا، اور اسے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="8633025649649592204">حالیہ سرگرمی</translation>
+<translation id="8635399646025169806">ٹیب گروپ کو برقرار رکھیں؟</translation>
 <translation id="870736955561925754">ٹیب بند کریں اور گروپ کو حذف کریں؟</translation>
 <translation id="8714939927607906138">کم قیمت</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8730999928494395583">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے ہٹائی جائے گی</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ماہ پہلے تخلیق کیا گیا}other{<ph name="NUM_MONTHS_MANY" /> ماہ پہلے تخلیق کیا گیا}}</translation>
+<translation id="8804742093141782941">گروپ کو برقرار رکھیں</translation>
 <translation id="8820741577754260431">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں</translation>
 <translation id="8887921976452567404">آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔</translation>
 <translation id="8915916167043355778">تمام بند کریں</translation>

@@ -263,7 +263,6 @@
 <translation id="2245007488813216650">Oversætter…</translation>
 <translation id="2249119578464404734">Tryk på søgeikonet øverst på skærmen</translation>
 <translation id="2251686759395008410">Menu → Historik</translation>
-<translation id="2252674110805316998">Websøgning</translation>
 <translation id="2252749852083403809">Gemmer i Drev for <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Din organisation tillader kun login med bestemte konti.</translation>
 <translation id="2257567812274161158">Der kunne ikke synkroniseres.</translation>
@@ -671,10 +670,10 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4286718549648564014">Adressen er flyttet til din konto: <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markér som læst</translation>
 <translation id="428768789042547925">Nyheder</translation>
-<translation id="4293080268407233932">Søg</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
+<translation id="4320848494125124980">Seneste</translation>
 <translation id="4324735664183300693">Aktivér notifikationer</translation>
 <translation id="4328843285884395590">Mit drev</translation>
 <translation id="4331177082088332784">Du kan administrere dette under BEGIN_LINKIndstillinger for indholdEND_LINK</translation>

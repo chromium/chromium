@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Pomarańczowy</translation>
 <translation id="125153950246128346">Kliknij, by zobaczyć inną kartę</translation>
 <translation id="1273910660700874265">Opcje grupy kart <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.
+
+Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph name="TITLE_OF_GROUP" />” i zostanie ona usunięta ze wszystkich urządzeń.</translation>
 <translation id="1340839264183302272">Opuść grupę</translation>
 <translation id="1419023007528516122">Spowoduje to trwałe usunięcie grupy z urządzenia</translation>
 <translation id="1486715732399361704">Tutaj znajdziesz wszystkie grupy kart</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zamknij grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Wyświetl informacje o sklepie, opcja dostępna u góry ekranu</translation>
+<translation id="5615302411300498438">Zachowaj tę grupę, aby później dodać do niej karty, lub ją opuść.
+
+Jeśli opuścisz grupę, natychmiast utracisz dostęp do grupy kart „<ph name="TITLE_OF_GROUP" />”.</translation>
 <translation id="5627941783489838464">Brak aktualizacji kart</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Przywróć kartę}few{Przywróć karty}many{Przywróć karty}other{Przywróć karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link z Chrome}few{<ph name="TABS_COUNT_MANY" /> linki z Chrome}many{<ph name="TABS_COUNT_MANY" /> linków z Chrome}other{<ph name="TABS_COUNT_MANY" /> linku z Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę, zamknięto <ph name="ANY_CLOSED" />}few{Dodano <ph name="MANY_ADDED" /> karty, zamknięto <ph name="ANY_CLOSED" />}many{Dodano <ph name="MANY_ADDED" /> kart, zamknięto <ph name="ANY_CLOSED" />}other{Dodano <ph name="MANY_ADDED" /> karty, zamknięto <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Wszyscy natychmiast utracą dostęp do grupy kart <ph name="GROUP_NAME" />, a grupa zostanie usunięta ze wszystkich urządzeń</translation>
 <translation id="8633025649649592204">Ostatnia aktywność</translation>
+<translation id="8635399646025169806">Zachować grupę kart?</translation>
 <translation id="870736955561925754">Zamknąć kartę i usunąć grupę?</translation>
 <translation id="8714939927607906138">Niższa cena</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8730999928494395583">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Utworzono <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
+<translation id="8804742093141782941">Zachowaj grupę</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>
 <translation id="8915916167043355778">Zamknij wszystko</translation>

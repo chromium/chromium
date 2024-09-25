@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">依掃瞄區大小自動調整</translation>
 <translation id="1343442362630695901">鹽湖</translation>
 <translation id="1348657754632799065">錄音列</translation>
+<translation id="1350909945461913813">請務必儲存所有資料</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1371650399987522809">為採用 Google AI 技術製作的桌布提供意見</translation>
 <translation id="1374385338586507108">定義</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">請嘗試解決疑難步驟</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">選擇主題並選取加上底線的字詞，即可打造個人化的 AI 圖像。</translation>
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">如要查看螢幕保護程式，請連線至網絡並重新載入頁面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">偵測不到語音</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2448312741937722512">類型</translation>
+<translation id="2468124392950503650">選取要建立的提示或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">「幫我寫」功能採用 Google AI 技術，用來建立草稿或修正現有作品</translation>
 <translation id="2480572840229215612">螃蟹</translation>
 <translation id="248546197012830854">裝置已離線。連線至 Wi-Fi 網絡即可查看說明內容。</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">請確保已連接互聯網，然後再試一次。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> 係 <ph name="APN_NAME" /> 較多人認識嘅名稱。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
-<translation id="3600063043775287169">開啟 Chromebook 音訊後，「錄音機」會錄下此裝置播放的所有音訊。請確保你想錄下所有聲音。</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">找不到相符的結果</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
+<translation id="4486524074141928967">系統會在<ph name="TIME" /> 將你登出</translation>
 <translation id="4500722292849917410">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左箭咀</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">灰色</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5600027863942488546">測試咗 <ph name="KEY_NAME" /> 制</translation>
+<translation id="5613201299517339763">你已登出</translation>
 <translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5630438231335788050">包豪斯</translation>
 <translation id="5631759159893697722">摘要</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5938286923316838007">無法為此內容建立錄音名稱</translation>
 <translation id="5939518447894949180">重設</translation>
+<translation id="5942727615796467094"><ph name="MANAGER" /> 系統管理員已設定這部 <ph name="DEVICE_TYPE" /> 的使用時間</translation>
 <translation id="594552776027197022">產生隨機配對金鑰</translation>
 <translation id="5946538341867151940">您尚未連線。如果您的流動網絡供應商建議使用自訂 APN，請選取「+ 新增 APN」來輸入 APN 資料</translation>
 <translation id="5947266287934282605">如果當月最後一天早於這一天，系統會在當月最後一天重設資料</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">不同的行星</translation>
 <translation id="6359706544163531585">停用淺色主題背景</translation>
 <translation id="6359919876285606596">這是永久操作，無法復原。</translation>
+<translation id="6368342879959028556">如果選取「使用 AI 製作」，請自行輸入提示；如果選取「AI 桌布」，只要再選擇主題並選取加上底線的字詞，就能打造個人化的 AI 桌布。</translation>
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6373461326814131011">池塘</translation>
 <translation id="6379086450106841622">觸控螢幕</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">去帳戶設定</translation>
 <translation id="6462978824459367242">宜家啟用咗「加入 APN」掣</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃瞄頁面嗎？}=1{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}other{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}}</translation>
+<translation id="6468146470109254228">這是你最近使用的 3 個提示和輸出內容。這些資料只能在使用「桌布和樣式」功能時存取。</translation>
 <translation id="6472207088655375767">一次性密碼</translation>
 <translation id="6472979596862005515">小船</translation>
 <translation id="64778964625672495">深紅色</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="66621959568103627">珊瑚粉紅色</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          選取「給我靈感」可獲得更多獨特而有變化的 AI 圖像選項。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          使用 AI 製作內容時，系統會將提示傳送到 Google AI 伺服器，以生成圖像及提升產品品質。資料處理過程會遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 為實驗功能，處於初期開發階段，目前未全面開放使用。</translation>
 <translation id="6673898378497337661">校光鍵盤</translation>
 <translation id="6692996468359469499">取得您選取項目相關資料</translation>
 <translation id="6694534975463174713">鎖定</translation>
@@ -1570,6 +1587,7 @@
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8882789155418924367">貓頭鷹</translation>
 <translation id="8892443466059986410">取消編輯快速鍵</translation>
+<translation id="8897043028305808902">已重新命名檔案</translation>
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8909114361904403025">向上鍵</translation>
 <translation id="8910721771319628100">預設網絡超過延遲門檻</translation>

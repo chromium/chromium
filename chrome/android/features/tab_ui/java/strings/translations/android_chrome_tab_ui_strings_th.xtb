@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">สีส้ม</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือลบออกหากคุณไม่ต้องการแล้ว
+
+หากลบกลุ่มนี้ ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1340839264183302272">ออกจากกลุ่ม</translation>
 <translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="1486715732399361704">คุณดูกลุ่มแท็บทั้งหมดได้ที่นี่</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
+<translation id="5615302411300498438">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่ม
+
+หากออกจากกลุ่ม คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ทันที</translation>
 <translation id="5627941783489838464">ไม่มีการอัปเดตแท็บ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{กู้คืนแท็บ}other{กู้คืนแท็บ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ลิงก์จาก Chrome}other{<ph name="TABS_COUNT_MANY" /> ลิงก์จาก Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{เพิ่มแล้ว <ph name="ONE_ADDED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{เพิ่มแล้ว <ph name="MANY_ADDED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="8631711675211020168">ทุกคนจะสูญเสียสิทธิ์เข้าถึงกลุ่มแท็บ <ph name="GROUP_NAME" /> ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
 <translation id="8633025649649592204">กิจกรรมล่าสุด</translation>
+<translation id="8635399646025169806">เก็บกลุ่มแท็บไว้ใช่ไหม</translation>
 <translation id="870736955561925754">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8730999928494395583">ระบบจะนำกิจกรรมในแท็บที่ไม่ระบุตัวตนเหล่านี้ออกจากอุปกรณ์นี้</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_MONTHS_ONE" /> เดือนที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MONTHS_MANY" /> เดือนที่ผ่านมา}}</translation>
+<translation id="8804742093141782941">เก็บกลุ่มไว้</translation>
 <translation id="8820741577754260431">ดูการลดราคาในแท็บ</translation>
 <translation id="8887921976452567404">แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ"</translation>
 <translation id="8915916167043355778">ปิดทั้งหมด</translation>

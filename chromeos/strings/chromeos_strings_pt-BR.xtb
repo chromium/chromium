@@ -79,6 +79,7 @@
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1343442362630695901">lago salino</translation>
 <translation id="1348657754632799065">Barra de gravação</translation>
+<translation id="1350909945461913813">Salve os trabalhos não salvos</translation>
 <translation id="1367951781824006909">Escolher um arquivo</translation>
 <translation id="1371650399987522809">Feedback sobre o plano de fundo com a tecnologia de IA do Google</translation>
 <translation id="1374385338586507108">Definição</translation>
@@ -237,6 +238,7 @@
 <translation id="2011174342667534258">Versão do SDK:</translation>
 <translation id="2016697457005847575">Testar etapas de solução de problemas</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Escolha um tema e selecione as palavras sublinhadas para personalizar suas imagens de IA.</translation>
 <translation id="2045814230297767491">talheres</translation>
 <translation id="2047316797244836561">Conecte-se a uma rede e atualize a página para conferir o protetor de tela.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -318,6 +320,7 @@
 <translation id="242825218556404975">Nenhuma fala detectada</translation>
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2468124392950503650">Selecione o comando para criar ou ver o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Use a opção "Quero ajuda para escrever" para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google</translation>
 <translation id="2480572840229215612">caranguejos</translation>
 <translation id="248546197012830854">O dispositivo está off-line. Conecte-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
@@ -510,7 +513,6 @@
 <translation id="3588034708467091142">Confira sua conexão de Internet e tente de novo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> é o nome fácil de usar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
-<translation id="3600063043775287169">Quando o áudio do Chromebook está ativado, o Gravador captura todo o áudio tocado no dispositivo. Confirme se você quer gravar todos os sons.</translation>
 <translation id="3600339377155080675">Espelhar tela</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -686,6 +688,7 @@
 <translation id="4474142134969976028">Nenhum resultado correspondente</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha no ping do gateway de rede não padrão</translation>
+<translation id="4486524074141928967">Sua conta será desconectada às <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Atalho indisponível. Pressione um novo atalho usando uma tecla modificadora (Ctrl, Alt, Shift ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
@@ -909,6 +912,7 @@
 <translation id="5595623927872580850">cinza</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600027863942488546">A tecla <ph name="KEY_NAME" /> foi testada</translation>
+<translation id="5613201299517339763">Você saiu da sua conta</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resumo</translation>
@@ -973,6 +977,7 @@
 <translation id="5931523347251946569">Arquivo não encontrado</translation>
 <translation id="5938286923316838007">Não é possível criar nomes de gravações para esse conteúdo</translation>
 <translation id="5939518447894949180">Redefinir</translation>
+<translation id="5942727615796467094">O administrador do <ph name="MANAGER" /> definiu quando este <ph name="DEVICE_TYPE" /> pode ser usado</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
 <translation id="5946538341867151940">Sua rede ainda não está conectada. Se a sua operadora de celular recomendar um APN personalizado, insira as informações dele selecionando "+ Novo APN"</translation>
 <translation id="5947266287934282605">Os dados serão redefinidos no último dia do mês se ele for antes dessa data</translation>
@@ -1064,6 +1069,7 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desativar o tema claro</translation>
 <translation id="6359919876285606596">Esta ação é permanente e não pode ser desfeita</translation>
+<translation id="6368342879959028556">Ao selecionar "Criar com IA", escreva um comando personalizado. Você também pode selecionar "Planos de fundo de IA" para escolher um tema e, em seguida, as palavras sublinhadas para personalizar o plano de fundo.</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
 <translation id="6373461326814131011">Lagoa</translation>
 <translation id="6379086450106841622">Tela touchscreen</translation>
@@ -1087,6 +1093,7 @@
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
 <translation id="6462978824459367242">O botão "Adicionar APN" está ativado</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
+<translation id="6468146470109254228">Seus 3 comandos e saídas mais recentes. Você só poderá acessar esses itens enquanto estiver usando o Estilo e fundo de tela.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">barcos</translation>
 <translation id="64778964625672495">vermelho-escura</translation>
@@ -1132,6 +1139,16 @@
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659594942844771486">Guia</translation>
 <translation id="66621959568103627">rosa-coral</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Buscar inspiração" para receber opções de imagens de IA mais exclusivas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando você cria com IA, o comando é enviado aos servidores da IA do Google para gerar imagens e melhorar o produto, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade do Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa é experimental e está em desenvolvimento inicial. No momento, ela tem disponibilidade limitada.</translation>
 <translation id="6673898378497337661">aumentar brilho do teclado</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6694534975463174713">cadeado</translation>

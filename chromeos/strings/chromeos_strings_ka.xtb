@@ -513,7 +513,6 @@
 <translation id="3588034708467091142">დარწმუნდით, რომ დაკავშირებული ხართ ინტერნეტთან და ცადეთ ხელახლა.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> არის <ph name="APN_NAME" />-ის მომხმარებელზე მორგებული სახელი.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
-<translation id="3600063043775287169">როცა Chromebook აუდიო ჩართულია, რეკორდერი ჩაიწერს ამ მოწყობილობაზე დაკრულ ყველა აუდიოს. დარწმუნდით, რომ ყველა ხმის ჩაწერა გსურთ.</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3603829704940252505">ავატარი</translation>
@@ -1588,6 +1587,7 @@
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>
 <translation id="8882789155418924367">ბუები</translation>
 <translation id="8892443466059986410">]მალსახმობის რედაქტირების გაუქმება</translation>
+<translation id="8897043028305808902">ფაილის სახელი შეიცვალა</translation>
 <translation id="8898840733695078011">სიგნალის სიძლიერე</translation>
 <translation id="8909114361904403025">ისარი ზემოთ</translation>
 <translation id="8910721771319628100">ნაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>

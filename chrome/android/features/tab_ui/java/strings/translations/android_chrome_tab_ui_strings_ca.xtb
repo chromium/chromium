@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1273910660700874265">Opcions del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1293272072740285747">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.
+
+Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="TITLE_OF_GROUP" />" i se suprimirà de tots els dispositius.</translation>
 <translation id="1340839264183302272">Surt del grup</translation>
 <translation id="1419023007528516122">Amb aquesta acció, el grup se suprimirà permanentment del dispositiu</translation>
 <translation id="1486715732399361704">Pots veure tots els teus grups de pestanyes aquí</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tanca el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Tanca el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="5556417849629758491">Consulta la informació de la botiga, opció disponible a prop de la part superior de la pantalla</translation>
+<translation id="5615302411300498438">Conserva aquest grup per afegir-hi pestanyes més tard o abandona'l.
+
+Si l'abandones, perdràs immediatament l'accés al grup de pestanyes "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Cap actualització de pestanyes</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaura la pestanya}other{Restaura les pestanyes}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> enllaç de Chrome}other{<ph name="TABS_COUNT_MANY" /> enllaços de Chrome}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{S'ha afegit <ph name="ONE_ADDED" /> pestanya i se n'ha tancat <ph name="ANY_CLOSED" />}other{S'han afegit <ph name="MANY_ADDED" /> pestanyes i se n'han tancat <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Tothom perdrà immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i se suprimirà de tots els dispositius</translation>
 <translation id="8633025649649592204">Activitat recent</translation>
+<translation id="8635399646025169806">Vols conservar el grup de pestanyes?</translation>
 <translation id="870736955561925754">Vols tancar la pestanya i suprimir el grup?</translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
+<translation id="8804742093141782941">Conserva el grup</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="8887921976452567404">Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes.</translation>
 <translation id="8915916167043355778">Tanca-ho tot</translation>

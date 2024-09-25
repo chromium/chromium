@@ -6653,6 +6653,27 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6102449843040973938">No impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="610892566190435199">Habilitar los informes sobre el estado de la energía del dispositivo</translation>
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
+<translation id="6112524153927257380">Si se establece la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
+
+      Hay muchos tipos de advertencias de descarga en Chrome. En general, pueden dividirse en las siguientes categorías (consulta más información sobre los resultados de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Contenido malicioso: como lo marca el servidor de Navegación segura
+      * Contenido poco frecuente o no deseado: como lo marca el servidor de Navegación segura
+      * Tipo de archivo peligroso: por ejemplo, todas las descargas de archivos SWF y muchas descargas de archivos EXE
+
+      Cuando se establece la política, se bloquean distintos subconjuntos de estas categorías en función de su valor:
+
+      0: sin restricciones especiales. Predeterminado.
+
+      1: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
+
+      2: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y archivos poco frecuentes o no deseados marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
+
+      3: bloquea todas las descargas. No recomendado (excepto en casos especiales).
+
+      4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
+
+      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Restaura el comportamiento permisivo.</translation>
 <translation id="6119207979839638596">Esta política se retiró en la versión M75 después de que la política de la versión máxima de TLS se retirase de <ph name="PRODUCT_NAME" />.
 

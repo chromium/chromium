@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
+<translation id="1293272072740285747">後でタブを追加できるようにこのグループを保持するか、不要になった場合は削除します。
+
+削除すると、全員が「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
 <translation id="1340839264183302272">グループから退出</translation>
 <translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
 <translation id="1486715732399361704">ここですべてのタブグループを表示できます</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を閉じます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を閉じます。}}</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
+<translation id="5615302411300498438">後でタブを追加できるようにこのグループを保持するか、グループから退出します。
+
+退出すると、「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなります。</translation>
 <translation id="5627941783489838464">タブの更新はありません</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{タブを復元}other{タブを復元}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome からの <ph name="TABS_COUNT_ONE" /> 件のリンク}other{Chrome からの <ph name="TABS_COUNT_MANY" /> 件のリンク}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個のタブを追加、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="8631711675211020168">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
+<translation id="8635399646025169806">タブグループを保持しますか？</translation>
 <translation id="870736955561925754">タブを閉じてグループを削除しますか？</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
+<translation id="8804742093141782941">グループを保持</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>

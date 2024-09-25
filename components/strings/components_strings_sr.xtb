@@ -379,6 +379,7 @@
 <translation id="1658111267661135323">ТВ и видео</translation>
 <translation id="1658918301167915956">Bluetooth уређаји</translation>
 <translation id="1662550410081243962">Чувај и уноси начине плаћања</translation>
+<translation id="1662980953334786797">Исти редослед</translation>
 <translation id="1663943134801823270">Картице и адресе су из Chrome-а. Њима можете да управљате у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Flexo фотополимер</translation>
 <translation id="166624440456221306">Избриши табелу за поређење</translation>
@@ -1659,6 +1660,7 @@
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
 <translation id="4025325634010721551">Смернице су поново учитане</translation>
 <translation id="4025338605225449265">Валуте и мењачки послови</translation>
+<translation id="4025777154208238692">Обрнути редослед</translation>
 <translation id="4027270464942389997"><ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Нападачи могу да виде и промене<ph name="END_STRONG" /> информације које шаљете или примате са сајта.
       <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Најбезбедније је да посетите овај сајт касније<ph name="END_STRONG" /> ако користите јавну мрежу. Ризик је мањи са поуздане мреже, попут кућне или пословне WiFi мреже.

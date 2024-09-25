@@ -169,6 +169,7 @@
 <translation id="2945997411976714835">Суулгах үед алдаа гарлаа: Суулгагч явцыг эхлүүлж чадсангүй.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="2970681950995291301">Google Бүртгэлээ Chrome-с хасахын тулд Тохиргооны хуудсанд Chrome-с гарна уу</translation>
+<translation id="2994465299455873643">Хэрэв <ph name="BROWSER_NAME" /> хуучирсан бол тухайн хөтчийг сэргээх аюулгүй арга болон шифрлэлтийн үйлчилгээгээр хангадаг. Хэрэв энэ үйлчилгээг идэвхгүй болгосон бол <ph name="BROWSER_NAME" /> шифрлэгдсэн өгөгдөлд хандах эрхээ алдаж магадгүй бөгөөд <ph name="BROWSER_NAME" /> өөрийгөө сэргээх боломжгүй болж болзошгүй.</translation>
 <translation id="3018957014024118866">Мөн Chrome-с өгөгдөл устгах (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex-г шинэчлэхийн тулд дахин ачаална уу</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
@@ -225,6 +226,7 @@
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chrome олж мэдлээ</translation>
 <translation id="3695446226812920698">Заавар харах</translation>
 <translation id="3697952514309507634">Chrome-н бусад профайл</translation>
+<translation id="3700276346088749847">бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу</translation>
 <translation id="3703994572283698466">ChromeOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
@@ -296,6 +298,7 @@
 <translation id="4575717501879784448">Chrome таны үзэх хэрэглээг сайжруулж, нөөцүүдийг чөлөөлөхийн тулд эдгээр табыг идэвхгүй болгох боломжтой.</translation>
 <translation id="459622048091363950">Chrome-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
 <translation id="4600710005438004015">Chrome-г хамгийн сүүлийн хувилбарт шинэчлээгүй тул та шинэ онцлог болон аюулгүй байдлын засвар авах боломжгүй байна.</translation>
+<translation id="4601439950572737842">Таны өгөгдлийг нэвтрэх үгээр тань шифрлэсэн. Google бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу.</translation>
 <translation id="4624065194742029982">Chrome-н нууцлалын горим</translation>
 <translation id="4627412468266359539">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр ChromeOS Flex-н онцлогууд, гүйцэтгэлийг сайжруулахад тусална уу.</translation>
 <translation id="4633000520311261472">Chrome-ыг илүү аюулгүй болгохын тулд бид <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-дахь жагсаалтанд ороогүй мөн танд мэдэгдэлгүйгээр нэмэгдсэн байж болох зарим нэг өргөтгөлүүдийг идэвхгүй болголоо.</translation>

@@ -6613,6 +6613,27 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6102449843040973938">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät nicht verhindern</translation>
 <translation id="610892566190435199">Melden des Energiestatus auf Geräten aktivieren</translation>
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
+<translation id="6112524153927257380">Wenn diese Richtlinie konfiguriert ist, können Nutzer keine Sicherheitsentscheidungen für Downloads umgehen.
+
+      In Chrome gibt es verschiedene Arten von Warnungen zu Downloads, die sich in die folgenden Kategorien unterteilen lassen (weitere Informationen über Safe Browsing-Ergebnisse findest du unter https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Schädlich, wie vom Safe Browsing-Server gemeldet
+      * Ungewöhnlich oder unerwünscht, wie vom Safe Browsing-Server gemeldet
+      * Gefährlicher Dateityp (z. B. alle Downloads von SWF-Dateien und manche Downloads von EXE-Dateien)
+
+      Je nachdem, auf welchen Wert die Richtlinie festgelegt ist, werden manche dieser Kategorien blockiert:
+
+      0: Keine besonderen Einschränkungen. Standard.
+
+      1: Schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden, UND alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
+
+      2: Schädliche Dateien UND ungewöhnliche oder unerwünschte Dateien, die vom Safe Browsing-Server gemeldet wurden, SOWIE alle gefährlichen Dateitypen werden blockiert. Nur für OEs/Browser/Nutzer empfohlen, die eine hohe Toleranz für falsch positive Ergebnisse haben.
+
+      3: Alle Downloads werden blockiert. Nur für spezielle Anwendungsfälle empfohlen.
+
+      4: Blockiert schädliche Dateien, die vom Safe Browsing-Server gemeldet wurden. Gefährliche Dateitypen werden nicht blockiert. Empfohlen.
+
+      Hinweis: Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Die Einschränkungen gelten aber weder für das Herunterladen der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen. Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="6118226055960302400">Weniger striktes Verhalten wiederherstellen.</translation>
 <translation id="6119207979839638596">Diese Richtlinie wurde in M75 entfernt, nachdem die Richtlinie zur TLS-Höchstversion aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 

@@ -398,6 +398,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
 <translation id="2416438829169535743">Ieși din vizualizare?</translation>
 <translation id="2417486498593892439">Conectează-te la rețea</translation>
+<translation id="2423619675829330672">Prea multe încercări de introducere a codului PIN. Așteaptă <ph name="TIME_LEFT" /> și încearcă din nou.</translation>
 <translation id="2426051945783024481">Cadrul camerei foto este centrat automat</translation>
 <translation id="2427507373259914951">Clic stânga</translation>
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
@@ -1577,6 +1578,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6330012934079202188">Se afișează ferestrele de pe toate desktopurile. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe desktopul actual.</translation>
 <translation id="6337159624125741244">S-a activat lupa de ecran complet</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> este o sesiune gestionată de <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">Dacă ai uitat codul PIN, încearcă să recuperezi acest utilizator.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> s-a conectat</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, apoi <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> sau <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGESTII DE APLICAȚII</translation>
@@ -1633,6 +1635,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6539852571005954999">Se scanează <ph name="FILENAME" /> pentru descărcare</translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojiuri, GIF-uri și altele</translation>
+<translation id="6545382064335350438">Codul tău PIN tot nu a putut fi confirmat. Încearcă din nou.</translation>
 <translation id="6555373427270923730">Introdu o adresă web în bara de adrese, apoi apasă pe <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Instalare nouă</translation>
@@ -2029,6 +2032,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7904094684485781019">Administratorul acestui cont a dezactivat conectarea multiplă.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispozitive conectate</translation>
+<translation id="7921565901396407357">Codul tău PIN nu a putut fi confirmat. Încearcă din nou.</translation>
 <translation id="7923534281713082605">Vremea</translation>
 <translation id="7926080067315048321">Vezi toate sarcinile din Google Tasks pe web</translation>
 <translation id="7930731167419639574">Vorbirea este acum procesată local și Dictarea funcționează offline</translation>

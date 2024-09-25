@@ -513,7 +513,6 @@
 <translation id="3588034708467091142">Проверите да ли сте повезани на интернет и пробајте поново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> је име које је лако за коришћење за: <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
-<translation id="3600063043775287169">Када је звук Chromebook-а укључен, Снимач звука снима све звукове који се пуштају на овом уређају. Уверите се да желите да снимате све звукове.</translation>
 <translation id="3600339377155080675">Пресликајте екран</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1588,6 +1587,7 @@
 <translation id="8881098542468797602">Тест је успео</translation>
 <translation id="8882789155418924367">сове</translation>
 <translation id="8892443466059986410">Откажите измену пречица</translation>
+<translation id="8897043028305808902">Фајл је преименован</translation>
 <translation id="8898840733695078011">Јачина сигнала</translation>
 <translation id="8909114361904403025">стрелица нагоре</translation>
 <translation id="8910721771319628100">Подразумевана мрежа премашује граничну вредност за кашњење</translation>

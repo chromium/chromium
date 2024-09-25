@@ -9,6 +9,9 @@
 <translation id="1197088940767939838">තැඹිලි</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> පටිති සමූහ විකල්ප</translation>
+<translation id="1293272072740285747">පසුව පටිති එක් කිරීමට මෙම සමූහය තබා ගන්න, නැතහොත් ඔබට එය තවදුරටත් අවශ්‍ය නැතිනම් එය මකන්න.
+
+ඔබ එය මකා දැමුවහොත්, සෑම කෙනෙකුටම වහාම "<ph name="TITLE_OF_GROUP" />" පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය සියලු උපාංගවලින් මකා දැමෙනු ඇත.</translation>
 <translation id="1340839264183302272">සමූහය හැර යන්න</translation>
 <translation id="1419023007528516122">මෙය සමූහය ඔබේ උපාංගයෙන් ස්ථිරව මකයි</translation>
 <translation id="1486715732399361704">ඔබට ඔබේ සියලු පටිති සමූහ මෙහි සොයා ගත හැක</translation>
@@ -105,6 +108,9 @@
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}}</translation>
 <translation id="5556417849629758491">අලෙවිසැල් තොරතුරු බලන්න, තිරයේ ඉහළින්ම ඇති විකල්පය</translation>
+<translation id="5615302411300498438">පසුව පටිති එක් කිරීමට මෙම සමූහය තබා ගන්න, නැතහොත් පිටව යන්න.
+
+ඔබ හැර ගියහොත්, ඔබට වහාම "<ph name="TITLE_OF_GROUP" />" පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇත.</translation>
 <translation id="5627941783489838464">පටිති යාවත්කාලීන නැත</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{පටිත්ත ප්‍රතිසාධනය කරන්න}one{පටිති ප්‍රතිසාධනය කරන්න}other{පටිති ප්‍රතිසාධනය කරන්න}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome වෙතින් <ph name="TABS_COUNT_ONE" /> සබැඳියක්}one{Chrome වෙතින් සබැඳි <ph name="TABS_COUNT_MANY" />ක්}other{Chrome වෙතින් සබැඳි <ph name="TABS_COUNT_MANY" />ක්}}</translation>
@@ -178,11 +184,13 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />ක් පටිත්තක් එක් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}one{පටිති <ph name="MANY_ADDED" />ක් එක් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}other{පටිති <ph name="MANY_ADDED" />ක් එක් කරන ලදි, <ph name="ANY_CLOSED" /> වසා ඇත}}</translation>
 <translation id="8631711675211020168">සෑම කෙනෙකුටම <ph name="GROUP_NAME" /> පටිති සමූහය වෙත ප්‍රවේශය වහාම අහිමි වනු ඇති අතර, එය සියලු උපාංගවලින් මකා දැමෙනු ඇත</translation>
 <translation id="8633025649649592204">මෑත ක්‍රියාකාරකම</translation>
+<translation id="8635399646025169806">පටිති සමූහය තබා ගන්න ද?</translation>
 <translation id="870736955561925754">පටිත්ත වසා සමූහය මකන්නද?</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
 <translation id="8730621377337864115">අවසන්</translation>
 <translation id="8730999928494395583">මෙම අප්‍රකට පටිතිවල ඔබේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{මාස <ph name="NUM_MONTHS_ONE" />ට පෙර තනන ලදි}one{මාස <ph name="NUM_MONTHS_MANY" />ට පෙර තනන ලදි}other{මාස <ph name="NUM_MONTHS_MANY" />ට පෙර තනන ලදි}}</translation>
+<translation id="8804742093141782941">සමූහය තබා ගන්න</translation>
 <translation id="8820741577754260431">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න</translation>
 <translation id="8887921976452567404">ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක.</translation>
 <translation id="8915916167043355778">සියල්ල වසන්න</translation>
