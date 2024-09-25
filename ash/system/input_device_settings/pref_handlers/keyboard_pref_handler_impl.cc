@@ -66,6 +66,8 @@ static constexpr auto kMetaKeyMapping =
     base::MakeFixedFlatMap<ui::mojom::MetaKey, const char*>(
         {{ui::mojom::MetaKey::kSearch, ::prefs::kLanguageRemapSearchKeyTo},
          {ui::mojom::MetaKey::kLauncher, ::prefs::kLanguageRemapSearchKeyTo},
+         {ui::mojom::MetaKey::kLauncherRefresh,
+          ::prefs::kLanguageRemapSearchKeyTo},
          {ui::mojom::MetaKey::kExternalMeta,
           ::prefs::kLanguageRemapExternalMetaKeyTo},
          {ui::mojom::MetaKey::kCommand,
@@ -222,7 +224,11 @@ GetModifierRemappings(PrefService* prefs, const mojom::Keyboard& keyboard) {
       continue;
     }
     auto it = kKeyboardModifierMappings.find(modifier_key);
-    DCHECK(it != kKeyboardModifierMappings.end());
+    // Skip modifiers which do not have old pref equivalents.
+    if (it == kKeyboardModifierMappings.end()) {
+      continue;
+    }
+
     const auto pref_modifier_key =
         static_cast<ui::mojom::ModifierKey>(prefs->GetInteger(it->second));
     if (modifier_key != pref_modifier_key) {
@@ -250,7 +256,10 @@ GetModifierRemappingsKnownUser(const user_manager::KnownUser& known_user,
       continue;
     }
     auto it = kKeyboardModifierMappings.find(modifier_key);
-    DCHECK(it != kKeyboardModifierMappings.end());
+    // Skip modifiers which do not have old pref equivalents.
+    if (it == kKeyboardModifierMappings.end()) {
+      continue;
+    }
     const auto pref_modifier_key = static_cast<ui::mojom::ModifierKey>(
         known_user.FindIntPath(account_id, it->second)
             .value_or(static_cast<int>(modifier_key)));
