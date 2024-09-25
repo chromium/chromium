@@ -98,10 +98,7 @@ bool CryptohomePinEngine::ShouldSkipSetupBecauseOfPolicy(
     const AccountId& account_id) const {
   std::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
       account_id, CryptohomePinEngine::Purpose::kAny);
-  bool result = is_pin_disabled.has_value() ? is_pin_disabled.value() : false;
-  result = result ||
-           chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin();
-  return result;
+  return is_pin_disabled.value_or(false);
 }
 
 void CryptohomePinEngine::IsPinAuthAvailable(

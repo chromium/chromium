@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -102,47 +103,64 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
 
 PinSetupScreen::~PinSetupScreen() = default;
 
-bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
-  if (!context.extra_factors_token.has_value()) {
-    return true;
+std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
+    WizardContext& context) {
+  CHECK(has_login_support_.has_value());
+
+  if (context.skip_post_login_screens_for_tests) {
+    return SkipReason::kSkippedForTests;
   }
+
+  if (!context.extra_factors_token.has_value()) {
+    return SkipReason::kMissingExtraFactorsToken;
+  }
+
   if (!ash::AuthSessionStorage::Get()->IsValid(
           context.extra_factors_token.value())) {
-    return true;
+    return SkipReason::kExpiredToken;
   }
+
+  if (chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
+    return SkipReason::kManagedGuestSessionOrEphemeralLogin;
+  }
+
   AccountId account_id = ash::AuthSessionStorage::Get()
                              ->Peek(context.extra_factors_token.value())
                              ->GetAccountId();
-  if (context.skip_post_login_screens_for_tests ||
-      cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(account_id)) {
-    return true;
+  if (cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(account_id)) {
+    return SkipReason::kNotAllowedByPolicy;
   }
 
-  // If cryptohome takes very long to respond, `has_login_support_` may be null
-  // here, but this is very unusual.
-  LOG_IF(WARNING, !has_login_support_.has_value())
-      << "Could not determine hardware support support for login";
-  // Show pin setup if we have hardware support for login with pin.
-  if (has_login_support_.value_or(false)) {
-    return false;
+  // Hardware capability check. In order for the screen to be shown, the device
+  // needs to support PIN for login, OR be a tablet device.
+  const bool is_device_a_tablet =
+      display::Screen::GetScreen()->InTabletMode() ||
+      switches::ShouldOobeUseTabletModeFirstRun();
+  if (!(is_device_a_tablet || has_login_support_.value())) {
+    return SkipReason::kUsupportedHardware;
   }
 
-  // Show the screen if the device is in tablet mode or tablet mode first user
-  // run is forced on the device.
-  if (display::Screen::GetScreen()->InTabletMode() ||
-      switches::ShouldOobeUseTabletModeFirstRun()) {
-    return false;
-  }
-
-  return true;
+  // Will not be skipped.
+  return std::nullopt;
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
-  if (ShouldBeSkipped(context)) {
+  // If cryptohome takes very long to respond, `has_login_support_` may be null
+  // here, but this is very unusual. In that case, assume that there is no
+  // support for login.
+  if (!has_login_support_.has_value()) {
+    LOG(WARNING) << "Could not determine hardware support support for login";
+    has_login_support_ = false;
+  }
+
+  const auto skip_reason = GetSkipReason(context);
+  if (skip_reason.has_value()) {
     ClearAuthData(context);
+    // TODO(b/365059362) : Create new metric to track the detailed skip reason.
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
+
   return false;
 }
 

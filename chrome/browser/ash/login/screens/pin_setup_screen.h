@@ -28,7 +28,17 @@ class PinSetupScreen : public BaseScreen {
     kUserSkip = 1,
     kNotApplicable = 2,
     kTimedOut = 3,
-    kMaxValue = kTimedOut
+    kMaxValue = kTimedOut,
+  };
+
+  // Detailed reason describing why the screen is being skipped.
+  enum class SkipReason {
+    kSkippedForTests = 0,
+    kNotAllowedByPolicy,
+    kMissingExtraFactorsToken,
+    kExpiredToken,
+    kManagedGuestSessionOrEphemeralLogin,
+    kUsupportedHardware,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -67,12 +77,15 @@ class PinSetupScreen : public BaseScreen {
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
-  bool ShouldBeSkipped(const WizardContext& context) const override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
  private:
+  // Checks if the screen should be skipped by returning a detailed reason.
+  std::optional<PinSetupScreen::SkipReason> GetSkipReason(
+      WizardContext& context);
+
   // Inticates whether the device supports usage of PIN for login.
   // This information is retrived in an async way and will not be available
   // immediately.
