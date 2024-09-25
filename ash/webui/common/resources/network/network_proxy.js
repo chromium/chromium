@@ -18,121 +18,138 @@ import './network_proxy_input.js';
 import './network_shared.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {ManagedManualProxySettings, ManagedProperties, ManagedProxyLocation, ManagedProxySettings, ManagedStringList, ProxyLocation, ProxySettings} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_proxy.html.js';
 import {OncMojo} from './onc_mojo.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-proxy',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ */
+const NetworkProxyElementBase =
+    mixinBehaviors([CrPolicyNetworkBehaviorMojo, I18nBehavior], PolymerElement);
 
-  behaviors: [
-    CrPolicyNetworkBehaviorMojo,
-    I18nBehavior,
-  ],
+/** @polymer */
+class NetworkProxyElement extends NetworkProxyElementBase {
+  static get is() {
+    return 'network-proxy';
+  }
 
-  properties: {
-    /** Whether or not the proxy values can be edited. */
-    editable: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @type {!ManagedProperties|undefined} */
-    managedProperties: {
-      type: Object,
-      observer: 'managedPropertiesChanged_',
-    },
-
-    /** Whether shared proxies are allowed. */
-    useSharedProxies: {
-      type: Boolean,
-      value: false,
-      observer: 'updateProxy_',
-    },
-
-    /**
-     * UI visible / edited proxy configuration.
-     * @private {!ManagedProxySettings}
-     */
-    proxy_: {
-      type: Object,
-      value() {
-        return this.createDefaultProxySettings_();
+  static get properties() {
+    return {
+      /** Whether or not the proxy values can be edited. */
+      editable: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    /**
-     * The Web Proxy Auto Discovery URL extracted from managedProperties.
-     * @private
-     */
-    wpad_: {
-      type: String,
-      value: '',
-    },
+      /** @type {!ManagedProperties|undefined} */
+      managedProperties: {
+        type: Object,
+        observer: 'managedPropertiesChanged_',
+      },
 
-    /**
-     * Whether or not to use the same manual proxy for all protocols.
-     * @private
-     */
-    useSameProxy_: {
-      type: Boolean,
-      value: false,
-      observer: 'useSameProxyChanged_',
-    },
+      /** Whether shared proxies are allowed. */
+      useSharedProxies: {
+        type: Boolean,
+        value: false,
+        observer: 'updateProxy_',
+      },
 
-    /**
-     * Array of proxy configuration types.
-     * @private {!Array<string>}
-     * @const
-     */
-    proxyTypes_: {
-      type: Array,
-      value: ['Direct', 'PAC', 'WPAD', 'Manual'],
-      readOnly: true,
-    },
+      /**
+       * UI visible / edited proxy configuration.
+       * @private {!ManagedProxySettings}
+       */
+      proxy_: {
+        type: Object,
+        value() {
+          return this.createDefaultProxySettings_();
+        },
+      },
 
-    /**
-     * The current value of the proxy exclusion input.
-     * @private
-     */
-    proxyExclusionInputValue_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * The Web Proxy Auto Discovery URL extracted from managedProperties.
+       * @private
+       */
+      wpad_: {
+        type: String,
+        value: '',
+      },
 
-  /**
-   * Saved Manual properties so that switching to another type does not loose
-   * any set properties while the UI is open.
-   * @private {!ManagedManualProxySettings|
-   *           undefined}
-   */
-  savedManual_: undefined,
+      /**
+       * Whether or not to use the same manual proxy for all protocols.
+       * @private
+       */
+      useSameProxy_: {
+        type: Boolean,
+        value: false,
+        observer: 'useSameProxyChanged_',
+      },
 
-  /**
-   * Saved ExcludeDomains properties so that switching to a non-Manual type does
-   * not loose any set exclusions while the UI is open.
-   * @private {!ManagedStringList|undefined}
-   */
-  savedExcludeDomains_: undefined,
+      /**
+       * Array of proxy configuration types.
+       * @private {!Array<string>}
+       * @const
+       */
+      proxyTypes_: {
+        type: Array,
+        value: ['Direct', 'PAC', 'WPAD', 'Manual'],
+        readOnly: true,
+      },
 
-  /**
-   * Set to true while modifying proxy values so that an update does not
-   * override the edited values.
-   * @private {boolean}
-   */
-  proxyIsUserModified_: false,
+      /**
+       * The current value of the proxy exclusion input.
+       * @private
+       */
+      proxyExclusionInputValue_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Set to true while modifying proxy values so that an update does not
+       * override the edited values.
+       * @private {boolean}
+       */
+      proxyIsUserModified_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
+    /**
+     * Saved ExcludeDomains properties so that switching to a non-Manual type
+     * does not loose any set exclusions while the UI is open.
+     * @private {!ManagedManualProxySettings|undefined}
+     */
+    this.savedManual_ = undefined;
+
+    /**
+     * Saved Manual properties so that switching to another type does not loose
+     * any set properties while the UI is open.
+     * @private {!ManagedStringList|undefined}
+     */
+    this.savedExcludeDomains_ = undefined;
     this.reset();
-  },
+  }
 
   /**
    * Called any time the page is refreshed or navigated to so that the proxy
@@ -141,7 +158,7 @@ Polymer({
   reset() {
     this.proxyIsUserModified_ = false;
     this.updateProxy_();
-  },
+  }
 
   /**
    * @param {!ManagedProperties|undefined} newValue
@@ -162,13 +179,13 @@ Polymer({
       return;
     }
     this.updateProxy_();
-  },
+  }
 
   /**
    * @return {boolean} True if any input elements are currently being edited.
    * @private
    */
-  isInputEditInProgress_: function() {
+  isInputEditInProgress_() {
     if (!this.editable) {
       return false;
     }
@@ -200,7 +217,7 @@ Polymer({
 
     // Input should be considered active only when the property editable.
     return this.isEditable_(property);
-  },
+  }
 
   /**
    * @param {?ManagedProxyLocation|undefined} a
@@ -211,7 +228,7 @@ Polymer({
   proxyMatches_(a, b) {
     return !!a && !!b && a.host.activeValue === b.host.activeValue &&
         a.port.activeValue === b.port.activeValue;
-  },
+  }
 
   /**
    * @param {number} port
@@ -223,7 +240,7 @@ Polymer({
       host: OncMojo.createManagedString(''),
       port: OncMojo.createManagedInt(port),
     };
-  },
+  }
 
   /**
    * Returns a copy of |inputProxy| with all required properties set correctly.
@@ -257,7 +274,7 @@ Polymer({
           };
     }
     return proxy;
-  },
+  }
 
   /** @private */
   updateProxy_() {
@@ -288,8 +305,8 @@ Polymer({
     }
 
     // Set this.proxy_ after dom-repeat has been stamped.
-    this.async(() => this.setProxy_(proxy));
-  },
+    microTask.run(() => this.setProxy_(proxy));
+  }
 
   /**
    * @param {!ManagedProxySettings} proxy
@@ -313,12 +330,12 @@ Polymer({
       }
     }
     this.proxyIsUserModified_ = false;
-  },
+  }
 
   /** @private */
   useSameProxyChanged_() {
     this.proxyIsUserModified_ = true;
-  },
+  }
 
   /**
    * @return {!ManagedProxySettings}
@@ -328,7 +345,7 @@ Polymer({
     return {
       type: OncMojo.createManagedString('Direct'),
     };
-  },
+  }
 
   /**
    * @param {?ManagedProxyLocation|undefined}
@@ -344,7 +361,7 @@ Polymer({
       host: location.host.activeValue,
       port: location.port.activeValue,
     };
-  },
+  }
 
   /**
    * Called when the proxy changes in the UI.
@@ -401,9 +418,13 @@ Polymer({
     } else if (proxyType === 'PAC') {
       proxy.pac = OncMojo.getActiveString(this.proxy_.pac);
     }
-    this.fire('proxy-change', proxy);
+    this.dispatchEvent(new CustomEvent('proxy-change', {
+      bubbles: true,
+      composed: true,
+      detail: proxy,
+    }));
     this.proxyIsUserModified_ = false;
-  },
+  }
 
   /**
    * Event triggered when the selected proxy type changes.
@@ -427,7 +448,7 @@ Polymer({
         proxyTypeChangeIsReady = true;
         break;
       case 'PAC':
-        elementToFocus = this.$$('#pacInput');
+        elementToFocus = this.shadowRoot.querySelector('#pacInput');
         // If a PAC is already set, send the type change now, otherwise wait
         // until the user provides a PAC value.
         proxyTypeChangeIsReady = !!OncMojo.getActiveString(this.proxy_.pac);
@@ -436,7 +457,8 @@ Polymer({
         // Manual proxy configuration includes multiple input fields, so wait
         // until the 'send' button is clicked.
         proxyTypeChangeIsReady = false;
-        elementToFocus = this.$$('#manualProxy network-proxy-input');
+        elementToFocus =
+            this.shadowRoot.querySelector('#manualProxy network-proxy-input');
         break;
     }
 
@@ -450,21 +472,19 @@ Polymer({
     }
 
     if (elementToFocus) {
-      this.async(() => {
-        elementToFocus.focus();
-      });
+      microTask.run(() => elementToFocus.focus());
     }
-  },
+  }
 
   /** @private */
   onPACChange_() {
     this.sendProxyChange_();
-  },
+  }
 
   /** @private */
   onProxyInputChange_() {
     this.proxyIsUserModified_ = true;
-  },
+  }
 
   /** @private */
   onAddProxyExclusionTap_() {
@@ -474,7 +494,7 @@ Polymer({
     // Clear input.
     this.proxyExclusionInputValue_ = '';
     this.proxyIsUserModified_ = true;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -486,7 +506,7 @@ Polymer({
     }
     event.stopPropagation();
     this.onAddProxyExclusionTap_();
-  },
+  }
 
   /**
    * @param {string} proxyExclusionInputValue
@@ -495,7 +515,7 @@ Polymer({
    */
   shouldProxyExclusionButtonBeDisabled_(proxyExclusionInputValue) {
     return !proxyExclusionInputValue;
-  },
+  }
 
   /**
    * Event triggered when the proxy exclusion list changes.
@@ -504,12 +524,12 @@ Polymer({
    */
   onProxyExclusionsChange_(event) {
     this.proxyIsUserModified_ = true;
-  },
+  }
 
   /** @private */
   onSaveProxyTap_() {
     this.sendProxyChange_();
-  },
+  }
 
   /**
    * @param {string} proxyType The proxy type.
@@ -527,7 +547,7 @@ Polymer({
       return this.i18n('networkProxyTypeWpad');
     }
     return this.i18n('networkProxyTypeDirect');
-  },
+  }
 
   /**
    * @param {string} propertyName
@@ -544,7 +564,7 @@ Polymer({
       return true;  // Default to editable if property is not defined.
     }
     return this.isPropertyEditable_(property);
-  },
+  }
 
   /**
    * @param {!OncMojo.ManagedProperty|undefined} property
@@ -554,7 +574,7 @@ Polymer({
   isPropertyEditable_(property) {
     return !!property && !this.isNetworkPolicyEnforced(property) &&
         !this.isExtensionControlled(property);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -566,7 +586,7 @@ Polymer({
     }
     const source = this.managedProperties.source;
     return source === OncSource.kDevice || source === OncSource.kDevicePolicy;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -584,7 +604,7 @@ Polymer({
     return !!httpHost ||
         !!this.get('secureHttpProxy.host.activeValue', manual) ||
         !!this.get('socks.host.activeValue', manual);
-  },
+  }
 
   /**
    * @param {string} property The property to test
@@ -594,5 +614,7 @@ Polymer({
    */
   matches_(property, value) {
     return property === value;
-  },
-});
+  }
+}
+
+customElements.define(NetworkProxyElement.is, NetworkProxyElement);
