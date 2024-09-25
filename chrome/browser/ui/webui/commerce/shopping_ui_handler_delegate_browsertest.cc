@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   std::optional<base::Value::Dict> meta_data = base::JSONReader::ReadDict(
       FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
   ASSERT_TRUE(meta_data.has_value());
-  ASSERT_EQ(*meta_data->FindString("categoryTag"), "product_specifications");
+  ASSERT_EQ(*meta_data->FindString("categoryTag"), "compare");
   std::optional<base::Value::Dict> ai_meta_data =
       base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"));
   ASSERT_TRUE(ai_meta_data.has_value());
