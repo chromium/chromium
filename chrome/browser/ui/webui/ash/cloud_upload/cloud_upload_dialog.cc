@@ -362,16 +362,10 @@ mojom::OperationType UploadTypeToOperationType(UploadType upload_type) {
 
 void OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
     Profile* profile,
-    const fm_tasks::TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
     ash::office_fallback::FallbackReason fallback_reason,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
     std::optional<const std::string> choice) {
-  if (!IsOpenInOfficeTask(task)) {
-    DUMP_WILL_BE_NOTREACHED();
-    return;
-  }
-
   if (!choice.has_value()) {
     // The user's choice was unable to be retrieved.
     fm_tasks::LogOneDriveMetricsAfterFallback(
@@ -852,8 +846,7 @@ void CloudOpenTask::OpenAndroidOneDriveUrl(
         profile_, task_, file_urls_, fallback_reason,
         base::BindOnce(
             &OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived, profile_,
-            task_, file_urls_, fallback_reason,
-            std::move(cloud_open_metrics_)));
+            file_urls_, fallback_reason, std::move(cloud_open_metrics_)));
 
     return;
   }
