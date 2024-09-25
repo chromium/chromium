@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 }
 
 // TODO(crbug.com/40846825): Flaky.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/362833242): Flaky on Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_VerifyCanvasCaptureWebGLFrames \
   DISABLED_VerifyCanvasCaptureWebGLFrames
 #else
