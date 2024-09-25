@@ -3704,6 +3704,9 @@ extern const char kCameraAngleBackendDescription[];
 extern const char kCameraSuperResOverrideName[];
 extern const char kCameraSuperResOverrideDescription[];
 
+extern const char kDisableBruschettaInstallChecksName[];
+extern const char kDisableBruschettaInstallChecksDescription[];
+
 extern const char kCrostiniContainerInstallName[];
 extern const char kCrostiniContainerInstallDescription[];
 

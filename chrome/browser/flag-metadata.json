@@ -2125,6 +2125,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-bruschetta-install-checks",
+    "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
+    // This flag does not expire because it allows developers to disable hardcoded
+    // install checks that may need to change during development.
+    "expiry_milestone": -1
+  },
+  {
     "name": "disable-buffer-bw-compression",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to

@@ -6428,6 +6428,12 @@ const char kChromeboxUsbPassthroughLimitDescription[] =
     "When enabled, attempts to prevent primary mice/keyboard from being passed "
     "through to guest environments on chromebox-style devices";
 
+const char kDisableBruschettaInstallChecksName[] =
+    "Disable Bruschetta Installer Checks";
+const char kDisableBruschettaInstallChecksDescription[] =
+    "Disables the built-in checks the Bruschetta installer performs before "
+    "running the install process.";
+
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =

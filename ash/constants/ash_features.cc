@@ -625,6 +625,20 @@ BASE_FEATURE(kDiacriticsUseReplaceSurroundingText,
              "DiacriticsUseReplaceSurroundingText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables hardware requirement checks for Bruschetta installer, allowing for
+// more easy development against changes of said requirements.
+BASE_FEATURE(kDisableBruschettaInstallChecks,
+             "DisableBruschettaInstallChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Disables the CryptAuth v1 DeviceSync flow. Note: During the first phase
+// of the v2 DeviceSync rollout, v1 and v2 DeviceSync run in parallel. This flag
+// is needed to disable the v1 service during the second phase of the rollout.
+// kCryptAuthV2DeviceSync should be enabled before this flag is flipped.
+BASE_FEATURE(kDisableCryptAuthV1DeviceSync,
+             "DisableCryptAuthV1DeviceSync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Feature flag for disable/enable Lacros TTS support.
 // The flag is enabled by default so that the feature is disabled before it is
 // completedly implemented.
