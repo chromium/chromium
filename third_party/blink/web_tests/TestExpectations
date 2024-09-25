@@ -1826,6 +1826,8 @@ crbug.com/501659 fast/css/stylesheet-candidate-nodes-crash.xhtml [ Failure ]
 
 crbug.com/525296 fast/css/font-load-while-styleresolver-missing.html [ Crash Failure Pass ]
 
+crbug.com/369369569 http/tests/notifications/request-permission-granted.html [ Pass Timeout ]
+
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-window.html [ Failure Pass Timeout ]
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-worker.html [ Failure Pass Timeout ]
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-sharedworker.html [ Failure Pass Timeout ]
