@@ -292,10 +292,13 @@ std::optional<std::wstring> GetCommandLineSwitch(
     const std::wstring& command_line,
     std::wstring_view switch_name);
 
+// Convenience version of the above which returns the value of a switch in the
+// current process command line.
+std::optional<std::wstring> GetCommandLineSwitch(std::wstring_view switch_name);
+
 // Returns the value of the specified switch or an empty string if there is no
-// such switch in |command_line| or the switch has no value.
-std::wstring GetCommandLineSwitchValue(const std::wstring& command_line,
-                                       std::wstring_view switch_name);
+// such switch in the current process command line or the switch has no value.
+std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name);
 
 // Ensures that the given |full_path| exists, and that the tail component is a
 // directory. If the directory does not already exist, it will be created.

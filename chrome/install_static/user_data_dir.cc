@@ -8,8 +8,6 @@
 
 #include <assert.h>
 
-#include <optional>
-
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
@@ -21,7 +19,6 @@ namespace {
 
 std::wstring* g_user_data_dir;
 std::wstring* g_invalid_user_data_dir;
-bool g_temp_user_data_dir_created_for_headless = false;
 
 // Retrieves a registry policy for the user data directory from the registry, if
 // one is set. If there's none set in either HKLM or HKCU, |user_data_dir| will
@@ -66,8 +63,8 @@ bool GetUserDataDirectoryUsingProcessCommandLine(
     const InstallConstants& mode,
     std::wstring* result,
     std::wstring* invalid_supplied_directory) {
-  return GetUserDataDirectoryImpl(::GetCommandLine(), mode, result,
-                                  invalid_supplied_directory);
+  return GetUserDataDirectoryImpl(GetCommandLineSwitchValue(kUserDataDirSwitch),
+                                  mode, result, invalid_supplied_directory);
 }
 
 // Populates |result| with the default User Data directory for the current
@@ -102,39 +99,16 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
   return true;
 }
 
-// Returns true if the |command_line| contains --headless or --headless=<value>
-// where "<value>" is anything but "old". Note that the value checking portion
-// should go away when the old headless code is removed from the Chrome binary,
-// see https://crbug.com/366381673.
-bool IsHeadlessMode(const std::wstring& command_line) {
-  std::optional<std::wstring> opt =
-      GetCommandLineSwitch(command_line, L"headless");
-  return opt ? opt.value() != L"old" : false;
-}
-
 }  // namespace
 
-bool GetUserDataDirectoryImpl(const std::wstring& command_line,
-                              const InstallConstants& mode,
-                              std::wstring* result,
-                              std::wstring* invalid_supplied_directory) {
-  std::wstring user_data_dir =
-      GetCommandLineSwitchValue(command_line, kUserDataDirSwitch);
+bool GetUserDataDirectoryImpl(
+    const std::wstring& user_data_dir_from_command_line,
+    const InstallConstants& mode,
+    std::wstring* result,
+    std::wstring* invalid_supplied_directory) {
+  std::wstring user_data_dir = user_data_dir_from_command_line;
 
   GetUserDataDirFromRegistryPolicyIfSet(mode, &user_data_dir);
-
-  // Headless Chrome instances are expected to run in parallel with the headful
-  // Chrome and other headless Chrome instances. In order to do so, headless
-  // Chrome needs a dedicated user data directory for each headless instance.
-  // Provide one here unless user data directory is explicitly specified.
-  g_temp_user_data_dir_created_for_headless = false;
-  if (user_data_dir.empty() && IsHeadlessMode(command_line)) {
-    assert(IsBrowserProcess());
-    user_data_dir = CreateUniqueTempDirectory(L"Headless");
-    if (!user_data_dir.empty()) {
-      g_temp_user_data_dir_created_for_headless = true;
-    }
-  }
 
   // On Windows, trailing separators leave Chrome in a bad state. See
   // crbug.com/464616.
@@ -177,10 +151,6 @@ bool GetUserDataDirectory(std::wstring* user_data_dir,
   if (invalid_user_data_dir)
     *invalid_user_data_dir = *g_invalid_user_data_dir;
   return true;
-}
-
-bool IsTemporaryUserDataDirectoryCreatedForHeadless() {
-  return g_temp_user_data_dir_created_for_headless;
 }
 
 }  // namespace install_static

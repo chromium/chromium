@@ -540,8 +540,7 @@ bool ReportingIsEnforcedByPolicy(bool* crash_reporting_enabled) {
 
 void InitializeProcessType() {
   assert(g_process_type == ProcessType::UNINITIALIZED);
-  g_process_type = GetProcessType(
-      GetCommandLineSwitchValue(::GetCommandLine(), kProcessType));
+  g_process_type = GetProcessType(GetCommandLineSwitchValue(kProcessType));
 }
 
 bool IsProcessTypeInitialized() {
@@ -853,12 +852,15 @@ std::optional<std::wstring> GetCommandLineSwitch(
   return std::nullopt;
 }
 
-std::wstring GetCommandLineSwitchValue(const std::wstring& command_line,
-                                       std::wstring_view switch_name) {
-  assert(!command_line.empty());
+std::optional<std::wstring> GetCommandLineSwitch(
+    std::wstring_view switch_name) {
   assert(!switch_name.empty());
-  return GetCommandLineSwitch(command_line, switch_name)
-      .value_or(std::wstring());
+  return GetCommandLineSwitch(::GetCommandLine(), switch_name);
+}
+
+std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name) {
+  assert(!switch_name.empty());
+  return GetCommandLineSwitch(switch_name).value_or(std::wstring());
 }
 
 bool RecursiveDirectoryCreate(const std::wstring& full_path) {
