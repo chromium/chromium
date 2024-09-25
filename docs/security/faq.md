@@ -329,7 +329,7 @@ These browser's actions/shortcuts are specific to Chrome. They are different
 from the behavior specified by the web-platform, such as using executing
 `window.open()` or opening a link with the `target=_blank` attribute.
 
-<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"</a>
+<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"></a>
 ### What is the threat model for Chrome for Testing?
 
 [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) is a
