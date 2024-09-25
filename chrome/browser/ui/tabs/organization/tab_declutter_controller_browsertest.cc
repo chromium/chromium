@@ -323,8 +323,9 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
   EXPECT_EQ(remaining_tab_count, initial_tab_count - stale_tab_count);
 }
 
+// TODO(b/369681212): Enable test after fixing Linux ASan LSan errors.
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
-                       TestDoesNotDeclutterTabForAnotherBrowser) {
+                       DISABLED_TestDoesNotDeclutterTabForAnotherBrowser) {
   Browser* browser_two =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(browser_two, GURL(), -1, true);
