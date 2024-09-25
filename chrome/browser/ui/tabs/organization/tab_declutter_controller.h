@@ -64,6 +64,8 @@ class TabDeclutterController {
   virtual std::vector<tabs::TabModel*> GetStaleTabs();
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
+  void ExcludeFromStaleTabs(tabs::TabModel* tab_model);
+
   // Closes the tabs from the tabstrip if they are present.
   void DeclutterTabs(std::vector<tabs::TabModel*> tab_models);
 
@@ -93,6 +95,7 @@ class TabDeclutterController {
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
+  std::vector<tabs::TabModel*> excluded_tabs_;
 };
 
 }  // namespace tabs

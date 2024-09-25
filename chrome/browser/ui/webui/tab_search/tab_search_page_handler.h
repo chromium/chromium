@@ -184,8 +184,7 @@ class TabSearchPageHandler
   void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
-  std::vector<tab_search::mojom::TabPtr> FindStaleTabs(
-      int32_t excluded_id = -1);
+  std::vector<tab_search::mojom::TabPtr> FindStaleTabs();
 
   tabs::TabDeclutterController* GetTabDeclutterController();
 

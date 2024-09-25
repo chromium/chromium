@@ -361,10 +361,21 @@ void TabSearchPageHandler::RenameTabOrganization(int32_t session_id,
 }
 
 void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
-  // TODO(crbug.com/358381117): Plumb this data through TabDeclutterService to
-  // store multiple excluded tabs for a single declutter action. This is a
-  // placeholder for now, only excluding the most recently excluded tab.
-  page_->StaleTabsChanged(FindStaleTabs(tab_id));
+  tabs::TabDeclutterController* controller = GetTabDeclutterController();
+  if (!controller) {
+    return;
+  }
+
+  std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
+
+  if (!optional_details || optional_details->tab_strip_model.get() !=
+                               controller->tab_strip_model()) {
+    return;
+  }
+
+  controller->ExcludeFromStaleTabs(
+      controller->tab_strip_model()->GetTabAtIndex(optional_details->index));
+  page_->StaleTabsChanged(FindStaleTabs());
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -845,8 +856,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   return profile_data;
 }
 
-std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs(
-    int32_t excluded_id) {
+std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
   std::vector<tab_search::mojom::TabPtr> tabs;
   tabs::TabDeclutterController* controller = GetTabDeclutterController();
   if (!controller) {

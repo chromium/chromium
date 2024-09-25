@@ -345,3 +345,35 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   // Verify that the number of tabs has not decreased in second browser.
   EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestExcludeTabsFromDeclutter) {
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller()->AddObserver(&fake_observer);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller()->SetTimerForTesting(
+      task_runner->GetMockTickClock(), task_runner);
+
+  // Add 4 tabs that are 8 days old. These are all stale.
+  AddTabsWithLastActiveTime(4, 8);
+
+  tabs::TabModel* tab_to_exclude =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
+  tab_declutter_controller()->ExcludeFromStaleTabs(tab_to_exclude);
+
+  task_runner->FastForwardBy(
+      tab_declutter_controller()->declutter_timer_interval_minutes());
+
+  EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 1);
+
+  // Verify that the excluded tab is not part of the processed stale tabs.
+  std::vector<tabs::TabModel*> processed_stale_tabs =
+      fake_observer.processed_tabs();
+  EXPECT_EQ(processed_stale_tabs.size(), 3ul);
+  EXPECT_FALSE(std::find(processed_stale_tabs.begin(),
+                         processed_stale_tabs.end(),
+                         tab_to_exclude) != processed_stale_tabs.end());
+}

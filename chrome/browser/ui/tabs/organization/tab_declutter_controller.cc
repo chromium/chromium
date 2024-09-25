@@ -92,6 +92,11 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
        tab_index++) {
     tabs::TabModel* tab_model = tab_strip_model_->GetTabAtIndex(tab_index);
 
+    if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab_model) !=
+        excluded_tabs_.end()) {
+      continue;
+    }
+
     if (tab_model->pinned() || tab_model->group().has_value()) {
       continue;
     }
@@ -109,7 +114,6 @@ std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
       tabs.push_back(tab_model);
     }
   }
-
   return tabs;
 }
 
@@ -124,6 +128,20 @@ void TabDeclutterController::DeclutterTabs(
     tab_strip_model_->CloseWebContentsAt(
         tab_strip_model_->GetIndexOfWebContents(tab_model->GetContents()),
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
+    excluded_tabs_.clear();
+  }
+}
+
+void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabModel* tab_model) {
+  if (tab_strip_model_->GetIndexOfTab(tab_model->GetHandle()) ==
+      TabStripModel::kNoTab) {
+    return;
+  }
+
+  if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab_model) ==
+      excluded_tabs_.end()) {
+    excluded_tabs_.push_back(tab_model);
   }
 }
 
