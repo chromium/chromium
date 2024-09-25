@@ -181,59 +181,6 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   __weak id<PreloadCancelling> canceler_;
 };
 
-// Maximum time to let a cancelled webState attempt to finish restore.
-static const size_t kMaximumCancelledWebStateDelay = 2;
-
-// Helper function to destroy a pre-rendering WebState. This is a free function
-// so that the code does not accidently try to access to PreloadController's
-// _webState ivar (which has been set to null by the time this function is
-// called).
-void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
-  // Preload appears to trigger an edge-case crash in WebKit when a restore is
-  // triggered and cancelled before it can complete.  This isn't specific to
-  // preload, but is very easy to trigger in preload.  As a speculative fix, if
-  // a preload is in restore, don't destroy it until after restore is complete.
-  // This logic should really belong in WebState itself, so any attempt to
-  // destroy a WebState during restore will trigger this logic.  Even better,
-  // this edge case crash should be fixed in WebKit:
-  //     https://bugs.webkit.org/show_bug.cgi?id=217440.
-  // The crash in WebKit appears to be related to IPC throttling.  Session
-  // restore can create a large number of IPC calls, which can then be
-  // throttled.  It seems if the WKWebView is destroyed with this backlog of
-  // IPC calls, sometimes WebKit crashes.
-  // See crbug.com/1032928 for an explanation for how to trigger this crash.
-  // Note the timer should only be called if for some reason session restoration
-  // fails to complete -- thus preventing a WebState leak.
-  if (!web_state->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    web_state.reset();
-    return;
-  }
-
-  __block auto reset_timer = std::make_unique<base::OneShotTimer>();
-  __block std::unique_ptr<web::WebState> block_web_state = std::move(web_state);
-
-  auto reset_block = ^{
-    if (block_web_state) {
-      block_web_state.reset();
-    }
-
-    if (!reset_timer) {
-      return;
-    }
-
-    reset_timer->Stop();
-    reset_timer.reset();
-  };
-
-  reset_timer->Start(FROM_HERE, base::Seconds(kMaximumCancelledWebStateDelay),
-                     base::BindOnce(reset_block));
-
-  block_web_state->GetNavigationManager()->AddRestoreCompletionCallback(
-      base::BindOnce(^{
-        dispatch_async(dispatch_get_main_queue(), reset_block);
-      }));
-}
-
 }  // namespace
 
 @interface PreloadController () <CRConnectionTypeObserverBridge,
@@ -455,8 +402,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 
 - (std::unique_ptr<web::WebState>)releasePrerenderContents {
-  if (!_webState ||
-      _webState->GetNavigationManager()->IsRestoreSessionInProgress()) {
+  if (!_webState) {
     return nullptr;
   }
 
@@ -737,8 +683,10 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
                             PRERENDER_FINAL_STATUS_MAX);
 
-  // Use the helper function to properly destroy the WebState.
-  DestroyPrerenderingWebState([self releasePrerenderContentsInternal]);
+  // Dropping the std::unique_ptr<...> cause the destruction
+  // of the WebState object used for pre-render.
+  std::unique_ptr<web::WebState> destroyed =
+      [self releasePrerenderContentsInternal];
 }
 
 #pragma mark - Notification Helpers

@@ -221,10 +221,6 @@ void ContentNavigationManager::Restore(
   NOTIMPLEMENTED();
 }
 
-bool ContentNavigationManager::IsRestoreSessionInProgress() const {
-  return false;
-}
-
 void ContentNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
   // TODO(crbug.com/40257932)

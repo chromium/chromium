@@ -1185,13 +1185,10 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     }
   }
 
-  // Restore allowsBackForwardNavigationGestures once restoration is complete.
-  if (!self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    if (_webView.allowsBackForwardNavigationGestures !=
-        _allowsBackForwardNavigationGestures) {
-      _webView.allowsBackForwardNavigationGestures =
-          _allowsBackForwardNavigationGestures;
-    }
+  if (_webView.allowsBackForwardNavigationGestures !=
+      _allowsBackForwardNavigationGestures) {
+    _webView.allowsBackForwardNavigationGestures =
+        _allowsBackForwardNavigationGestures;
   }
 
   BOOL success = !context || !context->GetError();

@@ -2988,43 +2988,7 @@ using UserFeedbackDataCallback =
                                   dismissOmnibox:(BOOL)dismissOmnibox
                                       completion:(ProceduralBlock)completion {
   __weak SceneController* weakSelf = self;
-
   std::vector<GURL> copyURLs = URLs;
-
-  ApplicationModeForTabOpening targetMode =
-      incognitoMode ? ApplicationModeForTabOpening::INCOGNITO
-                    : ApplicationModeForTabOpening::NORMAL;
-  WrangledBrowser* targetInterface =
-      [self extractInterfaceBaseOnMode:targetMode];
-
-  web::WebState* currentWebState =
-      targetInterface.browser->GetWebStateList()->GetActiveWebState();
-
-  if (currentWebState) {
-    web::NavigationManager* navigation_manager =
-        currentWebState->GetNavigationManager();
-    // Check if the current tab is in the process of restoration and whether it
-    // is an NTP. If so, add the tabs-opening action to the
-    // RestoreCompletionCallback queue so that the tabs are opened only after
-    // the NTP finishes restoring. This is to avoid an edge where multiple tabs
-    // are trying to open in the middle of NTP restoration, as this will cause
-    // all tabs trying to load into the same NTP, causing a race condition that
-    // results in wrong behavior.
-    if (navigation_manager->IsRestoreSessionInProgress() &&
-        IsUrlNtp(currentWebState->GetVisibleURL())) {
-      navigation_manager->AddRestoreCompletionCallback(base::BindOnce(^{
-        [self
-            dismissModalDialogsWithCompletion:^{
-              [weakSelf openMultipleTabsWithURLs:copyURLs
-                                 inIncognitoMode:incognitoMode
-                                      completion:completion];
-            }
-                               dismissOmnibox:dismissOmnibox];
-      }));
-      return;
-    }
-  }
-
   [self
       dismissModalDialogsWithCompletion:^{
         [weakSelf openMultipleTabsWithURLs:copyURLs

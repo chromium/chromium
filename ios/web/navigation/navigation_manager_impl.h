@@ -130,9 +130,6 @@ class NavigationManagerImpl final : public NavigationManager {
   // into this layer.
   void OnNavigationItemCommitted();
 
-  // Called when a navigation has started.
-  void OnNavigationStarted(const GURL& url);
-
   // Prepares for the deletion of WKWebView such as caching necessary data.
   void DetachFromWebView();
 
@@ -249,7 +246,6 @@ class NavigationManagerImpl final : public NavigationManager {
   std::vector<NavigationItem*> GetForwardItems() const final;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) final;
-  bool IsRestoreSessionInProgress() const final;
   void AddRestoreCompletionCallback(base::OnceClosure callback) final;
 
   // Implementation for corresponding NavigationManager getters.
@@ -450,11 +446,6 @@ class NavigationManagerImpl final : public NavigationManager {
   mutable TimeSmoother time_smoother_;
 
   WKWebViewCache web_view_cache_{this};
-
-  // Whether this navigation manager is in the process of restoring session
-  // history into WKWebView. It is set in Restore() and unset in
-  // FinalizeSessionRestore().
-  bool is_restore_session_in_progress_ = false;
 
   // Whether this navigation manager is in the process of restoring session
   // history into WKWebView using native restoration.

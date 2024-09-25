@@ -580,8 +580,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
 
     self.webStateImpl->OnNavigationStarted(context);
-    self.webStateImpl->GetNavigationManagerImpl().OnNavigationStarted(
-        webViewURL);
     return;
   }
 
@@ -604,8 +602,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       !exemptedAppSpecificLoad) {
     self.webStateImpl->ClearWebUI();
   }
-
-  self.webStateImpl->GetNavigationManagerImpl().OnNavigationStarted(webViewURL);
 
   std::unique_ptr<web::NavigationContextImpl> navigationContext =
       [self.delegate navigationHandler:self

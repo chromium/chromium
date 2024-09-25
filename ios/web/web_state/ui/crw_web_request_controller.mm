@@ -495,11 +495,6 @@ enum class BackForwardNavigationType {
                        hasUserGesture:YES
                     rendererInitiated:NO];
 
-  if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    self.navigationManagerImpl->RestoreNativeSession();
-    return;
-  }
-
   WKNavigation* navigation = nil;
   if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
     request.attribution = NSURLRequestAttributionUser;

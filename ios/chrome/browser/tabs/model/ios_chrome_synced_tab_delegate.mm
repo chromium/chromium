@@ -137,20 +137,9 @@ IOSChromeSyncedTabDelegate::GetBlockedNavigations() const {
 }
 
 bool IOSChromeSyncedTabDelegate::IsPlaceholderTab() const {
-  // A tab is considered as "placeholder" if it is not fully loaded. This
-  // corresponds to "unrealized" tabs or tabs that are still restoring their
-  // navigation history.
-  if (!web_state_->IsRealized()) {
-    return true;
-  }
-
-  if (web_state_->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    return true;
-  }
-
-  // The WebState is realized and the navigation history fully loaded, the
-  // tab can be considered as valid for sync.
-  return false;
+  // A tab is considered as "placeholder" if it is not fully
+  // loaded. This corresponds to "unrealized" tabs.
+  return !web_state_->IsRealized();
 }
 
 bool IOSChromeSyncedTabDelegate::ShouldSync(

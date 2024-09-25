@@ -27,7 +27,7 @@ void IncrementCounter(size_t* counter) {
 enum class CreateWebStateAs {
   kUnrealized,
   kSerializable,
-  kRestoreInProgress,
+  kUnserializable,
 };
 
 }  // anonymous namespace
@@ -51,16 +51,16 @@ class SessionRestorationWebStateListObserverTest : public PlatformTest {
 
       case CreateWebStateAs::kSerializable:
         web_state->SetIsRealized(true);
-        static_cast<web::FakeNavigationManager*>(
-            web_state->GetNavigationManager())
-            ->SetIsRestoreSessionInProgress(false);
         break;
 
-      case CreateWebStateAs::kRestoreInProgress:
-        web_state->SetIsRealized(true);
-        static_cast<web::FakeNavigationManager*>(
-            web_state->GetNavigationManager())
-            ->SetIsRestoreSessionInProgress(true);
+      case CreateWebStateAs::kUnserializable:
+        web::FakeNavigationManager* manager =
+            static_cast<web::FakeNavigationManager*>(
+                web_state->GetNavigationManager());
+        manager->AddItem(GURL("https://www.example.com"),
+                         ui::PAGE_TRANSITION_LINK);
+        manager->SetPendingItem(manager->GetLastCommittedItem());
+        manager->SetLastCommittedItem(nullptr);
         break;
     }
 
@@ -164,7 +164,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Insert_Unserializable) {
                             &IncrementCounter, &call_count)));
 
   web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+      InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(base::Contains(observer.dirty_web_states(), web_state));
@@ -326,7 +326,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unserializable) {
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+  InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();
@@ -426,7 +426,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_DirtyUnserializable) {
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+  InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
 
   ASSERT_GT(web_state_list()->count(), 0);
   web_state_list()->DetachWebStateAt(/*index*/ 0);
@@ -532,7 +532,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_Unserializable) {
                             &IncrementCounter, &call_count)));
 
   web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+      InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   // Clear the dirty state and reset the call counter.
@@ -638,7 +638,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_DirtyUnserializable) {
                             &IncrementCounter, &call_count)));
 
   web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+      InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   ASSERT_GT(web_state_list()->count(), 0);
@@ -850,7 +850,7 @@ TEST_F(SessionRestorationWebStateListObserverTest,
                             &IncrementCounter, &call_count)));
 
   web::FakeWebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
+      InsertWebState(CreateWebState(CreateWebStateAs::kUnserializable));
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();

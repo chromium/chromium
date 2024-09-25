@@ -222,59 +222,11 @@ void NavigationManagerImpl::OnNavigationItemCommitted() {
   }
   if (!wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
     restored_visible_item_.reset();
-    if (is_restore_session_in_progress_) {
-      // There are crashes because restored_visible_item_ is nil and
-      // is_restore_session_in_progress_ is true. This is a speculative fix,
-      // based on the idea that a navigation item could be committed before
-      // OnNavigationStarted is called. See crbug.com/1127434.
-      FinalizeSessionRestore();
-    }
-  }
-}
-
-void NavigationManagerImpl::OnNavigationStarted(const GURL& url) {
-  if (!is_restore_session_in_progress_)
-    return;
-
-  GURL target_url;
-  if (wk_navigation_util::IsRestoreSessionUrl(url) &&
-      !web::wk_navigation_util::ExtractTargetURL(url, &target_url)) {
-    restoration_timer_ = std::make_unique<base::ElapsedTimer>();
-  } else if (!wk_navigation_util::IsRestoreSessionUrl(url)) {
-    // It's possible for there to be pending navigations for a session that is
-    // going to be restored (such as for the -ForwardHistoryClobber workaround).
-    // In this case, the pending navigation will start while the navigation
-    // manager is in restore mode.  There are other edges cases where a restore
-    // session finishes without trigger it's start, such as when restoring some
-    // with some app specific or blocked URLs, or when WKWebView's
-    // backForwardList state is out of sync. See crbug.com/1008026 for more
-    // details.
-    if (restoration_timer_) {
-      UMA_HISTOGRAM_TIMES(kRestoreNavigationTime,
-                          restoration_timer_->Elapsed());
-      restoration_timer_.reset();
-    }
-
-    // Get the last committed item directly because the restoration is in
-    // progress so the item returned by the last committed item is the
-    // last_committed_web_view_item_ as the origins mistmatch.
-    int index = GetLastCommittedItemIndexInCurrentOrRestoredSession();
-    DCHECK(index != -1 || 0 == GetItemCount());
-    if (index != -1 && restored_visible_item_ &&
-        restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
-      NavigationItemImpl* last_committed_item =
-          GetNavigationItemImplAtIndex(static_cast<size_t>(index));
-      last_committed_item->SetUserAgentType(
-          restored_visible_item_->GetUserAgentType());
-    }
-
-    FinalizeSessionRestore();
   }
 }
 
 void NavigationManagerImpl::DetachFromWebView() {
   web_view_cache_.DetachFromWebView();
-  is_restore_session_in_progress_ = false;
 }
 
 void NavigationManagerImpl::AddPendingItem(
@@ -531,9 +483,6 @@ void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
 }
 
 void NavigationManagerImpl::RestoreNativeSession() {
-  if (!base::FeatureList::IsEnabled(features::kRemoveOldWebStateRestoration)) {
-    DCHECK(is_restore_session_in_progress_);
-  }
   RecordSessionRestorationHasFetchers(!session_data_blob_fetchers_.empty());
 
   // Try to load session data blob from each registered source in order,
@@ -603,13 +552,6 @@ NavigationItemImpl* NavigationManagerImpl::GetCurrentItemImpl() const {
 }
 
 NavigationItemImpl* NavigationManagerImpl::GetLastCommittedItemImpl() const {
-  // GetLastCommittedItemImpl() should return null while session restoration is
-  // in progress and real item after the first post-restore navigation is
-  // finished. IsRestoreSessionInProgress(), will return true until the first
-  // post-restore is started.
-  if (IsRestoreSessionInProgress())
-    return nullptr;
-
   NavigationItemImpl* result = GetLastCommittedItemInCurrentOrRestoredSession();
   if (!result || wk_navigation_util::IsRestoreSessionUrl(result->GetURL())) {
     // Session restoration has completed, but the first post-restore navigation
@@ -690,8 +632,9 @@ WebState* NavigationManagerImpl::GetWebState() const {
 }
 
 NavigationItem* NavigationManagerImpl::GetVisibleItem() const {
-  if (is_restore_session_in_progress_ || restored_visible_item_)
+  if (restored_visible_item_) {
     return restored_visible_item_.get();
+  }
 
   // Only return pending_item_ for new (non-history), user-initiated
   // navigations in order to prevent URL spoof attacks.
@@ -727,13 +670,6 @@ NavigationItem* NavigationManagerImpl::GetLastCommittedItem() const {
 }
 
 int NavigationManagerImpl::GetLastCommittedItemIndex() const {
-  // GetLastCommittedItemIndex() should return -1 while session restoration is
-  // in progress and real item after the first post-restore navigation is
-  // finished. IsRestoreSessionInProgress(), will return true until the first
-  // post-restore is started.
-  if (IsRestoreSessionInProgress())
-    return -1;
-
   NavigationItem* item = GetLastCommittedItemInCurrentOrRestoredSession();
   if (!item || wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
     // Session restoration has completed, but the first post-restore
@@ -746,8 +682,6 @@ int NavigationManagerImpl::GetLastCommittedItemIndex() const {
 }
 
 NavigationItem* NavigationManagerImpl::GetPendingItem() const {
-  if (IsRestoreSessionInProgress())
-    return nullptr;
   return GetPendingItemInCurrentOrRestoredSession();
 }
 
@@ -758,14 +692,6 @@ void NavigationManagerImpl::DiscardNonCommittedItems() {
 
 void NavigationManagerImpl::LoadURLWithParams(
     const NavigationManager::WebLoadParams& params) {
-  if (IsRestoreSessionInProgress() &&
-      !wk_navigation_util::IsRestoreSessionUrl(params.url)) {
-    AddRestoreCompletionCallback(
-        base::BindOnce(&NavigationManagerImpl::LoadURLWithParams,
-                       base::Unretained(this), params));
-    return;
-  }
-
   DCHECK(!(params.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK));
   delegate_->ClearDialogs();
   delegate_->RecordPageStateInNavigationItem();
@@ -883,8 +809,6 @@ int NavigationManagerImpl::GetIndexOfItem(const NavigationItem* item) const {
 }
 
 int NavigationManagerImpl::GetPendingItemIndex() const {
-  if (is_restore_session_in_progress_)
-    return -1;
   return pending_item_index_;
 }
 
@@ -897,9 +821,6 @@ bool NavigationManagerImpl::CanGoForward() const {
 }
 
 bool NavigationManagerImpl::CanGoToOffset(int offset) const {
-  if (is_restore_session_in_progress_)
-    return false;
-
   // If the last committed item is the empty window.open item, no back-forward
   // navigation is allowed.
   if (empty_window_open_item_) {
@@ -919,12 +840,6 @@ void NavigationManagerImpl::GoForward() {
 
 void NavigationManagerImpl::Reload(ReloadType reload_type,
                                    bool check_for_reposts) {
-  if (IsRestoreSessionInProgress()) {
-    // Do not interrupt session restoration process. Last committed item will
-    // eventually reload once the session is restored.
-    return;
-  }
-
   // Use GetLastCommittedItemInCurrentOrRestoredSession() instead of
   // GetLastCommittedItem() so restore session URL's aren't suppressed.
   // Otherwise a cancelled/stopped navigation during the first post-restore
@@ -998,10 +913,6 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
 
 std::vector<NavigationItem*> NavigationManagerImpl::GetBackwardItems() const {
   std::vector<NavigationItem*> items;
-
-  if (is_restore_session_in_progress_)
-    return items;
-
   int current_back_forward_item_index = web_view_cache_.GetCurrentItemIndex();
   for (int index = current_back_forward_item_index - 1; index >= 0; index--) {
     items.push_back(GetItemAtIndex(index));
@@ -1012,10 +923,6 @@ std::vector<NavigationItem*> NavigationManagerImpl::GetBackwardItems() const {
 
 std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
   std::vector<NavigationItem*> items;
-
-  if (is_restore_session_in_progress_)
-    return items;
-
   for (int index = web_view_cache_.GetCurrentItemIndex() + 1;
        index < GetItemCount(); index++) {
     items.push_back(GetItemAtIndex(index));
@@ -1026,7 +933,6 @@ std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
 void NavigationManagerImpl::Restore(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItem>> items) {
-  DCHECK(!is_restore_session_in_progress_);
   WillRestore(items.size());
 
   DCHECK_LT(last_committed_item_index, static_cast<int>(items.size()));
@@ -1096,17 +1002,10 @@ void NavigationManagerImpl::Restore(
                     std::move(forward_items));
 }
 
-bool NavigationManagerImpl::IsRestoreSessionInProgress() const {
-  return is_restore_session_in_progress_;
-}
-
 void NavigationManagerImpl::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
-  if (!is_restore_session_in_progress_) {
-    std::move(callback).Run();
-    return;
-  }
-  restore_session_completion_callbacks_.push_back(std::move(callback));
+  // TODO:(crbug.com/40276021): Remove with remaining old session restoration.
+  std::move(callback).Run();
 }
 
 NavigationItemImpl*
@@ -1278,7 +1177,6 @@ void NavigationManagerImpl::UnsafeRestore(
   // before starting the new navigation, which may trigger client lookup of
   // visible item. The visible item of the restored session is the last
   // committed item, because a restored session has no pending item.
-  is_restore_session_in_progress_ = true;
   if (last_committed_item_index > -1)
     restored_visible_item_ = std::move(items[last_committed_item_index]);
 
@@ -1442,7 +1340,6 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
 }
 
 void NavigationManagerImpl::FinalizeSessionRestore() {
-  is_restore_session_in_progress_ = false;
   session_data_blob_fetchers_.clear();
 
   for (base::OnceClosure& callback : restore_session_completion_callbacks_) {

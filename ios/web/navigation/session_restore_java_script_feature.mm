@@ -5,7 +5,6 @@
 #import "ios/web/navigation/session_restore_java_script_feature.h"
 
 #import "ios/web/js_messaging/web_view_js_utils.h"
-#import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -68,27 +67,8 @@ void SessionRestoreJavaScriptFeature::ConfigureHandlers(
 
 void SessionRestoreJavaScriptFeature::SessionRestorationMessageReceived(
     WKScriptMessage* message) {
-  WebState* web_state = WebViewWebStateMap::FromBrowserState(browser_state_)
-                            ->GetWebStateForWebView(message.webView);
-  if (!web_state ||
-      !web_state->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    // Ignore this message if `message.webView` is no longer associated with a
-    // WebState or if session restore is not in progress.
-    return;
-  }
-
-  if (![message.body[@"offset"] isKindOfClass:[NSNumber class]]) {
-    return;
-  }
-  NSString* method =
-      [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
-                                 message.body[@"offset"]];
-
-  // Don't use `CallJavaScriptFunction` here, as it relies on the WebFrame
-  // existing before window.onload starts.
-  // Note that `web::ExecuteJavaScript` assumes the page content world, which is
-  // ok in this case as restore_session.html is loaded as a webpage.
-  web::ExecuteJavaScript(message.webView, method, nil);
+  // TODO:(crbug.com/40276021): Remove this class with remaining old session
+  // restoration.
 }
 
 }  // namespace web

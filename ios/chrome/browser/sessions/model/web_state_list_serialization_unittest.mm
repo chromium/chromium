@@ -43,30 +43,14 @@ using tab_groups::TabGroupId;
 namespace {
 
 // Creates a fake WebState with `navigation_count` navigation items (all
-// pointing to the same `url`). If `has_pending_load` is true, the last
-// item will be marked as pending.
+// pointing to the same `url`).
 std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
     int navigation_count,
-    bool has_pending_load,
-    bool restore_in_progress,
     const GURL& url,
     web::WebStateID web_state_id) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   for (int index = 0; index < navigation_count; ++index) {
     navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
-  }
-
-  if (navigation_count > 0) {
-    if (has_pending_load) {
-      const int pending_item_index = navigation_count - 1;
-      navigation_manager->SetPendingItemIndex(pending_item_index);
-      navigation_manager->SetPendingItem(
-          navigation_manager->GetItemAtIndex(pending_item_index));
-    }
-  } else {
-    if (restore_in_progress) {
-      navigation_manager->SetIsRestoreSessionInProgress(true);
-    }
   }
 
   auto web_state = std::make_unique<web::FakeWebState>(web_state_id);
@@ -81,20 +65,16 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
 
 // Creates a fake WebState with some navigations.
 std::unique_ptr<web::WebState> CreateWebState() {
-  return CreateWebStateWithNavigations(
-      1, false, false, GURL(kChromeUIVersionURL), web::WebStateID::NewUnique());
+  return CreateWebStateWithNavigations(/*navigation_count=*/1,
+                                       GURL(kChromeUIVersionURL),
+                                       web::WebStateID::NewUnique());
 }
 
 // Creates a fake WebState with no navigation items.
 std::unique_ptr<web::WebState> CreateWebStateWithNoNavigation(
     web::WebStateID web_state_id = web::WebStateID::NewUnique()) {
-  return CreateWebStateWithNavigations(0, false, false, GURL(), web_state_id);
-}
-
-// Creates a fake WebState with no navigation items and restoration in progress.
-std::unique_ptr<web::WebState> CreateWebStateRestoreSessionInProgress() {
-  return CreateWebStateWithNavigations(0, false, true, GURL(),
-                                       web::WebStateID::NewUnique());
+  return CreateWebStateWithNavigations(/*navigation_count=*/0, GURL(),
+                                       web_state_id);
 }
 
 // Creates a fake WebState with no navigation items but one pending item.
@@ -119,7 +99,7 @@ std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
 // Creates a fake WebState from `web_state_id`.
 std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
     web::WebStateID web_state_id) {
-  return CreateWebStateWithNavigations(1, false, false,
+  return CreateWebStateWithNavigations(/*navigation_count=*/1,
                                        GURL(kChromeUIVersionURL), web_state_id);
 }
 
@@ -270,9 +250,6 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropNoNavigation) {
   FakeWebStateListDelegate delegate;
   WebStateList web_state_list(&delegate);
   web_state_list.InsertWebState(
-      CreateWebStateRestoreSessionInProgress(),
-      WebStateList::InsertionParams::AtIndex(0).Pinned());
-  web_state_list.InsertWebState(
       CreateWebStateWithNoNavigation(),
       WebStateList::InsertionParams::AtIndex(0).Pinned());
   web_state_list.InsertWebState(
@@ -288,15 +265,15 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropNoNavigation) {
   web_state_list.InsertWebState(
       CreateWebStateWithPendingNavigation(pending_item.get()),
       WebStateList::InsertionParams::AtIndex(4).WithOpener(
-          WebStateOpener(web_state_list.GetWebStateAt(2), 1)));
+          WebStateOpener(web_state_list.GetWebStateAt(1), 1)));
 
   // Serialize the session and check the serialized data is correct.
   SessionWindowIOS* session_window = SerializeWebStateList(&web_state_list);
 
   // Check that the two tabs with no navigation items have been closed,
   // including the active tab (its next sibling should be selected).
-  EXPECT_EQ(session_window.sessions.count, 3u);
-  EXPECT_EQ(session_window.selectedIndex, 2u);
+  EXPECT_EQ(session_window.sessions.count, 2u);
+  EXPECT_EQ(session_window.selectedIndex, 1u);
 
   // Expect a log of 0 duplicate.
   histogram_tester_.ExpectUniqueSample(
@@ -538,9 +515,6 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
   FakeWebStateListDelegate delegate;
   WebStateList web_state_list(&delegate);
   web_state_list.InsertWebState(
-      CreateWebStateRestoreSessionInProgress(),
-      WebStateList::InsertionParams::AtIndex(0).Pinned());
-  web_state_list.InsertWebState(
       CreateWebStateWithNoNavigation(),
       WebStateList::InsertionParams::AtIndex(0).Pinned());
   web_state_list.InsertWebState(
@@ -556,7 +530,7 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
   web_state_list.InsertWebState(
       CreateWebStateWithPendingNavigation(pending_item.get()),
       WebStateList::InsertionParams::AtIndex(4).WithOpener(
-          WebStateOpener(web_state_list.GetWebStateAt(2), 1)));
+          WebStateOpener(web_state_list.GetWebStateAt(1), 1)));
 
   // Serialize the session and check the serialized data is correct.
   ios::proto::WebStateListStorage storage;
@@ -564,9 +538,8 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
 
   // Check that the two tabs with no navigation items have been closed,
   // including the active tab (its next sibling should be selected).
-  EXPECT_EQ(storage.items_size(), 3);
-  EXPECT_EQ(storage.active_index(), 2);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
+  EXPECT_EQ(storage.items_size(), 2);
+  EXPECT_EQ(storage.active_index(), 1);
 
   // Expect a log of 0 duplicate.
   histogram_tester_.ExpectUniqueSample(

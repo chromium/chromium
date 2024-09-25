@@ -328,10 +328,6 @@ enum class TipsNotificationType;
 // from the cache even if the Cache-Control response header says otherwise.
 + (NSError*)purgeCachedWebViewPages;
 
-// Returns YES if the current WebState's navigation manager is currently
-// restoring session state.
-+ (BOOL)isRestoreSessionInProgress;
-
 // Returns YES if the current WebState's web view uses the content inset to
 // correctly align the top of the content with the bottom of the top bar.
 + (BOOL)webStateWebViewUsesContentInset;

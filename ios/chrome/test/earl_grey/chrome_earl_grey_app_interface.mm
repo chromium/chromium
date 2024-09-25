@@ -793,12 +793,6 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
-+ (BOOL)isRestoreSessionInProgress {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return web_state &&
-         web_state->GetNavigationManager()->IsRestoreSessionInProgress();
-}
-
 + (BOOL)webStateWebViewUsesContentInset {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
   return web_state && web_state->GetWebViewProxy().shouldUseViewContentInset;

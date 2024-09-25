@@ -56,7 +56,6 @@ class ContentNavigationManager : public NavigationManager {
   std::vector<NavigationItem*> GetForwardItems() const override;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) override;
-  bool IsRestoreSessionInProgress() const override;
   void AddRestoreCompletionCallback(base::OnceClosure callback) override;
 
  private:

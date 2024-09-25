@@ -157,10 +157,6 @@ void FakeNavigationManager::Restore(
   NOTREACHED_IN_MIGRATION();
 }
 
-bool FakeNavigationManager::IsRestoreSessionInProgress() const {
-  return restore_session_in_progress_;
-}
-
 void FakeNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
   NOTREACHED_IN_MIGRATION();
@@ -178,10 +174,6 @@ void FakeNavigationManager::AddItem(const GURL& url,
 
 void FakeNavigationManager::SetBrowserState(web::BrowserState* browser_state) {
   browser_state_ = browser_state;
-}
-
-void FakeNavigationManager::SetIsRestoreSessionInProgress(bool in_progress) {
-  restore_session_in_progress_ = in_progress;
 }
 
 bool FakeNavigationManager::LoadURLWithParamsWasCalled() {

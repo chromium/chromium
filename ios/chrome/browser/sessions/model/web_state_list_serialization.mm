@@ -60,8 +60,8 @@ bool ShouldKeepWebState(const web::WebState* web_state,
 
   if (web_state->IsRealized()) {
     const web::NavigationManager* manager = web_state->GetNavigationManager();
-    if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
-      // WebState has restoration or navigation pending, keep.
+    if (manager->GetPendingItem()) {
+      // WebState has navigation pending, keep.
       return true;
     }
   }
