@@ -260,11 +260,28 @@ export namespace Session {
 export type BrowserCommand =
   | Browser.Close
   | Browser.CreateUserContext
+  | Browser.GetClientWindows
   | Browser.GetUserContexts
-  | Browser.RemoveUserContext;
+  | Browser.RemoveUserContext
+  | Browser.SetClientWindowState
+  | Record<string, never>;
 export type BrowserResult =
   | Browser.CreateUserContextResult
   | Browser.GetUserContextsResult;
+export namespace Browser {
+  export type ClientWindow = string;
+}
+export namespace Browser {
+  export type ClientWindowInfo = {
+    active: boolean;
+    clientWindow: Browser.ClientWindow;
+    height: JsUint;
+    state: 'fullscreen' | 'maximized' | 'minimized' | 'normal';
+    width: JsUint;
+    x: JsInt;
+    y: JsInt;
+  };
+}
 export namespace Browser {
   export type UserContext = string;
 }
@@ -289,6 +306,17 @@ export namespace Browser {
   export type CreateUserContextResult = Browser.UserContextInfo;
 }
 export namespace Browser {
+  export type GetClientWindows = {
+    method: 'browser.getClientWindows';
+    params: EmptyParams;
+  };
+}
+export namespace Browser {
+  export type GetClientWindowsResult = {
+    clientWindows: [...Browser.ClientWindowInfo[]];
+  };
+}
+export namespace Browser {
   export type GetUserContexts = {
     method: 'browser.getUserContexts';
     params: EmptyParams;
@@ -308,6 +336,33 @@ export namespace Browser {
 export namespace Browser {
   export type RemoveUserContextParameters = {
     userContext: Browser.UserContext;
+  };
+}
+export namespace Browser {
+  export type SetClientWindowState = {
+    method: 'browser.setClientWindowState';
+    params: Browser.SetClientWindowStateParameters;
+  };
+}
+export namespace Browser {
+  export type SetClientWindowStateParameters =
+    | ({
+        clientWindow: Browser.ClientWindow;
+      } & Browser.ClientWindowNamedState)
+    | Browser.ClientWindowRectState;
+}
+export namespace Browser {
+  export type ClientWindowNamedState = {
+    state: 'fullscreen' | 'maximized' | 'minimized';
+  };
+}
+export namespace Browser {
+  export type ClientWindowRectState = {
+    state: 'normal';
+    width?: JsUint;
+    height?: JsUint;
+    x?: JsInt;
+    y?: JsInt;
   };
 }
 export type BrowsingContextCommand =
@@ -352,6 +407,7 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type Info = {
     children: BrowsingContext.InfoList | null;
+    clientWindow: Browser.ClientWindow;
     context: BrowsingContext.BrowsingContext;
     originalOpener: BrowsingContext.BrowsingContext | null;
     url: string;

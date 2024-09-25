@@ -156,11 +156,19 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return this.#browserProcessor.close();
       case 'browser.createUserContext':
         return await this.#browserProcessor.createUserContext(command.params);
+      case 'browser.getClientWindows':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`
+        );
       case 'browser.getUserContexts':
         return await this.#browserProcessor.getUserContexts();
       case 'browser.removeUserContext':
         return await this.#browserProcessor.removeUserContext(
           this.#parser.parseRemoveUserContextParams(command.params)
+        );
+      case 'browser.setClientWindowState':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`
         );
       // keep-sorted end
 

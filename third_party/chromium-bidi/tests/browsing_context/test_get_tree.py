@@ -28,7 +28,8 @@ async def test_browsingContext_getTree_contextReturned(websocket, context_id):
             "parent": None,
             "url": "about:blank",
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     }
 
@@ -56,7 +57,8 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
             "url": "about:blank",
             "children": [],
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     }
 
@@ -78,12 +80,14 @@ async def test_browsingContext_afterNavigation_getTree_contextsReturned(
                 "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": None,
             "url": page_with_nested_iframe,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -99,11 +103,13 @@ async def test_browsingContext_afterNavigation_getTree_contextsReturned(
                 "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": None,
             "url": another_page_with_nested_iframe,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result

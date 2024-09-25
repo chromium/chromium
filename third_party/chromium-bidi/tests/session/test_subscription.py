@@ -128,6 +128,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
             "children": None,
             "parent": context_id,
             "userContext": "default",
+            'clientWindow': ANY_STR,
             "originalOpener": None
         }
     } == resp

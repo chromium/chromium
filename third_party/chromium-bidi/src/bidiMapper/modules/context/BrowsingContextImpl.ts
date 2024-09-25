@@ -386,6 +386,8 @@ export class BrowsingContextImpl {
       url: this.url,
       userContext: this.userContext,
       originalOpener: this.#originalOpener ?? null,
+      // TODO(#2646): Implement Client Window correctly
+      clientWindow: '',
       children:
         maxDepth > 0
           ? this.directChildren.map((c) =>

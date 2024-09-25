@@ -68,7 +68,8 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
             "children": None,
             "parent": None,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }
     } == context_created_event
 
@@ -134,6 +135,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             "url": top_level_page,
             "userContext": "default",
             "originalOpener": None,
+            'clientWindow': ANY_STR,
             "children": [
                 {
                     "context": ANY_STR,
@@ -141,13 +143,15 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
                     "url": ANY_STR,
                     "userContext": "default",
                     "originalOpener": None,
+                    'clientWindow': ANY_STR,
                     "children": [{
                         "context": ANY_STR,
                         # It's not guaranteed the nested page is already loaded.
                         "url": ANY_STR,
                         "userContext": "default",
                         "children": [],
-                        "originalOpener": None
+                        "originalOpener": None,
+                        'clientWindow': ANY_STR,
                     }]
                 },
             ]
@@ -237,6 +241,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
         'params': {
             'context': ANY_STR,
             'url': 'about:blank',
+            'clientWindow': ANY_STR,
             'children': None,
             'parent': None,
             'userContext': 'default',

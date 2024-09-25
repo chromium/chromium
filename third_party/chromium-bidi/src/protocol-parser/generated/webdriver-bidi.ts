@@ -351,8 +351,11 @@ export const BrowserCommandSchema = z.lazy(() =>
   z.union([
     Browser.CloseSchema,
     Browser.CreateUserContextSchema,
+    Browser.GetClientWindowsSchema,
     Browser.GetUserContextsSchema,
     Browser.RemoveUserContextSchema,
+    Browser.SetClientWindowStateSchema,
+    z.object({}),
   ])
 );
 export const BrowserResultSchema = z.lazy(() =>
@@ -361,6 +364,22 @@ export const BrowserResultSchema = z.lazy(() =>
     Browser.GetUserContextsResultSchema,
   ])
 );
+export namespace Browser {
+  export const ClientWindowSchema = z.lazy(() => z.string());
+}
+export namespace Browser {
+  export const ClientWindowInfoSchema = z.lazy(() =>
+    z.object({
+      active: z.boolean(),
+      clientWindow: Browser.ClientWindowSchema,
+      height: JsUintSchema,
+      state: z.enum(['fullscreen', 'maximized', 'minimized', 'normal']),
+      width: JsUintSchema,
+      x: JsIntSchema,
+      y: JsIntSchema,
+    })
+  );
+}
 export namespace Browser {
   export const UserContextSchema = z.lazy(() => z.string());
 }
@@ -393,6 +412,21 @@ export namespace Browser {
   );
 }
 export namespace Browser {
+  export const GetClientWindowsSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.getClientWindows'),
+      params: EmptyParamsSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const GetClientWindowsResultSchema = z.lazy(() =>
+    z.object({
+      clientWindows: z.array(Browser.ClientWindowInfoSchema),
+    })
+  );
+}
+export namespace Browser {
   export const GetUserContextsSchema = z.lazy(() =>
     z.object({
       method: z.literal('browser.getUserContexts'),
@@ -419,6 +453,44 @@ export namespace Browser {
   export const RemoveUserContextParametersSchema = z.lazy(() =>
     z.object({
       userContext: Browser.UserContextSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const SetClientWindowStateSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browser.setClientWindowState'),
+      params: Browser.SetClientWindowStateParametersSchema,
+    })
+  );
+}
+export namespace Browser {
+  export const SetClientWindowStateParametersSchema = z.lazy(() =>
+    z.union([
+      z
+        .object({
+          clientWindow: Browser.ClientWindowSchema,
+        })
+        .and(Browser.ClientWindowNamedStateSchema),
+      Browser.ClientWindowRectStateSchema,
+    ])
+  );
+}
+export namespace Browser {
+  export const ClientWindowNamedStateSchema = z.lazy(() =>
+    z.object({
+      state: z.enum(['fullscreen', 'maximized', 'minimized']),
+    })
+  );
+}
+export namespace Browser {
+  export const ClientWindowRectStateSchema = z.lazy(() =>
+    z.object({
+      state: z.literal('normal'),
+      width: JsUintSchema.optional(),
+      height: JsUintSchema.optional(),
+      x: JsIntSchema.optional(),
+      y: JsIntSchema.optional(),
     })
   );
 }
@@ -476,6 +548,7 @@ export namespace BrowsingContext {
   export const InfoSchema = z.lazy(() =>
     z.object({
       children: z.union([BrowsingContext.InfoListSchema, z.null()]),
+      clientWindow: Browser.ClientWindowSchema,
       context: BrowsingContext.BrowsingContextSchema,
       originalOpener: z.union([
         BrowsingContext.BrowsingContextSchema,

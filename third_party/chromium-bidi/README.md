@@ -161,7 +161,7 @@ npm install
 
 <!-- TODO(jrandolf): Remove after binaries get published -->
 
-We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverBidi types before building.
+We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverBiDi types before building.
 
 1.  Install [Rust](https://rustup.rs/).
 2.  Run `cargo install --git https://github.com/google/cddlconv.git cddlconv`

@@ -38,7 +38,8 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
             "parent": ANY_STR,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -197,7 +198,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
             "parent": ANY_STR,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -213,7 +215,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
             "parent": ANY_STR,
             "url": url_with_hash_2,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -240,7 +243,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
             "parent": ANY_STR,
             "url": url_with_hash_1,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -256,7 +260,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
             "parent": ANY_STR,
             "url": url_with_hash_2,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -281,12 +286,14 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
                 "url": url_example_another_origin,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": ANY_STR,
             "url": another_page_with_nested_iframe,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -311,11 +318,13 @@ async def test_nestedBrowsingContext_afterNavigation_getTree_contextsReturned(
                 "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": ANY_STR,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -332,11 +341,13 @@ async def test_nestedBrowsingContext_afterNavigation_getTree_contextsReturned(
                 "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": ANY_STR,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -357,12 +368,14 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
                 "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
-                "originalOpener": None
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
             }],
             "parent": None,
             "url": page_with_nested_iframe,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
 
@@ -388,6 +401,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "parent": None,
             "url": page_with_nested_iframe,
             "userContext": "default",
-            "originalOpener": None
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
         }]
     } == result
