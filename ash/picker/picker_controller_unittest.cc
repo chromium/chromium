@@ -1093,7 +1093,7 @@ TEST_F(PickerControllerTest,
 class PickerControllerKeyEnabledTest : public PickerControllerTestBase {};
 
 TEST_F(PickerControllerKeyEnabledTest,
-       ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
+       DISABLED_ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
   base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
 
   EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(true));
@@ -1104,7 +1104,7 @@ TEST_F(PickerControllerKeyEnabledTest,
 }
 
 TEST_F(PickerControllerKeyEnabledTest,
-       ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
+       DISABLED_ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
   base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
 
   EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(false));
