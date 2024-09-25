@@ -8,7 +8,9 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -115,6 +117,17 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
         assertEquals(oldRight, right);
         assertNotEquals(oldBottom, customBottom);
         assertEquals(bottom, customBottom);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetClipToPadding() {
+        mContainerModel.set(TabListContainerProperties.IS_CLIP_TO_PADDING, false);
+        assertFalse(mRecyclerView.getClipToPadding());
+
+        mContainerModel.set(TabListContainerProperties.IS_CLIP_TO_PADDING, true);
+        assertTrue(mRecyclerView.getClipToPadding());
     }
 
     @Test

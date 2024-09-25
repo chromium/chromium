@@ -195,13 +195,16 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     public void onAnimationEnd(Animator animation) {
                         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                         mParent.removeView(mContainerView);
+
+                        // Remove the pad adjuster after the animation to avoid the view
+                        // changes its size before animation ends.
+                        if (mEdgeToEdgeSupplier != null && mEdgeToEdgePadAdjuster != null) {
+                            mEdgeToEdgePadAdjuster.destroy();
+                            mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+                        }
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
-        if (mEdgeToEdgeSupplier != null && mEdgeToEdgePadAdjuster != null) {
-            mEdgeToEdgePadAdjuster.destroy();
-            mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
-        }
     }
 
     /**

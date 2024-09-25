@@ -267,14 +267,54 @@ public class HubPaneHostViewUnitTest {
         assertEquals(fixedMargin, getBottomMargin(mActionButton));
 
         // Bottom margin use the larger insets since larger than the original.
-        int largerBottomInset = fixedMargin + 10;
-        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, largerBottomInset);
-        assertEquals(largerBottomInset, getBottomMargin(mActionButton));
+        int edgeToEdgeMargin = 10;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, edgeToEdgeMargin);
+        assertEquals(edgeToEdgeMargin + fixedMargin, getBottomMargin(mActionButton));
+    }
 
-        // Bottom margin should use the origin fixedMargin since bottom insets is smaller.
-        int smallerBottomInset = fixedMargin / 2;
-        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, smallerBottomInset);
-        assertEquals(fixedMargin, getBottomMargin(mActionButton));
+    @Test
+    public void testSnackbarContainerFabAnimation_EdgeToEdge() {
+        mActionButton.layout(0, 0, 100, 100);
+        mSnackbarContainer.layout(0, 100, 100, 100);
+
+        int oldMargin = getBottomMargin(mActionButton);
+        int edgeToEdgeMargin = 24;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, edgeToEdgeMargin);
+        assertEquals(oldMargin + edgeToEdgeMargin, getBottomMargin(mActionButton));
+
+        View.OnLayoutChangeListener listener =
+                mPaneHost.getSnackbarLayoutChangeListenerForTesting();
+
+        listener.onLayoutChange(
+                mSnackbarContainer,
+                /* left= */ 0,
+                /* top= */ 50,
+                /* right= */ 100,
+                /* bottom= */ 100,
+                /* oldLeft= */ 0,
+                /* oldTop= */ 100,
+                /* oldRight= */ 100,
+                /* oldBottom= */ 100);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                "Snackbar height should be used to calculate bottom margin.",
+                oldMargin + 50,
+                getBottomMargin(mActionButton));
+
+        listener.onLayoutChange(
+                mSnackbarContainer,
+                /* left= */ 0,
+                /* top= */ 100,
+                /* right= */ 100,
+                /* bottom= */ 100,
+                /* oldLeft= */ 0,
+                /* oldTop= */ 50,
+                /* oldRight= */ 100,
+                /* oldBottom= */ 100);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(oldMargin + edgeToEdgeMargin, getBottomMargin(mActionButton));
     }
 
     private int getBottomMargin(View view) {

@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -56,7 +57,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -132,9 +132,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnDestroyed;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final int mFloatingButtonSpace;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
     private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplier =
             new OneshotSupplierImpl<>();
+    private final Callback<EdgeToEdgeController> mOnEdgeToEdgeControllerChangedCallback =
+            new ValueChangedCallback<>(this::onEdgeToEdgeControllerChanged);
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -145,6 +148,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Not null when drawing the hub edge to edge. */
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+
+    private int mEdgeToEdgeBottomInsets;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -203,6 +208,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mParentView = parentView;
             mOnDestroyed = onDestroyed;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+            mFloatingButtonSpace =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.floating_action_button_space);
+
             assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
             ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
@@ -323,11 +333,18 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             containerViewModel, recyclerView, TabListContainerViewBinder::bind);
 
             if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-                // TODO(crbug.com/368072594): Use a custom pad adjuster to set the bottom padding to
-                // avoid conflicts with the model.
                 mEdgeToEdgePadAdjuster =
-                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                                recyclerView, mEdgeToEdgeSupplier);
+                        new EdgeToEdgePadAdjuster() {
+                            @Override
+                            public void overrideBottomInset(int inset) {
+                                mEdgeToEdgeBottomInsets = inset;
+                                updateBottomPadding();
+                            }
+
+                            @Override
+                            public void destroy() {}
+                        };
+                mEdgeToEdgeSupplier.addObserver(mOnEdgeToEdgeControllerChangedCallback);
             }
 
             RecordHistogram.recordTimesHistogram(
@@ -372,6 +389,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mMultiThumbnailCardProvider.destroy();
         mTabListEditorManager.destroy();
         mOnDestroyed.run();
+        mEdgeToEdgeSupplier.removeObserver(mOnEdgeToEdgeControllerChangedCallback);
+        if (mEdgeToEdgePadAdjuster != null && mEdgeToEdgeSupplier.get() != null) {
+            mEdgeToEdgeSupplier.get().unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgePadAdjuster = null;
+        }
     }
 
     /** Post native initialization. */
@@ -590,6 +612,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         RecordUserAction.record("TabMultiSelectV2.OpenLongPressInGrid");
     }
 
+    private void onEdgeToEdgeControllerChanged(
+            @Nullable EdgeToEdgeController newController,
+            @Nullable EdgeToEdgeController oldController) {
+        if (oldController != null) {
+            oldController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        if (newController != null && mEdgeToEdgePadAdjuster != null) {
+            newController.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
+    }
+
     /** Returns the container view property model for testing. */
     @NonNull
     PropertyModel getContainerViewModelForTesting() {
@@ -628,15 +661,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void updateBottomPadding() {
-        if (HubFieldTrial.usesFloatActionButton() && mTabListCoordinator.isLastItemMessage()) {
+        int bottomPadding = 0;
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+            bottomPadding = mEdgeToEdgeBottomInsets;
             mContainerViewModel.set(
-                    TabListContainerProperties.BOTTOM_PADDING,
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.floating_action_button_space));
-        } else {
-            mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
+                    TabListContainerProperties.IS_CLIP_TO_PADDING, bottomPadding == 0);
         }
+        if (HubFieldTrial.usesFloatActionButton() && mTabListCoordinator.isLastItemMessage()) {
+            bottomPadding += mFloatingButtonSpace;
+        }
+        mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, bottomPadding);
     }
 
     /**

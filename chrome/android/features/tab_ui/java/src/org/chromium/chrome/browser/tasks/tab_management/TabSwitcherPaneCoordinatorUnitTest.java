@@ -15,8 +15,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
@@ -413,11 +415,22 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
     })
     public void testEdgeToEdgePadAdjuster() {
+        int originalPadding = mCoordinator.getContainerViewModelForTesting().get(BOTTOM_PADDING);
         var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
         assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
 
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(eq(padAdjuster));
+
+        int bottomInsets = 50;
+        padAdjuster.overrideBottomInset(bottomInsets);
+        assertFalse(
+                "Not clip to padding when bottom insets > 0",
+                mCoordinator.getContainerViewModelForTesting().get(IS_CLIP_TO_PADDING));
+        assertEquals(
+                "Bottom insets should be added to the bottom padding.",
+                originalPadding + bottomInsets,
+                mCoordinator.getContainerViewModelForTesting().get(BOTTOM_PADDING));
     }
 
     @Test

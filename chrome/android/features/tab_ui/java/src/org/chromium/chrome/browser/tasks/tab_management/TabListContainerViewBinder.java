@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 
@@ -70,6 +71,8 @@ class TabListContainerViewBinder {
             int right = view.getPaddingRight();
             int bottom = model.get(BOTTOM_PADDING);
             view.setPadding(left, top, right, bottom);
+        } else if (IS_CLIP_TO_PADDING == propertyKey) {
+            view.setClipToPadding(model.get(IS_CLIP_TO_PADDING));
         } else if (FETCH_VIEW_BY_INDEX_CALLBACK == propertyKey) {
             Callback<Function<Integer, View>> callback = model.get(FETCH_VIEW_BY_INDEX_CALLBACK);
             callback.onResult(

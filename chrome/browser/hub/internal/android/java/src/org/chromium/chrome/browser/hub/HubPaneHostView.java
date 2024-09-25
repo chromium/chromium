@@ -57,8 +57,12 @@ public class HubPaneHostView extends FrameLayout {
                     // If the height is unchanged there is no need to do anything.
                     if (height == oldHeight) return;
 
-                    // TODO(crbug.com/368072594): Adjust the delta during edge to edge.
-                    int delta = height - oldHeight;
+                    // Calculate the delta based on the difference of the bottom margin besides
+                    // the mOriginalMargin. See #updateFloatingButtonBottomMargin.
+                    int delta =
+                            Math.max(mEdgeToEdgeBottomInset, height)
+                                    - Math.max(mEdgeToEdgeBottomInset, oldHeight);
+
                     ObjectAnimator animator =
                             ObjectAnimator.ofFloat(mActionButton, View.TRANSLATION_Y, -delta);
 
@@ -215,7 +219,7 @@ public class HubPaneHostView extends FrameLayout {
         var lp = (MarginLayoutParams) mActionButton.getLayoutParams();
         // TODO(crbug.com/368407436): Use mSnackBarContainer.getHeight().
         lp.bottomMargin =
-                Math.max(mEdgeToEdgeBottomInset, mOriginalMargin) + mSnackbarHeightForAnimation;
+                mOriginalMargin + Math.max(mEdgeToEdgeBottomInset, mSnackbarHeightForAnimation);
         mActionButton.setLayoutParams(lp);
     }
 
