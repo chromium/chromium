@@ -91,8 +91,10 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void ShowInactive() override {}
   void Hide() override {}
   bool IsVisible() const override { return false; }
-  gfx::Rect GetBounds() override { return gfx::Rect(); }
-  void UpdateNaturalSize(const gfx::Size& natural_size) override {}
+  gfx::Rect GetBounds() override { return gfx::Rect(size_); }
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
+    size_ = natural_size;
+  }
   void SetPlaybackState(PlaybackState playback_state) override {}
   void SetPlayPauseButtonVisibility(bool is_visible) override {}
   void SetSkipAdButtonVisibility(bool is_visible) override {}
@@ -107,6 +109,9 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
 
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
+
+ private:
+  gfx::Size size_;
 };
 
 }  // namespace
