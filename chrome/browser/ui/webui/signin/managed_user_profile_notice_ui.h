@@ -14,6 +14,12 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
 class Browser;
 class ManagedUserProfileNoticeHandler;
 struct AccountInfo;
@@ -21,6 +27,18 @@ struct AccountInfo;
 namespace content {
 class WebUI;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+class ManagedUserProfileNoticeUI;
+
+class ManagedUserProfileNoticeUIConfig
+    : public content::DefaultWebUIConfig<ManagedUserProfileNoticeUI> {
+ public:
+  ManagedUserProfileNoticeUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIManagedUserProfileNoticeHost) {}
+};
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 class ManagedUserProfileNoticeUI : public content::WebUIController {
  public:

@@ -34472,6 +34472,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1058168190" label="chrome://color-internals/"/>
   <int value="1059833308" label="chrome://hps-internals/"/>
   <int value="1066907868" label="chrome://physical-web/"/>
+  <int value="1069074449" label="chrome://managed-user-profile-notice/"/>
   <int value="1076364348" label="chrome://web-app-internals/"/>
   <int value="1084212752" label="chrome://personalization/"/>
   <int value="1109407387" label="chrome://keyboardoverlay/"/>

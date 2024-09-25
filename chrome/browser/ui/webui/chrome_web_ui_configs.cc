@@ -115,6 +115,15 @@
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/intro/intro_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_error_ui.h"
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
   // them in chrome_web_ui_configs_chromeos.cc.
@@ -234,4 +243,13 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   map.AddWebUIConfig(std::make_unique<BatchUploadUIConfig>());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  map.AddWebUIConfig(std::make_unique<ManagedUserProfileNoticeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<IntroUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ProfileCustomizationUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ProfilePickerUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SigninErrorUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SigninEmailConfirmationUIConfig>());
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 }

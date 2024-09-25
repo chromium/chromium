@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/family_link_user_internals/family_link_user_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
@@ -167,14 +166,6 @@
 #include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/welcome/welcome_ui.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
-#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
-#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_error_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -440,24 +431,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncConfirmationUI>;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUIManagedUserProfileNoticeHost) {
-    return &NewWebUI<ManagedUserProfileNoticeUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIIntroHost) {
-    return &NewWebUI<IntroUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIProfileCustomizationHost)
-    return &NewWebUI<ProfileCustomizationUI>;
-  if (url.host_piece() == chrome::kChromeUIProfilePickerHost)
-    return &NewWebUI<ProfilePickerUI>;
-  if (url.host_piece() == chrome::kChromeUISigninErrorHost &&
-      (!profile->IsOffTheRecord() || profile->IsSystemProfile()))
-    return &NewWebUI<SigninErrorUI>;
-  if (url.host_piece() == chrome::kChromeUISigninEmailConfirmationHost &&
-      !profile->IsOffTheRecord())
-    return &NewWebUI<SigninEmailConfirmationUI>;
-#endif
 
 #if BUILDFLAG(ENABLE_NACL)
   if (url.host_piece() == chrome::kChromeUINaClHost)
