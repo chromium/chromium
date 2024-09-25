@@ -125,8 +125,9 @@ float SVGLength::Value(const SVGLengthContext& context) const {
   if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(*value_)) {
     return context.ResolveValue(*math_function, UnitMode());
   }
-  return context.ConvertValueToUserUnits(value_->GetFloatValue(), UnitMode(),
-                                         NumericLiteralType());
+  return context.ConvertValueToUserUnits(
+      To<CSSNumericLiteralValue>(*value_).DoubleValue(), UnitMode(),
+      NumericLiteralType());
 }
 
 void SVGLength::SetValueAsNumber(float value) {
