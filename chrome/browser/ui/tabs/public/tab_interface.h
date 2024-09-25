@@ -114,10 +114,21 @@ class TabInterface {
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
 
-  // Always valid in practice. Tabs briefly do not have a BrowserWindowInterface
-  // when they are detached from one window and moved to another. That is an
-  // implementation detail of tab dragging that should not be exposed to
-  // consumers of this interface.
+  // Always valid in production code. Exceptions are:
+  //  (1) Tabs briefly do not have a BrowserWindowInterface when they are
+  //  detached from one window and moved to another. That is an implementation
+  //  detail of tab dragging and should not affect code outside of the tab-strip
+  //  implementation.
+  //  (2) Some tab-related unit tests create a TabInterface but do not create
+  //  TabFeatures, BrowserWindowInterface or BrowserWindowFeatures. Most code
+  //  that accesses this method should typically be scoped to TabFeatures or
+  //  BrowserWindowFeatures, but some code (e.g. tab_helpers) are currently
+  //  created in these unit tests. The proper solution is to convert these
+  //  tab_helpers to TabFeatures, which is tracked in
+  //  https://crbug.com/369319589.
+  // This is a long winded way of saying: if you are using this code from
+  // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
+  // always non-nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
   // Returns the feature controllers scoped to this tab.
