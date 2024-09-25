@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -481,6 +482,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    // TODO(crbug.com/369556626): Flaky on automotive.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testChainedTapsRemovedFromHistory() throws Exception {
         // Make sure we use tap for the simulateResolveSearch since only tap chains.
         // Simulate a resolving search and make sure a URL was loaded.
