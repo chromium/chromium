@@ -537,8 +537,15 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
 
+    // We cannot use easy selector matching for VTT elements.
+    // It is also not prepared to deal with the featurelessness
+    // of the host (see comment in SelectorChecker::CheckOne()).
+    bool can_use_easy_selector_matching =
+        context.vtt_originating_element == nullptr &&
+        !(context.scope && context.scope->OwnerShadowHost() == context.element);
+
     SelectorChecker::MatchResult result;
-    if (context.vtt_originating_element == nullptr &&
+    if (can_use_easy_selector_matching &&
         rule_data.IsEntirelyCoveredByBucketing()) {
       // Just by seeing this rule, we know that its selector
       // matched, and that we don't get any flags or a match
@@ -552,8 +559,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         suppress_visited_, result.proximity));
 #endif
-    } else if (context.vtt_originating_element == nullptr &&
-               rule_data.SelectorIsEasy()) {
+    } else if (can_use_easy_selector_matching && rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
         continue;
       }

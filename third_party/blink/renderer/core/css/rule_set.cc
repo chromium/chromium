@@ -404,7 +404,9 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
     // more common, but we currently don't bucket on & at all.)
     //
     // We could also have taken universal selectors no matter what
-    // should_mark_func() says, but again, we consider that not worth it.
+    // should_mark_func() says, but again, we consider that not worth it
+    // (though if the selector is being put in the universal bucket,
+    // there will be an explicit check).
 
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
@@ -648,6 +650,10 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
 
   // If we didn't find a specialized map to stick it in, file under universal
   // rules.
+  MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+    return selector.Match() == CSSSelector::kTag &&
+           selector.TagQName() == AnyQName();
+  });
   AddToRuleSet(universal_rules_, rule_data);
 }
 

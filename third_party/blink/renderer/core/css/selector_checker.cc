@@ -289,8 +289,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   SubResult sub_result(result);
   bool is_covered_by_bucketing =
       context.selector->IsCoveredByBucketing() &&
-      !context.is_sub_selector;  // Don't trust bucketing in sub-selectors; we
-                                 // may be in a child selector (a nested rule).
+      !context
+           .is_sub_selector &&  // Don't trust bucketing in sub-selectors; we
+                                // may be in a child selector (a nested rule).
+      !context.scope;           // May be featureless; see CheckOne().
 #if DCHECK_IS_ON()
   SubResult dummy_result(result);
   if (is_covered_by_bucketing) {

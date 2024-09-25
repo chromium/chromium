@@ -537,15 +537,17 @@ TEST(RuleSetTest, IsCoveredByBucketing) {
           {false, false, true}));  // See findBestRuleSetAndAdd_ThreeClasses.
   EXPECT_THAT(CoveredByBucketing(".c > [attr]"),
               ElementsAreArray({false, false}));
-  EXPECT_THAT(CoveredByBucketing("*"), ElementsAreArray({false}));
+  EXPECT_THAT(CoveredByBucketing("*"), ElementsAreArray({true}));
 
-  // Tag namespacing.
+  // Tag namespacing (including universal selector).
   EXPECT_THAT(CoveredByBucketing("div"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing("*|div"), ElementsAreArray({true}));
   EXPECT_THAT(
       CoveredByBucketing("@namespace ns \"http://example.org\";\nns|div"),
       ElementsAreArray({false}));
   EXPECT_THAT(CoveredByBucketing("@namespace \"http://example.org\";\ndiv"),
+              ElementsAreArray({false}));
+  EXPECT_THAT(CoveredByBucketing("@namespace \"http://example.org\";\n*"),
               ElementsAreArray({false}));
 
   // Attribute selectors.

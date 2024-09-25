@@ -42,7 +42,10 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
             tag_q_name.LocalName() == CSSSelector::UniversalSelectorAtom()) {
           // We don't support the universal selector, to avoid checking
           // for it when doing tag matching (most selectors are not
-          // the universal selector).
+          // the universal selector). Note that in if we are in the
+          // universal bucket, and it's a true universal match
+          // (not just universal local name), we'd most likely hit
+          // IsCoveredByBucketing() above.
           return false;
         }
         break;
