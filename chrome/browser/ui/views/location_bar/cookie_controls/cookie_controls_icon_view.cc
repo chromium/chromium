@@ -113,35 +113,37 @@ void CookieControlsIconView::UpdateImpl() {
   }
 }
 
-bool CookieControlsIconView::MaybeShowIPH() {
+void CookieControlsIconView::MaybeShowIPH() {
   CHECK(browser_->window());
-  // Need to make element visible or calls to show IPH will fail.
-  SetVisible(true);
-
-  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd ||
-      !should_highlight_) {
-    return false;
-  }
-
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHCookieControlsFeature);
   params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
                                          weak_ptr_factory_.GetWeakPtr());
   if (!browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
-    return false;
+    MaybeAnimateIcon();
+    return;
   }
   SetHighlighted(true);
-  return true;
+}
+
+void CookieControlsIconView::OnShowPromoResult(
+    user_education::FeaturePromoResult result) {
+  if (result) {
+    SetHighlighted(true);
+    return;
+  }
+  // If we attempted to show the IPH but failed, instead try animating.
+  MaybeAnimateIcon();
+}
+
+void CookieControlsIconView::OnIPHClosed() {
+  SetHighlighted(false);
 }
 
 bool CookieControlsIconView::IsManagedIPHActive() const {
   CHECK(browser_->window());
   return browser_->window()->IsFeaturePromoActive(
       feature_engagement::kIPHCookieControlsFeature);
-}
-
-void CookieControlsIconView::OnIPHClosed() {
-  SetHighlighted(false);
 }
 
 void CookieControlsIconView::SetLabelAndTooltip() {
@@ -188,10 +190,10 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
   }
 }
 
-bool CookieControlsIconView::MaybeAnimateIcon() {
-  if (!should_highlight_ || GetAssociatedBubble() || IsManagedIPHActive() ||
+void CookieControlsIconView::MaybeAnimateIcon() {
+  if (GetAssociatedBubble() || IsManagedIPHActive() ||
       slide_animation_.is_animating()) {
-    return false;
+    return;
   }
 
   int label = blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd
@@ -207,7 +209,9 @@ bool CookieControlsIconView::MaybeAnimateIcon() {
   } else {
     CHECK_IS_TEST();
   }
-  return true;
+  did_animate_ = true;
+  base::RecordAction(
+      base::UserMetricsAction("TrackingProtection.UserBypass.Animated"));
 }
 
 void CookieControlsIconView::UpdateIcon() {
@@ -219,10 +223,12 @@ void CookieControlsIconView::UpdateIcon() {
   UpdateIconImage();
   SetVisible(true);
   SetLabelAndTooltip();
-  if (protections_on_ && !MaybeShowIPH() && MaybeAnimateIcon()) {
-    did_animate_ = true;
-    base::RecordAction(
-        base::UserMetricsAction("TrackingProtection.UserBypass.Animated"));
+  if (protections_on_ && should_highlight_) {
+    if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
+      MaybeShowIPH();
+    } else {
+      MaybeAnimateIcon();
+    }
   } else {
     base::RecordAction(
         base::UserMetricsAction("TrackingProtection.UserBypass.Shown"));

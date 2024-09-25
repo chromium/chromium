@@ -66,9 +66,11 @@ class CookieControlsIconView : public PageActionIconView,
 
   // Attempts to show IPH for the cookie controls icon.
   // Returns whether IPH was successfully shown.
-  bool MaybeShowIPH();
+  void MaybeShowIPH();
+  // Callback for when we try to show the IPH.
+  void OnShowPromoResult(user_education::FeaturePromoResult result);
 
-  bool MaybeAnimateIcon();
+  void MaybeAnimateIcon();
   void UpdateIcon();
 
   int GetLabelForStatus() const;
