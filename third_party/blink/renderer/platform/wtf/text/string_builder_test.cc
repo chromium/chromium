@@ -125,6 +125,36 @@ TEST(StringBuilderTest, Append) {
                        builder_for_u_char32_append);
 }
 
+TEST(StringBuilderTest, AppendSpan) {
+  StringBuilder builder;
+
+  // Append an empty span
+  builder.Append(base::as_byte_span(base::span_from_cstring("")));
+  EXPECT_EQ(0u, builder.length());
+  builder.Append(base::span_from_cstring(u""));
+  EXPECT_EQ(0u, builder.length());
+
+  // Append to an 8-bit builder.
+  builder.Append("a");
+  builder.Append(base::as_byte_span(base::span_from_cstring("b")));
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(2u, builder.length());
+  builder.Append(base::span_from_cstring(u"U"));
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(3u, builder.length());
+  builder.Append(base::span_from_cstring(u"VV"));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(5u, builder.length());
+
+  // Append to a 16-bit builder.
+  builder.Append(base::as_byte_span(base::span_from_cstring("c")));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(6u, builder.length());
+  builder.Append(base::span_from_cstring(u"W"));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(7u, builder.length());
+}
+
 TEST(StringBuilderTest, AppendSharingImpl) {
   String string("abc");
   StringBuilder builder1;

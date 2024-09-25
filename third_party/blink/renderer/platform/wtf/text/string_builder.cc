@@ -282,6 +282,44 @@ void StringBuilder::Append(const LChar* characters, unsigned length) {
   length_ += length;
 }
 
+void StringBuilder::Append(base::span<const UChar> chars) {
+  if (chars.empty()) {
+    return;
+  }
+  DCHECK(chars.data());
+
+  // If there's only one char we use append(UChar) instead since it will
+  // check for latin1 and avoid converting to 16bit if possible.
+  if (chars.size() == 1) {
+    Append(chars[0]);
+    return;
+  }
+
+  unsigned length = base::checked_cast<unsigned>(chars.size());
+  EnsureBuffer16(length);
+  buffer16_.AppendSpan(chars);
+  length_ += length;
+}
+
+void StringBuilder::Append(base::span<const LChar> chars) {
+  if (chars.empty()) {
+    return;
+  }
+  DCHECK(chars.data());
+
+  unsigned length = base::checked_cast<unsigned>(chars.size());
+  if (is_8bit_) {
+    EnsureBuffer8(length);
+    buffer8_.AppendSpan(chars);
+    length_ += length;
+    return;
+  }
+
+  EnsureBuffer16(length);
+  buffer16_.AppendSpan(chars);
+  length_ += length;
+}
+
 void StringBuilder::AppendNumber(bool number) {
   AppendNumber(static_cast<uint8_t>(number));
 }
