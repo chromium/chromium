@@ -413,25 +413,6 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
                                        *data.manifest);
 
-  // Skip checks for PasswordManager WebUI page.
-  if (content::HasWebUIScheme(validated_url_) &&
-      (validated_url_.host() ==
-       password_manager::kChromeUIPasswordManagerHost)) {
-    if (WebappsClient::Get()->DoesNewWebAppConflictWithExistingInstallation(
-            web_contents()->GetBrowserContext(),
-            web_app_data_->manifest().start_url, web_app_data_->manifest_id)) {
-      TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
-      SetInstallableWebAppCheckResult(
-          InstallableWebAppCheckResult::kNo_AlreadyInstalled);
-      Stop(InstallableStatusCode::ALREADY_INSTALLED);
-    } else {
-      SetInstallableWebAppCheckResult(
-          InstallableWebAppCheckResult::kYes_Promotable);
-      Stop(InstallableStatusCode::NO_ERROR_DETECTED);
-    }
-    return;
-  }
-
   PerformInstallableChecks();
 }
 
