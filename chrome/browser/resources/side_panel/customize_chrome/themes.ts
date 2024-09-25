@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './themes.css.js';
@@ -168,12 +168,6 @@ export class ThemesElement extends ThemesElementBase {
         Math.floor(
             WindowProxy.getInstance().now() -
             this.previewImageLoadStartEpoch_));
-  }
-
-  protected onPreviewImageError_() {
-    if (this.imageErrorDetectionEnabled_) {
-      recordCustomizeChromeImageError(NtpImageType.BACKGROUND_IMAGE);
-    }
   }
 
   private onCollectionChange_() {

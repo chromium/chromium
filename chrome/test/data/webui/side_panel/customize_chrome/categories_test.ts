@@ -6,7 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 
 import type {CategoriesElement} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
-import {CustomizeChromeAction, NtpImageType} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
@@ -20,11 +20,6 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
-
-interface CollectionOptions {
-  numCollections: number;
-  shouldReplaceBrokenImages?: boolean;
-}
 
 function createTestCollections(length: number): BackgroundCollection[] {
   const testCollections: BackgroundCollection[] = [];
@@ -46,21 +41,16 @@ suite('CategoriesTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let metrics: MetricsTracker;
 
-  async function setInitialSettings(
-      {numCollections, shouldReplaceBrokenImages = false}: CollectionOptions) {
+  async function setInitialSettings(numCollections: number) {
     handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: createTestCollections(numCollections),
     }));
     if (loadTimeData.getBoolean('imageErrorDetectionEnabled')) {
       handler.setResultMapperFor(
           'getReplacementCollectionPreviewImage', (collectionId: string) => {
-            if (shouldReplaceBrokenImages) {
-              return Promise.resolve({
-                previewImageUrl: {url: `https://replaced-${collectionId}.jpg`},
-              });
-            } else {
-              return Promise.resolve(null);
-            }
+            return Promise.resolve({
+              previewImageUrl: {url: `https://replaced-${collectionId}.jpg`},
+            });
           });
     }
     categoriesElement = document.createElement('customize-chrome-categories');
@@ -83,7 +73,7 @@ suite('CategoriesTest', () => {
 
   test('hide collection elements when collections empty', async () => {
     const numCollections = 0;
-    await setInitialSettings({numCollections: numCollections});
+    await setInitialSettings(numCollections);
 
     const collections =
         categoriesElement.shadowRoot!.querySelectorAll('.collection');
@@ -100,7 +90,8 @@ suite('CategoriesTest', () => {
 
       test('collection visibility based on error detection', async () => {
         const numCollections = 2;
-        await setInitialSettings({numCollections: numCollections});
+        await setInitialSettings(numCollections);
+        await microtasksFinished();
 
         const collections =
             categoriesElement.shadowRoot!.querySelectorAll('.collection');
@@ -123,8 +114,7 @@ suite('CategoriesTest', () => {
 
       test('collection image src based on error detection', async () => {
         const numCollections = 2;
-        await setInitialSettings(
-            {numCollections: numCollections, shouldReplaceBrokenImages: true});
+        await setInitialSettings(numCollections);
 
         const images =
             categoriesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
@@ -138,10 +128,6 @@ suite('CategoriesTest', () => {
         if (!errorDetectionEnabled) {
           assertEquals('https://collection-1.jpg', images[0]!.autoSrc);
           assertEquals('https://collection-2.jpg', images[1]!.autoSrc);
-          assertEquals(
-              0,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
         } else {
           assertEquals('https://replaced-1.jpg', images[0]!.autoSrc);
           assertEquals('https://replaced-2.jpg', images[1]!.autoSrc);
@@ -149,16 +135,17 @@ suite('CategoriesTest', () => {
       });
 
       test('collections surface if their images load', async () => {
-        await setInitialSettings({numCollections: 1});
+        await setInitialSettings(1);
         await microtasksFinished();
         const collection = $$(categoriesElement, '.collection');
         assertTrue(!!collection);
+        const img1 = collection!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img1);
+
         if (errorDetectionEnabled) {
           assertFalse(isVisible(collection));
         }
 
-        const img1 = collection!.querySelector<CrAutoImgElement>('img');
-        assertTrue(!!img1);
         img1.dispatchEvent(new Event('load'));
 
         await microtasksFinished();
@@ -168,44 +155,13 @@ suite('CategoriesTest', () => {
             metrics.count(
                 'NewTabPage.Images.ShownTime.CollectionPreviewImage'));
       });
-
-      test('error detection metrics fire correctly', async () => {
-        const numCollections = 2;
-        await setInitialSettings({numCollections: 2});
-
-        const images =
-            categoriesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
-                '.collection img');
-        assertEquals(numCollections, images.length);
-        const img1Error = eventToPromise('error', images[0]!);
-        const img2Error = eventToPromise('error', images[1]!);
-        await Promise.all([img1Error, img2Error]);
-        await microtasksFinished();
-
-        if (!errorDetectionEnabled) {
-          assertEquals(
-              0,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-        } else {
-          assertEquals(
-              2,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-          assertEquals(
-              2,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
-                  NtpImageType.COLLECTIONS));
-        }
-      });
     });
   });
 
   test('collection preview images create metrics when loaded', async () => {
     const startTime = 123.45;
     windowProxy.setResultFor('now', startTime);
-    await setInitialSettings({numCollections: 1});
+    await setInitialSettings(1);
     assertEquals(1, windowProxy.getCallCount('now'));
     const imageLoadTime = 678.90;
     windowProxy.setResultFor('now', imageLoadTime);
@@ -224,7 +180,7 @@ suite('CategoriesTest', () => {
   });
 
   test('clicking collection sends event', async () => {
-    await setInitialSettings({numCollections: 1});
+    await setInitialSettings(1);
 
     const eventPromise = eventToPromise('collection-select', categoriesElement);
     const category =
@@ -237,7 +193,7 @@ suite('CategoriesTest', () => {
   });
 
   test('back button creates event', async () => {
-    await setInitialSettings({numCollections: 0});
+    await setInitialSettings(0);
     const eventPromise = eventToPromise('back-click', categoriesElement);
     categoriesElement.$.heading.getBackButton().click();
     const event = await eventPromise;
@@ -245,7 +201,7 @@ suite('CategoriesTest', () => {
   });
 
   test('clicking classic chrome sets theme', async () => {
-    await setInitialSettings({numCollections: 0});
+    await setInitialSettings(0);
     categoriesElement.$.classicChromeTile.click();
     assertEquals(1, handler.getCallCount('removeBackgroundImage'));
     assertEquals(1, handler.getCallCount('setDefaultColor'));
@@ -258,7 +214,7 @@ suite('CategoriesTest', () => {
         loadTimeData.overrideValues({
           updatedToUploadedImage: 'Theme updated to uploaded image',
         });
-        await setInitialSettings({numCollections: 0});
+        await setInitialSettings(0);
         handler.setResultFor('chooseLocalCustomBackground', Promise.resolve({
           success: true,
         }));
@@ -283,14 +239,14 @@ suite('CategoriesTest', () => {
       });
 
   test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
-    await setInitialSettings({numCollections: 0});
+    await setInitialSettings(0);
 
     categoriesElement.$.chromeWebStoreTile.click();
     assertEquals(1, handler.getCallCount('openChromeWebStore'));
   });
 
   test('checks selected category', async () => {
-    await setInitialSettings({numCollections: 2});
+    await setInitialSettings(2);
 
     // Set an empty theme with no color and no background.
     const theme = createTheme();
@@ -358,7 +314,7 @@ suite('CategoriesTest', () => {
   });
 
   test('help bubble can correctly find anchor elements', async () => {
-    await setInitialSettings({numCollections: 5});
+    await setInitialSettings(5);
     assertDeepEquals(
         categoriesElement.getSortedAnchorStatusesForTesting(),
         [
@@ -369,7 +325,7 @@ suite('CategoriesTest', () => {
   });
 
   test('classic chrome tile shows correct image', async () => {
-    await setInitialSettings({numCollections: 0});
+    await setInitialSettings(0);
 
     assertEquals(
         $$<HTMLImageElement>(
@@ -390,7 +346,7 @@ suite('CategoriesTest', () => {
       test(
           `wallpaper search does ${flagEnabled ? '' : 'not '}show`,
           async () => {
-            await setInitialSettings({numCollections: 0});
+            await setInitialSettings(0);
             assertEquals(
                 !!categoriesElement.shadowRoot!.querySelector(
                     '#wallpaperSearchTile'),
@@ -398,7 +354,7 @@ suite('CategoriesTest', () => {
           });
 
       test('check category for wallpaper search background', async () => {
-        await setInitialSettings({numCollections: 1});
+        await setInitialSettings(1);
 
         // Set a theme with wallpaper search background.
         const theme = createTheme();
@@ -436,7 +392,7 @@ suite('CategoriesTest', () => {
     });
 
     test('choosing collection sets metric', async () => {
-      await setInitialSettings({numCollections: 1});
+      await setInitialSettings(1);
 
       const tile = categoriesElement.shadowRoot!.querySelector('.collection');
       assertTrue(!!tile);
@@ -453,7 +409,7 @@ suite('CategoriesTest', () => {
     });
 
     test('choosing default chrome sets metric', async () => {
-      await setInitialSettings({numCollections: 0});
+      await setInitialSettings(0);
 
       categoriesElement.$.classicChromeTile.click();
 
@@ -467,7 +423,7 @@ suite('CategoriesTest', () => {
     });
 
     test('choosing wallpaper search sets metric', async () => {
-      await setInitialSettings({numCollections: 0});
+      await setInitialSettings(0);
 
       const tile =
           categoriesElement.shadowRoot!.querySelector('#wallpaperSearchTile');
@@ -484,7 +440,7 @@ suite('CategoriesTest', () => {
     });
 
     test('choosing upload sets metric', async () => {
-      await setInitialSettings({numCollections: 0});
+      await setInitialSettings(0);
 
       categoriesElement.$.uploadImageTile.click();
 

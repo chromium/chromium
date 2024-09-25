@@ -34,8 +34,7 @@ export function getHtml(this: ThemesElement) {
             <img is="cr-auto-img" data-index="${index}"
                 .autoSrc="${item.previewImageUrl.url}"
                 draggable="false"
-                @load="${this.onPreviewImageLoad_}"
-                @error="${this.onPreviewImageError_}">
+                @load="${this.onPreviewImageLoad_}">
             </img>
           </div>
         </customize-chrome-check-mark-wrapper>

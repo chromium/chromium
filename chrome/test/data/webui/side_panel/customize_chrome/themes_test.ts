@@ -4,7 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 
-import {CustomizeChromeAction, NtpImageType} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CollectionImage, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
@@ -377,40 +377,9 @@ suite('ThemesTest', () => {
         }
 
         img1.dispatchEvent(new Event('load'));
-        await microtasksFinished();
 
+        await microtasksFinished();
         assertTrue(isVisible(theme));
-      });
-
-      test('error detection metrics fire correctly', async () => {
-        const numThemes = 2;
-        await setCollection('test1', numThemes);
-
-        const images =
-            themesElement.shadowRoot!.querySelectorAll<CrAutoImgElement>(
-                '.theme img');
-        assertEquals(numThemes, images.length);
-        const img1Error = eventToPromise('error', images[0]!);
-        const img2Error = eventToPromise('error', images[1]!);
-        await Promise.all([img1Error, img2Error]);
-        await microtasksFinished();
-
-        if (!errorDetectionEnabled) {
-          assertEquals(
-              0,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-        } else {
-          assertEquals(
-              2,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-          assertEquals(
-              2,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
-                  NtpImageType.BACKGROUND_IMAGE));
-        }
       });
     });
   });

@@ -374,6 +374,10 @@ void NtpBackgroundService::OnImageURLHeadersFetchComplete(
 void NtpBackgroundService::FetchReplacementCollectionPreviewImage(
     const std::string& collection_id,
     FetchReplacementImageCallback fetch_replacement_image_callback) {
+  // TODO(b:367702048) - Move metric to frontend, where the error was detected.
+  UMA_HISTOGRAM_ENUMERATION(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+      NtpImageType::kCollections);
   FetchCollectionImageInfoInternal(
       collection_id,
       base::BindOnce(&NtpBackgroundService::

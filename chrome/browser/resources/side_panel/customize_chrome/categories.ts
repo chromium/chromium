@@ -23,7 +23,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './categories.css.js';
 import {getHtml} from './categories.html.js';
-import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -193,7 +193,6 @@ export class CategoriesElement extends CategoriesElementBase {
     if (!this.imageErrorDetectionEnabled_) {
       return;
     }
-    recordCustomizeChromeImageError(NtpImageType.COLLECTIONS);
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     assert(this.collections_[index]);
     this.pageHandler_
