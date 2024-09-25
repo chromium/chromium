@@ -19,4 +19,3 @@
 -BackForwardCacheWithSubframeNavigationBrowserTest.SubframeNavigationWithUrlLoaderBeforeSendingRequestShouldNotPreventCache
 -FindRequestManagerTest.FindInPage_Issue627799
 -PrerenderBrowserTest.ActivatePageWithInnerContents
--RenderThreadImplBrowserTest.*

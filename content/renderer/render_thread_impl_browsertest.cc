@@ -167,8 +167,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
     content_renderer_client_ = std::make_unique<ContentRendererClient>();
     SetRendererClientForTesting(content_renderer_client_.get());
 
-    browser_threads_ = std::make_unique<BrowserTaskEnvironment>(
-        BrowserTaskEnvironment::REAL_IO_THREAD);
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
         GetIOThreadTaskRunner({});
 
@@ -278,10 +276,16 @@ class RenderThreadImplBrowserTest : public testing::Test,
   bool RendererIsHidden() { return thread_->RendererIsHidden(); }
 
   scoped_refptr<TestTaskCounter> test_task_counter_;
+
+  // Must be created before TestContentClientInitializer, since with
+  // --force-renderer-accessibility that creates a BrowserAccessibilityStateImpl
+  // that uses a browser thread.
+  BrowserTaskEnvironment browser_threads_{
+      BrowserTaskEnvironment::REAL_IO_THREAD};
+
   TestContentClientInitializer content_client_initializer_;
   std::unique_ptr<ContentRendererClient> content_renderer_client_;
 
-  std::unique_ptr<BrowserTaskEnvironment> browser_threads_;
   const base::Process null_process_;
   std::unique_ptr<ChildProcessHost> process_host_;
 
@@ -305,7 +309,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
 TEST_F(RenderThreadImplBrowserTest,
        WILL_LEAK(NonResourceDispatchIPCTasksDontGoThroughScheduler)) {
   // This seems to deflake the test on Android.
-  browser_threads_->RunIOThreadUntilIdle();
+  browser_threads_.RunIOThreadUntilIdle();
 
   // NOTE other than not being a resource message, the actual message is
   // unimportant.
