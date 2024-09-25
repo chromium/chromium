@@ -42,6 +42,11 @@ class OptionalStorage {
     return *data_;
   }
 
+  const T& Get() const {
+    CHECK(data_);
+    return *data_;
+  }
+
  private:
   std::optional<T> data_;
 };
@@ -65,6 +70,11 @@ class SparseStorage {
   }
 
   T& Get() {
+    CHECK(data_);
+    return *data_;
+  }
+
+  const T& Get() const {
     CHECK(data_);
     return *data_;
   }
