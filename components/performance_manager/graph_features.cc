@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
+#include "components/performance_manager/decorators/important_frame_decorator.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
@@ -43,6 +44,9 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.frame_visibility_decorator) {
     Install<FrameVisibilityDecorator>(graph);
   }
+  if (flags_.important_frame_decorator) {
+    Install<ImportantFrameDecorator>(graph);
+  }
   if (flags_.metrics_collector) {
     Install<MetricsCollector>(graph);
   }
@@ -57,7 +61,7 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.priority_tracking) {
     // The ExecutionContextPriorityDecorator depends on FrameVisibilityDecorator
-    // and so must be installed after.
+    // and ImportantFrameDecorator and so must be installed after.
     Install<execution_context_priority::ExecutionContextPriorityDecorator>(
         graph);
     Install<ProcessPriorityAggregator>(graph);

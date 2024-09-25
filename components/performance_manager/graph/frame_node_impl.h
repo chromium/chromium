@@ -111,6 +111,7 @@ class FrameNodeImpl
   bool IsCapturingMediaStream() const override;
   std::optional<ViewportIntersection> GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
+  bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   uint64_t GetResidentSetKbEstimate() const override;
   uint64_t GetPrivateFootprintKbEstimate() const override;
@@ -145,6 +146,7 @@ class FrameNodeImpl
   void SetViewportIntersection(blink::mojom::FrameVisibility frame_visibility);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
+  void SetIsImportant(bool is_important);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
   void SetPrivateFootprintKbEstimate(uint64_t private_footprint_estimate);
 
@@ -412,6 +414,10 @@ class FrameNodeImpl
       Visibility,
       &FrameNodeObserver::OnFrameVisibilityChanged>
       visibility_{Visibility::kUnknown};
+
+  ObservedProperty::
+      NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsImportantChanged>
+          is_important_{true};
 
   // Indicates that SetViewportIntersection() was called with a
   // blink::mojom::ViewportIntersectionState instance. This is only called for

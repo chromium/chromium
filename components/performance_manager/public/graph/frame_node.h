@@ -227,6 +227,13 @@ class FrameNode : public TypedNode<FrameNode> {
   // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
 
+  // Returns true if the frame is deemed important. This means that the frame
+  // had been interacted with by the user, or is intersecting with a large area
+  // of the viewport. Note that this is the importance in the context of the
+  // containing page. If the page is not visible, the frame should not be
+  // considered important, regardless of this value.
+  virtual bool IsImportant() const = 0;
+
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
@@ -336,6 +343,9 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* frame_node,
       FrameNode::Visibility previous_value) = 0;
 
+  // Invoked when the `IsImportant` property changes.
+  virtual void OnIsImportantChanged(const FrameNode* frame_node) = 0;
+
   // Events with no property changes.
 
   // Invoked when a non-persistent notification has been issued by the frame.
@@ -393,6 +403,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {
   }
+  void OnIsImportantChanged(const FrameNode* frame_node) override {}
   void OnNonPersistentNotificationCreated(
       const FrameNode* frame_node) override {}
   void OnFirstContentfulPaint(

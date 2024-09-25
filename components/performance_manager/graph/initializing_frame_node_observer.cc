@@ -172,6 +172,13 @@ void InitializingFrameNodeObserverManager::OnFrameVisibilityChanged(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnIsImportantChanged(
+    const FrameNode* frame_node) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnIsImportantChanged(frame_node);
+  }
+}
+
 void InitializingFrameNodeObserverManager::OnNonPersistentNotificationCreated(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {

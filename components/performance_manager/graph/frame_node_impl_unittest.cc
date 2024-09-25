@@ -20,6 +20,8 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -193,6 +195,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
               OnFrameVisibilityChanged,
               (const FrameNode*, FrameNode::Visibility),
               (override));
+  MOCK_METHOD(void, OnIsImportantChanged, (const FrameNode*), (override));
   MOCK_METHOD(void,
               OnNonPersistentNotificationCreated,
               (const FrameNode*),

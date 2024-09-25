@@ -284,6 +284,11 @@ FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
   return visibility_.value();
 }
 
+bool FrameNodeImpl::IsImportant() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_important_.value();
+}
+
 const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_host_proxy_;
@@ -496,6 +501,11 @@ void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
 void FrameNodeImpl::SetVisibility(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visibility_.SetAndMaybeNotify(this, visibility);
+}
+
+void FrameNodeImpl::SetIsImportant(bool is_important) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_important_.SetAndMaybeNotify(this, is_important);
 }
 
 void FrameNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {

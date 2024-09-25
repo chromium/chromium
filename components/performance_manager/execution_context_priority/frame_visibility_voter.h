@@ -16,6 +16,9 @@ namespace execution_context_priority {
 // depends on their visibility. A visible frame will receive a
 // TaskPriority::USER_BLOCKING vote, while a non-visible frame will receive a
 // TaskPriority::LOWEST vote.
+// If the kUnimportantFrame feature is enabled, a lesser
+// TaskPriority::USER_VISIBLE vote is cast for frames that are deemed
+// unimportant.
 // Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
 // priority of a frame.
 class FrameVisibilityVoter : public VoterBase,
@@ -38,6 +41,7 @@ class FrameVisibilityVoter : public VoterBase,
   void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
+  void OnIsImportantChanged(const FrameNode* frame_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 

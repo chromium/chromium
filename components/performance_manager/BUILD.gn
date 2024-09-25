@@ -16,6 +16,8 @@ static_library("performance_manager") {
     "browser_child_process_watcher.h",
     "decorators/frame_visibility_decorator.cc",
     "decorators/frame_visibility_decorator.h",
+    "decorators/important_frame_decorator.cc",
+    "decorators/important_frame_decorator.h",
     "decorators/page_aggregator.cc",
     "decorators/page_aggregator.h",
     "decorators/page_aggregator_data.cc",
@@ -355,6 +357,7 @@ source_set("unit_tests") {
   sources = [
     "decorators/decorators_utils_unittest.cc",
     "decorators/frame_visibility_decorator_unittest.cc",
+    "decorators/important_frame_decorator_unittest.cc",
     "decorators/page_aggregator_unittest.cc",
     "decorators/page_live_state_decorator_unittest.cc",
     "decorators/page_load_tracker_decorator_unittest.cc",
