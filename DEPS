@@ -2634,7 +2634,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'c4a28daf28c98300da9d9b5213c53f762908825e',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '6b575cfd98c822cf36f6ffda901725c7aa9914cc',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
