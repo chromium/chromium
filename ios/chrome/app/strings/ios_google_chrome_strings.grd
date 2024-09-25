@@ -572,6 +572,30 @@ Things to consider:
       <message name="IDS_IOS_LOGIN_ERROR_AUTHENTICATING_HOSTED" desc="Couldn't sign in because hosted account is used.">
         Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION" desc="The description of the context menu for the Chrome Tips Magic Stack card.">
+      This card shows you suggestions on how to get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_DEFAULT_TITLE" desc="The default title of the Lens tip for the Magic Stack.">
+      Search with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_SHOP_TITLE" desc="The title of the use Lens for shopping tip for the Magic Stack.">
+      Shop with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_TITLE" desc="The title of the use Lens for translation tip for the Magic Stack.">
+      Translate with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE" desc="The title of the Save Password tip for the Magic Stack.">
+      Save Your Passwords on Chrome
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
+      Get Chrome's Strongest Security
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_DESCRIPTION" desc="The description of the Set Up List completion for the Magic Stack.">
+      Check back here for more useful tips to get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TITLE" desc="The name of the Chrome Tips Magic Stack.">
+      Chrome Tips
+      </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY" desc="Message explaining that signing out of a managed account will clear all the Chrome data. [Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
         Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. Your data will remain in your Google Account.
       </message>
