@@ -104,12 +104,6 @@ suite('FlagsAppTest', function() {
         new CustomEvent('input', {composed: true, bubbles: true}));
   }
 
-  function selectChange(selectEl: HTMLSelectElement, index: number) {
-    selectEl.selectedIndex = index;
-    selectEl.dispatchEvent(
-        new CustomEvent('change', {composed: true, bubbles: true}));
-  }
-
   test('Layout', function() {
     // Flag search
     assertTrue(isVisible(searchTextArea));
@@ -160,43 +154,6 @@ suite('FlagsAppTest', function() {
     assertTrue(isVisible(unavailableExperimentsContainer));
     assertFalse(isVisible(defaultAvailableExperimentsContainer));
   });
-
-  test(
-      'enable experiment and selectExperimentalFeature event fired',
-      function() {
-        const experimentWithDefault =
-            app.getRequiredElement('#default-experiments')
-                .querySelectorAll('flags-experiment')[0];
-        assertTrue(!!experimentWithDefault);
-        const select =
-            experimentWithDefault.getRequiredElement<HTMLSelectElement>(
-                '.experiment-select');
-        assertTrue(!!select);
-
-        // Initially, the selected option is "Default" at index 0
-        assertEquals(0, select.selectedIndex);
-
-        // Select the "Enabled" option at index 1
-        selectChange(select, 1);
-        return browserProxy.whenCalled('selectExperimentalFeature');
-      });
-
-  test(
-      'enable experiment and enableExperimentalFeature event fired',
-      function() {
-        const experimentWithNoDefault =
-            app.getRequiredElement('#default-experiments')
-                .querySelectorAll('flags-experiment')[1];
-        assertTrue(!!experimentWithNoDefault);
-        const select =
-            experimentWithNoDefault.getRequiredElement<HTMLSelectElement>(
-                '.experiment-enable-disable');
-        assertTrue(!!select);
-
-        // Select the non-default option at index 1
-        selectChange(select, 1);
-        return browserProxy.whenCalled('enableExperimentalFeature');
-      });
 
   test('clear search button shown/hidden', async function() {
     // The clear search button is hidden initially.

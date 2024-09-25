@@ -6,6 +6,7 @@ import 'chrome://flags/experiment.js';
 
 import type {ExperimentElement} from 'chrome://flags/experiment.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
+import type {Feature} from 'chrome://flags/flags_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -14,6 +15,41 @@ import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
 suite('ExperimentTest', function() {
   let experiment: ExperimentElement;
   let browserProxy: TestFlagsBrowserProxy;
+
+  const experimentWithOptions: Feature = {
+    'description': 'available feature',
+    'internal_name': 'available-feature',
+    'is_default': true,
+    'name': 'available feature',
+    'enabled': true,
+    'options': [
+      {
+        'description': 'Default',
+        'internal_name': 'available-feature@0',
+        'selected': false,
+      },
+      {
+        'description': 'Enabled',
+        'internal_name': 'available-feature@1',
+        'selected': false,
+      },
+      {
+        'description': 'Disabled',
+        'internal_name': 'available-feature@2',
+        'selected': false,
+      },
+    ],
+    'supported_platforms': ['Windows'],
+  };
+
+  const experimentWithoutOptions: Feature = {
+    'description': 'available feature no default',
+    'internal_name': 'available-feature-no-default',
+    'is_default': true,
+    'name': 'available feature on default',
+    'enabled': true,
+    'supported_platforms': ['Windows'],
+  };
 
   function hasBeforePseudoElement(element: HTMLElement): boolean {
     const styles = window.getComputedStyle(element, '::before');
@@ -34,32 +70,8 @@ suite('ExperimentTest', function() {
     experiment = document.createElement('flags-experiment');
   });
 
-  test('ExperimentWithOptions', async function() {
-    experiment.data = {
-      'description': 'available feature',
-      'internal_name': 'available-feature',
-      'is_default': true,
-      'name': 'available feature',
-      'enabled': true,
-      'options': [
-        {
-          'description': 'Default',
-          'internal_name': 'available-feature@0',
-          'selected': false,
-        },
-        {
-          'description': 'Enabled',
-          'internal_name': 'available-feature@1',
-          'selected': false,
-        },
-        {
-          'description': 'Disabled',
-          'internal_name': 'available-feature@2',
-          'selected': false,
-        },
-      ],
-      'supported_platforms': ['Windows'],
-    };
+  test('ExperimentWithOptions_Layout', async function() {
+    experiment.data = experimentWithOptions;
     document.body.appendChild(experiment);
     await microtasksFinished();
 
@@ -95,15 +107,24 @@ suite('ExperimentTest', function() {
     assertFalse(hasBeforePseudoElement(experimentName));
   });
 
-  test('ExperimentWithoutOptions', async function() {
-    experiment.data = {
-      'description': 'available feature no default',
-      'internal_name': 'available-feature-no-default',
-      'is_default': true,
-      'name': 'available feature on default',
-      'enabled': true,
-      'supported_platforms': ['Windows'],
-    };
+  test('ExperimentWithOptions_Change', async function() {
+    experiment.data = experimentWithOptions;
+    document.body.appendChild(experiment);
+    await microtasksFinished();
+
+    const select = experiment.getRequiredElement('select');
+    assertEquals(0, select.selectedIndex);
+    const whenFired = eventToPromise('select-change', select);
+    await simulateUserInput(select, 1);
+
+    return Promise.all([
+      browserProxy.whenCalled('selectExperimentalFeature'),
+      whenFired,
+    ]);
+  });
+
+  test('ExperimentWithoutOptions_Layout', async function() {
+    experiment.data = experimentWithoutOptions;
     document.body.appendChild(experiment);
     await microtasksFinished();
 
@@ -132,6 +153,22 @@ suite('ExperimentTest', function() {
     assertTrue(hasBeforePseudoElement(experimentName));
     await simulateUserInput(select, 1);
     assertFalse(hasBeforePseudoElement(experimentName));
+  });
+
+  test('ExperimentWithoutOptions_Change', async function() {
+    experiment.data = experimentWithoutOptions;
+    document.body.appendChild(experiment);
+    await microtasksFinished();
+
+    const select = experiment.getRequiredElement('select');
+    assertEquals(1, select.selectedIndex);
+    const whenFired = eventToPromise('select-change', select);
+    await simulateUserInput(select, 0);
+
+    return Promise.all([
+      browserProxy.whenCalled('enableExperimentalFeature'),
+      whenFired,
+    ]);
   });
 
   test('UnavailableExperiment', async function() {
