@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+
 #include "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #include "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
 #include "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
 #include "ios/web/public/js_messaging/script_message.h"
@@ -44,7 +46,7 @@ class Env : public web::FuzzerEnvWithWebState {
         autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state());
   }
   // The object will be deconstructed at deconstructing the WebState.
-  autofill::FormActivityTabHelper* tab_helper_;
+  raw_ptr<autofill::FormActivityTabHelper> tab_helper_;
   std::string main_frame_id_;
 };
 
