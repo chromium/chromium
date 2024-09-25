@@ -38,6 +38,9 @@ steps, or simply run update_google_patch.sh from the commandline.
 3) Make your new changes inside the git hunspell directory.
 4) Generate the updated patch:
    $ git diff > ~/src/third_party/hunspell/google.patch
+5) Copy the patched source to Chromium:
+   $ cp -r src/ README.md COPYING* license* \
+       ~/src/third_party/hunspell/
 
 All dictionaries used by Chromium has been checked in to the
 'third_party/hunspell_dictionaries' directory. They have several additions over

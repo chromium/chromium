@@ -1,7 +1,7 @@
 About Hunspell
 ==============
 
-NOTICE: Verison 2 is in the works. For contributing see
+NOTICE: Version 2 is in the works. For contributing see
 [version 2 specification][v2spec] and the folder `src/hunspell2`.
 
 [v2spec]: https://github.com/hunspell/hunspell/wiki/Version-2-Specification
@@ -31,24 +31,24 @@ Main features of Hunspell spell checker and morphological analyzer:
 - Free software. Versions 1.x are licenced under LGPL, GPL, MPL tri-license.
   Version 2 is licenced only under GNU LGPL.
 
-Compiling on Unix/Linux and others
-==================================
+Compiling on GNU/Linux and Unixes
+=================================
 
 	autoreconf -vfi
 	./configure
 	make
-	make install    #if neccesary prefix with sudo
-	ldconfig        #not needed on windows, on linux sudo may be needed
+	sudo make install
+	sudo ldconfig
 
-For dictionary development, use the --with-warnings option of configure.
+For dictionary development, use the `--with-warnings` option of configure.
 
-For interactive user interface of Hunspell executable, use the --with-ui option.
+For interactive user interface of Hunspell executable, use the `--with-ui option`.
 
 The developer packages you need to compile Hunspell's interface:
 
 	autoconf automake autopoint libtool g++
 
-optional developer packages:
+Optional developer packages:
 
 - ncurses (need for --with-ui), eg. libncursesw5 for UTF-8
 - readline (for fancy input line editing,
@@ -59,8 +59,7 @@ optional developer packages:
 Compiling on Windows
 ====================
 
-1. Compiling with Mingw64 and MSYS2
------------------------------------
+## 1. Compiling with Mingw64 and MSYS2
 
 Download Msys2, update everything and install the following packages:
 
@@ -68,8 +67,7 @@ Download Msys2, update everything and install the following packages:
 
 Open Mingw-w64 Win64 prompt and compile the same way as on Linux, see above.
 
-2. Compiling in Cygwin environment
-----------------------------------
+## 2. Compiling in Cygwin environment
 
 Download and install Cygwin environment for Windows with the following
 extra packages: 
@@ -77,16 +75,24 @@ extra packages:
 - make
 - automake
 - autoconf
+- libtool
 - gcc-g++ development package
 - ncurses, readline (for user interface)
 - iconv (character conversion)
 
-###3.1. Cygwin1.dll dependent compiling
+Then compile the same way as on Linux. Cygwin builds depend on Cygwin1.dll.
 
-Same as on Linux.
+Debugging
+=========
+
+For debugging we need to create a debug build and then we need to start `gdb`.
+
+	make clean
+	make CXXFLAGS='-g -O0'
+	libtool --mode=execute gdb src/tools/hunspell
 
 Testing
-========
+=======
 
 Testing Hunspell (see tests in tests/ subdirectory):
 
@@ -116,7 +122,7 @@ http://hunspell.github.io/
 Usage
 =====
 
-The src/tools dictionary contains ten executables after compiling:
+The src/tools directory contains ten executables after compiling:
 
 - affixcompress: dictionary generation from large (millions of words)
   vocabularies
