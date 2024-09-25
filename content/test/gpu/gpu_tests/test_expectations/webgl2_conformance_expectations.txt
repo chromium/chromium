@@ -973,8 +973,6 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
 
-# Suspected i915 image uprev
-crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
@@ -1030,7 +1028,6 @@ crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2
 # Lacros failures #
 #####################
 
-crbug.com/324952609 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
 
 
@@ -1141,7 +1138,6 @@ crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffe
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ mac intel angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ chromeos chromeos-board-octopus ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
