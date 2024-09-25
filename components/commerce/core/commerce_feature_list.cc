@@ -228,6 +228,10 @@ BASE_FEATURE(kProductSpecificationsMultiSpecifics,
              "ProductSpecificationsMultiSpecifics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCompareConfirmationToast,
+             "CompareConfirmationToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingIconColorVariant,
              "ShoppingIconColorVariant",
              base::FEATURE_DISABLED_BY_DEFAULT);

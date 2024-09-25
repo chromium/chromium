@@ -31,6 +31,10 @@ const char kProductSpecificationsMultiSpecificsDescription[] =
     "Enable the Product Specifications backed by the sync multi specifics "
     "representation.";
 
+const char kCompareConfirmationToastName[] = "Added to set confirmation toast";
+const char kCompareConfirmationToastDescription[] =
+    "Enable to show the added to set confirmation in a toast.";
+
 const char kShoppingIconColorVariantName[] =
     "Enable color variant for shopping icons";
 const char kShoppingIconColorVariantDescription[] =
