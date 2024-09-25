@@ -206,6 +206,11 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   void RemoveUserWallpaperInfo(const AccountId& account_id) override {
+    if (profile_helper_->IsEphemeral(account_id)) {
+      ephemeral_users_wallpaper_info_.erase(account_id);
+      return;
+    }
+
     RemoveWallpaperInfo(account_id, local_state_, prefs::kUserWallpaperInfo);
     RemoveWallpaperInfo(account_id,
                         profile_helper_->GetUserPrefServiceSyncable(account_id),

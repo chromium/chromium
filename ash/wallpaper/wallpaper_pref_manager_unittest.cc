@@ -91,8 +91,9 @@ class TestProfileHelper : public WallpaperProfileHelper {
   void SetClient(WallpaperControllerClient*) override {}
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& id) override {
-    if (!is_sync_enabled)
+    if (!is_sync_enabled) {
       return nullptr;
+    }
 
     const auto& pref = synced_prefs_.find(id);
     return pref == synced_prefs_.end() ? nullptr : &(pref->second);
@@ -208,6 +209,16 @@ TEST_F(WallpaperPrefManagerTest,
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(
       account_id_1, /*is_ephemeral=*/true, &actual_info));
   EXPECT_TRUE(actual_info.MatchesSelection(expected_info));
+}
+
+TEST_F(WallpaperPrefManagerTest, RemoveUserWallpaperInfo_Ephemeral) {
+  profile_helper_->is_ephemeral = true;
+  WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
+
+  pref_manager_->RemoveUserWallpaperInfo(account_id_1);
+  WallpaperInfo actual_info;
+  EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {
