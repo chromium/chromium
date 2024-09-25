@@ -334,8 +334,6 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   params->assets = std::move(assets);
   params->max_tokens = GetTokenLimits().max_tokens;
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
-  params->support_multiple_sessions =
-      features::GetOnDeviceModelSupportMultipleSessions();
   service_remote_->LoadModel(
       std::move(params), std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,

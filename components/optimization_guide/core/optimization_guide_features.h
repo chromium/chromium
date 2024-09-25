@@ -357,10 +357,6 @@ bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelIdleTimeout();
 
-// Returns whether to enable multiple sessions support with the on device model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceModelSupportMultipleSessions();
-
 // Returns the delay before starting the on device model inference when
 // running validation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
