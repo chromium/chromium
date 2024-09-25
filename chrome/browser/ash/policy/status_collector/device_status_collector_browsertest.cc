@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
+#include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -118,6 +119,7 @@
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
@@ -1158,6 +1160,16 @@ class DeviceStatusCollectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddActivityPeriodForUser(const std::string& user_email) {
+    base::Time start_time = test_clock_.Now();
+    test_clock_.Advance(base::Hours(1));
+    base::Time end_time = test_clock_.Now();
+    test_clock_.Advance(base::Hours(1));
+
+    status_collector_->GetActivityStorageForTesting().AddActivityPeriod(
+        start_time, end_time, user_email);
+  }
+
   // Convenience method.
   int64_t ActivePeriodMilliseconds() {
     return DeviceStatusCollector::kIdlePollInterval.InMilliseconds();
@@ -1641,6 +1653,34 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
   EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
+}
+
+// Remove deprecated ARC Kiosk account from the activity periods list.
+TEST_F(DeviceStatusCollectorTest, PrepopulatedActivityPeriods) {
+  DisableDefaultSettings();
+
+  // Simulate when something is left from the previous session reporting.
+  // ARC Kiosk activity to be removed.
+  const std::string kArcKioskEmail =
+      std::string("test@") + user_manager::kArcKioskDomain;
+  AddActivityPeriodForUser(kArcKioskEmail);
+  // Regular user activity to be uploaded.
+  const std::string kTestEmail = std::string("test@test.com");
+  AddActivityPeriodForUser(kTestEmail);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceActivityTimes, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceUsers, true);
+
+  GetStatus();
+  EXPECT_EQ(2, device_status_.active_periods_size());
+  // No email and session type are reported for ARC kiosk account.
+  EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
+  // Both email and session type are reported for regular user account.
+  EXPECT_EQ(device_status_.active_periods(1).user_email(), kTestEmail);
+  EXPECT_TRUE(device_status_.active_periods(1).has_session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, DevSwitchBootMode) {

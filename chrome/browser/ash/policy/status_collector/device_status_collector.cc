@@ -104,6 +104,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -684,6 +685,11 @@ em::TpmVersionInfo_GscVersion ConvertTpmGscVersion(
 
   NOTREACHED_IN_MIGRATION();
   return em::TpmVersionInfo::GSC_VERSION_UNSPECIFIED;
+}
+
+// Do not report session type and email for deprecated user types.
+bool IsDeprecatedArcKioskAccount(std::string_view user_email) {
+  return gaia::ExtractDomainName(user_email) == user_manager::kArcKioskDomain;
 }
 
 }  // namespace
@@ -2293,8 +2299,9 @@ bool DeviceStatusCollector::GetActivityTimes(
       period->set_end_timestamp(end_timestamp);
       active_period->set_active_duration(activity_period.end_timestamp() -
                                          activity_period.start_timestamp());
-      // Report user email and session_type only if users reporting is on.
-      if (!user_email.empty()) {
+      // Report user email and session_type for non-deprecated accounts only
+      // if users reporting is on.
+      if (!user_email.empty() && !IsDeprecatedArcKioskAccount(user_email)) {
         em::ActiveTimePeriod::SessionType session_type =
             GetSessionType(user_email);
         // Don't report the email address for MGS / Kiosk apps
