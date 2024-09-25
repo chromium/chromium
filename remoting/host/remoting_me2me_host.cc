@@ -670,7 +670,7 @@ void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
     return;
   }
 
-  OnConfigParsed(std::move(config.value()));
+  OnConfigParsed(std::move(*config));
 }
 
 void HostProcess::OnConfigParsed(base::Value::Dict config) {
@@ -1524,7 +1524,7 @@ bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
     return false;
   }
 
-  host_username_match_required_ = host_username_match_required.value();
+  host_username_match_required_ = *host_username_match_required;
   ApplyUsernamePolicy();
 #endif
   return false;
@@ -1540,10 +1540,10 @@ bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
     return false;
   }
 
-  desktop_environment_options_.set_enable_curtaining(curtain_required.value());
+  desktop_environment_options_.set_enable_curtaining(*curtain_required);
 
 #if BUILDFLAG(IS_APPLE)
-  if (curtain_required.value()) {
+  if (*curtain_required) {
     // When curtain mode is in effect on Mac, the host process runs in the
     // user's switched-out session, but launchd will also run an instance at
     // the console login screen.  Even if no user is currently logged-on, we
@@ -1562,7 +1562,7 @@ bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
   }
 #endif
 
-  if (curtain_required.value()) {
+  if (*curtain_required) {
     HOST_LOG << "Policy requires curtain-mode.";
   } else {
     HOST_LOG << "Policy does not require curtain-mode.";
@@ -1580,7 +1580,7 @@ bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
     return false;
   }
 
-  allow_pairing_ = allow_pairing.value();
+  allow_pairing_ = *allow_pairing;
   if (allow_pairing_) {
     HOST_LOG << "Policy enables client pairing.";
   } else {
@@ -1598,7 +1598,7 @@ bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
     return false;
   }
 
-  security_key_auth_policy_enabled_ = security_key_auth_policy_enabled.value();
+  security_key_auth_policy_enabled_ = *security_key_auth_policy_enabled;
   if (security_key_auth_policy_enabled_) {
     HOST_LOG << "Policy enables security key auth.";
   } else {
@@ -1649,7 +1649,7 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
 
   // Save the value until we have parsed the host config since we only want the
   // policy to be applied to machines owned by a Googler.
-  enable_user_interface_ = enable_user_interface.value();
+  enable_user_interface_ = *enable_user_interface;
   if (enable_user_interface_) {
     HOST_LOG << "Policy enables user interface for non-curtained sessions.";
   } else {
@@ -1672,7 +1672,7 @@ bool HostProcess::OnAllowRemoteAccessConnections(
   }
 
   // Update the value if the policy was set and retrieval was successful.
-  allow_remote_access_connections_ = allow_remote_access_connections.value();
+  allow_remote_access_connections_ = *allow_remote_access_connections;
   ApplyAllowRemoteAccessConnections();
   return false;
 }
