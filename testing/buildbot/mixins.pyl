@@ -8,24 +8,6 @@
 # //infra/config/scripts/sync-pyl-files.py.
 
 {
-  '10-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_29_google_apis_x86',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_29_google_apis_x86',
-          'path': '.android_emulator/android_29_google_apis_x86',
-        },
-      ],
-    },
-  },
   '11-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb',
@@ -77,42 +59,6 @@
         {
           'name': 'android_32_google_apis_x64_foldable_fyi',
           'path': '.android_emulator/android_32_google_apis_x64_foldable_fyi',
-        },
-      ],
-    },
-  },
-  '12l-landscape-x64-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_landscape.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_32_google_apis_x64_foldable_landscape',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_32_google_apis_x64_foldable_landscape',
-          'path': '.android_emulator/android_32_google_apis_x64_foldable_landscape',
-        },
-      ],
-    },
-  },
-  '12l-x64-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_32_google_apis_x64_foldable',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_32_google_apis_x64_foldable',
-          'path': '.android_emulator/android_32_google_apis_x64_foldable',
         },
       ],
     },

@@ -13,6 +13,7 @@
   # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
   #   chromium
   #   chromium.accessibility
+  #   chromium.android
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
   {
@@ -464,196 +465,13 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.android.star
-    #   Android ASAN (dbg)
-    #   Android WebView O (dbg)
-    #   Android WebView P (dbg)
-    #   Android arm Builder (dbg)
-    #   Android arm64 Builder (dbg)
-    #   Android arm64 Builder All Targets (dbg)
-    #   Android x64 Builder All Targets (dbg)
-    #   Android x86 Builder (dbg)
-    #   Cast Android (dbg)
-    #   Oreo Phone Tester
-    #   android-10-arm64-rel
-    #   android-12-x64-rel
-    #   android-13-x64-rel
-    #   android-14-arm64-rel
-    #   android-arm64-proguard-rel
-    #   android-cronet-arm-dbg
-    #   android-cronet-arm-rel
-    #   android-cronet-arm64-dbg
-    #   android-cronet-arm64-rel
-    #   android-cronet-asan-arm-rel
-    #   android-cronet-mainline-clang-arm64-dbg
-    #   android-cronet-mainline-clang-arm64-rel
-    #   android-cronet-mainline-clang-riscv64-dbg
-    #   android-cronet-mainline-clang-riscv64-rel
-    #   android-cronet-mainline-clang-x86-dbg
-    #   android-cronet-mainline-clang-x86-rel
-    #   android-cronet-riscv64-dbg
-    #   android-cronet-riscv64-rel
-    #   android-cronet-x64-dbg
-    #   android-cronet-x64-dbg-12-tests
-    #   android-cronet-x64-dbg-13-tests
-    #   android-cronet-x64-dbg-14-tests
-    #   android-cronet-x64-rel
-    #   android-cronet-x86-dbg
-    #   android-cronet-x86-dbg-10-tests
-    #   android-cronet-x86-dbg-11-tests
-    #   android-cronet-x86-dbg-lollipop-tests
-    #   android-cronet-x86-dbg-marshmallow-tests
-    #   android-cronet-x86-dbg-nougat-tests
-    #   android-cronet-x86-dbg-oreo-tests
-    #   android-cronet-x86-dbg-pie-tests
-    #   android-cronet-x86-rel
-    #   android-bfcache-rel
-    #   android-pie-arm64-dbg
-    #   android-pie-arm64-rel
-    #   android-webview-13-x64-hostside-rel
-    'name': 'chromium.android',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'Android x64 Builder (dbg)': {},
-      'android-11-x86-rel': {
-        'mixins': [
-          '11-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_11_emulator_gtests',
-        }
-      },
-      'android-12l-landscape-x64-dbg-tests': {
-        'mixins': [
-          '12l-landscape-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_12l_landscape_emulator_gtests',
-        }
-      },
-      'android-12l-x64-dbg-tests': {
-        'mixins': [
-          '12l-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_12l_emulator_gtests',
-        }
-      },
-      'android-14-x64-rel': {
-        'mixins': [
-          '14-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_14_emulator_gtests',
-        }
-      },
-      'android-15-x64-rel': {
-        'mixins': [
-          '15-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'args': [
-            '--emulator-debug-tags=all,-qemud,-sensors',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_15_emulator_gtests',
-        }
-      },
-      'android-oreo-x86-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'oreo-x86-emulator',
-          'emulator-4-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'additional_compile_targets': [
-          'chrome_nocompile_tests',
-        ],
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_oreo_emulator_gtests',
-          'isolated_scripts': 'oreo_isolated_scripts',
-          'scripts': 'chromium_android_scripts',
-        },
-      },
-      'android-pie-x86-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie-x86-emulator',
-          'emulator-4-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_pie_rel_emulator_gtests',
-          'scripts': 'chromium_android_scripts',
-        }
-      },
-      'android-webview-10-x86-rel-tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          '10-x86-emulator',
-          'emulator-4-cores',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_10_cts_tests_gtest',
-        },
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.android.star
+    #   android-12-x64-dbg-tests
     #   android-12-x64-fyi-rel
+    #   android-webview-12-x64-dbg-tests
+    #   android-webview-13-x64-dbg-tests
     'name': 'chromium.android.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'android-12-x64-dbg-tests': {
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_12_dbg_emulator_gtests',
-        }
-      },
       'android-12l-x64-fyi-dbg': {
         'mixins': [
           '12l-fyi-x64-emulator',
@@ -775,32 +593,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_14_tablet_gtests',
-        }
-      },
-      'android-webview-12-x64-dbg-tests': {
-        'mixins': [
-          '12-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_fyi_bot_all_gtests',
-        }
-      },
-      'android-webview-13-x64-dbg-tests': {
-        'mixins': [
-          '13-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_64_cts_gtests',
         }
       },
       'android-webview-13-x64-wpt-android-specific': {

@@ -50,7 +50,8 @@
           "builder": "android-pie-x86-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-pie-x86-rel/targets"
     }
   },
   "$build/reclient": {

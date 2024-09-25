@@ -5417,17 +5417,6 @@
       },
     },
 
-    'webview_trichrome_cts_tests_suite': {
-      'webview_trichrome_cts_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
-        'args': [
-          '--store-tombstones',
-        ],
-      },
-    },
-
     'webview_ui_instrumentation_tests': {
       'webview_ui_test_app_test_apk': {},
     },
@@ -5562,10 +5551,6 @@
 
   'compound_suites': {
 
-    'android_12_dbg_emulator_gtests': [
-      'android_trichrome_smoke_tests',
-    ],
-
     'android_cronet_clang_coverage_gtests': [
       'cronet_clang_coverage_additional_gtests',
       'cronet_gtests',
@@ -5592,20 +5577,6 @@
       'android_specific_coverage_java_tests',
       'chrome_public_tests',
       'vr_android_specific_chromium_tests',
-      'webview_ui_instrumentation_tests',
-    ],
-
-    'android_pie_rel_emulator_gtests': [
-      'android_emulator_specific_chrome_public_tests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'system_webview_shell_instrumentation_tests',
-      'webview_cts_tests_gtest',
-      'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
     ],
 
@@ -6348,11 +6319,6 @@
       'webview_bot_unittests_gtest',
     ],
 
-    'webview_trichrome_64_cts_gtests': [
-      'webview_trichrome_64_cts_tests_no_field_trial_suite',
-      'webview_trichrome_64_cts_tests_suite',
-    ],
-
     'win_specific_isolated_scripts_and_sizes': [
       'chrome_sizes_suite',
       'win_specific_isolated_scripts',
@@ -6360,24 +6326,6 @@
   },
 
   'matrix_compound_suites': {
-
-    'android_11_emulator_gtests': {
-      'android_emulator_specific_chrome_public_tests': {},
-      'android_smoke_tests': {},
-      'android_specific_chromium_gtests': {},
-      'android_trichrome_smoke_tests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_cts_tests_suite': {
-        'variants': [
-          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
-          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
-        ],
-      },
-      'webview_ui_instrumentation_tests': {},
-    },
 
     'android_12l_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
@@ -6389,10 +6337,6 @@
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {},
       'webview_ui_instrumentation_tests': {},
-    },
-
-    'android_12l_landscape_emulator_gtests': {
-      'android_emulator_specific_chrome_public_tests': {},
     },
 
     'android_13_emulator_gtests': {
@@ -6420,25 +6364,6 @@
 
     'android_14_device_fyi_gtests': {
       'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests_suite': {
-        'variants': [
-          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
-          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
-        ],
-      },
-      'webview_ui_instrumentation_tests': {},
-    },
-
-    'android_14_emulator_gtests': {
-      'android_emulator_specific_chrome_public_tests': {},
-      'android_smoke_tests': {},
-      'android_specific_chromium_gtests': {},
-      'android_trichrome_smoke_tests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests_no_field_trial_suite': {},
       'webview_trichrome_64_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
@@ -6477,18 +6402,6 @@
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
         ],
       },
-    },
-
-    'android_15_emulator_gtests': {
-      'android_emulator_specific_chrome_public_tests': {},
-      'android_smoke_tests': {},
-      'android_specific_chromium_gtests': {},
-      'android_trichrome_smoke_tests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'system_webview_shell_instrumentation_tests': {},
-      'webview_ui_instrumentation_tests': {},
     },
 
     'android_fieldtrial_rel_webview_tests': {
@@ -7700,15 +7613,6 @@
           'AMD_RADEON_RX_5500_XT',
           'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
-        ],
-      },
-    },
-
-    'webview_trichrome_10_cts_tests_gtest': {
-      'webview_trichrome_cts_tests_suite': {
-        'variants': [
-          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
-          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
         ],
       },
     },

@@ -35,25 +35,7 @@
     },
   },
   'android_browsertests': {
-    'remove_from': [
-      # https://crbug.com/345100678
-      'android-15-x64-rel', # These tests are not ready to run on a non FYI CI.
-    ],
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          # https://crbug.com/1289764
-          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          # https://crbug.com/1289764
-          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*:'
-          # https://crbug.com/1468262
-          'All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           # https://crbug.com/1289764
@@ -64,12 +46,6 @@
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          # https://crbug.com/361042311
-          '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
         ],
       },
       'android-15-x64-fyi-rel': {
@@ -88,29 +64,12 @@
           'shards': 3,
         },
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 9,
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
-        ],
-        'swarming': {
-          'dimensions': {
-            'cores': '8', # crbug.com/1292221
-          },
-        },
-      },
       'android-tablet-14-arm64-fyi-rel': {
         'swarming': {
           'shards': 2,
         },
       },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'ci_only': True,
         'swarming': {
@@ -126,28 +85,12 @@
   },
   'android_sync_integration_tests': {
    'modifications': {
-      'android-14-x64-rel': {
-        'args': [
-          '--emulator-debug-tags=all,-qemud,-sensors',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'experiment_percentage': 100, # https://crbug.com/345579530
-      },
       'android-code-coverage-native': {
         'swarming': {
           'shards': 2,
         },
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'ci_only': True,
         'swarming': {
@@ -187,11 +130,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter',
         ],
       },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
@@ -200,16 +138,6 @@
       'android-13-x64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter',
-        ]
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter',
         ],
       },
       'android-mte-arm64-rel': {
@@ -1076,18 +1004,6 @@
           'shards': 3,
         },
       },
-      'android-11-x86-rel': {
-        # https://crbug.com/1039860
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
-        ],
-      },
-      'android-pie-x86-rel': {
-        # https://crbug.com/1039860
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
-        ],
-      },
       'android-tablet-14-arm64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
@@ -1150,31 +1066,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
-          '--timeout-scale=2.0',
-        ],
-        # TODO(crbug.com/40210655) Remove experiment and enable on
-        # trybot once the device offline issue is resolved.
-        'ci_only': True,
-        'experiment_percentage': 100,
-        'swarming': {
-          'dimensions': {
-            'cores': "8",
-          },
-        },
-      },
-      'android-12l-landscape-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_landscape.chrome_public_test_apk.filter',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
@@ -1185,52 +1076,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
         ],
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter',
-          '--emulator-debug-tags=all,-qemud,-sensors',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter',
-        ],
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
       'android-pie-arm64-rel-dev': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
-      'android-pie-x86-rel': {
-        'args': [
-          # https://crbug.com/1046059
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'dimensions': {
-            'cores': "8",
-          },
-          # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
-          'shards': 30,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter',
@@ -1258,11 +1109,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter',
@@ -1273,23 +1119,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter',
         ],
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_unit_test_apk.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter',
-        ],
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
-        ],
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
@@ -1334,29 +1164,12 @@
           'shards': 2,
         },
       },
-      'android-11-x86-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'android-14-x64-rel': {
-        'args': [
-          # TODO(crbug.com/40746860): Fix the test failure
-          '--gtest_filter=-V8ContextTrackerTest.AboutBlank',
-        ],
-      },
       'android-asan': {
         'swarming': {
           'shards': 3,
         },
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -1403,18 +1216,6 @@
           'shards': 2,
         },
       },
-      'android-11-x86-rel': {
-        'args': [
-          # TODO(crbug.com/40174843): Fix the test failure
-          '--gtest_filter=-FieldFormatterTest.DifferentLocales',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          # crbug.com/361638641
-          '--gtest_filter=-BrowsingTopicsStateTest.EpochsForSite_FourEpochs_SwitchTimeArrived',
-        ],
-      },
       'android-mte-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.components_unittests.filter',
@@ -1435,15 +1236,11 @@
   },
   'content_browsertests': {
     'remove_from': [
-      # TODO(crbug.com/40263601): Temporarily remove it from android-12L builder due to infra flakiness.
-      'android-12l-x64-dbg-tests',
       'CrWinAsan(dll)', # https://crbug.com/935598
       # TODO(crbug.com/40241445): Enable on Fuchsia asan/clang builders.
       'ToTFuchsia x64',
       'ToTFuchsiaOfficial arm64',
       'linux-chromeos-chrome-preuprev', # http://b/331706144
-      # https://crbug.com/365788368
-      'android-15-x64-rel', # These tests are not ready to run on a non FYI CI.
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
@@ -1537,33 +1334,6 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
-      'android-11-x86-rel': {
-        # TODO(crbug.com/40152686): Remove ci_only and experiment_percentage
-        # after the test suite is green.
-        'ci_only': True,
-        'experiment_percentage': 100,
-        # TODO(crbug.com/40152686): Revisit the shard number once failed tests
-        # are fixed.
-        'swarming': {
-          'shards': 30,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
-      'android-12l-x64-dbg-tests': {
-        # TODO(crbug.com/40265619): Remove experiment and ci_only
-        # once the test suite is stable.
-        'ci_only': True,
-        'experiment_percentage': 100,
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
@@ -1575,14 +1345,6 @@
       'android-13-x64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1614,31 +1376,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.content_browsertests.filter',
         ],
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          '--gtest-also-run-pre-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
-        ],
-      'swarming': {
-          # Flaking with only 20 shards with 40-60 minute runs.
-          # https://crbug.com/1230118
-          'shards': 30,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
@@ -1765,8 +1503,7 @@
   },
   'content_shell_crash_test': {
     'remove_from': [
-      'android-oreo-x86-rel', # crbug.com/1084353. If you remove this, also remove android-x86-code-coverage.
-      'android-x86-code-coverage',
+      'android-x86-code-coverage', # crbug.com/1084353
     ],
     'modifications': {
       'Win10 Tests x64 (dbg)': {
@@ -1780,17 +1517,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter',
-          '--timeout-scale=2.0',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter',
@@ -1801,32 +1527,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter',
         ],
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter',
-        ],
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'swarming': {
-          'shards': 6,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*',
-        ],
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'swarming': {
           'shards': 6,
@@ -1853,16 +1554,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_unittests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_unittests.filter',
-        ],
       },
       'android-mte-arm64-rel': {
         'args': [
@@ -1971,32 +1662,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.crashpad_tests.filter',
         ],
       },
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
@@ -2126,27 +1797,12 @@
   },
   'device_unittests': {
     'modifications': {
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
         ],
@@ -2463,16 +2119,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
@@ -2483,33 +2129,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
         ],
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
       'android-code-coverage-native': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
-        ],
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
-        ],
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
@@ -2598,16 +2223,6 @@
   },
   'gwp_asan_unittests': {
     'modifications': {
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter',
-        ],
-      },
       'android-mte-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter',
@@ -2978,10 +2593,6 @@
         ],
       },
     },
-    'remove_from': [
-      # TODO(crbug.com/40264100): Runs too slowly in this configuration.
-      'android-oreo-x86-rel',
-    ],
   },
   'mac_signing_tests': {
     'remove_from': [
@@ -3002,32 +2613,12 @@
   },
   'media_unittests': {
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
@@ -3156,18 +2747,6 @@
           'shards': 4,
         }
       },
-      'android-15-x64-rel': {
-        'args': [
-          # TODO(crbug.com/362292404): Fix the failed test
-          '--gtest_filter=-TrafficStatsAndroidTest.*',
-        ],
-      },
-      'android-pie-x86-rel': {
-        # crbug.com/1046060
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
-        ],
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 14,
@@ -3273,12 +2852,6 @@
   },
   'perfetto_unittests': {
     'modifications': {
-      'android-12l-x64-dbg-tests': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
       'android-12l-x64-fyi-dbg': {
         'args': [
           # TODO(crbug.com/40201873): Fix the failed test
@@ -3291,26 +2864,7 @@
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
-      'android-14-x64-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
       'android-mte-arm64-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
         'args': [
           # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
@@ -3322,7 +2876,7 @@
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
         ],
       },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           # TODO(crbug.com/40201873): Fix the failed test
@@ -3335,8 +2889,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'android-pie-x86-rel',
-      'android-11-x86-rel',
       'ToTAndroid'
     ]
   },
@@ -3608,32 +3160,7 @@
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          # TODO(crbug.com/40203477): Fix the failed tests
-          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
-        ],
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'ci_only': True,
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          # TODO(crbug.com/40203477): Fix the failed tests
-          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter',
@@ -3810,11 +3337,7 @@
   },
   'telemetry_chromium_minidump_unittests': {
     'modifications': {
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'ci_only': True,
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'ci_only': True,
       },
@@ -3834,11 +3357,7 @@
   },
   'telemetry_monochrome_minidump_unittests': {
     'modifications': {
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'ci_only': True,
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'ci_only': True,
       },
@@ -3902,16 +3421,7 @@
   },
   'telemetry_perf_unittests_android_chrome': {
     'modifications': {
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           # For whatever reason, automatic browser selection on this bot chooses
@@ -4055,16 +3565,6 @@
           'shards': 2,
         },
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter',
-        ],
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter',
-        ],
-      },
       'android-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter',
@@ -4150,20 +3650,6 @@
       # Windows Intel doesn't have the GL extensions to support this test.
       'Win10 FYI x64 Release (Intel)',
       'Win10 FYI x64 Experimental Release (Intel)',
-    ],
-  },
-  'viz_unittests': {
-    'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter',
-        ],
-      },
-    },
-  },
-  'vr_common_unittests': {
-    'remove_from': [
-      'android-pie-x86-rel',
     ],
   },
   'vulkan_pixel_skia_gold_test': {
@@ -4768,11 +4254,6 @@
           'shards': 2,
         },
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*', # https://crbug.com/352586409
-        ],
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 2,
@@ -4812,17 +4293,6 @@
       'android-asan',  # https://crbug.com/964562
     ],
     'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          # TODO(crbug.com/40173842) Enable this test once the issue is fixed.
-          '--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers',
-        ],
-      },
-      'android-12l-x64-dbg-tests': {
-        'swarming': {
-          'shards': 9,
-        },
-      },
       'android-12l-x64-fyi-dbg': {
         'swarming': {
           'shards': 9,
@@ -4831,22 +4301,6 @@
       'android-13-x64-fyi-rel': {
         'swarming': {
           'shards': 9,
-        },
-      },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'android-15-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 12,
         },
       },
       'android-code-coverage-native': {
@@ -4859,29 +4313,12 @@
           'shards': 24,
         },
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 8, # crbug.com/1294924
-        },
-      },
       'android-tablet-14-arm64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
         ],
       },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--use-persistent-shell',
@@ -4926,26 +4363,7 @@
           'shards': 12,
         },
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        # This builder is mirrored by CQ builder. Only multiple process tests run in CQ.
-        'ci_only': True,
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          'shards': 9,
-        },
-      },
-     'android-pie-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 5, # crbug.com/1294924
-        },
-      },
-      # Keep this same as android-oreo-x86-rel above
+      # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--use-persistent-shell',
@@ -4969,11 +4387,6 @@
   "webview_trichrome_64_cts_tests_no_field_trial": {
     'remove_from': [
       'android-15-x64-fyi-rel',  # https://crbug.com/353915320
-    ],
-  },
-  'webview_ui_test_app_test_apk': {
-    'remove_from': [
-      'android-11-x86-rel', # crbug.com/1165280
     ],
   },
   'xr_browser_tests': {

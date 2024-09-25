@@ -47,7 +47,8 @@
           "builder": "android-oreo-x86-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-x86-rel/targets"
     }
   },
   "$build/code_coverage": {

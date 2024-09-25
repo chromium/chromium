@@ -6,6 +6,7 @@ load("//lib/targets.star", "targets")
 
 targets.mixin(
     name = "10-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
     ],
@@ -135,6 +136,7 @@ targets.mixin(
 
 targets.mixin(
     name = "12l-x64-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
     ],
@@ -156,6 +158,7 @@ targets.mixin(
 
 targets.mixin(
     name = "12l-landscape-x64-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_landscape.textpb",
     ],

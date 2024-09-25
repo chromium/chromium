@@ -570,6 +570,21 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "webview_fyi_bot_all_gtests",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "12",
@@ -597,6 +612,21 @@ ci.thin_tester(
             config = "x64_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "webview_trichrome_64_cts_gtests",
+        ],
+        mixins = [
+            "13-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
@@ -628,6 +658,21 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_12_dbg_emulator_gtests",
+        ],
+        mixins = [
+            "12-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "12",
@@ -644,7 +689,10 @@ ci.builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
-            apply_configs = ["cronet_builder", "mb"],
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,

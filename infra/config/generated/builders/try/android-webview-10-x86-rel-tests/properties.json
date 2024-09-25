@@ -80,7 +80,8 @@
           "builder": "android-webview-10-x86-rel-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-10-x86-rel-tests/targets"
     }
   },
   "$build/reclient": {

@@ -80,7 +80,8 @@
           "builder": "android-webview-13-x64-dbg-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-13-x64-dbg/targets"
     }
   },
   "$build/reclient": {

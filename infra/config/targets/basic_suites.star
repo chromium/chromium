@@ -5012,17 +5012,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_cts_tests_suite",
-    tests = {
-        "webview_trichrome_cts_tests": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "webview_ui_instrumentation_tests",
     tests = {
         "webview_ui_test_app_test_apk": targets.legacy_test_config(),

@@ -12,13 +12,6 @@
 load("//lib/targets.star", "targets")
 
 targets.legacy_compound_suite(
-    name = "android_12_dbg_emulator_gtests",
-    basic_suites = [
-        "android_trichrome_smoke_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "android_cronet_clang_coverage_gtests",
     basic_suites = [
         "cronet_clang_coverage_additional_gtests",
@@ -53,26 +46,6 @@ targets.legacy_compound_suite(
         "chrome_public_tests",
         "vr_android_specific_chromium_tests",
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-# Keep in sync with android_pie_rel_gtests in bundles.star, except for
-# vr_{android,platform}_specific_chromium_gtests which are not applicable
-# to android emulators on x86 & x64.
-targets.legacy_compound_suite(
-    name = "android_pie_rel_emulator_gtests",
-    basic_suites = [
-        "android_emulator_specific_chrome_public_tests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        "webview_cts_tests_gtest",
-        "webview_ui_instrumentation_tests",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
     ],
 )
 
@@ -1179,14 +1152,6 @@ targets.legacy_compound_suite(
         "webview_bot_instrumentation_test_apk_mutations_gtest",
         "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
         "webview_bot_unittests_gtest",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "webview_trichrome_64_cts_gtests",
-    basic_suites = [
-        "webview_trichrome_64_cts_tests_suite",
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
     ],
 )
 

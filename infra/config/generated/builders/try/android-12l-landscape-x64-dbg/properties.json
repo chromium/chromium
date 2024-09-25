@@ -83,7 +83,8 @@
           "builder": "android-12l-landscape-x64-dbg-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-12l-landscape-x64-dbg/targets"
     }
   },
   "$build/reclient": {
