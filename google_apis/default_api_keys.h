@@ -9,16 +9,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-// Used to indicate an unset key/id/secret.  This works better with
-// various unit tests than leaving the token empty.
-#define DUMMY_API_TOKEN "dummytoken"
-
 namespace google_apis {
 
 // A trivial struct bundling default API key values defined at compile time
 // through preprocessor directives. Useful for injecting these values for
 // testing.
 struct DefaultApiKeys {
+  // Used to indicate an unset key/id/secret.  This works better with
+  // various unit tests than leaving the token empty.
+  static constexpr char kUnsetApiToken[] = "dummytoken";
+
   bool allow_unset_values;
   bool allow_override_via_environment;
 

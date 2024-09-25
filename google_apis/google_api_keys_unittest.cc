@@ -71,9 +71,6 @@ void GoogleAPIKeysTest::TearDown() {
   }
 }
 
-// This is the default baked-in value for OAuth IDs and secrets.
-static const char kDummyToken[] = "dummytoken";
-
 base::FilePath GetTestFilePath(const std::string& relative_path) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path)) {
@@ -144,34 +141,27 @@ TEST_F(GoogleAPIKeysTest, OfficialKeys) {
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
 
   EXPECT_NE(0u, api_key.size());
-  EXPECT_NE(DUMMY_API_TOKEN, api_key);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, api_key);
   EXPECT_NE("bogus api_key", api_key);
-  EXPECT_NE(kDummyToken, api_key);
 
   EXPECT_NE(0u, id_main.size());
-  EXPECT_NE(DUMMY_API_TOKEN, id_main);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, id_main);
   EXPECT_NE("bogus client_id_main", id_main);
-  EXPECT_NE(kDummyToken, id_main);
 
   EXPECT_NE(0u, secret_main.size());
-  EXPECT_NE(DUMMY_API_TOKEN, secret_main);
-  EXPECT_NE(kDummyToken, secret_main);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, secret_main);
 
   EXPECT_NE(0u, id_remoting.size());
-  EXPECT_NE(DUMMY_API_TOKEN, id_remoting);
-  EXPECT_NE(kDummyToken, id_remoting);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting);
 
   EXPECT_NE(0u, secret_remoting.size());
-  EXPECT_NE(DUMMY_API_TOKEN, secret_remoting);
-  EXPECT_NE(kDummyToken, secret_remoting);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting);
 
   EXPECT_NE(0u, id_remoting_host.size());
-  EXPECT_NE(DUMMY_API_TOKEN, id_remoting_host);
-  EXPECT_NE(kDummyToken, id_remoting_host);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting_host);
 
   EXPECT_NE(0u, secret_remoting_host.size());
-  EXPECT_NE(DUMMY_API_TOKEN, secret_remoting_host);
-  EXPECT_NE(kDummyToken, secret_remoting_host);
+  EXPECT_NE(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
 }
 #endif  // defined(USE_OFFICIAL_GOOGLE_API_KEYS)
 
@@ -225,13 +215,13 @@ TEST_F(GoogleAPIKeysTest, DefaultKeys) {
   std::string secret_remoting_host =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
 
-  EXPECT_EQ(kDummyToken, api_key);
-  EXPECT_EQ(kDummyToken, id_main);
-  EXPECT_EQ(kDummyToken, secret_main);
-  EXPECT_EQ(kDummyToken, id_remoting);
-  EXPECT_EQ(kDummyToken, secret_remoting);
-  EXPECT_EQ(kDummyToken, id_remoting_host);
-  EXPECT_EQ(kDummyToken, secret_remoting_host);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, api_key);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_main);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_main);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting_host);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
 }
 
 // Override a couple of keys, leave the rest default.
@@ -280,12 +270,12 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeys) {
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("API_KEY override", api_key);
-  EXPECT_EQ(kDummyToken, id_main);
-  EXPECT_EQ(kDummyToken, secret_main);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_main);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_main);
   EXPECT_EQ("CLIENT_ID_REMOTING override", id_remoting);
-  EXPECT_EQ(kDummyToken, secret_remoting);
-  EXPECT_EQ(kDummyToken, id_remoting_host);
-  EXPECT_EQ(kDummyToken, secret_remoting_host);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, id_remoting_host);
+  EXPECT_EQ(google_apis::DefaultApiKeys::kUnsetApiToken, secret_remoting_host);
 }
 
 // Override all keys.

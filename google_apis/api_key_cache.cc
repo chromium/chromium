@@ -110,10 +110,10 @@ static std::string CalculateKeyValue(const char* baked_in_value,
             << " with value " << key_value << " from command-line switch.";
   }
 
-  if (key_value == DUMMY_API_TOKEN) {
+  if (key_value == DefaultApiKeys::kUnsetApiToken) {
     // No key should be unset in an official build except the
-    // GOOGLE_DEFAULT_* keys.  The default keys don't trigger this
-    // check as their "unset" value is not DUMMY_API_TOKEN.
+    // GOOGLE_DEFAULT_* keys. The default keys don't trigger this
+    // check as their "unset" value is not DefaultApiKeys::kUnsetApiToken.
     CHECK(allow_unset_values);
     if (default_if_unset.size() > 0) {
       VLOG(1) << "Using default value \"" << default_if_unset
@@ -300,15 +300,15 @@ void ApiKeyCache::SetClientSecret(OAuth2Client client,
 #endif
 
 bool ApiKeyCache::HasAPIKeyConfigured() const {
-  return api_key_ != DUMMY_API_TOKEN;
+  return api_key_ != DefaultApiKeys::kUnsetApiToken;
 }
 
 bool ApiKeyCache::HasOAuthClientConfigured() const {
-  auto equals_dummy_api_token = [](const std::string& value) {
-    return value == DUMMY_API_TOKEN;
+  auto is_unset = [](const std::string& value) {
+    return value == DefaultApiKeys::kUnsetApiToken;
   };
-  return std::ranges::none_of(client_ids_, equals_dummy_api_token) &&
-         std::ranges::none_of(client_secrets_, equals_dummy_api_token);
+  return std::ranges::none_of(client_ids_, is_unset) &&
+         std::ranges::none_of(client_secrets_, is_unset);
 }
 
 }  // namespace google_apis

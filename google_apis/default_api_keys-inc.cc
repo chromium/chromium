@@ -16,73 +16,77 @@
 // Please keep this file's list of dependencies minimal.
 
 #if !defined(GOOGLE_API_KEY)
-#define GOOGLE_API_KEY DUMMY_API_TOKEN
+#define GOOGLE_API_KEY google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_METRICS_SIGNING_KEY)
-#define GOOGLE_METRICS_SIGNING_KEY DUMMY_API_TOKEN
+#define GOOGLE_METRICS_SIGNING_KEY google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_MAIN)
-#define GOOGLE_CLIENT_ID_MAIN DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_ID_MAIN google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_SECRET_MAIN)
-#define GOOGLE_CLIENT_SECRET_MAIN DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_SECRET_MAIN google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_REMOTING)
-#define GOOGLE_CLIENT_ID_REMOTING DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_ID_REMOTING google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_SECRET_REMOTING)
-#define GOOGLE_CLIENT_SECRET_REMOTING DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_SECRET_REMOTING \
+  google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_ID_REMOTING_HOST)
-#define GOOGLE_CLIENT_ID_REMOTING_HOST DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_ID_REMOTING_HOST \
+  google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !defined(GOOGLE_CLIENT_SECRET_REMOTING_HOST)
-#define GOOGLE_CLIENT_SECRET_REMOTING_HOST DUMMY_API_TOKEN
+#define GOOGLE_CLIENT_SECRET_REMOTING_HOST \
+  google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 #if !defined(GOOGLE_API_KEY_ANDROID_NON_STABLE)
-#define GOOGLE_API_KEY_ANDROID_NON_STABLE DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_ANDROID_NON_STABLE \
+  google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 #endif
 
 #if !defined(GOOGLE_API_KEY_REMOTING)
-#define GOOGLE_API_KEY_REMOTING DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_REMOTING google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 // API key for the Speech On-Device API (SODA).
 #if !defined(GOOGLE_API_KEY_SODA)
-#define GOOGLE_API_KEY_SODA DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_SODA google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // API key for the HaTS API.
 #if !defined(GOOGLE_API_KEY_HATS)
-#define GOOGLE_API_KEY_HATS DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_HATS google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // API key for the Nearby Sharing Service.
 #if !defined(GOOGLE_API_KEY_SHARING)
-#define GOOGLE_API_KEY_SHARING DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_SHARING google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 // API key for the ReadAloud API.
 #if !defined(GOOGLE_API_KEY_READ_ALOUD)
-#define GOOGLE_API_KEY_READ_ALOUD DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_READ_ALOUD google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 
 // API key for the Fresnel API.
 #if !defined(GOOGLE_API_KEY_FRESNEL)
-#define GOOGLE_API_KEY_FRESNEL DUMMY_API_TOKEN
+#define GOOGLE_API_KEY_FRESNEL google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
