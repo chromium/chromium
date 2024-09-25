@@ -9869,24 +9869,6 @@
             ]
         }
     ],
-    "FamilyMemberRoleFeedback": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240722",
-                    "enable_features": [
-                        "FetchListFamilyMembersWithCapability",
-                        "UseFamilyMemberRolePrefsForFeedback"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [

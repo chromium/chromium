@@ -67,6 +67,9 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
 };
 
 TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -205,7 +208,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
-  mutator.set_is_subject_to_parental_controls(false);
   mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(primary_account);
   test_list_family_members_service_->Init();
@@ -227,6 +229,8 @@ TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
 
 TEST_F(ListFamilyMembersServiceTest,
        RepeatingCallbackUpdatesPreferencesMultipleTimes) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -246,7 +250,7 @@ TEST_F(ListFamilyMembersServiceTest,
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(primary_account);
   test_list_family_members_service_->Init();
 
@@ -274,6 +278,8 @@ TEST_F(ListFamilyMembersServiceTest,
 }
 
 TEST_F(ListFamilyMembersServiceTest, IneligibleAccountForFamilyFetch) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -301,6 +307,8 @@ TEST_F(ListFamilyMembersServiceTest, IneligibleAccountForFamilyFetch) {
 }
 
 TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -326,7 +334,7 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
 
   // Set the eligibility capability after the service has been started.
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(primary_account);
 
   // Perform the sequence of obtaining an access token, simulating response and
@@ -346,6 +354,8 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
 // Prevents regressions to b/350715351.
 TEST_F(ListFamilyMembersServiceTest,
        ListFamilyFetcherOnMakingSupervisedUserAccountPrimary) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -373,8 +383,7 @@ TEST_F(ListFamilyMembersServiceTest,
   // Set the supervised user capability after the service has been started for
   // the current (non-primary) account.
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
-  mutator.set_can_fetch_family_member_info(false);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
   // No requests made for ineligible account.
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
@@ -434,6 +443,8 @@ TEST_F(ListFamilyMembersServiceTest,
 // Sign-out test is not supported for ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
   // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
   // list family response from fetches. We check if the response is correct at
   // the last step with `hoh_username`.
@@ -456,7 +467,7 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_env_.UpdateAccountInfoForAccount(primary_account);
   test_list_family_members_service_->Init();
 
@@ -473,7 +484,8 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
 
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(hoh_username, "");
-  EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole), "");
+  EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
+            supervised_user::kDefaultEmptyFamilyMemberRole);
 
   test_list_family_members_service_->Shutdown();
 }
