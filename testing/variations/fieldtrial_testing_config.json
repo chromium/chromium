@@ -9330,6 +9330,28 @@
             ]
         }
     ],
+    "EncryptedAndPlaintextValuesAreInvalid": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EncryptedAndPlaintextValuesAreInvalid"
+                    ]
+                }
+            ]
+        }
+    ],
     "EndOfLifeIncentive": [
         {
             "platforms": [
