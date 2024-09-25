@@ -531,12 +531,6 @@ BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
              "CrostiniVirtualKeyboardSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables always using device-activity-status data to filter
-// eligible host phones.
-BASE_FEATURE(kCryptAuthV2AlwaysUseActiveEligibleHosts,
-             "kCryptAuthV2AlwaysUseActiveEligibleHosts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 BASE_FEATURE(kCryptAuthV2DeviceActivityStatus,
              "CryptAuthV2DeviceActivityStatus",

@@ -56,30 +56,25 @@ EligibleHostDevicesProviderImpl::~EligibleHostDevicesProviderImpl() {
 
 multidevice::RemoteDeviceRefList
 EligibleHostDevicesProviderImpl::GetEligibleHostDevices() const {
-  // When enabled, this is equivalent to GetEligibleActiveHostDevices() without
+  // This is equivalent to GetEligibleActiveHostDevices() without
   // the connectivity data.
   // TODO(https://crbug.com/1229876): Consolidate GetEligibleHostDevices() and
   // GetEligibleActiveHostDevices().
-  if (base::FeatureList::IsEnabled(
-          features::kCryptAuthV2AlwaysUseActiveEligibleHosts)) {
-    multidevice::RemoteDeviceRefList eligible_active_devices;
-    for (const auto& device : eligible_active_devices_from_last_sync_) {
-      if (device.remote_device.instance_id().empty() &&
-          device.remote_device.GetDeviceId().empty()) {
-        // TODO(b/207089877): Add a metric to capture the frequency of missing
-        // device id.
-        PA_LOG(WARNING) << __func__
-                        << ": encountered device with missing Instance ID and "
-                           "legacy device ID";
-        continue;
-      }
-      eligible_active_devices.push_back(device.remote_device);
+  multidevice::RemoteDeviceRefList eligible_active_devices;
+  for (const auto& device : eligible_active_devices_from_last_sync_) {
+    if (device.remote_device.instance_id().empty() &&
+        device.remote_device.GetDeviceId().empty()) {
+      // TODO(b/207089877): Add a metric to capture the frequency of missing
+      // device id.
+      PA_LOG(WARNING) << __func__
+                      << ": encountered device with missing Instance ID and "
+                         "legacy device ID";
+      continue;
     }
-
-    return eligible_active_devices;
+    eligible_active_devices.push_back(device.remote_device);
   }
 
-  return eligible_devices_from_last_sync_;
+  return eligible_active_devices;
 }
 
 multidevice::DeviceWithConnectivityStatusList
