@@ -84,10 +84,12 @@ void OnAllFaviconsRetrievedCoral(
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
                                const std::vector<GURL>& page_urls,
-                               const std::vector<std::string>& app_ids)
+                               const std::vector<std::string>& app_ids,
+                               int cluster_id)
     : BirchItem(coral_title, coral_text),
       page_urls_(page_urls),
-      app_ids_(app_ids) {
+      app_ids_(app_ids),
+      cluster_id_(cluster_id) {
   set_addon_label(u"Show");
 }
 

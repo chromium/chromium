@@ -20,12 +20,15 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
                  const std::vector<GURL>& page_urls,
-                 const std::vector<std::string>& app_ids);
+                 const std::vector<std::string>& app_ids,
+                 int cluster_id);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
   bool operator==(const BirchCoralItem& rhs) const;
   ~BirchCoralItem() override;
+
+  int cluster_id() const { return cluster_id_; }
 
   // BirchItem:
   BirchItemType GetType() const override;
@@ -54,7 +57,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   // A vector of app ids representing the apps received from coral provider.
   std::vector<std::string> app_ids_;
 
-  // TODO(yulunwu): Add coral data to `BirchCoralItem`.
+  int cluster_id_;
 };
 
 }  // namespace ash

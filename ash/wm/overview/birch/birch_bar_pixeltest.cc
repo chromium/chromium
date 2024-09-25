@@ -127,7 +127,8 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*coral_title=*/u"coral_title",
           /*coral_text=*/u"coral_text",
           /*page_urls=*/page_urls,
-          /*app_ids=*/app_ids));
+          /*app_ids=*/app_ids,
+          /*cluster_id=*/0));
       break;
     }
     case BirchItemType::kTest:

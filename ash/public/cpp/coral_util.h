@@ -12,7 +12,11 @@
 
 namespace ash::coral_util {
 
-// Gets the unique identifier for `item`.
+std::string ASH_PUBLIC_EXPORT
+GetIdentifier(const coral::mojom::EntityKeyPtr& key);
+
+std::string ASH_PUBLIC_EXPORT GetIdentifier(const coral::mojom::EntityKey& key);
+
 std::string ASH_PUBLIC_EXPORT GetIdentifier(const coral::mojom::Entity& item);
 
 }  // namespace ash::coral_util

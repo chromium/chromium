@@ -49,6 +49,9 @@ class StubBirchClient : public BirchClient {
   // Installs a stub weather provider to birch model and returns the weather
   // data provider pointer.
   StubDataProvider* InstallStubWeatherDataProvider();
+  // Installs a stub coral provider to birch model and returns the coral
+  // data provider pointer.
+  StubDataProvider* InstallStubCoralDataProvider();
 
   bool DidRequestCalendarDataFetch() const;
   bool DidRequestFileSuggestDataFetch() const;

@@ -26,33 +26,33 @@ TEST_F(CoralItemRemoverTest, FilterContent) {
       coral::mojom::App::New("app 0 name", "app 0 id"));
   auto item3 = coral::mojom::Entity::NewApp(
       coral::mojom::App::New("app 1 name", "app 1 id"));
-  std::vector<coral::mojom::EntityPtr> tab_items;
-  tab_items.push_back(item0.Clone());
-  tab_items.push_back(item1.Clone());
-  tab_items.push_back(item2.Clone());
-  tab_items.push_back(item3.Clone());
+  std::vector<coral::mojom::EntityPtr> entities;
+  entities.push_back(item0.Clone());
+  entities.push_back(item1.Clone());
+  entities.push_back(item2.Clone());
+  entities.push_back(item3.Clone());
 
   // Filter `tab_items` before any items are removed. The list should remain
   // unchanged.
-  coral_item_remover_.FilterRemovedItems(&tab_items);
-  ASSERT_EQ(4u, tab_items.size());
+  coral_item_remover_.FilterRemovedItems(&entities);
+  ASSERT_EQ(4u, entities.size());
 
   // Remove `item2`, and filter it from the list of tabs.
   coral_item_remover_.RemoveItem(*item2);
-  coral_item_remover_.FilterRemovedItems(&tab_items);
+  coral_item_remover_.FilterRemovedItems(&entities);
 
   // Check that `item2` is filtered out.
-  ASSERT_EQ(3u, tab_items.size());
-  EXPECT_THAT(tab_items, ElementsAre(Eq(std::ref(item0)), Eq(std::ref(item1)),
-                                     Eq(std::ref(item3))));
+  ASSERT_EQ(3u, entities.size());
+  EXPECT_THAT(entities, ElementsAre(Eq(std::ref(item0)), Eq(std::ref(item1)),
+                                    Eq(std::ref(item3))));
 
   // Remove `item1`, and filter it from the list of tabs.
   coral_item_remover_.RemoveItem(*item1);
-  coral_item_remover_.FilterRemovedItems(&tab_items);
+  coral_item_remover_.FilterRemovedItems(&entities);
 
   // Check that `item1` is filtered out.
-  ASSERT_EQ(2u, tab_items.size());
-  EXPECT_THAT(tab_items, ElementsAre(Eq(std::ref(item0)), Eq(std::ref(item3))));
+  ASSERT_EQ(2u, entities.size());
+  EXPECT_THAT(entities, ElementsAre(Eq(std::ref(item0)), Eq(std::ref(item3))));
 }
 
 }  // namespace ash

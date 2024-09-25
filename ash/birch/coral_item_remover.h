@@ -23,12 +23,23 @@ class ASH_EXPORT CoralItemRemover {
   CoralItemRemover& operator=(const CoralItemRemover&) = delete;
   ~CoralItemRemover();
 
+  // Records the coral::mojom::EntityKey to be removed for the current session.
+  void RemoveItem(const coral::mojom::EntityKey& key);
+
+  // Records the coral::mojom::EntityKeyPtr to be removed for the current
+  // session.
+  void RemoveItem(const coral::mojom::EntityKeyPtr& key);
+
   // Records the coral::mojom::Entity to be removed for the current session.
   void RemoveItem(const coral::mojom::Entity& item);
 
   // Erases from the ContentItem list any items which have been removed by the
   // user. The list is mutated in place.
   void FilterRemovedItems(std::vector<coral::mojom::EntityPtr>* content_items);
+
+  const std::set<std::string>& RemovedContentItemsForTest() const {
+    return removed_content_items_;
+  }
 
  private:
   // Stores the unique identifier for content items that should be filtered for

@@ -16,6 +16,7 @@
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_ranker.h"
 #include "ash/birch/birch_weather_provider.h"
+#include "ash/birch/coral_item_remover.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -298,6 +299,11 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   MaybeRespondToDataFetchRequest();
 }
 
+CoralItemRemover* BirchModel::GetCoralItemRemoverForTest() {
+  return static_cast<BirchCoralProvider*>(coral_provider_.get())
+      ->GetCoralItemRemoverForTest();
+}
+
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   if (!IsItemRemoverInitialized()) {
     // With no initialized item remover, return an empty list of items to avoid
@@ -530,6 +536,11 @@ void BirchModel::RemoveItem(BirchItem* item) {
     if (birch_client_) {
       birch_client_->RemoveFileItemFromLauncher(file_item->file_path());
     }
+  }
+  if (item->GetType() == BirchItemType::kCoral) {
+    auto* coral_item = static_cast<BirchCoralItem*>(item);
+    static_cast<BirchCoralProvider*>(coral_provider_.get())
+        ->RemoveGroup(coral_item->cluster_id());
   }
 }
 

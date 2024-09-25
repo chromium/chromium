@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
 
   // Check if the collected data as expected.
   auto* coral_provider = GetCoralProvider();
-  const auto& content_data = coral_provider->request_for_test().content();
+  const auto& content_data = coral_provider->GetCoralRequestForTest().content();
 
   // Extract tab data and app data from content data.
   std::vector<Tab> tab_data;
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
 
   // Check if the collected data as expected.
   auto* coral_provider = GetCoralProvider();
-  const auto& content_data = coral_provider->request_for_test().content();
+  const auto& content_data = coral_provider->GetCoralRequestForTest().content();
 
   // Extract tab data and app data from content data.
   std::vector<Tab> tab_data;

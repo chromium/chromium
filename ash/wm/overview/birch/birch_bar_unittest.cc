@@ -319,7 +319,8 @@ class BirchBarTest : public AshTestBase {
       item_list.emplace_back(
           /*coral_title=*/u"coral_title",
           /*coral_text=*/u"coral_text", /*page_urls=*/page_urls,
-          /*app_ids=*/app_ids);
+          /*app_ids=*/app_ids,
+          /*cluster_id=*/0);
       item_list.back().set_ranking(1.0f);
     }
     coral_provider_->set_items(item_list);

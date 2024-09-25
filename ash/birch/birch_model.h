@@ -13,6 +13,7 @@
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
+#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,7 @@ namespace ash {
 class BirchDataProvider;
 class BirchIconCache;
 class BirchItemRemover;
+class CoralItemRemover;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers. Both data and prefs are associated with the primary user
@@ -125,6 +127,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   }
 
   BirchItemRemover* GetItemRemoverForTest() { return item_remover_.get(); }
+  CoralItemRemover* GetCoralItemRemoverForTest();
 
   // Returns all items, sorted by ranking. Includes unranked items.
   std::vector<std::unique_ptr<BirchItem>> GetAllItems();

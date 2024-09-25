@@ -55,8 +55,9 @@ class TabAppSelectionViewTest : public AshTestBase {
     std::vector<std::string> app_ids;
     app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
 
-    coral_provider_->set_items({BirchCoralItem(
-        u"Title", u"Text", /*page_urls=*/page_urls, /*app_ids=*/app_ids)});
+    coral_provider_->set_items(
+        {BirchCoralItem(u"Title", u"Text", /*page_urls=*/page_urls,
+                        /*app_ids=*/app_ids, /*cluster_id=*/0)});
   }
 
   void TearDown() override {
