@@ -66,6 +66,12 @@ const char kNotificationAutorizationStatusChangedToAuthorized[] =
 // permission status.
 const char kNotificationAutorizationStatusChangedToDenied[] =
     "IOS.PushNotification.NotificationAutorizationStatusChangedToDenied";
+
+// Key for the pre-rendered payload from Chime.
+NSString* const kPrerenderedPayloadKey = @"$";
+
+// Key for the client id in the payload.
+NSString* const kClientIdFieldKey = @"n";
 }  // namespace
 
 @implementation PushNotificationUtil
@@ -224,6 +230,37 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
       // notifications for a limited amount of time.
       return SettingsAuthorizationStatus::EPHEMERAL;
   }
+}
+
++ (std::optional<PushNotificationClientId>)
+    mapToPushNotificationClientIdFromUserInfo:
+        (NSDictionary<NSString*, id>*)userInfo {
+  // The client mapping rubric for mapping chime ids to Push Notification Client
+  // Ids. Sports maps to Content.
+  NSDictionary<NSString*, NSNumber*>* clientIdMappings = @{
+    @"commerce_price_drop" : [NSNumber
+        numberWithInt:static_cast<int>(PushNotificationClientId::kCommerce)],
+    @"content_push_notify" : [NSNumber
+        numberWithInt:static_cast<int>(PushNotificationClientId::kContent)],
+    @"sports_push_notify" : [NSNumber
+        numberWithInt:static_cast<int>(PushNotificationClientId::kContent)],
+    @"send_tab_notify" : [NSNumber
+        numberWithInt:static_cast<int>(PushNotificationClientId::kSendTab)],
+  };
+
+  NSString* payloadText = userInfo[kPrerenderedPayloadKey][kClientIdFieldKey];
+  if (payloadText.length) {
+    // Removes the unstable prefix from the chime client id.
+    NSString* resultingClient =
+        [[payloadText componentsSeparatedByString:@":"][1]
+            stringByReplacingOccurrencesOfString:@"_unstable"
+                                      withString:@""];
+    NSNumber* number = clientIdMappings[resultingClient];
+    if (number) {
+      return static_cast<PushNotificationClientId>(number.intValue);
+    }
+  }
+  return std::nullopt;
 }
 
 #pragma mark - Private

@@ -52,6 +52,7 @@ source_set("push_notification_util") {
     "push_notification_util.mm",
   ]
   deps = [
+    ":push_notification_client_id",
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/application_context",

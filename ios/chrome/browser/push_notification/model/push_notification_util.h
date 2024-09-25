@@ -8,6 +8,10 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <optional>
+
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+
 @class UIApplication;
 @class UNNotificationCategory;
 @class UNNotificationSettings;
@@ -94,6 +98,13 @@ enum class SettingsAuthorizationStatus {
 // `status`.
 + (push_notification::SettingsAuthorizationStatus)
     getNotificationSettingsStatusFrom:(UNAuthorizationStatus)status;
+
+// This function maps a chime client id from a payload (`userInfo`) to a single
+// PushNotificationClient.
++ (std::optional<PushNotificationClientId>)
+    mapToPushNotificationClientIdFromUserInfo:
+        (NSDictionary<NSString*, id>*)userInfo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_UTIL_H_

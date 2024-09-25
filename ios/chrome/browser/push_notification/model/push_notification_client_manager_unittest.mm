@@ -59,44 +59,12 @@ TEST_F(PushNotificationClientManagerTest, AddMultipleClients) {
   ASSERT_EQ(number_of_clients, manager_->GetPushNotificationClients().size());
 }
 
-TEST_F(PushNotificationClientManagerTest, HandleNotificationReception) {
-  GenerateClients(manager_, 1);
-  ASSERT_EQ(UIBackgroundFetchResultNoData,
-            manager_->HandleNotificationReception(nil));
-}
-
 TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithNewData) {
+       HandleNotificationReceptionWithInvalidData) {
   const unsigned long number_of_clients = 5;
   GenerateClients(manager_, number_of_clients);
 
-  TestPushNotificationClient* client = GetClient(manager_, 0);
-  client->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
-  ASSERT_EQ(UIBackgroundFetchResultNewData,
-            manager_->HandleNotificationReception(nil));
-}
-
-TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithFailure) {
-  const unsigned long number_of_clients = 5;
-  GenerateClients(manager_, number_of_clients);
-
-  TestPushNotificationClient* client = GetClient(manager_, 0);
-  client->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
   ASSERT_EQ(UIBackgroundFetchResultFailed,
-            manager_->HandleNotificationReception(nil));
-}
-
-TEST_F(PushNotificationClientManagerTest,
-       HandleNotificationReceptionWithNewDataAndFailure) {
-  const unsigned long number_of_clients = 5;
-  GenerateClients(manager_, number_of_clients);
-
-  GetClient(manager_, 0)
-      ->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
-  GetClient(manager_, 1)
-      ->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
-  ASSERT_EQ(UIBackgroundFetchResultNewData,
             manager_->HandleNotificationReception(nil));
 }
 
