@@ -250,7 +250,10 @@ bool IsGuestModeEnabled() {
       base::ranges::any_of(g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes(),
-                           &ProfileAttributesEntry::IsSupervised)) {
+                           [](const ProfileAttributesEntry* entry) {
+                             return entry->IsSupervised() &&
+                                    !entry->IsOmitted();
+                           })) {
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

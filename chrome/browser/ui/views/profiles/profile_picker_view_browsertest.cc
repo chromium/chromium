@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
@@ -101,6 +102,10 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -2288,6 +2293,133 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   handler->HandleRemoveProfile(args);
   waiter.Wait();
 }
+
+class SupervisedProfilePickerHideGuestModeTest
+    : public ProfilePickerCreationFlowBrowserTest,
+      public testing::WithParamInterface<
+          /*HideGuestModeForSupervisedUsers=*/bool> {
+ public:
+  SupervisedProfilePickerHideGuestModeTest() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitWithFeatureState(
+        supervised_user::kHideGuestModeForSupervisedUsers,
+        HideGuestModeForSupervisedUsersEnabled());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  }
+
+  static bool HideGuestModeForSupervisedUsersEnabled() { return GetParam(); }
+
+  void OpenProfilePicker() {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+    WaitForLoadStop(GURL("chrome://profile-picker"));
+  }
+
+  void RemoveProfile(Profile* profile) {
+    ProfileDestructionWaiter waiter(profile);
+    webui::DeleteProfileAtPath(profile->GetPath(),
+                               ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+    waiter.Wait();
+  }
+
+  bool IsGuestModeButtonHidden() {
+    return content::EvalJs(
+               web_contents(),
+               base::StrCat({"getComputedStyle(", kBrowseAsGuestButtonPath,
+                             ").display == \"none\" "}))
+        .ExtractBool();
+  }
+
+  ::testing::AssertionResult ClickGuestModeButton() {
+    return content::ExecJs(web_contents(),
+                           base::StrCat({kBrowseAsGuestButtonPath, ".click"}));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  static constexpr char kBrowseAsGuestButtonPath[] =
+      "document.body.getElementsByTagName('"
+      "profile-picker-app')[0].shadowRoot."
+      "getElementById('mainView').shadowRoot.getElementById("
+      "\'browseAsGuestButton\')";
+};
+
+IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+                       DeleteSupervisedProfile) {
+  Profile* default_profile = browser()->profile();
+  AccountInfo default_account_info =
+      FinishDiceSignIn(default_profile, "adult@gmail.com", "Adult");
+
+  // Create a second supervised profile and signin.
+  base::FilePath child_path = CreateNewProfileWithoutBrowser();
+  Profile* child_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(child_path);
+  supervised_user::EnableParentalControls(*child_profile->GetPrefs());
+
+  AccountInfo child_account_info =
+      FinishDiceSignIn(child_profile, "child@gmail.com", "child");
+  ASSERT_TRUE(child_profile);
+
+  OpenProfilePicker();
+
+  // Guest Mode button will be unavailable when a supervised user is added, and
+  // kHideGuestModeForSupervisedUsers is enabled.
+  EXPECT_EQ(IsGuestModeButtonHidden(),
+            HideGuestModeForSupervisedUsersEnabled());
+
+  RemoveProfile(child_profile);
+
+  // Guest Mode button will be available when a supervised user is removed.
+  EXPECT_FALSE(IsGuestModeButtonHidden());
+  EXPECT_TRUE(ClickGuestModeButton());
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+                       DeleteLastSupervisedProfile) {
+  base::FilePath child_path = CreateNewProfileWithoutBrowser();
+  Profile* child_profile =
+      g_browser_process->profile_manager()->GetProfileByPath(child_path);
+  supervised_user::EnableParentalControls(*child_profile->GetPrefs());
+
+  ASSERT_TRUE(child_profile);
+
+  OpenProfilePicker();
+
+  EXPECT_EQ(IsGuestModeButtonHidden(),
+            HideGuestModeForSupervisedUsersEnabled());
+
+  RemoveProfile(child_profile);
+
+  EXPECT_FALSE(IsGuestModeButtonHidden());
+  EXPECT_TRUE(ClickGuestModeButton());
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
+                       RegularProfile_GuestModeAvailable) {
+  Profile* default_profile = browser()->profile();
+  AccountInfo default_account_info =
+      FinishDiceSignIn(default_profile, "adult@gmail.com", "Adult");
+
+  // Open the picker.
+  OpenProfilePicker();
+
+  // Guest Mode button is available when kHideGuestModeForSupervisedUsers is
+  // enabled and disabled.
+  EXPECT_FALSE(IsGuestModeButtonHidden());
+  EXPECT_TRUE(ClickGuestModeButton());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SupervisedProfilePickerHideGuestModeTest,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                         testing::Bool(),
+#else
+      testing::Values(false),
+#endif
+                         [](const auto& info) {
+                           return info.param ? "WithHideGuestModeEnabled"
+                                             : "WithHideGuestModeDisabled";
+                         });
 
 class ProfilePickerEnterpriseCreationFlowBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
