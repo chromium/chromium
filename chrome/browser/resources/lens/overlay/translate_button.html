@@ -58,7 +58,7 @@
   }
 
   :host([is-translate-mode-enabled]) .language-picker-button {
-    max-width: 165px;
+    max-width: 220px;
     min-width: 77px;
     pointer-events: all;
     transform: scaleX(1);
@@ -193,7 +193,7 @@
 
   :host([is-translate-mode-enabled]) #languagePicker {
     min-width: 197px;
-    max-width: 370px;
+    max-width: 500px;
     opacity: 1;
     pointer-events: all;
     transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
@@ -282,13 +282,11 @@
   #translateEnableButton {
     background-color: var(--color-selection-element);
     height: 48px;
-    left: 50%;
     opacity: 1;
-    top: 50%;
-    transform: translate(-50%, -50%);
     transition: opacity 150ms linear 50ms;
     position: absolute;
-    width: 164px;
+    min-width: 164px;
+    width: max-content;
     z-index: 1;
   }
 
@@ -302,6 +300,7 @@
   #translateButtonLabel {
     color: var(--color-scrim);
     line-height: 50px;
+    margin-inline-end: 20px;
   }
 
   #translateContainer {
@@ -310,6 +309,7 @@
     cursor: default;
     display: flex;
     flex-direction: row;
+    justify-content: flex-end;
     min-width: 164px;
     overflow: hidden;
     pointer-events: all;
@@ -347,6 +347,7 @@
 
   #translateEnableIcon {
     background-color: var(--color-primary);
+    margin-inline-start: 15px;
   }
 
   :host(:not([should-show-stars-icon])) #starsIcon {
