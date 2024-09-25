@@ -293,6 +293,7 @@ LensOverlayController::SearchQuery::SearchQuery(const SearchQuery& other) {
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
   lens_selection_type_ = other.lens_selection_type_;
+  translate_options_ = other.translate_options_;
 }
 
 LensOverlayController::SearchQuery&
@@ -307,6 +308,7 @@ LensOverlayController::SearchQuery::operator=(
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
   lens_selection_type_ = other.lens_selection_type_;
+  translate_options_ = other.translate_options_;
   return *this;
 }
 
@@ -699,6 +701,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     initialization_data_->selected_region_bitmap_.reset();
     initialization_data_->selected_text_.reset();
     initialization_data_->additional_search_query_params_.clear();
+    initialization_data_->translate_options_.reset();
     selected_region_thumbnail_uri_.clear();
     lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     page_->ClearAllSelections();
@@ -721,6 +724,10 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   search_query.selected_region_thumbnail_uri_ = selected_region_thumbnail_uri_;
   if (initialization_data_->selected_text_.has_value()) {
     search_query.selected_text_ = initialization_data_->selected_text_.value();
+  }
+  if (initialization_data_->translate_options_.has_value()) {
+    search_query.translate_options_ =
+        initialization_data_->translate_options_.value();
   }
   search_query.lens_selection_type_ = lens_selection_type_;
   search_query.additional_search_query_params_ =
@@ -760,7 +767,10 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   // query and update the selection, thumbnail and searchbox state.
   CHECK(page_);
   page_->ClearAllSelections();
-  if (query.selected_text_.has_value()) {
+  // We do not want to reset text selections for translated text since it may
+  // not be on the screen until we resend the full image request.
+  if (query.selected_text_.has_value() &&
+      !query.translate_options_.has_value()) {
     page_->SetTextSelection(query.selected_text_->first,
                             query.selected_text_->second);
     initialization_data_->selected_text_ = query.selected_text_.value();
@@ -806,6 +816,13 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
     }
     return;
   }
+
+  if (query.translate_options_.has_value()) {
+    page_->SetTranslateMode(query.translate_options_->source_language,
+                            query.translate_options_->target_language);
+    initialization_data_->translate_options_ = query.translate_options_.value();
+  }
+
   // Load the popped query URL in the results frame if it does not need to
   // send image bytes.
   LoadURLInResultsFrame(query.search_query_url_);
@@ -930,6 +947,11 @@ void LensOverlayController::IssueTranslateFullPageRequest(
     bubble_view->SetLabelText(
         IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT);
   }
+  // Set the translate options on initialization data in case we need to
+  // re-enable translate mode later.
+  initialization_data_->translate_options_ =
+      TranslateOptions(source_language, target_language);
+
   lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
                                                              target_language);
 }
@@ -943,6 +965,9 @@ void LensOverlayController::IssueEndTranslateModeRequest() {
         preselection_widget_->widget_delegate());
     bubble_view->SetLabelText(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   }
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  initialization_data_->selected_text_.reset();
+  initialization_data_->translate_options_.reset();
   lens_overlay_query_controller_->SendEndTranslateModeQuery();
 }
 

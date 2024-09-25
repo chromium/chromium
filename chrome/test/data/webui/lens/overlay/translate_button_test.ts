@@ -7,6 +7,7 @@ import 'chrome-untrusted://lens-overlay/translate_button.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
 import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/language_browser_proxy.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {ShimmerControlRequester} from 'chrome-untrusted://lens-overlay/selection_utils.js';
 import type {TranslateButtonElement} from 'chrome-untrusted://lens-overlay/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
@@ -21,6 +22,7 @@ import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
 suite('OverlayTranslateButton', function() {
+  let callbackRouterRemote: LensPageRemote;
   let overlayTranslateButtonElement: TranslateButtonElement;
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let testLanguageBrowserProxy: TestLanguageBrowserProxy;
@@ -48,6 +50,8 @@ suite('OverlayTranslateButton', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestLensOverlayBrowserProxy();
+    callbackRouterRemote =
+        testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Set a test browser proxy so we can mock out the language setting calls.
@@ -347,5 +351,188 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         overlayTranslateButtonElement.$.menuDetectedLanguage.innerText,
         'Swahili');
+  });
+
+  test('SetTranslateMode', async () => {
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    const firstSourceLanguage = 'auto';
+    const firstTargetLanguage = 'sw';
+    let focusRegionEventPromise = eventToPromise('focus-region', document.body);
+    callbackRouterRemote.setTranslateMode(
+        firstSourceLanguage, firstTargetLanguage);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Language picker should now be visible.
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Language buttons should have languages set according to setTranslateMode.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        loadTimeData.getString('detectLanguage'));
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        'Swahili');
+
+    // The shimmer should be focused in translate.
+    let focusRegionEvent = await focusRegionEventPromise;
+    assertEquals(
+        focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    const secondSourceLanguage = 'sw';
+    const secondTargetLanguage = 'en';
+    callbackRouterRemote.setTranslateMode(
+        secondSourceLanguage, secondTargetLanguage);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Language buttons should have languages set according to setTranslateMode.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        'Swahili');
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        'English');
+
+    let unfocusRegionEventPromise =
+        eventToPromise('unfocus-region', document.body);
+    // `setTextSelection` is called whenever there is a text selection
+    // (non-translate) to go back to via back button. This means the translate
+    // mode should be disabled.
+    callbackRouterRemote.setTextSelection(0, 0);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // The shimmer should be unfocus translate.
+    let unfocusRegionEvent = await unfocusRegionEventPromise;
+    assertEquals(
+        unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    const thirdSourceLanguage = 'en';
+    const thirdTargetLanguage = 'sw';
+    focusRegionEventPromise = eventToPromise('focus-region', document.body);
+    callbackRouterRemote.setTranslateMode(
+        thirdSourceLanguage, thirdTargetLanguage);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Language picker should now be visible.
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Language buttons should have languages set according to setTranslateMode.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        'English');
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        'Swahili');
+
+    // The shimmer should be focused in translate.
+    focusRegionEvent = await focusRegionEventPromise;
+    assertEquals(
+        focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    unfocusRegionEventPromise = eventToPromise('unfocus-region', document.body);
+    // `setPostRegionSelection` is called whenever there is a region selection
+    // to go back to via back button. This means the translate mode should be
+    // disabled.
+    callbackRouterRemote.setPostRegionSelection({
+      box: {
+        x: 0.5,
+        y: 0.5,
+        width: 1,
+        height: 1,
+      },
+      rotation: 0,
+      coordinateType: 0,
+    });
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // The shimmer should be unfocus translate.
+    unfocusRegionEvent = await unfocusRegionEventPromise;
+    assertEquals(
+        unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    // Verify the call count of ending and starting translate requests.
+    assertEquals(
+        3,
+        testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
+    assertEquals(
+        2,
+        testBrowserProxy.handler.getCallCount('issueEndTranslateModeRequest'));
+  });
+
+  test('SetTranslateModeToSameLanguages', async () => {
+    // Verify translate mode is disabled.
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    const sourceLanguage = 'auto';
+    const targetLanguage = 'sw';
+    const focusRegionEventPromise =
+        eventToPromise('focus-region', document.body);
+    callbackRouterRemote.setTranslateMode(sourceLanguage, targetLanguage);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Language picker should now be visible.
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertTrue(
+        isRendered(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Language buttons should have languages set according to setTranslateMode.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        loadTimeData.getString('detectLanguage'));
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        'Swahili');
+
+    // The shimmer should be focused in translate.
+    const focusRegionEvent = await focusRegionEventPromise;
+    assertEquals(
+        focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
+    callbackRouterRemote.setTranslateMode(sourceLanguage, targetLanguage);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Language buttons should have languages set according to setTranslateMode.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        loadTimeData.getString('detectLanguage'));
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        'Swahili');
+
+    // Verify the call count of starting translate requests.
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
   });
 });
