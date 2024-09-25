@@ -40,8 +40,7 @@ struct TypeConverter<bluetooth::mojom::GattResult,
       case device::BluetoothGattService::GattErrorCode::kNotSupported:
         return bluetooth::mojom::GattResult::NOT_SUPPORTED;
     }
-    NOTREACHED_IN_MIGRATION();
-    return bluetooth::mojom::GattResult::NOT_SUPPORTED;
+    NOTREACHED();
   }
 };
 }  // namespace mojo

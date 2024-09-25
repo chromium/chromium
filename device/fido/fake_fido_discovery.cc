@@ -104,8 +104,7 @@ FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
     case FidoTransportProtocol::kInternal:
       return std::move(next_platform_discovery_list_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_WIN)

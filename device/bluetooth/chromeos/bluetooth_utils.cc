@@ -218,7 +218,7 @@ bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
     case ConnectionFailureReason::kSocketError:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
@@ -282,7 +282,7 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
                                     failure_reason);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

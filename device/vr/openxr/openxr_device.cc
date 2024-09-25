@@ -246,7 +246,7 @@ void OpenXrDevice::ShutdownSession(
 
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
   // Presentation sessions can not currently be restricted.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace device

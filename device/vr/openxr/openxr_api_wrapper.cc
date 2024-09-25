@@ -84,8 +84,7 @@ const char* GetXrSessionStateName(XrSessionState state) {
       return "Max_Enum";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -283,8 +282,7 @@ bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
     case XR_REFERENCE_SPACE_TYPE_STAGE:
       return stage_space_ != XR_NULL_HANDLE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -369,7 +367,7 @@ device::mojom::XREnvironmentBlendMode OpenXrApiWrapper::GetMojoBlendMode(
     case XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND:
       return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
     case XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   };
   return device::mojom::XREnvironmentBlendMode::kOpaque;
 }
@@ -404,7 +402,7 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
       }
       break;
     case device::mojom::XRSessionMode::kInline:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return GetMojoBlendMode(blend_mode_);
@@ -1049,7 +1047,7 @@ XrResult OpenXrApiWrapper::LocateViews(
     case XR_REFERENCE_SPACE_TYPE_MAX_ENUM:
     case XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT:
     case XR_REFERENCE_SPACE_TYPE_LOCALIZATION_MAP_ML:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Initialize the XrView objects' type field to XR_TYPE_VIEW. xrLocateViews

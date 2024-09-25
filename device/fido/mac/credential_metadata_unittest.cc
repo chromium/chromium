@@ -92,7 +92,7 @@ TEST_F(CredentialMetadataTest, LegacyCredentialIds) {
         EXPECT_EQ(id.size(), 54u);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     CredentialMetadata expected = DefaultUser();
     expected.version = version;

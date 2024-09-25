@@ -216,8 +216,7 @@ void BluetoothDeviceFloss::SetConnectionLatency(
       max_connection_interval = kMaxConnectionIntervalHigh;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   BLUETOOTH_LOG(EVENT) << "Setting LE connection parameters: min="
@@ -593,8 +592,7 @@ void BluetoothDeviceFloss::SetBondState(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -192,8 +192,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
     MakeCredentialCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_pending_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   is_pending_ = true;
 
@@ -303,7 +302,7 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
 }
 
 void WinWebAuthnApiAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WinWebAuthnApiAuthenticator::Cancel() {

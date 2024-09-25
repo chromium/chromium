@@ -122,13 +122,11 @@ FakeRemoteGattCharacteristic::GetProperties() const {
 
 FakeRemoteGattCharacteristic::Permissions
 FakeRemoteGattCharacteristic::GetPermissions() const {
-  NOTREACHED_IN_MIGRATION();
-  return PERMISSION_NONE;
+  NOTREACHED();
 }
 
 const std::vector<uint8_t>& FakeRemoteGattCharacteristic::GetValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return value_;
+  NOTREACHED();
 }
 
 device::BluetoothRemoteGattService* FakeRemoteGattCharacteristic::GetService()
@@ -256,7 +254,7 @@ void FakeRemoteGattCharacteristic::DispatchReadResponse(
           std::vector<uint8_t>());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -280,7 +278,7 @@ void FakeRemoteGattCharacteristic::DispatchWriteResponse(
           .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -300,7 +298,7 @@ void FakeRemoteGattCharacteristic::DispatchSubscribeToNotificationsResponse(
           .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -320,7 +318,7 @@ void FakeRemoteGattCharacteristic::DispatchUnsubscribeFromNotificationsResponse(
           .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

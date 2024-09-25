@@ -1705,8 +1705,7 @@ base::WeakPtr<device::BluetoothAdapter> BluetoothAdapterFloss::GetWeakPtr() {
 }
 
 bool BluetoothAdapterFloss::SetPoweredImpl(bool powered) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BluetoothAdapterFloss::StartScanWithFilter(

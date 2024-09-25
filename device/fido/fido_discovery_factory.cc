@@ -118,8 +118,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       }
       return {};
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled transport type";
-  return {};
+  NOTREACHED() << "Unhandled transport type";
 }
 
 std::optional<std::unique_ptr<FidoDiscoveryBase>>

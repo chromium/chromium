@@ -601,8 +601,7 @@ void FidoTunnelDevice::OnTunnelData(
     case State::kReady: {
       // In |kReady| the connection is handled by |established_connection_| and
       // so this should never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
@@ -724,7 +723,7 @@ void FidoTunnelDevice::EstablishedConnection::Close() {
 
     case State::kLocallyShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -869,8 +868,7 @@ void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
 
     case State::kRemoteShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

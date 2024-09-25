@@ -194,8 +194,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
       };
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return base::flat_set<FidoTransportProtocol>();
+  NOTREACHED();
 }
 
 void ReportMakeCredentialResponseTransport(
@@ -532,8 +531,7 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
       return;
     case PINUVDisposition::kUnsatisfiable:
       // |IsCandidateAuthenticatorPostTouch| should have handled this case.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   auto request_copy(*request.get());  // can't copy and move in the same stmt.

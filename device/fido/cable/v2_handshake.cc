@@ -765,8 +765,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_size_checked = (padded_size_checked + kPaddingGranularity - 1) &
                         ~(kPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();

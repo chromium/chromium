@@ -175,12 +175,12 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
 
   void AuthenticatorAdded(FidoDiscoveryBase* discovery,
                           FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
