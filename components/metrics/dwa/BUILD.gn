@@ -4,12 +4,16 @@
 
 component("dwa") {
   sources = [
+    "dwa_pref_names.cc",
+    "dwa_pref_names.h",
     "dwa_recorder.cc",
     "dwa_recorder.h",
     "dwa_recorder_factory_impl.cc",
     "dwa_recorder_factory_impl.h",
     "dwa_recorder_interface.cc",
     "dwa_recorder_interface.h",
+    "dwa_reporting_service.cc",
+    "dwa_reporting_service.h",
     "dwa_service.cc",
     "dwa_service.h",
   ]

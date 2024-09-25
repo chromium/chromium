@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
-
+#import "base/not_fatal_until.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -81,6 +81,10 @@ void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
     case metrics::MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS:
       // `this` should never be instantiated with this service type.
       CHECK(false);
+      return;
+    case metrics::MetricsLogUploader::MetricServiceType::DWA:
+      // `this` should never be instantiated with this service type.
+      CHECK(false, base::NotFatalUntil::M134);
       return;
   }
   NOTREACHED_IN_MIGRATION();
