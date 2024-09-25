@@ -10,22 +10,21 @@
 
 namespace content {
 
-enum class PrefetchCallbackType {
-  // Called when the initial prefetch request is started (i.e. the URL loader is
-  // created & started),
-  // just after `PrefetchContainer` has transitioned to `LoadState::kStarted`.
-  // This is called at most once per `PrefetchContainer` and is not called when
-  // prefetch request redirects are started.
-  kStarted
+enum class PrefetchStartResultCode {
+  // Prefetch was started successfully (i.e. the URL loader was created &
+  // started).
+  kSuccess = 0,
+
+  // Prefetch failed to start.
+  kFailed = 1,
 };
 
-// Used to resolve callbacks related to the various non-failure states of a
-// prefetch request.
-// This interface is experimental and is subject to change, therefore
-// it is not recommended to use this outside of WebView app initiated
-// prefetching.
-using PrefetchBrowserCallback =
-    base::RepeatingCallback<void(const PrefetchCallbackType type)>;
+// Used to report when a prefetch request has either started (i.e. the URL
+// loader has been created & started) or failed to start. This interface is
+// experimental and is subject to change, therefore it is not recommended to use
+// this outside of WebView app initiated prefetching.
+using PrefetchStartCallback =
+    base::OnceCallback<void(const PrefetchStartResultCode)>;
 
 }  // namespace content
 #endif  // CONTENT_PUBLIC_BROWSER_PREFETCH_BROWSER_CALLBACKS_H_

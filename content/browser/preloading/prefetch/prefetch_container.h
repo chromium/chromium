@@ -133,7 +133,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
-      std::optional<PrefetchBrowserCallback> prefetch_browser_callback =
+      std::optional<PrefetchStartCallback> prefetch_start_callback =
           std::nullopt);
 
   ~PrefetchContainer();
@@ -696,7 +696,7 @@ class CONTENT_EXPORT PrefetchContainer {
       ukm::SourceId ukm_source_id,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
-      std::optional<PrefetchBrowserCallback> prefetch_browser_callback,
+      std::optional<PrefetchStartCallback> prefetch_start_callback,
       bool is_javascript_enabled);
 
   // Update |prefetch_status_| and report prefetch status to
@@ -723,6 +723,15 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
   const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
+
+  // Called when a prefetch request could not be started because of eligibility
+  // reasons. Should only be called for the initial prefetch request and not
+  // redirects.
+  void OnInitialPrefetchFailedIneligible(PreloadingEligibility eligibility);
+
+  // Returns the |PrefetchStartResultCode| based on the |eligibility|.
+  PrefetchStartResultCode GetPrefetchFailedIneligibleStartResultCode(
+      PreloadingEligibility eligibility);
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
@@ -872,7 +881,7 @@ class CONTENT_EXPORT PrefetchContainer {
       on_maybe_determined_head_callback_;
 
   // Browser callbacks.
-  std::optional<PrefetchBrowserCallback> prefetch_browser_callback_;
+  std::optional<PrefetchStartCallback> prefetch_start_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

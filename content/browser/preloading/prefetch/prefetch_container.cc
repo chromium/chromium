@@ -478,7 +478,7 @@ PrefetchContainer::PrefetchContainer(
           GetUkmSourceId(referring_render_frame_host),
           std::move(attempt),
           referring_render_frame_host.GetDevToolsNavigationToken(),
-          /* prefetch_browser_callback=*/std::nullopt,
+          /* prefetch_start_callback=*/std::nullopt,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled) {
@@ -508,7 +508,7 @@ PrefetchContainer::PrefetchContainer(
           ukm::kInvalidSourceId,
           std::move(attempt),
           /*initiator_devtools_navigation_token=*/std::nullopt,
-          /* prefetch_browser_callback=*/std::nullopt,
+          /* prefetch_start_callback=*/std::nullopt,
           referring_web_contents.GetOrCreateWebPreferences()
               .javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
@@ -524,7 +524,7 @@ PrefetchContainer::PrefetchContainer(
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PreloadingAttempt> attempt,
-    std::optional<PrefetchBrowserCallback> prefetch_browser_callback)
+    std::optional<PrefetchStartCallback> prefetch_start_callback)
     : PrefetchContainer(GlobalRenderFrameHostId(),
                         referring_origin.value_or(url::Origin()),
                         /*referring_url_hash=*/std::nullopt,
@@ -539,7 +539,7 @@ PrefetchContainer::PrefetchContainer(
                         ukm::kInvalidSourceId,
                         std::move(attempt),
                         /*initiator_devtools_navigation_token=*/std::nullopt,
-                        std::move(prefetch_browser_callback),
+                        std::move(prefetch_start_callback),
                         javascript_enabled) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
@@ -558,7 +558,7 @@ PrefetchContainer::PrefetchContainer(
     ukm::SourceId ukm_source_id,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
-    std::optional<PrefetchBrowserCallback> prefetch_browser_callback,
+    std::optional<PrefetchStartCallback> prefetch_start_callback,
     bool is_javascript_enabled)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
@@ -574,7 +574,7 @@ PrefetchContainer::PrefetchContainer(
       attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
           std::move(initiator_devtools_navigation_token)),
-      prefetch_browser_callback_(std::move(prefetch_browser_callback)),
+      prefetch_start_callback_(std::move(prefetch_start_callback)),
       is_javascript_enabled_(is_javascript_enabled) {
   redirect_chain_.push_back(
       std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));
@@ -810,6 +810,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       SetLoadState(LoadState::kFailedIneligible);
       SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
           PrefetchStatusFromIneligibleReason(eligibility));
+      OnInitialPrefetchFailedIneligible(eligibility);
     }
 
     if (attempt_) {
@@ -1445,8 +1446,10 @@ void PrefetchContainer::OnDetectedCookiesChange2() {
 
 void PrefetchContainer::OnPrefetchStarted() {
   SetLoadState(PrefetchContainer::LoadState::kStarted);
-  if (prefetch_browser_callback_.has_value()) {
-    prefetch_browser_callback_.value().Run(PrefetchCallbackType::kStarted);
+  if (prefetch_start_callback_.has_value()) {
+    CHECK(prefetch_start_callback_.value());
+    std::move(prefetch_start_callback_.value())
+        .Run(PrefetchStartResultCode::kSuccess);
   }
 }
 
@@ -1831,6 +1834,24 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
       return "prefetch";
     }
   }
+}
+
+void PrefetchContainer::OnInitialPrefetchFailedIneligible(
+    PreloadingEligibility eligibility) {
+  CHECK(redirect_chain_.size() == 1);
+  CHECK_NE(eligibility, PreloadingEligibility::kEligible);
+  if (prefetch_start_callback_.has_value()) {
+    CHECK(prefetch_start_callback_.value());
+    std::move(prefetch_start_callback_.value())
+        .Run(GetPrefetchFailedIneligibleStartResultCode(eligibility));
+  }
+}
+
+PrefetchStartResultCode
+PrefetchContainer::GetPrefetchFailedIneligibleStartResultCode(
+    PreloadingEligibility eligibility) {
+  CHECK_NE(eligibility, PreloadingEligibility::kEligible);
+  return PrefetchStartResultCode::kFailed;
 }
 
 void PrefetchContainer::AddObserver(Observer* observer) {
