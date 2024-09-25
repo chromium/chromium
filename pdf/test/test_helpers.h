@@ -30,6 +30,11 @@ testing::AssertionResult MatchesPngFile(
     const SkImage* actual_image,
     const base::FilePath& expected_png_file);
 
+// Same as MatchesPngFile() above, but with a fuzzy pixel comparator.
+testing::AssertionResult FuzzyMatchesPngFile(
+    const SkImage* actual_image,
+    const base::FilePath& expected_png_file);
+
 // Creates a Skia surface with dimensions `size` and filled with `color`.
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
                                              SkColor color);
