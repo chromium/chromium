@@ -13,6 +13,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -122,6 +128,54 @@ bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {
 
 bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
   return ash::demo_mode::IsFeatureAwareDevice();
+}
+
+bool CampaignsManagerClientImpl::IsAppIconOnShelf(
+    const std::string& app_id) const {
+  auto* shelf = ash::Shell::GetPrimaryRootWindowController()->shelf();
+  const bool is_shelf_visible =
+      shelf && (shelf->GetVisibilityState() ==
+                    ash::ShelfVisibilityState::SHELF_VISIBLE ||
+                (shelf->GetVisibilityState() ==
+                     ash::ShelfVisibilityState::SHELF_AUTO_HIDE &&
+                 shelf->GetAutoHideState() ==
+                     ash::ShelfAutoHideState::SHELF_AUTO_HIDE_SHOWN));
+
+  if (!is_shelf_visible) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kShelfInvisibleAtMatching);
+    CAMPAIGNS_LOG(ERROR) << "Matching hotseat state when shelf is not visible.";
+    return false;
+  }
+
+  auto* hotseat_widget = shelf->hotseat_widget();
+  const bool is_hotseat_visible =
+      hotseat_widget && hotseat_widget->state() != ash::HotseatState::kNone &&
+      hotseat_widget->state() != ash::HotseatState::kHidden;
+  if (!is_hotseat_visible) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kHotseatInvisibleAtMatching);
+    CAMPAIGNS_LOG(ERROR)
+        << "Matching hotseat state when hotseat is not visible.";
+    return false;
+  }
+
+  auto* shelf_view = hotseat_widget->GetShelfView();
+  if (!shelf_view) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kShelfViewNotAvailableAtMatching);
+    CAMPAIGNS_LOG(ERROR) << "Matching hotseat state when hotseat is available "
+                            "but shelf_view is not available.";
+    return false;
+  }
+
+  if (!shelf_view->GetShelfAppButton(ash::ShelfID(app_id))) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kHotseatAppIconNotPresent);
+    CAMPAIGNS_LOG(ERROR) << "App icon is not on shelf.";
+    return false;
+  }
+  return true;
 }
 
 const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {

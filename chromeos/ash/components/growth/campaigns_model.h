@@ -418,6 +418,8 @@ class RuntimeTargeting : public TargetingBase {
   const std::vector<std::unique_ptr<TriggerTargeting>> GetTriggers() const;
 
   const base::Value::List* GetUserPrefTargetings() const;
+
+  std::unique_ptr<AppTargeting> GetHotseatAppIcon() const;
 };
 
 // Wrapper around the action dictionary for performing an action, including

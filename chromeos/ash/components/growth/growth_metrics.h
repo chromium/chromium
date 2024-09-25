@@ -65,8 +65,12 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kMissingActionPerformerAction = 42,
       kUnknownMinorUserState = 43,
       kNullptrProfile = 44,
+      kShelfInvisibleAtMatching = 45,
+      kHotseatInvisibleAtMatching = 46,
+      kShelfViewNotAvailableAtMatching = 47,
+      kHotseatAppIconNotPresent = 48,
 
-      kMaxValue = kNullptrProfile,
+      kMaxValue = kHotseatAppIconNotPresent,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.

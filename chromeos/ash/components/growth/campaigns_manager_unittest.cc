@@ -351,6 +351,11 @@ class CampaignsManagerTest : public testing::Test {
         .WillRepeatedly(testing::Return(std::string(country)));
   }
 
+  void MockHotseatAppIconAvailable(bool is_icon_on_shelf) {
+    EXPECT_CALL(mock_client_, IsAppIconOnShelf)
+        .WillRepeatedly(testing::Return(is_icon_on_shelf));
+  }
+
   void MockFeatueEngagementCheckOnCaps(bool reach_impression_cap,
                                        bool reach_dismissal_cap,
                                        bool reach_group_impression_cap,
@@ -2623,6 +2628,36 @@ TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithSwitch) {
 TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithoutSwitch) {
   auto registered_time = campaigns_manager_->GetRegisteredTimeForTesting();
   EXPECT_FALSE(registered_time);
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithNoHotseatTargeting) {
+  MockHotseatAppIconAvailable(false);
+  LoadComponentWithRunTimeTargeting(R"({})");
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithAppOnHotseat) {
+  MockHotseatAppIconAvailable(true);
+  LoadComponentWithRunTimeTargeting(R"(
+          {
+            "hotseat": {
+              "appIcon": {"appId": "app_id"}
+            }
+          })");
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithoutAppOnHotseat) {
+  MockHotseatAppIconAvailable(false);
+  LoadComponentWithRunTimeTargeting(R"(
+          {
+            "hotseat": {
+              "appIcon": {"appId": "app_id"}
+            }
+          })");
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 }  // namespace growth

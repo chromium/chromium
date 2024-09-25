@@ -80,6 +80,10 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Missing action performer action"/>
   <int value="43" label="Minor user state is unknown"/>
   <int value="44" label="Profile becomes nullptr in session"/>
+  <int value="45" label="Shelf not visible at matching"/>
+  <int value="46" label="Hotseat not visible at matching"/>
+  <int value="47" label="Shelf view not available at matching"/>
+  <int value="48" label="App icon not shown in hotseat"/>
 </enum>
 
 </enums>

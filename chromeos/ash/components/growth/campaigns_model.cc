@@ -103,8 +103,11 @@ inline constexpr char kTriggerTargetings[] = "triggerList";
 inline constexpr char kTriggerType[] = "triggerType";
 inline constexpr char kTriggerEvents[] = "triggerEvents";
 
-// User Preference Targeting paths.
+// User Preference Targeting path.
 inline constexpr char kUserPrefTargetings[] = "userPrefs";
+
+// Shelf Hotseat Targeting path.
+inline constexpr char kHotseatAppIcon[] = "hotseat.appIcon";
 
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
@@ -707,6 +710,14 @@ RuntimeTargeting::GetTriggers() const {
 
 const base::Value::List* RuntimeTargeting::GetUserPrefTargetings() const {
   return GetListCriteria(kUserPrefTargetings);
+}
+
+std::unique_ptr<AppTargeting> RuntimeTargeting::GetHotseatAppIcon() const {
+  auto* app = GetDictCriteria(kHotseatAppIcon);
+  if (!app) {
+    return nullptr;
+  }
+  return std::make_unique<AppTargeting>(app);
 }
 
 // Action.

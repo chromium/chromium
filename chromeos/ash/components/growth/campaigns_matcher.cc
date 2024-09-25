@@ -270,8 +270,8 @@ bool MatchUserPrefCriteria(const PrefService& pref_service,
 // ]
 // conditions_met = (A1 || A2 || B1) && C1;
 bool MatchUserPrefs(const PrefService* pref_service,
-                    const base::Value::List* user_pref_targettings) {
-  if (!user_pref_targettings || user_pref_targettings->empty()) {
+                    const base::Value::List* user_pref_targetings) {
+  if (!user_pref_targetings || user_pref_targetings->empty()) {
     return true;
   }
 
@@ -284,7 +284,7 @@ bool MatchUserPrefs(const PrefService* pref_service,
   }
 
   // If all conditions are matched, the campaign will be selected.
-  for (auto& targeting : *user_pref_targettings) {
+  for (auto& targeting : *user_pref_targetings) {
     if (!targeting.is_list()) {
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
@@ -743,6 +743,20 @@ bool CampaignsMatcher::MatchActiveUrlRegexes(
   return false;
 }
 
+bool CampaignsMatcher::MatchHotseatAppIcon(
+    std::unique_ptr<AppTargeting> app) const {
+  if (!app) {
+    return true;
+  }
+
+  auto* app_id = app->GetAppId();
+  if (!app_id) {
+    // Ignore if app id is missing from the targeting.
+    return true;
+  }
+  return client_->IsAppIconOnShelf(*app_id);
+}
+
 bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                                    int campaign_id,
                                    std::optional<int> group_id) const {
@@ -914,6 +928,13 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
   if (!is_matched) {
     CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
                          << " Schedulings targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchHotseatAppIcon(targeting.GetHotseatAppIcon());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Hotseat app icon targeting is NOT matched.";
     return false;
   }
 

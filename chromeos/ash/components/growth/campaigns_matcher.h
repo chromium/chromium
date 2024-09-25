@@ -67,6 +67,7 @@ class CampaignsMatcher {
       const std::vector<std::unique_ptr<TriggerTargeting>>& triggers) const;
   bool MatchActiveUrlRegexes(
       const std::vector<std::string>& active_url_regrexes) const;
+  bool MatchHotseatAppIcon(std::unique_ptr<AppTargeting> app) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
   bool MatchRuntimeTargeting(const RuntimeTargeting& targeting,
                              int campaign_id,
