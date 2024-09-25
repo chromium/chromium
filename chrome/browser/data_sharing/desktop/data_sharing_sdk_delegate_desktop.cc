@@ -135,12 +135,17 @@ void DataSharingSDKDelegateDesktop::Shutdown() {
 
 void DataSharingSDKDelegateDesktop::OnReadGroups(
     ReadGroupsCallback callback,
-    std::vector<data_sharing::mojom::GroupDataPtr> groups) {
+    data_sharing::mojom::ReadGroupsResultPtr mojom_result) {
+  if (mojom_result->status_code != 0) {
+    std::move(callback).Run(base::unexpected(
+        absl::Status(static_cast<absl::StatusCode>(mojom_result->status_code),
+                     "Read Groups failed")));
+    return;
+  }
   data_sharing_pb::ReadGroupsResult result;
-  for (auto& group : groups) {
+  for (auto& group : mojom_result->groups) {
     *result.add_group_data() = ConvertGroup(group);
   }
-
   std::move(callback).Run(result);
 }
 

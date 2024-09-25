@@ -81,7 +81,7 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   void MaybeLoadWebContents(LoadFinishedCallback callback);
 
   void OnReadGroups(ReadGroupsCallback callback,
-                    std::vector<data_sharing::mojom::GroupDataPtr> groups);
+                    data_sharing::mojom::ReadGroupsResultPtr mojom_result);
 
   // A list of callback to be invoked.
   base::OnceCallbackList<void(content::WebContents*)> callbacks_;

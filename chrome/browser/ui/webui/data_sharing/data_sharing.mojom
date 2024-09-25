@@ -7,6 +7,16 @@ module data_sharing.mojom;
 import "url/mojom/url.mojom";
 import "components/data_sharing/public/protocol/group_data.mojom";
 
+// Result of the ReadGroups API.
+struct ReadGroupsResult {
+  // Returns GroupData array when ReadGroups is successful, otherwise
+  // returns empty array.
+  array<GroupData> groups;
+
+  // Status code equivalent to absl::StatusCode. Returns 0 if successful.
+  int32 status_code;
+};
+
 // Factory ensures that the Page and PageHandler interfaces are always created
 // together without requiring an initialization call from the WebUI to the
 // handler.
@@ -47,5 +57,5 @@ interface Page {
   OnAccessTokenFetched(string access_token);
 
   // Read groups given group_ids.
-  ReadGroups(array<string> group_ids) => (array<GroupData> groups);
+  ReadGroups(array<string> group_ids) => (ReadGroupsResult result);
 };
