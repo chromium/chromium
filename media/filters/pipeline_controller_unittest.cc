@@ -161,10 +161,17 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) override {}
   void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) override {}
 
+  // testing::Test overrides
+  void TearDown() override {
+    pipeline_ = nullptr;
+    testing::Test::TearDown();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   NiceMock<MockDemuxer> demuxer_;
-  raw_ptr<StrictMock<MockPipeline>, DanglingUntriaged> pipeline_;
+  // Owned by PipelineController.
+  raw_ptr<StrictMock<MockPipeline>> pipeline_;
   PipelineController pipeline_controller_;
 
   bool was_started_ = false;
