@@ -363,6 +363,10 @@ crbug.com/333842054 http/tests/inspector-protocol/page/page-events-associated-is
 # Counters failures to be fixed with new implementation
 crbug.com/990657 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]
 
+crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-change-event.js [ Pass Timeout ]
+crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-event-listener.js [ Pass Timeout ]
+crbug.com/369423339 http/tests/inspector-protocol/emulation/device-posture-media-queries.js [ Pass Timeout ]
+
 # Service Worker registration.update() Network Requests require more instrumentation
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-content-type.js [ Failure ]
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-redirect.js [ Failure ]
