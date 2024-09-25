@@ -798,16 +798,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SkiaRenderer.VertexOpacityUsage"
-    units="VertexOpacityUsage" expires_after="2024-11-03">
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>kyle@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Vertex usage is logged cumulatively for every 1000 TextureDrawQuads drawn.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2025-06-01">
   <owner>kylechar@chromium.org</owner>
