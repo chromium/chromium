@@ -11,11 +11,12 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
- * This factory returns an implementation for the {@link PasswordSyncControllerDelegate}.
- * The factory itself is implemented downstream, too.
+ * This factory returns an implementation for the {@link PasswordSyncControllerDelegate}. The
+ * factory itself is implemented downstream, too.
  */
 public abstract class PasswordSyncControllerDelegateFactory {
     private static PasswordSyncControllerDelegateFactory sInstance;
@@ -28,7 +29,12 @@ public abstract class PasswordSyncControllerDelegateFactory {
      */
     public static PasswordSyncControllerDelegateFactory getInstance() {
         assertOnUiThread();
-        if (sInstance == null) sInstance = new PasswordSyncControllerDelegateFactoryImpl();
+        if (sInstance == null) {
+            sInstance = ServiceLoaderUtil.maybeCreate(PasswordSyncControllerDelegateFactory.class);
+        }
+        if (sInstance == null) {
+            sInstance = new PasswordSyncControllerDelegateFactoryUpstreamImpl();
+        }
         return sInstance;
     }
 

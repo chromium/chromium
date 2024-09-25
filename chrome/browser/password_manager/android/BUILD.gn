@@ -298,7 +298,6 @@ robolectric_binary("password_manager_junit_tests") {
   deps = [
     ":android_backend_java_enums",
     ":java",
-    ":public_impl_java",
     ":settings_interface_java",
     ":test_support_java",
     ":unified_password_manager_proto_java",
@@ -378,6 +377,7 @@ android_library("settings_interface_java") {
   deps = [
     ":backend_interface_java",
     "//base:base_java",
+    "//base:service_loader_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -386,24 +386,15 @@ android_library("settings_interface_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactoryUpstreamImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryUpstreamImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelper.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelperImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelperUpstreamImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessor.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryImpl.java",
-  ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [
-    "*/CredentialManagerLauncherFactoryImpl.class",
-    "*/PasswordSettingsAccessorFactoryImpl.class",
-    "*/PasswordCheckupClientHelperFactoryImpl.class",
-    "*/PasswordManagerBackendSupportHelperImpl.class",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryUpstreamImpl.java",
   ]
 }
 
@@ -411,6 +402,7 @@ android_library("backend_interface_java") {
   deps = [
     ":android_backend_java_enums",
     "//base:base_java",
+    "//base:service_loader_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -418,17 +410,10 @@ android_library("backend_interface_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryUpstreamImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegate.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryImpl.java",
-  ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [
-    "*/PasswordStoreAndroidBackendFactoryImpl.class",
-    "*/PasswordSyncControllerDelegateFactoryImpl.class",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryUpstreamImpl.java",
   ]
 }
 
@@ -495,38 +480,11 @@ android_library("password_manager_resource_provider_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProvider.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderUpstreamImpl.java",
   ]
 
   deps = [
-    "//chrome/android:chrome_app_java_resources",
-    "//chrome/browser/flags:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/PasswordManagerResourceProviderImpl.class" ]
-
-  resources_package = "org.chromium.chrome.browser.password_manager"
-}
-
-# Merged target of the password manager upstream-specific implementations.
-android_library("public_impl_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientHelperFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerBackendSupportHelperImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsAccessorFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateFactoryImpl.java",
-  ]
-
-  deps = [
-    ":backend_interface_java",
-    ":password_manager_resource_provider_java",
-    ":settings_interface_java",
+    "//base:service_loader_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

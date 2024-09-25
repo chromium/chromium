@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.password_manager;
 import androidx.annotation.DrawableRes;
 
 /**
- * Public version of {@link PasswordManagerResourceProviderImpl}.
- * Downstream may provide a different implementation.
+ * Public version of {@link PasswordManagerResourceProviderUpstreamImpl}. Downstream may provide a
+ * different implementation.
  */
-class PasswordManagerResourceProviderImpl implements PasswordManagerResourceProvider {
+class PasswordManagerResourceProviderUpstreamImpl implements PasswordManagerResourceProvider {
     @Override
     public @DrawableRes int getPasswordManagerIcon() {
         return R.drawable.ic_vpn_key_blue;

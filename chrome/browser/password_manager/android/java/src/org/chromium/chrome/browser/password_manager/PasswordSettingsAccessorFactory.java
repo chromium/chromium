@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
@@ -24,7 +25,10 @@ public abstract class PasswordSettingsAccessorFactory {
      */
     public static PasswordSettingsAccessorFactory getOrCreate() {
         if (sInstance == null) {
-            sInstance = new PasswordSettingsAccessorFactoryImpl();
+            sInstance = ServiceLoaderUtil.maybeCreate(PasswordSettingsAccessorFactory.class);
+        }
+        if (sInstance == null) {
+            sInstance = new PasswordSettingsAccessorFactoryUpstreamImpl();
         }
         return sInstance;
     }

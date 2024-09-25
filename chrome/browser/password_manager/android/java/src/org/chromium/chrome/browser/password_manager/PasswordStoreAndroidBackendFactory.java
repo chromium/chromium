@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
@@ -23,7 +24,12 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return The shared {@link PasswordStoreAndroidBackendFactory} instance.
      */
     public static PasswordStoreAndroidBackendFactory getInstance() {
-        if (sInstance == null) sInstance = new PasswordStoreAndroidBackendFactoryImpl();
+        if (sInstance == null) {
+            sInstance = ServiceLoaderUtil.maybeCreate(PasswordStoreAndroidBackendFactory.class);
+        }
+        if (sInstance == null) {
+            sInstance = new PasswordStoreAndroidBackendFactoryUpstreamImpl();
+        }
         return sInstance;
     }
 
