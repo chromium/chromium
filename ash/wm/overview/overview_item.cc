@@ -47,6 +47,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -557,17 +558,16 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
   // container.
   if (transform_window_.fill_mode() == OverviewItemFillMode::kNormal ||
       transform_window_.fill_mode() == OverviewItemFillMode::kPillarBoxed) {
-    if (!overview_item_view_->header_view()->GetBoundsInScreen().IsEmpty()) {
-      // The window top bar's target height with the transform.
-      const float window_top_inset_target_height =
-          target_bounds.height() / screen_rect.height() * top_view_inset;
-      overview_item_bounds.set_y(
-          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
-          window_top_inset_target_height);
-      overview_item_bounds.set_height(target_bounds.height() -
-                                      kWindowMiniViewHeaderHeight +
-                                      window_top_inset_target_height);
-    }
+    // The window top bar's target height with the transform.
+    const float window_top_inset_target_height =
+        target_bounds.height() / screen_rect.height() * top_view_inset;
+    const int header_view_bottom =
+        base::ClampRound(transformed_bounds.y() + kWindowMiniViewHeaderHeight);
+    overview_item_bounds.set_y(header_view_bottom -
+                               window_top_inset_target_height);
+    overview_item_bounds.set_height(target_bounds.height() -
+                                    kWindowMiniViewHeaderHeight +
+                                    window_top_inset_target_height);
   }
 
   return gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
