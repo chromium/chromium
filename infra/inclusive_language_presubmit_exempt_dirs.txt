@@ -39,6 +39,7 @@ chrome/android/junit/src/org/chromium/chrome/browser/payments 1 1
 chrome/browser 2 2
 chrome/browser/android/oom_intervention 1 1
 chrome/browser/ash/arc/file_system_watcher 1 1
+chrome/browser/ash/arc/policy 2 2
 chrome/browser/ash/crosapi 2 1
 chrome/browser/ash/extensions 1 1
 chrome/browser/ash/ownership 4 2
@@ -670,6 +671,7 @@ third_party/rust/chromium_crates_io/vendor/cxx-1.0.128/src 4 1
 third_party/rust/chromium_crates_io/vendor/either-1.13.0/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/flate2-1.0.33 33 2
 third_party/rust/chromium_crates_io/vendor/getrandom-0.2.15 5 1
+third_party/rust/chromium_crates_io/vendor/glob-0.3.1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/hex-0.4.3 1 1
 third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/itoa-1.0.11 2 1
@@ -703,6 +705,7 @@ third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/hybrid 7 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/meta 6 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-0.4.7/tests/nfa/thompson/backtrack 2 1
 third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4 2 2
+third_party/rust/chromium_crates_io/vendor/relative-path-1.9.3/src 1 1
 third_party/rust/chromium_crates_io/vendor/rustc_version-0.4.1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17 2 1
 third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/.github/workflows 2 1
@@ -723,8 +726,6 @@ third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0/src 2 1
 third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3 1 1
-third_party/rust/chromium_crates_io/vendor/syn-1.0.109 1 1
-third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src 4 2
 third_party/rust/chromium_crates_io/vendor/syn-2.0.77 1 1
 third_party/rust/chromium_crates_io/vendor/syn-2.0.77/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
@@ -830,7 +831,7 @@ tools/perf/page_sets/rendering 2 1
 tools/perf/page_sets/tough_canvas_cases/rendering_throughput 2 2
 tools/python/google 1 1
 tools/resources 1 1
-tools/rust 3 2
+tools/rust 2 2
 tools/symsrc 1 1
 tools/usb_gadget 1 1
 tools/utr 1 1

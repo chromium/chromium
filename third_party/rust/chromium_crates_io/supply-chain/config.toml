@@ -128,6 +128,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."getrandom:0.2.15"]
 criteria = ["crypto-safe", "safe-to-run"]
 
+[policy."glob:0.3.1"]
+criteria = ["crypto-safe", "safe-to-run"]
+
 [policy."heck:0.4.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -215,13 +218,16 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."regex:1.10.6"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rstest:0.17.0"]
+[policy."relative-path:1.9.3"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rstest_macros:0.17.0"]
+[policy."rstest:0.22.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rstest_reuse:0.5.0"]
+[policy."rstest_macros:0.22.0"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."rstest_reuse:0.7.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustc-demangle-capi:0.1.0"]
@@ -277,9 +283,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."syn:1.0.109"]
-criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."syn:2.0.77"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]

@@ -97,5 +97,7 @@ cargo_crate("lib") {
     "parsing",
     "printing",
     "proc-macro",
+    "visit",
+    "visit-mut",
   ]
 }

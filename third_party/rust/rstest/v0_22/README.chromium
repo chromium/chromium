@@ -1,0 +1,11 @@
+Name: rstest
+URL: https://crates.io/crates/rstest
+Description: Rust fixture based test framework. It use procedural macro
+to implement fixtures and table based tests.
+
+Version: 0.22.0
+Security Critical: no
+Shipped: no
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/rstest-0.22.0/LICENSE-APACHE
+Revision: 62134281cf451fc2bea69f9d2a16805a9ad03fef

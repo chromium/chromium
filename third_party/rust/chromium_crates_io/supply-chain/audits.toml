@@ -1071,6 +1071,16 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.2.14 -> 0.2.15"
 
+[[audits.glob]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.3.1"
+notes = """
+No unsafe. The crate's purpose is to find files based on a glob, so it
+uses the fs module for that and returns lists of paths. There's no net
+usage or crypto.
+"""
+
 [[audits.heck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
@@ -1562,6 +1572,17 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.8.3 -> 0.8.4"
 
+[[audits.relative-path]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.9.3"
+notes = """
+There is no net or fs usage, no crypto.
+There is unsafe to convert pointers from str to RelativePath, where the latter
+is a transparent wrapper around str so the pointer will be to a valid
+type/value always.
+"""
+
 [[audits.rstest]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
@@ -1571,6 +1592,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.rstest]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.17.0 -> 0.22.0"
+notes = "No new unsafe. fs and net usage, but only in its own tests."
 
 [[audits.rstest_macros]]
 who = "danakj@chromium.org"
@@ -1582,6 +1609,18 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.rstest_macros]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.22.0"
+notes = """
+There is no fs or net usage directly, though there is fs
+usage through the glob crate to get lists of files if the user
+asks for it in their macro.
+
+There is no unsafe. Scanned through all the code.
+"""
+
 [[audits.rstest_reuse]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
@@ -1591,6 +1630,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.rstest_reuse]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.5.0 -> 0.7.0"
+notes = "No new unsafe, looked through the changes which were minimal."
 
 [[audits.rustc-demangle]]
 who = "danakj@chromium.org"

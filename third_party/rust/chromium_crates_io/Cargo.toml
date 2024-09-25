@@ -40,7 +40,6 @@ rand = "0.8"
 rand_pcg = "0.3"
 read-fonts = "0.22"
 regex = "1"
-rstest_reuse = "0.5"
 rustc-demangle-capi = "0.1"
 serde = "1"
 serde_json = "1"
@@ -65,7 +64,10 @@ artifact = "bin"
 
 [dependencies.rstest]
 default-features = false
-version = "0.17"
+version = "0.22"
+
+[dependencies.rstest_reuse]
+version = "0.7"
 
 [dependencies.rustversion]
 version = "1"
