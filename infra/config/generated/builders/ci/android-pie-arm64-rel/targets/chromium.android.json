@@ -1,0 +1,594 @@
+{
+  "android-pie-arm64-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "android_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "android_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "crosshatch",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "android_browsertests",
+        "test_id_prefix": "ninja://chrome/test:android_browsertests/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "blink_platform_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "crosshatch",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "cc_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_public_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_smoke_test/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
+          "--use-persistent-shell",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 19
+        },
+        "test": "chrome_public_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_unit_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_unit_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "crosshatch",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test": "chrome_public_unit_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gtest-also-run-pre-tests",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "content_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 25
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "monochrome_public_bundle_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "monochrome_public_bundle_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "monochrome_public_bundle_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:monochrome_public_bundle_smoke_test/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "monochrome_public_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "monochrome_public_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "monochrome_public_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:monochrome_public_smoke_test/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "system_webview_shell_layout_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "system_webview_shell_layout_test_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "system_webview_shell_layout_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "viz_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "viz_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/"
+      },
+      {
+        "args": [
+          "--store-tombstones",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_64_cts_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_64_cts_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+            }
+          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "crosshatch",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=multiple",
+          "--use-persistent-shell",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_multiple_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=single",
+          "--use-persistent-shell",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_single_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_single_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_ui_test_app_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_ui_test_app_test_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_ui_test_app_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/"
+      }
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py"
+      }
+    ]
+  }
+}

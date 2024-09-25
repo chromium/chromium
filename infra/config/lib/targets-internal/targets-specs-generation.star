@@ -251,15 +251,6 @@ def _get_bundle_resolver():
 
     return resolve
 
-def _resolve_magic_args(builder_name, settings, spec_value):
-    new_args = []
-    for arg in spec_value["args"]:
-        if type(arg) == type(struct()):
-            new_args.extend(arg.function(builder_name, settings, spec_value))
-        else:
-            new_args.append(arg)
-    spec_value["args"] = new_args
-
 # flag to merge -> inter-value separator
 _FLAGS_TO_MERGE = {
     "--enable-features=": ",",
@@ -330,17 +321,13 @@ def get_targets_spec_generator():
 
         additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node, settings)
         sort_key_and_specs_by_type_key = {}
-        for name, spec in test_spec_by_name.items():
+        for test_name, spec in test_spec_by_name.items():
             spec_value = dict(spec.value)
-            type_key, sort_key, spec_value = spec.handler.finalize(name, settings, spec_value)
+            type_key, sort_key, spec_value = spec.handler.finalize(builder_name, test_name, settings, spec_value)
             if "args" in spec_value:
-                _resolve_magic_args(builder_name, settings, spec_value)
-
-                # Merge args after resolving magic args since that could produce
-                # additional args that should be merged
                 _merge_args(spec_value)
-            if name in current_autoshard_exceptions:
-                spec_value["swarming"]["shards"] = current_autoshard_exceptions[name]
+            if test_name in current_autoshard_exceptions:
+                spec_value["swarming"]["shards"] = current_autoshard_exceptions[test_name]
             finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 

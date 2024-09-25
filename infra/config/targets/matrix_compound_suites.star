@@ -117,17 +117,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "android_14_device_gtests",
-    basic_suites = {
-        "android_hardware_specific_gtests": None,
-        "android_limited_capacity_gtests": None,
-        "android_trichrome_smoke_tests": None,
-        "android_smoke_tests": None,
-        "chrome_public_tests": None,
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "android_14_tablet_gtests",
     basic_suites = {
         "android_trichrome_smoke_tests": None,

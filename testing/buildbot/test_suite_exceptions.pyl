@@ -66,11 +66,6 @@
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
       },
-      'android-14-arm64-rel': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'android-14-x64-rel': {
         'args': [
           # https://crbug.com/361042311
@@ -98,20 +93,6 @@
         'ci_only': True,
         'swarming': {
           'shards': 9,
-        },
-      },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
-        ],
-        'ci_only': True,
-        'swarming': {
-          'dimensions': {
-            'device_type': 'crosshatch',
-          },
-          # TODO(crbug.com/40917979): Temporarily increase the shard by 1 for the surging number of tests.
-          # Recover to original number of shards(4) after the bug is fixed.
-          'shards': 5,
         },
       },
       'android-pie-x86-rel': {
@@ -250,16 +231,6 @@
   },
   'blink_platform_unittests': {
     'modifications': {
-      'android-pie-arm64-rel': {
-        'ci_only': True,
-        # TODO(crbug.com/40142574): Move this back to walleye if/when additional
-        # capacity has been deployed.
-        'swarming': {
-          'dimensions': {
-            'device_type': 'crosshatch',
-          },
-        },
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -1111,14 +1082,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
         ],
       },
-      'android-14-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
-        ],
-      },
-      'android-pie-arm64-rel': {
-        'ci_only': True,
-      },
       'android-pie-x86-rel': {
         # https://crbug.com/1039860
         'args': [
@@ -1180,11 +1143,6 @@
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
     ],
-    'modifications': {
-      'android-pie-arm64-rel': {
-        'ci_only': True,
-      },
-    },
   },
   'chrome_public_test_apk': {
     'remove_from': [
@@ -1227,12 +1185,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
         ],
       },
-      'android-14-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter',
-        ],
-        'ci_only': True,
-      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter',
@@ -1259,13 +1211,6 @@
             'cores': '8',
           },
         },
-      },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
-          '--use-persistent-shell',
-        ],
-        'ci_only': True, # https://crbug.com/1233700
       },
       'android-pie-arm64-rel-dev': {
         'swarming': {
@@ -1302,7 +1247,6 @@
   },
   'chrome_public_test_vr_apk': {
     'remove_from': [
-      'android-pie-arm64-rel', # https://crbug.com/1010211
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
@@ -1344,15 +1288,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
         ],
-      },
-      'android-pie-arm64-rel': {
-        'swarming': {
-          'dimensions': {
-            'device_type': 'crosshatch',
-          },
-          # TODO(crbug.com/40922014): Temporarily increase the shard to 5 for the network issue.
-          'shards': 5,
-        },
       },
       # Keep this same as android-oreo-x86-rel above
       'android-x86-code-coverage': {
@@ -1645,12 +1580,6 @@
           'shards': 40,
         },
       },
-      'android-14-arm64-rel': {
-        'args': [
-          '--gtest-also-run-pre-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter',
-        ],
-      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_browsertests.filter',
@@ -1697,18 +1626,6 @@
             # use 8-core to shorten runtime
             'cores': '8',
           },
-        },
-      },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--gtest-also-run-pre-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          # TODO(crbug.com/40922014): Temporarily increase the shard by 5 for the surging number of tests.
-          # Recover to default number of shards(20) after the bug is fixed.
-          'shards': 25,
         },
       },
       'android-pie-x86-rel': {
@@ -2587,11 +2504,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
         ],
       },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
-        ],
-      },
       'android-pie-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
@@ -3125,11 +3037,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.media_unittests.filter',
         ],
       },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--gtest_filter=-AAudio/AudioOutputTest.Play200HzTone/0', # https://crbug.com/1034009
-        ],
-      },
       'android-tablet-14-arm64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.media_unittests.filter',
@@ -3187,20 +3094,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-    },
-  },
-  'monochrome_public_bundle_smoke_test': {
-    'modifications': {
-      'android-pie-arm64-rel': {
-        'ci_only': True,
-      },
-    },
-  },
-  'monochrome_public_smoke_test': {
-    'modifications': {
-      'android-pie-arm64-rel': {
-        'ci_only': True,
       },
     },
   },
@@ -3442,7 +3335,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'android-pie-arm64-rel',
       'android-pie-x86-rel',
       'android-11-x86-rel',
       'ToTAndroid'
@@ -3995,7 +3887,6 @@
       },
     },
     'remove_from': [
-      'android-pie-arm64-rel',
       # TODO crbug.com/1277277
       'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium
@@ -4109,9 +4000,6 @@
     ],
   },
   'unit_tests': {
-    'remove_from': [
-      'android-pie-arm64-rel',  # https://crbug.com/1010211
-    ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # Only retry the individual failed tests instead of rerunning entire
@@ -4270,9 +4158,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter',
         ],
-      },
-      'android-pie-arm64-rel': {
-        'ci_only': True,
       },
     },
   },
@@ -4919,19 +4804,6 @@
       },
     },
   },
-  'webview_64_cts_tests': {
-    'modifications': {
-      'android-pie-arm64-rel': {
-        # TODO(crbug.com/40142574): Move this back to walleye if/when additional
-        # capacity has been deployed.
-        'swarming': {
-          'dimensions': {
-            'device_type': 'crosshatch',
-          },
-        },
-      },
-    },
-  },
   'webview_instrumentation_test_apk_multiple_process_mode': {
     'remove_from': [
       # This test frequently fails on Android, https://crbug.com/824959
@@ -4960,12 +4832,6 @@
         'swarming': {
           'shards': 9,
         },
-      },
-      'android-14-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
-        ],
-        'ci_only': True,
       },
       'android-14-x64-rel': {
         'args': [
@@ -5000,15 +4866,6 @@
         ],
         'swarming': {
           'shards': 15,
-        },
-      },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'ci_only': True, # crbug/1368281
-        'swarming': {
-          'shards': 6,
         },
       },
       'android-pie-x86-rel': {
@@ -5078,16 +4935,6 @@
         ],
         'swarming': {
           'shards': 9,
-        },
-      },
-      'android-pie-arm64-rel': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        # This builder is mirrored by CQ builder. Only multiple process tests run in CQ.
-        'ci_only': True,
-        'swarming': {
-          'shards': 3,
         },
       },
      'android-pie-x86-rel': {

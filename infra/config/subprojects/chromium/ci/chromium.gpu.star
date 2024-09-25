@@ -11,6 +11,7 @@ load("//lib/builders.star", "gardener_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -28,6 +29,14 @@ ci.defaults.set(
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
     tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+        "swarming_containment_auto",
+        "timeout_30m",
+    ],
 )
 
 consoles.console_view(
@@ -121,6 +130,19 @@ ci.gpu.linux_builder(
             "static_angle",
             "android_fastbuild",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_common_android_telemetry_tests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.ANDROID_CHROMIUM,
+        os_type = targets.os_type.ANDROID,
+        use_android_merge_script_by_default = False,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android",

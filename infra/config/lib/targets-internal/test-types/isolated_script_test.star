@@ -11,10 +11,10 @@ load("../nodes.star", _targets_nodes = "nodes")
 def _isolated_script_test_spec_init(node, settings, **kwargs):
     return _targets_common.spec_init(node, settings, **kwargs)
 
-def _isolated_script_test_spec_finalize(name, settings, spec_value):
+def _isolated_script_test_spec_finalize(builder_name, test_name, settings, spec_value):
     default_merge_script = "standard_isolated_script_merge"
-    spec_value = _targets_common.spec_finalize(settings, spec_value, default_merge_script)
-    return "isolated_scripts", name, spec_value
+    spec_value = _targets_common.spec_finalize(builder_name, settings, spec_value, default_merge_script)
+    return "isolated_scripts", test_name, spec_value
 
 def create_isolated_script_test_spec_handler(type_name):
     """Create spec handler for test type implemented via isolated scripts.

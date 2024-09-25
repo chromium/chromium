@@ -78,11 +78,6 @@
       },
     },
 
-    'android_hardware_specific_gtests': {
-      'cc_unittests': {},
-      'viz_unittests': {},
-    },
-
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [
@@ -95,57 +90,9 @@
       },
     },
 
-    'android_limited_capacity_gtests': {
-      'android_browsertests': {},
-      'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'content_browsertests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'webview_instrumentation_test_apk_multiple_process_mode': {
-        'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=multiple',
-        ],
-        'swarming': {
-          'shards': 6,
-        },
-      },
-    },
-
     'android_monochrome_smoke_tests': {
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},
-    },
-
-    'android_pie_rel_reduced_capacity_gtests': {
-      'android_browsertests': {},
-      'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'cc_unittests': {},
-      'content_browsertests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'viz_unittests': {},
-      'webview_instrumentation_test_apk_multiple_process_mode': {
-        'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=multiple',
-        ],
-        'swarming': {
-          'shards': 5,
-        },
-      },
     },
 
     'android_smoke_tests': {
@@ -5342,20 +5289,6 @@
       },
     },
 
-    'webview_64_cts_tests_gtest': {
-      'webview_64_cts_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
-        'args': [
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'webview_bot_instrumentation_test_apk_gtest': {
       'webview_instrumentation_test_apk': {
         'args': [
@@ -5672,17 +5605,6 @@
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests',
       'webview_cts_tests_gtest',
-      'webview_instrumentation_test_apk_single_process_mode_gtests',
-      'webview_ui_instrumentation_tests',
-    ],
-
-    'android_pie_rel_gtests': [
-      'android_monochrome_smoke_tests',
-      'android_pie_rel_reduced_capacity_gtests',
-      'android_smoke_tests',
-      'chrome_public_tests',
-      'system_webview_shell_instrumentation_tests',
-      'webview_64_cts_tests_gtest',
       'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
     ],
@@ -6505,14 +6427,6 @@
         ],
       },
       'webview_ui_instrumentation_tests': {},
-    },
-
-    'android_14_device_gtests': {
-      'android_hardware_specific_gtests': {},
-      'android_limited_capacity_gtests': {},
-      'android_smoke_tests': {},
-      'android_trichrome_smoke_tests': {},
-      'chrome_public_tests': {},
     },
 
     'android_14_emulator_gtests': {

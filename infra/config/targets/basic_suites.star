@@ -58,16 +58,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Test suites that need to run on hardware that is close to real Android device.
-# See https://crbug.com/40204012#comment5 for details.
-targets.legacy_basic_suite(
-    name = "android_hardware_specific_gtests",
-    tests = {
-        "cc_unittests": targets.legacy_test_config(),
-        "viz_unittests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "android_isolated_scripts",
     tests = {
@@ -79,53 +69,11 @@ targets.legacy_basic_suite(
     },
 )
 
-# Used when the device capacity is limited, e.g. for CQ.
-# TODO(crbug.com/352811552): Revisit after Android 14 on device promoted to CQ.
-targets.legacy_basic_suite(
-    name = "android_limited_capacity_gtests",
-    tests = {
-        "android_browsertests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(),
-        "content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "android_monochrome_smoke_tests",
     tests = {
         "monochrome_public_bundle_smoke_test": targets.legacy_test_config(),
         "monochrome_public_smoke_test": targets.legacy_test_config(),
-    },
-)
-
-# TODO(crbug.com/40142574): Deprecate this group in favor of
-# android_pie_rel_gtests if/when android Pie capacity is fully restored.
-targets.legacy_basic_suite(
-    name = "android_pie_rel_reduced_capacity_gtests",
-    tests = {
-        "android_browsertests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(),
-        "cc_unittests": targets.legacy_test_config(),
-        "content_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-        "viz_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
     },
 )
 
@@ -4928,20 +4876,6 @@ targets.legacy_basic_suite(
                 "external/wpt/webrtc-stats",
                 "external/wpt/webrtc-svc",
             ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "webview_64_cts_tests_gtest",
-    tests = {
-        "webview_64_cts_tests": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
         ),
     },
 )

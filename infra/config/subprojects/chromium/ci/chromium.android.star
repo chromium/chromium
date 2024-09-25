@@ -2816,6 +2816,173 @@ ci.builder(
             "webview_monochrome",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "android_pie_rel_gtests",
+                    # TODO(crbug.com/40142574): Re-enable this if/when
+                    # additional capacity has been deployed.
+                    # "marshmallow_nougat_pie_isolated_scripts_with_proguard",
+                ],
+                mixins = targets.mixin(
+                    args = [
+                        "--use-persistent-shell",
+                    ],
+                ),
+            ),
+            "chromium_android_scripts",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                args = [
+                    # https://crbug.com/1034001
+                    "--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode",
+                ],
+                ci_only = True,
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_type": "crosshatch",
+                    },
+                    # TODO(crbug.com/40917979): Temporarily increase the shard
+                    # by 1 for the surging number of tests. Recover to original
+                    # number of shards(4) after the bug is fixed.
+                    shards = 5,
+                ),
+            ),
+            "blink_platform_unittests": targets.mixin(
+                ci_only = True,
+                # TODO(crbug.com/40142574): Move this back to walleye if/when
+                # capacity has been deployed.
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_type": "crosshatch",
+                    },
+                ),
+            ),
+            "cc_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            "chrome_public_smoke_test": targets.mixin(
+                ci_only = True,
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    # https://crbug.com/1010211
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter",
+                    "--use-persistent-shell",
+                ],
+                # https://crbug.com/1233700
+                ci_only = True,
+            ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "chrome_public_test_vr_apk": targets.remove(
+            #     reason = "https://crbug.com/1010211",
+            # ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_type": "crosshatch",
+                    },
+                    # TODO(crbug.com/40922014): Temporarily increase the shard
+                    # to 5 for the network issue.
+                    shards = 5,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--gtest-also-run-pre-tests",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter",
+                ],
+                ci_only = True,
+                swarming = targets.swarming(
+                    # TODO(crbug.com/40922014): Temporarily increase the shard
+                    # by 5 for the surging number of tests. Recover to default
+                    # number of shards(20) after the bug is fixed.
+                    shards = 25,
+                ),
+            ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "gl_tests_validating": targets.mixin(
+            #     args = [
+            #         # https://crbug.com/1034007
+            #         "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
+            #     ],
+            # ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "media_unittests": targets.mixin(
+            #     args = [
+            #         # https://crbug.com/1034009
+            #         "--gtest_filter=-AAudio/AudioOutputTest.Play200HzTone/0",
+            #     ],
+            # ),
+            "monochrome_public_bundle_smoke_test": targets.mixin(
+                ci_only = True,
+            ),
+            "monochrome_public_smoke_test": targets.mixin(
+                ci_only = True,
+            ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "perfetto_unittests": targets.remove(
+            #     reason = "TODO(crbug.com/41440830) Fix permission issue when creating tmp files",
+            # ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "telemetry_perf_unittests": targets.remove(
+            #     reason = "existed at migration, originally removed in https://crrev.com/c/1968238",
+            # ),
+            # TODO(crbug.com/40142574) Remove or restore as appropriate if
+            # marshmallow_nougat_pie_isolated_scripts_with_proguard is reenabled
+            # "unit_tests": targets.remove(
+            #     reason = "https://crbug.com/1010211",
+            # ),
+            "viz_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            "webview_64_cts_tests": targets.mixin(
+                # TODO(crbug.com/40142574): Move this back to walleye if/when
+                # additional capacity has been deployed.
+                swarming = targets.swarming(
+                    dimensions = {
+                        "device_type": "crosshatch",
+                    },
+                ),
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                # crbug/1368281
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                # This builder is mirrored by CQ builder. Only multiple process
+                # tests run in CQ.
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
@@ -3295,6 +3462,50 @@ ci.builder(
             "webview_trichrome",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_14_device_gtests",
+            "chromium_android_scripts",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "panther_on_14",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "cc_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
+                ],
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter",
+                ],
+                ci_only = True,
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--gtest-also-run-pre-tests",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter",
+                ],
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
+                ],
+                ci_only = True,
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
@@ -3304,6 +3515,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
 )
+
 ci.builder(
     name = "android-14-x64-rel",
     description_html = "Run chromium tests on Android 14 emulators.",

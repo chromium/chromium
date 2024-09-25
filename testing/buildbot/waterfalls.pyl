@@ -477,6 +477,7 @@
     #   android-10-arm64-rel
     #   android-12-x64-rel
     #   android-13-x64-rel
+    #   android-14-arm64-rel
     #   android-arm64-proguard-rel
     #   android-cronet-arm-dbg
     #   android-cronet-arm-rel
@@ -507,6 +508,7 @@
     #   android-cronet-x86-rel
     #   android-bfcache-rel
     #   android-pie-arm64-dbg
+    #   android-pie-arm64-rel
     #   android-webview-13-x64-hostside-rel
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
@@ -549,18 +551,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_12l_emulator_gtests',
-        }
-      },
-      'android-14-arm64-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'panther_on_14',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_14_device_gtests',
-          'scripts': 'chromium_android_scripts',
         }
       },
       'android-14-x64-rel': {
@@ -613,24 +603,6 @@
           'isolated_scripts': 'oreo_isolated_scripts',
           'scripts': 'chromium_android_scripts',
         },
-      },
-      'android-pie-arm64-rel': {
-        'mixins': [
-          'chromium_pixel_2_pie',
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-        ],
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_pie_rel_gtests',
-          # TODO(crbug.com/40142574): Re-enable this if/when additional capacity
-          # has been deployed.
-          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
-          'scripts': 'chromium_android_scripts',
-        },
-        'os_type': 'android',
       },
       'android-pie-x86-rel': {
         'mixins': [
@@ -3327,6 +3299,10 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.android.star
+    #   Android Release (Pixel 2)
     'name': 'chromium.gpu',
     'forbid_script_tests': True,
     'mixins': [
@@ -3341,17 +3317,6 @@
         'skip_merge_script': True,
         'mixins': [
           'chromium_nexus_5x_oreo',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
-        },
-      },
-      'Android Release (Pixel 2)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'chromium_pixel_2_pie',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',

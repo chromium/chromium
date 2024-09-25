@@ -38,7 +38,7 @@ def _gpu_telemetry_test_spec_init(node, settings):
     spec_value["telemetry_test_name"] = node.props.details.telemetry_test_name
     return spec_value
 
-def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
+def _gpu_telemetry_test_spec_finalize(builder_name, test_name, settings, spec_value):
     browser_config = settings.browser_config
     # TODO: crbug.com/40258588 - Handle browser for
     # android_webview_gpu_telemetry_tests and cast_streaming_tests keys
@@ -63,7 +63,7 @@ def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
     extra_browser_args.append("--js-flags=--expose-gc")
 
     spec_value["args"] = args_lib.listify(
-        spec_value.get("telemetry_test_name", name),
+        spec_value["telemetry_test_name"] or test_name,
         "--show-stdout",
         "--browser={}".format(browser_config),
         # --passthrough displays more of the logging in Telemetry when run via
@@ -79,7 +79,7 @@ def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
 
     spec_value["swarming"] = structs.evolve(spec_value["swarming"], idempotent = False)
 
-    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(name, settings, spec_value)
+    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(builder_name, test_name, settings, spec_value)
 
     spec_value.pop("telemetry_test_name")
 

@@ -60,6 +60,17 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_14_device_gtests",
+    targets = [
+        "android_hardware_specific_gtests",
+        "android_limited_capacity_gtests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "chrome_public_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_ar_gtests",
     targets = [
         "monochrome_public_test_ar_apk",
@@ -126,6 +137,40 @@ targets.bundle(
     },
 )
 
+# Test suites that need to run on hardware that is close to real Android device.
+# See https://crbug.com/40204012#comment5 for details.
+targets.bundle(
+    name = "android_hardware_specific_gtests",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+    ],
+)
+
+# Used when the device capacity is limited, e.g. for CQ.
+# TODO(crbug.com/352811552): Revisit after Android 14 on device promoted to CQ.
+targets.bundle(
+    name = "android_limited_capacity_gtests",
+    targets = [
+        "android_browsertests",
+        "blink_platform_unittests",
+        "content_browsertests",
+        "webview_instrumentation_test_apk_multiple_process_mode",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+    },
+)
+
 targets.bundle(
     name = "android_marshmallow_gtests",
     targets = [
@@ -184,6 +229,54 @@ targets.bundle(
         "chromium_tracing_gtests",
         # No standard tests due to capacity, no Vega tests since it's currently
         # O only.
+    ],
+)
+
+# TODO(crbug.com/40142574): Deprecate this group in favor of
+# android_pie_rel_gtests if/when android Pie capacity is fully restored.
+targets.bundle(
+    name = "android_pie_rel_reduced_capacity_gtests",
+    targets = [
+        "android_browsertests",
+        "blink_platform_unittests",
+        "cc_unittests",
+        "content_browsertests",
+        "viz_unittests",
+        "webview_instrumentation_test_apk_multiple_process_mode",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "android_pie_rel_gtests",
+    targets = [
+        # TODO(crbug.com/40142574): Deprecate this when all the test suites below
+        # it are re-enabled.
+        "android_pie_rel_reduced_capacity_gtests",
+        "android_monochrome_smoke_tests",
+        "android_smoke_tests",
+        # "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        # "chromium_gtests",
+        # "chromium_gtests_for_devices_with_graphical_output",
+        "chrome_public_tests",
+        # "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",
+        # "vr_android_specific_chromium_tests",
+        # "vr_platform_specific_chromium_gtests",
+        "webview_64_cts_tests_suite",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+        "webview_ui_instrumentation_tests",
     ],
 )
 
@@ -604,6 +697,23 @@ targets.bundle(
     targets = [
         "checkbins",
     ],
+)
+
+targets.bundle(
+    name = "webview_64_cts_tests_suite",
+    targets = [
+        "webview_64_cts_tests",
+    ],
+    per_test_modifications = {
+        "webview_64_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
 )
 
 targets.bundle(

@@ -56,7 +56,7 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Keep in sync with android_pie_rel_gtests below, except for
+# Keep in sync with android_pie_rel_gtests in bundles.star, except for
 # vr_{android,platform}_specific_chromium_gtests which are not applicable
 # to android emulators on x86 & x64.
 targets.legacy_compound_suite(
@@ -73,28 +73,6 @@ targets.legacy_compound_suite(
         "webview_cts_tests_gtest",
         "webview_ui_instrumentation_tests",
         "webview_instrumentation_test_apk_single_process_mode_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "android_pie_rel_gtests",
-    basic_suites = [
-        # TODO(crbug.com/40142574): Deprecate this when all the test suites below
-        # it are re-enabled.
-        "android_pie_rel_reduced_capacity_gtests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-        # "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        # "chromium_gtests",
-        # "chromium_gtests_for_devices_with_graphical_output",
-        "chrome_public_tests",
-        # "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",
-        # "vr_android_specific_chromium_tests",
-        # "vr_platform_specific_chromium_gtests",
-        "webview_64_cts_tests_gtest",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
-        "webview_ui_instrumentation_tests",
     ],
 )
 

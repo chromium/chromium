@@ -45,7 +45,8 @@
           "builder": "android-14-arm64-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-14-arm64-rel/targets"
     }
   },
   "$build/code_coverage": {

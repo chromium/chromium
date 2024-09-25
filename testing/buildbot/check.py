@@ -59,6 +59,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'private_code_failure_test',
     'resource_sizes_cronet_sample_apk',
     'telemetry_gpu_integration_test_fuchsia',
+    'webview_64_cts_tests',
     'webview_trichrome_64_cts_hostside_tests',
 
     # These targets are listed only in build-side recipes.
