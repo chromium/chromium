@@ -424,7 +424,7 @@ BASE_FEATURE(kCellularUseSecondEuicc,
 // Settings and in the recovery flow.
 BASE_FEATURE(kChangePasswordFactorSetup,
              "ChangePasswordFactorSeteup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Multiple scraped passwords should be checked against password in
 // cryptohome.
