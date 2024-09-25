@@ -17,7 +17,7 @@ autoconfig is turned on and there's no WPAD server.
 
 ## Solution
 
-There's a couple of simplifying assumptions we make:
+There are a couple of simplifying assumptions we make:
 
 *   If there is a WPAD server, it is on the same network as us, and hence likely
     to respond to lookups far more quickly than a random internet DNS server
