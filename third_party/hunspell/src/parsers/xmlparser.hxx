@@ -57,9 +57,9 @@ class XMLParser : public TextParser {
                   unsigned int len3,
                   std::string&);
   virtual bool next_token(std::string&);
-  std::string get_word(const char* p2[][2],
+  std::string get_word2(const char* p2[][2],
                   unsigned int len2,
-                  const std::string token);
+                  const std::string &tok);
   int change_token(const char* word);
   virtual ~XMLParser();
 

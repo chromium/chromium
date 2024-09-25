@@ -153,7 +153,7 @@ bool XMLParser::next_token(const char* PATTERN[][2],
           // in-word patterns
           if ((pattern3_num = look_pattern(PATTERN3, PATTERN_LEN3, 0)) != -1) {
             size_t pos = line[actual].find(PATTERN3[pattern3_num][1], head);
-            if (pos != -1) {
+            if (pos != std::string::npos) {
               size_t endpos = pos + strlen(PATTERN3[pattern3_num][1]) - 1;
               if (is_wordchar(line[actual].c_str() + endpos + 1)) {
                 head = endpos;
@@ -218,16 +218,16 @@ bool XMLParser::next_token(std::string& t) {
 }
 
 // remove in-word patterns
-std::string XMLParser::get_word(
+std::string XMLParser::get_word2(
         const char* PATTERN3[][2],
         unsigned int PATTERN_LEN3,
-        const std::string token) {
-  std::string word = token;
+        const std::string &tok) {
+  std::string word = tok;
   for (unsigned int i = 0; i < PATTERN_LEN3; i++) {
     size_t pos;
-    while ((pos = word.find(PATTERN3[i][0])) != -1) {
+    while ((pos = word.find(PATTERN3[i][0])) != word.npos) {
       size_t endpos = word.find(PATTERN3[i][1], pos);
-      if (endpos != -1) {
+      if (endpos != word.npos) {
         word.erase(pos, endpos + strlen(PATTERN3[i][1]) - pos);
       } else
         return word;

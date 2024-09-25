@@ -645,6 +645,7 @@ bool HunspellImpl::spell_internal(const std::string& word, int* info, std::strin
           break;
       }
     }
+      /* FALLTHROUGH */
     case INITCAP: {
       // handle special capitalization of dotted I
       bool Idot = (utf8 && (unsigned char) scw[0] == 0xc4 && (unsigned char) scw[1] == 0xb0);
@@ -1040,6 +1041,10 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
 #ifdef HUNSPELL_CHROME_CLIENT
   if (m_HMgrs[0]) m_HMgrs[0]->EmptyHentryCache();
 #endif
+  captype = NOCAP;
+  abbv = 0;
+  capwords = false;
+
   std::vector<std::string> slst;
 
   int onlycmpdsug = 0;
@@ -1057,8 +1062,6 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
     if (word.size() >= MAXWORDLEN)
       return slst;
   }
-  captype = NOCAP;
-  abbv = 0;
   size_t wl = 0;
 
   std::string scw;
@@ -1079,10 +1082,9 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
       return slst;
   }
 
-  capwords = false;
   bool good = false;
 
-  HUNSPELL_THREAD_LOCAL clock_t timelimit;
+  clock_t timelimit;
   // initialize in every suggestion call
   timelimit = clock();
 
@@ -1126,6 +1128,7 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
     }
     case HUHINITCAP:
       capwords = true;
+      /* FALLTHROUGH */
     case HUHCAP: {
       good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
       if (clock() > timelimit + TIMELIMIT_GLOBAL)
@@ -1249,8 +1252,10 @@ std::vector<std::string> HunspellImpl::suggest_internal(const std::string& word,
             return slst;
         break;
       }
+      /* FALLTHROUGH */
       case HUHINITCAP:
         capwords = true;
+      /* FALLTHROUGH */
       case HUHCAP: {
         std::string wspace(scw);
         mkallsmall2(wspace, sunicw);

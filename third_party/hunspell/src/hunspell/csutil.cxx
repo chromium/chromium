@@ -69,6 +69,7 @@
  */
 
 #include <algorithm>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -486,20 +487,17 @@ void uniqlist(std::vector<std::string>& list) {
 
 namespace {
 unsigned char cupper(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].cupper;
 }
 
 unsigned char clower(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].clower;
 }
 
 unsigned char ccase(const struct cs_info* csconv, int nIndex) {
-  if (nIndex < 0 || nIndex > 255)
-    return nIndex;
+  assert(nIndex >= 0 && nIndex <= 255);
   return csconv[nIndex].ccase;
 }
 }

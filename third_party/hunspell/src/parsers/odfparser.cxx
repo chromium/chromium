@@ -79,8 +79,8 @@ bool ODFParser::next_token(std::string& t) {
   return XMLParser::next_token(PATTERN, PATTERN_LEN, PATTERN2, PATTERN_LEN2, PATTERN3, PATTERN_LEN3, t);
 }
 
-std::string ODFParser::get_word(const std::string token) {
-  return XMLParser::get_word(PATTERN3, PATTERN_LEN3, token);
+std::string ODFParser::get_word(const std::string &tok) {
+  return XMLParser::get_word2(PATTERN3, PATTERN_LEN3, tok);
 }
 
 ODFParser::~ODFParser() {}

@@ -178,7 +178,7 @@ int Hunzip::getbuf() {
   do {
     if (inc == 0) {
       fin.read(in, BUFSIZE);
-      inbits = fin.gcount() * 8;
+      inbits = int(fin.gcount() * 8);
     }
     for (; inc < inbits; inc++) {
       int b = (in[inc / 8] & (1 << (7 - (inc % 8)))) ? 1 : 0;

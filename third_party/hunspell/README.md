@@ -1,32 +1,64 @@
 # About Hunspell
 
-Hunspell is a spell checker and morphological analyzer library and
-program designed for languages with rich morphology and complex word
-compounding or character encoding. Hunspell interfaces: Ispell-like
-terminal interface using Curses library, Ispell pipe interface, C++
-class and C functions.
+Hunspell is a free spell checker and morphological analyzer library
+and command-line tool, licensed under LGPL/GPL/MPL tri-license.
 
-Hunspell's code base comes from the OpenOffice.org MySpell
-(http://lingucomponent.openoffice.org/MySpell-3.zip). See
-README.MYSPELL, AUTHORS.MYSPELL and license.myspell files. Hunspell is
-designed to eventually replace Myspell in OpenOffice.org.
+Hunspell is used by LibreOffice office suite, free browsers, like
+Mozilla Firefox and Google Chrome, and other tools and OSes, like
+Linux distributions and macOS. It is also a command-line tool for
+Linux, Unix-like and other OSes.
 
-Main features of Hunspell spell checker and morphological analyzer:
+It is designed for quick and high quality spell checking and
+correcting for languages with word-level writing system,
+including languages with rich morphology, complex word compounding
+and character encoding.
 
-  - Unicode support (affix rules work only with the first 65535 Unicode
-    characters)
-  - Morphological analysis (in custom item and arrangement style) and
-    stemming
-  - Max. 65535 affix classes and twofold affix stripping (for
-    agglutinative languages, like Azeri, Basque, Estonian, Finnish,
-    Hungarian, Turkish, etc.)
-  - Support complex compounds (for example, Hungarian and German)
-  - Support language specific features (for example, special casing of
-    Azeri and Turkish dotted i, or German sharp s)
-  - Handle conditional affixes, circumfixes, fogemorphemes, forbidden
-    words, pseudoroots and homonyms.
-  - Free software. Versions 1.x are licenced under LGPL, GPL, MPL
-    tri-license. Version 2 is licenced only under GNU LGPL.
+Hunspell interfaces: Ispell-like terminal interface using Curses
+library, Ispell pipe interface, C++/C APIs and shared library, also
+with existing language bindings for other programming languages.
+
+Hunspell's code base comes from OpenOffice.org's MySpell library,
+developed by Kevin Hendricks (originally a C++ reimplementation of
+spell checking and affixation of Geoff Kuenning's International
+Ispell from scratch, later extended with eg. n-gram suggestions),
+see http://lingucomponent.openoffice.org/MySpell-3.zip, and
+its README, CONTRIBUTORS and license.readme (here: license.myspell) files.
+
+Main features of Hunspell library, developed by László Németh:
+
+  - Unicode support
+  - Highly customizable suggestions: word-part replacement tables and
+    stem-level phonetic and other alternative transcriptions to recognize
+    and fix all typical misspellings, don't suggest offensive words etc.
+  - Complex morphology: dictionary and affix homonyms; twofold affix
+    stripping to handle inflectional and derivational morpheme groups for
+    agglutinative languages, like Azeri, Basque, Estonian, Finnish, Hungarian,
+    Turkish; 64 thousand affix classes with arbitrary number of affixes;
+    conditional affixes, circumfixes, fogemorphemes, zero morphemes,
+    virtual dictionary stems, forbidden words to avoid overgeneration etc.
+  - Handling complex compounds (for example, for Finno-Ugric, German and
+    Indo-Aryan languages): recognizing compounds made of arbitrary
+    number of words, handle affixation within compounds etc.
+  - Custom dictionaries with affixation
+  - Stemming
+  - Morphological analysis (in custom item and arrangement style)
+  - Morphological generation
+  - SPELLML XML API over plain spell() API function for easier integration
+    of stemming, morpological generation and custom dictionaries with affixation
+  - Language specific algorithms, like special casing of Azeri or Turkish
+    dotted i and German sharp s, and special compound rules of Hungarian.
+
+Main features of Hunspell command line tool, developed by László Németh:
+
+  - Reimplementation of quick interactive interface of Geoff Kuenning's Ispell
+  - Parsing formats: text, OpenDocument, TeX/LaTeX, HTML/SGML/XML, nroff/troff
+  - Custom dictionaries with optional affixation, specified by a model word
+  - Multiple dictionary usage (for example hunspell -d en_US,de_DE,de_medical)
+  - Various filtering options (bad or good words/lines)
+  - Morphological analysis (option -m)
+  - Stemming (option -s)
+
+See man hunspell, man 3 hunspell, man 5 hunspell for complete manual.
 
 # Dependencies
 
@@ -36,14 +68,10 @@ Build only dependencies:
 
 Runtime dependencies:
 
-|               | Mandatory        |Optional          |
+|               | Mandatory        | Optional         |
 |---------------|------------------|------------------|
-|libhunspell 1  |                  |                  |
-|cmd line tool 1| libiconv gettext | ncurses readline |
-    
-Recommended tools for developers:
-
-    vim qtcreator clang-format cppcheck gdb libtool-bin doxygen plantuml
+|libhunspell    |                  |                  |
+|hunspell tool  | libiconv gettext | ncurses readline |
 
 # Compiling on GNU/Linux and Unixes
 
@@ -53,8 +81,7 @@ need to manually install them.
 
 For Ubuntu:
 
-    sudo apt install autoconf automake autopoint libtool libboost-locale-dev \
-                     libboost-system-dev
+    sudo apt install autoconf automake autopoint libtool
 
 Then run the following commands:
 
@@ -85,25 +112,24 @@ In Ubuntu, the packages are:
 On macOS for compiler always use `clang` and not `g++` because Homebrew
 dependencies are build with that.
 
-    brew install autoconf automake libtool gettext boost
+    brew install autoconf automake libtool gettext
     brew link gettext --force
 
-Then run the standard trio: autoreconf, configure, make. See above.
+Then run autoreconf, configure, make. See above.
 
 # Compiling on Windows
 
-## 1\. Compiling with Mingw64 and MSYS2
+## Compiling with Mingw64 and MSYS2
 
 Download Msys2, update everything and install the following
     packages:
 
-    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool \
-              mingw-w64-x86_64-boost
+    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
 
 Open Mingw-w64 Win64 prompt and compile the same way as on Linux, see
 above.
 
-## 2\. Compiling in Cygwin environment
+## Compiling in Cygwin environment
 
 Download and install Cygwin environment for Windows with the following
 extra packages:
@@ -113,7 +139,6 @@ extra packages:
   - autoconf
   - libtool
   - gcc-g++ development package
-  - boost
   - ncurses, readline (for user interface)
   - iconv (character conversion)
 
@@ -166,18 +191,68 @@ features and dictionary format:
 
 http://hunspell.github.io/
 
-Documentation for developers can be generated from the source files by running:
-
-    doxygen
-
-The result can be viewed by opening `doxygen/html/index.html` in a web browser.
-Doxygen will use Graphviz for generating all sorts of graphs and PlantUML
-for generating UML diagrams. Make sure that the packages plantuml and graphviz are installed before running Doxygen. The latter is usually installed automatically
-when installing Doxygen.
-
 # Usage
 
-The src/tools directory contains ten executables after compiling.
+After compiling and installing (see INSTALL) you can run the Hunspell
+spell checker (compiled with user interface) with a Hunspell or Myspell
+dictionary:
+
+    hunspell -d en_US text.txt
+
+or without interface:
+
+    hunspell
+    hunspell -d en_GB -l <text.txt
+
+Dictionaries consist of an affix (.aff) and dictionary (.dic) file, for
+example, download American English dictionary files of LibreOffice
+(older version, but with stemming and morphological generation) with
+
+    wget -O en_US.aff  https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff?id=a4473e06b56bfe35187e302754f6baaa8d75e54f
+    wget -O en_US.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic?id=a4473e06b56bfe35187e302754f6baaa8d75e54f
+
+and with command line input and output, it's possible to check its work quickly,
+for example with the input words "example", "examples", "teached" and
+"verybaaaaaaaaaaaaaaaaaaaaaad":
+
+    $ hunspell -d en_US
+    Hunspell 1.7.0
+    example
+    *
+
+    examples
+    + example
+
+    teached
+    & teached 9 0: taught, teased, reached, teaches, teacher, leached, beached
+
+    verybaaaaaaaaaaaaaaaaaaaaaad
+    # verybaaaaaaaaaaaaaaaaaaaaaad 0
+
+Where in the output, `*` and `+` mean correct (accepted) words (`*` = dictionary stem,
+`+` = affixed forms of the following dictionary stem), and
+`&` and `#` mean bad (rejected) words (`&` = with suggestions, `#` = without suggestions)
+(see man hunspell).
+
+Example for stemming:
+
+    $ hunspell -d en_US -s
+    mice
+    mice mouse
+
+Example for morphological analysis (very limited with this English dictionary):
+
+    $ hunspell -d en_US -m
+    mice
+    mice  st:mouse ts:Ns
+
+    cats
+    cats  st:cat ts:0 is:Ns
+    cats  st:cat ts:0 is:Vs
+
+# Other executables
+
+The src/tools directory contains the following executables after compiling.
 
   - The main executable:
       - hunspell: main program for spell checking and others (see
@@ -201,19 +276,14 @@ The src/tools directory contains ten executables after compiling.
       - unmunch (DEPRECATED, use wordforms): list all recognized words
         of a MySpell dictionary
 
-After compiling and installing (see INSTALL) you can run the Hunspell
-spell checker (compiled with user interface) with a Hunspell or Myspell
-dictionary:
+Example for morphological generation:
 
-    hunspell -d en_US text.txt
-
-or without interface:
-
-    hunspell
-    hunspell -d en_UK -l <text.txt
-
-Dictionaries consist of an affix and dictionary file, see tests/ or
-http://wiki.services.openoffice.org/wiki/Dictionaries.
+    $ ~/hunspell/src/tools/analyze en_US.aff en_US.dic /dev/stdin
+    cat mice
+    generate(cat, mice) = cats
+    mouse cats
+    generate(mouse, cats) = mice
+    generate(mouse, cats) = mouses
 
 # Using Hunspell library with GCC
 
@@ -223,27 +293,23 @@ Including in your program:
 
 Linking with Hunspell static library:
 
-    g++ -lhunspell-1.6 example.cxx
+    g++ -lhunspell-1.7 example.cxx
     # or better, use pkg-config
     g++ $(pkg-config --cflags --libs hunspell) example.cxx
 
 ## Dictionaries
 
-Myspell & Hunspell dictionaries:
+Hunspell (MySpell) dictionaries:
 
-  - https://github.com/hunspell/hunspell/wiki/Dictionaries-and-Contacts
-  - https://github.com/hunspell/hunspell/wiki/Dictionary-Packages
-  - http://extensions.libreoffice.org
+  - https://wiki.documentfoundation.org/Language_support_of_LibreOffice
   - http://cgit.freedesktop.org/libreoffice/dictionaries
+  - http://extensions.libreoffice.org
   - http://extensions.openoffice.org
   - http://wiki.services.openoffice.org/wiki/Dictionaries
 
-Aspell dictionaries (need some conversion):
+Aspell dictionaries (conversion: man 5 hunspell):
 
   - ftp://ftp.gnu.org/gnu/aspell/dict
-
-Conversion steps: see relevant feature request at
-http://hunspell.github.io/ .
 
 László Németh, nemeth at numbertext org
 

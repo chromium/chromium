@@ -320,7 +320,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
   for (int cpdsuggest = 0; (cpdsuggest < 2) && (nocompoundtwowords == 0) && !good_suggestion;
        cpdsuggest++) {
 
-    HUNSPELL_THREAD_LOCAL clock_t timelimit;
+    clock_t timelimit;
     // initialize both in non-compound and compound cycles
     timelimit = clock();
 

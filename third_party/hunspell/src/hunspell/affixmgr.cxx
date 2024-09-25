@@ -2097,9 +2097,9 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
               if (sfxappnd) {
                 std::string tmp(sfxappnd);
                 reverseword(tmp);
-                numsyllable -= get_syllable(tmp) + sfxextra;
+                numsyllable -= short(get_syllable(tmp) + sfxextra);
               } else {
-                numsyllable -= sfxextra;
+                numsyllable -= short(sfxextra);
               }
 
               // + 1 word, if syllable number of the prefix > 1 (hungarian
@@ -2690,9 +2690,9 @@ int AffixMgr::compound_check_morph(const char* word,
           if (sfxappnd) {
             std::string tmp(sfxappnd);
             reverseword(tmp);
-            numsyllable -= get_syllable(tmp) + sfxextra;
+            numsyllable -= short(get_syllable(tmp) + sfxextra);
           } else {
-            numsyllable -= sfxextra;
+            numsyllable -= short(sfxextra);
           }
 
           // + 1 word, if syllable number of the prefix > 1 (hungarian
