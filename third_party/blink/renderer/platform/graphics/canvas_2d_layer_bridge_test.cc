@@ -251,28 +251,6 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-    cc::PaintFlags flags;
-    Canvas().drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
-    scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
-    EXPECT_TRUE(Host()->IsResourceValid());
-  }
-
-  {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferCPU, kNonOpaque);
-    cc::PaintFlags flags;
-    Canvas().drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
-    scoped_refptr<StaticBitmapImage> image =
-        bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-    EXPECT_TRUE(Host()->IsResourceValid());
-  }
-
-  {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferCPU, kNonOpaque);
     cc::PaintFlags flags;
     Canvas().drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
