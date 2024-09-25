@@ -2323,6 +2323,7 @@ chromium-metrics-reviews@google.com.
     The time it takes to run {TracedMethod}. Recorded everytime {TracedMethod}
     is triggered.
   </summary>
+  <token key="TracedMethod" variants="TracedMethod"/>
 </histogram>
 
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"
