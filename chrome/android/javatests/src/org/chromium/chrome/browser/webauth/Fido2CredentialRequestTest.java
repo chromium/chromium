@@ -108,7 +108,6 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link Fido2CredentialRequestTest}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DisabledTest(message = "Disable whole test class for crbug.com/347310677")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
@@ -476,11 +475,14 @@ public class Fido2CredentialRequestTest {
                 PackageUtils.getCertificateSHA256FingerprintForPackage(mContext.getPackageName())
                         .stream()
                         .map(s -> s.replaceAll(":", ""))
-                        .collect(Collectors.joining(","));
+                        .collect(Collectors.joining("\'"));
         InstrumentationRegistry.getInstrumentation()
                 .getUiAutomation()
                 .executeShellCommand(String.format(FIDO_OVERRIDE_COMMAND, fingerprints));
 
+        Log.d(
+                TAG,
+                "Executing command: '" + String.format(FIDO_OVERRIDE_COMMAND, fingerprints) + "'");
         mIntentSender = new MockIntentSender();
         mTestServer = sActivityTestRule.getTestServer();
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
@@ -550,6 +552,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_success() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -720,6 +723,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_parametersContainEligibleAndNoneligible() {
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
         PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();
@@ -749,6 +753,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_noExcludeCredentials() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -771,6 +776,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testAuthenticatorImplMakeCredential_success() {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
@@ -799,6 +805,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testAuthenticatorImplMakeCredential_withConfirmationUi_success() {
         boolean[] wasCalled = new boolean[1];
         CreateConfirmationUiDelegate createConfirmationUiDelegate =
@@ -897,6 +904,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testInternalAuthenticatorMakeCredential_success() {
         InternalAuthenticator authenticator =
                 InternalAuthenticator.createForTesting(
@@ -1059,6 +1067,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertionWithoutUvmRequested_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
@@ -1078,6 +1087,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertionWithUvmRequestedWithoutUvmResponded_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
@@ -1098,6 +1108,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertionWithUvmRequestedWithUvmResponded_success() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
@@ -1259,6 +1270,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_appIdUsed() {
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
         customOptions.extensions.appid = "www.example.com";
@@ -1282,6 +1294,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testAuthenticatorImplGetAssertionWithUvmRequestedWithUvmResponded_success() {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
@@ -1374,6 +1387,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testInternalAuthenticatorGetAssertionWithUvmRequestedWithUvmResponded_success() {
         InternalAuthenticator authenticator =
                 InternalAuthenticator.createForTesting(
@@ -1413,6 +1427,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_attestationNone() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -1435,6 +1450,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_attestationIndirect() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -1458,6 +1474,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_attestationDirect() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -1480,6 +1497,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/347310677")
     public void testMakeCredential_attestationEnterprise() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
@@ -1839,9 +1857,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_emptyAllowCredentials_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
@@ -1898,9 +1914,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUi_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
@@ -2048,9 +2062,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiCancelWhileRequestSentToPlatform_ignored() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
@@ -2148,9 +2160,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiRetryAfterUserDeny_success() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createErrorIntent(Fido2Api.NOT_ALLOWED_ERR, ""));
@@ -2187,9 +2197,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiWithAllowCredentialMatch_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
@@ -2334,10 +2342,7 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/347310677")
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_23W12)
+    @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiHybrid_success() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         FeatureList.setTestValues(testValues);
