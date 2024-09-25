@@ -8,7 +8,10 @@ import("//extensions/buildflags/buildflags.gni")
 # APIs and features included in both normal desktop builds and the experimental
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
-extensions_api_schema_files_ = [ "test.json" ]
+extensions_api_schema_files_ = [
+  "alarms.idl",
+  "test.json",
+]
 
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
@@ -28,7 +31,6 @@ extensions_types_only_schema_files_ = [
 # APIs that are not currently supported on the experimental desktop-android.
 if (enable_extensions) {
   extensions_api_schema_files_ += [
-    "alarms.idl",
     "app_current_window_internal.idl",
     "app_runtime.idl",
     "app_view_guest_internal.json",

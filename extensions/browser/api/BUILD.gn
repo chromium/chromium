@@ -29,6 +29,7 @@ group("api_implementations") {
   # experimental desktop-android build.
   # TODO(https://crbug.com/356905053): Continue moving more APIs here.
   public_deps = [
+    "//extensions/browser/api/alarms",
     "//extensions/browser/api/declarative_net_request",
     "//extensions/browser/api/test",
   ]
@@ -37,7 +38,6 @@ group("api_implementations") {
   if (enable_extensions) {
     public_deps += [
       "//extensions/browser:browser_sources",
-      "//extensions/browser/api/alarms",
       "//extensions/browser/api/app_current_window_internal",
       "//extensions/browser/api/app_runtime",
       "//extensions/browser/api/app_window",

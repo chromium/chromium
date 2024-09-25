@@ -821,6 +821,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "api/alarms/alarms_api_unittest.cc",
     "api/declarative/declarative_rule_unittest.cc",
     "api/declarative/deduping_factory_unittest.cc",
     "api/declarative/rules_registry_unittest.cc",
@@ -936,7 +937,6 @@ source_set("unit_tests") {
   # in the desktop-android build when the related APIs are enabled.
   if (enable_extensions) {
     sources += [
-      "api/alarms/alarms_api_unittest.cc",
       "api/api_resource_manager_unittest.cc",
       "api/bluetooth/bluetooth_event_router_unittest.cc",
       "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
