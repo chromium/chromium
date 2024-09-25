@@ -28,6 +28,8 @@ extern const char kAdditionalTrustTokenKeyCommitments[];
 COMPONENT_EXPORT(NETWORK_CPP) extern const char kUseFirstPartySet[];
 COMPONENT_EXPORT(NETWORK_CPP) extern const char kUseRelatedWebsiteSet[];
 COMPONENT_EXPORT(NETWORK_CPP) extern const char kIpAddressSpaceOverrides[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kDisableSharedDictionaryStorageCleanupForTesting[];
 
 }  // namespace switches
 
