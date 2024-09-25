@@ -192,6 +192,12 @@ AccountPasswordStoreFactory::GetForProfile(Profile* profile,
 }
 
 // static
+bool AccountPasswordStoreFactory::HasStore(Profile* profile) {
+  return GetInstance()->GetServiceForBrowserContext(
+             profile, /*create=*/false) != nullptr;
+}
+
+// static
 AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
   static base::NoDestructor<AccountPasswordStoreFactory> instance;
   return instance.get();

@@ -123,6 +123,12 @@ ProfilePasswordStoreFactory::GetForProfile(Profile* profile,
 }
 
 // static
+bool ProfilePasswordStoreFactory::HasStore(Profile* profile) {
+  return GetInstance()->GetServiceForBrowserContext(
+             profile, /*create=*/false) != nullptr;
+}
+
+// static
 ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
   static base::NoDestructor<ProfilePasswordStoreFactory> instance;
   return instance.get();

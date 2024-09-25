@@ -78,6 +78,12 @@ ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
 }
 
 // static
+bool ReadingListModelFactory::HasModel(content::BrowserContext* context) {
+  return GetInstance()->GetServiceForBrowserContext(
+             context, /*create=*/false) != nullptr;
+}
+
+// static
 ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
   static base::NoDestructor<ReadingListModelFactory> instance;
   return instance.get();

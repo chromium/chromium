@@ -26,6 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -66,6 +67,8 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -90,6 +93,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -101,6 +105,7 @@
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_header_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tpcd/support/origin_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
@@ -126,6 +131,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -1128,6 +1134,23 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
     extension_prefs->MigrateObsoleteExtensionPrefs();
   }
 #endif
+
+  // Run the sync->signin-migration now that PrefService is ready but none of
+  // the services affected by the migration are.
+  // TODO(crbug.com/369297671): Remove one year after launching
+  // kForceMigrateSyncingUserToSignedIn on all //chrome platforms.
+  CHECK(GetPrefs(), base::NotFatalUntil::M133);
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
+        base::NotFatalUntil::M133);
+  CHECK(!SyncServiceFactory::HasSyncService(this), base::NotFatalUntil::M133);
+  CHECK(!BookmarkModelFactory::GetForBrowserContextIfExists(this),
+        base::NotFatalUntil::M133);
+  CHECK(!ProfilePasswordStoreFactory::HasStore(this),
+        base::NotFatalUntil::M133);
+  CHECK(!AccountPasswordStoreFactory::HasStore(this),
+        base::NotFatalUntil::M133);
+  CHECK(!ReadingListModelFactory::HasModel(this), base::NotFatalUntil::M133);
+  browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android StartupData creates proto database provider for the profile
