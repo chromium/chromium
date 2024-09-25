@@ -10,6 +10,8 @@ source_set("coordinator") {
     "drive_file_picker_mediator.h",
     "drive_file_picker_mediator.mm",
     "drive_file_picker_mediator_delegate.h",
+    "drive_file_picker_mediator_helper.h",
+    "drive_file_picker_mediator_helper.mm",
     "root_drive_file_picker_coordinator.h",
     "root_drive_file_picker_coordinator.mm",
   ]
