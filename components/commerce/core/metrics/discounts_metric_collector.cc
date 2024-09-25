@@ -35,7 +35,8 @@ void DiscountsMetricCollector::DiscountsBubbleCopyStatusOnBubbleClosed(
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
-    bool is_expanded) {
+    bool is_expanded,
+    const std::vector<DiscountInfo>& discounts) {
   if (is_expanded) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.Discounts.DiscountsPageActionIcon.Expanded"));
@@ -45,6 +46,12 @@ void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
   }
   base::UmaHistogramBoolean(
       "Commerce.Discounts.DiscountsPageActionIconIsExpanded", is_expanded);
+
+  if (commerce::kDiscountOnShoppyPage.Get()) {
+    base::UmaHistogramEnumeration(
+        "Commerce.Discounts.PageActionIcon.TypeOnShown",
+        discounts[0].cluster_type);
+  }
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconClicked(

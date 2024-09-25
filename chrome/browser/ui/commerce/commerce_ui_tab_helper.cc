@@ -351,7 +351,8 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   if (ShouldShowDiscountsIconView()) {
     commerce::metrics::DiscountsMetricCollector::
         RecordDiscountsPageActionIconExpandState(
-            IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+            IsPageActionIconExpanded(PageActionIconType::kDiscounts),
+            GetDiscounts());
   }
 }
 

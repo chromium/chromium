@@ -292,6 +292,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Discounts.PageActionIcon.TypeOnShown"
+    enum="DiscountClusterType" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount type (page level vs product level) when the discount
+    page action icon is shown.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Heuristics.CartExtractionScriptSource"
     enum="CommerceHeuristicsDataSource" expires_after="2023-04-23">
   <owner>yuezhanggg@chromium.org</owner>
