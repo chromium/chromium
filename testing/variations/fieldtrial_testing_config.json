@@ -25890,27 +25890,6 @@
             ]
         }
     ],
-    "WebProtectCustomRuleMessageDialog": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DialogCustomRuleMessageEnabled",
-                        "RealTimeUrlFilteringCustomMessage"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3BufferingMaxAllowedExcessRenderBlocksOverride": [
         {
             "platforms": [
