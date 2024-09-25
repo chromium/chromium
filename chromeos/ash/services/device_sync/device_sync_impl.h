@@ -35,6 +35,10 @@ class Clock;
 class OneShotTimer;
 }  // namespace base
 
+namespace gcm {
+class GCMDriver;
+}  // namespace gcm
+
 namespace instance_id {
 class InstanceIDDriver;
 }  // namespace instance_id
@@ -80,6 +84,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // parameter only exists for testing via dependency injection.
     static std::unique_ptr<DeviceSyncBase> Create(
         signin::IdentityManager* identity_manager,
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -95,6 +100,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     virtual ~Factory();
     virtual std::unique_ptr<DeviceSyncBase> CreateInstance(
         signin::IdentityManager* identity_manager,
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -220,6 +226,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
 
   DeviceSyncImpl(
       signin::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -287,6 +294,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void OnSetSoftwareFeatureTimerFired();
 
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<const GcmDeviceInfoProvider> gcm_device_info_provider_;

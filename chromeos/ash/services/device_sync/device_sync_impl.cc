@@ -249,6 +249,7 @@ DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::custom_factory_instance_ =
 // static
 std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     signin::IdentityManager* identity_manager,
+    gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
     const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -259,14 +260,14 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
         get_attestation_certificates_function) {
   if (custom_factory_instance_) {
     return custom_factory_instance_->CreateInstance(
-        identity_manager, instance_id_driver, profile_prefs,
+        identity_manager, gcm_driver, instance_id_driver, profile_prefs,
         gcm_device_info_provider, client_app_metadata_provider,
         std::move(url_loader_factory), std::move(timer),
         get_attestation_certificates_function);
   }
 
   return base::WrapUnique(new DeviceSyncImpl(
-      identity_manager, instance_id_driver, profile_prefs,
+      identity_manager, gcm_driver, instance_id_driver, profile_prefs,
       gcm_device_info_provider, client_app_metadata_provider,
       std::move(url_loader_factory), base::DefaultClock::GetInstance(),
       std::move(timer), get_attestation_certificates_function));
@@ -412,6 +413,7 @@ void DeviceSyncImpl::PendingSetFeatureStatusRequest::InvokeCallback(
 
 DeviceSyncImpl::DeviceSyncImpl(
     signin::IdentityManager* identity_manager,
+    gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
     const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -423,6 +425,7 @@ DeviceSyncImpl::DeviceSyncImpl(
         get_attestation_certificates_function)
     : DeviceSyncBase(),
       identity_manager_(identity_manager),
+      gcm_driver_(gcm_driver),
       instance_id_driver_(instance_id_driver),
       profile_prefs_(profile_prefs),
       gcm_device_info_provider_(gcm_device_info_provider),
@@ -823,6 +826,7 @@ void DeviceSyncImpl::Shutdown() {
   cryptauth_gcm_manager_.reset();
 
   identity_manager_ = nullptr;
+  gcm_driver_ = nullptr;
   instance_id_driver_ = nullptr;
   profile_prefs_ = nullptr;
   gcm_device_info_provider_ = nullptr;
@@ -919,7 +923,7 @@ void DeviceSyncImpl::RegisterWithGcm() {
     // Initialize |cryptauth_gcm_manager_| and have it start listening for GCM
     // tickles.
     cryptauth_gcm_manager_ = CryptAuthGCMManagerImpl::Factory::Create(
-        instance_id_driver_, profile_prefs_);
+        gcm_driver_, instance_id_driver_, profile_prefs_);
     cryptauth_gcm_manager_->StartListening();
   }
 
@@ -1151,7 +1155,6 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
     const std::string& public_key) const {
   DCHECK_EQ(status_, InitializationStatus::kReady)
       << "DeviceSyncImpl::GetSyncedDeviceWithPublicKey() called before ready.";
-
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
   const auto it = base::ranges::find(synced_devices, public_key,
                                      &multidevice::RemoteDevice::public_key);

@@ -188,6 +188,7 @@ class FakeDeviceSyncImplFactory
   // ash::device_sync::DeviceSyncImpl::Factory:
   std::unique_ptr<ash::device_sync::DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const ash::device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,

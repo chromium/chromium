@@ -208,13 +208,15 @@ CryptAuthGCMManagerImpl::Factory*
 
 // static
 std::unique_ptr<CryptAuthGCMManager> CryptAuthGCMManagerImpl::Factory::Create(
+    gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* pref_service) {
   if (factory_instance_)
-    return factory_instance_->CreateInstance(instance_id_driver, pref_service);
+    return factory_instance_->CreateInstance(gcm_driver, instance_id_driver,
+                                             pref_service);
 
-  return base::WrapUnique(
-      new CryptAuthGCMManagerImpl(instance_id_driver, pref_service));
+  return base::WrapUnique(new CryptAuthGCMManagerImpl(
+      gcm_driver, instance_id_driver, pref_service));
 }
 
 // static
@@ -225,17 +227,17 @@ void CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
 CryptAuthGCMManagerImpl::Factory::~Factory() = default;
 
 CryptAuthGCMManagerImpl::CryptAuthGCMManagerImpl(
+    gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* pref_service)
-    : instance_id_driver_(instance_id_driver),
+    : gcm_driver_(gcm_driver),
+      instance_id_driver_(instance_id_driver),
       pref_service_(pref_service),
       registration_in_progress_(false) {}
 
 CryptAuthGCMManagerImpl::~CryptAuthGCMManagerImpl() {
   if (IsListening())
-    instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
-        ->gcm_driver()
-        ->RemoveAppHandler(kCryptAuthGcmAppId);
+    gcm_driver_->RemoveAppHandler(kCryptAuthGcmAppId);
 }
 
 void CryptAuthGCMManagerImpl::StartListening() {
@@ -244,15 +246,11 @@ void CryptAuthGCMManagerImpl::StartListening() {
     return;
   }
 
-  instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
-      ->gcm_driver()
-      ->AddAppHandler(kCryptAuthGcmAppId, this);
+  gcm_driver_->AddAppHandler(kCryptAuthGcmAppId, this);
 }
 
 bool CryptAuthGCMManagerImpl::IsListening() {
-  return instance_id_driver_->GetInstanceID(kCryptAuthGcmAppId)
-             ->gcm_driver()
-             ->GetAppHandler(kCryptAuthGcmAppId) == this;
+  return gcm_driver_->GetAppHandler(kCryptAuthGcmAppId) == this;
 }
 
 void CryptAuthGCMManagerImpl::RegisterWithGCM() {
