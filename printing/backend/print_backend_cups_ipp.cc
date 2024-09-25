@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_helper.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/units.h"

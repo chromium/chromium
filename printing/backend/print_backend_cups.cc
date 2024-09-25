@@ -66,7 +66,8 @@ int CaptureCupsDestCallback(void* data, unsigned flags, cups_dest_t* dest) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // This may be removed when Amazon Linux 2 reaches EOL (30 Jun 2025).
 bool AreNewerCupsFunctionsAvailable() {
-  return cupsFindDestDefault && cupsFindDestSupported && ippValidateAttributes;
+  return cupsFindDestDefault && cupsFindDestSupported && cupsUserAgent &&
+         ippValidateAttributes;
 }
 #endif
 
