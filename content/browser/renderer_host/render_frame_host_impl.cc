@@ -50,6 +50,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
@@ -416,6 +417,9 @@ static_assert(kSubframeProcessShutdownDelayInMSec + kUnloadTimeoutInMSec <
 #if BUILDFLAG(IS_ANDROID)
 const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+const void* const kDiscardedRFHProcessHelperKey =
+    &kDiscardedRFHProcessHelperKey;
 
 // The next value to use for the accessibility reset token.
 uint32_t g_accessibility_reset_token = 0;
@@ -1442,6 +1446,94 @@ WindowProxyUserActivationState GetWindowProxyUserActivationState(
   }
 }
 
+// Responsible for cleaning up render processes for discard operations.
+class DiscardedRFHProcessHelper : public base::SupportsUserData::Data {
+ public:
+  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {}
+  DiscardedRFHProcessHelper(const DiscardedRFHProcessHelper&) = delete;
+  DiscardedRFHProcessHelper& operator=(const DiscardedRFHProcessHelper&) =
+      delete;
+  ~DiscardedRFHProcessHelper() override = default;
+
+  static DiscardedRFHProcessHelper* GetForRenderProcessHost(
+      RenderProcessHost* host) {
+    if (!host->GetUserData(kDiscardedRFHProcessHelperKey)) {
+      host->SetUserData(kDiscardedRFHProcessHelperKey,
+                        std::make_unique<DiscardedRFHProcessHelper>(host));
+    }
+    return static_cast<DiscardedRFHProcessHelper*>(
+        host->GetUserData(kDiscardedRFHProcessHelperKey));
+  }
+
+  // Resets `retries_` and begins attempts to shutdown sequenced with delay
+  // until kKeepAliveHandleFactoryTimeout is reached.
+  void ShutdownForDiscardIfPossible() {
+    shutdown_attempt_timer_.Stop();
+    retries_ = 0;
+    ShutdownIfPossible();
+  }
+
+ private:
+  // A task that attempts to shutdown the render process for the case where only
+  // discarded frames remain.
+  void ShutdownIfPossible() {
+    if (!host_->IsInitializedAndNotDead() || host_->IsDeletingSoon()) {
+      shutdown_attempt_timer_.Stop();
+      retries_ = 0;
+      return;
+    }
+
+    // The delay between render process shutdown attempts. Attempts will
+    // continue until a maximum delay of kKeepAliveHandleFactoryTimeout is
+    // reached.
+    constexpr base::TimeDelta kProcessShutdownRetryDelay =
+        base::Milliseconds(5000);
+
+    // Attempt a fast shutdown if only discarded frames remain in the process. A
+    // render process may host both speculative and non-speculative frames,
+    // however speculative frames cannot be discarded and
+    // FastShutdownIfPossible() will no-op if speculative frames are hosted in
+    // the process. This is because a pending view is registered on the process
+    // when a speculative frame is created.
+    bool only_discarded_frames = true;
+    std::set<RenderWidgetHost*> discarded_widgets;
+    host_->ForEachRenderFrameHost(
+        [&only_discarded_frames, &discarded_widgets](RenderFrameHost* rfh) {
+          if (static_cast<RenderFrameHostImpl*>(rfh)
+                  ->document_associated_data()
+                  .is_discarded()) {
+            discarded_widgets.insert(rfh->GetRenderWidgetHost());
+          } else {
+            only_discarded_frames = false;
+          }
+        });
+
+    // Attempt shutdown without running unload handlers, the discard operation
+    // has been acknowledged by the render process at this point.
+    if (discarded_widgets.size() > 0 && only_discarded_frames &&
+        (retries_ * kProcessShutdownRetryDelay <=
+         RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
+        !host_->FastShutdownIfPossible(
+            /*page_count=*/discarded_widgets.size(),
+            /*skip_unload_handlers=*/true)) {
+      retries_++;
+      shutdown_attempt_timer_.Start(
+          FROM_HERE, kProcessShutdownRetryDelay,
+          base::BindRepeating(&DiscardedRFHProcessHelper::ShutdownIfPossible,
+                              base::Unretained(this)));
+    }
+  }
+
+  // `retries_` tracks the number of shutdown attempts.
+  int retries_ = 0;
+
+  // Timer for the task that attempts to shutdown the render process.
+  base::RetainingOneShotTimer shutdown_attempt_timer_;
+
+  // Owns this.
+  const raw_ptr<RenderProcessHost> host_;
+};
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -2273,6 +2365,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     owned_render_widget_host_->ShutdownAndDestroyWidget(false);
 
   render_view_host_.reset();
+
+  // Attempt to cleanup the render process if only discarded frames remain.
+  CleanupRenderProcessForDiscardIfPossible();
 
   // If another frame is waiting for a beforeunload completion callback from
   // this frame, simulate it now.
@@ -16690,29 +16785,9 @@ void RenderFrameHostImpl::MaybeResetBoostRenderProcessForLoading() {
   }
 }
 
-void RenderFrameHostImpl::CleanupRenderProcessForDiscardIfPossible(
-    int retries) {
-  // The delay between render process shutdown attempts. Attempts will continue
-  // until a maximum delay of kKeepAliveHandleFactoryTimeout is reached.
-  constexpr base::TimeDelta kProcessShutdownRetryDelay =
-      base::Milliseconds(5000);
-
-  // Attempt shutdown without running unload handlers, the discard operation has
-  // been acknowledged by the render process at this point.
-  if (GetProcess()->IsInitializedAndNotDead() &&
-      document_associated_data_->is_discarded() &&
-      (retries * kProcessShutdownRetryDelay <
-       RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
-      !GetProcess()->FastShutdownIfPossible(
-          /*page_count=*/1u,
-          /*skip_unload_handlers=*/true)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &RenderFrameHostImpl::CleanupRenderProcessForDiscardIfPossible,
-            weak_ptr_factory_.GetWeakPtr(), ++retries),
-        kProcessShutdownRetryDelay);
-  }
+void RenderFrameHostImpl::CleanupRenderProcessForDiscardIfPossible() {
+  DiscardedRFHProcessHelper::GetForRenderProcessHost(GetProcess())
+      ->ShutdownForDiscardIfPossible();
 }
 
 const blink::DocumentToken& RenderFrameHostImpl::GetDocumentToken() const {
