@@ -210,6 +210,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/text_selection/model",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/trusted_vault/model",
     "//ios/chrome/browser/unified_consent/model",

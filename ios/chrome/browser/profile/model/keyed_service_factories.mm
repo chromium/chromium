@@ -143,6 +143,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -307,6 +308,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   TailoredSecurityServiceFactory::GetInstance();
   TextClassifierModelServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
+  TipsManagerIOSFactory::GetInstance();
   LanguageDetectionModelServiceFactory::GetInstance();
   TrustedVaultClientBackendFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();

@@ -71,6 +71,7 @@ specific_include_rules = {
     "+ios/chrome/browser/sync/model",
     "+ios/chrome/browser/tabs_search/model",
     "+ios/chrome/browser/text_selection/model",
+    "+ios/chrome/browser/tips_manager/model",
     "+ios/chrome/browser/translate/model",
     "+ios/chrome/browser/trusted_vault/model",
     "+ios/chrome/browser/unified_consent/model",
