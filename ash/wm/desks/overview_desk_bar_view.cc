@@ -12,10 +12,12 @@ namespace ash {
 
 OverviewDeskBarView::OverviewDeskBarView(
     base::WeakPtr<OverviewGrid> overview_grid,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator,
+    const gfx::Rect& initial_widget_bounds)
     : DeskBarViewBase(overview_grid->root_window(),
                       DeskBarViewBase::Type::kOverview,
-                      window_occlusion_calculator) {
+                      window_occlusion_calculator),
+      initial_widget_bounds_(initial_widget_bounds) {
   SetProperty(views::kElementIdentifierKey, kOverviewDeskBarElementId);
   overview_grid_ = overview_grid;
 }
@@ -29,9 +31,11 @@ gfx::Size OverviewDeskBarView::CalculatePreferredSize(
 }
 
 gfx::Rect OverviewDeskBarView::GetAvailableBounds() const {
-  // Information is retrieved from the widget as it comes with the full
-  // available bounds at initialization time and remains unchanged.
-  return GetWidget()->GetRootView()->bounds();
+  // If the widget is not set yet (which is the case for a brief period during
+  // desk bar initialization), use the widget's calculated initial bounds as
+  // that's what will be available after the widget does get set.
+  return GetWidget() ? GetWidget()->GetRootView()->bounds()
+                     : initial_widget_bounds_;
 }
 
 BEGIN_METADATA(OverviewDeskBarView)

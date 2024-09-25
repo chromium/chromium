@@ -2913,17 +2913,29 @@ void OverviewGrid::MaybeInitDesksWidget() {
 
   base::ScopedUmaHistogramTimer latency_recorder(
       "Ash.Overview.DeskBarInitLatency");
+  const gfx::Rect initial_widget_bounds = GetDesksWidgetBounds();
   desks_widget_ = DeskBarViewBase::CreateDeskWidget(
-      root_window_, GetDesksWidgetBounds(), DeskBarViewBase::Type::kOverview);
+      root_window_, initial_widget_bounds, DeskBarViewBase::Type::kOverview);
 
-  // The following order of function calls is significant: SetContentsView()
-  // must be called before OverviewDeskBarView:: Init(). This is needed because
-  // the desks mini views need to access the widget to get the root window in
-  // order to know how to layout themselves.
-  desks_bar_view_ =
-      desks_widget_->SetContentsView(std::make_unique<OverviewDeskBarView>(
-          weak_ptr_factory_.GetWeakPtr(), window_occlusion_calculator_));
-  desks_bar_view_->Init();
+  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+    auto desk_bar_view = std::make_unique<OverviewDeskBarView>(
+        weak_ptr_factory_.GetWeakPtr(), window_occlusion_calculator_,
+        initial_widget_bounds);
+    // Initializing the desk bar before calling `SetContentsView()` prevents
+    // a second unnecessary desk bar layout when rendering the first frame.
+    desk_bar_view->Init(desks_widget_->GetNativeWindow());
+    desks_bar_view_ = desks_widget_->SetContentsView(std::move(desk_bar_view));
+  } else {
+    // The following order of function calls was significant: SetContentsView()
+    // had to be called before OverviewDeskBarView:: Init(). This was needed
+    // because the desks mini views needed to access the widget to get the root
+    // window in order to know how to layout themselves.
+    desks_bar_view_ =
+        desks_widget_->SetContentsView(std::make_unique<OverviewDeskBarView>(
+            weak_ptr_factory_.GetWeakPtr(), window_occlusion_calculator_,
+            initial_widget_bounds));
+    desks_bar_view_->Init(desks_widget_->GetNativeWindow());
+  }
 
   // If the feature ContinuousOverviewScrollAnimation is enabled and a
   // continuous scroll is now starting, move the desk bar up so we can slowly

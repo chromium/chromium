@@ -375,7 +375,7 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
         root, window_occlusion_calculator_
                   ? window_occlusion_calculator_->AsWeakPtr()
                   : nullptr));
-    bar_view->Init();
+    bar_view->Init(bar_widget->GetNativeWindow());
 
     // Ownership transfer and bookkeeping.
     desk_bars_.emplace_back(bar_view, std::move(bar_widget));

@@ -56,10 +56,9 @@ void DefaultDeskButton::UpdateLabelText() {
 
 gfx::Size DefaultDeskButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  auto* root_window =
-      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   const int preview_width = DeskMiniView::GetPreviewWidth(
-      root_window->bounds().size(), DeskPreviewView::GetHeight(root_window));
+      bar_view_->root()->bounds().size(),
+      DeskPreviewView::GetHeight(bar_view_->root()));
   int label_width = 0, label_height = 0;
   gfx::Canvas::SizeStringInt(DesksController::Get()->desks()[0]->name(),
                              gfx::FontList(), &label_width, &label_height, 0,

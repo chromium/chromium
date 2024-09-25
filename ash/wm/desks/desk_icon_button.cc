@@ -181,8 +181,8 @@ gfx::Size DeskIconButton::CalculatePreferredSize(
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }
 
-  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
-      GetWidget()->GetNativeWindow()->GetRootWindow());
+  gfx::Rect desk_preview_bounds =
+      DeskMiniView::GetDeskPreviewBounds(bar_view_->root());
   if (state_ == State::kExpanded) {
     return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
   }

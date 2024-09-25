@@ -992,7 +992,8 @@ void DeskBarViewBase::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void DeskBarViewBase::Init() {
+void DeskBarViewBase::Init(aura::Window* desk_bar_widget_window) {
+  CHECK(desk_bar_widget_window);
   // It's possible that window occlusion state change triggers some new windows
   // to show up during desk bar initialization process. It should not broadcast
   // the desk content update since desk mini view may not be ready. Please refer
@@ -1006,8 +1007,8 @@ void DeskBarViewBase::Init() {
   pending_post_layout_operations_.push_back(
       std::make_unique<ScrollForActiveMiniView>(this));
 
-  hover_observer_ = std::make_unique<DeskBarHoverObserver>(
-      this, GetWidget()->GetNativeWindow());
+  hover_observer_ =
+      std::make_unique<DeskBarHoverObserver>(this, desk_bar_widget_window);
 
   RecordDeskProfileAdoption();
 }
@@ -1021,7 +1022,7 @@ bool DeskBarViewBase::IsDraggingDesk() const {
 }
 
 bool DeskBarViewBase::IsDeskNameBeingModified() const {
-  if (!GetWidget()->IsActive()) {
+  if (!GetWidget() || !GetWidget()->IsActive()) {
     return false;
   }
 
@@ -1610,9 +1611,6 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   // This should not be called when a desk is removed.
   DCHECK_LE(mini_views_.size(), desks.size());
 
-  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  DCHECK(root_window);
-
   // New mini views can be added at any index, so we need to iterate through and
   // insert new mini views in a position in `mini_views_` that corresponds to
   // their index in the `DeskController`'s list of desks.
@@ -1621,7 +1619,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
       DeskMiniView* mini_view = contents_view_->AddChildViewAt(
-          std::make_unique<DeskMiniView>(this, root_window, desk.get(),
+          std::make_unique<DeskMiniView>(this, root_, desk.get(),
                                          window_occlusion_calculator_),
           mini_view_index);
       mini_views_.insert(mini_views_.begin() + mini_view_index, mini_view);
