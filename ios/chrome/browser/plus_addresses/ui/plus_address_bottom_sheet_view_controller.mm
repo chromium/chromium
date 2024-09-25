@@ -234,7 +234,13 @@ UIImageView* BrandingImageView() {
 - (void)confirmationAlertPrimaryAction {
   self.primaryActionButton.enabled = NO;
   // Make sure the user perceives that something is happening via a spinner.
-  [_activityIndicator startAnimating];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+    self.isLoading = YES;
+  } else {
+    [_activityIndicator startAnimating];
+  }
+
   [_delegate confirmPlusAddress];
   plus_addresses::metrics::RecordModalEvent(
       plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
@@ -261,7 +267,13 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-  [_activityIndicator stopAnimating];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+    self.isLoading = NO;
+  } else {
+    [_activityIndicator stopAnimating];
+  }
+
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -275,7 +287,12 @@ UIImageView* BrandingImageView() {
   [_reservedPlusAddressTableView reloadData];
 
   _errorMessage.hidden = NO;
-  [_activityIndicator stopAnimating];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+    self.isLoading = NO;
+  } else {
+    [_activityIndicator stopAnimating];
+  }
   // Resize to accommodate error message.
   [self expandBottomSheet];
 }
@@ -454,6 +471,11 @@ UIImageView* BrandingImageView() {
 }
 
 - (void)setupAboveTitleView {
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+    return;
+  }
+
   _activityIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
 
