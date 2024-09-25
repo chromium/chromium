@@ -5098,7 +5098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.{ConnectionType}.{CertState}"
+    name="Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.{ConnectionType}.{CertState}"
     enum="Boolean" expires_after="2025-02-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
@@ -5121,7 +5121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SharedDictionaryUsedResponseErrorCodes.{DestinationType}.{CertState}"
+    name="Net.SharedDictionaryUsedResponseErrorCodes2.{DestinationType}.{CertState}"
     enum="NetErrorCodes" expires_after="2025-02-23">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>

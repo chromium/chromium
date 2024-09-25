@@ -450,9 +450,12 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
     network::mojom::RequestDestination destination,
     const net::HttpResponseInfo& response_info,
     bool shared_dictionary_allowed_check_passed) {
+  if (response_info.was_cached) {
+    return;
+  }
   if (response_info.did_use_shared_dictionary) {
     base::UmaHistogramSparse(
-        base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes.",
+        base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes2.",
                       GetDestinationTypePartString(destination), ".",
                       GetCertStatePartString(response_info.ssl_info)}),
         -error_code);
@@ -462,7 +465,7 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
       destination == network::mojom::RequestDestination::kDocument) {
     base::UmaHistogramBoolean(
         base::StrCat(
-            {"Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.",
+            {"Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.",
              net::HttpConnectionInfoCoarseToString(
                  net::HttpConnectionInfoToCoarse(
                      response_info.connection_info)),
