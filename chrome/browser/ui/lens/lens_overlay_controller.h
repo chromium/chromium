@@ -101,19 +101,6 @@ class LensOverlayController : public LensSearchboxClient,
                               public content::RenderProcessHostObserver,
                               public find_in_page::FindResultObserver {
  public:
-  // Observer of LensOverlayController events.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called after showing the Lens Overlay.
-    virtual void OnLensOverlayDidShow() {}
-
-    // Called after closing the Lens Overlay.
-    virtual void OnLensOverlayDidClose() {}
-
-    // Called when the controller is destroyed.
-    virtual void OnLensOverlayControllerDestroyed() {}
-  };
-
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
@@ -387,14 +374,6 @@ class LensOverlayController : public LensSearchboxClient,
   void OnSidePanelHidden();
 
   tabs::TabInterface* GetTabInterface();
-
-  // Adds the given observer from the observer list.
-  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
-
-  // Removes the given observer from the observer list.
-  void RemoveObserver(Observer* observer) {
-    observers_.RemoveObserver(observer);
-  }
 
   // Show preselection toast bubble. Creates a preselection bubble if it does
   // not exist.
@@ -987,9 +966,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
-
-  // List of observers of this controller.
-  base::ObserverList<Observer> observers_;
 
   // Indicates whether a search has been performed in the current session. Used
   // to record success/abandonment rate, as defined by whether or not a search

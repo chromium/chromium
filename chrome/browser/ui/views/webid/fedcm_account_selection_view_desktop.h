@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
@@ -31,8 +30,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   public AccountSelectionViewBase::Observer,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
-                                  views::WidgetObserver,
-                                  public LensOverlayController::Observer {
+                                  views::WidgetObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
@@ -104,14 +102,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                         blink::mojom::RpMode rp_mode) override;
   void CloseModalDialog() override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
-
-  // LensOverlayController::Observer:
-  void OnLensOverlayDidShow() override;
-  void OnLensOverlayDidClose() override;
-  void OnLensOverlayControllerDestroyed() override;
-
-  // Setter method for testing only.
-  void SetIsLensOverlayShowingForTesting(bool value);
 
   base::WeakPtr<FedCmAccountSelectionView> GetWeakPtr();
 
@@ -381,10 +371,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // or not.
   bool started_as_single_returning_account_{false};
 
-  // Whether the Lens overlay is showing. Updated by LensOverlayController and
-  // observer events.
-  bool is_lens_overlay_showing_{false};
-
   // Whether the last ShowMultiAccountPicker() is from a "Choose an account"
   // button. This is used to determine whether to show this title when coming
   // back from the single account confirmation dialog.
@@ -405,11 +391,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // otherwise returns an AccountSelectionViewBase to render modal dialogs
   // for button flows.
   raw_ptr<AccountSelectionViewBase> account_selection_view_;
-
-  // Observation for Lens overlay controller.
-  base::ScopedObservation<LensOverlayController,
-                          LensOverlayController::Observer>
-      lens_overlay_controller_observation_{this};
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

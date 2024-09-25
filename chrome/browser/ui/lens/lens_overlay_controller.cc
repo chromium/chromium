@@ -268,10 +268,6 @@ LensOverlayController::~LensOverlayController() {
       LensOverlayControllerTabLookup::UserDataKey());
 
   state_ = State::kOff;
-
-  for (Observer& observer : observers_) {
-    observer.OnLensOverlayControllerDestroyed();
-  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
@@ -1263,9 +1259,6 @@ void LensOverlayController::DidCaptureScreenshot(
   CreateInitializationData(bitmap, all_bounds);
   ShowOverlay();
 
-  for (Observer& observer : observers_) {
-    observer.OnLensOverlayDidShow();
-  }
   state_ = State::kStartingWebUI;
 }
 
@@ -1614,10 +1607,6 @@ void LensOverlayController::CloseUIPart2(
   overlay_view_ = nullptr;
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-
-  for (Observer& observer : observers_) {
-    observer.OnLensOverlayDidClose();
-  }
 
   state_ = State::kOff;
 

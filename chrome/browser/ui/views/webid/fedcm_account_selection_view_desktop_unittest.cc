@@ -357,16 +357,6 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return controller;
   }
 
-  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowWithLensOverlay(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      SignInMode sign_in_mode) {
-    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
-    controller->SetIsLensOverlayShowingForTesting(true);
-    Show(*controller, accounts, sign_in_mode, blink::mojom::RpMode::kWidget);
-    return controller;
-  }
-
   void Show(TestFedCmAccountSelectionView& controller,
             const std::vector<IdentityRequestAccountPtr>& accounts,
             SignInMode sign_in_mode,
@@ -2428,33 +2418,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   controller->OnTabForegrounded();
   EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
-}
-
-// Tests that the Lens overlay showing hides the dialog until the overlay is
-// closed.
-TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlayHidesDialog) {
-  std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShow(accounts_, SignInMode::kExplicit);
-  EXPECT_TRUE(dialog_widget_->IsVisible());
-
-  controller->OnLensOverlayDidShow();
-  EXPECT_FALSE(dialog_widget_->IsVisible());
-
-  controller->OnLensOverlayDidClose();
-  EXPECT_TRUE(dialog_widget_->IsVisible());
-}
-
-// Tests that the dialog does not open if the Lens overlay is already showing.
-TEST_F(FedCmAccountSelectionViewDesktopTest, LensOverlaySuppressesDialog) {
-  std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShowWithLensOverlay(accounts_, SignInMode::kExplicit);
-  EXPECT_FALSE(dialog_widget_->IsVisible());
-
-  controller->OnLensOverlayDidClose();
-  EXPECT_TRUE(dialog_widget_->IsVisible());
-
-  controller->OnLensOverlayDidShow();
-  EXPECT_FALSE(dialog_widget_->IsVisible());
 }
 
 // Test that the fields API (request_permission={}) correctly hides the
