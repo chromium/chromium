@@ -120,10 +120,14 @@ export class DragAndDropManager {
     // that 'dragover' events only fire for adjacent columns.
     this.eventTracker_.add(
         this.tableElement_, 'dragleave', (e: DragEvent) => this.drop_(e));
+    // Prevent cursor from switching to not-allowed on Windows.
+    this.eventTracker_.add(
+        this.tableElement_, 'dragenter', (e: DragEvent) => e.preventDefault());
     this.eventTracker_.add(document, 'dragend', () => {
       this.eventTracker_.remove(document, 'dragover');
       this.eventTracker_.remove(document, 'drop');
       this.eventTracker_.remove(this.tableElement_, 'dragleave');
+      this.eventTracker_.remove(this.tableElement_, 'dragenter');
       this.dragEnd_();
     });
   }
