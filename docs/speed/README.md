@@ -13,7 +13,6 @@
   * [How does Chrome measure performance?](how_does_chrome_measure_performance.md)
   * [My CL caused a performance regression! What do I do?](addressing_performance_regressions.md)
   * [I want Chrome to have better performance](help_improve_performance.md)
-  * [Perf sheriffing documentation](perf_regression_sheriffing.md)
   * [I want to add tests or platforms to the perf waterfall](adding_tests_bots.md)
 
 ## Core Teams and Work
