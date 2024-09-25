@@ -104,9 +104,9 @@ export class ExtensionsReviewPanelElement extends
       /**
        * Indicates whether to show the panel header.
        */
-      shouldShowSafetyHubHeader_: {
+      shouldShowExtensionsSafetyHub_: {
         type: Boolean,
-        computed: 'computeShouldShowSafetyHubHeader_(extensions.*)',
+        computed: 'computeshouldShowExtensionsSafetyHub_(extensions.*)',
       },
 
       /**
@@ -159,7 +159,7 @@ export class ExtensionsReviewPanelElement extends
   private subtitleString_: string;
   private unsafeExtensionsReviewListExpanded_: boolean;
   private completionMessage_: string;
-  private shouldShowSafetyHubHeader_: boolean;
+  private shouldShowExtensionsSafetyHub_: boolean;
   private shouldShowSafetyHubRemoveAllButton_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private shouldShowUnsafeExtensions_: boolean;
@@ -221,7 +221,7 @@ export class ExtensionsReviewPanelElement extends
     return false;
   }
 
-  private computeShouldShowSafetyHubHeader_(): boolean {
+  private computeshouldShowExtensionsSafetyHub_(): boolean {
     return loadTimeData.getBoolean('safetyHubShowReviewPanel') &&
         (this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_);
   }

@@ -177,7 +177,7 @@ suite('ExtensionItemListTest', function() {
     // Panel is hidden if safetyCheckShowReviewPanel is enabled, there are no
     // unsafe extensions and panel wasn't previously shown.
     loadTimeData.overrideValues(
-        {safetyCheckShowReviewPanel: true, safetyHubShowReviewPanel: false});
+        {safetyCheckShowReviewPanel: true, safetyHubShowReviewPanel: true});
     setupElement();
     flush();
     boundTestVisible('extensions-review-panel', false);

@@ -45,11 +45,11 @@
 </style>
 
 <h2 id="safetyHubTitleContainer" class="panel-title"
-    hidden$="[[!shouldShowSafetyHubHeader_]]">
+    hidden$="[[!shouldShowExtensionsSafetyHub_]]">
   $i18n{safetyHubHeader}
 </h2>
 
-<div class="panel-background">
+<div class="panel-background" hidden$="[[!shouldShowExtensionsSafetyHub_]]">
   <cr-expand-button no-hover
       id="expandButton"
       expanded="{{unsafeExtensionsReviewListExpanded_}}"
