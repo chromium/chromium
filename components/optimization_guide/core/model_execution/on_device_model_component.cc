@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -168,6 +169,15 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature, *local_state_)) {
+    // This is the first time usage of the feature.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OnDeviceModelComponentStateManager::
+                                      NotifyOnDeviceEligibleFeatureFirstUsed,
+                                  GetWeakPtr(), feature));
+  }
+
   local_state_->SetTime(
       model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
       base::Time::Now());
@@ -389,6 +399,14 @@ void OnDeviceModelComponentStateManager::NotifyStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& o : observers_) {
     o.StateChanged(GetState());
+  }
+}
+
+void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
+    ModelBasedCapabilityKey feature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& o : observers_) {
+    o.OnDeviceEligibleFeatureFirstUsed(feature);
   }
 }
 
