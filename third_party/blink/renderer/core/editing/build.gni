@@ -133,6 +133,8 @@ blink_core_sources_editing = [
   "finder/async_find_buffer.h",
   "finder/sync_find_buffer.cc",
   "finder/sync_find_buffer.h",
+  "finder/chunk_graph_utils.cc",
+  "finder/chunk_graph_utils.h",
   "finder/find_buffer.cc",
   "finder/find_buffer.h",
   "finder/find_buffer_runner.h",
