@@ -53,7 +53,8 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
                       int32_t launch_id);
 
   // Launch the given group.
-  void LaunchCoralGroup(int32_t launch_id);
+  void LaunchCoralGroup(std::unique_ptr<app_restore::RestoreData> restore_data,
+                        int32_t launch_id);
 
  protected:
   // chromeos::AppLaunchHandler:

@@ -115,15 +115,14 @@ std::string BirchCoralItem::ToString() const {
 }
 
 void BirchCoralItem::PerformAction(bool is_post_login) {
-  // TODO(yulunwu) restore all applicable items in group to active desk.
-  // Open all related tabs in the same window with the default window bounds.
-  // Open related app(s) in its last used window state.
-
   // TODO(sammiequon): Remove hardcoded group.
   coral::mojom::GroupPtr temp_group = coral::mojom::Group::New();
   temp_group->title = "Coral desk";
+  temp_group->entities.push_back(
+      coral::mojom::EntityKey::NewTabUrl(GURL("https://www.ikea.com/")));
+  temp_group->entities.push_back(
+      coral::mojom::EntityKey::NewTabUrl(GURL("https://www.nhl.com/")));
 
-  // TODO(http://b/365839465): Handle post-login case.
   if (is_post_login) {
     Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(temp_group));
     return;

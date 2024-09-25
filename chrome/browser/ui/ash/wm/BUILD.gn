@@ -25,6 +25,8 @@ static_library("wm") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/desks",
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chromeos/ash/services/coral/public/mojom",
+    "//components/app_constants",
     "//content/public/browser",
   ]
 }

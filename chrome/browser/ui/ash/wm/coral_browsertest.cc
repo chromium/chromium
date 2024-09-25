@@ -14,22 +14,41 @@
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/app_restore/app_restore_test_util.h"
+#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
 
 class CoralBrowserTest : public InProcessBrowserTest {
  public:
-  CoralBrowserTest() = default;
+  CoralBrowserTest() { set_launch_browser_for_testing(nullptr); }
   CoralBrowserTest(const CoralBrowserTest&) = delete;
   CoralBrowserTest& operator=(const CoralBrowserTest&) = delete;
   ~CoralBrowserTest() override = default;
 
   // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // Disable the prefs for data providers other than coral. This ensures
+    // the data is fresh once the last active provider replies.
+    DisableAllDataTypePrefsExcept({prefs::kBirchUseCoral});
+
+    // Ensure the item remover is initialized, otherwise data fetches won't
+    // complete.
+    EnsureItemRemoverInitialized();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForceBirchFakeCoral);
@@ -39,17 +58,44 @@ class CoralBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kBirchCoral};
 };
 
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {
+  // Ensure that post login overview shows up by having at least one app open
+  // and immediate saving to bypass the 2.5 second throttle.
+  CreateBrowser(ProfileManager::GetActiveUserProfile());
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Launches a browser with the expected tabs when the post login coral chip is
+// clicked.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
+  // Wait until the chip is visible, it may not be visible while data fetch is
+  // underway or the overview animation is still running.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    BirchChipButtonBase* coral_chip = GetBirchChipButton();
+    return !!coral_chip;
+  }));
+
+  BirchChipButtonBase* coral_chip = GetBirchChipButton();
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+  ui_test_utils::BrowserChangeObserver observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  test::Click(coral_chip);
+  Browser* coral_browser = observer.Wait();
+
+  // TODO(sammiequon): This tabs are currently hardcoded in ash for
+  // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
+  // instead.
+  TabStripModel* tab_strip_model = coral_browser->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(GURL("https://www.ikea.com/"),
+            tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
+  EXPECT_EQ(GURL("https://www.nhl.com/"),
+            tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
+}
+
 // Tests that clicking the in session coral button opens and activates a new
 // desk.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, OpenNewDesk) {
-  // Disable the prefs for data providers other than coral. This ensures
-  // the data is fresh once the last active provider replies.
-  DisableAllDataTypePrefsExcept({prefs::kBirchUseCoral});
-
-  // Ensure the item remover is initialized, otherwise data fetches won't
-  // complete.
-  EnsureItemRemoverInitialized();
-
   DesksController* desks_controller = DesksController::Get();
   EXPECT_EQ(1u, desks_controller->desks().size());
 

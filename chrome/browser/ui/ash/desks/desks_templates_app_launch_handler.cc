@@ -106,7 +106,18 @@ void DesksTemplatesAppLaunchHandler::LaunchTemplate(
   LaunchBrowsers();
 }
 
-void DesksTemplatesAppLaunchHandler::LaunchCoralGroup(int32_t launch_id) {}
+void DesksTemplatesAppLaunchHandler::LaunchCoralGroup(
+    std::unique_ptr<app_restore::RestoreData> restore_data,
+    int32_t launch_id) {
+  // Ensure that the handler isn't re-used.
+  CHECK_EQ(launch_id_, 0);
+  launch_id_ = launch_id;
+
+  read_handler_->SetRestoreData(launch_id_, restore_data->Clone());
+  set_restore_data(std::move(restore_data));
+
+  LaunchBrowsers();
+}
 
 void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
