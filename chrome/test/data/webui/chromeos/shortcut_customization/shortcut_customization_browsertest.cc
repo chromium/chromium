@@ -89,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
   RunTestAtPath("search_result_bolding_test.js");
 }
 
+// TODO(crbug.com/369506934): De-flake and re-enable
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
-                       ShortcutCustomizationApp) {
+                       DISABLED_ShortcutCustomizationApp) {
   RunTestAtPath("shortcut_customization_test.js");
 }
 
