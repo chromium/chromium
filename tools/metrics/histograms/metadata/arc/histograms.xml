@@ -652,17 +652,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.ArcFeatures.ParseResult" enum="ArcFeaturesParseResult"
-    expires_after="2024-11-01">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    Records the result of parsing the ARC Features JSON file off rootfs.
-    Recorded every time the file is parsed, which most commonly happens during
-    OOBE.
-  </summary>
-</histogram>
-
 <histogram name="Arc.ArcOnDemand.ActivationIsDelayed" enum="Boolean"
     expires_after="2025-05-31">
   <owner>yuholong@google.com</owner>

@@ -25,24 +25,6 @@ constexpr const base::FilePath::CharType kArcVmFeaturesJsonFile[] =
 constexpr const base::FilePath::CharType kArcFeaturesJsonFile[] =
     FILE_PATH_LITERAL("/etc/arc/features.json");
 
-enum class ParseResult {
-  kSuccess = 0,
-  kErrorParsingJson = 1,
-  kInvalidFeatureList = 2,
-  kInvalidUnavailableFeatureList = 3,
-  kInvalidPropertiesList = 4,
-  kMissingFingerprintProperty = 5,
-  kMissingSdkProperty = 6,
-  kMissingReleaseProperty = 7,
-  kMissingAbiListProperty = 8,
-  kMissingPlayStoreVersion = 9,
-  kMaxValue = kMissingPlayStoreVersion
-};
-
-void RecordParseResultHistogram(ParseResult status) {
-  base::UmaHistogramEnumeration("Arc.ArcFeatures.ParseResult", status);
-}
-
 base::RepeatingCallback<std::optional<ArcFeatures>()>*
     g_arc_features_getter_for_testing = nullptr;
 
@@ -52,11 +34,9 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(input_json);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing feature JSON: " << parsed_json.error().message;
-    RecordParseResultHistogram(ParseResult::kErrorParsingJson);
     return std::nullopt;
   } else if (!parsed_json->is_dict()) {
     LOG(ERROR) << "Error parsing feature JSON: Expected a dictionary.";
-    RecordParseResultHistogram(ParseResult::kErrorParsingJson);
     return std::nullopt;
   }
 
@@ -66,7 +46,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const base::Value::List* feature_list = dict.FindList("features");
   if (!feature_list) {
     LOG(ERROR) << "No feature list in JSON.";
-    RecordParseResultHistogram(ParseResult::kInvalidFeatureList);
     return std::nullopt;
   }
   for (auto& feature_item : *feature_list) {
@@ -75,12 +54,10 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
         feature_item.GetDict().FindInt("version");
     if (!feature_name || feature_name->empty()) {
       LOG(ERROR) << "Missing name in the feature.";
-      RecordParseResultHistogram(ParseResult::kInvalidFeatureList);
       return std::nullopt;
     }
     if (!feature_version.has_value()) {
       LOG(ERROR) << "Missing version in the feature.";
-      RecordParseResultHistogram(ParseResult::kInvalidFeatureList);
       return std::nullopt;
     }
     arc_features.feature_map.emplace(*feature_name, *feature_version);
@@ -90,20 +67,17 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const base::Value::List* unavailable_feature_list =
       dict.FindList("unavailable_features");
   if (!unavailable_feature_list) {
-    RecordParseResultHistogram(ParseResult::kInvalidUnavailableFeatureList);
     LOG(ERROR) << "No unavailable feature list in JSON.";
     return std::nullopt;
   }
   for (auto& feature_item : *unavailable_feature_list) {
     if (!feature_item.is_string()) {
       LOG(ERROR) << "Item in the unavailable feature list is not a string.";
-      RecordParseResultHistogram(ParseResult::kInvalidUnavailableFeatureList);
       return std::nullopt;
     }
 
     if (feature_item.GetString().empty()) {
       LOG(ERROR) << "Missing name in the feature.";
-      RecordParseResultHistogram(ParseResult::kInvalidUnavailableFeatureList);
       return std::nullopt;
     }
     arc_features.unavailable_features.emplace_back(feature_item.GetString());
@@ -113,7 +87,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const base::Value::Dict* properties = dict.FindDict("properties");
   if (!properties) {
     LOG(ERROR) << "No properties in JSON.";
-    RecordParseResultHistogram(ParseResult::kInvalidPropertiesList);
     return std::nullopt;
   }
 
@@ -121,7 +94,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const std::string* fingerprint = properties->FindString(kFingerprintProperty);
   if (!fingerprint) {
     LOG(ERROR) << "Missing required build property " << kFingerprintProperty;
-    RecordParseResultHistogram(ParseResult::kMissingFingerprintProperty);
     return std::nullopt;
   }
   arc_features.build_props.fingerprint = *fingerprint;
@@ -130,7 +102,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const std::string* sdk_version = properties->FindString(kSdkProperty);
   if (!sdk_version) {
     LOG(ERROR) << "Missing required build property " << kSdkProperty;
-    RecordParseResultHistogram(ParseResult::kMissingSdkProperty);
     return std::nullopt;
   }
   arc_features.build_props.sdk_version = *sdk_version;
@@ -139,7 +110,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const std::string* release_version = properties->FindString(kReleaseProperty);
   if (!release_version) {
     LOG(ERROR) << "Missing required build property " << kReleaseProperty;
-    RecordParseResultHistogram(ParseResult::kMissingReleaseProperty);
     return std::nullopt;
   }
   arc_features.build_props.release_version = *release_version;
@@ -154,7 +124,6 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   }
   if (!abi_list) {
     LOG(ERROR) << "Missing required abilist build property";
-    RecordParseResultHistogram(ParseResult::kMissingAbiListProperty);
     return std::nullopt;
   }
   arc_features.build_props.abi_list = *abi_list;
@@ -163,12 +132,9 @@ std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   const std::string* play_version = dict.FindString("play_store_version");
   if (!play_version) {
     LOG(ERROR) << "No Play Store version in JSON.";
-    RecordParseResultHistogram(ParseResult::kMissingPlayStoreVersion);
     return std::nullopt;
   }
   arc_features.play_store_version = *play_version;
-
-  RecordParseResultHistogram(ParseResult::kSuccess);
 
   return arc_features;
 }

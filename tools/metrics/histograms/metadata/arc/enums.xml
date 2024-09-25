@@ -199,19 +199,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Not allowed"/>
 </enum>
 
-<enum name="ArcFeaturesParseResult">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kErrorParsingJson"/>
-  <int value="2" label="kInvalidFeatureList"/>
-  <int value="3" label="kInvalidUnavailableFeatureList"/>
-  <int value="4" label="kInvalidPropertiesList"/>
-  <int value="5" label="kMissingFingerprintProperty"/>
-  <int value="6" label="kMissingSdkProperty"/>
-  <int value="7" label="kMissingReleaseProperty"/>
-  <int value="8" label="kMissingAbiListProperty"/>
-  <int value="9" label="kMissingPlayStoreVersion"/>
-</enum>
-
 <enum name="ArcKeyMintError">
   <int value="0" label="Other unspecified error code"/>
   <int value="1" label="OK"/>
