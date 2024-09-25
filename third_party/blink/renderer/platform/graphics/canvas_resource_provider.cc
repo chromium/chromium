@@ -343,6 +343,11 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return resource_->GetClientSharedImage();
   }
 
+  void EndExternalWrite(
+      const gpu::SyncToken& external_write_sync_token) override {
+    resource_->WaitSyncToken(external_write_sync_token);
+  }
+
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override {
     return shared_image_usage_flags_;
   }
