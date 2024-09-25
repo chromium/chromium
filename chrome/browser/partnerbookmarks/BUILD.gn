@@ -5,26 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("delegate_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarkIterator.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegate.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegateImpl.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarkIterator.java" ]
 
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-
-  resources_package = "org.chromium.chrome.browser.partnerbookmarks"
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/PartnerBookmarksDelegateImpl.class" ]
-}
-
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegateImpl.java" ]
-
-  deps = [
-    ":delegate_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
 }
