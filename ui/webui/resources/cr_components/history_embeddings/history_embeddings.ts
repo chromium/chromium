@@ -94,6 +94,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         reflectToAttribute: true,
         value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
       },
+      enableImages_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsImages'),
+      },
       answerSource_: {
         type: Boolean,
         computed: 'computeAnswerSource_(searchResult_.items)',

@@ -46,8 +46,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
     setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      loadTimeData.overrideValues(
-          {enableHistoryEmbeddingsAnswers: enableAnswers});
+      loadTimeData.overrideValues({
+        enableHistoryEmbeddingsAnswers: enableAnswers,
+        enableHistoryEmbeddingsImages: true,
+      });
 
       handler = TestMock.fromClass(PageHandlerRemote);
 

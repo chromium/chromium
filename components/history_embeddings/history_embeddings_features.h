@@ -71,6 +71,10 @@ extern const base::FeatureParam<bool> kUseMlAnswerer;
 // Specifies the min score for generated answer from the ML answerer.
 extern const base::FeatureParam<double> kMlAnswererMinScore;
 
+// Specifies whether to show images in results for search results on the
+// chrome://history page.
+extern const base::FeatureParam<bool> kEnableImagesForResults;
+
 // Whether history embedding results should be shown in the omnibox when in the
 // '@history' scope.
 extern const base::FeatureParam<bool> kOmniboxScoped;

@@ -199,6 +199,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
           !enable_history_embeddings);
   source->AddBoolean("enableHistoryEmbeddingsAnswers",
                      history_embeddings::kEnableAnswers.Get());
+  source->AddBoolean("enableHistoryEmbeddingsImages",
+                     history_embeddings::kEnableImagesForResults.Get());
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
