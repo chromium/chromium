@@ -478,6 +478,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                              range:item.titleRangeToEmphasize];
     cell.textLabel.attributedText = attributedTitle;
   }
+
+  [cell setDetailText:item.subtitle];
+  [cell setTextLayoutConstraintAxis:item.subtitle
+                                        ? UILayoutConstraintAxisVertical
+                                        : UILayoutConstraintAxisHorizontal];
+
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
   if (!item.icon) {
@@ -490,8 +496,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 
   if (item.type == DriveItemType::kFile) {
-    [cell setDetailText:item.creationDate];
-    [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
     cell.accessoryType = [itemIdentifier isEqual:_selectedIdentifier]
                              ? UITableViewCellAccessoryCheckmark
                              : UITableViewCellAccessoryNone;

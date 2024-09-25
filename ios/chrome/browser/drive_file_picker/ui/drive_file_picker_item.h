@@ -33,12 +33,11 @@ enum class DriveItemType : NSUInteger {
 // Drive item title.
 @property(nonatomic, readonly) NSString* title;
 
+// Drive item subtitle.
+@property(nonatomic, readonly) NSString* subtitle;
+
 // Range of the title which should be emphasized.
 @property(nonatomic, assign) NSRange titleRangeToEmphasize;
-
-// Drive item creation date (in case of files it represents the last time the
-// file was modified).
-@property(nonatomic, readonly) NSString* creationDate;
 
 // Whether this item is enabled. YES by default.
 @property(nonatomic, assign) BOOL enabled;
@@ -53,8 +52,8 @@ enum class DriveItemType : NSUInteger {
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                              title:(NSString*)title
+                          subtitle:(NSString*)subtitle
                               icon:(UIImage*)icon
-                      creationDate:(NSString*)creationDate
                               type:(DriveItemType)type
     NS_DESIGNATED_INITIALIZER;
 

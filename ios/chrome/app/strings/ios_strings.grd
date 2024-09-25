@@ -1701,6 +1701,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_RECENT_TITLE" desc="Title of a section where recent Drive items are presented. [iOS only]" meaning="Title of a section where recent Drive items are presented. [iOS only]">
           Recent
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_MODIFIED" desc="Subtitle of a Drive item indicating when the item was last modified. [iOS only]" meaning="Subtitle of a Drive item indicating when the item was last modified. [iOS only]">
+          Modified <ph name="LAST_MODIFICATION_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_OPENED" desc="Subtitle of a Drive item indicating when the item was last opened. [iOS only]" meaning="Subtitle of a Drive item indicating when the item was last opened. [iOS only]">
+          Opened <ph name="LAST_OPENING_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_SHARED_WITH_ME" desc="Subtitle of a Drive item shared to the user indicating when the item was shared. [iOS only]" meaning="Subtitle of a Drive item shared to the user indicating when the item was shared. [iOS only]">
+          Shared with me <ph name="SHARED_WITH_ME_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
       <message name="IDS_IOS_DRIVE_SORT_BY_NAME" desc="Title of the context menu entry to sort Drive items by name. [iOS only]">
           Name
       </message>

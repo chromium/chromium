@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -299,17 +300,121 @@ bool ItemShouldBeEnabled(const DriveItem& item,
   return false;
 }
 
+// Returns the subtitle which contains the last modified date for `item`.
+NSString* DriveFilePickerItemSubtitleModified(const DriveItem& item) {
+  if (!item.modified_time) {
+    return nil;
+  }
+  NSString* modified_time_str =
+      [NSDateFormatter localizedStringFromDate:item.modified_time
+                                     dateStyle:NSDateFormatterMediumStyle
+                                     timeStyle:NSDateFormatterNoStyle];
+  return l10n_util::GetNSStringF(IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_MODIFIED,
+                                 base::SysNSStringToUTF16(modified_time_str));
+}
+
+// Returns the subtitle which contains the last opened date for `item`.
+NSString* DriveFilePickerItemSubtitleOpened(const DriveItem& item) {
+  if (!item.viewed_by_me_time) {
+    return nil;
+  }
+  NSString* viewed_by_me_time_str =
+      [NSDateFormatter localizedStringFromDate:item.viewed_by_me_time
+                                     dateStyle:NSDateFormatterMediumStyle
+                                     timeStyle:NSDateFormatterNoStyle];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_OPENED,
+      base::SysNSStringToUTF16(viewed_by_me_time_str));
+}
+
+// Returns the subtitle for `item` when shown in "Shared with me".
+NSString* DriveFilePickerItemSubtitleShareWithMe(const DriveItem& item) {
+  if (!item.shared_with_me_time) {
+    return nil;
+  }
+  NSString* shared_with_me_time_str =
+      [NSDateFormatter localizedStringFromDate:item.shared_with_me_time
+                                     dateStyle:NSDateFormatterMediumStyle
+                                     timeStyle:NSDateFormatterNoStyle];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_SHARED_WITH_ME,
+      base::SysNSStringToUTF16(shared_with_me_time_str));
+}
+
+// Returns the subtitle for `item` when shown in "Recent".
+NSString* DriveFilePickerItemSubtitleRecent(const DriveItem& item) {
+  if (!item.viewed_by_me_time || !item.modified_time) {
+    return nil;
+  }
+  return [item.viewed_by_me_time compare:item.modified_time]
+             ? DriveFilePickerItemSubtitleOpened(item)
+             : DriveFilePickerItemSubtitleModified(item);
+}
+
+// Returns the subtitle for a given `item`.
+NSString* DriveFilePickerItemSubtitle(
+    const DriveItem& item,
+    DriveFilePickerCollectionType collection_type,
+    DriveItemsSortingType sorting_criteria,
+    BOOL should_show_search_items,
+    NSString* search_text) {
+  // Handling search separately.
+  if (should_show_search_items) {
+    if (search_text.length == 0) {
+      // Zero-state search items are sorted by recency.
+      return DriveFilePickerItemSubtitleRecent(item);
+    }
+    switch (sorting_criteria) {
+      case DriveItemsSortingType::kName:
+      case DriveItemsSortingType::kModificationTime:
+        // If the sorting criteria is by name or modification time, then the
+        // subtitle presented for each item is the last modification time.
+        return DriveFilePickerItemSubtitleModified(item);
+      case DriveItemsSortingType::kOpeningTime:
+        return DriveFilePickerItemSubtitleOpened(item);
+    }
+  }
+
+  // Handling non-search items.
+  switch (collection_type) {
+    case DriveFilePickerCollectionType::kRoot:
+    case DriveFilePickerCollectionType::kSharedDrives:
+      NOTREACHED_NORETURN();
+    case DriveFilePickerCollectionType::kRecent:
+      return DriveFilePickerItemSubtitleRecent(item);
+    case DriveFilePickerCollectionType::kSharedWithMe:
+      return DriveFilePickerItemSubtitleShareWithMe(item);
+    case DriveFilePickerCollectionType::kFolder:
+    case DriveFilePickerCollectionType::kStarred:
+      switch (sorting_criteria) {
+        case DriveItemsSortingType::kName:
+        case DriveItemsSortingType::kModificationTime:
+          // If the sorting criteria is by name or modification time, then the
+          // subtitle presented for each item is the last modification time.
+          return DriveFilePickerItemSubtitleModified(item);
+        case DriveItemsSortingType::kOpeningTime:
+          return DriveFilePickerItemSubtitleOpened(item);
+      }
+  }
+}
+
 // Returns a `DriveFilePickerItem` based on a `DriveItem`.
 DriveFilePickerItem* DriveItemToDriveFilePickerItem(
-    const DriveItem& driveItem) {
-  DriveFilePickerItem* driveItemIdentifier = [[DriveFilePickerItem alloc]
-      initWithIdentifier:driveItem.identifier
-                   title:driveItem.name
+    const DriveItem& item,
+    DriveFilePickerCollectionType collection_type,
+    DriveItemsSortingType sorting_criteria,
+    BOOL should_show_search_items,
+    NSString* search_text) {
+  DriveFilePickerItem* drive_file_picker_item = [[DriveFilePickerItem alloc]
+      initWithIdentifier:item.identifier
+                   title:item.name
+                subtitle:DriveFilePickerItemSubtitle(
+                             item, collection_type, sorting_criteria,
+                             should_show_search_items, search_text)
                     icon:nil
-            creationDate:[driveItem.modified_time description]
-                    type:(driveItem.is_folder) ? DriveItemType::kFolder
-                                               : DriveItemType::kFile];
-  return driveItemIdentifier;
+                    type:(item.is_folder) ? DriveItemType::kFolder
+                                          : DriveItemType::kFile];
+  return drive_file_picker_item;
 }
 
 // Finds a DriveItem within the provided vector based on its identifier.
@@ -834,7 +939,9 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     if ([previousIdentifiers containsObject:item.identifier]) {
       [itemsToReconfigure addObject:item.identifier];
     }
-    DriveFilePickerItem* filePickerItem = DriveItemToDriveFilePickerItem(item);
+    DriveFilePickerItem* filePickerItem =
+        DriveItemToDriveFilePickerItem(item, _collectionType, _sortingCriteria,
+                                       _shouldShowSearchItems, _searchText);
     filePickerItem.enabled =
         ItemShouldBeEnabled(item, _acceptedTypes, _ignoreAcceptedTypes);
     // If the search text is not empty, emphasize the first match of the search

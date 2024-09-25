@@ -32,15 +32,15 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                              title:(NSString*)title
+                          subtitle:(NSString*)subtitle
                               icon:(UIImage*)icon
-                      creationDate:(NSString*)creationDate
                               type:(DriveItemType)type {
   self = [super init];
   if (self) {
-    _identifier = identifier;
-    _title = title;
+    _identifier = [identifier copy];
+    _title = [title copy];
+    _subtitle = [subtitle copy];
     _icon = icon;
-    _creationDate = creationDate;
     _type = type;
     _enabled = YES;
     _titleRangeToEmphasize.location = NSNotFound;
@@ -57,9 +57,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerMyDriveItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE)
+                  subtitle:nil
                       icon:CustomSymbolWithPointSize(kMyDriveSymbol,
                                                      kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kMyDrive];
   });
   return item;
@@ -73,9 +73,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerSharedDrivesItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES)
+                  subtitle:nil
                       icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
                                                      kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kSharedDrives];
   });
   return item;
@@ -89,9 +89,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerComputersItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_COMPUTERS)
+                  subtitle:nil
                       icon:DefaultSymbolWithPointSize(kLaptopAndIphoneSymbol,
                                                       kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kComputers];
   });
   return item;
@@ -105,9 +105,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerStarredItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_STARRED)
+                  subtitle:nil
                       icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
                                                       kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kStarred];
   });
   return item;
@@ -121,9 +121,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerRecentItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_RECENT)
+                  subtitle:nil
                       icon:DefaultSymbolWithPointSize(kClockSymbol,
                                                       kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kRecent];
   });
   return item;
@@ -137,9 +137,9 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
         initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
+                  subtitle:nil
                       icon:DefaultSymbolWithPointSize(kPersonTwoSymbol,
                                                       kIconPointSize)
-              creationDate:nil
                       type:DriveItemType::kSharedWithMe];
   });
   return item;
