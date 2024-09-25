@@ -372,7 +372,7 @@ Request* Request::CreateRequestWithRequestOrString(
     request->SetIsHistoryNavigation(false);
 
     // "Set |request|’s referrer to "client"."
-    request->SetReferrerString(AtomicString(Referrer::ClientReferrerString()));
+    request->SetReferrerString(Referrer::ClientReferrerString());
 
     // "Set |request|’s referrer policy to the empty string."
     request->SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
@@ -413,8 +413,7 @@ Request* Request::CreateRequestWithRequestOrString(
         //
         //     parsedReferrer’s origin is not same origin with origin"
         //
-        request->SetReferrerString(
-            AtomicString(Referrer::ClientReferrerString()));
+        request->SetReferrerString(Referrer::ClientReferrerString());
       } else {
         // "Set |request|'s referrer to |parsedReferrer|."
         request->SetReferrerString(AtomicString(parsed_referrer.GetString()));
