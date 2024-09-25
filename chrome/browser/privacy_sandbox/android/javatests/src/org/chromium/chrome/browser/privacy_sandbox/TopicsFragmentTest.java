@@ -217,7 +217,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOnWhenTopicListEmptyV2() {
+    public void testTurnTopicsOnWhenTopicListEmpty() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -262,7 +262,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOffV2() {
+    public void testTurnTopicsOff() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -290,7 +290,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockedTopicsAppearWhenTopicOnV2() {
+    public void testBlockedTopicsAppearWhenTopicOn() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -307,7 +307,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockTopicsV2() {
+    public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -346,7 +346,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testUnblockTopicsV2() {
+    public void testUnblockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();

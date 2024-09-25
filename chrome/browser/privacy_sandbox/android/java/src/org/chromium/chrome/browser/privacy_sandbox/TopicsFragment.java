@@ -75,7 +75,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         mPageTitle.set(getString(R.string.settings_topics_page_title));
-        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v2);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
         mTopicsExplanationPreference = findPreference(TOPICS_EXPLANATION_PREFERENCE);

@@ -511,7 +511,7 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    public void testFooterTopicsLinkV2() throws IOException {
+    public void testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
         // Open a Topics settings activity.

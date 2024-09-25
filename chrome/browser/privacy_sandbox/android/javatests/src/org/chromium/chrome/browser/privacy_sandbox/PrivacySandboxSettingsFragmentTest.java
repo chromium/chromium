@@ -175,7 +175,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testNavigateToTopicsPageV2() {
+    public void testNavigateToTopicsPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
 

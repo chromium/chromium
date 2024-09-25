@@ -207,7 +207,7 @@ android_resources("java_resources") {
     "java/res/xml/privacy_sandbox_preferences_restricted.xml",
     "java/res/xml/topics_learn_more_preference.xml",
     "java/res/xml/topics_manage_preference.xml",
-    "java/res/xml/topics_preference_v2.xml",
+    "java/res/xml/topics_preference.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
