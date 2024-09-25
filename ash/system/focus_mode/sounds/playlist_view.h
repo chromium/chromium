@@ -35,7 +35,8 @@ class ASH_EXPORT PlaylistView : public views::BoxLayoutView {
     return playlist_data_;
   }
 
-  void UpdateContents(const FocusModeSoundsController::Playlist& playlist);
+  void UpdateContents(uint8_t position,
+                      const FocusModeSoundsController::Playlist& playlist);
   void SetState(focus_mode_util::SoundState state);
 
  private:

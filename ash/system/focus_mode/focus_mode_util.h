@@ -44,6 +44,7 @@ struct ASH_EXPORT SelectedPlaylist {
   gfx::ImageSkia thumbnail;
   focus_mode_util::SoundType type = focus_mode_util::SoundType::kNone;
   focus_mode_util::SoundState state = focus_mode_util::SoundState::kNone;
+  uint8_t list_position = 0;
 };
 
 // Values for the "ash.focus_mode.focus_mode_sounds_enabled" policy.

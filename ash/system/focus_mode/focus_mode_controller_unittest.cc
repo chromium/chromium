@@ -1211,33 +1211,6 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistChosenHistogram) {
   auto* controller = FocusModeController::Get();
   auto* sounds_controller = controller->focus_mode_sounds_controller();
 
-  // Create the playlists for two types.
-  using playlist_type = FocusModeSoundsController::Playlist;
-  std::unique_ptr<playlist_type> init_soundscapes[] = {
-      std::make_unique<playlist_type>("id1", "title1", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id2", "title2", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id3", "title3", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id4", "title4", gfx::ImageSkia())};
-  std::vector<std::unique_ptr<playlist_type>> soundscape_list{
-      std::make_move_iterator(std::begin(init_soundscapes)),
-      std::make_move_iterator(std::end(init_soundscapes))};
-  sounds_controller->set_soundscape_playlists_for_testing(
-      std::move(soundscape_list));
-  ASSERT_EQ(sounds_controller->soundscape_playlists().size(), 4u);
-
-  std::unique_ptr<playlist_type> init_youtube_music[] = {
-      std::make_unique<playlist_type>("id1", "title1", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id2", "title2", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id3", "title3", gfx::ImageSkia()),
-      std::make_unique<playlist_type>("id4", "title4", gfx::ImageSkia())};
-  std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>
-      youtube_music_list{
-          std::make_move_iterator(std::begin(init_youtube_music)),
-          std::make_move_iterator(std::end(init_youtube_music))};
-  sounds_controller->set_youtube_music_playlists_for_testing(
-      std::move(youtube_music_list));
-  ASSERT_EQ(sounds_controller->youtube_music_playlists().size(), 4u);
-
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
 
@@ -1246,6 +1219,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistChosenHistogram) {
   selected_playlist.id = "id2";
   selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
   selected_playlist.state = focus_mode_util::SoundState::kNone;
+  selected_playlist.list_position = 1;
   sounds_controller->TogglePlaylist(selected_playlist);
   SimulateStartPlaying();
   histogram_tester.ExpectBucketCount(
@@ -1257,6 +1231,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistChosenHistogram) {
   // Simulate we play a YouTube Music 3 in session.
   selected_playlist.id = "id3";
   selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  selected_playlist.list_position = 2;
   sounds_controller->TogglePlaylist(selected_playlist);
   SimulateStartPlaying();
   histogram_tester.ExpectBucketCount(

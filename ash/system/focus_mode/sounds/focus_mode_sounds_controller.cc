@@ -274,8 +274,9 @@ void RecordPlaylistPlayedLatency(focus_mode_util::SoundType playlist_type,
 }
 
 focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
-    int index,
+    size_t index,
     focus_mode_util::SoundType sound_type) {
+  CHECK_LT(index, kFocusModePlaylistViewsNum);
   switch (sound_type) {
     case focus_mode_util::SoundType::kSoundscape:
       return soundscapes_chosen[index];
@@ -287,20 +288,11 @@ focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
 }
 
 void RecordPlaylistChosenHistogram(
-    const focus_mode_util::SelectedPlaylist& selected_playlist,
-    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
-        selected_playlist_list) {
-  for (size_t i = 0; i < selected_playlist_list.size(); ++i) {
-    if (selected_playlist_list.at(i)->playlist_id == selected_playlist.id) {
-      base::UmaHistogramEnumeration(
-          /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-          /*sample=*/GetPlaylistChosenType(i, selected_playlist.type));
-      return;
-    }
-  }
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   base::UmaHistogramEnumeration(
       /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-      /*sample=*/focus_mode_histogram_names::FocusModePlaylistChosen::kNone);
+      /*sample=*/GetPlaylistChosenType(selected_playlist.list_position,
+                                       selected_playlist.type));
 }
 
 }  // namespace
@@ -408,11 +400,7 @@ void FocusModeSoundsController::OnFocusGained(
   }
 
   RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
-  RecordPlaylistChosenHistogram(
-      selected_playlist_,
-      selected_playlist_.type == focus_mode_util::SoundType::kSoundscape
-          ? soundscape_playlists_
-          : youtube_music_playlists_);
+  RecordPlaylistChosenHistogram(selected_playlist_);
 
   // Otherwise, we will bind the media controller observer with the specific
   // request id to observe our media state.
