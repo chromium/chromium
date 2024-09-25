@@ -74,15 +74,13 @@ autofill::Suggestion CreateChildSuggestionForFilling(
   return child_suggestion;
 }
 
-// Creates a spinner-like suggestion shown while improved predictions are
-// loaded.
+// Creates the suggestion shown while improved predictions are loaded which
+// shows an animated gradient.
 std::vector<autofill::Suggestion> CreateLoadingSuggestion() {
-  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion loading_suggestion(
-      u"Loading",
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
+  loading_suggestion.icon = autofill::Suggestion::Icon::kAccount;
   loading_suggestion.is_acceptable = false;
-  loading_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
   return {loading_suggestion};
 }
 

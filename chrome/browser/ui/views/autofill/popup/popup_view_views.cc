@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_title_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
+#include "chrome/browser/ui/views/autofill_prediction_improvements/prediction_improvements_loading_state_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -1013,6 +1014,13 @@ void PopupViewViews::CreateSuggestionViews() {
         case SuggestionType::kInsecureContextPaymentDisabledMessage:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupWarningView>(
+                  kSuggestions[current_line_number])));
+          break;
+
+        case SuggestionType::kPredictionImprovementsLoadingState:
+          rows_.push_back(body_container->AddChildView(
+              std::make_unique<autofill_prediction_improvements::
+                                   PredictionImprovementsLoadingStateView>(
                   kSuggestions[current_line_number])));
           break;
 
