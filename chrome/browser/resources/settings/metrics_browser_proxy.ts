@@ -11,28 +11,29 @@
  * numeric values should never be reused.
  *
  * Must be kept in sync with the SettingsPrivacyElementInteractions enum in
- * histograms/enums.xml
+ * histograms/metadata/settings/enums.xml
  */
+// LINT.IfChange(PrivacyElementInteractions)
 export enum PrivacyElementInteractions {
-  SYNC_AND_GOOGLE_SERVICES = 0,
-  CHROME_SIGN_IN = 1,
+  // SYNC_AND_GOOGLE_SERVICES = 0,
+  // CHROME_SIGN_IN = 1,
   DO_NOT_TRACK = 2,
   PAYMENT_METHOD = 3,
-  NETWORK_PREDICTION = 4,
+  // NETWORK_PREDICTION = 4,
   MANAGE_CERTIFICATES = 5,
-  SAFE_BROWSING = 6,
-  PASSWORD_CHECK = 7,
+  // SAFE_BROWSING = 6,
+  // PASSWORD_CHECK = 7,
   IMPROVE_SECURITY = 8,
-  COOKIES_ALL = 9,
-  COOKIES_INCOGNITO = 10,
-  COOKIES_THIRD = 11,
-  COOKIES_BLOCK = 12,
-  COOKIES_SESSION = 13,
-  SITE_DATA_REMOVE_ALL = 14,
-  SITE_DATA_REMOVE_FILTERED = 15,
-  SITE_DATA_REMOVE_SITE = 16,
-  COOKIE_DETAILS_REMOVE_ALL = 17,
-  COOKIE_DETAILS_REMOVE_ITEM = 18,
+  // COOKIES_ALL = 9,
+  // COOKIES_INCOGNITO = 10,
+  // COOKIES_THIRD = 11,
+  // COOKIES_BLOCK = 12,
+  // COOKIES_SESSION = 13,
+  // SITE_DATA_REMOVE_ALL = 14,
+  // SITE_DATA_REMOVE_FILTERED = 15,
+  // SITE_DATA_REMOVE_SITE = 16,
+  // COOKIE_DETAILS_REMOVE_ALL = 17,
+  // COOKIE_DETAILS_REMOVE_ITEM = 18,
   SITE_DETAILS_CLEAR_DATA = 19,
   THIRD_PARTY_COOKIES_ALLOW = 20,
   THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO = 21,
@@ -43,6 +44,7 @@ export enum PrivacyElementInteractions {
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 26,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacyElementInteractions)
 
 /**
  * Contains all Safety Hub card states.

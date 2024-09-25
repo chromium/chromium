@@ -277,26 +277,29 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Last 15 minutes"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsPrivacyElementInteractions) -->
+
 <enum name="SettingsPrivacyElementInteractions">
-  <int value="0" label="Sync control button"/>
-  <int value="1" label="Allow Chrome sign in toggle"/>
+  <int value="0" label="Sync control button (obsolete)"/>
+  <int value="1" label="Allow Chrome sign in toggle (obsolete)"/>
   <int value="2" label="Do not track toggle"/>
   <int value="3" label="Check payment methods toggle"/>
-  <int value="4" label="Network prediction toggle"/>
+  <int value="4" label="Network prediction toggle (obsolete)"/>
   <int value="5" label="Manage certificates link row"/>
-  <int value="6" label="Safe browsing toggle"/>
-  <int value="7" label="Passwords leak detection toggle"/>
+  <int value="6" label="Safe browsing toggle (obsolete)"/>
+  <int value="7" label="Passwords leak detection toggle (obsolete)"/>
   <int value="8" label="Safe browsing reporting toggle"/>
-  <int value="9" label="Cookies allow all radio"/>
-  <int value="10" label="Cookies block third incognito radio"/>
-  <int value="11" label="Cookies block third radio"/>
-  <int value="12" label="Cookies block all radio"/>
-  <int value="13" label="Cookies session only toggle"/>
-  <int value="14" label="Remove all on site data page"/>
-  <int value="15" label="Remove based on current filter on site data page"/>
-  <int value="16" label="Remove site on site data page"/>
-  <int value="17" label="Remove all on cookie details page"/>
-  <int value="18" label="Remove item on cookie details page"/>
+  <int value="9" label="Cookies allow all radio (obsolete)"/>
+  <int value="10" label="Cookies block third incognito radio (obsolete)"/>
+  <int value="11" label="Cookies block third radio (obsolete)"/>
+  <int value="12" label="Cookies block all radio (obsolete)"/>
+  <int value="13" label="Cookies session only toggle (obsolete)"/>
+  <int value="14" label="Remove all on site data page (obsolete)"/>
+  <int value="15"
+      label="Remove based on current filter on site data page (obsolete)"/>
+  <int value="16" label="Remove site on site data page (obsolete)"/>
+  <int value="17" label="Remove all on cookie details page (obsolete)"/>
+  <int value="18" label="Remove item on cookie details page (obsolete)"/>
   <int value="19" label="Clear data on site details page"/>
   <int value="20" label="Third-party cookies allow all radio"/>
   <int value="21" label="Third-party cookies block in incognito radio"/>
@@ -305,6 +308,8 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="IP protection toggle"/>
   <int value="25" label="Fingerprinting protection toggle"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyElementInteractions) -->
 
 <enum name="SettingsPrivacyGuideInteractions">
   <int value="0" label="Welcome Page Next Button"/>
