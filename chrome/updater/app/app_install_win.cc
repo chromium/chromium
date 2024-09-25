@@ -220,9 +220,8 @@ class AppInstallProgressIPC : public AppInstallProgress {
   void OnCheckingForUpdate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
-    PostClosure(base::BindOnce(&AppInstallProgress::OnUpdateAvailable,
-                               base::Unretained(observer_), std::string(),
-                               std::u16string(), base::Version()));
+    PostClosure(base::BindOnce(&AppInstallProgress::OnCheckingForUpdate,
+                               base::Unretained(observer_)));
   }
 
   void OnUpdateAvailable(const std::string& app_id,
