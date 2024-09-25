@@ -52,7 +52,9 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
             ProfileSelections::Builder()
                 .WithRegular(ProfileSelection::kRedirectedToOriginal)
                 .WithGuest(ProfileSelection::kNone)
-                .Build()) {}
+                .Build()) {
+    DependsOn(BookmarkModelFactory::GetInstance());
+  }
 
  private:
   // ProfileKeyedServiceFactory overrides
@@ -61,7 +63,8 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
     Profile* profile = Profile::FromBrowserContext(context);
     DCHECK(!profile->IsOffTheRecord());
 
-    return new AuxiliarySearchProvider(profile);
+    return new AuxiliarySearchProvider(
+        BookmarkModelFactory::GetForBrowserContext(profile));
   }
 };
 
@@ -122,8 +125,9 @@ void FilterNonSensitiveSearchableTabs(
 
 }  // namespace
 
-AuxiliarySearchProvider::AuxiliarySearchProvider(Profile* profile)
-    : profile_(profile) {
+AuxiliarySearchProvider::AuxiliarySearchProvider(
+    bookmarks::BookmarkModel* bookmark_model)
+    : bookmark_model_(bookmark_model) {
   max_bookmark_donation_count_ =
       chrome::android::kAuxiliarySearchMaxBookmarksCountParam.Get();
   max_tab_donation_count_ =
@@ -134,8 +138,7 @@ AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
 base::android::ScopedJavaLocalRef<jbyteArray>
 AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
-  auxiliary_search::AuxiliarySearchBookmarkGroup group =
-      GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()));
+  auxiliary_search::AuxiliarySearchBookmarkGroup group = GetBookmarks();
 
   std::string serialized_group;
   if (!group.SerializeToString(&serialized_group)) {
@@ -160,11 +163,11 @@ void AuxiliarySearchProvider::GetNonSensitiveTabs(
 }
 
 auxiliary_search::AuxiliarySearchBookmarkGroup
-AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
+AuxiliarySearchProvider::GetBookmarks() const {
   auxiliary_search::AuxiliarySearchBookmarkGroup group;
   std::vector<const BookmarkNode*> nodes;
-  bookmarks::GetMostRecentlyUsedEntries(model, max_bookmark_donation_count_,
-                                        &nodes);
+  bookmarks::GetMostRecentlyUsedEntries(bookmark_model_,
+                                        max_bookmark_donation_count_, &nodes);
   for (const BookmarkNode* node : nodes) {
     GURL url = node->url();
     if (!IsSchemeAllowed(url)) {

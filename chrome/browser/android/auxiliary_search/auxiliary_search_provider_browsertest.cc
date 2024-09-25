@@ -11,6 +11,7 @@
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -44,8 +45,8 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(
         web_contents(),
         embedded_test_server()->GetURL("/android/google.html")));
-    auxiliary_search_provider_ =
-        std::make_unique<AuxiliarySearchProvider>(profile());
+    auxiliary_search_provider_ = std::make_unique<AuxiliarySearchProvider>(
+        BookmarkModelFactory::GetForBrowserContext(profile()));
     PersistedTabDataAndroid::OnDeferredStartup();
     content::RunAllTasksUntilIdle();
   }

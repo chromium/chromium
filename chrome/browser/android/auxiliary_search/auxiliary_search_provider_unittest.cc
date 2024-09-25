@@ -8,51 +8,31 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
-using content::BrowserContext;
 
 class AuxiliarySearchProviderTest : public ::testing::Test {
  public:
-  AuxiliarySearchProviderTest();
+  AuxiliarySearchProviderTest() = default;
 
-  void SetUp() override {
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        BookmarkModelFactory::GetInstance(),
-        BookmarkModelFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
-    provider = std::make_unique<AuxiliarySearchProvider>(profile_.get());
-  }
+  AuxiliarySearchProviderTest(const AuxiliarySearchProviderTest&) = delete;
+  AuxiliarySearchProviderTest& operator=(const AuxiliarySearchProviderTest&) =
+      delete;
 
-  void TearDown() override {
-    profile_.reset(nullptr);
-    scoped_feature_list_.Reset();
-  }
+  ~AuxiliarySearchProviderTest() override = default;
 
  protected:
-  std::unique_ptr<AuxiliarySearchProvider> provider;
-  std::unique_ptr<BookmarkModel> model_;
-  std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
+  const std::unique_ptr<BookmarkModel> model_ =
+      bookmarks::TestBookmarkClient::CreateModel();
+  AuxiliarySearchProvider provider_{model_.get()};
 };
-
-AuxiliarySearchProviderTest::AuxiliarySearchProviderTest() {
-  model_ = bookmarks::TestBookmarkClient::CreateModel();
-}
 
 // Helper to get a mutable bookmark node.
 BookmarkNode* AsMutable(const BookmarkNode* node) {
@@ -68,7 +48,7 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
     node->set_date_last_used(base::Time::FromTimeT(i));
   }
   auxiliary_search::AuxiliarySearchBookmarkGroup group =
-      provider->GetBookmarks(model_.get());
+      provider_.GetBookmarks();
 
   EXPECT_EQ(100, group.bookmark_size());
 
@@ -89,10 +69,11 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
 }
 
 TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_flagTest) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
       chrome::android::kAuxiliarySearchDonation,
       {{"auxiliary_search_max_donation_bookmark", "150"}});
-  provider = std::make_unique<AuxiliarySearchProvider>(profile_.get());
+  auto provider = std::make_unique<AuxiliarySearchProvider>(model_.get());
   for (int i = 0; i < 200; i++) {
     std::string number = base::NumberToString(i);
     BookmarkNode* node = AsMutable(model_->AddURL(
@@ -101,7 +82,7 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_flagTest) {
     node->set_date_last_used(base::Time::FromTimeT(i));
   }
   auxiliary_search::AuxiliarySearchBookmarkGroup group =
-      provider->GetBookmarks(model_.get());
+      provider->GetBookmarks();
 
   EXPECT_EQ(150, group.bookmark_size());
 
@@ -150,7 +131,7 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_nativePageShouldBeFiltered) {
   }
 
   auxiliary_search::AuxiliarySearchBookmarkGroup group =
-      provider->GetBookmarks(model_.get());
+      provider_.GetBookmarks();
 
   EXPECT_EQ(2, group.bookmark_size());
   EXPECT_TRUE(group.bookmark(0).has_creation_timestamp());
