@@ -243,7 +243,13 @@ INSTANTIATE_TEST_SUITE_P(
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(995, 0, 10, 10),
             /*expected_quad_rect=*/gfx::Rect(995, 0, 5, 10),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500))));
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
+        std::make_tuple(
+            /*first_display_specs=*/"3000x2000*2.252252",
+            /*auto_update=*/false,
+            /*content_rect=*/gfx::Rect(0, 0, 1332, 888),
+            /*expected_quad_rect=*/gfx::Rect(0, 0, 3000, 2000),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 3000, 2000))));
 
 }  // namespace
 }  // namespace ash

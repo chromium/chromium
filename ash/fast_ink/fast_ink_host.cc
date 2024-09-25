@@ -116,9 +116,11 @@ void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
   // be done by the compositor.
   window_to_buffer_transform_ = host_window->GetHost()->GetRootTransform();
   gfx::Rect bounds(host_window->GetBoundsInScreen().size());
-  buffer_size_ =
-      cc::MathUtil::MapEnclosingClippedRect(window_to_buffer_transform_, bounds)
-          .size();
+  // TODO(oshima): Make this eplison default.
+  constexpr float kEpsilon = 0.001f;
+  buffer_size_ = cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+                     window_to_buffer_transform_, bounds, kEpsilon)
+                     .size();
 }
 
 void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
