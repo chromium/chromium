@@ -21,7 +21,6 @@
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
@@ -60,20 +59,11 @@ class MockPage : public history_embeddings::mojom::Page {
 
 std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
     content::BrowserContext* browser_context) {
-  auto* profile = Profile::FromBrowserContext(browser_context);
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  CHECK(history_service);
-  auto* page_content_annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile);
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
-      TestingBrowserProcess::GetGlobal()->os_crypt_async(), history_service,
-      page_content_annotations_service, optimization_guide_keyed_service,
-      std::make_unique<history_embeddings::MockEmbedder>(),
-      std::make_unique<history_embeddings::MockAnswerer>(),
-      /*intent_classfier=*/nullptr);
+  return HistoryEmbeddingsServiceFactory::
+      BuildServiceInstanceForBrowserContextForTesting(
+          browser_context, std::make_unique<history_embeddings::MockEmbedder>(),
+          /*answerer=*/nullptr,
+          /*intent_classfier=*/nullptr);
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(
