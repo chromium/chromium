@@ -67,6 +67,7 @@ source_set("toolbar") {
     "//build:chromeos_buildflags",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/views",
     "//components/bookmarks/browser",

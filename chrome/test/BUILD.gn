@@ -4368,12 +4368,13 @@ if (!is_android) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
-        "//chrome/browser/user_annotations:user_annotations",
+        "//chrome/browser/ui/global_error:test_support",
 
         # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
         # when tests that include chrome_zoom_level_prefs.h get modularized, eg
         # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
         "//chrome/browser/ui/zoom",
+        "//chrome/browser/user_annotations:user_annotations",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
@@ -4444,8 +4445,6 @@ if (!is_android) {
     }
     if (toolkit_views) {
       sources += [
-        "../browser/ui/global_error/global_error_browsertest.cc",
-        "../browser/ui/global_error/global_error_service_browsertest.cc",
         "../browser/ui/media_router/presentation_receiver_window_controller_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_progress_dialog_views_browsertest.cc",
@@ -4644,6 +4643,7 @@ if (!is_android) {
         "//chrome/browser/ui/file_system_access",
         "//chrome/browser/ui/file_system_access:browser_tests",
         "//chrome/browser/ui/find_bar",
+        "//chrome/browser/ui/global_error:browser_tests",
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/lens:browser_tests",
@@ -7814,7 +7814,6 @@ test("unit_tests") {
       "../browser/ui/extensions/extensions_overrides/simple_overrides_unittest.cc",
       "../browser/ui/extensions/settings_api_bubble_helpers_unittest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_unittest.cc",
-      "../browser/ui/global_error/global_error_service_unittest.cc",
       "../browser/ui/global_media_controls/cast_device_list_host_unittest.cc",
       "../browser/ui/global_media_controls/cast_media_notification_item_unittest.cc",
       "../browser/ui/global_media_controls/cast_media_notification_producer_unittest.cc",
@@ -8261,6 +8260,7 @@ test("unit_tests") {
       "//chrome/browser/ui/download:unit_tests",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:unit_tests",
+      "//chrome/browser/ui/global_error:unit_tests",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/hats:unit_tests",
       "//chrome/browser/ui/lens:unit_tests",
@@ -9294,6 +9294,7 @@ test("unit_tests") {
       "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/cookies:helpers",
+      "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
       "//chrome/browser/web_applications:web_applications_unit_tests",

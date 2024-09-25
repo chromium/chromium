@@ -1079,14 +1079,6 @@ static_library("ui") {
       "confirm_bubble_model.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
-      "global_error/global_error.cc",
-      "global_error/global_error.h",
-      "global_error/global_error_bubble_view_base.h",
-      "global_error/global_error_observer.h",
-      "global_error/global_error_service.cc",
-      "global_error/global_error_service.h",
-      "global_error/global_error_service_factory.cc",
-      "global_error/global_error_service_factory.h",
       "global_media_controls/cast_device_list_host.cc",
       "global_media_controls/cast_device_list_host.h",
       "global_media_controls/cast_media_notification_item.cc",
@@ -1926,6 +1918,7 @@ static_library("ui") {
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
@@ -6179,8 +6172,6 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
-      "global_error/global_error_waiter.cc",
-      "global_error/global_error_waiter.h",
       "global_media_controls/test_helper.cc",
       "global_media_controls/test_helper.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
