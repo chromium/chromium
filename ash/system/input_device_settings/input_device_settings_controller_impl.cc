@@ -933,6 +933,11 @@ void InputDeviceSettingsControllerImpl::OnSessionStateChanged(
       last_session_ == session_manager::SessionState::OOBE) {
     RefreshCachedKeyboardSettings();
 
+    if (!active_pref_service_) {
+      last_session_ = state;
+      return;
+    }
+
     for (auto& [id, keyboard] : keyboards_) {
       if (IsSplitModifierKeyboard(*keyboard)) {
         active_pref_service_->SetBoolean(
