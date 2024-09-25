@@ -45,8 +45,9 @@ std::optional<base::TaskPriority> GetVotePriority(const FrameNode* frame_node) {
     return std::nullopt;
   }
 
-  // Simply return the parent's priority.
-  return parent_priority;
+  // Only inherit up to the USER_VISIBLE priority level.
+  CHECK_GE(parent_priority, base::TaskPriority::USER_VISIBLE);
+  return base::TaskPriority::USER_VISIBLE;
 }
 
 std::optional<Vote> GetVote(const FrameNode* frame_node) {

@@ -83,7 +83,7 @@ void LoadingPageVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
 
   voting_channel_.SubmitVote(
       GetExecutionContext(frame_node),
-      Vote(base::TaskPriority::USER_BLOCKING, kPageIsLoadingReason));
+      Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 }
 
 void LoadingPageVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
@@ -109,7 +109,7 @@ void LoadingPageVoter::OnPageNodeStoppedLoading(const PageNode* page_node) {
 void LoadingPageVoter::SubmitVoteForSubtree(const FrameNode* frame_node) {
   voting_channel_.SubmitVote(
       GetExecutionContext(frame_node),
-      Vote(base::TaskPriority::USER_BLOCKING, kPageIsLoadingReason));
+      Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 
   // Recurse through subtree.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
