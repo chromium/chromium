@@ -14483,6 +14483,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="39" label="Welcome Tour"/>
   <int value="40" label="Focus Mode panel"/>
   <int value="41" label="Sparky"/>
+  <int value="42" label="Web App Navigation Capturing"/>
 </enum>
 
 <enum name="LcppHintStatus">

@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
+#include <ostream>
+
 namespace apps {
 
 WindowInfo::WindowInfo(int64_t display_id) : display_id(display_id) {}
@@ -105,6 +107,100 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_FOCUS_MODE;
     case LaunchSource::kFromSparky:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_CHROME_INTERNAL;
+    case LaunchSource::kFromNavigationCapturing:
+      return ApplicationLaunchSource::
+          APPLICATION_LAUNCH_SOURCE_NAVIGATION_CAPTURING;
+  }
+}
+
+std::ostream& operator<<(std::ostream& out, LaunchSource launch_source) {
+  switch (launch_source) {
+    case LaunchSource::kUnknown:
+      return out << "kUnknown";
+    case LaunchSource::kFromAppListGrid:
+      return out << "kFromAppListGrid";
+    case LaunchSource::kFromAppListGridContextMenu:
+      return out << "kFromAppListGridContextMenu";
+    case LaunchSource::kFromAppListQuery:
+      return out << "kFromAppListQuery";
+    case LaunchSource::kFromAppListQueryContextMenu:
+      return out << "kFromAppListQueryContextMenu";
+    case LaunchSource::kFromAppListRecommendation:
+      return out << "kFromAppListRecommendation";
+    case LaunchSource::kFromParentalControls:
+      return out << "kFromParentalControls";
+    case LaunchSource::kFromShelf:
+      return out << "kFromShelf";
+    case LaunchSource::kFromFileManager:
+      return out << "kFromFileManager";
+    case LaunchSource::kFromLink:
+      return out << "kFromLink";
+    case LaunchSource::kFromOmnibox:
+      return out << "kFromOmnibox";
+    case LaunchSource::kFromChromeInternal:
+      return out << "kFromChromeInternal";
+    case LaunchSource::kFromKeyboard:
+      return out << "kFromKeyboard";
+    case LaunchSource::kFromOtherApp:
+      return out << "kFromOtherApp";
+    case LaunchSource::kFromMenu:
+      return out << "kFromMenu";
+    case LaunchSource::kFromInstalledNotification:
+      return out << "kFromInstalledNotification";
+    case LaunchSource::kFromTest:
+      return out << "kFromTest";
+    case LaunchSource::kFromArc:
+      return out << "kFromArc";
+    case LaunchSource::kFromSharesheet:
+      return out << "kFromSharesheet";
+    case LaunchSource::kFromReleaseNotesNotification:
+      return out << "kFromReleaseNotesNotification";
+    case LaunchSource::kFromFullRestore:
+      return out << "kFromFullRestore";
+    case LaunchSource::kFromSmartTextContextMenu:
+      return out << "kFromSmartTextContextMenu";
+    case LaunchSource::kFromDiscoverTabNotification:
+      return out << "kFromDiscoverTabNotification";
+    case LaunchSource::kFromManagementApi:
+      return out << "kFromManagementApi";
+    case LaunchSource::kFromKiosk:
+      return out << "kFromKiosk";
+    case LaunchSource::kFromCommandLine:
+      return out << "kFromCommandLine";
+    case LaunchSource::kFromBackgroundMode:
+      return out << "kFromBackgroundMode";
+    case LaunchSource::kFromNewTabPage:
+      return out << "kFromNewTabPage";
+    case LaunchSource::kFromIntentUrl:
+      return out << "kFromIntentUrl";
+    case LaunchSource::kFromOsLogin:
+      return out << "kFromOsLogin";
+    case LaunchSource::kFromProtocolHandler:
+      return out << "kFromProtocolHandler";
+    case LaunchSource::kFromUrlHandler:
+      return out << "kFromUrlHandler";
+    case LaunchSource::kFromLockScreen:
+      return out << "kFromLockScreen";
+    case LaunchSource::kFromAppHomePage:
+      return out << "kFromAppHomePage";
+    case LaunchSource::kFromReparenting:
+      return out << "kFromReparenting";
+    case LaunchSource::kFromProfileMenu:
+      return out << "kFromProfileMenu";
+    case LaunchSource::kFromSysTrayCalendar:
+      return out << "kFromSysTrayCalendar";
+    case LaunchSource::kFromInstaller:
+      return out << "kFromInstaller";
+    case LaunchSource::kFromFirstRun:
+      return out << "kFromFirstRun";
+    case LaunchSource::kFromWelcomeTour:
+      return out << "kFromWelcomeTour";
+    case LaunchSource::kFromFocusMode:
+      return out << "kFromFocusMode";
+    case LaunchSource::kFromSparky:
+      return out << "kFromSparky";
+    case LaunchSource::kFromNavigationCapturing:
+      return out << "kFromNavigationCapturing";
   }
 }
 

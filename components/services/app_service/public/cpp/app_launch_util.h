@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 
+#include <iosfwd>
 #include <optional>
 
 #include "base/component_export.h"
@@ -67,16 +68,17 @@ enum class LaunchSource {
   kFromReparenting = 34,               // Moving content into an app.
   kFromProfileMenu =
       35,  // Profile menu of installable chrome://password-manager WebUI.
-  kFromSysTrayCalendar = 36,  // Launches from the system tray Calendar.
-  kFromInstaller = 37,        // Installation UI
-  kFromFirstRun = 38,         // First Run.
-  kFromWelcomeTour = 39,      // Welcome Tour.
-  kFromFocusMode = 40,        // Focus Mode panel.
-  kFromSparky = 41,           // From Sparky feature.
+  kFromSysTrayCalendar = 36,      // Launches from the system tray Calendar.
+  kFromInstaller = 37,            // Installation UI
+  kFromFirstRun = 38,             // First Run.
+  kFromWelcomeTour = 39,          // Welcome Tour.
+  kFromFocusMode = 40,            // Focus Mode panel.
+  kFromSparky = 41,               // From Sparky feature.
+  kFromNavigationCapturing = 42,  // Web App Navigation Capturing.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromSparky,
+  kMaxValue = kFromNavigationCapturing,
 };
 
 // Don't remove items or change the order of this enum.  It's used in
@@ -110,6 +112,9 @@ using WindowInfoPtr = std::unique_ptr<WindowInfo>;
 COMPONENT_EXPORT(APP_TYPES)
 ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
     LaunchSource launch_source);
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& out, LaunchSource launch_source);
 
 }  // namespace apps
 

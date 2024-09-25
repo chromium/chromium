@@ -1113,6 +1113,11 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
         MaybeShowNavigationCaptureIph(app_id, profile,
                                       existing_browser_and_tab->first);
 
+        // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work
+        // with apps that open in a new browser tab.
+        RecordLaunchMetrics(
+            app_id, apps::LaunchContainer::kLaunchContainerWindow,
+            apps::LaunchSource::kFromNavigationCapturing, params.url, contents);
         return {AppNavigationResult{/*browser= */ nullptr, -1,
                                     /*enqueue_launch_params=*/false,
                                     /*show_iph=*/true}};
@@ -1149,6 +1154,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
     } else {
       app_window = CreateWebAppWindowFromNavigationParams(app_id, params);
     }
+
     // TODO(crbug.com/359224477): In all but one case we set `show_iph` to the
     // same value as `enqueue_launch_params`. Maybe there is an opportunity to
     // simplify this once the WebAppLaunchProcess logic has been fixed.
@@ -1215,6 +1221,12 @@ void OnWebAppNavigationAfterWebContentsCreation(
     EnqueueLaunchParams(params.navigated_or_inserted_contents, app_id,
                         params.url,
                         /*wait_for_navigation_to_complete=*/true);
+
+    // TODO(crbug.com/336371044): Update RecordLaunchMetrics() to also work with
+    // apps that open in a new browser tab.
+    RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
+                        apps::LaunchSource::kFromNavigationCapturing,
+                        params.url, params.navigated_or_inserted_contents);
   }
 
   // TODO(crbug.com/359224477): Once WebAppLaunchProcess logic has been fixed,

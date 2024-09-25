@@ -112,6 +112,7 @@ enum ApplicationLaunchSource {
   APPLICATION_LAUNCH_SOURCE_WELCOME_TOUR = 39;
   APPLICATION_LAUNCH_SOURCE_FOCUS_MODE = 40;
   APPLICATION_LAUNCH_SOURCE_SPARKY = 41;
+  APPLICATION_LAUNCH_SOURCE_NAVIGATION_CAPTURING = 42;
 }
 
 // Describes the app uninstall source. Should be kept in sync with

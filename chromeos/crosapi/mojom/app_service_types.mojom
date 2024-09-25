@@ -491,6 +491,7 @@ enum LaunchSource {
   [MinVersion=14] kFromWelcomeTour,              // Welcome Tour.
   [MinVersion=15] kFromFocusMode,                // Focus Mode panel.
   [MinVersion=16] kFromSparky,                   // Sparky.
+  [MinVersion=36] kFromNavigationCapturing,      // WebApp Navigation Capturing.
 };
 
 [Stable, Extensible]

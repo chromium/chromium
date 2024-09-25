@@ -336,6 +336,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromProfileMenu:
     case LaunchSource::kFromSysTrayCalendar:
     case LaunchSource::kFromInstaller:
+    case LaunchSource::kFromNavigationCapturing:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }

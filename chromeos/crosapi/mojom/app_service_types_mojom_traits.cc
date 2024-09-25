@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -1030,7 +1031,9 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
       return crosapi::mojom::LaunchSource::kFromFocusMode;
     case apps::LaunchSource::kFromSparky:
       return crosapi::mojom::LaunchSource::kFromSparky;
-    // TODO(crbug.com/40852514): Make lock screen apps use lacros browser.
+    case apps::LaunchSource::kFromNavigationCapturing:
+      return crosapi::mojom::LaunchSource::kFromNavigationCapturing;
+    // TODO(crbug.com/40852514): Make lock screen apps use Lacros browser.
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
@@ -1154,6 +1157,9 @@ bool EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::FromMojom(
       return true;
     case crosapi::mojom::LaunchSource::kFromSparky:
       *output = apps::LaunchSource::kFromSparky;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromNavigationCapturing:
+      *output = apps::LaunchSource::kFromNavigationCapturing;
       return true;
   }
 

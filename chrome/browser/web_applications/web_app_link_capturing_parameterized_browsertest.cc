@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -439,18 +440,6 @@ base::Value::Dict BrowserToJson(const Browser& browser) {
   return dict;
 }
 
-// Serializes the entire state of chrome that we're interested in in this test
-// to a dictionary. This state consists of the state of all Browser windows, in
-// creation order of the Browser.
-base::Value::Dict CaptureCurrentState() {
-  base::Value::List browsers;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    base::Value::Dict json_browser = BrowserToJson(*b);
-    browsers.Append(std::move(json_browser));
-  }
-  return base::Value::Dict().Set("browsers", std::move(browsers));
-}
-
 // This helper class monitors WebContents creation in all tabs (of all browsers)
 // and can be queried for the last one seen.
 class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
@@ -601,6 +590,32 @@ class WebAppLinkCapturingParameterizedBrowserTest
         std::move(exclusive_file)));
   }
 
+  // Serializes the entire state of chrome that we're interested in in this test
+  // to a dictionary. This state consists of the state of all Browser windows,
+  // in creation order of the Browser.
+  base::Value::Dict CaptureCurrentState() {
+    base::Value::List browsers;
+    for (Browser* b : *BrowserList::GetInstance()) {
+      base::Value::Dict json_browser = BrowserToJson(*b);
+      browsers.Append(std::move(json_browser));
+    }
+
+    // Checks whether the web app launch metrics have been measured for the
+    // current navigation.
+    std::vector<base::Bucket> buckets =
+        action_histogram_tester_->GetAllSamples("WebApp.LaunchSource");
+    base::Value::List bucket_list;
+    for (const base::Bucket& bucket : buckets) {
+      EXPECT_EQ(1, bucket.count);
+      bucket_list.Append(
+          base::ToString(static_cast<apps::LaunchSource>(bucket.min)));
+    }
+
+    return base::Value::Dict()
+        .Set("browsers", std::move(browsers))
+        .Set("launch_metric_buckets", std::move(bucket_list));
+  }
+
   // This function is used during rebaselining to record (to a file) the results
   // from an actual run of a single test case, used by developers to update the
   // expectations. Constructs a json dictionary and saves it to the test results
@@ -618,7 +633,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
       test_case.Set("disabled", true);
     }
     test_case.Set("expected_state", CaptureCurrentState());
-
     SaveExpectations();
   }
 
@@ -769,6 +783,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return test_expectations_->GetDict();
   }
 
+  // Histogram tester for the action (navigation) that is performed in the test.
+  std::unique_ptr<base::HistogramTester> action_histogram_tester_;
+
  private:
   // Returns the path to the test expectation file (or an error).
   base::expected<base::FilePath, std::string> GetPathForLinkCaptureInputJson() {
@@ -905,6 +922,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
                                  : Browser::Type::TYPE_NORMAL,
               browser_a->type());
   }
+
+  action_histogram_tester_ = std::make_unique<base::HistogramTester>();
 
   {
     content::DOMMessageQueue message_queue;
