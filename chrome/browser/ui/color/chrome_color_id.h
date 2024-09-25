@@ -179,7 +179,8 @@
   E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \
   E_CPONLY(kColorLensOverlayToastBackground) \
-  E_CPONLY(kColorLensOverlayToastButtonText) \
+  E_CPONLY(kColorLensOverlayToastButtonBorder) \
+  E_CPONLY(kColorLensOverlayToastForeground) \
   /* Location bar colors. */ \
   E_CPONLY(kColorLocationBarBackground) \
   E_CPONLY(kColorLocationBarBackgroundHovered) \

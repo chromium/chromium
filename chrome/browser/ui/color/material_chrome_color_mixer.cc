@@ -80,9 +80,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
 
   // Lens overlay colors.
-  mixer[kColorLensOverlayToastBackground] = {
-      ui::kColorSysInverseSurfacePrimary};
-  mixer[kColorLensOverlayToastButtonText] = {ui::kColorSysTonalOutline};
+  mixer[kColorLensOverlayToastBackground] = {ui::kColorSysInverseSurface};
+  mixer[kColorLensOverlayToastButtonBorder] = {ui::kColorSysInverseOnSurface};
+  mixer[kColorLensOverlayToastForeground] = {ui::kColorSysInverseOnSurface};
 
   // PageInfo colors.
   mixer[kColorPageInfoPermissionBlockedOnSystemLevelDisabled] = {

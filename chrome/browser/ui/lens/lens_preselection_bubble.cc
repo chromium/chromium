@@ -140,15 +140,17 @@ void LensPreselectionBubble::OnThemeChanged() {
       offline_ ? vector_icons::kErrorOutlineIcon
                : vector_icons::kSearchChromeRefreshIcon,
 #endif
-      color_provider->GetColor(ui::kColorToastForeground), 24));
-  label_->SetEnabledColor(color_provider->GetColor(ui::kColorToastForeground));
+      color_provider->GetColor(kColorLensOverlayToastForeground),
+      /*icon_size=*/24));
+  label_->SetEnabledColor(
+      color_provider->GetColor(kColorLensOverlayToastForeground));
 
   if (offline_) {
     CHECK(exit_button_);
     exit_button_->SetEnabledTextColors(
-        color_provider->GetColor(kColorLensOverlayToastButtonText));
+        color_provider->GetColor(kColorLensOverlayToastForeground));
     exit_button_->SetBorder(views::CreateRoundedRectBorder(
-        1, 48, color_provider->GetColor(ui::kColorButtonBorder)));
+        1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
     exit_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
   }
 }
