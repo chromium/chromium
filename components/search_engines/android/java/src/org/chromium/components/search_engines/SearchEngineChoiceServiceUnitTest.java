@@ -62,6 +62,7 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Before
     public void setUp() {
+        FeatureList.setDisableNativeForTesting(true);
         configureClayBlockingFeature(mIsClayBlockingEnabled, /* isDarkLaunchEnabled= */ false);
 
         doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();

@@ -22,6 +22,44 @@ import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Handles signals coming from various observers, services etc and updates the state of the dialog
+ * via its {@link Delegate}.
+ *
+ * <p>Documentation of the internal state transitions:
+ *
+ * <ul>
+ *   <li>On startup ({@link #startObserving}):
+ *       <ul>
+ *         <li>this mediator is created, the type is set to {@link DialogType#LOADING} and {@link
+ *             #mObservationStartedTimeMillis} is set.
+ *         <li>If the supplier response is not available yet, we schedule a task to show the dialog
+ *             after {@link
+ *             SearchEnginesFeatureUtils#clayBlockingDialogSilentlyPendingDurationMillis}.
+ *       </ul>
+ *   <li>On supplier update before the dialog is shown ({@link #onIsDeviceChoiceRequiredChanged}):
+ *       <ul>
+ *         <li>we set the type to {@link DialogType#CHOICE_LAUNCH} and show the dialog. Otherwise,
+ *             if the dialog should not be shown, we dismiss the (possibly pending) dialog and
+ *             destroy the mediator.
+ *       </ul>
+ *   <li>On dialog added ({@link #onDialogAdded}):
+ *       <ul>
+ *         <li>We set {@link #mDialogAddedTimeMillis}, which will then be used to signal that the
+ *             dialog was shown. if we didn't get a backend signal at this point, we schedule a task
+ *             to auto-unblock the dialog after {@link
+ *             SearchEnginesFeatureUtils#clayBlockingDialogTimeoutMillis}.
+ *       </ul>
+ *   <li>On other supplier updates ({@link #onIsDeviceChoiceRequiredChanged}):
+ *       <ul>
+ *         <li>If the blocking the user is needed, we set the type to {@link
+ *             DialogType#CHOICE_LAUNCH} which will let the users launch the choice screen.
+ *         <li>If blocking the user is not needed, we set the type to {@link
+ *             DialogType#CHOICE_CONFIRM} to make the dialog non-blocking. If we get this signal
+ *             while the dialog is not visible, we destroy the mediator.
+ *       </ul>
+ * </ul>
+ */
 class ChoiceDialogMediator {
     @IntDef({
         DialogType.UNKNOWN,
@@ -131,16 +169,35 @@ class ChoiceDialogMediator {
         mObservationStartedTimeMillis = System.currentTimeMillis();
         mDialogType = DialogType.LOADING;
 
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "Mediator initializing");
+        }
+
         if (!mIsDeviceChoiceRequiredSupplier.hasValue()) {
             // An initial response from the supplier is still pending, so it won't call the observer
             // on registration by itself. It's unclear how long it would take. We proactively
-            // trigger the blocking dialog, but if it takes too long we will unblock the user.
-            // We do it asynchronously to match how it is done via the supplier when it has a value.
-            ThreadUtils.postOnUiThread(
+            // trigger the blocking dialog. We use a grace period (externally configured via
+            // `SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis()`) before
+            // showing so that if the backend responds quickly enough, we can reduce the chances to
+            // unnecessarily show the dialog.
+            ThreadUtils.postOnUiThreadDelayed(
                     () -> {
+                        if (mDialogType != DialogType.LOADING) {
+                            // Another update arrived via the supplier, which changed the internal
+                            // state. No need to show it here anymore.
+                            return;
+                        }
+
                         mDelegate.updateDialogType(DialogType.LOADING);
                         mDelegate.showDialog();
-                    });
+
+                        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                            Log.i(TAG, "Dialog shown while waiting for a backend response.");
+                        }
+                    },
+                    SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis());
         }
         mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
         mLifecycleDispatcher.register(mActivityLifecycleObserver);
@@ -158,6 +215,10 @@ class ChoiceDialogMediator {
         mDialogType = DialogType.UNKNOWN;
 
         delegate.onMediatorDestroyed();
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "Mediator destroyed");
+        }
     }
 
     /**
@@ -184,11 +245,13 @@ class ChoiceDialogMediator {
         mDialogAddedTimeMillis = System.currentTimeMillis();
         mSearchEngineChoiceService.notifyDeviceChoiceBlockShown();
 
-        // TODO(b/355201070): Replace this after e2e testing with UMA recording.
-        Log.i(
-                TAG,
-                "onDialogAdded(), time since observation start: %s millis",
-                mDialogAddedTimeMillis - mObservationStartedTimeMillis);
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355201070): Replace this after e2e testing with UMA recording.
+            Log.i(
+                    TAG,
+                    "onDialogAdded(), time since observation start: %s millis",
+                    mDialogAddedTimeMillis - mObservationStartedTimeMillis);
+        }
         scheduleDismissOnDeviceChoiceRequiredUpdateTimeout();
     }
 
@@ -205,18 +268,20 @@ class ChoiceDialogMediator {
 
         if (mFirstServiceEventTimeMillis == null) {
             mFirstServiceEventTimeMillis = System.currentTimeMillis();
-            // TODO(b/355201070): Replace this after e2e testing with UMA recording.
-            Log.i(
-                    TAG,
-                    "onIsDeviceChoiceRequiredChanged(%s), time since dialog added: %s millis, "
-                            + "time since observation started: %s millis",
-                    isDeviceChoiceRequired,
-                    wasDialogShown
-                            ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis
-                            : "<N/A>",
-                    mObservationStartedTimeMillis != null
-                            ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
-                            : "<N/A>");
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355201070): Replace this after e2e testing with UMA recording.
+                Log.i(
+                        TAG,
+                        "onIsDeviceChoiceRequiredChanged(%s), time since dialog added: %s millis, "
+                                + "time since observation started: %s millis",
+                        isDeviceChoiceRequired,
+                        wasDialogShown
+                                ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis
+                                : "<N/A>",
+                        mObservationStartedTimeMillis != null
+                                ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
+                                : "<N/A>");
+            }
         }
 
         if (Boolean.TRUE.equals(isDeviceChoiceRequired) && !wasDialogDismissed) {
@@ -225,6 +290,11 @@ class ChoiceDialogMediator {
 
             if (!wasDialogShown) {
                 mDelegate.showDialog();
+
+                if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                    // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                    Log.i(TAG, "Dialog shown after a positive backend response.");
+                }
             }
             return;
         }
@@ -255,16 +325,19 @@ class ChoiceDialogMediator {
         // If we get here, this is some sort of error state. Shutdown everything.
         // Indicates that the backend was disconnected. This would make the dialog non-functional if
         // it is still shown, so let's dismiss it and let the user proceed to Chrome.
-        // TODO(b/355201070): Add UMA recording, remove or update the log below.
-        Log.w(
-                TAG,
-                "Unexpected backend update received. State: "
-                        + "{wasDialogShown=%b, wasDialogDismissed=%b, mDialogType=%s, "
-                        + "isDeviceChoiceRequired=%s}",
-                wasDialogShown,
-                wasDialogDismissed,
-                mDialogType,
-                isDeviceChoiceRequired);
+        // TODO(b/355201070): Add UMA recording.
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.w(
+                    TAG,
+                    "Unexpected backend update received. State: "
+                            + "{wasDialogShown=%b, wasDialogDismissed=%b, mDialogType=%s, "
+                            + "isDeviceChoiceRequired=%s}",
+                    wasDialogShown,
+                    wasDialogDismissed,
+                    mDialogType,
+                    isDeviceChoiceRequired);
+        }
         mDelegate.dismissDialog();
         destroy();
     }

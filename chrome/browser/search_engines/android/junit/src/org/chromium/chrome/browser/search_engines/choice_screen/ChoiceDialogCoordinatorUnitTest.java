@@ -188,7 +188,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
         assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
 
-        shadowOf(Looper.getMainLooper()).idle();
+        shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
@@ -204,13 +204,19 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_dismissesDialogAfterTimeout() {
-        long timeoutDuration = 24_000;
+        int timeoutDuration = 24_000;
+        int silentPendingDuration = 1_000;
+
         var testFeatures = new FeatureList.TestValues();
         testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
         testFeatures.addFieldTrialParamOverride(
                 SearchEnginesFeatures.CLAY_BLOCKING,
                 "dialog_timeout_millis",
                 Long.toString(timeoutDuration));
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING,
+                "silent_pending_duration_millis",
+                Long.toString(silentPendingDuration));
         FeatureList.setTestValues(testFeatures);
 
         var pendingSupplier = new ObservableSupplierImpl<>();
@@ -222,7 +228,11 @@ public class ChoiceDialogCoordinatorUnitTest {
         assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
         assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
 
-        shadowOf(Looper.getMainLooper()).idle();
+        // Verify that we don't show the dialog until silentPendingDuration is reached
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(silentPendingDuration - 1));
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(1));
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
