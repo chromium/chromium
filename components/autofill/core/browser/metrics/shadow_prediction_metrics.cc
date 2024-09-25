@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
