@@ -36,7 +36,7 @@ class NET_EXPORT HttpUtil {
  public:
   // Generates a request line that is used for text-based HTTP messaging.
   static std::string GenerateRequestLine(std::string_view method,
-                                         GURL url,
+                                         const GURL& url,
                                          bool is_for_get_to_http_proxy);
 
   // Returns the absolute URL, to be used for the http request. This url is

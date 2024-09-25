@@ -1355,7 +1355,7 @@ CookieMonster::FindPartitionedCookiesForRegistryControlledHost(
 }
 
 void CookieMonster::FilterCookiesWithOptions(
-    const GURL url,
+    const GURL& url,
     const CookieOptions options,
     std::vector<CanonicalCookie*>* cookie_ptrs,
     CookieAccessResultList* included_cookies,

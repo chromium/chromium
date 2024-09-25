@@ -507,7 +507,7 @@ void ReportingCacheImpl::SetEnterpriseReportingEndpoints(
         /*origin=*/std::nullopt, endpoint_name,
         ReportingTargetType::kEnterprise);
     ReportingEndpoint::EndpointInfo endpoint_info;
-    endpoint_info.url = std::move(endpoint_url);
+    endpoint_info.url = endpoint_url;
     endpoint.info = endpoint_info;
     new_enterprise_endpoints.push_back(endpoint);
   }
@@ -1015,7 +1015,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
   // If the endpoint doesn't yet exist, add it.
   if (endpoint_it == endpoints_.end()) {
     ReportingEndpoint::EndpointInfo info;
-    info.url = std::move(url);
+    info.url = url;
     info.priority = priority;
     info.weight = weight;
     ReportingEndpoint new_endpoint(group_key, info);
