@@ -330,6 +330,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         document, 'translate-mode-state-changed',
         (e: CustomEvent<TranslateState>) => {
           this.showTranslateContextMenuItem = !e.detail.translateModeEnabled;
+          this.translateModeEnabled = e.detail.translateModeEnabled;
+          // Resetting the cursor will properly set it to text or normal
+          // based on the current translate mode.
+          this.resetCursor();
         });
     this.eventTracker_.add(
         document, 'show-selected-text-context-menu',
@@ -425,14 +429,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
-    this.eventTracker_.add(
-        document, 'translate-mode-state-changed',
-        (e: CustomEvent<TranslateState>) => {
-          this.translateModeEnabled = e.detail.translateModeEnabled;
-          // Resetting the cursor will properly set it to text or normal
-          // based on the current translate mode.
-          this.resetCursor();
-        });
 
     this.updateSelectionOverlayRect();
     this.updateDevicePixelRatioListener();

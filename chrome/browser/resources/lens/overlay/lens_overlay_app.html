@@ -2,6 +2,10 @@
   :host {
     --cr-searchbox-height: 48px;
     --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: 250px;
+  }
+
+  :host([is-searchbox-focused]) {
     --cr-searchbox-min-width: 306px;
   }
 
@@ -44,7 +48,7 @@
     inset-block-start: 36px;
   }
 
-  :host([close-button-hidden]) #optionsButtonContainer {
+  :host([side-panel-opened]) #optionsButtonContainer {
     inset-inline-end: 24px;
   }
 
@@ -53,8 +57,21 @@
     inset-inline-end: 135px;
   }
 
-  :host([close-button-hidden]) #translateButtonContainer {
+  :host([side-panel-opened]) #translateButtonContainer {
     inset-inline-end: 84px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonContainer {
+    inset-inline-end: 84px;
+    inset-block-start: 36px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][side-panel-opened]) #translateButtonContainer {
+    inset-inline-end: 24px;
+  }
+
+  :host([is-searchbox-focused]) #translateButtonContainer {
+    display: none;
   }
 
   .action-button {
@@ -71,13 +88,23 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([close-button-hidden]) #closeButton,
-  :host([search-box-hidden]) #searchboxContainer {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #closeButton {
+    background-color: var(--color-selection-element);
+    height: 48px;
+    width: 48px;
+    --cr-icon-button-fill-color: var(--color-primary);
+  }
+
+  :host([side-panel-opened]) #closeButton {
     display: none;
   }
 
   #toast {
     justify-content: space-between;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
+    display: none;
   }
 
   #moreOptions {
@@ -187,6 +214,14 @@
     inset-inline-end: 140px;
   }
 
+  :host([is-searchbox-focused]) #searchboxContainer {
+    inset-inline-end: 84px;
+  }
+
+  :host([search-box-hidden]) #searchboxContainer {
+    display: none;
+  }
+
   :host([dark-mode]) #searchboxContainer {
     --color-searchbox-results-background: #3c3c3cff;
   }
@@ -235,7 +270,7 @@
       </cr-searchbox>
     </div>
   </template>
-  <template is="dom-if" if="[[isTranslateButtonVisible]]">
+  <template is="dom-if" if="[[isTranslateButtonEnabled]]">
     <div id="translateButtonContainer" class="button-container">
       <translate-button></translate-button>
     </div>

@@ -69,7 +69,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      closeButtonHidden: {
+      sidePanelOpened: {
         type: Boolean,
         reflectToAttribute: true,
       },
@@ -85,7 +85,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      isTranslateButtonVisible: {
+      isTranslateButtonEnabled: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
@@ -111,8 +111,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: () => loadTimeData.getBoolean('darkMode'),
         reflectToAttribute: true,
       },
+      isSearchboxFocused: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       toastMessage: String,
-      isSearchboxFocused: Boolean,
     };
   }
 
@@ -120,9 +123,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private isImageRendered: boolean = false;
   // Whether the initial flash animation has ended on the selection overlay.
   private initialFlashAnimationHasEnded: boolean = false;
-  // Whether the close button should be hidden.
-  private closeButtonHidden: boolean = false;
-  // Whether the search box should be hidden.
+  // Whether the side panel has been opened.
+  private sidePanelOpened: boolean = false;
+  // Whether the search box should be hidden. Updated on overlay selection and
+  // translate mode state change.
   private searchBoxHidden: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
@@ -180,6 +184,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
+          this.searchBoxHidden =
+              this.isTranslateModeActive || this.sidePanelOpened;
         });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
@@ -291,7 +297,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private onNotifyResultsPanelOpened() {
-    this.closeButtonHidden = true;
+    this.sidePanelOpened = true;
   }
 
   private themeReceived(theme: OverlayTheme) {

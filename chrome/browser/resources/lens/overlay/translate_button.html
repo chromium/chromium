@@ -191,6 +191,11 @@
     pointer-events: none;
   }
 
+  :host-context([is-lens-overlay-contextual-searchbox-enabled]) #languagePicker {
+    max-width: 0px;
+    min-width: 0px;
+  }
+
   :host([is-translate-mode-enabled]) #languagePicker {
     min-width: 197px;
     max-width: 500px;
@@ -290,6 +295,12 @@
     z-index: 1;
   }
 
+  :host-context([is-lens-overlay-contextual-searchbox-enabled]) #translateEnableButton {
+    min-width: 48px;
+    width: 48px;
+    gap: 0;
+  }
+
   :host([is-translate-mode-enabled]) #translateEnableButton {
     background-color: white;
     opacity: 0;
@@ -303,6 +314,10 @@
     margin-inline-end: 20px;
   }
 
+  :host-context([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonLabel {
+    display: none;
+  }
+
   #translateContainer {
     background-color: var(--color-selection-element);
     border-radius: 36px;
@@ -313,6 +328,11 @@
     min-width: 164px;
     overflow: hidden;
     pointer-events: all;
+  }
+
+  :host-context([is-lens-overlay-contextual-searchbox-enabled]) #translateContainer {
+    min-width: 48px;
+    border-radius: 48px;
   }
 
   :host([is-translate-mode-enabled]) #translateContainer {
