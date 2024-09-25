@@ -251,7 +251,7 @@ TEST_F(ArenaEventBufferTest, ProfileUpdatePath) {
   buffer->proto().StartWriteForTesting();
   Wait();
 
-  // Expect the flushed size ot be the same as the serialized size of the
+  // Expect the flushed size to be the same as the serialized size of the
   // in-memory content.
   int64_t size = 0;
   EXPECT_TRUE(base::GetFileSize(buffer->proto().path(), &size));
