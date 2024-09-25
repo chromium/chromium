@@ -147,9 +147,13 @@ void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
     return;
   }
 
-  // TODO(crbug.com/367934036): Check the DS-PNA content setting in
-  // ChromeDirectSocketsDelegate once it's implemented.
-  std::move(callback).Run(/*access_allowed=*/true);
+  auto* delegate = GetContentClient()->browser()->GetDirectSocketsDelegate();
+  if (!delegate) {
+    // No additional rules from the embedder.
+    std::move(callback).Run(/*access_allowed=*/true);
+    return;
+  }
+  return delegate->RequestPrivateNetworkAccess(rfh, std::move(callback));
 }
 
 template <typename FinishCallback>

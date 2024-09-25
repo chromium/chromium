@@ -14,7 +14,13 @@
 
 bool ChromeDirectSocketsDelegate::IsAPIAccessAllowed(
     content::RenderFrameHost& rfh) {
-  const GURL& url = rfh.GetLastCommittedURL();
+  // No additional rules for Chrome Apps.
+  if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
+          ->Contains(rfh.GetProcess()->GetID())) {
+    return true;
+  }
+
+  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
   return HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
              ->GetContentSetting(url, url,
                                  ContentSettingsType::DIRECT_SOCKETS) ==
@@ -70,4 +76,25 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
           extension, /*request=*/{content::SocketPermissionRequest::TCP_LISTEN,
                                   address, port});
   }
+}
+
+void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
+    content::RenderFrameHost& rfh,
+    base::OnceCallback<void(bool)> callback) {
+  // No additional rules for Chrome Apps.
+  if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
+          ->Contains(rfh.GetProcess()->GetID())) {
+    std::move(callback).Run(/*allow_access=*/true);
+    return;
+  }
+
+  // TODO(crbug.com/368266657): Show a permission prompt for DS-PNA & ponder
+  // whether this requires transient activation.
+  const GURL& url = rfh.GetMainFrame()->GetLastCommittedURL();
+  std::move(callback).Run(
+      HostContentSettingsMapFactory::GetForProfile(rfh.GetBrowserContext())
+          ->GetContentSetting(
+              url, url,
+              ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS) ==
+      CONTENT_SETTING_ALLOW);
 }

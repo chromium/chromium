@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -31,6 +32,11 @@ class CONTENT_EXPORT DirectSocketsDelegate {
                                       const std::string& address,
                                       uint16_t port,
                                       ProtocolType) = 0;
+
+  // Allows embedders to introduce additional rules for private network access.
+  virtual void RequestPrivateNetworkAccess(
+      content::RenderFrameHost& rfh,
+      base::OnceCallback<void(/*access_allowed=*/bool)>) = 0;
 };
 
 }  // namespace content

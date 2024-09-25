@@ -145,6 +145,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, 127},
     {ContentSettingsType::HAND_TRACKING, 128},
     {ContentSettingsType::WEB_APP_INSTALLATION, 129},
+    {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, 130},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
