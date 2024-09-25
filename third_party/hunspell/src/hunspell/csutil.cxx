@@ -79,13 +79,6 @@
 #include "atypes.hxx"
 #include "langnum.hxx"
 
-// Unicode character encoding information
-struct unicode_info {
-  unsigned short c;
-  unsigned short cupper;
-  unsigned short clower;
-};
-
 #ifdef _WIN32
 #include <windows.h>
 #include <wchar.h>
@@ -95,7 +88,7 @@ struct unicode_info {
 #include <unicode/uchar.h>
 #else
 #ifndef MOZILLA_CLIENT
-#include "utf_info.cxx"
+#include "utf_info.hxx"
 #define UTF_LST_LEN (sizeof(utf_lst) / (sizeof(unicode_info)))
 #endif
 #endif
