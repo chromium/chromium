@@ -48,7 +48,7 @@ constexpr char kModifierSplitHashKey[] =
     "\x10\x99";
 
 // Whether checking the mahi secret key is ignored.
-bool g_ignore_modifier_split_secret_key = false;
+bool g_ignore_modifier_split_secret_key = true;
 
 // The hash value for the secret key of the sparky feature.
 constexpr char kSparkyHashKey[] =

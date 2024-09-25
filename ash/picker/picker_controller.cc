@@ -80,7 +80,7 @@ namespace ash {
 
 namespace {
 
-bool g_should_check_key = true;
+bool g_should_check_key = false;
 bool g_feature_tour_enabled = true;
 
 // The hash value for the feature key of the Picker feature, used for
