@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-namespace LensOverlay {
+// The location bar lens overlay entrypoint UIButton.
+@interface LensOverlayEntrypointButton : UIButton
 
-// Returns the location bar lens overlay entrypoint UIButton.
-UIButton* NewEntrypointButton();
+- (instancetype)init;
 
-}  // namespace LensOverlay
+@end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_ENTRYPOINT_VIEW_H_

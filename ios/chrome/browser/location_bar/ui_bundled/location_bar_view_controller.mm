@@ -114,7 +114,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 @implementation LocationBarViewController {
   BOOL _isNTP;
 
-  UIButton* _lensOverlayPlaceholderView;
+  LensOverlayEntrypointButton* _lensOverlayPlaceholderView;
 }
 
 #pragma mark - public
@@ -232,7 +232,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
   if (IsLensOverlayAvailable()) {
-    _lensOverlayPlaceholderView = LensOverlay::NewEntrypointButton();
+    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc] init];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
     [_lensOverlayPlaceholderView addTarget:self

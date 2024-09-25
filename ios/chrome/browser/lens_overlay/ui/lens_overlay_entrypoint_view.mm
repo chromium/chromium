@@ -9,34 +9,55 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
-namespace LensOverlay {
+namespace {
 
 const CGFloat kLensCameraSymbolPointSize = 18.0;
 
-UIButton* NewEntrypointButton() {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+}  // namespace
 
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
-  button.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+@implementation LensOverlayEntrypointButton
 
-  UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
-      configurationWithPointSize:kLensCameraSymbolPointSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-  [button setPreferredSymbolConfiguration:symbolConfig
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    self.pointerInteractionEnabled = YES;
+    self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
+    self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+
+    UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
+        configurationWithPointSize:kLensCameraSymbolPointSize
+                            weight:UIImageSymbolWeightRegular
+                             scale:UIImageSymbolScaleMedium];
+    [self setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
 
-  [button setImage:CustomSymbolWithPointSize(kCameraLensSymbol,
+    [self setImage:CustomSymbolWithPointSize(kCameraLensSymbol,
                                              kLensCameraSymbolPointSize)
           forState:UIControlStateNormal];
-  button.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-  [NSLayoutConstraint
-      activateConstraints:@[ [button.widthAnchor
-                              constraintEqualToAnchor:button.heightAnchor] ]];
+    [NSLayoutConstraint
+        activateConstraints:@[ [self.widthAnchor
+                                constraintEqualToAnchor:self.heightAnchor] ]];
 
-  return button;
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self
+               selector:@selector(deviceOrientationDidChange)
+                   name:UIDeviceOrientationDidChangeNotification
+                 object:nil];
+  }
+
+  return self;
 }
 
-}  // namespace LensOverlay
+// Handles device rotation.
+- (void)deviceOrientationDidChange {
+  const UIDeviceOrientation deviceOrientation =
+      [[UIDevice currentDevice] orientation];
+
+  // The entrypoint button must be enabled only on landscape mode.
+  self.enabled = deviceOrientation == UIDeviceOrientationPortrait;
+}
+
+@end
