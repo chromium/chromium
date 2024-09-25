@@ -26,7 +26,9 @@ DriveItem& DriveItem::operator=(const DriveItem& other) {
   icon_link = [other.icon_link copy];
   thumbnail_link = [other.thumbnail_link copy];
   background_image_link = [other.background_image_link copy];
+  created_time = other.created_time;
   modified_time = other.modified_time;
+  modified_by_me_time = other.modified_by_me_time;
   viewed_by_me_time = other.viewed_by_me_time;
   shared_with_me_time = other.shared_with_me_time;
   parent_identifier = [other.parent_identifier copy];
@@ -44,7 +46,9 @@ DriveItem& DriveItem::operator=(DriveItem&& other) {
   std::swap(icon_link, other.icon_link);
   std::swap(thumbnail_link, other.thumbnail_link);
   std::swap(background_image_link, other.background_image_link);
+  std::swap(created_time, other.created_time);
   std::swap(modified_time, other.modified_time);
+  std::swap(modified_by_me_time, other.modified_by_me_time);
   std::swap(viewed_by_me_time, other.viewed_by_me_time);
   std::swap(shared_with_me_time, other.shared_with_me_time);
   std::swap(parent_identifier, other.parent_identifier);

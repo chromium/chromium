@@ -33,8 +33,12 @@ struct DriveItem {
   // Link to this shared drive's background image. Only populated for shared
   // drives.
   NSString* background_image_link = nil;
+  // The time the item was created.
+  NSDate* created_time = nil;
   // The last time the item was modified by anyone.
   NSDate* modified_time = nil;
+  // The last time the item was modified by the user.
+  NSDate* modified_by_me_time = nil;
   // The last time the item was viewed by the user.
   NSDate* viewed_by_me_time = nil;
   // The time the item was shared with the current user.
