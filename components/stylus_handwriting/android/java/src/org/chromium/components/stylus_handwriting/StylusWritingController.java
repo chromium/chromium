@@ -21,6 +21,8 @@ public class StylusWritingController {
     private final Context mContext;
     private WebContents mCurrentWebContents;
     @Nullable private PointerIcon mHandwritingIcon;
+    private boolean mIconFetched;
+    private boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
 
     @Nullable private AndroidStylusWritingHandler mAndroidHandler;
@@ -29,18 +31,40 @@ public class StylusWritingController {
 
     static StylusWritingController createControllerForTests(Context context, PointerIcon icon) {
         StylusWritingController controller = new StylusWritingController(context);
+        controller.mIconFetched = true;
         controller.mHandwritingIcon = icon;
         return controller;
     }
 
     /** Creates a new instance of this class. */
     public StylusWritingController(Context context) {
+        this(context, false);
+    }
+
+    public StylusWritingController(
+            Context context, boolean lazyFetchHandWritingIconFeatureEnabled) {
         mContext = context;
-        int iconType = getHandler().getStylusPointerIcon();
-        if (iconType != PointerIcon.TYPE_NULL) {
-            mHandwritingIcon =
-                    PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
+        mLazyFetchHandWritingIconFeatureEnabled = lazyFetchHandWritingIconFeatureEnabled;
+        mIconFetched = false;
+        if (!mLazyFetchHandWritingIconFeatureEnabled) {
+            int iconType = getHandler().getStylusPointerIcon();
+            if (iconType != PointerIcon.TYPE_NULL) {
+                mHandwritingIcon =
+                        PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
+            }
         }
+    }
+
+    private PointerIcon getHandwritingIcon() {
+        if (!mIconFetched) {
+            int iconType = getHandler().getStylusPointerIcon();
+            if (iconType != PointerIcon.TYPE_NULL) {
+                mHandwritingIcon = PointerIcon.getSystemIcon(mContext, iconType);
+            }
+            mIconFetched = true;
+        }
+
+        return mHandwritingIcon;
     }
 
     /**
@@ -113,7 +137,12 @@ public class StylusWritingController {
 
     @Nullable
     public PointerIcon resolvePointerIcon() {
-        return mShouldOverrideStylusHoverIcon ? mHandwritingIcon : null;
+        if (mShouldOverrideStylusHoverIcon) {
+            return mLazyFetchHandWritingIconFeatureEnabled
+                    ? getHandwritingIcon()
+                    : mHandwritingIcon;
+        }
+        return null;
     }
 
     private void setShouldOverrideStylusHoverIcon(boolean shouldOverride) {

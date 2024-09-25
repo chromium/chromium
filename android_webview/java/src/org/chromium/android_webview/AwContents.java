@@ -1429,7 +1429,11 @@ public class AwContents implements SmartClipProvider {
             setScrollBarStyle(mInternalAccessAdapter.super_getScrollBarStyle());
 
             mAwDarkMode = new AwDarkMode(context);
-            mStylusWritingController = new StylusWritingController(context);
+            mStylusWritingController =
+                    new StylusWritingController(
+                            context,
+                            AwFeatureMap.isEnabled(
+                                    AwFeatures.WEBVIEW_LAZY_FETCH_HAND_WRITING_ICON));
 
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));

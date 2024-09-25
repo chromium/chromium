@@ -31,6 +31,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewExitReasonMetric,
     &::features::kWebViewFrameRateHints,
     &features::kWebViewInvokeZoomPickerOnGSU,
+    &features::kWebViewLazyFetchHandWritingIcon,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewUseMetricsUploadService,
