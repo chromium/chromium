@@ -9,11 +9,6 @@ GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
  * Automatic clicks feature using accessibility common extension browser tests.
  */
 AutoclickE2ETest = class extends E2ETestBase {
-  constructor() {
-    super();
-    this.navigateLacrosWithAutoComplete = true;
-  }
-
   async setUpDeferred() {
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;

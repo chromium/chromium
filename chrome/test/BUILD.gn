@@ -909,8 +909,6 @@ static_library("test_support") {
       "base/ash/scoped_test_system_nss_key_slot_mixin.h",
       "base/browser_process_platform_part_test_api_chromeos.cc",
       "base/browser_process_platform_part_test_api_chromeos.h",
-      "base/chromeos/ash_browser_test_starter.cc",
-      "base/chromeos/ash_browser_test_starter.h",
 
       # Only used for Chromevox tests, so only included on Chrome OS.
       "base/ash/extension_js_browser_test.cc",
@@ -8539,7 +8537,6 @@ test("unit_tests") {
       "../browser/upgrade_detector/upgrade_detector_chromeos_unittest.cc",
       "../common/chrome_constants_ash_unittest.cc",
       "../renderer/chromeos_delayed_callback_group_unittest.cc",
-      "base/chromeos/ash_browser_test_starter_unittest.cc",
     ]
 
     deps += [
