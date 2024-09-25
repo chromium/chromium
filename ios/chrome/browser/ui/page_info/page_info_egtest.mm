@@ -7,6 +7,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/browser/content_settings_uma_util.h"
 #import "components/content_settings/core/common/content_settings_types.h"
@@ -15,6 +16,8 @@
 #import "components/page_info/core/page_info_action.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_app_interface.h"
@@ -38,6 +41,11 @@ namespace {
 
 using ::base::test::ios::kWaitForUIElementTimeout;
 using ::base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::HistoryEntry;
+using chrome_test_util::NavigationBarDoneButton;
+
+// Title and content of the external website used for testing.
+const char kTitleAndContentOfExternalWebsite[] = "Example Domain";
 
 // Matcher infobar modal camera permissions switch.
 id<GREYMatcher> CameraPermissionsSwitch(BOOL isOn) {
@@ -49,6 +57,11 @@ id<GREYMatcher> CameraPermissionsSwitch(BOOL isOn) {
 id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   return chrome_test_util::TableViewSwitchCell(
       kPageInfoMicrophoneSwitchAccessibilityIdentifier, isOn);
+}
+
+// Matcher for the search button.
+id<GREYMatcher> SearchIconButton() {
+  return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
 }
 
 // Matcher for Security help center link in footer.
@@ -542,6 +555,122 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                    IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping on the Last Visited row reveals the Last Visited subpage.
+- (void)testLastVisitedSubpage {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL URL("https://www.example.com/");
+
+  // Create an entry in History which took place one hour ago on `url`.
+  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+
+  // Visit `URL` and open Page Info.
+  AddAboutThisSiteHint(URL);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that tapping on the Last Visited Row leads to the Last Visited
+  // subpage.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Assert that Last Visited subpage displays one entry.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL)),
+              kTitleAndContentOfExternalWebsite)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that tapping on the show full history button leads to the history page.
+// Additionally, it tests that dismissing full history reveals back the Last
+// Visited subpage.
+- (void)testLastVisitedSubpageOpensFullHistory {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL URL("https://www.example.com/");
+
+  // Create an entry in History which took place one hour ago on `url`.
+  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+
+  // Visit `URL` and open Page Info.
+  AddAboutThisSiteHint(URL);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page and then the full history.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_HISTORY_SHOWFULLHISTORY_LINK))]
+      performAction:grey_tap()];
+
+  // Check that full history page is displayed.
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that dismissing the full history reveals the Last Visited subpage.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()
+              error:nil];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL)),
+              kTitleAndContentOfExternalWebsite)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that tapping on a history entry dismisses both full history and the
+// underlying Page Info (which presents the Last Visited subpage).
+- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL URL("https://www.example.com/");
+
+  // Create an entry in History which took place one hour ago on `url`.
+  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+
+  // Visit `URL` and open Page Info.
+  AddAboutThisSiteHint(URL);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page and then the full history.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_HISTORY_SHOWFULLHISTORY_LINK))]
+      performAction:grey_tap()];
+
+  // Check that tapping on a URL (from full history) dismisses both full history
+  // and Page Info.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL)),
+              kTitleAndContentOfExternalWebsite)] performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
 }
 
 // Tests that we don't crash when showing the page info twice (prevent

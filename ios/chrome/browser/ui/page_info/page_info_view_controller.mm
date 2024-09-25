@@ -218,7 +218,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       }
       break;
     case ItemIdentifierLastVisited:
-      // TODO(crbug.com/358341532): Handle the tap on the Last Visited row.
+      CHECK(IsPageInfoLastVisitedIOSEnabled());
+      [self.pageInfoPresentationHandler showLastVisitedPage];
       break;
     case ItemIdentifierPermissionsCamera:
     case ItemIdentifierPermissionsMicrophone:

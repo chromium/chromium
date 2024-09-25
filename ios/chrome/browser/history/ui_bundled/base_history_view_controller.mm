@@ -70,11 +70,11 @@
 using history::BrowsingHistoryService;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHistoryEntry = kItemTypeEnumZero,
-  ItemTypeEntriesStatus,
-  ItemTypeEntriesStatusWithLink,
-  ItemTypeActivityIndicator,
+enum ItemType : NSInteger {
+  kItemTypeHistoryEntry = kItemTypeEnumZero,
+  kItemTypeEntriesStatus,
+  kItemTypeEntriesStatusWithLink,
+  kItemTypeActivityIndicator,
 };
 // Section identifier for the header (sync information) section.
 const NSInteger kEntriesStatusSectionIdentifier = kSectionIdentifierEnumZero;
@@ -159,8 +159,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   _dragDropHandler.dragDataSource = self;
   self.tableView.dragDelegate = _dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
-
-  [self showHistoryMatchingQuery:nil];
 }
 
 #pragma mark - TableViewModel
@@ -220,6 +218,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     return;
   }
 
+  self.loading = YES;
   if ([self shouldDisplayLoadingIndicator]) {
     [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
                                                       IDS_HISTORY_NO_RESULTS)];
@@ -266,6 +265,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   [self removeEmptyTableView];
 }
 
+// TODO(crbug.com/369517575): Clean-up deprecated implementation of the Context
+// menu.
 #pragma mark - Context Menu
 
 // Displays a context menu on the cell pressed with gestureRecognizer.
@@ -420,6 +421,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     return;
   }
 
+  self.loading = NO;
   _query_history_continuation = std::move(continuationClosure);
 
   // If history sync is enabled and there hasn't been a response from synced
@@ -459,7 +461,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   DCHECK([[self tableViewModel] numberOfSections]);
   for (const BrowsingHistoryService::HistoryEntry& entry : results) {
     HistoryEntryItem* item =
-        [[HistoryEntryItem alloc] initWithType:ItemTypeHistoryEntry
+        [[HistoryEntryItem alloc] initWithType:kItemTypeHistoryEntry
                          accessibilityDelegate:self];
     item.text = [history::FormattedTitle(entry.title, entry.url) copy];
     item.detailText = base::SysUTF16ToNSString(
@@ -666,8 +668,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ(tableView, self.tableView);
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // Only navigate and record metrics if a ItemTypeHistoryEntry was selected.
-  if (item.type == ItemTypeHistoryEntry) {
+  // Only navigate and record metrics if a kItemTypeHistoryEntry was selected.
+  if (item.type == kItemTypeHistoryEntry) {
     HistoryEntryItem* historyItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     [self openURL:historyItem.URL];
@@ -677,7 +679,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return (item.type == ItemTypeHistoryEntry);
+  return (item.type == kItemTypeHistoryEntry);
 }
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
@@ -726,8 +728,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   UITableViewCell* cellToReturn = [super tableView:tableView
                              cellForRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  cellToReturn.userInteractionEnabled = !(item.type == ItemTypeEntriesStatus);
-  if (item.type == ItemTypeHistoryEntry) {
+  cellToReturn.userInteractionEnabled = !(item.type == kItemTypeEntriesStatus);
+  if (item.type == kItemTypeHistoryEntry) {
     HistoryEntryItem* URLItem =
         base::apple::ObjCCastStrict<HistoryEntryItem>(item);
     TableViewURLCell* URLCell =
@@ -786,14 +788,14 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch (item.type) {
-    case ItemTypeHistoryEntry: {
+    case kItemTypeHistoryEntry: {
       HistoryEntryItem* URLItem =
           base::apple::ObjCCastStrict<HistoryEntryItem>(item);
       return [[URLInfo alloc] initWithURL:URLItem.URL title:URLItem.text];
     }
-    case ItemTypeEntriesStatus:
-    case ItemTypeActivityIndicator:
-    case ItemTypeEntriesStatusWithLink:
+    case kItemTypeEntriesStatus:
+    case kItemTypeActivityIndicator:
+    case kItemTypeEntriesStatusWithLink:
       break;
   }
   return nil;
@@ -882,14 +884,14 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   if (messageWillContainLink) {
     TableViewLinkHeaderFooterItem* header =
         [[TableViewLinkHeaderFooterItem alloc]
-            initWithType:ItemTypeEntriesStatusWithLink];
+            initWithType:kItemTypeEntriesStatusWithLink];
     header.text = message;
     header.urls = @[ [[CrURL alloc] initWithGURL:GURL(kHistoryMyActivityURL)] ];
     item = header;
   } else {
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
-            initWithType:ItemTypeEntriesStatus];
+            initWithType:kItemTypeEntriesStatus];
     header.text = message;
     item = header;
   }
@@ -953,7 +955,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
   return YES;
 }
 
@@ -971,7 +973,7 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -984,9 +986,9 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   base::RecordAction(base::UserMetricsAction("IOSHistoryCloseWithSwipe"));
-  // Call the delegate dismissViewController:withCompletion: to
+  // Call the delegate dismissViewController: to
   // clean up state and stop the Coordinator.
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 - (NSMutableArray<NSIndexPath*>*)filteredOutEntriesIndexPaths {

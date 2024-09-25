@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_history_mediator.h"
+#import "ios/chrome/browser/ui/page_info/page_info_last_visited_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_security_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
@@ -41,12 +43,15 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-@interface PageInfoCoordinator () <PageInfoPresentationCommands>
+@interface PageInfoCoordinator () <PageInfoPresentationCommands,
+                                   HistoryCoordinatorDelegate>
 
 @property(nonatomic, strong) UINavigationController* navigationController;
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
 @property(nonatomic, strong) PageInfoViewController* viewController;
 @property(nonatomic, strong) PageInfoPermissionsMediator* permissionsMediator;
+@property(nonatomic, strong)
+    PageInfoLastVisitedCoordinator* lastVisitedCoordinator;
 
 @end
 
@@ -147,7 +152,7 @@
 
 - (void)stop {
   [self.permissionsMediator disconnect];
-  [self.baseViewController.presentedViewController
+  [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   [self.dispatcher stopDispatchingToTarget:self];
@@ -162,6 +167,9 @@
   [_securityCoordinator stop];
   _securityCoordinator.pageInfoPresentationHandler = nil;
   _securityCoordinator = nil;
+
+  [self.lastVisitedCoordinator stop];
+  self.lastVisitedCoordinator = nil;
 
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
@@ -225,6 +233,33 @@
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   return [PageInfoSiteSecurityMediator configurationForWebState:webState];
+}
+
+- (void)showLastVisitedPage {
+  CHECK(IsPageInfoLastVisitedIOSEnabled());
+  self.lastVisitedCoordinator = [[PageInfoLastVisitedCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:self.browser
+                              hostName:_siteSecurityDescription.siteURL];
+  self.lastVisitedCoordinator.delegate = self;
+  [self.lastVisitedCoordinator start];
+}
+
+#pragma mark - HistoryCoordinatorDelegate
+
+- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
+  if (completion) {
+    completion();
+  }
+
+  // Stop this coordinator.
+  id<PageInfoCommands> pageInfoCommandsHandler =
+      HandlerForProtocol(self.dispatcher, PageInfoCommands);
+  [pageInfoCommandsHandler hidePageInfo];
+}
+
+- (void)closeHistory {
+  [self closeHistoryWithCompletion:nil];
 }
 
 @end

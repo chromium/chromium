@@ -124,6 +124,8 @@ history::WebHistoryService* WebHistoryServiceGetter(
     _browserObserver.reset();
   }
 
+  [self.viewController.contextMenuCoordinator stop];
+
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
   _browsingHistoryDriverDelegate = nullptr;
@@ -134,6 +136,10 @@ history::WebHistoryService* WebHistoryServiceGetter(
 - (void)dismissViewController:(BaseHistoryViewController*)controller
                withCompletion:(ProceduralBlock)completionHandler {
   [self.delegate closeHistoryWithCompletion:completionHandler];
+}
+
+- (void)dismissViewController:(BaseHistoryViewController*)controller {
+  [self.delegate closeHistory];
 }
 
 #pragma mark - HistoryMenuProvider

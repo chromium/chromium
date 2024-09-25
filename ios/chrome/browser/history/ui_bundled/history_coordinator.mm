@@ -62,10 +62,6 @@
 }
 
 - (void)dismissHistoryNavigationWithCompletion:(ProceduralBlock)completion {
-  // Make sure to stop `self.historyTableViewController.contextMenuCoordinator`
-  // before dismissing, or `_historyNavigationController` will dismiss that
-  // instead of itself.
-  [_viewController.contextMenuCoordinator stop];
   [_historyNavigationController dismissViewControllerAnimated:YES
                                                    completion:completion];
   _historyNavigationController = nil;

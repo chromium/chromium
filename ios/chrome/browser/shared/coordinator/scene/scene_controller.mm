@@ -4193,4 +4193,8 @@ using UserFeedbackDataCallback =
   }];
 }
 
+- (void)closeHistory {
+  [self closeHistoryWithCompletion:nil];
+}
+
 @end

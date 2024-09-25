@@ -71,11 +71,8 @@
 using history::BrowsingHistoryService;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHistoryEntry = kItemTypeEnumZero,
-  ItemTypeEntriesStatus,
-  ItemTypeEntriesStatusWithLink,
-  ItemTypeActivityIndicator,
+enum ItemType : NSInteger {
+  kItemTypeHistoryEntry = kItemTypeEnumZero,
 };
 // The default UIButton font size used by UIKit.
 const CGFloat kButtonDefaultFontSize = 15.0;
@@ -227,8 +224,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     [self updateToolbarButtonsWithAnimation:YES];
   } else {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // Only navigate and record metrics if a ItemTypeHistoryEntry was selected.
-    if (item.type == ItemTypeHistoryEntry) {
+    // Only navigate and record metrics if a kItemTypeHistoryEntry was selected.
+    if (item.type == kItemTypeHistoryEntry) {
       if (self.searchInProgress) {
         // Set the searchController active property to NO or the SearchBar will
         // cause the navigation controller to linger for a second  when
@@ -367,7 +364,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                    queryResultsInfo
                         continuationClosure:
                             (base::OnceClosure)continuationClosure {
-  self.loading = NO;
   [super historyQueryWasCompletedWithResults:results
                             queryResultsInfo:queryResultsInfo
                          continuationClosure:std::move(continuationClosure)];
@@ -438,7 +434,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Dismisses this ViewController.
 - (void)dismissHistory {
   base::RecordAction(base::UserMetricsAction("MobileHistoryClose"));
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 - (NSArray<UIBarButtonItem*>*)toolbarButtons {

@@ -1414,6 +1414,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }];
 }
 
+- (void)closeHistory {
+  [self closeHistoryWithCompletion:nil];
+}
+
 #pragma mark - TabContextMenuDelegate
 
 - (void)shareURL:(const GURL&)URL
