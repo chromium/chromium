@@ -523,6 +523,11 @@ void HistoryEmbeddingsService::SendQualityLog(
           query_quality->add_top_documents_shown();
       document_shown->set_url(scored_url_row.row.url().spec());
       document_shown->set_was_clicked(selections.contains(row_index));
+      if (!scored_url_row.scores.empty()) {
+        document_shown->set_best_embedding_score(
+            std::ranges::max(scored_url_row.scores));
+      }
+      document_shown->set_total_document_score(scored_url_row.scored_url.score);
 
       // Log the top passages that may be used as context for the Answerer.
       for (size_t passage_index : scored_url_row.GetBestScoreIndices(
