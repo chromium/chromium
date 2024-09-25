@@ -520,7 +520,7 @@
 
 #pragma mark - ContentSuggestionsCommands
 
-- (void)showSetUpListSeeMoreMenu {
+- (void)showSetUpListSeeMoreMenuExpanded:(BOOL)expanded {
   [_setUpListShowMoreViewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
@@ -538,6 +538,10 @@
     UISheetPresentationControllerDetent.mediumDetent,
     UISheetPresentationControllerDetent.largeDetent
   ];
+  if (expanded) {
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }
   presentationController.preferredCornerRadius = 16;
   [_magicStackCollectionView
       presentViewController:_setUpListShowMoreViewController
@@ -614,7 +618,7 @@
       [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
       break;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [self showSetUpListSeeMoreMenu];
+      [self showSetUpListSeeMoreMenuExpanded:NO];
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
       [self showMagicStackParcelList];

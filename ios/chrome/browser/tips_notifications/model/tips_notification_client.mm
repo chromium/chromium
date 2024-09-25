@@ -527,7 +527,8 @@ void TipsNotificationClient::ShowSignin(Browser* browser) {
 void TipsNotificationClient::ShowSetUpListContinuation(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(browser->GetCommandDispatcher(),
-                      ContentSuggestionsCommands) showSetUpListSeeMoreMenu];
+                      ContentSuggestionsCommands)
+      showSetUpListSeeMoreMenuExpanded:YES];
 }
 
 void TipsNotificationClient::ShowDocking(Browser* browser) {

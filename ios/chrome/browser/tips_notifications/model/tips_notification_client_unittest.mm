@@ -375,7 +375,7 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
 TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
   StubPrepareToPresentModal();
   id mock_handler = MockHandler(@protocol(ContentSuggestionsCommands));
-  OCMExpect([mock_handler showSetUpListSeeMoreMenu]);
+  OCMExpect([mock_handler showSetUpListSeeMoreMenuExpanded:YES]);
 
   id mock_response =
       MockRequestResponse(TipsNotificationType::kSetUpListContinuation);
