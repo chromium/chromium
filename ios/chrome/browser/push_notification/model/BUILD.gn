@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("browser_state_service") {
+source_set("profile_service") {
   sources = [
     "push_notification_profile_service.h",
     "push_notification_profile_service.mm",
@@ -23,14 +23,14 @@ source_set("browser_state_service") {
   ]
 }
 
-source_set("browser_state_service_factory") {
+source_set("profile_service_factory") {
   sources = [
     "push_notification_profile_service_factory.h",
     "push_notification_profile_service_factory.mm",
   ]
 
   deps = [
-    ":browser_state_service",
+    ":profile_service",
     ":push_notification_service",
     ":push_notification_service_header",
     "//base",

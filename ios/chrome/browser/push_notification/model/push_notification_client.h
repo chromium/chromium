@@ -25,8 +25,8 @@ class Browser;
 // intend to support push notifications should create a class that inherits from
 // the PushNotificationClient class.
 // TODO(crbug.com/325254943): Update this class and subclasses to accept an
-// injected ChromeBrowserState* and not internally fetch a browser state via
-// GetlastUsedBrowserState. Update tests as well.
+// injected ProfileIOS* and not internally fetch a profile via
+// GetlastUsedProfile. Update tests as well.
 class PushNotificationClient {
  public:
   PushNotificationClient(PushNotificationClientId client_id);
@@ -96,7 +96,7 @@ class PushNotificationClient {
   // method (either create specific manager per-profile, or include in the
   // notification an identifier for the profile, e.g. gaia id).
   // TODO(crbug.com/41497027): This API should be redesigned.
-  ChromeBrowserState* GetAnyProfile();
+  ProfileIOS* GetAnyProfile();
 
   // Returns the first active browser found with scene level
   // SceneActivationLevelForegroundActive.

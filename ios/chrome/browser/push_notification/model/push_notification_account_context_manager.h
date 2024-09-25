@@ -22,12 +22,12 @@ enum class PushNotificationClientId;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Adds the account to the manager if the account is not signed into the device
-// in any BrowserState. This function returns a BOOL value indicating whether
+// in any Profile. This function returns a BOOL value indicating whether
 // the account was added to the manager.
 - (BOOL)addAccount:(const std::string&)gaiaID;
 
 // Removes the account from the manager if the account is not signed into the
-// device in any BrowserState. This function returns a BOOL value indicating
+// device in any Profile. This function returns a BOOL value indicating
 // whether the account was removed from the manager.
 - (BOOL)removeAccount:(const std::string&)gaiaID;
 

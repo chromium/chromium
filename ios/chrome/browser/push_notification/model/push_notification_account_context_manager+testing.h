@@ -8,7 +8,7 @@
 @interface PushNotificationAccountContextManager (Testing)
 
 // Returns the number of times `gaiaID` has been signed into Chrome across
-// BrowserStates.
+// Profiles.
 - (NSUInteger)registrationCountForAccount:(const std::string&)gaiaID;
 
 @end

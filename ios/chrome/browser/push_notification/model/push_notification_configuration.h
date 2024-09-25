@@ -38,7 +38,7 @@ using GaiaIdToPushNotificationPreferenceMap =
 // A dictionary that maps a user's GAIA ID to an object containing the account's
 // preferences for all push notification enabled features and an number
 // representing the number of times the account is signed in across
-// BrowserStates.
+// Profiles.
 @property(nonatomic, strong)
     PushNotificationAccountContextManager* contextManager;
 

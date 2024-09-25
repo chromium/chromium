@@ -796,7 +796,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   plus_addresses::prefs::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
-  PushNotificationService::RegisterBrowserStatePrefs(registry);
+  PushNotificationService::RegisterProfilePrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
   safe_browsing::RegisterProfilePrefs(registry);
   segmentation_platform::SegmentationPlatformService::RegisterProfilePrefs(

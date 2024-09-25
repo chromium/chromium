@@ -258,7 +258,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
                   .mainBrowserProvider.browser;
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
-                                browserState:browser->GetBrowserState()];
+                                     profile:browser->GetProfile()];
           // Logs when a Registration succeeded with a loaded BrowserState.
           base::UmaHistogramBoolean(
               "ContentNotifications.Registration.BrowserStateUnavailable",
@@ -266,7 +266,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         } else {
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
-                                browserState:nil];
+                                     profile:nil];
         }
       }));
 }

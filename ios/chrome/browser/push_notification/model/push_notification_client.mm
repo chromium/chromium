@@ -72,13 +72,13 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 // the notification should includes some way to identify the associated profile
 // to use (maybe by including the gaia id of the associated profile).
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
-  ChromeBrowserState* profile = GetAnyProfile();
+  ProfileIOS* profile = GetAnyProfile();
   if (!profile) {
     return nullptr;
   }
 
   std::set<Browser*> browsers =
-      BrowserListFactory::GetForBrowserState(profile)->BrowsersOfType(
+      BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
           BrowserList::BrowserType::kRegular);
 
   for (Browser* browser : browsers) {
@@ -128,8 +128,8 @@ void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(
   }
 }
 
-ChromeBrowserState* PushNotificationClient::GetAnyProfile() {
-  std::vector<ChromeBrowserState*> loaded_profiles =
+ProfileIOS* PushNotificationClient::GetAnyProfile() {
+  std::vector<ProfileIOS*> loaded_profiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   if (loaded_profiles.empty()) {

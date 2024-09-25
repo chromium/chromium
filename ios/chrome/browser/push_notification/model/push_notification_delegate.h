@@ -30,7 +30,7 @@
 // token this function aggregates all the necessary information and registers
 // the device to the Push Notification server.
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
-                          browserState:(ChromeBrowserState*)browserState;
+                               profile:(ProfileIOS*)profile;
 
 @end
 

@@ -12,7 +12,7 @@
 class PushNotificationProfileService;
 
 // Singleton that creates the PushNotificationProfileService and associates that
-// service with ChromeBrowserState.
+// service with ProfileIOS.
 class PushNotificationProfileServiceFactory
     : public ProfileKeyedServiceFactoryIOS {
  public:

@@ -184,7 +184,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
+    "//ios/chrome/browser/push_notification/model:profile_service_factory",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
