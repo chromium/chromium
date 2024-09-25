@@ -47,7 +47,13 @@ PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
 #endif
 }
 
-PDFiumRange::PDFiumRange(const PDFiumRange& that) = default;
+PDFiumRange::PDFiumRange(const PDFiumRange&) = default;
+
+PDFiumRange& PDFiumRange::operator=(const PDFiumRange&) = default;
+
+PDFiumRange::PDFiumRange(PDFiumRange&&) noexcept = default;
+
+PDFiumRange& PDFiumRange::operator=(PDFiumRange&&) noexcept = default;
 
 PDFiumRange::~PDFiumRange() = default;
 

@@ -28,7 +28,10 @@ bool IsIgnorableCharacter(char16_t c);
 class PDFiumRange {
  public:
   PDFiumRange(PDFiumPage* page, int char_index, int char_count);
-  PDFiumRange(const PDFiumRange& that);
+  PDFiumRange(const PDFiumRange&);
+  PDFiumRange& operator=(const PDFiumRange&);
+  PDFiumRange(PDFiumRange&&) noexcept;
+  PDFiumRange& operator=(PDFiumRange&&) noexcept;
   ~PDFiumRange();
 
   // Update how many characters are in the selection.  Could be negative if

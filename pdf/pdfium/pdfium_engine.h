@@ -602,7 +602,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void ContinueFind(bool case_sensitive);
 
   // Inserts a find result into `find_results_`, which is sorted.
-  void AddFindResult(const PDFiumRange& result);
+  void AddFindResult(PDFiumRange result);
 
   // Search a page using PDFium's methods.  Doesn't work with unicode.  This
   // function is just kept arount in case PDFium code is fixed.

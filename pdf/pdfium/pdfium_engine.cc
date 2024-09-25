@@ -1805,6 +1805,8 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   bool first_search = (current_find_text_ != text);
   int character_to_start_searching_from = 0;
   if (first_search) {
+    // Do not move `selection_` here, as StopFind() expects to start with the
+    // existing selection.
     std::vector<PDFiumRange> old_selection = selection_;
     StopFind();
     current_find_text_ = text;
@@ -1906,7 +1908,7 @@ void PDFiumEngine::SearchUsingPDFium(const std::u16string& term,
       break;
     }
 
-    AddFindResult(result);
+    AddFindResult(std::move(result));
   }
 
   FPDFText_FindClose(find);
@@ -2044,7 +2046,7 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
   }
 }
 
-void PDFiumEngine::AddFindResult(const PDFiumRange& result) {
+void PDFiumEngine::AddFindResult(PDFiumRange result) {
   // Figure out where to insert the new location, since we could have
   // started searching midway and now we wrapped.
   size_t result_index;
@@ -2057,7 +2059,7 @@ void PDFiumEngine::AddFindResult(const PDFiumRange& result) {
       break;
     }
   }
-  find_results_.insert(find_results_.begin() + result_index, result);
+  find_results_.insert(find_results_.begin() + result_index, std::move(result));
   UpdateTickMarks();
   client_->NotifyNumberOfFindResultsChanged(find_results_.size(), false);
 }
