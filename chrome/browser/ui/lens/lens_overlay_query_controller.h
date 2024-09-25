@@ -126,11 +126,24 @@ class LensOverlayQueryController {
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.
+  // TODO(b/369374459): Cleanup this method once interaction flow goes through
+  //                    PerformFetchRequest instead.
   virtual void CreateAndFetchEndpointFetcher(
       lens::LensOverlayServerRequest request_data,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
       EndpointFetcherCallback fetched_response_callback);
+
+  // Creates an endpoint fetcher with the given request_headers to perform the
+  // given request. Calls fetcher_created_callback when the EndpointFetcher is
+  // created to keep it alive while the request is being made.
+  // response_received_callback is invoked once the request returns a response.
+  virtual void PerformFetchRequest(
+      lens::LensOverlayServerRequest* request,
+      std::vector<std::string>* request_headers,
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback response_received_callback);
 
   // Sends a latency Gen204 ping if enabled.
   virtual void SendLatencyGen204IfEnabled(int64_t latency_ms);
@@ -160,14 +173,74 @@ class LensOverlayQueryController {
     kReceivedFullImageErrorResponse = 3,
   };
 
+  // Data class for constructing a fetch request to the Lens servers.
+  // All fields that are required for the request should use std::unique_ptr to
+  // validate all fields are non-null prior to making a request. If a field does
+  // not need to be set, but should be included if it is set, use std::optional.
+  struct LensServerFetchRequest {
+   public:
+    LensServerFetchRequest(int sequence_id, int64_t query_start_time_ms);
+    ~LensServerFetchRequest();
+
+    // The sequence ID of the request this data belongs to. Used for cancelling
+    // any requests that have been superseded by another.
+    const int sequence_id_;
+
+    // The start time of the query.
+    const int64_t query_start_time_ms_;
+
+    // The request to be sent to the server. Must be set prior to making the
+    // request.
+    std::unique_ptr<lens::LensOverlayServerRequest> request_;
+
+    // The headers to attach to the request.
+    std::unique_ptr<std::vector<std::string>> request_headers_;
+  };
+
   // Processes the screenshot and fetches a full image request.
   void PrepareAndFetchFullImageRequest();
 
-  // Continues with fetching the full image request after the screenshot has
-  // been encoded.
-  void OnImageDataReady(
+  // Does any preprocessing on the image data outside of encoding the
+  // screenshot bytes that needs to be done before attaching the ImageData to
+  // the full image request.
+  void PrepareImageDataForFullImageRequest(
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
       lens::ImageData image_data);
+
+  // Creates the FullImageRequest that is sent to the server and tries to
+  // perform the request. If all async flows have not finished, the attempt to
+  // perform the request will be ignored, and the last async flow to finish
+  // will perform the request.
+  void CreateFullImageRequestAndTryPerformFullImageRequest(
+      int sequence_id,
+      std::unique_ptr<lens::LensOverlayRequestId> request_id,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      lens::ImageData image_data);
+
+  // Creates the OAuth headers to be used in the full image request. If the
+  // users OAuth is unavailable, will fallback to using the API key. If all
+  // async flows have not finished, the attempt to perform the request will be
+  // ignored, and the last async flow to finish will perform the request.
+  void CreateOAuthHeadersAndTryPerformFullPageRequest(int sequence_id);
+
+  // Called when an asynchronous piece of data needed to make the full image
+  // request is ready. Once this has been invoked with every necessary piece of
+  // data with the same sequence_id, it will call PerformFullImageRequest to
+  // send the request to the server. Ignores any data received from an old
+  // sequence_id.
+  void FullImageRequestDataReady(int sequence_id,
+                                 lens::LensOverlayServerRequest request);
+  void FullImageRequestDataReady(int sequence_id,
+                                 std::vector<std::string> headers);
+  // Helper to the above, used to actually validate the data prior to calling
+  // PerformFullImageRequest().
+  void FullImageRequestDataHelper(int sequence_id);
+
+  // Verifies the given sequence_id is still the most recent.
+  bool IsCurrentFullImageSequence(int sequence_id);
+
+  // Creates the endpoint fetcher and send the full image request to the server.
+  void PerformFullImageRequest();
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
@@ -199,15 +272,8 @@ class LensOverlayQueryController {
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
       std::optional<lens::ImageCrop> image_crop);
 
-  // Fetches the endpoint using the initial image data.
-  void FetchFullImageRequest(
-      std::unique_ptr<lens::LensOverlayRequestId> request_id,
-      lens::ImageData image_data,
-      lens::LensOverlayClientLogs client_logs);
-
-  // Handles the endpoint fetch response for the initial request.
+  // Handles the endpoint fetch response for the full image request.
   void FullImageFetchResponseHandler(
-      int64_t query_start_time_ms,
       int request_sequence_id,
       std::unique_ptr<EndpointResponse> response);
 
@@ -279,6 +345,8 @@ class LensOverlayQueryController {
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Creates an endpoint fetcher using the received auth token data.
+  // TODO(b/369374459): Cleanup this method once interaction flow goes through
+  //                    PerformFetchRequest instead.
   void FetchEndpoint(lens::LensOverlayServerRequest request_data,
                      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
                          fetcher_created_callback,
@@ -339,6 +407,10 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
+  // The data for the full image request in progress. Is null if no full image
+  // request has been made.
+  std::unique_ptr<LensServerFetchRequest> latest_full_image_request_data_;
+
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;
 
@@ -398,10 +470,6 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_;
-
-  // The latest full image request sequence id. Used for cancelling any full
-  // image requests that have been superseded by another.
-  int latest_full_image_sequence_id_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

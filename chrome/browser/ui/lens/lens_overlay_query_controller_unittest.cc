@@ -170,6 +170,45 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     fetcher->PerformRequest(std::move(endpoint_fetcher_callback), kTestApiKey);
   }
 
+  // Mocked to avoid making actual server call. Instead, returns a fake
+  // response.
+  void PerformFetchRequest(
+      lens::LensOverlayServerRequest* request,
+      std::vector<std::string>* request_headers,
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback response_received_callback) override {
+    lens::LensOverlayServerResponse fake_server_response;
+    if (request->has_objects_request()) {
+      sent_objects_request_.CopyFrom(request->objects_request());
+      fake_server_response.mutable_objects_response()->CopyFrom(
+          fake_objects_response_);
+      sent_request_id_.CopyFrom(
+          request->objects_request().request_context().request_id());
+    } else if (request->has_interaction_request()) {
+      sent_interaction_request_.CopyFrom(request->interaction_request());
+      fake_server_response.mutable_interaction_response()->CopyFrom(
+          fake_interaction_response_);
+      sent_request_id_.CopyFrom(
+          request->interaction_request().request_context().request_id());
+    } else {
+      NOTREACHED_IN_MIGRATION();
+    }
+    sent_client_logs_.CopyFrom(request->client_logs());
+
+    EndpointResponse fake_endpoint_response;
+    fake_endpoint_response.response = fake_server_response.SerializeAsString();
+    fake_endpoint_response.http_status_code =
+        google_apis::ApiErrorCode::HTTP_SUCCESS;
+    std::unique_ptr<FakeEndpointFetcher> endpoint_fetcher =
+        std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
+    EndpointFetcher* fetcher = endpoint_fetcher.get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                  std::move(endpoint_fetcher)));
+    fetcher->PerformRequest(std::move(response_received_callback), kTestApiKey);
+  }
+
   void SendLatencyGen204IfEnabled(int64_t latency_ms) override {
     num_gen204_pings_sent_++;
   }

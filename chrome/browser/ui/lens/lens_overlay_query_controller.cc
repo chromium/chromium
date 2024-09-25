@@ -242,49 +242,6 @@ void LensOverlayQueryController::StartQueryFlow(
   PrepareAndFetchFullImageRequest();
 }
 
-void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
-  // There can be multiple full image requests that are called. For example,
-  // when translate mode is enabled after opening the overlay or when turning
-  // translate mode back off after enabling. Reset if there is one pending.
-  latest_full_image_sequence_id_ = -1;
-  full_image_endpoint_fetcher_.reset();
-  query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
-
-  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
-      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
-  ref_counted_logs->client_logs().set_lens_overlay_entry_point(
-      LenOverlayEntryPointFromInvocationSource(invocation_source_));
-
-  // Do the image encoding asynchronously to prevent the main thread from
-  // blocking on the encoding.
-  encoding_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&lens::DownscaleAndEncodeBitmap, original_screenshot_,
-                     ui_scale_factor_, ref_counted_logs),
-      base::BindOnce(&LensOverlayQueryController::OnImageDataReady,
-                     weak_ptr_factory_.GetWeakPtr(), ref_counted_logs));
-}
-
-void LensOverlayQueryController::OnImageDataReady(
-    scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
-    lens::ImageData image_data) {
-  if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
-  }
-
-  resized_bitmap_size_ = gfx::Size(image_data.image_metadata().width(),
-                                   image_data.image_metadata().height());
-
-  AddSignificantRegions(image_data, std::move(significant_region_boxes_));
-
-  // The image sequence should be incremented and the analytics id updated
-  // for all full-image requests.
-  request_id_generator_->IncrementImageSequenceId();
-  request_id_generator_->CreateNewAnalyticsId();
-  FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
-                        ref_counted_logs->client_logs());
-}
-
 lens::LensOverlayClientContext
 LensOverlayQueryController::CreateClientContext() {
   lens::LensOverlayClientContext context;
@@ -353,54 +310,12 @@ LensOverlayQueryController::AddVisualSearchInteractionLogData(
   return additional_search_query_params;
 }
 
-void LensOverlayQueryController::FetchFullImageRequest(
-    std::unique_ptr<lens::LensOverlayRequestId> request_id,
-    lens::ImageData image_data,
-    lens::LensOverlayClientLogs client_logs) {
-  DCHECK_EQ(query_controller_state_,
-            QueryControllerState::kAwaitingFullImageResponse);
-  // Create the request.
-  lens::LensOverlayServerRequest request;
-  request.mutable_client_logs()->CopyFrom(client_logs);
-  lens::LensOverlayRequestContext request_context;
-  request_context.mutable_request_id()->CopyFrom(*request_id.get());
-  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
-  request.mutable_objects_request()->mutable_request_context()->CopyFrom(
-      request_context);
-  request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
-
-  // The content bytes are optional, so if they were included in the
-  // StartQueryFlow, included them in the request.
-  if (!underlying_content_bytes_.empty()) {
-    lens::Payload payload;
-    payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
-                                           underlying_content_bytes_.end());
-    payload.set_content_type(underlying_content_type_);
-    request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
-  }
-
-  int64_t query_start_time_ms =
-      base::Time::Now().InMillisecondsSinceUnixEpoch();
-  latest_full_image_sequence_id_ = request_id->sequence_id();
-
-  // Fetch the request.
-  CreateAndFetchEndpointFetcher(
-      request,
-      base::BindOnce(
-          &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
-          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), query_start_time_ms,
-                     latest_full_image_sequence_id_));
-}
-
 void LensOverlayQueryController::FullImageFetchResponseHandler(
-    int64_t query_start_time_ms,
     int request_sequence_id,
     std::unique_ptr<EndpointResponse> response) {
   // If this request sequence ID does not match the latest sent then we should
   // ignore the response.
-  if (request_sequence_id != latest_full_image_sequence_id_) {
+  if (latest_full_image_request_data_->sequence_id_ != request_sequence_id) {
     return;
   }
 
@@ -431,8 +346,8 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     return;
   }
 
-  int64_t elapsed_time =
-      base::Time::Now().InMillisecondsSinceUnixEpoch() - query_start_time_ms;
+  int64_t elapsed_time = base::Time::Now().InMillisecondsSinceUnixEpoch() -
+                         latest_full_image_request_data_->query_start_time_ms_;
   SendLatencyGen204IfEnabled(elapsed_time);
 
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
@@ -487,6 +402,200 @@ void LensOverlayQueryController::SendLatencyGen204IfEnabled(
             base::Unretained(this)),
         kMaxDownloadBytes);
   }
+}
+
+LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
+    int sequence_id,
+    int64_t query_start_time_ms)
+    : sequence_id_(sequence_id), query_start_time_ms_(query_start_time_ms) {}
+LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
+    default;
+
+void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
+  // There can be multiple full image requests that are called. For example,
+  // when translate mode is enabled after opening the overlay or when turning
+  // translate mode back off after enabling. Reset if there is one pending.
+  full_image_endpoint_fetcher_.reset();
+  query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
+
+  // Create the client logs needed throughout the async process to attach to
+  // the full image request.
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  ref_counted_logs->client_logs().set_lens_overlay_entry_point(
+      LenOverlayEntryPointFromInvocationSource(invocation_source_));
+
+  // The image sequence should be incremented and the analytics id updated
+  // for all full-image requests.
+  request_id_generator_->IncrementImageSequenceId();
+  request_id_generator_->CreateNewAnalyticsId();
+
+  // Get request_id for this request flow.
+  auto request_id = request_id_generator_->GetNextRequestId();
+  int current_sequence_id = request_id->sequence_id();
+
+  // Initialize latest_full_image_request_data_ with the latest sequence_id to
+  // ensure once the async processes finish, no new full image request has
+  // started.
+  latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
+      current_sequence_id,
+      /*query_start_time_ms=*/base::Time::Now().InMillisecondsSinceUnixEpoch());
+
+  // Preparing for the full image request requires multiple async flows to
+  // complete before the request is ready to be send to the server. We start
+  // these flows here, and each flow completes by calling
+  // FullImageRequestDataReady() with its data. FullImageRequestDataReady() will
+  // handle waiting for all necessary flows to complete before performing the
+  // request.
+  //
+  // Async Flow 1: Creating the full image request.
+  // Do the image encoding asynchronously to prevent the main thread from
+  // blocking on the encoding.
+  encoding_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&lens::DownscaleAndEncodeBitmap, original_screenshot_,
+                     ui_scale_factor_, ref_counted_logs),
+      base::BindOnce(&LensOverlayQueryController::
+                         CreateFullImageRequestAndTryPerformFullImageRequest,
+                     weak_ptr_factory_.GetWeakPtr(), current_sequence_id,
+                     std::move(request_id), ref_counted_logs));
+
+  // Async Flow 2: Retrieve the OAuth headers.
+  CreateOAuthHeadersAndTryPerformFullPageRequest(current_sequence_id);
+}
+
+void LensOverlayQueryController::PrepareImageDataForFullImageRequest(
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+    lens::ImageData image_data) {
+  if (lens::features::GetLensOverlaySendLatencyGen204()) {
+    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
+  }
+
+  resized_bitmap_size_ = gfx::Size(image_data.image_metadata().width(),
+                                   image_data.image_metadata().height());
+
+  AddSignificantRegions(image_data, std::move(significant_region_boxes_));
+}
+
+void LensOverlayQueryController::
+    CreateFullImageRequestAndTryPerformFullImageRequest(
+        int sequence_id,
+        std::unique_ptr<lens::LensOverlayRequestId> request_id,
+        scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+        lens::ImageData image_data) {
+  DCHECK_EQ(query_controller_state_,
+            QueryControllerState::kAwaitingFullImageResponse);
+  PrepareImageDataForFullImageRequest(ref_counted_logs, image_data);
+
+  // Create the request.
+  lens::LensOverlayServerRequest request;
+  request.mutable_client_logs()->CopyFrom(ref_counted_logs->client_logs());
+  lens::LensOverlayRequestContext request_context;
+  request_context.mutable_request_id()->CopyFrom(*request_id.get());
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
+  request.mutable_objects_request()->mutable_request_context()->CopyFrom(
+      request_context);
+  request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
+
+  // The content bytes are optional, so if they were included in the
+  // StartQueryFlow, included them in the request.
+  if (!underlying_content_bytes_.empty()) {
+    lens::Payload payload;
+    payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
+                                           underlying_content_bytes_.end());
+    payload.set_content_type(underlying_content_type_);
+    request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+  }
+
+  FullImageRequestDataReady(sequence_id, request);
+}
+
+void LensOverlayQueryController::CreateOAuthHeadersAndTryPerformFullPageRequest(
+    int sequence_id) {
+  DCHECK_EQ(query_controller_state_,
+            QueryControllerState::kAwaitingFullImageResponse);
+
+  // Use OAuth if the flag is enabled and the user is logged in.
+  if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Create callback that uses the tokens to create the OAuth headers and pass
+    // the headers to FullImageRequestDataReady.
+    signin::AccessTokenFetcher::TokenCallback token_callback =
+        base::BindOnce(&lens::CreateOAuthHeader)
+            .Then(base::BindOnce(
+                static_cast<void (LensOverlayQueryController::*)(
+                    int, std::vector<std::string>)>(
+                    &LensOverlayQueryController::FullImageRequestDataReady),
+                weak_ptr_factory_.GetWeakPtr(), sequence_id));
+    signin::ScopeSet oauth_scopes;
+    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
+
+    // If an access token fetcher is already in flight, it is intentionally
+    // replaced by this newer one.
+    access_token_fetcher_ =
+        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+            kOAuthConsumerName, identity_manager_, oauth_scopes,
+            std::move(token_callback),
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+            signin::ConsentLevel::kSignin);
+    return;
+  }
+
+  // Supply no OAuth Headers which will fallback to directly using API key.
+  FullImageRequestDataReady(sequence_id,
+                            /*headers=*/std::vector<std::string>());
+}
+
+void LensOverlayQueryController::FullImageRequestDataReady(
+    int sequence_id,
+    lens::LensOverlayServerRequest request) {
+  if (!IsCurrentFullImageSequence(sequence_id)) {
+    // Ignore superseded request.
+    return;
+  }
+
+  access_token_fetcher_.reset();
+  latest_full_image_request_data_->request_ =
+      std::make_unique<lens::LensOverlayServerRequest>(request);
+  FullImageRequestDataHelper(sequence_id);
+}
+
+void LensOverlayQueryController::FullImageRequestDataReady(
+    int sequence_id,
+    std::vector<std::string> headers) {
+  if (!IsCurrentFullImageSequence(sequence_id)) {
+    // Ignore superseded request.
+    return;
+  }
+
+  latest_full_image_request_data_->request_headers_ =
+      std::make_unique<std::vector<std::string>>(headers);
+  FullImageRequestDataHelper(sequence_id);
+}
+
+void LensOverlayQueryController::FullImageRequestDataHelper(int sequence_id) {
+  CHECK(latest_full_image_request_data_->sequence_id_ == sequence_id);
+  if (latest_full_image_request_data_->request_ &&
+      latest_full_image_request_data_->request_headers_) {
+    PerformFullImageRequest();
+  }
+}
+
+bool LensOverlayQueryController::IsCurrentFullImageSequence(int sequence_id) {
+  CHECK(latest_full_image_request_data_);
+  return latest_full_image_request_data_->sequence_id_ == sequence_id;
+}
+
+void LensOverlayQueryController::PerformFullImageRequest() {
+  PerformFetchRequest(
+      latest_full_image_request_data_->request_.get(),
+      latest_full_image_request_data_->request_headers_.get(),
+      base::BindOnce(
+          &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&LensOverlayQueryController::FullImageFetchResponseHandler,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     latest_full_image_request_data_->sequence_id_));
 }
 
 void LensOverlayQueryController::OnLatencyGen204LoaderComplete(
@@ -945,6 +1054,73 @@ void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
                 /*headers=*/std::vector<std::string>());
 }
 
+void LensOverlayQueryController::PerformFetchRequest(
+    lens::LensOverlayServerRequest* request,
+    std::vector<std::string>* request_headers,
+    base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+        fetcher_created_callback,
+    EndpointFetcherCallback response_received_callback) {
+  CHECK(request);
+  CHECK(request_headers);
+
+  // Serialize the request to a string to include as the request post data.
+  std::string request_string;
+  CHECK(request->SerializeToString(&request_string));
+
+  // Get client experiment variations to include in the request.
+  std::vector<std::string> cors_exempt_headers;
+  variations::mojom::VariationsHeadersPtr variations =
+      variations_client_->GetVariationsHeaders();
+  if (!variations.is_null()) {
+    cors_exempt_headers.push_back(kClientDataHeader);
+    // The endpoint is always a Google property.
+    cors_exempt_headers.push_back(variations->headers_map.at(
+        variations::mojom::GoogleWebVisibility::FIRST_PARTY));
+  }
+
+  // Generate the URL to fetch to and include the server session id if present.
+  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
+  if (cluster_info_.has_value()) {
+    // The endpoint fetches should use the server session id from the cluster
+    // info.
+    fetch_url = net::AppendOrReplaceQueryParameter(
+        fetch_url, kSessionIdQueryParameterKey,
+        cluster_info_->server_session_id());
+  }
+
+  // Create the EndpointFetcher, responsible for making the request using our
+  // given params.
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
+      std::make_unique<EndpointFetcher>(
+          /*url_loader_factory=*/profile_
+              ? profile_->GetURLLoaderFactory().get()
+              : g_browser_process->shared_url_loader_factory(),
+          /*url=*/fetch_url,
+          /*http_method=*/kHttpMethod,
+          /*content_type=*/kContentType,
+          base::Milliseconds(
+              lens::features::GetLensOverlayServerRequestTimeout()),
+          /*post_data=*/request_string,
+          /*headers=*/*request_headers,
+          /*cors_exempt_headers=*/cors_exempt_headers,
+          /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+          /*request_params=*/
+          EndpointFetcher::RequestParams::Builder()
+              .SetCredentialsMode(CredentialsMode::kInclude)
+              .Build());
+  EndpointFetcher* fetcher = endpoint_fetcher.get();
+
+  // Run callback that the fetcher was created. This is used to keep the
+  // endpoint_fetcher alive while the request is made.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                std::move(endpoint_fetcher)));
+
+  // Finally, perform the request.
+  fetcher->PerformRequest(std::move(response_received_callback),
+                          google_apis::GetAPIKey().c_str());
+}
+
 void LensOverlayQueryController::OnFullImageEndpointFetcherCreated(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
   full_image_endpoint_fetcher_ = std::move(endpoint_fetcher);
@@ -965,7 +1141,6 @@ void LensOverlayQueryController::FetchEndpoint(
   std::string request_data_string;
   CHECK(request_data.SerializeToString(&request_data_string));
   std::vector<std::string> cors_exempt_headers;
-
   variations::mojom::VariationsHeadersPtr variations =
       variations_client_->GetVariationsHeaders();
   if (!variations.is_null()) {
