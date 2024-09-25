@@ -18,6 +18,7 @@ import {
   css,
   CSSResultGroup,
   html,
+  map,
   nothing,
   PropertyDeclarations,
   ref,
@@ -125,8 +126,9 @@ export class SummarizationView extends ReactiveLitElement {
 
     #summary {
       font: var(--cros-body-1-font);
-      padding: 12px 16px;
-      white-space: pre-wrap;
+      list-style-position: outside;
+      margin: 12px 12px 12px 22px;
+      padding: 0 0 0 10px;
     }
 
     #footer {
@@ -253,6 +255,14 @@ export class SummarizationView extends ReactiveLitElement {
     `;
   }
 
+  private renderSummaryResult(result: string) {
+    const sentences = result.split('\n');
+    return map(sentences, (sentence) => {
+      // Remove the leading hyphen and space from the sentence, if any.
+      return html`<li>${sentence.replace(/^-\s+/, '')}</li>`;
+    });
+  }
+
   private renderSummaryContent() {
     const summary = this.summary.value;
     if (summary === null) {
@@ -275,15 +285,15 @@ export class SummarizationView extends ReactiveLitElement {
           >
           </genai-error>`;
       case 'success':
-        // Don't add space around ${summary.result}
-        // prettier-ignore
         return html`<spoken-message role="status" aria-live="polite">
             ${i18n.summaryFinishedStatusMessage}
           </spoken-message>
-          <div
+          <ul
             id="summary"
             ${ref(this.summaryContainer)}
-          >${summary.result}</div>
+          >
+            ${this.renderSummaryResult(summary.result)}
+          </ul>
           ${this.renderSummaryFooter()}`;
       default:
         assertExhaustive(summary);
