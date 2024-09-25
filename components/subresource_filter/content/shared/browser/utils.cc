@@ -1,22 +1,17 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 
 #include "base/check.h"
+#include "components/subresource_filter/content/shared/common/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_utils.h"
-#include "url/gurl.h"
 
 namespace subresource_filter {
-
-bool ShouldInheritActivation(const GURL& url) {
-  return !content::IsURLHandledByNetworkStack(url);
-}
 
 bool ShouldInheritOpenerActivation(content::NavigationHandle* navigation_handle,
                                    content::RenderFrameHost* frame_host) {

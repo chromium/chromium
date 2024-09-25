@@ -1,29 +1,20 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_COMMON_SUBRESOURCE_FILTER_UTILS_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_COMMON_SUBRESOURCE_FILTER_UTILS_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_
 
-#include <optional>
+namespace content {
+class NavigationHandle;
+class RenderFrameHost;
+class Page;
+}  // namespace content
 
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page.h"
-#include "content/public/browser/render_frame_host.h"
-
-class GURL;
+// See also //components/subresource_filter/content/shared/common/utils.h for
+// related utils.
 
 namespace subresource_filter {
-
-// Child frame navigations and initial root frame navigations matching these
-// URLs/ schemes will not trigger ReadyToCommitNavigation in the browser
-// process, so they must be treated specially to maintain activation. Each
-// should inherit the activation of its parent in the case of a child frame and
-// its opener in the case of a root frame. This also accounts for the ability of
-// the parent/opener to affect the frame's content more directly, e.g. through
-// document.write(), even though these URLs won't match a filter list rule by
-// themselves.
-bool ShouldInheritActivation(const GURL& url);
 
 // If |navigation_handle| is for a special url that did not go through the
 // network stack or if the initial (attempted) load wasn't committed, the
@@ -54,4 +45,4 @@ content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh);
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_COMMON_SUBRESOURCE_FILTER_UTILS_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_

@@ -14,7 +14,7 @@
 #include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/common/utils.h"
 #include "components/subresource_filter/content/shared/renderer/web_document_subresource_filter_impl.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
