@@ -390,8 +390,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   virtual gfx::Rect GetTransformedRootWindowBoundsFromPixelSize(
       const gfx::Size& size_in_pixels) const;
 
-  const base::ObserverList<WindowTreeHostObserver>::Unchecked& observers()
-      const {
+  base::ObserverList<WindowTreeHostObserver>::Unchecked& observers() {
     return observers_;
   }
 

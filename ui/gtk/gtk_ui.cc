@@ -735,9 +735,9 @@ void GtkUi::OnCursorThemeNameChanged(GtkSettings* settings,
   if (cursor_theme_name.empty()) {
     return;
   }
-  for (auto& observer : cursor_theme_observers()) {
-    observer.OnCursorThemeNameChanged(cursor_theme_name);
-  }
+  cursor_theme_observers().Notify(
+      &ui::CursorThemeManagerObserver::OnCursorThemeNameChanged,
+      cursor_theme_name);
 }
 
 void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
@@ -746,9 +746,9 @@ void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
   if (!cursor_theme_size) {
     return;
   }
-  for (auto& observer : cursor_theme_observers()) {
-    observer.OnCursorThemeSizeChanged(cursor_theme_size);
-  }
+  cursor_theme_observers().Notify(
+      &ui::CursorThemeManagerObserver::OnCursorThemeSizeChanged,
+      cursor_theme_size);
 }
 
 void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
@@ -1045,10 +1045,8 @@ void GtkUi::UpdateDeviceScaleFactor() {
   auto new_config = GetDisplayConfig();
   if (display_config() != new_config) {
     display_config() = std::move(new_config);
-    for (ui::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list()) {
-      observer.OnDeviceScaleFactorChanged();
-    }
+    device_scale_factor_observer_list().Notify(
+        &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
   set_default_font_settings(std::nullopt);
   default_font_render_params_.reset();

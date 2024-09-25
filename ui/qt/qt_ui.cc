@@ -662,10 +662,8 @@ void QtUi::ScaleFactorMaybeChangedImpl() {
   }
   if (display_config() != new_config) {
     display_config() = std::move(new_config);
-    for (ui::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list()) {
-      observer.OnDeviceScaleFactorChanged();
-    }
+    device_scale_factor_observer_list().Notify(
+        &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
 }
 

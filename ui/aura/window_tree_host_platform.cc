@@ -261,8 +261,8 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   // OnHostDidProcessBoundsChange() is called when all bounds changes have
   // completed.
   if (++on_bounds_changed_recursion_depth_ == 1) {
-    for (WindowTreeHostObserver& observer : observers())
-      observer.OnHostWillProcessBoundsChange(this);
+    observers().Notify(&WindowTreeHostObserver::OnHostWillProcessBoundsChange,
+                       this);
   }
 
   const auto preferred_scale =
@@ -287,8 +287,8 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   }
   DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
   if (--on_bounds_changed_recursion_depth_ == 0) {
-    for (WindowTreeHostObserver& observer : observers())
-      observer.OnHostDidProcessBoundsChange(this);
+    observers().Notify(&WindowTreeHostObserver::OnHostDidProcessBoundsChange,
+                       this);
   }
 }
 
