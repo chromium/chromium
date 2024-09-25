@@ -61,6 +61,12 @@ static const char* (*PATTERN2)[2] = NULL;
 
 #define PATTERN_LEN2 0
 
+static const char* PATTERN3[][2] = {
+    {"<text:span", ">"},   // part of the reedited words
+    {"</text:span", ">"}}; // for example, an inserted letter
+
+#define PATTERN_LEN3 (sizeof(PATTERN3) / (sizeof(char*) * 2))
+
 ODFParser::ODFParser(const char* wordchars)
   : XMLParser(wordchars) {
 }
@@ -70,7 +76,11 @@ ODFParser::ODFParser(const w_char* wordchars, int len)
 }
 
 bool ODFParser::next_token(std::string& t) {
-  return XMLParser::next_token(PATTERN, PATTERN_LEN, PATTERN2, PATTERN_LEN2, t);
+  return XMLParser::next_token(PATTERN, PATTERN_LEN, PATTERN2, PATTERN_LEN2, PATTERN3, PATTERN_LEN3, t);
+}
+
+std::string ODFParser::get_word(const std::string token) {
+  return XMLParser::get_word(PATTERN3, PATTERN_LEN3, token);
 }
 
 ODFParser::~ODFParser() {}

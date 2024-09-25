@@ -1,9 +1,5 @@
 # About Hunspell
 
-NOTICE: Version 2 is in the works. For contributing see [version 2
-specification](https://github.com/hunspell/hunspell/wiki/Version-2-Specification)
-and the folder `src/hunspell2`.
-
 Hunspell is a spell checker and morphological analyzer library and
 program designed for languages with rich morphology and complex word
 compounding or character encoding. Hunspell interfaces: Ispell-like
@@ -40,16 +36,14 @@ Build only dependencies:
 
 Runtime dependencies:
 
-|               | Mandatory |Optional|
-|---------------|-----------|--------|
-|libhunspell 1  |           |        |
-|cmd line tool 1| libiconv  |gettext ncurses readline|
-|libhunspell 2  | cppunit boost-locale  |        |
-|cmd line tool 2|           |        |
+|               | Mandatory        |Optional          |
+|---------------|------------------|------------------|
+|libhunspell 1  |                  |                  |
+|cmd line tool 1| libiconv gettext | ncurses readline |
     
 Recommended tools for developers:
 
-    vim qtcreator clang-format cppcheck
+    vim qtcreator clang-format cppcheck gdb libtool-bin doxygen plantuml
 
 # Compiling on GNU/Linux and Unixes
 
@@ -59,7 +53,8 @@ need to manually install them.
 
 For Ubuntu:
 
-    sudo apt install autoconf automake autopoint pkg-config libtool libcppunit-dev libboost-locale-dev libboost-system-dev
+    sudo apt install autoconf automake autopoint libtool libboost-locale-dev \
+                     libboost-system-dev
 
 Then run the following commands:
 
@@ -80,8 +75,6 @@ Optional developer packages:
   - ncurses (need for --with-ui), eg. libncursesw5 for UTF-8
   - readline (for fancy input line editing, configure parameter:
     --with-readline)
-  - locale and gettext (but you can also use the --with-included-gettext
-    configure parameter)
 
 In Ubuntu, the packages are:
 
@@ -92,7 +85,7 @@ In Ubuntu, the packages are:
 On macOS for compiler always use `clang` and not `g++` because Homebrew
 dependencies are build with that.
 
-    brew install autoconf automake libtool gettext pkg-config cppunit boost
+    brew install autoconf automake libtool gettext boost
     brew link gettext --force
 
 Then run the standard trio: autoreconf, configure, make. See above.
@@ -104,7 +97,8 @@ Then run the standard trio: autoreconf, configure, make. See above.
 Download Msys2, update everything and install the following
     packages:
 
-    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool mingw-w64-x86_64-cppunit mingw-w64-x86_64-boost
+    pacman -S base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool \
+              mingw-w64-x86_64-boost
 
 Open Mingw-w64 Win64 prompt and compile the same way as on Linux, see
 above.
@@ -119,6 +113,7 @@ extra packages:
   - autoconf
   - libtool
   - gcc-g++ development package
+  - boost
   - ncurses, readline (for user interface)
   - iconv (character conversion)
 
@@ -136,7 +131,7 @@ For debugging we need to create a debug build and then we need to start
 
     ./configure CXXFLAGS='-g -O0 -Wall -Wextra'
     make
-    libtool --mode=execute gdb src/tools/hunspell
+    ./libtool --mode=execute gdb src/tools/hunspell
 
 You can also pass the `CXXFLAGS` directly to `make` without calling
 `./configure`, but we don't recommend this way during long development
@@ -170,6 +165,15 @@ features and dictionary format:
     hunspell -h
 
 http://hunspell.github.io/
+
+Documentation for developers can be generated from the source files by running:
+
+    doxygen
+
+The result can be viewed by opening `doxygen/html/index.html` in a web browser.
+Doxygen will use Graphviz for generating all sorts of graphs and PlantUML
+for generating UML diagrams. Make sure that the packages plantuml and graphviz are installed before running Doxygen. The latter is usually installed automatically
+when installing Doxygen.
 
 # Usage
 
@@ -219,9 +223,9 @@ Including in your program:
 
 Linking with Hunspell static library:
 
-``` 
-g++ -lhunspell example.cxx 
-```
+    g++ -lhunspell-1.6 example.cxx
+    # or better, use pkg-config
+    g++ $(pkg-config --cflags --libs hunspell) example.cxx
 
 ## Dictionaries
 

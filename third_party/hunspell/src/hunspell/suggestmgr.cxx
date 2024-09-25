@@ -904,7 +904,7 @@ int SuggestMgr::twowords(std::vector<std::string>& wlst,
         }
         // add two word suggestion with dash, if TRY string contains
         // "a" or "-"
-        // NOTE: cwrd doesn't modified for REP twoword sugg.
+	// Note that cwrd doesn't modified for REP twoword sugg.
         if (ctry && (strchr(ctry, 'a') || strchr(ctry, '-')) &&
             mystrlen(p + 1) > 1 && mystrlen(candidate) - mystrlen(p) > 1) {
           *p = '-';

@@ -131,9 +131,6 @@ public:
   const char* get_version() const;
   int input_conv(const char* word, char* dest, size_t destsize);
 
-
-  std::vector<char> dic_encoding_vec;
-
 private:
   AffixMgr* pAMgr;
   std::vector<HashMgr*> m_HMgrs;
@@ -221,9 +218,6 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
     csconv = get_current_cs(encoding);
   complexprefixes = pAMgr->get_complexprefixes();
   wordbreak = pAMgr->get_breaktable();
-
-  dic_encoding_vec.resize(encoding.size()+1);
-  strcpy(&dic_encoding_vec[0], encoding.c_str());
 
   /* and finally set up the suggestion manager */
 #ifdef HUNSPELL_CHROME_CLIENT
@@ -719,6 +713,11 @@ bool HunspellImpl::spell(const std::string& word, int* info, std::string* root) 
       size_t plen = wordbreak[j].size();
       size_t found = scw.find(wordbreak[j]);
       if ((found > 0) && (found < wl - plen)) {
+        size_t found2 = scw.find(wordbreak[j], found + 1);
+        // try to break at the second occurance
+        // to recognize dictionary words with wordbreak
+        if (found2 > 0 && (found2 < wl - plen))
+            found = found2;
         if (!spell(scw.substr(found + plen)))
           continue;
         std::string suffix(scw.substr(found));
@@ -1789,6 +1788,21 @@ std::vector<std::string> HunspellImpl::spellml(const std::string& in_word) {
         }
       }
     }
+  } else if (check_xml_par(q, "type=", "add")) {
+    std::string cw = get_xml_par(strchr(q2, '>'));
+    if (cw.empty())
+      return slst;
+    const char* q3 = strstr(q2 + 1, "<word");
+    if (q3) {
+      std::string cw2 = get_xml_par(strchr(q3, '>'));
+      if (!cw2.empty()) {
+        add_with_affix(cw, cw2);
+      } else {
+        add(cw);
+      }
+    } else {
+        add(cw);
+    }
   }
   return slst;
 }
@@ -1876,7 +1890,7 @@ void HunspellImpl::free_list(char*** slst, int n) {
 }
 
 char* HunspellImpl::get_dic_encoding() {
-  return &dic_encoding_vec[0];
+  return &encoding[0];
 }
 
 int HunspellImpl::analyze(char*** slst, const char* word) {

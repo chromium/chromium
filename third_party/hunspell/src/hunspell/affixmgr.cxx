@@ -121,7 +121,7 @@ AffixMgr::AffixMgr(const char* affpath,
   compoundforbidflag = FLAG_NULL;  // compound fordidden flag for suffixed word
   compoundmoresuffixes = 0;        // allow more suffixes within compound words
   checkcompounddup = 0;            // forbid double words in compounds
-  checkcompoundrep = 0;  // forbid bad compounds (may be non compound word with
+  checkcompoundrep = 0;  // forbid bad compounds (may be non-compound word with
                          // a REP substitution)
   checkcompoundcase =
       0;  // forbid upper and lowercase combinations at word bounds
@@ -494,7 +494,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
       }
     }
 
-    /* parse in the flag used by forbidden words */
+    /* parse in the flag used by forbidden words (is deprecated) */
     if (line.compare(0, 13, "LEMMA_PRESENT", 13) == 0) {
       if (!parse_flag(line, &lemma_present, afflst)) {
         finishFileMgr(afflst);
@@ -518,7 +518,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
       }
     }
 
-    /* parse in the flag used by `needaffixs' */
+    /* parse in the flag used by `needaffixs' (is deprecated) */
     if (line.compare(0, 10, "PSEUDOROOT", 10) == 0) {
       if (!parse_flag(line, &needaffix, afflst)) {
         finishFileMgr(afflst);
@@ -602,7 +602,7 @@ int AffixMgr::parse_file(const char* affpath, const char* key) {
       }
     }
 
-    /* parse in the input conversion table */
+    /* parse in the output conversion table */
     if (line.compare(0, 5, "OCONV", 5) == 0) {
       if (!parse_convtable(line, afflst, &oconvtable, "OCONV")) {
         finishFileMgr(afflst);
@@ -1205,7 +1205,7 @@ struct hentry* AffixMgr::prefix_check(const char* word,
   return NULL;
 }
 
-// check word for prefixes
+// check word for prefixes and two-level suffixes
 struct hentry* AffixMgr::prefix_check_twosfx(const char* word,
                                              int len,
                                              char in_compound,
@@ -1246,7 +1246,7 @@ struct hentry* AffixMgr::prefix_check_twosfx(const char* word,
   return NULL;
 }
 
-// check word for prefixes
+// check word for prefixes and morph
 std::string AffixMgr::prefix_check_morph(const char* word,
                                          int len,
                                          char in_compound,
@@ -1293,7 +1293,7 @@ std::string AffixMgr::prefix_check_morph(const char* word,
   return result;
 }
 
-// check word for prefixes
+// check word for prefixes and morph and two-level suffixes
 std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
                                                 int len,
                                                 char in_compound,
@@ -1334,7 +1334,7 @@ std::string AffixMgr::prefix_check_twosfx_morph(const char* word,
   return result;
 }
 
-// Is word a non compound with a REP substitution (see checkcompoundrep)?
+// Is word a non-compound with a REP substitution (see checkcompoundrep)?
 int AffixMgr::cpdrep_check(const char* word, int wl) {
 
 #ifdef HUNSPELL_CHROME_CLIENT
@@ -1987,7 +1987,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 &&
                 (scpd == 0 || checkcpdtable[scpd - 1].cond2 == FLAG_NULL ||
                  TESTAFF(rv->astr, checkcpdtable[scpd - 1].cond2, rv->alen))) {
-              // forbid compound word, if it is a non compound word with typical
+              // forbid compound word, if it is a non-compound word with typical
               // fault
               if (checkcompoundrep && cpdrep_check(word.c_str(), len))
                 return NULL;
@@ -2112,7 +2112,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 (((cpdwordmax == -1) || (wordnum + 1 < cpdwordmax)) ||
                  ((cpdmaxsyllable != 0) && (numsyllable <= cpdmaxsyllable))) &&
                 ((!checkcompounddup || (rv != rv_first)))) {
-              // forbid compound word, if it is a non compound word with typical
+              // forbid compound word, if it is a non-compound word with typical
               // fault
               if (checkcompoundrep && cpdrep_check(word.c_str(), len))
                 return NULL;
@@ -2138,7 +2138,7 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
               rv = NULL;
             }
             if (rv) {
-              // forbid compound word, if it is a non compound word with typical
+              // forbid compound word, if it is a non-compound word with typical
               // fault
               if (checkcompoundrep || forbiddenword) {
 
@@ -2850,7 +2850,6 @@ struct hentry* AffixMgr::suffix_check(const char* word,
 }
 
 // check word for two-level suffixes
-
 struct hentry* AffixMgr::suffix_check_twosfx(const char* word,
                                              int len,
                                              int sfxopts,
@@ -2895,6 +2894,7 @@ struct hentry* AffixMgr::suffix_check_twosfx(const char* word,
   return NULL;
 }
 
+// check word for two-level suffixes and morph
 std::string AffixMgr::suffix_check_twosfx_morph(const char* word,
                                                 int len,
                                                 int sfxopts,

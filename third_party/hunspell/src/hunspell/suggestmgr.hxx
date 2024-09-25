@@ -79,7 +79,7 @@
 #define MAXCOMPOUNDSUGS 3
 
 // timelimit: max ~1/4 sec (process time on Linux) for a time consuming function
-#define TIMELIMIT (CLOCKS_PER_SEC >> 2)
+#define TIMELIMIT (CLOCKS_PER_SEC / 4)
 #define MINTIMER 100
 #define MAXPLUSTIMER 100
 
