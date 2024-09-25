@@ -1,8 +1,0 @@
-# neeadaffix on affixes
-NEEDAFFIX X
-
-SFX A Y 1
-SFX A 0 s/XB .
-
-SFX B Y 1
-SFX B 0 baz .

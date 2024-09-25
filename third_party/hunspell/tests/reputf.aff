@@ -1,9 +1,0 @@
-# With REP suggestions, we can fix typical language specific misspellings.
-
-SET UTF-8
-
-# switch off ngram suggestion for testing
-MAXNGRAMSUGS 0
-
-REP 1
-REP oo őő

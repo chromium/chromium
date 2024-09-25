@@ -1,5 +1,0 @@
-# test ß - SS special capitalizing in UTF-8
-SET UTF-8
-CHECKSHARPS
-WORDCHARS Ã.
-KEEPCASE k

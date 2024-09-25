@@ -1,8 +1,0 @@
-# English ordinal numbers (parenthesized long flags)
-FLAG long
-WORDCHARS 0123456789
-COMPOUNDMIN 1
-ONLYINCOMPOUND cc
-COMPOUNDRULE 2
-COMPOUNDRULE (nn)*(11)(tt)
-COMPOUNDRULE (nn)*(mm)(pp)

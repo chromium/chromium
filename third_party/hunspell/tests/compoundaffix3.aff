@@ -1,8 +1,0 @@
-COMPOUNDFLAG X
-COMPOUNDFORBIDFLAG Z
-
-PFX P Y 1
-PFX P   0     pre/Z         .
-
-SFX S Y 1
-SFX S   0     suf/Z         .
