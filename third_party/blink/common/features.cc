@@ -2038,15 +2038,6 @@ BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables waiting for codec support status notification from GPU factory in RTC
-// codec factories.
-BASE_FEATURE(kRTCGpuCodecSupportWaiter,
-             "kRTCGpuCodecSupportWaiter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kRTCGpuCodecSupportWaiterTimeoutParam{
-    &kRTCGpuCodecSupportWaiter, "timeout_ms", 3000};
-
 // Reduce the amount of information in the default 'referer' header for
 // cross-origin requests.
 BASE_FEATURE(kReducedReferrerGranularity,

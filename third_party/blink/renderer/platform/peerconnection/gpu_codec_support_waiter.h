@@ -30,7 +30,7 @@ class GpuCodecSupportWaiter {
 
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
-  const std::optional<base::TimeDelta> wait_timeout_ms_;
+  const base::TimeDelta wait_timeout_ms_;
 };
 
 }  // namespace blink
