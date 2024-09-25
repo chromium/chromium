@@ -77,7 +77,7 @@
   <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitMonochromeApplication"
       android:allowAudioPlaybackCapture="false"
