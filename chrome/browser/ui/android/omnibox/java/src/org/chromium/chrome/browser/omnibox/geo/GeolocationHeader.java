@@ -16,7 +16,6 @@ import android.util.Base64;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.ObjectsCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Granularity;
@@ -28,13 +27,11 @@ import com.google.android.gms.location.Priority;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,7 +48,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Duration;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Provides methods for building the X-Geo HTTP header, which provides device location to a server
@@ -260,7 +256,7 @@ public class GeolocationHeader {
 
         if (!hasGeolocationPermission()) return;
 
-        if (!isGeoHeaderEnabledForDSE(profile, templateService)) return;
+        if (!isGeoHeaderEnabledForDse(profile, templateService)) return;
 
         if (sFirstLocationTime == Long.MAX_VALUE) {
             sFirstLocationTime = SystemClock.elapsedRealtime();
@@ -331,7 +327,7 @@ public class GeolocationHeader {
         sFusedLocation = location;
     }
 
-    private static boolean isGeoHeaderEnabledForDSE(
+    private static boolean isGeoHeaderEnabledForDse(
             Profile profile, TemplateUrlService templateService) {
         return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY))
                 == HeaderState.HEADER_ENABLED;
@@ -427,7 +423,6 @@ public class GeolocationHeader {
     private static @Nullable String getGeoHeader(String url, Profile profile, Tab tab) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeoHeader")) {
             Location locationToAttach = null;
-            VisibleNetworks visibleNetworksToAttach = null;
             long locationAge = Long.MAX_VALUE;
             @HeaderState int headerState = geoHeaderStateForUrl(profile, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
@@ -439,23 +434,11 @@ public class GeolocationHeader {
                         locationToAttach = null;
                     }
                 }
-
-                // The header state is enabled, so this means we have app permissions, and the url
-                // is allowed to receive location. Before attempting to attach visible networks,
-                // check if network-based location is enabled.
-                if (isNetworkLocationEnabled() && !isLocationFresh(locationToAttach)) {
-                    visibleNetworksToAttach =
-                            VisibleNetworksTracker.getLastKnownVisibleNetworks(
-                                    ContextUtils.getApplicationContext());
-                }
             }
 
             // Proto encoding
             String locationProtoEncoding = encodeProtoLocation(locationToAttach);
-            String visibleNetworksProtoEncoding =
-                    encodeProtoVisibleNetworks(visibleNetworksToAttach);
-
-            if (locationProtoEncoding == null && visibleNetworksProtoEncoding == null) return null;
+            if (locationProtoEncoding == null) return null;
 
             StringBuilder header = new StringBuilder(XGEO_HEADER_PREFIX);
             if (locationProtoEncoding != null) {
@@ -463,12 +446,6 @@ public class GeolocationHeader {
                         .append(LOCATION_PROTO_PREFIX)
                         .append(LOCATION_SEPARATOR)
                         .append(locationProtoEncoding);
-            }
-            if (visibleNetworksProtoEncoding != null) {
-                header.append(LOCATION_SEPARATOR)
-                        .append(LOCATION_PROTO_PREFIX)
-                        .append(LOCATION_SEPARATOR)
-                        .append(visibleNetworksProtoEncoding);
             }
             return header.toString();
         }
@@ -515,14 +492,14 @@ public class GeolocationHeader {
      * geolocation infobar).
      */
     static boolean isLocationDisabledForUrl(Profile profile, Uri uri) {
-        // TODO(raymes): The call to isDSEOrigin is only needed if this could be called for
+        // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
         // an origin that isn't the default search engine. Otherwise remove this line.
-        boolean isDSEOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
+        boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
         @ContentSettingValues
         @Nullable
         Integer settingValue = locationContentSettingForUrl(profile, uri);
 
-        boolean enabled = isDSEOrigin && settingValue == ContentSettingValues.ALLOW;
+        boolean enabled = isDseOrigin && settingValue == ContentSettingValues.ALLOW;
         return !enabled;
     }
 
@@ -788,94 +765,6 @@ public class GeolocationHeader {
             PartnerLocationDescriptor.LocationDescriptor locationDescriptor) {
         return Base64.encodeToString(
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
-    }
-
-    /** Encodes visible networks in proto encoding. */
-    @Nullable
-    @VisibleForTesting
-    static String encodeProtoVisibleNetworks(@Nullable VisibleNetworks visibleNetworks) {
-        VisibleNetworks visibleNetworksToEncode = trimVisibleNetworks(visibleNetworks);
-        if (visibleNetworksToEncode == null || visibleNetworksToEncode.isEmpty()) {
-            // No data to encode.
-            return null;
-        }
-        VisibleWifi connectedWifi = visibleNetworksToEncode.connectedWifi();
-        VisibleCell connectedCell = visibleNetworksToEncode.connectedCell();
-        Set<VisibleWifi> visibleWifis = visibleNetworksToEncode.allVisibleWifis();
-        Set<VisibleCell> visibleCells = visibleNetworksToEncode.allVisibleCells();
-
-        PartnerLocationDescriptor.LocationDescriptor.Builder locationDescriptorBuilder =
-                PartnerLocationDescriptor.LocationDescriptor.newBuilder()
-                        .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
-                        .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION);
-
-        return encodeLocationDescriptor(locationDescriptorBuilder.build());
-    }
-
-    @Nullable
-    @VisibleForTesting
-    static VisibleNetworks trimVisibleNetworks(@Nullable VisibleNetworks visibleNetworks) {
-        if (visibleNetworks == null || visibleNetworks.isEmpty()) {
-            return null;
-        }
-        // Trim visible networks to only include a limited number of visible not-conntected networks
-        // based on flag.
-        VisibleCell connectedCell = visibleNetworks.connectedCell();
-        VisibleWifi connectedWifi = visibleNetworks.connectedWifi();
-        Set<VisibleCell> visibleCells = visibleNetworks.allVisibleCells();
-        Set<VisibleWifi> visibleWifis = visibleNetworks.allVisibleWifis();
-        VisibleCell extraVisibleCell = null;
-        VisibleWifi extraVisibleWifi = null;
-        if (shouldExcludeVisibleWifi(connectedWifi)) {
-            // Trim the connected wifi.
-            connectedWifi = null;
-        }
-        // Select the extra visible cell.
-        if (visibleCells != null) {
-            for (VisibleCell candidateCell : visibleCells) {
-                if (ObjectsCompat.equals(connectedCell, candidateCell)) {
-                    // Do not include this candidate cell, since its already the connected one.
-                    continue;
-                }
-                // Add it and since we only want one, stop iterating over other cells.
-                extraVisibleCell = candidateCell;
-                break;
-            }
-        }
-        // Select the extra visible wifi.
-        if (visibleWifis != null) {
-            for (VisibleWifi candidateWifi : visibleWifis) {
-                if (shouldExcludeVisibleWifi(candidateWifi)) {
-                    // Do not include this candidate wifi.
-                    continue;
-                }
-                if (ObjectsCompat.equals(connectedWifi, candidateWifi)) {
-                    // Replace the connected, since the candidate will have level. This is because
-                    // the android APIs exposing connected WIFI do not expose level, while the ones
-                    // exposing visible wifis expose level.
-                    connectedWifi = candidateWifi;
-                    // Do not include this candidate wifi, since its already the connected one.
-                    continue;
-                }
-                // Keep the one with stronger level (since it's negative, this is the smaller value)
-                if (extraVisibleWifi == null || extraVisibleWifi.level() > candidateWifi.level()) {
-                    extraVisibleWifi = candidateWifi;
-                }
-            }
-        }
-
-        if (connectedCell == null
-                && connectedWifi == null
-                && extraVisibleCell == null
-                && extraVisibleWifi == null) {
-            return null;
-        }
-
-        return VisibleNetworks.create(
-                connectedWifi,
-                connectedCell,
-                extraVisibleWifi != null ? CollectionUtil.newHashSet(extraVisibleWifi) : null,
-                extraVisibleCell != null ? CollectionUtil.newHashSet(extraVisibleCell) : null);
     }
 
     /**

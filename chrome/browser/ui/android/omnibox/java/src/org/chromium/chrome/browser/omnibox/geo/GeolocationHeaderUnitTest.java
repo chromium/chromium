@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox.geo;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,6 +30,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -100,22 +100,17 @@ public class GeolocationHeaderUnitTest {
                     .setMobileNetworkCode(23)
                     .setTimestamp(20L)
                     .build();
-    private static final String ENCODED_PROTO_VISIBLE_NETWORKS = "CAEQDA==";
     private static int sRefreshVisibleNetworksRequests;
     private static int sRefreshLastKnownLocation;
 
-    @Rule public JniMocker mocker = new JniMocker();
+    public @Rule JniMocker mocker = new JniMocker();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
-
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-
     @Mock Profile mProfileMock;
-
     @Mock private Tab mTab;
-
     @Mock WebContents mWebContentsMock;
-
     @Mock TemplateUrlService mTemplateUrlServiceMock;
     @Mock FusedLocationProviderClient mLocationProviderClient;
     @Captor private ArgumentCaptor<LocationListener> mLocationListenerCaptor;
@@ -157,67 +152,6 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void voidtestTrimVisibleNetworks() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI_NO_LEVEL,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI1, VISIBLE_WIFI2, VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL1, VISIBLE_CELL2)));
-
-        // We expect trimming to replace connected Wifi (since it will have level), and select only
-        // the visible wifi different from the connected one, with strongest level.
-        VisibleNetworks expectedTrimmed =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI1,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-
-        VisibleNetworks trimmed = GeolocationHeader.trimVisibleNetworks(visibleNetworks);
-        assertEquals(expectedTrimmed, trimmed);
-    }
-
-    @Test
-    public void testTrimVisibleNetworksEmptyOrNull() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VisibleWifi.create("whatever", null, null, null),
-                        null,
-                        new HashSet<>(),
-                        new HashSet<>());
-        assertNull(GeolocationHeader.trimVisibleNetworks(visibleNetworks));
-        assertNull(GeolocationHeader.trimVisibleNetworks(null));
-    }
-
-    @Test
-    public void testEncodeProtoVisibleNetworksEmptyOrNull() {
-        assertNull(GeolocationHeader.encodeProtoVisibleNetworks(null));
-        assertNull(
-                GeolocationHeader.encodeProtoVisibleNetworks(
-                        VisibleNetworks.create(null, null, null, null)));
-        assertNull(
-                GeolocationHeader.encodeProtoVisibleNetworks(
-                        VisibleNetworks.create(null, null, new HashSet<>(), new HashSet<>())));
-        assertNotNull(
-                GeolocationHeader.encodeProtoVisibleNetworks(
-                        VisibleNetworks.create(
-                                null, null, null, new HashSet<>(Arrays.asList(VISIBLE_CELL2)))));
-    }
-
-    @Test
-    public void testEncodeProtoVisibleNetworksExcludeNoMapOrOptout() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI_NOMAP,
-                        null,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI_OPTOUT)),
-                        new HashSet<>());
-        String encodedProtoLocation = GeolocationHeader.encodeProtoVisibleNetworks(visibleNetworks);
-        assertNull(encodedProtoLocation);
-    }
-
-    @Test
     public void testGetGeoHeaderFreshLocation() {
         VisibleNetworks visibleNetworks =
                 VisibleNetworks.create(
@@ -235,26 +169,18 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testGetGeoHeaderLocationMissing() {
-        GeolocationTracker.setLocationForTesting(null, null);
-        String header = GeolocationHeader.getGeoHeader(SEARCH_URL, mTab);
-    }
-
-    @Test
     public void testGetGeoHeaderOldLocationHighAccuracy() {
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.HIGH_ACCURACY);
         // Visible networks should be included
-        checkOldLocation(
-                "X-Geo: w " + ENCODED_PROTO_LOCATION + " w " + ENCODED_PROTO_VISIBLE_NETWORKS);
+        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
     }
 
     @Test
     public void testGetGeoHeaderOldLocationBatterySaving() {
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.BATTERY_SAVING);
-        checkOldLocation(
-                "X-Geo: w " + ENCODED_PROTO_LOCATION + " w " + ENCODED_PROTO_VISIBLE_NETWORKS);
+        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
     }
 
     @Test
@@ -300,7 +226,7 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
-    public void testPrimeLocationForGeoHeaderDSEAutograntOff() {
+    public void testPrimeLocationForGeoHeaderDseAutograntOff() {
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
                         anyString(), anyString()))
