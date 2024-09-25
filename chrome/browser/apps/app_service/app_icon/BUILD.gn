@@ -139,6 +139,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",

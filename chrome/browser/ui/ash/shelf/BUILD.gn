@@ -87,6 +87,7 @@ static_library("shelf") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:prefs",
     "//ash/constants",
@@ -210,6 +211,7 @@ source_set("unit_tests") {
     ":test_support",
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",

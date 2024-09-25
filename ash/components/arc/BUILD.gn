@@ -395,6 +395,10 @@ static_library("arc_test_support") {
   ]
 }
 
+static_library("arc_app_constants") {
+  sources = [ "app/arc_app_constants.h" ]
+}
+
 source_set("arc_metrics_constants") {
   sources = [ "metrics/arc_metrics_constants.h" ]
 }

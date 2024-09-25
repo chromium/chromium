@@ -27,6 +27,7 @@ static_library("vmm") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser:browser_process",
@@ -58,6 +59,7 @@ source_set("unit_tests") {
   deps = [
     ":vmm",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",

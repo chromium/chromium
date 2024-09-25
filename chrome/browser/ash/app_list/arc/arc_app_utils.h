@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/observer_list_types.h"
@@ -23,35 +24,6 @@ class BrowserContext;
 }
 
 namespace arc {
-
-inline constexpr char kPlayStoreActivity[] =
-    "com.android.vending.AssetBrowserActivity";
-inline constexpr char kPlayStorePackage[] = "com.android.vending";
-
-inline constexpr char kAndroidContactsAppId[] =
-    "kipfkokfekalckplgaikemhghlbkgpfl";
-inline constexpr char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";
-inline constexpr char kGoogleCalendarAppId[] =
-    "decaoeahkmjpajbmlbpogjjkjbjokeed";
-inline constexpr char kGoogleDuoAppId[] = "djkcbcmkefiiphjkonbeknmcgiheajce";
-inline constexpr char kGoogleMapsAppId[] = "gmhipfhgnoelkiiofcnimehjnpaejiel";
-inline constexpr char kGooglePhotosAppId[] = "fdbkkojdbojonckghlanfaopfakedeca";
-inline constexpr char kGoogleTVAppId[] = "kadljooblnjdohjelobhphgeimdbcpbo";
-inline constexpr char kInfinitePainterAppId[] =
-    "afihfgfghkmdmggakhkgnfhlikhdpima";
-inline constexpr char kLightRoomAppId[] = "fpegfnbgomakooccabncdaelhfppceni";
-inline constexpr char kPackageInstallerAppId[] =
-    "jegcgkleafemmaabigncnldhlhnddfkf";
-inline constexpr char kPlayBooksAppId[] = "cafegjnmmjpfibnlddppihpnkbkgicbg";
-inline constexpr char kPlayGamesAppId[] = "nplnnjkbeijcggmpdcecpabgbjgeiedc";
-inline constexpr char kPlayMoviesAppId[] = "dbbihmicnlldbflflckpafphlekmjfnm";
-inline constexpr char kPlayMusicAppId[] = "ophbaopahelaolbjliokocojjbgfadfn";
-inline constexpr char kPlayStoreAppId[] = "cnbgggchhmkkdmeppjobngjoejnihlei";
-inline constexpr char kSettingsAppId[] = "mconboelelhjpkbdhhiijkgcimoangdj";
-inline constexpr char kYoutubeAppId[] = "aniolghapcdkoolpkffememnhpphmjkl";
-inline constexpr char kYoutubeMusicAppId[] = "hpdkdmlckojaocbedhffglopeafcgggc";
-inline constexpr char kYoutubeMusicWebApkAppId[] =
-    "jcmmigapnpnikbmnjknhcoageaeinihi";
 
 // Observes ARC app launches.
 class AppLaunchObserver : public base::CheckedObserver {

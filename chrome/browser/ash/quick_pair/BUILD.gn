@@ -24,10 +24,10 @@ static_library("quick_pair") {
   ]
 
   deps = [
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/quick_pair/feature_status_tracker",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles:profile",

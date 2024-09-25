@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"

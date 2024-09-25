@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/apps_section.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
@@ -12,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/parental_controls_handler.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

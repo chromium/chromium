@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item_delegate.h"

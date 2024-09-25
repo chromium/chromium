@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"

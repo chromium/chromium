@@ -49,6 +49,7 @@ static_library("extensions") {
 
   deps = [
     "//ash",
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/mall:app_id",

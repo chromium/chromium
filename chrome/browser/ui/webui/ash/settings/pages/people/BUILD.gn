@@ -41,6 +41,7 @@ static_library("people") {
   ]
 
   deps = [
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
@@ -49,7 +50,6 @@ static_library("people") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/quick_unlock",

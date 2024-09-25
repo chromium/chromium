@@ -25,6 +25,7 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"

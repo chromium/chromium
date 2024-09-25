@@ -2203,6 +2203,7 @@ static_library("ui") {
       "//ash/assistant/model",
       "//ash/assistant/util",
       "//ash/components/arc",
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc/touch_selection_menu",
       "//ash/components/arc/vector_icons:vector_icons",
       "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",

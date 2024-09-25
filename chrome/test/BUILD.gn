@@ -8554,6 +8554,7 @@ test("unit_tests") {
       "//ash/assistant/model",
       "//ash/assistant/util",
       "//ash/components/arc",
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
       "//ash/public/cpp:test_support",
       "//ash/public/cpp/assistant/test_support",

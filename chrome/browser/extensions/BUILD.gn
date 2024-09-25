@@ -1190,6 +1190,7 @@ source_set("extensions") {
     deps += [
       "//ash",
       "//ash/components/arc",
+      "//ash/components/arc:arc_app_constants",
       "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",

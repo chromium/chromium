@@ -35,6 +35,7 @@ static_library("app_service") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
     "//ash/constants",
     "//ash/public/cpp",

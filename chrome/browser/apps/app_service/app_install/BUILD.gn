@@ -58,6 +58,7 @@ source_set("implementation") {
 
     deps += [
       ":proto",
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc/mojom",
       "//ash/components/arc/session",
       "//ash/components/arc/session:connection_holder",
@@ -152,6 +153,7 @@ source_set("unit_tests") {
     deps += [
       ":proto",
       ":test_support",
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/almanac_api_client/proto",

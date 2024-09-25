@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"

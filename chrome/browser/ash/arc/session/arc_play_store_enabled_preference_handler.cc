@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/command_line.h"

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"

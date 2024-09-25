@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/ash/default_pinned_apps/default_pinned_apps.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"

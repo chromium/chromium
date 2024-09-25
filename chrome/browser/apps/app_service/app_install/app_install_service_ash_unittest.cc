@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_launcher.h"

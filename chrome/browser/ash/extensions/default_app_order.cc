@@ -7,6 +7,7 @@
 #include <array>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
@@ -22,7 +23,6 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"

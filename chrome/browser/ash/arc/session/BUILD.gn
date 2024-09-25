@@ -40,6 +40,7 @@ static_library("session") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/media_session",
     "//ash/public/cpp",
     "//base",

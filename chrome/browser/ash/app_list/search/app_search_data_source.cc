@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"

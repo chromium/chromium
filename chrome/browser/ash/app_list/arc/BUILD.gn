@@ -63,6 +63,7 @@ static_library("arc") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/mojom",
     "//ash/components/arc/session",
     "//ash/components/arc/session:connection_holder",
@@ -126,6 +127,7 @@ source_set("unit_tests") {
   deps = [
     ":arc",
     ":test_support",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:arc_metrics_constants",

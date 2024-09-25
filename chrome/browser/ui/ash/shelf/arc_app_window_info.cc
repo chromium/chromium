@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"

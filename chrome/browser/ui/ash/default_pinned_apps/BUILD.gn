@@ -15,8 +15,8 @@ static_library("default_pinned_apps") {
   public_deps = [ "//content/public/browser" ]
 
   deps = [
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/web_applications",
     "//chrome/common/extensions",

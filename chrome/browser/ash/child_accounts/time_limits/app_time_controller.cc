@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/containers/contains.h"
