@@ -53,9 +53,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.CheckAndroidVersion",
   "arc.Downloads",
 
-  # b/344853253
-  "borealis.FontCheck@volteer",
-
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
