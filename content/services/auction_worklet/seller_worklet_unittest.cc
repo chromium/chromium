@@ -289,7 +289,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      std::optional<uint32_t> expected_data_version = {},
+      std::optional<uint32_t> expected_data_version = std::nullopt,
       const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
       const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
@@ -321,7 +321,7 @@ class SellerWorkletTest : public testing::Test {
           expected_component_auction_modified_bid_params,
       base::TimeDelta expected_duration,
       const std::vector<std::string>& expected_errors = {},
-      std::optional<uint32_t> expected_data_version = {},
+      std::optional<uint32_t> expected_data_version = std::nullopt,
       const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
       const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
@@ -362,7 +362,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      std::optional<uint32_t> expected_data_version = {},
+      std::optional<uint32_t> expected_data_version = std::nullopt,
       const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
       const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
@@ -2026,6 +2026,14 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/1);
 
+  mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+      /*bucket=*/1024 + auction_worklet::RealTimeReportingPlatformError::
+                            kTrustedScoringSignalsFailure,
+      /*priority_weight=*/1,
+      /*latency_threshold=*/std::nullopt);
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(
+      expected_trusted_signal_histogram.Clone());
   // A network error when fetching the scoring signals results in null
   // `trustedScoringSignals`. This case is just before the component ad test
   // case so that its error response for `kNoComponentSignalsUrl` makes a
@@ -2039,7 +2047,12 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
       TrustedSignalsRequestManager::kAutoSendDelay,
       /*expected_errors=*/
       {base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
-                          kNoComponentSignalsUrl.spec().c_str())});
+                          kNoComponentSignalsUrl.spec().c_str())},
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 
   browser_signal_ad_components_ = {GURL("https://component1.test/"),
                                    GURL("https://component2.test/")};
@@ -7618,22 +7631,33 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ErrorCrossOrigin) {
   AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl, "{",
                            /*data_version=*/5);
 
-  RunScoreAdWithReturnValueExpectingResult(
-      "crossOriginTrustedSignals === null ? 1 : 0", 1, expected_errors);
-  RunScoreAdWithReturnValueExpectingResult("arguments.length", 7,
-                                           expected_errors);
-  RunScoreAdWithReturnValueExpectingResult(
-      "trustedScoringSignals === null ? 1 : 0", 1, expected_errors);
+  const char* kTestCases[] = {
+      "crossOriginTrustedSignals === null ? 1 : 0",
+      "arguments.length === 7 ? 1 : 0",
+      "trustedScoringSignals === null ? 1 : 0",
+      "'dataVersion' in browserSignals ? 0 : 1",
+      "'crossOriginDataVersion' in browserSignals ? 0 : 1"};
 
-  // No version in browserSignals... or passed out of worklet.
-  RunScoreAdWithReturnValueExpectingResult(
-      "'dataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
-      mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt);
-  RunScoreAdWithReturnValueExpectingResult(
-      "'crossOriginDataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
-      mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt);
+  for (const char* test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+    mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+        /*bucket=*/1024 + auction_worklet::RealTimeReportingPlatformError::
+                              kTrustedScoringSignalsFailure,
+        /*priority_weight=*/1,
+        /*latency_threshold=*/std::nullopt);
+    RealTimeReportingContributions expected_real_time_contributions;
+    expected_real_time_contributions.push_back(
+        expected_trusted_signal_histogram.Clone());
+    RunScoreAdWithReturnValueExpectingResult(
+        /*raw_return_value=*/test_case, /*expected_score=*/1, expected_errors,
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+        /*expected_pa_requests=*/{},
+        std::move(expected_real_time_contributions));
+  }
 }
 
 // Need to use SYSTEM_TIME, because scoring latency uses elapsed_timer, which is
