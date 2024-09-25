@@ -534,6 +534,9 @@ extern const char kSearchInCCTAlternateTapHandlingDescription[];
 extern const char kSeparateWebAppShortcutBadgeIconName[];
 extern const char kSeparateWebAppShortcutBadgeIconDescription[];
 
+extern const char kSeparateLocalAndAccountThemesName[];
+extern const char kSeparateLocalAndAccountThemesDescription[];
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 extern const char kCameraMicEffectsName[];
 extern const char kCameraMicEffectsDescription[];

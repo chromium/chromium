@@ -931,6 +931,13 @@ const char kSeparateWebAppShortcutBadgeIconDescription[] =
     "The shortcut app badge is painted in the UI instead of being part of the "
     "shortcut app icon, and more effects are added for the icon.";
 
+const char kSeparateLocalAndAccountThemesName[] =
+    "Separate local and account themes";
+const char kSeparateLocalAndAccountThemesDescription[] =
+    "Keeps the local and the account theme separate. If the user signs out or "
+    "sync is turned off, only the account theme is removed and the "
+    "pre-existing local theme is restored.";
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const char kCameraMicEffectsName[] = "Camera and Mic Effects";
 const char kCameraMicEffectsDescription[] =

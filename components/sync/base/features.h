@@ -171,6 +171,9 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
 
+// If enabled, distinguishes between local and account themes.
+BASE_DECLARE_FEATURE(kSeparateLocalAndAccountThemes);
+
 // If enabled, the local change nudge delays for single-client users are
 // increased by some factor, specified via the FeatureParam below.
 BASE_DECLARE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient);

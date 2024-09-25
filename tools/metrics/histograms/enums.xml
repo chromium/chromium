@@ -23607,6 +23607,7 @@ from previous Chrome versions.
   <int value="1381817717" label="EduCoexistence:enabled"/>
   <int value="1382107019" label="LevelDBPerformRewrite:disabled"/>
   <int value="1382500494" label="disable-drive-apps-in-app-list"/>
+  <int value="1382727025" label="SeparateLocalAndAccountThemes:disabled"/>
   <int value="1383197819" label="IncognitoScreenshot:enabled"/>
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>
@@ -23866,6 +23867,7 @@ from previous Chrome versions.
   <int value="1486171015" label="disable-fill-on-account-select"/>
   <int value="1486347614" label="IsolatedWebApps:disabled"/>
   <int value="1487341558" label="MacViewsAutofillPopup:enabled"/>
+  <int value="1487866428" label="SeparateLocalAndAccountThemes:enabled"/>
   <int value="1488193175" label="ChromeOSAssistant:enabled"/>
   <int value="1488700164" label="password-import:disabled"/>
   <int value="1488811168" label="UseMultiPlaneFormatForSoftwareVideo:disabled"/>
