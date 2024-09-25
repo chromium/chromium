@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -1266,6 +1267,16 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
 cc::ImageProvider::ScopedResult
 CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
     const cc::DrawImage& draw_image) {
+  cc::PaintImage paint_image = draw_image.paint_image();
+  if (paint_image.IsDeferredPaintRecord()) {
+    CHECK(!paint_image.IsPaintWorklet());
+    scoped_refptr<CanvasDeferredPaintRecord> canvas_deferred_paint_record(
+        static_cast<CanvasDeferredPaintRecord*>(
+            paint_image.deferred_paint_record().get()));
+    return cc::ImageProvider::ScopedResult(
+        canvas_deferred_paint_record->GetPaintRecord());
+  }
+
   // TODO(xidachen): Ensure this function works for paint worklet generated
   // images.
   // If we like to decode high bit depth image source to half float backed

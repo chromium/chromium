@@ -76,7 +76,7 @@ class DispatchingImageProvider : public ImageProvider {
       const DrawImage& draw_image) override {
     return draw_image.paint_image().IsPaintWorklet()
                ? paint_worklet_image_provider_.GetPaintRecordResult(
-                     draw_image.paint_image().paint_worklet_input().value())
+                     draw_image.paint_image().GetPaintWorkletInput())
                : playback_image_provider_.GetRasterContent(draw_image);
   }
 

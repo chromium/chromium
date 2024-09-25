@@ -3185,6 +3185,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(color_cache_);
   visitor->Trace(webgpu_access_texture_);
+  visitor->Trace(placed_elements_);
   CanvasPath::Trace(visitor);
 }
 

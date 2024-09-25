@@ -1318,7 +1318,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                                       const PlaybackParams& params) {
   // TODO(crbug.com/40613771): make sure to support the case where paint worklet
   // generated images are used in other raster work such as canvas2d.
-  if (op->image.IsPaintWorklet()) {
+  if (op->image.IsDeferredPaintRecord()) {
     // When rasterizing on the main thread (e.g. paint invalidation checking,
     // see https://crbug.com/990382), an image provider may not be available, so
     // we should draw nothing.

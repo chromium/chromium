@@ -30,10 +30,12 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
@@ -694,6 +696,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
+
+  // TODO(issues.chromium.org/issues/349835587): Add an observer to know if the
+  // element is detached and then remove it.
+  HeapHashMap<WeakMember<Element>, scoped_refptr<CanvasDeferredPaintRecord>>
+      placed_elements_;
 
  private:
   void FillImpl(SkPathFillType winding_rule);

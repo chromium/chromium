@@ -194,6 +194,16 @@ gpu::Mailbox PaintImage::GetMailbox() const {
   return texture_backing_->GetMailbox();
 }
 
+const scoped_refptr<PaintWorkletInput> PaintImage::GetPaintWorkletInput()
+    const {
+  if (!IsPaintWorklet()) {
+    return nullptr;
+  }
+  scoped_refptr<PaintWorkletInput> paint_worklet_input(
+      static_cast<PaintWorkletInput*>(deferred_paint_record().get()));
+  return paint_worklet_input;
+}
+
 bool PaintImage::IsOpaque() const {
   if (IsPaintWorklet())
     return deferred_paint_record_->KnownToBeOpaque();
