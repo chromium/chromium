@@ -537,7 +537,7 @@ crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/renderin
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
 
 ## win-swangle-chromium-x86
-crbug.com/365680832 [ win angle-swiftshader passthrough ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
+crbug.com/365680832 [ angle-swiftshader graphite-enabled oop-c passthrough renderer-skia-gl win ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
 
 ####################
 # Mac failures     #
