@@ -158,7 +158,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1269516672602708785">Opret hurtigt et nyt website i Google Sites</translation>
 <translation id="1270328905573953738">Flytning</translation>
 <translation id="1270502636509132238">Afhentningsmetode</translation>
-<translation id="1273592791152866347">Prisovervågning er deaktiveret</translation>
+<translation id="1273592791152866347">Prissporing er deaktiveret</translation>
 <translation id="127777513559587977">Tv-talkshows</translation>
 <translation id="1281476433249504884">Stabler 1</translation>
 <translation id="1281536351321444151">Hvis du vil udfylde dette IBAN-nummer automatisk næste gang, skal du gemme det på din Google-konto</translation>
@@ -641,7 +641,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2154484045852737596">Rediger kort</translation>
 <translation id="2154739667870063220">Genstart</translation>
 <translation id="2155260325161282517">5 x 7 tommer</translation>
-<translation id="2157640075051554492">Notifikationer om prisovervågning</translation>
+<translation id="2157640075051554492">Notifikationer om prissporing</translation>
 <translation id="21613918653299710">Online billedgallerier</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162510787844374618">Kontakter din bank…</translation>
@@ -2442,7 +2442,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5596939519753369075">2 x 3,5 tommer</translation>
 <translation id="560412284261940334">Administration er ikke understøttet</translation>
-<translation id="5605249000617390290">Få flere oplysninger om prisovervågning</translation>
+<translation id="5605249000617390290">Få flere oplysninger om prissporing</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Tjekke din forbindelse</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
@@ -2798,7 +2798,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="629730747756840877">Konto</translation>
 <translation id="6298456705131259420">Påvirker de websites, der er angivet her. Hvis du indsætter "[*.]" før et domænenavn, oprettes der en undtagelse for hele domænet. Hvis du f.eks. tilføjer "[*.]google.com", kan tredjepartscookies også være aktive for mail.google.com, da det er en del af google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Din enhed genstarter nu}=1{Din enhed genstarter om 1 sekund}one{Din enhed genstarter om # sekund}other{Din enhed genstarter om # sekunder}}</translation>
-<translation id="6301104306974789820">Få notifikationer om prisovervågning</translation>
+<translation id="6301104306974789820">Få notifikationer om prissporing</translation>
 <translation id="6302546952464230349">Vis oplysninger om tilladelsen <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Multimediesoftware</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan ikke nås.</translation>

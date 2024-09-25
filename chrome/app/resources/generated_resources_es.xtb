@@ -3648,7 +3648,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3618286417582819036">Se ha producido un error</translation>
 <translation id="3618647122592024084">Ahora, <ph name="RECIPIENT_NAME" /> podrá usar tu nombre de usuario y contraseña cuando utilice el Gestor de contraseñas de Google. Indícale que vaya a <ph name="WEBSITE" /> para iniciar sesión.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
-<translation id="3619294456800709762">Los sitios pueden activar la función de imagen en imagen automáticamente</translation>
+<translation id="3619294456800709762">Los sitios pueden activar la función Imagen en imagen automáticamente</translation>
 <translation id="3620136223548713675">Geolocalización</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de ChromeOS</translation>
@@ -6059,7 +6059,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Enlace}other{# enlaces}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Fuente predeterminada</translation>
-<translation id="5397378439569041789">Registrar dispositivo de Kiosk y Signage</translation>
+<translation id="5397378439569041789">Registrar dispositivo de kiosco o señalización</translation>
 <translation id="5397794290049113714">Tú</translation>
 <translation id="5398062879200420134">⌥ + colocar el cursor encima</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
@@ -9833,7 +9833,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8161095570253161196">Reanudar navegación</translation>
 <translation id="8161604891089629425">Fuente de contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestaña a una nueva ventana}other{Mover pestañas a una nueva ventana}}</translation>
-<translation id="8163152278172770963">No permitir que los sitios activen la función de imagen en imagen automáticamente</translation>
+<translation id="8163152278172770963">No permitir que los sitios activen la función Imagen en imagen automáticamente</translation>
 <translation id="8163708146810922598">más antiguos</translation>
 <translation id="8165997195302308593">Redirección de puertos de Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un número de teléfono}other{# números de teléfono}}</translation>
