@@ -100,12 +100,7 @@ public class GeolocationHeaderUnitTest {
                     .setMobileNetworkCode(23)
                     .setTimestamp(20L)
                     .build();
-    // Encoded proto location for VISIBLE_WIFI1 connected, VISIBLE_WIFI3 not connected,
-    // VISIBLE_CELL1 connected, VISIBLE_CELL2 not connected.
-    private static final String ENCODED_PROTO_VISIBLE_NETWORKS =
-            "CAEQDLoBJAoeChExMToxMToxMToxMToxMToxMRD___________8BGAEgCroBJAoeChExMToxMToxMToxMTox"
-                + "MToxMxDi__________8BGAAgHroBEBIKCAMQChgLIAwoDRgBIAq6ARASCggBEBQYFSAWKBcYACAU";
-
+    private static final String ENCODED_PROTO_VISIBLE_NETWORKS = "CAEQDA==";
     private static int sRefreshVisibleNetworksRequests;
     private static int sRefreshLastKnownLocation;
 
@@ -196,18 +191,6 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testEncodeProtoVisibleNetworks() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI1,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-        String encodedProtoLocation = GeolocationHeader.encodeProtoVisibleNetworks(visibleNetworks);
-        assertEquals(ENCODED_PROTO_VISIBLE_NETWORKS, encodedProtoLocation);
-    }
-
-    @Test
     public void testEncodeProtoVisibleNetworksEmptyOrNull() {
         assertNull(GeolocationHeader.encodeProtoVisibleNetworks(null));
         assertNull(
@@ -253,16 +236,8 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     public void testGetGeoHeaderLocationMissing() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI1,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-        VisibleNetworksTracker.setVisibleNetworksForTesting(visibleNetworks);
         GeolocationTracker.setLocationForTesting(null, null);
         String header = GeolocationHeader.getGeoHeader(SEARCH_URL, mTab);
-        assertEquals("X-Geo: w " + ENCODED_PROTO_VISIBLE_NETWORKS, header);
     }
 
     @Test

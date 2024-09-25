@@ -566,10 +566,6 @@ BASE_FEATURE(kOmniboxElegantTextHeight,
              "OmniboxElegantTextHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxAblateVisibleNetworks,
-             "OmniboxAblateVisibleNetworks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether the contents of the omnibox should be retained on focus as opposed to
 // being cleared. When this feature flag is enabled and the omnibox contents are
 // retained, focus events will also result in the omnibox contents being fully
@@ -591,7 +587,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kRichAutocompletion,
           &kUseFusedLocationProvider,
           &kOmniboxElegantTextHeight,
-          &kOmniboxAblateVisibleNetworks,
           &kRetainOmniboxOnFocus,
       }});
 

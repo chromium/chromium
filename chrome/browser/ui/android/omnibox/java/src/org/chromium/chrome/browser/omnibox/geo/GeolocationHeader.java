@@ -809,23 +809,6 @@ public class GeolocationHeader {
                         .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
                         .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION);
 
-        if (connectedWifi != null) {
-            locationDescriptorBuilder.addVisibleNetwork(connectedWifi.toProto(true));
-        }
-        if (visibleWifis != null) {
-            for (VisibleWifi visibleWifi : visibleWifis) {
-                locationDescriptorBuilder.addVisibleNetwork(visibleWifi.toProto(false));
-            }
-        }
-        if (connectedCell != null) {
-            locationDescriptorBuilder.addVisibleNetwork(connectedCell.toProto(true));
-        }
-        if (visibleCells != null) {
-            for (VisibleCell visibleCell : visibleCells) {
-                locationDescriptorBuilder.addVisibleNetwork(visibleCell.toProto(false));
-            }
-        }
-
         return encodeLocationDescriptor(locationDescriptorBuilder.build());
     }
 

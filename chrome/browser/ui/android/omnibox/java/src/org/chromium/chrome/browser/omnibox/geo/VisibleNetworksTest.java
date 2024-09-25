@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.util.Base64;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -141,34 +139,6 @@ public class VisibleNetworksTest {
     }
 
     @Test
-    public void testVisibleWifiToProto() {
-        boolean connected = true;
-        PartnerLocationDescriptor.VisibleNetwork visibleNetwork = mVisibleWifi1.toProto(connected);
-        PartnerLocationDescriptor.VisibleNetwork.WiFi wifi = visibleNetwork.getWifi();
-
-        assertEquals(mVisibleWifi1.bssid(), wifi.getBssid());
-        assertEquals(mVisibleWifi1.level().intValue(), wifi.getLevelDbm());
-        assertEquals(mVisibleWifi1.timestampMs().longValue(), visibleNetwork.getTimestampMs());
-        assertEquals(connected, visibleNetwork.getConnected());
-
-        assertEquals(VISIBLE_WIFI1_PROTO_ENCODED, encodeVisibleNetwork(visibleNetwork));
-    }
-
-    @Test
-    public void testVisibleWifiToProtoEmptyWifi() {
-        boolean connected = true;
-        PartnerLocationDescriptor.VisibleNetwork visibleNetwork = mEmptyWifi.toProto(connected);
-        PartnerLocationDescriptor.VisibleNetwork.WiFi wifi = visibleNetwork.getWifi();
-
-        assertFalse(wifi.hasBssid());
-        assertFalse(wifi.hasLevelDbm());
-        assertFalse(visibleNetwork.hasTimestampMs());
-        assertEquals(connected, visibleNetwork.getConnected());
-
-        assertEquals(EMPTY_WIFI_PROTO_ENCODED, encodeVisibleNetwork(visibleNetwork));
-    }
-
-    @Test
     public void testVisibleCellBuilder() {
         for (@RadioType int radioType = RadioType.UNKNOWN;
                 radioType < RadioType.NUM_ENTRIES;
@@ -226,47 +196,6 @@ public class VisibleNetworksTest {
     }
 
     @Test
-    public void testVisibleCellToProto() {
-        boolean connected = true;
-        PartnerLocationDescriptor.VisibleNetwork visibleNetwork = mVisibleCell1.toProto(connected);
-        PartnerLocationDescriptor.VisibleNetwork.Cell cell = visibleNetwork.getCell();
-
-        assertEquals(mVisibleCell1.cellId().intValue(), cell.getCellId());
-        assertEquals(mVisibleCell1.locationAreaCode().intValue(), cell.getLocationAreaCode());
-        assertEquals(mVisibleCell1.mobileCountryCode().intValue(), cell.getMobileCountryCode());
-        assertEquals(mVisibleCell1.mobileNetworkCode().intValue(), cell.getMobileNetworkCode());
-        assertEquals(
-                mVisibleCell1.primaryScramblingCode().intValue(), cell.getPrimaryScramblingCode());
-        assertEquals(mVisibleCell1.physicalCellId().intValue(), cell.getPhysicalCellId());
-        assertEquals(mVisibleCell1.trackingAreaCode().intValue(), cell.getTrackingAreaCode());
-        assertEquals(mVisibleCell1.timestampMs().longValue(), visibleNetwork.getTimestampMs());
-        assertEquals(connected, visibleNetwork.getConnected());
-        assertEquals(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.GSM, cell.getType());
-
-        assertEquals(VISIBLE_CELL1_PROTO_ENCODED, encodeVisibleNetwork(visibleNetwork));
-    }
-
-    @Test
-    public void testVisibleCellToProtoEmptyCell() {
-        boolean connected = true;
-        PartnerLocationDescriptor.VisibleNetwork visibleNetwork = mEmptyCell.toProto(connected);
-        PartnerLocationDescriptor.VisibleNetwork.Cell cell = visibleNetwork.getCell();
-
-        assertEquals(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.UNKNOWN, cell.getType());
-        assertFalse(cell.hasCellId());
-        assertFalse(cell.hasLocationAreaCode());
-        assertFalse(cell.hasMobileCountryCode());
-        assertFalse(cell.hasMobileNetworkCode());
-        assertFalse(cell.hasPrimaryScramblingCode());
-        assertFalse(cell.hasPhysicalCellId());
-        assertFalse(cell.hasTrackingAreaCode());
-        assertFalse(visibleNetwork.hasTimestampMs());
-        assertEquals(connected, visibleNetwork.getConnected());
-
-        assertEquals(EMPTY_CELL_PROTO_ENCODED, encodeVisibleNetwork(visibleNetwork));
-    }
-
-    @Test
     public void testVisibleNetworksCreate() {
         Set<VisibleCell> expectedVisibleCells =
                 new HashSet<VisibleCell>(Arrays.asList(mVisibleCell1, mVisibleCell2));
@@ -308,18 +237,5 @@ public class VisibleNetworksTest {
         VisibleNetworks visibleNetworks = VisibleNetworks.create(null, null, null, null);
         assertTrue(visibleNetworks.isEmpty());
         assertFalse(mVisibleNetworks1.isEmpty());
-    }
-
-    private static String encodeVisibleNetwork(
-            PartnerLocationDescriptor.VisibleNetwork visibleNetwork) {
-        PartnerLocationDescriptor.LocationDescriptor locationDescriptor =
-                PartnerLocationDescriptor.LocationDescriptor.newBuilder()
-                        .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
-                        .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION)
-                        .addVisibleNetwork(visibleNetwork)
-                        .build();
-
-        return Base64.encodeToString(
-                locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
     }
 }

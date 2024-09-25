@@ -8,8 +8,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.components.omnibox.OmniboxFeatures;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -186,31 +184,6 @@ class VisibleNetworks {
         public int hashCode() {
             return VisibleNetworks.objectsHash(mSsid, mBssid);
         }
-
-        /**
-         * Encodes a VisibleWifi into its corresponding PartnerLocationDescriptor.VisibleNetwork
-         * proto.
-         */
-        PartnerLocationDescriptor.VisibleNetwork toProto(boolean connected) {
-            if (OmniboxFeatures.sAblateVisibleNetworks.isEnabled()) {
-                return PartnerLocationDescriptor.VisibleNetwork.getDefaultInstance();
-            }
-
-            PartnerLocationDescriptor.VisibleNetwork.Builder visibleNetworkBuilder =
-                    PartnerLocationDescriptor.VisibleNetwork.newBuilder();
-
-            PartnerLocationDescriptor.VisibleNetwork.WiFi.Builder wifiBuilder =
-                    PartnerLocationDescriptor.VisibleNetwork.WiFi.newBuilder();
-
-            if (bssid() != null) wifiBuilder.setBssid(bssid());
-            if (level() != null) wifiBuilder.setLevelDbm(level());
-
-            visibleNetworkBuilder.setWifi(wifiBuilder.build());
-            if (timestampMs() != null) visibleNetworkBuilder.setTimestampMs(timestampMs());
-            visibleNetworkBuilder.setConnected(connected);
-
-            return visibleNetworkBuilder.build();
-        }
     }
 
     /** Specification of a visible cell. */
@@ -356,57 +329,6 @@ class VisibleNetworks {
                     mPrimaryScramblingCode,
                     mPhysicalCellId,
                     mTrackingAreaCode);
-        }
-
-        /**
-         * Encodes a VisibleCell into its corresponding PartnerLocationDescriptor.VisibleNetwork
-         * proto.
-         */
-        PartnerLocationDescriptor.VisibleNetwork toProto(boolean connected) {
-            if (OmniboxFeatures.sAblateVisibleNetworks.isEnabled()) {
-                return PartnerLocationDescriptor.VisibleNetwork.getDefaultInstance();
-            }
-
-            PartnerLocationDescriptor.VisibleNetwork.Builder visibleNetworkBuilder =
-                    PartnerLocationDescriptor.VisibleNetwork.newBuilder();
-
-            PartnerLocationDescriptor.VisibleNetwork.Cell.Builder cellBuilder =
-                    PartnerLocationDescriptor.VisibleNetwork.Cell.newBuilder();
-
-            switch (radioType()) {
-                case VisibleCell.RadioType.CDMA:
-                    cellBuilder.setType(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.CDMA);
-                    break;
-                case VisibleCell.RadioType.GSM:
-                    cellBuilder.setType(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.GSM);
-                    break;
-                case VisibleCell.RadioType.LTE:
-                    cellBuilder.setType(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.LTE);
-                    break;
-                case VisibleCell.RadioType.WCDMA:
-                    cellBuilder.setType(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.WCDMA);
-                    break;
-                case VisibleCell.RadioType.UNKNOWN:
-                case VisibleCell.RadioType.UNKNOWN_MISSING_LOCATION_PERMISSION:
-                default:
-                    cellBuilder.setType(PartnerLocationDescriptor.VisibleNetwork.Cell.Type.UNKNOWN);
-                    break;
-            }
-            if (cellId() != null) cellBuilder.setCellId(cellId());
-            if (locationAreaCode() != null) cellBuilder.setLocationAreaCode(locationAreaCode());
-            if (mobileCountryCode() != null) cellBuilder.setMobileCountryCode(mobileCountryCode());
-            if (mobileNetworkCode() != null) cellBuilder.setMobileNetworkCode(mobileNetworkCode());
-            if (primaryScramblingCode() != null) {
-                cellBuilder.setPrimaryScramblingCode(primaryScramblingCode());
-            }
-            if (physicalCellId() != null) cellBuilder.setPhysicalCellId(physicalCellId());
-            if (trackingAreaCode() != null) cellBuilder.setTrackingAreaCode(trackingAreaCode());
-
-            visibleNetworkBuilder.setCell(cellBuilder.build());
-            if (timestampMs() != null) visibleNetworkBuilder.setTimestampMs(timestampMs());
-            visibleNetworkBuilder.setConnected(connected);
-
-            return visibleNetworkBuilder.build();
         }
 
         /** A {@link VisibleCell} builder. */
