@@ -32,13 +32,12 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
   GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(
       cros_network_config_observer_.BindNewPipeAndPassRemote());
-  StartSessionPolling();
-  // Register BocaSessionManager for the current profile.
+  //  Register BocaSessionManager for the current profile.
   if (BocaAppClient::HasInstance()) {
     BocaAppClient::Get()->AddSessionManager(this);
   }
 }
-BocaSessionManager::~BocaSessionManager() {}
+BocaSessionManager::~BocaSessionManager() = default;
 
 void BocaSessionManager::Observer::OnBundleUpdated(
     const ::boca::Bundle& bundle) {}
@@ -60,7 +59,14 @@ void BocaSessionManager::OnNetworkStateChanged(
   // chromeos/services/network_config/public/mojom/network_types.mojom
   if (network_state->connection_state ==
       chromeos::network_config::mojom::ConnectionStateType::kOnline) {
-    is_network_conntected_ = true;
+    if (!is_network_conntected_) {
+      // Explicitly trigger a load whenever network back online. This will cover
+      // the case for initial ctor too.
+      // Other network change may trigger this events too, only handle when
+      // flipped from offline to online.
+      is_network_conntected_ = true;
+      LoadCurrentSession();
+    }
   } else {
     is_network_conntected_ = false;
   }
@@ -122,6 +128,13 @@ void BocaSessionManager::UpdateCurrentSession(
   return current_session_.get();
 }
 
+void BocaSessionManager::NotifyLocalCaptionEvents(
+    ::boca::CaptionsConfig caption_config) {
+  for (auto& observer : observers_) {
+    observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
+  }
+}
+
 bool BocaSessionManager::IsProfileActive() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->GetActiveUser() &&
@@ -135,6 +148,10 @@ void BocaSessionManager::NotifySessionUpdate() {
       previous_session_ &&
       previous_session_->session_state() == ::boca::Session::ACTIVE) {
     for (auto& observer : observers_) {
+      // Stop polling when session ends.
+      if (timer_.IsRunning()) {
+        timer_.Stop();
+      }
       observer.OnSessionEnded(previous_session_->session_id());
     }
   }
@@ -144,6 +161,11 @@ void BocaSessionManager::NotifySessionUpdate() {
       (!previous_session_ ||
        previous_session_->session_state() != ::boca::Session::ACTIVE)) {
     for (auto& observer : observers_) {
+      // Start polling after session start.
+      if (!timer_.IsRunning()) {
+        timer_.Start(FROM_HERE, kPollingInterval, this,
+                     &BocaSessionManager::LoadCurrentSession);
+      }
       observer.OnSessionStarted(current_session_->session_id(),
                                 current_session_->teacher());
     }
@@ -193,10 +215,4 @@ void BocaSessionManager::NotifyRosterUpdate() {
   }
 }
 
-void BocaSessionManager::NotifyLocalCaptionEvents(
-    ::boca::CaptionsConfig caption_config) {
-  for (auto& observer : observers_) {
-    observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
-  }
-}
 }  // namespace ash::boca

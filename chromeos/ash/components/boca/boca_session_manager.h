@@ -11,6 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -30,8 +31,7 @@ namespace ash::boca {
 class BocaSessionManager
     : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
-  // TODO(b/361852484): Make it 5 minutes after fcm in place.
-  inline static constexpr base::TimeDelta kPollingInterval = base::Seconds(5);
+  inline static constexpr base::TimeDelta kPollingInterval = base::Minutes(5);
 
   enum class BocaAction {
     kDefault = 0,

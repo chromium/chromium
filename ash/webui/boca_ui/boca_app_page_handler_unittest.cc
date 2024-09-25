@@ -413,45 +413,45 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        auto session = std::make_unique<::boca::Session>();
-        session->mutable_duration()->set_seconds(120);
-        session->set_session_state(::boca::Session::ACTIVE);
-        auto* teacher = session->mutable_teacher();
-        teacher->set_email("teacher@email.com");
-        teacher->set_full_name("teacher");
-        teacher->set_gaia_id("000");
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  auto session = std::make_unique<::boca::Session>();
+  session->mutable_duration()->set_seconds(120);
+  session->set_session_state(::boca::Session::ACTIVE);
+  auto* teacher = session->mutable_teacher();
+  teacher->set_email("teacher@email.com");
+  teacher->set_full_name("teacher");
+  teacher->set_gaia_id("000");
 
-        auto* student_groups_1 =
-            session->mutable_roster()->mutable_student_groups()->Add();
-        student_groups_1->set_title(kMainStudentGroupName);
-        auto* student = student_groups_1->mutable_students()->Add();
-        student->set_email("dog@email.com");
-        student->set_full_name("dog");
-        student->set_gaia_id("123");
+  auto* student_groups_1 =
+      session->mutable_roster()->mutable_student_groups()->Add();
+  student_groups_1->set_title(kMainStudentGroupName);
+  auto* student = student_groups_1->mutable_students()->Add();
+  student->set_email("dog@email.com");
+  student->set_full_name("dog");
+  student->set_gaia_id("123");
 
-        ::boca::SessionConfig session_config;
-        auto* caption_config_1 = session_config.mutable_captions_config();
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
 
-        caption_config_1->set_captions_enabled(true);
-        caption_config_1->set_translations_enabled(true);
+  caption_config_1->set_captions_enabled(true);
+  caption_config_1->set_translations_enabled(true);
 
-        auto* active_bundle =
-            session_config.mutable_on_task_config()->mutable_active_bundle();
-        active_bundle->set_locked(true);
-        auto* content = active_bundle->mutable_content_configs()->Add();
-        content->set_url("http://google.com/");
-        content->set_favicon_url("data/image");
-        content->set_title("google");
-        content->mutable_locked_navigation_options()->set_navigation_type(
-            ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
+  auto* active_bundle =
+      session_config.mutable_on_task_config()->mutable_active_bundle();
+  active_bundle->set_locked(true);
+  auto* content = active_bundle->mutable_content_configs()->Add();
+  content->set_url("http://google.com/");
+  content->set_favicon_url("data/image");
+  content->set_title("google");
+  content->mutable_locked_navigation_options()->set_navigation_type(
+      ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
 
-        (*session->mutable_student_group_configs())[kMainStudentGroupName] =
-            std::move(session_config);
-        request->callback().Run(std::move(session));
-      })));
+  (*session->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
 
   boca_app_handler_->GetSession(future_1.GetCallback());
 
@@ -489,15 +489,13 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        auto session = std::make_unique<::boca::Session>();
-        session->mutable_duration()->set_seconds(120);
-        session->set_session_state(::boca::Session::ACTIVE);
-        request->callback().Run(std::move(session));
-      })));
+  auto session = std::make_unique<::boca::Session>();
+  session->mutable_duration()->set_seconds(120);
+  session->set_session_state(::boca::Session::ACTIVE);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
   boca_app_handler_->GetSession(future_1.GetCallback());
 
@@ -513,34 +511,12 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithEmptyInputTest) {
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        request->callback().Run(
-            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
-      })));
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
   boca_app_handler_->GetSession(future_1.GetCallback());
-  auto result = future_1.Take();
-  ASSERT_TRUE(result->is_error());
-  EXPECT_EQ(mojom::GetSessionError::kHTTPError, result->get_error());
-}
-
-TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
-  // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-  // API callback.
-  base::test::TestFuture<mojom::SessionResultPtr> future_1;
-
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke(
-          [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
-
-  boca_app_handler_->GetSession(future_1.GetCallback());
-
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
@@ -553,13 +529,11 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
       future;
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
-
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        request->callback().Run(std::make_unique<::boca::Session>());
-      })));
-
+  auto session = std::make_unique<::boca::Session>(::boca::Session());
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
@@ -575,18 +549,16 @@ TEST_F(BocaAppPageHandlerTest,
   // API callback.
   base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
-  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
-  EXPECT_CALL(*session_client_impl(), GetSession(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto request) {
-        auto session = std::make_unique<::boca::Session>();
-        session->set_session_state(::boca::Session::ACTIVE);
-        request->callback().Run(std::make_unique<::boca::Session>());
-      })));
+  auto session = std::make_unique<::boca::Session>(::boca::Session());
+  session->set_session_state(::boca::Session::ACTIVE);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
   boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
-  ASSERT_TRUE(result->is_error());
-  EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
+  ASSERT_FALSE(result->is_error());
 }
 
 TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {

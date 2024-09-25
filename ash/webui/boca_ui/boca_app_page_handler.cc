@@ -152,75 +152,57 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 }
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
-  auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), user_identity_.gaia_id(),
-      base::BindOnce(
-          [](GetSessionCallback callback,
-             base::expected<std::unique_ptr<::boca::Session>,
-                            google_apis::ApiErrorCode> result) {
-            if (!result.has_value()) {
-              std::move(callback).Run(mojom::SessionResult::NewError(
-                  mojom::GetSessionError::kHTTPError));
-              return;
-            }
-            if (!result.value() ||
-                result.value()->session_state() != ::boca::Session::ACTIVE) {
-              std::move(callback).Run(mojom::SessionResult::NewError(
-                  mojom::GetSessionError::kEmpty));
-              return;
-            }
-            auto session = std::move(result.value());
-            std::vector<mojom::IdentityPtr> students;
-            for (auto student : GetStudentGroupsSafe(session.get())) {
-              students.push_back(mojom::Identity::New(
-                  student.gaia_id(), student.full_name(), student.email()));
-            }
+  // UI should fetch session from memory instead of initialize a network call.
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    std::move(callback).Run(
+        mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
+    return;
+  }
+  std::vector<mojom::IdentityPtr> students;
+  for (auto student : GetStudentGroupsSafe(session)) {
+    students.push_back(mojom::Identity::New(
+        student.gaia_id(), student.full_name(), student.email()));
+  }
 
-            auto caption_config = mojom::CaptionConfig::New();
-            if (GetSessionConfigSafe(session.get()).has_captions_config()) {
-              auto session_caption_config =
-                  GetSessionConfigSafe(session.get()).captions_config();
-              caption_config->caption_enabled =
-                  session_caption_config.captions_enabled();
-              caption_config->transcription_enabled =
-                  session_caption_config.translations_enabled();
-            }
+  auto caption_config = mojom::CaptionConfig::New();
+  if (GetSessionConfigSafe(session).has_captions_config()) {
+    auto session_caption_config =
+        GetSessionConfigSafe(session).captions_config();
+    caption_config->caption_enabled = session_caption_config.captions_enabled();
+    caption_config->transcription_enabled =
+        session_caption_config.translations_enabled();
+  }
 
-            mojom::OnTaskConfigPtr on_task_config = mojom::OnTaskConfig::New();
-            if (GetSessionConfigSafe(session.get()).has_on_task_config()) {
-              auto session_on_task_config =
-                  GetSessionConfigSafe(session.get()).on_task_config();
-              std::vector<mojom::ControlledTabPtr> tabs;
-              for (auto tab :
-                   session_on_task_config.active_bundle().content_configs()) {
-                tabs.push_back(mojom::ControlledTab::New(
-                    mojom::TabInfo::New(tab.title(), GURL(tab.url()),
-                                        tab.favicon_url()),
-                    mojom::NavigationType(
-                        tab.locked_navigation_options().navigation_type())));
-              }
-              on_task_config = mojom::OnTaskConfig::New(
-                  session_on_task_config.active_bundle().locked(),
-                  std::move(tabs));
-            }
-            mojom::IdentityPtr teacher;
-            if (session->has_teacher()) {
-              teacher = mojom::Identity::New(session->teacher().gaia_id(),
-                                             session->teacher().full_name(),
-                                             session->teacher().email());
-            }
-            auto config = mojom::Config::New(
-                // Nanos are not used throughout session lifecycle so it's
-                // safe to only parse seconds.
-                base::Seconds(session->duration().seconds()),
-                std::move(teacher), std::move(students),
-                std::move(on_task_config), std::move(caption_config));
+  mojom::OnTaskConfigPtr on_task_config = mojom::OnTaskConfig::New();
+  if (GetSessionConfigSafe(session).has_on_task_config()) {
+    auto session_on_task_config =
+        GetSessionConfigSafe(session).on_task_config();
+    std::vector<mojom::ControlledTabPtr> tabs;
+    for (auto tab : session_on_task_config.active_bundle().content_configs()) {
+      tabs.push_back(mojom::ControlledTab::New(
+          mojom::TabInfo::New(tab.title(), GURL(tab.url()), tab.favicon_url()),
+          mojom::NavigationType(
+              tab.locked_navigation_options().navigation_type())));
+    }
+    on_task_config = mojom::OnTaskConfig::New(
+        session_on_task_config.active_bundle().locked(), std::move(tabs));
+  }
+  mojom::IdentityPtr teacher;
+  if (session->has_teacher()) {
+    teacher = mojom::Identity::New(session->teacher().gaia_id(),
+                                   session->teacher().full_name(),
+                                   session->teacher().email());
+  }
+  auto config = mojom::Config::New(
+      // Nanos are not used throughout session lifecycle so it's
+      // safe to only parse seconds.
+      base::Seconds(session->duration().seconds()), std::move(teacher),
+      std::move(students), std::move(on_task_config),
+      std::move(caption_config));
 
-            std::move(callback).Run(
-                mojom::SessionResult::NewConfig(std::move(config)));
-          },
-          std::move(callback)));
-  session_client_impl_->GetSession(std::move(get_session_request));
+  std::move(callback).Run(mojom::SessionResult::NewConfig(std::move(config)));
 }
 
 void BocaAppHandler::EndSession(EndSessionCallback callback) {
