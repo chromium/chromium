@@ -898,7 +898,7 @@
   {
     "name": "autofill-remove-payments-butter-dropdown",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-require-valid-local-cards-in-settings",
