@@ -97,6 +97,9 @@ FindResults::Iterator::Iterator(
 std::optional<MatchResultICU> FindResults::Iterator::EarliestMatch() const {
   auto min_iter = std::min_element(match_list_.begin(), match_list_.end(),
                                    [](const auto& a, const auto& b) {
+                                     if (a.has_value() && !b.has_value()) {
+                                       return true;
+                                     }
                                      if (!a.has_value() || !b.has_value()) {
                                        return false;
                                      }

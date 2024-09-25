@@ -62,4 +62,17 @@ TEST_F(FindResultsTest, MultipleCorpora) {
   EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u, 10u}), offsets);
 }
 
+TEST_F(FindResultsTest, AnIteratorReachesToEnd) {
+  Vector<UChar> buffer0 = MakeBuffer(u"foo fo__o");
+  Vector<UChar> buffer1 = MakeBuffer(u"foo __foo");
+  Vector<Vector<UChar>> extra_buffers = {buffer1};
+  String query(u"foo");
+  FindBuffer* find_buffer = nullptr;
+  FindResults results(find_buffer, &main_searcher_, buffer0, &extra_buffers,
+                      query, FindOptions());
+
+  Vector<unsigned> offsets = ResultOffsets(results);
+  EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u}), offsets);
+}
+
 }  // namespace blink
