@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.policy;
 
+import android.text.TextUtils;
+
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 
 import java.util.UUID;
 
@@ -23,12 +25,7 @@ public class CloudManagementAndroidConnection {
         return LazyHolder.INSTANCE;
     }
 
-    /** Provides access to downstream implementation. */
-    private final CloudManagementAndroidConnectionDelegate mDelegate;
-
-    private CloudManagementAndroidConnection() {
-        mDelegate = new CloudManagementAndroidConnectionDelegateImpl();
-    }
+    private CloudManagementAndroidConnection() {}
 
     /* Returns the client ID to be used in the DM token generation. Once generated, the ID is saved
      * to Shared Preferences so it can be reused. */
@@ -43,8 +40,13 @@ public class CloudManagementAndroidConnection {
         // Use the Gservices Android ID as the client ID. If the Android ID can't be obtained, then
         // a randomly generated ID is used instead (e.g. for non-Chrome official builds).
         // Save the ID in Shared Preferences, so it can be reused.
-        String newClientId = getDelegate().getGservicesAndroidId();
-        if (newClientId == null || newClientId.isEmpty()) {
+        String newClientId = null;
+        CloudManagementAndroidConnectionDelegate delegate =
+                ServiceLoaderUtil.maybeCreate(CloudManagementAndroidConnectionDelegate.class);
+        if (delegate != null) {
+            newClientId = delegate.getGservicesAndroidId();
+        }
+        if (TextUtils.isEmpty(newClientId)) {
             newClientId = UUID.randomUUID().toString();
         }
         CloudManagementSharedPreferences.saveClientId(newClientId);
@@ -52,15 +54,8 @@ public class CloudManagementAndroidConnection {
         return newClientId;
     }
 
-    /** Overrides {@link mDelegate} if not null. */
-    private static CloudManagementAndroidConnectionDelegate sDelegateForTesting;
-
     public static void setDelegateForTesting(CloudManagementAndroidConnectionDelegate delegate) {
-        sDelegateForTesting = delegate;
-        ResettersForTesting.register(() -> sDelegateForTesting = null);
-    }
-
-    private CloudManagementAndroidConnectionDelegate getDelegate() {
-        return sDelegateForTesting != null ? sDelegateForTesting : mDelegate;
+        ServiceLoaderUtil.setInstanceForTesting(
+                CloudManagementAndroidConnectionDelegate.class, delegate);
     }
 }
