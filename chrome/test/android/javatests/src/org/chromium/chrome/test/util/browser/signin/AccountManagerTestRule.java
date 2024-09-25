@@ -215,46 +215,19 @@ public class AccountManagerTestRule implements TestRule {
      */
     @Deprecated
     public AccountInfo addAccount(String accountName) {
-        return addAccount(accountName, new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
         final String baseName = accountName.split("@", 2)[0];
-        return addAccount(
-                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
-    }
-
-    /**
-     * Adds an account of the given email and name to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(String email, String baseName) {
-        return addAccount(
-                email,
-                baseName + ".full",
-                baseName + ".given",
-                createAvatar(),
-                new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(
-            String accountName, String baseName, @NonNull AccountCapabilities capabilities) {
-        return addAccount(
-                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
+        String gaiaId = FakeAccountManagerFacade.toGaiaId(accountName);
+        AccountInfo accountInfo =
+                new AccountInfo(
+                        new CoreAccountId(gaiaId),
+                        accountName,
+                        gaiaId,
+                        baseName + ".full",
+                        baseName + ".given",
+                        createAvatar(),
+                        new AccountCapabilities(new HashMap<>()));
+        addAccount(accountInfo);
+        return accountInfo;
     }
 
     /**
@@ -264,21 +237,6 @@ public class AccountManagerTestRule implements TestRule {
     @Deprecated
     public AccountInfo addAccount(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
-        return addAccount(
-                email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
-     * FakeAccountInfoService}.
-     */
-    @Deprecated
-    public AccountInfo addAccount(
-            String email,
-            String fullName,
-            String givenName,
-            @Nullable Bitmap avatar,
-            @NonNull AccountCapabilities capabilities) {
         String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
         AccountInfo accountInfo =
                 new AccountInfo(
@@ -288,7 +246,7 @@ public class AccountManagerTestRule implements TestRule {
                         fullName,
                         givenName,
                         avatar,
-                        capabilities);
+                        new AccountCapabilities(new HashMap<>()));
         addAccount(accountInfo);
         return accountInfo;
     }

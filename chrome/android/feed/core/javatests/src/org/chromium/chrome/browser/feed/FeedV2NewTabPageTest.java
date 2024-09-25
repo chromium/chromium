@@ -95,7 +95,6 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -344,12 +343,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromoWhenDefaultAccountCannotShowHistorySyncWithoutMinorRestrictions() {
-        final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
-        mSigninTestRule.addAccount(
-                "test@gmail.com",
-                capabilitiesBuilder
-                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                        .build());
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
