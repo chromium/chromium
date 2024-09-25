@@ -105,12 +105,12 @@ bool MaskedDomainListManager::Matches(
       break;
     case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
       if (!top_frame_site.has_value()) {
-        DVLOG(3) << "NSPAL::Matches(" << request_url
-                 << ", empty top_frame_site) - false";
+        VLOG(3) << "MDLM::Matches(" << request_url
+                << ", empty top_frame_site) - false";
         return false;
       }
-      DVLOG(3) << "NSPAL::Matches(" << request_url << ", "
-               << top_frame_site.value() << ")";
+      VLOG(3) << "MDLM::Matches(" << request_url << ", "
+              << top_frame_site.value() << ")";
 
       // Bypass the proxy for same-site requests.
       net::SchemefulSite request_site(request_url);

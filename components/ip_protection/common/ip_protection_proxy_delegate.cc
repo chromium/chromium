@@ -48,13 +48,13 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  auto dvlog = [&](std::string message) {
+  auto vlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
-    DVLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
-             << (top_frame_site.has_value() ? top_frame_site.value()
-                                            : net::SchemefulSite())
-             << ") - " << message;
+    VLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
+            << (top_frame_site.has_value() ? top_frame_site.value()
+                                           : net::SchemefulSite())
+            << ") - " << message;
   };
 
   const std::string& always_proxy = net::features::kIpPrivacyAlwaysProxy.Get();
@@ -83,12 +83,12 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     // Protection should be used, remove this check.
     if (!base::FeatureList::IsEnabled(
             net::features::kEnableIpProtectionProxy)) {
-      dvlog("ip protection proxy cannot be enabled");
+      vlog("ip protection proxy cannot be enabled");
       return;
     }
 
     if (!ipp_core_->IsIpProtectionEnabled()) {
-      dvlog("ip protection proxy is not currently enabled");
+      vlog("ip protection proxy is not currently enabled");
       return;
     }
     const bool available = CheckAvailability(url, network_anonymization_key);
@@ -132,8 +132,8 @@ void IpProtectionProxyDelegate::OnResolveProxy(
   }
 
   if (VLOG_IS_ON(3)) {
-    dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
-                        proxy_list.ToDebugString()}));
+    vlog(base::StrCat({"setting proxy list (before deprioritization) to ",
+                       proxy_list.ToDebugString()}));
   }
   result->OverrideProxyList(MergeProxyRules(result->proxy_list(), proxy_list));
   result->DeprioritizeBadProxyChains(proxy_retry_info);
@@ -146,25 +146,25 @@ bool IpProtectionProxyDelegate::CheckEligibility(
   ip_protection::ProtectionEligibility eligibility;
   bool eligible;
 
-  auto dvlog = [&](std::string message) {
+  auto vlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
-    DVLOG(3) << "IPPD::CheckEligibility(" << url << ", "
-             << (top_frame_site.has_value() ? top_frame_site.value()
-                                            : net::SchemefulSite())
-             << ") - " << message;
+    VLOG(3) << "IPPD::CheckEligibility(" << url << ", "
+            << (top_frame_site.has_value() ? top_frame_site.value()
+                                           : net::SchemefulSite())
+            << ") - " << message;
   };
   if (!masked_domain_list_manager_->IsPopulated()) {
-    dvlog("proxy allow list not populated");
+    vlog("proxy allow list not populated");
     eligibility = ip_protection::ProtectionEligibility::kUnknown;
     eligible = false;
   } else if (!masked_domain_list_manager_->Matches(url,
                                                    network_anonymization_key)) {
-    dvlog("proxy allow list did not match");
+    vlog("proxy allow list did not match");
     eligibility = ip_protection::ProtectionEligibility::kIneligible;
     eligible = false;
   } else {
-    dvlog("proxy allow list matched");
+    vlog("proxy allow list matched");
     eligibility = ip_protection::ProtectionEligibility::kEligible;
     eligible = true;
   }
@@ -176,20 +176,20 @@ bool IpProtectionProxyDelegate::CheckEligibility(
 bool IpProtectionProxyDelegate::CheckAvailability(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
-  auto dvlog = [&](std::string message) {
+  auto vlog = [&](std::string message) {
     std::optional<net::SchemefulSite> top_frame_site =
         network_anonymization_key.GetTopFrameSite();
-    DVLOG(3) << "IPPD::CheckAvailability(" << url << ", "
-             << (top_frame_site.has_value() ? top_frame_site.value()
-                                            : net::SchemefulSite())
-             << ") - " << message;
+    VLOG(3) << "IPPD::CheckAvailability(" << url << ", "
+            << (top_frame_site.has_value() ? top_frame_site.value()
+                                           : net::SchemefulSite())
+            << ") - " << message;
   };
   const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
   const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
   ip_protection::Telemetry().ProtectionIsAvailableForRequest(
       auth_tokens_are_available, proxy_list_is_available);
   if (!auth_tokens_are_available) {
-    dvlog("no auth token available from cache");
+    vlog("no auth token available from cache");
     return false;
   }
   if (!proxy_list_is_available) {
@@ -197,7 +197,7 @@ bool IpProtectionProxyDelegate::CheckAvailability(
     // distinguish the case where a proxy list has not been downloaded, and the
     // case where a proxy list is empty. The `IsProxyListAvailable()` method can
     // be removed at that time.
-    dvlog("no proxy list available from cache");
+    vlog("no proxy list available from cache");
     return false;
   }
   return true;
