@@ -11436,6 +11436,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillSkipAndroidBottomSheetForIban)},
 #endif
 
+    {"password-leak-toggle-move",
+     flag_descriptions::kPasswordLeakToggleMoveName,
+     flag_descriptions::kPasswordLeakToggleMoveDescription, kOsAll,
+     FEATURE_VALUE_TYPE(safe_browsing::kPasswordLeakToggleMove)},
+
     {"pwm-show-suggestions-on-autofocus",
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusName,
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusDescription,

@@ -3024,6 +3024,12 @@ const char kPasswordGenerationSoftNudgeDescription[] =
     "Enables updated password generation UI with a prominent button and "
     "previewing the generated password on focus.";
 
+const char kPasswordLeakToggleMoveName[] = "Password leak toggle move";
+const char kPasswordLeakToggleMoveDescription[] =
+    "Enables the new location of the password leak toggle option under "
+    "standard protection on chrome://settings/security to the advanced "
+    "section of the chrome://settings/security page.";
+
 const char kPasswordManagerShowSuggestionsOnAutofocusName[] =
     "Showing password suggestions on autofocused password forms";
 const char kPasswordManagerShowSuggestionsOnAutofocusDescription[] =

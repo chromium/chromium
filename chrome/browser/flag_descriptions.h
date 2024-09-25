@@ -1746,6 +1746,9 @@ extern const char kParallelDownloadingDescription[];
 extern const char kPasswordGenerationSoftNudgeName[];
 extern const char kPasswordGenerationSoftNudgeDescription[];
 
+extern const char kPasswordLeakToggleMoveName[];
+extern const char kPasswordLeakToggleMoveDescription[];
+
 extern const char kPasswordManagerShowSuggestionsOnAutofocusName[];
 extern const char kPasswordManagerShowSuggestionsOnAutofocusDescription[];
 

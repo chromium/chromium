@@ -195,6 +195,10 @@ BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 
+// Enable movement of password leak toggle out of standard protection and into
+// its own section.
+BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
+
 // Controls whether custom messages from admin are shown for warn and block
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
