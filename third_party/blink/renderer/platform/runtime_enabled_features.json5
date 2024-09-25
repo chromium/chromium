@@ -2268,6 +2268,14 @@
       name: "HTMLAnchorAttribute",
       status: "experimental",
     },
+    // The `<embed>` should follow the specification, layout is not forced
+    // when the `type` attribute is set to `image`.
+    // https://html.spec.whatwg.org/C/#the-embed-element
+    // This feature was shipped in M131, so this flag can be removed in M133.
+    {
+      name: "HTMLEmbedElementNotForceLayout",
+      status: "stable",
+    },
     // Adds support for the experimental `interesttarget`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
     // https://open-ui.org/components/interest-invokers.explainer/
