@@ -878,11 +878,12 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
   }
 
   if (is_prematch) {
-    return MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
-           MatchDeviceTargeting(DeviceTargeting(targeting));
+    // TOOD(369188855): Re-enable demo mode prematch.
+    return MatchDeviceTargeting(DeviceTargeting(targeting));
   }
 
-  return MatchSessionTargeting(SessionTargeting(targeting)) &&
+  return MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
+         MatchSessionTargeting(SessionTargeting(targeting)) &&
          MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id,
                                group_id);
 }
