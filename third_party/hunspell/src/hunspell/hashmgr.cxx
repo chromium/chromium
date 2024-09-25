@@ -1265,6 +1265,8 @@ hentry* HashMgr::InitHashEntry(hentry* entry,
   entry->alen = static_cast<short>(const_cast<HashMgr*>(this)->get_aliasf(
       affix_index, &entry->astr, &dummyDictionaryFile));
   entry->blen = static_cast<unsigned char>(word_length);
+  std::vector<w_char> w;
+  entry->clen = u8_u16(w, word);
   memcpy(&entry->word, word, word_length);
 
   return entry;

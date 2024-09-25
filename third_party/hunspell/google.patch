@@ -344,7 +344,7 @@ index 62433ae..9016822 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index d8d5d20..05a159e 100644
+index d8d5d20..776359a 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -81,8 +81,14 @@
@@ -588,7 +588,7 @@ index d8d5d20..05a159e 100644
    if (!afflst) {
      HUNSPELL_WARNING(
          stderr, "Error - could not open affix description file %s\n", affpath);
-@@ -1091,6 +1217,130 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
+@@ -1091,6 +1217,132 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
    return true;
  }
  
@@ -640,6 +640,8 @@ index d8d5d20..05a159e 100644
 +  entry->alen = static_cast<short>(const_cast<HashMgr*>(this)->get_aliasf(
 +      affix_index, &entry->astr, &dummyDictionaryFile));
 +  entry->blen = static_cast<unsigned char>(word_length);
++  std::vector<w_char> w;
++  entry->clen = u8_u16(w, word);
 +  memcpy(&entry->word, word, word_length);
 +
 +  return entry;
