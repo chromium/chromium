@@ -8,7 +8,9 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -232,6 +234,140 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   std::map<PrefetchContainer::Key, std::unique_ptr<CandidateData>> candidates_;
   std::optional<base::TimeTicks> wait_started_at_ = std::nullopt;
 };
+
+// Abstracts required operations for `PrefetchContainer` that is used to collect
+// match candidates in the first phase of
+// `PrefetchMatchResolver2::FindPrefetch()`. Used for unit testing.
+template <class T>
+concept MatchCandidate =
+    requires(T& t,
+             const GURL& url,
+             base::TimeDelta cacheable_duration,
+             base::WeakPtr<PrefetchServingPageMetricsContainer>
+                 serving_page_metrics_container,
+             std::ostream& ostream) {
+      t.key();
+      t.GetURL();
+      t.GetServableState(cacheable_duration);
+      t.GetNoVarySearchHint();
+      t.IsNoVarySearchHeaderMatch(url);
+      t.HasPrefetchStatus();
+      t.GetPrefetchStatus();
+      t.HasPrefetchBeenConsideredToServe();
+      t.IsDecoy();
+      t.SetServingPageMetrics(serving_page_metrics_container);
+      t.UpdateServingPageMetrics();
+      ostream << t;
+    };
+
+// Collects `PrefetchContainer`s that are expected to match to `navigated_key`.
+//
+// This is defined with the template for testing the first phase of
+// `PrefetchMatchResolver2::FindPrefetch()` with mock `PrefetchContainer`.
+template <class T>
+  requires MatchCandidate<T>
+std::vector<T*> CollectMatchCandidatesGeneric(
+    const std::map<PrefetchContainer::Key, std::unique_ptr<T>>& prefetches,
+    const PrefetchContainer::Key& navigated_key,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container) {
+  std::vector<T*> matches;
+  std::vector<T*> hint_matches;
+  DVLOG(1) << "CollectMatchCandidatesGeneric(" << navigated_key << ")";
+  // Search for an exact or No-Vary-Search match first.
+  no_vary_search::IterateCandidates(
+      navigated_key, prefetches,
+      base::BindRepeating(
+          [](const PrefetchContainer::Key& navigated_key,
+             std::vector<T*>* matches, std::vector<T*>* hint_matches,
+             const std::unique_ptr<T>& prefetch_container,
+             no_vary_search::MatchType match_type) {
+            switch (match_type) {
+              case no_vary_search::MatchType::kExact:
+              case no_vary_search::MatchType::kNoVarySearch:
+                matches->push_back(prefetch_container.get());
+                break;
+              case no_vary_search::MatchType::kOther:
+                if (const auto& nvs_expected =
+                        prefetch_container->GetNoVarySearchHint()) {
+                  // We cannot match based on the NVS hint once we have the
+                  // response headers. If we have matching NVS header,
+                  // the entry would have matched with kNoVarySearch above.
+                  // We only match based on the hint if we have not yet
+                  // received the headers.
+                  if (prefetch_container->GetServableState(
+                          PrefetchCacheableDuration()) ==
+                          PrefetchContainer::ServableState::
+                              kShouldBlockUntilHeadReceived &&
+                      nvs_expected->AreEquivalent(
+                          navigated_key.url(), prefetch_container->GetURL())) {
+                    hint_matches->push_back(prefetch_container.get());
+                  }
+                }
+                break;
+            }
+            return no_vary_search::IterateCandidateResult::kContinue;
+          },
+          navigated_key, base::Unretained(&matches),
+          base::Unretained(&hint_matches)));
+
+  // Insert the No-Vary-Search hint matches at the end of `matches`.
+  matches.insert(matches.end(), hint_matches.begin(), hint_matches.end());
+
+  for (T* prefetch_container : matches) {
+    prefetch_container->SetServingPageMetrics(serving_page_metrics_container);
+    prefetch_container->UpdateServingPageMetrics();
+  }
+
+  std::erase_if(matches, [](const auto* prefetch_container) {
+    if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
+      DVLOG(1) << "CollectMatchCandidatesGeneric: skipped "
+               << "because already considered to serve: "
+               << *prefetch_container;
+      return true;
+    }
+
+    switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+      case PrefetchContainer::ServableState::kNotServable:
+        DVLOG(1) << "CollectMatchCandidatesGeneric: skipped "
+                    "because not servable: "
+                 << *prefetch_container;
+        return true;
+      case PrefetchContainer::ServableState::kServable:
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        break;
+    }
+
+    if (prefetch_container->IsDecoy()) {
+      DVLOG(1) << "CollectMatchCandidatesGeneric: "
+                  "skipped because "
+                  "prefetch is a decoy: "
+               << *prefetch_container;
+      return true;
+    }
+
+    // Note: This codepath is only be reached in practice if we create a
+    // second NavigationRequest to this prefetch's URL. The first
+    // NavigationRequest would call GetPrefetch, which might set this
+    // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
+    CHECK(prefetch_container->HasPrefetchStatus());
+    if (prefetch_container->GetPrefetchStatus() ==
+        PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
+      DVLOG(1) << "CollectMatchCandidatesGeneric: "
+                  "skipped because "
+                  "cookies for url have changed since prefetch completed: "
+               << *prefetch_container;
+      return true;
+    }
+
+    DVLOG(1) << "CollectMatchCandidatesGeneric:"
+                " matched: "
+             << *prefetch_container;
+    return false;
+  });
+
+  return matches;
+}
 
 }  // namespace content
 

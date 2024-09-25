@@ -1396,107 +1396,11 @@ PrefetchService::CollectPotentiallyMatchingPrefetchContainers(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
-  std::vector<PrefetchContainer*> matches;
-  std::vector<PrefetchContainer*> hint_matches;
-  DVLOG(1) << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers("
-           << key << ")";
-  // Search for an exact or No-Vary-Search match first.
-  no_vary_search::IterateCandidates(
-      key, owned_prefetches_,
-      base::BindRepeating(
-          [](const PrefetchContainer::Key& key,
-             std::vector<PrefetchContainer*>* matches,
-             std::vector<PrefetchContainer*>* hint_matches,
-             const std::unique_ptr<PrefetchContainer>& prefetch_container,
-             no_vary_search::MatchType match_type) {
-            switch (match_type) {
-              case no_vary_search::MatchType::kExact:
-              case no_vary_search::MatchType::kNoVarySearch:
-                matches->push_back(prefetch_container.get());
-                break;
-              case no_vary_search::MatchType::kOther:
-                if (const auto& nvs_expected =
-                        prefetch_container->GetNoVarySearchHint()) {
-                  // We cannot match based on the NVS hint once we have the
-                  // response headers. If we have matching NVS header,
-                  // the entry would have matched with kNoVarySearch above.
-                  // We only match based on the hint if we have not yet
-                  // received the headers.
-                  if (prefetch_container->GetServableState(
-                          PrefetchCacheableDuration()) ==
-                          PrefetchContainer::ServableState::
-                              kShouldBlockUntilHeadReceived &&
-                      nvs_expected->AreEquivalent(
-                          key.url(), prefetch_container->GetURL())) {
-                    hint_matches->push_back(prefetch_container.get());
-                  }
-                }
-                break;
-            }
-            return no_vary_search::IterateCandidateResult::kContinue;
-          },
-          key, base::Unretained(&matches), base::Unretained(&hint_matches)));
-
-  // Insert the No-Vary-Search hint matches at the end of `matches`.
-  matches.insert(matches.end(), hint_matches.begin(), hint_matches.end());
-
-  for (PrefetchContainer* prefetch_container : matches) {
-    prefetch_container->SetServingPageMetrics(serving_page_metrics_container);
-    prefetch_container->UpdateServingPageMetrics();
-  }
-
-  std::erase_if(matches, [](const auto* prefetch_container) {
-    if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
-      DVLOG(1) << "PrefetchService::"
-                  "CollectPotentiallyMatchingPrefetchContainers: skipped "
-               << "because already considered to serve: "
-               << *prefetch_container;
-      return true;
-    }
-
-    switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
-      case PrefetchContainer::ServableState::kNotServable:
-        DVLOG(1) << "PrefetchService::"
-                    "CollectPotentiallyMatchingPrefetchContainers: skipped "
-                    "because not servable: "
-                 << *prefetch_container;
-        return true;
-      case PrefetchContainer::ServableState::kServable:
-      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-        break;
-    }
-
-    if (prefetch_container->IsDecoy()) {
-      DVLOG(1)
-          << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers: "
-             "skipped because "
-             "prefetch is a decoy: "
-          << *prefetch_container;
-      return true;
-    }
-
-    // Note: This codepath is only be reached in practice if we create a
-    // second NavigationRequest to this prefetch's URL. The first
-    // NavigationRequest would call GetPrefetch, which might set this
-    // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
-    CHECK(prefetch_container->HasPrefetchStatus());
-    if (prefetch_container->GetPrefetchStatus() ==
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
-      DVLOG(1)
-          << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers: "
-             "skipped because "
-             "cookies for url have changed since prefetch completed: "
-          << *prefetch_container;
-      return true;
-    }
-
-    DVLOG(1) << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers:"
-                " matched: "
-             << *prefetch_container;
-    return false;
-  });
-
-  return matches;
+  // TODO(crbug.com/353490734): Remove include of
+  // prefetch_match_resolver.h when remove this call as it was included only for
+  // this.
+  return CollectMatchCandidatesGeneric(
+      owned_prefetches_, key, std::move(serving_page_metrics_container));
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::MatchUrl(
