@@ -8,6 +8,7 @@
 
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
+external/wpt/selection/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 
