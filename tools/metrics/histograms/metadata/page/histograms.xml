@@ -88,6 +88,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".FrameRemoved" summary="FrameRemoved"/>
   <variant name=".Hidden" summary="Hidden"/>
   <variant name=".InternalCancellation" summary="InternalCancellation"/>
+  <variant name=".NewDuplicateNavigation" summary="NewDuplicateNavigation"/>
   <variant name=".NewHistoryNavigation" summary="NewHistoryNavigation"/>
   <variant name=".NewOtherNavigationBrowserInitiated"
       summary="NewOtherNavigationBrowserInitiated"/>
