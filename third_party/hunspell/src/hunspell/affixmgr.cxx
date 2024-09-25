@@ -1364,6 +1364,23 @@ int AffixMgr::cpdrep_check(const char* word, int wl) {
   }
 #endif
 
+ return 0;
+}
+
+// forbid compound words, if they are in the dictionary as a
+// word pair separated by space
+int AffixMgr::cpdwordpair_check(const char * word, int wl) {
+  std::string candidate(word);
+  for (size_t i = 1; i < candidate.size(); i++) {
+    // go to end of the UTF-8 character
+    if (utf8 && ((word[i] & 0xc0) == 0x80))
+        continue;
+    candidate.insert(i, 1, ' ');
+    if (candidate_check(candidate.c_str(), candidate.size()))
+      return 1;
+    candidate.erase(i, 1);
+  }
+
   return 0;
 }
 
@@ -1714,6 +1731,12 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
         affixed = 1;
         rv = lookup(st.c_str());  // perhaps without prefix
 
+        // forbid dictionary stems with COMPOUNDFORBIDFLAG in
+        // compound words, overriding the effect of COMPOUNDPERMITFLAG
+        if ((rv) && compoundforbidflag &&
+                TESTAFF(rv->astr, compoundforbidflag, rv->alen))
+            continue;
+
         // search homonym with compound flag
         while ((rv) && !hu_mov_rule &&
                ((needaffix && TESTAFF(rv->astr, needaffix, rv->alen)) ||
@@ -1978,7 +2001,8 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                  TESTAFF(rv->astr, checkcpdtable[scpd - 1].cond2, rv->alen))) {
               // forbid compound word, if it is a non-compound word with typical
               // fault
-              if (checkcompoundrep && cpdrep_check(word.c_str(), len))
+              if ((checkcompoundrep && cpdrep_check(word.c_str(), len)) ||
+                      cpdwordpair_check(word.c_str(), len))
                 return NULL;
               return rv_first;
             }
@@ -2103,7 +2127,8 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                 ((!checkcompounddup || (rv != rv_first)))) {
               // forbid compound word, if it is a non-compound word with typical
               // fault
-              if (checkcompoundrep && cpdrep_check(word.c_str(), len))
+              if ((checkcompoundrep && cpdrep_check(word.c_str(), len)) ||
+                      cpdwordpair_check(word.c_str(), len))
                 return NULL;
               return rv_first;
             }
@@ -2128,7 +2153,11 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
             }
             if (rv) {
               // forbid compound word, if it is a non-compound word with typical
-              // fault
+              // fault, or a dictionary word pair
+
+              if (cpdwordpair_check(word.c_str(), len))
+                  return NULL;
+
               if (checkcompoundrep || forbiddenword) {
 
                 if (checkcompoundrep && cpdrep_check(word.c_str(), len))
@@ -2139,7 +2168,8 @@ struct hentry* AffixMgr::compound_check(const std::string& word,
                   char r = st[i + rv->blen];
                   st[i + rv->blen] = '\0';
 
-                  if (checkcompoundrep && cpdrep_check(st.c_str(), i + rv->blen)) {
+                  if ((checkcompoundrep && cpdrep_check(st.c_str(), i + rv->blen)) ||
+                      cpdwordpair_check(st.c_str(), i + rv->blen)) {
                     st[ + i + rv->blen] = r;
                     continue;
                   }
@@ -2265,6 +2295,12 @@ int AffixMgr::compound_check_morph(const char* word,
         presult.append(*partresult);
 
       rv = lookup(st.c_str());  // perhaps without prefix
+
+      // forbid dictionary stems with COMPOUNDFORBIDFLAG in
+      // compound words, overriding the effect of COMPOUNDPERMITFLAG
+      if ((rv) && compoundforbidflag &&
+              TESTAFF(rv->astr, compoundforbidflag, rv->alen))
+          continue;
 
       // search homonym with compound flag
       while ((rv) && !hu_mov_rule &&
@@ -3622,6 +3658,11 @@ FLAG AffixMgr::get_nosuggest() const {
 // return the forbidden words control flag
 FLAG AffixMgr::get_nongramsuggest() const {
   return nongramsuggest;
+}
+
+// return the substandard root/affix control flag
+FLAG AffixMgr::get_substandard() const {
+  return substandard;
 }
 
 // return the forbidden words flag modify flag

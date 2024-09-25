@@ -78,6 +78,7 @@
 #include "hashmgr.hxx"
 #include "csutil.hxx"
 #include "atypes.hxx"
+#include "langnum.hxx"
 
 // build a hash table from a munched word list
 
@@ -238,7 +239,8 @@ int HashMgr::add_word(const std::string& in_word,
                       unsigned short* aff,
                       int al,
                       const std::string* in_desc,
-                      bool onlyupcase) {
+                      bool onlyupcase,
+                      int captype) {
 // TODO: The following 40 lines or so are actually new. Should they be included?
 #ifndef HUNSPELL_CHROME_CLIENT
   const std::string* word = &in_word;
@@ -301,10 +303,11 @@ int HashMgr::add_word(const std::string& in_word,
   hp->astr = aff;
   hp->next = NULL;
   hp->next_homonym = NULL;
+  hp->var = (captype == INITCAP) ? H_OPT_INITCAP : 0;
 
   // store the description string or its pointer
   if (desc) {
-    hp->var = H_OPT;
+    hp->var += H_OPT;
     if (aliasm) {
       hp->var += H_OPT_ALIASM;
       store_pointer(hpw + word->size() + 1, get_aliasm(atoi(desc->c_str())));
@@ -313,7 +316,8 @@ int HashMgr::add_word(const std::string& in_word,
     }
     if (strstr(HENTRY_DATA(hp), MORPH_PHON)) {
       hp->var += H_OPT_PHON;
-      // store ph: fields of a morphological description in reptable
+      // store ph: fields (pronounciation, misspellings, old orthography etc.)
+      // of a morphological description in reptable to use in REP replacements.
       if (reptable.capacity() < tablesize/MORPH_PHON_RATIO)
           reptable.reserve(tablesize/MORPH_PHON_RATIO);
       std::string fields = HENTRY_DATA(hp);
@@ -321,15 +325,87 @@ int HashMgr::add_word(const std::string& in_word,
       std::string::const_iterator start_piece = mystrsep(fields, iter);
       while (start_piece != fields.end()) {
         if (std::string(start_piece, iter).find(MORPH_PHON) == 0) {
-          reptable.push_back(replentry());
-          reptable.back().pattern.assign(std::string(start_piece, iter).substr(3));
-          reptable.back().outstrings[0].assign(in_word);
+          std::string ph = std::string(start_piece, iter).substr(sizeof MORPH_PHON - 1);
+          std::vector<w_char> w;
+          if (ph.size() > 0) {
+            std::string wordpart(in_word);
+            // when the ph: field ends with the character *,
+            // strip last character of the pattern and the replacement
+            // to match in REP suggestions also at character changes,
+            // for example, "pretty ph:prity*" results "prit->prett"
+            // REP replacement instead of "prity->pretty", to get
+            // prity->pretty and pritiest->prettiest suggestions.
+            if (ph.at(ph.size()-1) == '*') {
+              int strippatt = 1;
+              int stripword = 0;
+              if (utf8) {
+                while ((strippatt < ph.size()) &&
+                  ((ph.at(ph.size()-strippatt-1) & 0xc0) == 0x80))
+                     ++strippatt;
+                while ((stripword < wordpart.size()) &&
+                  ((wordpart.at(wordpart.size()-stripword-1) & 0xc0) == 0x80))
+                     ++stripword;
+              }
+              ++strippatt;
+              ++stripword;
+              if ((ph.size() > strippatt) && (wordpart.size() > stripword)) {
+                ph.erase(ph.size()-strippatt, strippatt);
+                wordpart.erase(in_word.size()-stripword, stripword);
+              }
+            }
+            // capitalize lowercase pattern for capitalized words to support
+            // good suggestions also for capitalized misspellings, eg.
+            // Wednesday ph:wendsay
+            // results wendsay -> Wednesday and Wendsay -> Wednesday, too.
+            if (captype==INITCAP) {
+              std::string ph_capitalized;
+              if (utf8) {
+                u8_u16(w, ph);
+                if (get_captype_utf8(w, langnum) == NOCAP) {
+                  mkinitcap_utf(w, langnum);
+                  u16_u8(ph_capitalized, w);
+                }
+              } else if (get_captype(ph, csconv) == NOCAP)
+                  mkinitcap(ph_capitalized, csconv);
+
+              if (ph_capitalized.size() > 0) {
+                // add also lowercase word in the case of German or
+                // Hungarian to support lowercase suggestions lowercased by
+                // compound word generation or derivational suffixes
+                // (for example by adjectival suffix "-i" of geographical
+                // names in Hungarian:
+                // Massachusetts ph:messzecsuzec
+                // messzecsuzeci -> massachusettsi (adjective)
+                // For lowercasing by conditional PFX rules, see
+                // tests/germancompounding test example or the
+                // Hungarian dictionary.)
+                if (langnum == LANG_de || langnum == LANG_hu) {
+                  std::string wordpart_lower(wordpart);
+                  if (utf8) {
+                    u8_u16(w, wordpart_lower);
+                    mkallsmall_utf(w, langnum);
+                    u16_u8(wordpart_lower, w);
+                  } else {
+                    mkallsmall(wordpart_lower, csconv);
+                  }
+                  reptable.push_back(replentry());
+                  reptable.back().pattern.assign(ph);
+                  reptable.back().outstrings[0].assign(wordpart_lower);
+                }
+                reptable.push_back(replentry());
+                reptable.back().pattern.assign(ph_capitalized);
+                reptable.back().outstrings[0].assign(wordpart);
+              }
+           }
+           reptable.push_back(replentry());
+           reptable.back().pattern.assign(ph);
+           reptable.back().outstrings[0].assign(wordpart);
+          }
         }
         start_piece = mystrsep(fields, iter);
       }
     }
-  } else
-    hp->var = 0;
+  }
 
   struct hentry* dp = tableptr[i];
   if (!dp) {
@@ -431,12 +507,12 @@ int HashMgr::add_hidden_capitalized_word(const std::string& word,
       mkallsmall_utf(w, langnum);
       mkinitcap_utf(w, langnum);
       u16_u8(st, w);
-      return add_word(st, wcl, flags2, flagslen + 1, dp, true);
+      return add_word(st, wcl, flags2, flagslen + 1, dp, true, INITCAP);
     } else {
       std::string new_word(word);
       mkallsmall(new_word, csconv);
       mkinitcap(new_word, csconv);
-      int ret = add_word(new_word, wcl, flags2, flagslen + 1, dp, true);
+      int ret = add_word(new_word, wcl, flags2, flagslen + 1, dp, true, INITCAP);
       return ret;
     }
   }
@@ -526,7 +602,7 @@ int HashMgr::add(const std::string& word) {
     int al = 0;
     unsigned short* flags = NULL;
     int wcl = get_clen_and_captype(word, &captype);
-    add_word(word, wcl, flags, al, NULL, false);
+    add_word(word, wcl, flags, al, NULL, false, captype);
     return add_hidden_capitalized_word(word, wcl, flags, al, NULL,
                                        captype);
   }
@@ -541,14 +617,14 @@ int HashMgr::add_with_affix(const std::string& word, const std::string& example)
     int captype;
     int wcl = get_clen_and_captype(word, &captype);
     if (aliasf) {
-      add_word(word, wcl, dp->astr, dp->alen, NULL, false);
+      add_word(word, wcl, dp->astr, dp->alen, NULL, false, captype);
     } else {
       unsigned short* flags =
           (unsigned short*)malloc(dp->alen * sizeof(unsigned short));
       if (flags) {
         memcpy((void*)flags, (void*)dp->astr,
                dp->alen * sizeof(unsigned short));
-        add_word(word, wcl, flags, dp->alen, NULL, false);
+        add_word(word, wcl, flags, dp->alen, NULL, false, captype);
       } else
         return 1;
     }
@@ -736,7 +812,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     int wcl = get_clen_and_captype(ts, &captype, workbuf);
     const std::string *dp_str = dp.empty() ? NULL : &dp;
     // add the word and its index plus its capitalized form optionally
-    if (add_word(ts, wcl, flags, al, dp_str, false) ||
+    if (add_word(ts, wcl, flags, al, dp_str, false, captype) ||
         add_hidden_capitalized_word(ts, wcl, flags, al, dp_str, captype)) {
       delete dict;
       return 5;

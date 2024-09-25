@@ -291,6 +291,7 @@ class AffixMgr {
 
   short get_syllable(const std::string& word);
   int cpdrep_check(const char* word, int len);
+  int cpdwordpair_check(const char * word, int len);
   int cpdpat_check(const char* word,
                    int len,
                    hentry* r1,
@@ -351,6 +352,7 @@ class AffixMgr {
   FLAG get_forbiddenword() const;
   FLAG get_nosuggest() const;
   FLAG get_nongramsuggest() const;
+  FLAG get_substandard() const;
   FLAG get_needaffix() const;
   FLAG get_onlyincompound() const;
   const char* get_derived() const;

@@ -928,6 +928,7 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
   }
 
   int capwords = 0;
+  bool good = false;
 
   // check capitalized form for FORCEUCASE
   if (pAMgr && captype == NOCAP && pAMgr->get_forceucase()) {
@@ -942,22 +943,27 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
 
   switch (captype) {
     case NOCAP: {
-      pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      if (abbv) {
+        std::string wspace(scw);
+        wspace.push_back('.');
+        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      }
       break;
     }
 
     case INITCAP: {
       capwords = 1;
-      pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
       std::string wspace(scw);
       mkallsmall2(wspace, sunicw);
-      pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       break;
     }
     case HUHINITCAP:
       capwords = 1;
     case HUHCAP: {
-      pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, scw.c_str(), &onlycmpdsug);
       // something.The -> something. The
       size_t dot_pos = scw.find('.');
       if (dot_pos != std::string::npos) {
@@ -983,19 +989,19 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
         // TheOpenOffice.org -> The OpenOffice.org
         wspace = scw;
         mkinitsmall2(wspace, sunicw);
-        pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       }
       wspace = scw;
       mkallsmall2(wspace, sunicw);
       if (spell(wspace.c_str()))
         insert_sug(slst, wspace);
       size_t prevns = slst.size();
-      pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       if (captype == HUHINITCAP) {
         mkinitcap2(wspace, sunicw);
         if (spell(wspace.c_str()))
           insert_sug(slst, wspace);
-        pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+        good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       }
       // aNew -> "a New" (instead of "a new")
       for (size_t j = prevns; j < slst.size(); ++j) {
@@ -1022,11 +1028,11 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
     case ALLCAP: {
       std::string wspace(scw);
       mkallsmall2(wspace, sunicw);
-      pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       if (pAMgr && pAMgr->get_keepcase() && spell(wspace.c_str()))
         insert_sug(slst, wspace);
       mkinitcap2(wspace, sunicw);
-      pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
+      good |= pSMgr->suggest(slst, wspace.c_str(), &onlycmpdsug);
       for (size_t j = 0; j < slst.size(); ++j) {
         mkallcap(slst[j]);
         if (pAMgr && pAMgr->get_checksharps()) {
@@ -1058,12 +1064,11 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
     }
   }
   // END OF LANG_hu section
-
-  // try ngram approach since found nothing or only compound words
-  if (pAMgr && (slst.empty() || onlycmpdsug) && (pAMgr->get_maxngramsugs() != 0)) {
+  // try ngram approach since found nothing good suggestion
+  if (!good && pAMgr && (slst.empty() || onlycmpdsug) && (pAMgr->get_maxngramsugs() != 0)) {
     switch (captype) {
       case NOCAP: {
-        pSMgr->ngsuggest(slst, scw.c_str(), m_HMgrs);
+        pSMgr->ngsuggest(slst, scw.c_str(), m_HMgrs, NOCAP);
         break;
       }
       case HUHINITCAP:
@@ -1071,21 +1076,21 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
       case HUHCAP: {
         std::string wspace(scw);
         mkallsmall2(wspace, sunicw);
-        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs);
+        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs, HUHCAP);
         break;
       }
       case INITCAP: {
         capwords = 1;
         std::string wspace(scw);
         mkallsmall2(wspace, sunicw);
-        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs);
+        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs, INITCAP);
         break;
       }
       case ALLCAP: {
         std::string wspace(scw);
         mkallsmall2(wspace, sunicw);
         size_t oldns = slst.size();
-        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs);
+        pSMgr->ngsuggest(slst, wspace.c_str(), m_HMgrs, ALLCAP);
         for (size_t j = oldns; j < slst.size(); ++j) {
           mkallcap(slst[j]);
         }
@@ -1095,6 +1100,11 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
   }
 
   // try dash suggestion (Afo-American -> Afro-American)
+  // Note: LibreOffice was modified to treat dashes as word
+  // characters to check "scot-free" etc. word forms, but
+  // we need to handle suggestions for "Afo-American", etc.,
+  // while "Afro-American" is missing from the dictionary.
+  // TODO avoid possible overgeneration
   size_t dash_pos = scw.find('-');
   if (dash_pos != std::string::npos) {
     int nodashsug = 1;
@@ -1106,7 +1116,7 @@ std::vector<std::string> HunspellImpl::suggest(const std::string& word) {
     size_t prev_pos = 0;
     bool last = false;
 
-    while (nodashsug && !last) {
+    while (!good && nodashsug && !last) {
       if (dash_pos == scw.size())
         last = 1;
       std::string chunk = scw.substr(prev_pos, dash_pos - prev_pos);
