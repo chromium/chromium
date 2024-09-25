@@ -64,7 +64,9 @@ class AdHocCodeSigningForPWAsEnabledTest
   base::FilePath destination_dir_;
 };
 
-IN_PROC_BROWSER_TEST_P(AdHocCodeSigningForPWAsEnabledTest, IsRespected) {
+// TODO(crbug.com/369346087): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_P(AdHocCodeSigningForPWAsEnabledTest,
+                       DISABLED_IsRespected) {
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Example", GURL("https://www.example.com"));
 
