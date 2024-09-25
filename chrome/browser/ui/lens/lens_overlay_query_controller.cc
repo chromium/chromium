@@ -455,8 +455,8 @@ void LensOverlayQueryController::SendLatencyGen204IfEnabled(
 
 LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
     int sequence_id,
-    int64_t query_start_time_ms)
-    : sequence_id_(sequence_id), query_start_time_ms_(query_start_time_ms) {}
+    base::TimeTicks query_start_time)
+    : sequence_id_(sequence_id), query_start_time_(query_start_time) {}
 LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
@@ -488,7 +488,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // started.
   latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
       current_sequence_id,
-      /*query_start_time_ms=*/base::Time::Now().InMillisecondsSinceUnixEpoch());
+      /*query_start_time=*/base::TimeTicks::Now());
 
   // Preparing for the full image request requires multiple async flows to
   // complete before the request is ready to be send to the server. We start
@@ -683,9 +683,10 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     return;
   }
 
-  int64_t elapsed_time = base::Time::Now().InMillisecondsSinceUnixEpoch() -
-                         latest_full_image_request_data_->query_start_time_ms_;
-  SendLatencyGen204IfEnabled(elapsed_time);
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() -
+      latest_full_image_request_data_->query_start_time_;
+  SendLatencyGen204IfEnabled(elapsed_time.InMilliseconds());
 
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->CopyFrom(server_response.objects_response().cluster_info());

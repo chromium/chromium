@@ -180,7 +180,8 @@ class LensOverlayQueryController {
   // not need to be set, but should be included if it is set, use std::optional.
   struct LensServerFetchRequest {
    public:
-    LensServerFetchRequest(int sequence_id, int64_t query_start_time_ms);
+    LensServerFetchRequest(int sequence_id,
+                           base::TimeTicks query_start_time);
     ~LensServerFetchRequest();
 
     // The sequence ID of the request this data belongs to. Used for cancelling
@@ -188,7 +189,7 @@ class LensOverlayQueryController {
     const int sequence_id_;
 
     // The start time of the query.
-    const int64_t query_start_time_ms_;
+    const base::TimeTicks query_start_time_;
 
     // The request to be sent to the server. Must be set prior to making the
     // request.
