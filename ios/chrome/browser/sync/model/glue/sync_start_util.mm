@@ -16,18 +16,18 @@
 namespace ios {
 namespace {
 
-void StartSyncOnUIThread(base::WeakPtr<ChromeBrowserState> weak_browser_state,
+void StartSyncOnUIThread(base::WeakPtr<ProfileIOS> weak_profile,
                          syncer::DataType type) {
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
-    DVLOG(2) << "ChromeBrowserState destroyed, can't start sync.";
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
+    DVLOG(2) << "ProfileIOS destroyed, can't start sync.";
     return;
   }
 
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
-    DVLOG(2) << "No SyncService for ChromeBrowserState, can't start sync.";
+    DVLOG(2) << "No SyncService for ProfileIOS, can't start sync.";
     return;
   }
   sync_service->OnDataTypeRequestsSyncStartup(type);
@@ -38,10 +38,10 @@ void StartSyncOnUIThread(base::WeakPtr<ChromeBrowserState> weak_browser_state,
 namespace sync_start_util {
 
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(&StartSyncOnUIThread, browser_state->AsWeakPtr()));
+      base::BindRepeating(&StartSyncOnUIThread, profile->AsWeakPtr()));
 }
 
 }  // namespace sync_start_util

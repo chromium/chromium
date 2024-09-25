@@ -20,7 +20,7 @@ namespace sync_start_util {
 // The flare built by this function is designed to be Run()able from any thread
 // so that non-UI types don't have to deal with posting tasks.
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 }  // namespace sync_start_util
 }  // namespace ios

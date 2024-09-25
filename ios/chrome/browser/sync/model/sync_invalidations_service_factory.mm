@@ -15,12 +15,6 @@
 
 // static
 syncer::SyncInvalidationsService*
-SyncInvalidationsServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-syncer::SyncInvalidationsService*
 SyncInvalidationsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<syncer::SyncInvalidationsService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -46,15 +40,12 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   gcm::GCMDriver* gcm_driver =
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state)
-          ->driver();
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =
-      IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-          browser_state)
+      IOSChromeInstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
   return std::make_unique<syncer::SyncInvalidationsServiceImpl>(
       gcm_driver, instance_id_driver);

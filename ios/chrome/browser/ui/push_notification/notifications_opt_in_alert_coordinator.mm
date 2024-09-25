@@ -148,8 +148,7 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
         gaiaID, clientID, true);
     if (clientID == PushNotificationClientId::kSendTab) {
       // Refresh enabled status in DeviceInfo.
-      DeviceInfoSyncServiceFactory::GetForBrowserState(
-          self.browser->GetProfile())
+      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile())
           ->RefreshLocalDeviceInfo();
     }
   }

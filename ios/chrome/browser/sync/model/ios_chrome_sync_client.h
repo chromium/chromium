@@ -26,7 +26,7 @@ class PasswordStoreInterface;
 
 class IOSChromeSyncClient : public syncer::SyncClient {
  public:
-  explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
+  explicit IOSChromeSyncClient(ProfileIOS* profile);
 
   IOSChromeSyncClient(const IOSChromeSyncClient&) = delete;
   IOSChromeSyncClient& operator=(const IOSChromeSyncClient&) = delete;
@@ -56,7 +56,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
       override;
 
  private:
-  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<ProfileIOS> profile_;
 
   // The sync engine factory in use by this client.
   std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;

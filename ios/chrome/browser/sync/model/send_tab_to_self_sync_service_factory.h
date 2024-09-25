@@ -16,13 +16,9 @@ class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
 
 // Singleton that owns all SendTabToSelfSyncService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static send_tab_to_self::SendTabToSelfSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static send_tab_to_self::SendTabToSelfSyncService* GetForProfile(
       ProfileIOS* profile);
   static SendTabToSelfSyncServiceFactory* GetInstance();

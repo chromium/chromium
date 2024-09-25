@@ -26,19 +26,19 @@
 class SyncServiceFactoryTest : public PlatformTest {
  public:
   SyncServiceFactoryTest() {
-    TestChromeBrowserState::Builder browser_state_builder;
+    TestProfileIOS::Builder profile_builder;
     // BOOKMARKS requires the FaviconService, which requires the HistoryService.
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
     // Some services will only be created if there is a WebDataService.
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(browser_state_builder).Build();
+    profile_ = std::move(profile_builder).Build();
   }
 
   void TearDown() override {
@@ -102,20 +102,18 @@ class SyncServiceFactoryTest : public PlatformTest {
     return datatypes;
   }
 
-  ChromeBrowserState* chrome_browser_state() {
-    return chrome_browser_state_.get();
-  }
+  ProfileIOS* profile() { return profile_.get(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Verify that the disable sync flag disables creation of the sync service.
 TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
-  EXPECT_FALSE(SyncServiceFactory::GetForBrowserState(chrome_browser_state()));
+  EXPECT_FALSE(SyncServiceFactory::GetForProfile(profile()));
 }
 
 // Verify that a normal (no command line flags) SyncServiceImpl can be created
@@ -123,7 +121,7 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
-          chrome_browser_state());
+          profile());
   syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::DataTypeSet default_types = DefaultDatatypes();
   EXPECT_EQ(default_types.size(), types.size());

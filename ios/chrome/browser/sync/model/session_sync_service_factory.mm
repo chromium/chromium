@@ -166,16 +166,14 @@ SessionSyncServiceFactory::~SessionSyncServiceFactory() {}
 std::unique_ptr<KeyedService>
 SessionSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(
-          browser_state->GetPrefs(),
-          BrowserListFactory::GetForBrowserState(browser_state),
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-          DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
-          DataTypeStoreServiceFactory::GetForBrowserState(browser_state),
-          ios::sync_start_util::GetFlareForSyncableService(browser_state)));
+          profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
+          ios::HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          DeviceInfoSyncServiceFactory::GetForProfile(profile),
+          DataTypeStoreServiceFactory::GetForProfile(profile),
+          ios::sync_start_util::GetFlareForSyncableService(profile)));
 }

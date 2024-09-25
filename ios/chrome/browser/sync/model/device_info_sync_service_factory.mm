@@ -145,12 +145,6 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 }  // namespace
 
 // static
-syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<syncer::DeviceInfoSyncService*>(
@@ -166,10 +160,10 @@ DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
 void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
   DCHECK(trackers);
-  for (ChromeBrowserState* browser_state :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     syncer::DeviceInfoSyncService* service =
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+        DeviceInfoSyncServiceFactory::GetForProfile(profile);
     if (service != nullptr) {
       const syncer::DeviceInfoTracker* tracker =
           service->GetDeviceInfoTracker();
@@ -194,24 +188,22 @@ DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
 std::unique_ptr<KeyedService>
 DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   syncer::SyncInvalidationsService* const sync_invalidations_service =
-      SyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
+      SyncInvalidationsServiceFactory::GetForProfile(profile);
   signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
-      browser_state->GetPrefs(), sync_invalidations_service, identity_manager);
+      profile->GetPrefs(), sync_invalidations_service, identity_manager);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           ::GetChannel(), ::GetVersionString(), device_info_sync_client.get());
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(
-      browser_state->GetPrefs(), base::DefaultClock::GetInstance());
+      profile->GetPrefs(), base::DefaultClock::GetInstance());
 
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory(),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client), sync_invalidations_service);
 }

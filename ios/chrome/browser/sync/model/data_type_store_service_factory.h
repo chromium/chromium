@@ -16,12 +16,9 @@ class DataTypeStoreService;
 }  // namespace syncer
 
 // Singleton that owns all DataTypeStoreService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class DataTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static syncer::DataTypeStoreService* GetForBrowserState(ProfileIOS* profile);
-
   static syncer::DataTypeStoreService* GetForProfile(ProfileIOS* profile);
   static DataTypeStoreServiceFactory* GetInstance();
 

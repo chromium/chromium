@@ -64,7 +64,7 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   void TriggerInfobarOnAllWebStatesIfNeeded();
 
   // Returns the state of the Browser
-  ChromeBrowserState* GetBrowserState();
+  ProfileIOS* GetProfile();
 
   raw_ptr<Browser> browser_ = nullptr;
 

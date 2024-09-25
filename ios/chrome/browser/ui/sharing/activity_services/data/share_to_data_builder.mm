@@ -71,7 +71,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
+      SendTabToSelfSyncServiceFactory::GetForProfile(browser_state);
   BOOL can_send_tab_to_self =
       account_manager_service &&
       send_tab_to_self_service &&

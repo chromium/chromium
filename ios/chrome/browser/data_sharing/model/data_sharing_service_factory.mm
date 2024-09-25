@@ -51,7 +51,7 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   return std::make_unique<DataSharingServiceImpl>(
       browser_state->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(chrome_browser_state),
-      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+      DataTypeStoreServiceFactory::GetForProfile(chrome_browser_state)
           ->GetStoreFactory(),
       ::GetChannel(), std::move(sdk_delegate), std::move(ui_delegate));
 }

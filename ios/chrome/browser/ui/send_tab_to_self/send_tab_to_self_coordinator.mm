@@ -251,7 +251,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
                       targetDeviceName:(NSString*)deviceName {
-  SendTabToSelfSyncServiceFactory::GetForBrowserState(
+  SendTabToSelfSyncServiceFactory::GetForProfile(
       self.browser->GetBrowserState())
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
@@ -290,7 +290,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       send_tab_to_self::SendTabToSelfSyncService* syncService =
-          SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
+          SendTabToSelfSyncServiceFactory::GetForProfile(browserState);
       // This modal should not be launched in incognito mode where syncService
       // is undefined.
       DCHECK(syncService);
@@ -370,7 +370,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (std::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
   send_tab_to_self::SendTabToSelfSyncService* service =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(
+      SendTabToSelfSyncServiceFactory::GetForProfile(
           self.browser->GetBrowserState());
   return service ? service->GetEntryPointDisplayReason(_url) : std::nullopt;
 }

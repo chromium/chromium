@@ -19,24 +19,22 @@ using send_tab_to_self::SendTabToSelfSyncService;
 
 std::unique_ptr<KeyedService> BuildSendTabToSelfService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   syncer::OnceDataTypeStoreFactory store_factory =
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory();
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   syncer::DeviceInfoTracker* device_info_tracker =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state)
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
 
   return std::make_unique<SendTabToSelfSyncService>(
       GetChannel(), std::move(store_factory), history_service,
-      browser_state->GetPrefs(), device_info_tracker);
+      profile->GetPrefs(), device_info_tracker);
 }
 
 // static
@@ -44,12 +42,6 @@ SendTabToSelfSyncServiceFactory*
 SendTabToSelfSyncServiceFactory::GetInstance() {
   static base::NoDestructor<SendTabToSelfSyncServiceFactory> instance;
   return instance.get();
-}
-
-// static
-SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
 }
 
 // static

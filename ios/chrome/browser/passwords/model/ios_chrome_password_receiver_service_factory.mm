@@ -73,7 +73,7 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
   auto sync_bridge = std::make_unique<
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor),
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      DataTypeStoreServiceFactory::GetForProfile(browser_state)
           ->GetStoreFactory());
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(

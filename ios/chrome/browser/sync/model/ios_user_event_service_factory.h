@@ -15,12 +15,9 @@ namespace syncer {
 class UserEventService;
 }  // namespace syncer
 
-// Singleton that associates UserEventServices to ChromeBrowserStates.
+// Singleton that associates UserEventServices to ProfileIOS.
 class IOSUserEventServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static syncer::UserEventService* GetForBrowserState(ProfileIOS* profile);
-
   static syncer::UserEventService* GetForProfile(ProfileIOS* profile);
   static IOSUserEventServiceFactory* GetInstance();
 

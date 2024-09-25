@@ -41,53 +41,49 @@
 
 namespace {
 
-// A global variable is needed to detect "multiprofile" (multi-BrowserState)
-// scenarios where more than one profile try to register a synthetic field
-// trial.
+// A global variable is needed to detect multiprofile scenarios where more than one profile
+// tries to register a synthetic field trial.
 bool trusted_vault_synthetic_field_trial_registered = false;
 
 }  // namespace
 
-IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {
-  profile_password_store_ =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ =
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
+IOSChromeSyncClient::IOSChromeSyncClient(ProfileIOS* profile)
+    : profile_(profile) {
+  profile_password_store_ = IOSChromeProfilePasswordStoreFactory::GetForProfile(
+      profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  account_password_store_ = IOSChromeAccountPasswordStoreFactory::GetForProfile(
+      profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   engine_factory_ = std::make_unique<browser_sync::SyncEngineFactoryImpl>(
       this,
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_)
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state_)
-          ->GetSyncDataPath());
+      DataTypeStoreServiceFactory::GetForProfile(profile_)->GetSyncDataPath());
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
+          ios::BookmarkModelFactory::GetForProfile(profile_),
           ReadingListModelFactory::GetAsDualReadingListModelForProfile(
-              browser_state_));
+              profile_));
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
+          ios::BookmarkModelFactory::GetForProfile(profile_),
           ReadingListModelFactory::GetAsDualReadingListModelForProfile(
-              browser_state_));
+              profile_));
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
 
 PrefService* IOSChromeSyncClient::GetPrefService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return browser_state_->GetPrefs();
+  return profile_->GetPrefs();
 }
 
 signin::IdentityManager* IOSChromeSyncClient::GetIdentityManager() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return IdentityManagerFactory::GetForProfile(browser_state_);
+  return IdentityManagerFactory::GetForProfile(profile_);
 }
 
 base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
@@ -96,12 +92,12 @@ base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
 
 syncer::SyncInvalidationsService*
 IOSChromeSyncClient::GetSyncInvalidationsService() {
-  return SyncInvalidationsServiceFactory::GetForBrowserState(browser_state_);
+  return SyncInvalidationsServiceFactory::GetForProfile(profile_);
 }
 
 trusted_vault::TrustedVaultClient*
 IOSChromeSyncClient::GetTrustedVaultClient() {
-  return IOSTrustedVaultServiceFactory::GetForBrowserState(browser_state_)
+  return IOSTrustedVaultServiceFactory::GetForProfile(profile_)
       ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
 }
 
@@ -117,7 +113,7 @@ syncer::SyncEngineFactory* IOSChromeSyncClient::GetSyncEngineFactory() {
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForProfile(browser_state_);
+          SupervisedUserSettingsServiceFactory::GetForProfile(profile_);
   if (supervised_user_settings_service) {
     return supervised_user_settings_service->IsCustomPassphraseAllowed();
   }

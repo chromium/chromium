@@ -150,18 +150,18 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     return;
   }
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  ProfileIOS* profile = browser_->GetProfile();
   AppState* app_state = browser_->GetSceneState().appState;
 
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(
-          AuthenticationServiceFactory::GetForBrowserState(browser_state),
-          IdentityManagerFactory::GetForProfile(browser_state), app_state,
+          AuthenticationServiceFactory::GetForProfile(profile),
+          IdentityManagerFactory::GetForProfile(profile), app_state,
           signin_presenter_provider_);
   if (delegate) {
     InfoBarManagerImpl::FromWebState(web_state)->AddInfoBar(
         CreateConfirmInfoBar(std::move(delegate)));
     return;
   }
-  DisplaySyncErrors(browser_state, web_state, sync_presenter_provider_);
+  DisplaySyncErrors(profile, web_state, sync_presenter_provider_);
 }

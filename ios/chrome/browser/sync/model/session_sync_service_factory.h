@@ -18,7 +18,7 @@ class SessionSyncService;
 }  // namespace sync_sessions
 
 // Singleton that owns all SessionSyncService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   // TODO(crbug.com/358301380): remove this method.

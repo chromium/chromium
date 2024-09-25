@@ -87,8 +87,7 @@
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
   PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(
-          self.browser->GetProfile());
+      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile());
   _notificationsObserver = [[NotificationsSettingsObserver alloc]
       initWithPrefService:prefService
                localState:GetApplicationContext()->GetLocalState()];

@@ -407,7 +407,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   // Refresh the local device info now that the client has a Chime
   // Representative Target ID.
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
+      DeviceInfoSyncServiceFactory::GetForProfile(browserState);
   deviceInfoSyncService->RefreshLocalDeviceInfo();
 
   AuthenticationService* authService =
