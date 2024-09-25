@@ -80,7 +80,7 @@ class OptimizationGuideService
   OptimizationGuideService(const OptimizationGuideService&) = delete;
   OptimizationGuideService& operator=(const OptimizationGuideService&) = delete;
 
-  // Some initialization parts must be done once the browser_state is fully
+  // Some initialization parts must be done once the profile is fully
   // initialized.
   void DoFinalInit(download::BackgroundDownloadService*
                        background_download_service = nullptr);
@@ -182,10 +182,10 @@ class OptimizationGuideService
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
-  // The PrefService of the browser state this service is linked to.
+  // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;
 
-  // Whether the service is linked to an incognito browser state.
+  // Whether the service is linked to an incognito profile.
   const bool off_the_record_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

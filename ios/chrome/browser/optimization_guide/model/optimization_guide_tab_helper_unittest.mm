@@ -106,18 +106,18 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints}, {});
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
     optimization_guide_service_->DoFinalInit();
 
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
 
     OptimizationGuideTabHelper::CreateForWebState(&web_state_);
 
@@ -132,7 +132,7 @@ class OptimizationGuideTabHelperTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   web::FakeWebState web_state_;
 };

@@ -27,7 +27,7 @@ namespace {
 download::BackgroundDownloadService* GetBackgroundDownloadService(
     base::WeakPtr<ProfileIOS> weak_profile) {
   if (ProfileIOS* profile = weak_profile.get()) {
-    return BackgroundDownloadServiceFactory::GetForBrowserState(profile);
+    return BackgroundDownloadServiceFactory::GetForProfile(profile);
   }
 
   return nullptr;
@@ -40,7 +40,7 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   }
 
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  ProfileIOS* original_profile = profile->GetOriginalChromeBrowserState();
+  ProfileIOS* original_profile = profile->GetOriginalProfile();
 
   // Regardless of whether the profile is off the record or not, initialize the
   // Optimization Guide with the database associated with the original profile.
@@ -58,13 +58,13 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
   auto service = std::make_unique<OptimizationGuideService>(
       proto_db_provider, profile_path, profile->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocale(), hint_store,
-      profile->GetPrefs(), BrowserListFactory::GetForBrowserState(profile),
+      profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
       base::BindOnce(&GetBackgroundDownloadService, profile->AsWeakPtr()),
       IdentityManagerFactory::GetForProfile(profile));
 
   service->DoFinalInit(
-      BackgroundDownloadServiceFactory::GetForBrowserState(profile));
+      BackgroundDownloadServiceFactory::GetForProfile(profile));
   return service;
 }
 
