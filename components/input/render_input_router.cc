@@ -18,6 +18,7 @@
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/input/touch_emulator.h"
+#include "components/input/utils.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -334,11 +335,15 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   // Assigns a `trace_id` to the latency object.
   latency_tracker_->OnEventStart(&gesture_with_latency.latency);
 
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [&gesture_with_latency](perfetto::EventContext ctx) {
-                ui::LatencyInfo::FillTraceEvent(gesture_with_latency.latency,
-                                                ctx);
-              });
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&gesture_with_latency](perfetto::EventContext ctx) {
+        ui::LatencyInfo::EmitFirstLatencyInfoStep(
+            ctx, gesture_with_latency.latency.trace_id(),
+            perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                STEP_SEND_INPUT_EVENT_UI,
+            InputEventTypeToProto(gesture_with_latency.event.GetType()));
+      });
 
   // Early out if necessary, prior to performing latency logic.
   if (delegate_->IsIgnoringWebInputEvents(gesture_event)) {
@@ -474,8 +479,11 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
 
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&touch_with_latency](perfetto::EventContext ctx) {
-                ui::LatencyInfo::FillTraceEvent(touch_with_latency.latency,
-                                                ctx);
+                ui::LatencyInfo::EmitFirstLatencyInfoStep(
+                    ctx, touch_with_latency.latency.trace_id(),
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_SEND_INPUT_EVENT_UI,
+                    InputEventTypeToProto(touch_with_latency.event.GetType()));
               });
 
   DispatchInputEventWithLatencyInfo(

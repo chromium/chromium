@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -478,6 +479,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // Used to generate new unique render pass ids in the aggregated namespace.
   AggregatedRenderPassId::Generator render_pass_id_generator_;
+
+  // Flow ids for aggregated frames. Used for tracing.
+  std::unordered_set<int64_t> flow_ids_for_resolved_frames_;
 };
 
 }  // namespace viz

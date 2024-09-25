@@ -1401,6 +1401,7 @@ message ChromeGraphicsPipeline {
     STEP_RECEIVE_BEGIN_FRAME_DISCARD = 7;
     STEP_SEND_BEGIN_MAIN_FRAME = 8 [deprecated = true];
     STEP_SUBMIT_COMPOSITOR_FRAME = 9;
+    STEP_DRAW_AND_SWAP = 21;
     STEP_SURFACE_AGGREGATION = 10;
     STEP_SEND_BUFFER_SWAP = 11;
     STEP_BUFFER_SWAP_POST_SUBMIT = 12;
@@ -1461,6 +1462,10 @@ message ChromeGraphicsPipeline {
 
   // Optional variable that can be set together with STEP_BACKEND*.
   optional int64 backend_frame_id = 7;
+
+  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
+  // Used with `STEP_SURFACE_AGGREGATION` only.
+  repeated int64 aggregated_frames_ids = 8;
 };
 
 message LibunwindstackUnwinder {
@@ -1983,7 +1988,7 @@ message MainFramePipeline {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 12
+  // NEXT ID: 15
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -1993,6 +1998,7 @@ message ChromeLatencyInfo2 {
     STEP_SEND_INPUT_EVENT_UI = 3;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
+    STEP_RESAMPLE_SCROLL_EVENTS = 14;
     STEP_DID_HANDLE_INPUT_AND_OVERSCROLL = 8;
     // Occurs on the Renderer's main thread.
     STEP_HANDLE_INPUT_EVENT_MAIN = 4;
@@ -2003,6 +2009,10 @@ message ChromeLatencyInfo2 {
     // Optionally sometimes HANDLED_INPUT_EVENT_MAIN_OR_IMPL will proxy to the
     // renderer's compositor and this will be emitted.
     STEP_HANDLED_INPUT_EVENT_IMPL = 10;
+    // Occurs on Browser Main.
+    STEP_TOUCH_EVENT_HANDLED = 12;
+    // Occurs on Browser Main.
+    STEP_GESTURE_EVENT_HANDLED = 13;
     // Renderer's compositor.
     STEP_SWAP_BUFFERS = 6;
     // Happens on the VizCompositor in the GPU process.
@@ -2048,18 +2058,83 @@ message ChromeLatencyInfo2 {
   optional int64 gesture_scroll_id = 6;
   optional int64 touch_id = 7;
 
+  // Must be kept in sync with blink::mojom::EventType.
+  // All values are incremented by one for consistency with other proto enums.
   enum InputType {
-    UNSPECIFIED_OR_OTHER = 0;
-    TOUCH_MOVED = 1;
-    GESTURE_SCROLL_BEGIN = 2;
-    GESTURE_SCROLL_UPDATE = 3;
-    GESTURE_SCROLL_END = 4;
-    GESTURE_TAP = 5;
-    GESTURE_TAP_CANCEL = 6;
+    UNDEFINED_EVENT = 0;
+    MOUSE_DOWN_EVENT = 1;
+    MOUSE_UP_EVENT = 2;
+    MOUSE_MOVE_EVENT = 3;
+    MOUSE_ENTER_EVENT = 4;
+    MOUSE_LEAVE_EVENT = 5;
+    CONTEXT_MENU_EVENT = 6;
+
+    MOUSE_WHEEL_EVENT = 7;
+
+    RAW_KEY_DOWN_EVENT = 8;
+    KEY_DOWN_EVENT = 9;
+    KEY_UP_EVENT = 10;
+    CHAR_EVENT = 11;
+
+    GESTURE_SCROLL_BEGIN_EVENT = 12;
+    GESTURE_SCROLL_END_EVENT = 13;
+    GESTURE_SCROLL_UPDATE_EVENT = 14;
+    GESTURE_FLING_START_EVENT = 15;
+    GESTURE_FLING_CANCEL_EVENT = 16;
+    GESTURE_PINCH_BEGIN_EVENT = 17;
+    GESTURE_PINCH_END_EVENT = 18;
+    GESTURE_PINCH_UPDATE_EVENT = 19;
+
+    GESTURE_BEGIN_EVENT = 20;
+
+    GESTURE_TAP_DOWN_EVENT = 21;
+    GESTURE_SHOW_PRESS_EVENT = 22;
+    GESTURE_TAP_EVENT = 23;
+    GESTURE_TAP_CANCEL_EVENT = 24;
+    GESTURE_SHORT_PRESS_EVENT = 25;
+    GESTURE_LONG_PRESS_EVENT = 26;
+    GESTURE_LONG_TAP_EVENT = 27;
+    GESTURE_TWO_FINGER_TAP_EVENT = 28;
+    GESTURE_TAP_UNCONFIRMED_EVENT = 29;
+
+    GESTURE_DOUBLE_TAP_EVENT = 30;
+    GESTURE_END_EVENT = 31;
+
+    TOUCH_START_EVENT = 32;
+    TOUCH_MOVE_EVENT = 33;
+    TOUCH_END_EVENT = 34;
+    TOUCH_CANCEL_EVENT = 35;
+    TOUCH_SCROLL_STARTED_EVENT = 36;
+
+    POINTER_DOWN_EVENT = 37;
+    POINTER_UP_EVENT = 38;
+    POINTER_MOVE_EVENT = 39;
+    POINTER_RAW_UPDATE_EVENT = 40;
+    POINTER_CANCEL_EVENT = 41;
+    POINTER_CAUSED_UA_ACTION_EVENT = 42;
   }
 
   // The type of input corresponding to this `ChromeLatencyInfo`.
   optional InputType input_type = 8;
+
+  // Intended to mirror `blink::mojom::InputEventResultState`.
+  enum InputResultState {
+    UNKNOWN = 0;
+    CONSUMED = 1;
+    NOT_CONSUMED = 2;
+    NO_CONSUMER_EXISTS = 3;
+    IGNORED = 4;
+    SET_NON_BLOCKING = 5;
+    SET_NON_BLOCKING_DUE_TO_FLING = 6;
+  }
+
+  // If applicable, the result of handling the input corresponding to this
+  // `ChromeLatencyInfo`.
+  optional InputResultState input_result_state = 9;
+
+  // `trace_id` values corresponding to inputs that were coalesced/combined into
+  // the input for this `ChromeLatencyInfo`.
+  repeated int64 coalesced_trace_ids = 10;
 }
 
 message EventTiming {

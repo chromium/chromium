@@ -2346,6 +2346,18 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 #endif
 
   if (frame) {
+    TRACE_EVENT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(frame->data.swap_trace_id),
+        [swap_trace_id =
+             frame->data.swap_trace_id](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_BUFFER_SWAP_POST_SUBMIT);
+          data->set_display_trace_id(swap_trace_id);
+        });
+
     if (waiting_for_full_damage_) {
       // If we're using partial swap, we need to check whether the sub-buffer
       // rect is actually the entire screen, but otherwise, the damage is
@@ -2394,19 +2406,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     output_device_->SetViewportSize(frame->size);
 
     DCHECK(!frame->sub_buffer_rect || capabilities().supports_post_sub_buffer);
-
-    TRACE_EVENT(
-        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-        perfetto::Flow::Global(frame->data.swap_trace_id),
-        [swap_trace_id =
-             frame->data.swap_trace_id](perfetto::EventContext ctx) {
-          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-          auto* data = event->set_chrome_graphics_pipeline();
-          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                             StepName::STEP_BUFFER_SWAP_POST_SUBMIT);
-          data->set_display_trace_id(swap_trace_id);
-        });
-
     output_device_->Present(frame->sub_buffer_rect, buffer_presented_callback_,
                             std::move(*frame));
   }
