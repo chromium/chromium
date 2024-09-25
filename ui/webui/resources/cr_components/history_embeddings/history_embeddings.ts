@@ -19,6 +19,7 @@ import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/c
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -93,6 +94,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         reflectToAttribute: true,
         value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
       },
+      answerSource_: {
+        type: Boolean,
+        computed: 'computeAnswerSource_(searchResult_.items)',
+      },
     };
   }
 
@@ -154,8 +159,20 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
+  private computeAnswerSource_(): SearchResultItem|undefined {
+    if (!this.enableAnswers_) {
+      return undefined;
+    }
+    return this.searchResult_.items.find(item => item.answerData);
+  }
+
   private computeIsEmpty_(): boolean {
     return !this.loading_ && this.searchResult_?.items.length === 0;
+  }
+
+  private getFavicon_(item: SearchResultItem|undefined): string {
+    return getFaviconForPageURL(
+        item?.url.url || '', /*isSyncedUrlForHistoryUi=*/ true);
   }
 
   private getHeadingText_(): string {

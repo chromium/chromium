@@ -53,6 +53,18 @@ h2 cr-icon {
   padding: 8px 24px;
 }
 
+:host([enable-answers_]) .answer-source {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  display: inline-flex;
+  font-size: 11px;
+  gap: 4px;
+  margin: 8px 24px;
+  max-width: calc(100% - 48px);
+  line-height: 16px;
+  text-decoration: none;
+}
+
 .loading {
   padding: 24px;
   padding-block-start: 4px;
@@ -121,9 +133,23 @@ cr-url-list-item:hover + hr {
   font-weight: 500;
 }
 
+:host([enable-answers_]) .result-url-and-favicon {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
 :host([enable-answers_]) .result-url {
   color: var(--cr-secondary-text-color);
   font-size: 11px;
+}
+
+:host([enable-answers_]) .favicon {
+  background-position: center center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
 }
 
 .time {
@@ -231,6 +257,13 @@ a {
         hidden$="[[!hasAnswer_(loading_, searchResult_.answer)]]">
       <h2 class="heading">[[i18n('historyEmbeddingsAnswerHeading')]]</h2>
       <div class="answer">[[searchResult_.answer]]</div>
+      <a class="answer-source" hidden$="[[!answerSource_]]"
+          href="[[answerSource_.url.url]]" target="_blank">
+        <div>Source:</div>
+        <div class="favicon"
+            style$="background-image: [[getFavicon_(answerSource_)]]"></div>
+        <div class="result-url">[[answerSource_.urlForDisplay]]</div>
+      </a>
     </div>
 
     <h2 class="heading results-heading">
@@ -254,7 +287,11 @@ a {
           <div class="result-image"></div>
           <div class="result-metadata">
             <div class="result-title">[[item.title]]</div>
-            <div class="result-url">[[item.urlForDisplay]]</div>
+            <div class="result-url-and-favicon">
+              <div class="favicon"
+                  style$="background-image: [[getFavicon_(item)]]"></div>
+              <div class="result-url">[[item.urlForDisplay]]</div>
+            </div>
           </div>
           <span class="time">[[item.relativeTime]]</span>
           <cr-icon-button class="more-actions" iron-icon="cr:more-vert"

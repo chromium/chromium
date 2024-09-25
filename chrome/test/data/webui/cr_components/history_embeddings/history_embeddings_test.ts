@@ -6,6 +6,7 @@ import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {AnswerStatus, PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
@@ -387,6 +388,61 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(
           'some answer',
           answersSection.querySelector<HTMLElement>('.answer')!.innerText);
+    });
+
+    test('DisplaysAnswerSource', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      // Make the result at index 1 the result corresponding to the answer.
+      const resultWithAnswer = {
+        title: 'Website with answer',
+        url: {url: 'http://answer.com'},
+        urlForDisplay: 'Answer.com',
+        relativeTime: '2 months ago',
+        sourcePassage: 'Answer description',
+        lastUrlVisitTimestamp: 2000,
+        answerData: {answerTextDirectives: []},
+      };
+
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults, resultWithAnswer],
+      });
+      await flushTasks();
+
+      const answerSource = element.shadowRoot!.querySelector<HTMLAnchorElement>(
+          '.answer-source');
+      assertTrue(!!answerSource);
+      assertFalse(answerSource.hidden);
+      assertEquals('http://answer.com', answerSource.getAttribute('href'));
+      assertEquals(
+          'Answer.com',
+          answerSource.querySelector<HTMLElement>('.result-url')!.innerText);
+      assertEquals(
+          getFaviconForPageURL('http://answer.com', true),
+          answerSource.querySelector<HTMLElement>(
+                          '.favicon')!.style.backgroundImage);
+    });
+
+    test('DisplaysFavicons', async () => {
+      if (!enableAnswers) {
+        // Favicons for without answers is embedded in a separate component.
+        return;
+      }
+
+      const favicons = element.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.result-item .favicon');
+      assertEquals(2, favicons.length);
+      assertEquals(
+          getFaviconForPageURL(mockResults[0]!.url.url, true),
+          favicons[0]!.style.backgroundImage);
+      assertEquals(
+          getFaviconForPageURL(mockResults[1]!.url.url, true),
+          favicons[1]!.style.backgroundImage);
     });
   });
 });
