@@ -9517,7 +9517,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.Perfetto.Trigger"
-    enum="BackgroundTracingTriggerNameHash" expires_after="2024-09-22">
+    enum="BackgroundTracingTriggerNameHash" expires_after="2025-02-10">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
