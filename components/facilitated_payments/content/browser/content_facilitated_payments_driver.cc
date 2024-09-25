@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
+#include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,7 +26,8 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
           GetFacilitatedPaymentsApiClientCreator(
               render_frame_host->GetGlobalId()),
           optimization_guide_decider)),
-      render_frame_host_id_(render_frame_host->GetGlobalId()) {}
+      render_frame_host_id_(render_frame_host->GetGlobalId()),
+      security_checker_(std::make_unique<SecurityChecker>()) {}
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
@@ -39,8 +41,8 @@ void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
   }
 }
 
-// TODO(crbug.com//40280186): Add test for this method once FPManager
-// refactoring is done.
+// TODO(crbug.com/40280186): Add test for this method once FPManager refactoring
+// is done.
 void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_frame_host_id_);
@@ -48,8 +50,11 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
     return;
   }
 
-  // TODO(crbug.com//40280186): Add security check and triggering the eWallet
-  // push flow.
+  if (!security_checker_->IsSecureForPaymentLinkHandling(*render_frame_host)) {
+    return;
+  }
+
+  // TODO(crbug.com/40280186): Trigger the eWallet push payment flow.
   return;
 }
 

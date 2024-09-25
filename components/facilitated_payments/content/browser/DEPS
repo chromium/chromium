@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/network_session_configurator",
+  "+components/security_state",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
+  "+services/network/public/cpp",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
 ]
