@@ -363,8 +363,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
     return;
   }
 
-  g_browser_process->platform_part()
-      ->InitializeDeviceRestrictionScheduleController();
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.

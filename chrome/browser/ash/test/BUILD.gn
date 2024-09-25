@@ -14,10 +14,14 @@ source_set("browser_tests") {
   sources = [ "device_restriction_schedule_controller_browsertest.cc" ]
 
   deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login:test_support",
     "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time:test_support",
+    "//components/policy/proto",
     "//content/test:test_support",
   ]
 }

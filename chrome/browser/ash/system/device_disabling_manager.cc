@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -25,6 +26,16 @@
 
 namespace ash {
 namespace system {
+
+namespace {
+
+policy::DeviceRestrictionScheduleController*
+DeviceRestrictionScheduleController() {
+  return g_browser_process->platform_part()
+      ->device_restriction_schedule_controller();
+}
+
+}  // namespace
 
 DeviceDisablingManager::Observer::~Observer() = default;
 
@@ -43,7 +54,11 @@ DeviceDisablingManager::DeviceDisablingManager(
   CHECK(delegate_);
 }
 
-DeviceDisablingManager::~DeviceDisablingManager() = default;
+DeviceDisablingManager::~DeviceDisablingManager() {
+  if (DeviceRestrictionScheduleController()) {
+    DeviceRestrictionScheduleController()->RemoveObserver(this);
+  }
+}
 
 void DeviceDisablingManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -62,15 +77,18 @@ void DeviceDisablingManager::Init() {
   }
 
   device_disabled_subscription_ = cros_settings_->AddSettingsObserver(
-      kDeviceDisabled,
-      base::BindRepeating(&DeviceDisablingManager::UpdateFromCrosSettings,
-                          weak_factory_.GetWeakPtr()));
+      kDeviceDisabled, base::BindRepeating(&DeviceDisablingManager::Update,
+                                           weak_factory_.GetWeakPtr()));
   disabled_message_subscription_ = cros_settings_->AddSettingsObserver(
       kDeviceDisabledMessage,
-      base::BindRepeating(&DeviceDisablingManager::UpdateFromCrosSettings,
+      base::BindRepeating(&DeviceDisablingManager::Update,
                           weak_factory_.GetWeakPtr()));
 
-  UpdateFromCrosSettings();
+  if (DeviceRestrictionScheduleController()) {
+    DeviceRestrictionScheduleController()->AddObserver(this);
+  }
+
+  Update();
 }
 
 void DeviceDisablingManager::CacheDisabledMessageAndNotify(
@@ -153,6 +171,11 @@ bool DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation() {
     return false;
   }
 
+  if (DeviceRestrictionScheduleController() &&
+      DeviceRestrictionScheduleController()->RestrictionScheduleEnabled()) {
+    return true;
+  }
+
   bool device_disabled = false;
   CrosSettings::Get()->GetBoolean(kDeviceDisabled, &device_disabled);
   return device_disabled;
@@ -169,10 +192,14 @@ bool DeviceDisablingManager::HonorDeviceDisablingDuringNormalOperation() {
              switches::kDisableDeviceDisabling);
 }
 
-void DeviceDisablingManager::UpdateFromCrosSettings() {
+void DeviceDisablingManager::OnRestrictionScheduleStateChanged(bool enabled) {
+  Update();
+}
+
+void DeviceDisablingManager::Update() {
   if (cros_settings_->PrepareTrustedValues(base::BindOnce(
-          &DeviceDisablingManager::UpdateFromCrosSettings,
-          weak_factory_.GetWeakPtr())) != CrosSettingsProvider::TRUSTED) {
+          &DeviceDisablingManager::Update, weak_factory_.GetWeakPtr())) !=
+      CrosSettingsProvider::TRUSTED) {
     // If the cros settings are not trusted yet, request to be called back
     // later.
     return;

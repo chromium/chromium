@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/json/json_reader.h"
@@ -77,24 +78,34 @@ using testing::Return;
 class MockDelegate : public DeviceRestrictionScheduleController::Delegate {
  public:
   // DeviceRestrictionScheduleController::Delegate:
-  MOCK_METHOD1(BlockLogin, void(bool));
   MOCK_CONST_METHOD0(IsUserLoggedIn, bool());
   MOCK_METHOD1(ShowUpcomingLogoutNotification, void(base::Time));
   MOCK_METHOD0(ShowPostLogoutNotification, void());
 };
 
+class MockObserver : public DeviceRestrictionScheduleController::Observer {
+ public:
+  // DeviceRestrictionScheduleController::Observer:
+  MOCK_METHOD1(OnRestrictionScheduleStateChanged, void(bool));
+};
+
 class DeviceRestrictionScheduleControllerTest : public testing::Test {
  public:
+  DeviceRestrictionScheduleControllerTest() {
+    DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
+        local_state_.registry());
+    controller_ = std::make_unique<DeviceRestrictionScheduleController>(
+        delegate_, local_state_);
+    controller_->AddObserver(&observer_);
+  }
+
+  ~DeviceRestrictionScheduleControllerTest() override {
+    controller_->RemoveObserver(&observer_);
+  }
+
   void UpdatePolicyPref(const char* policy_json) {
     local_state_.SetList(chromeos::prefs::kDeviceRestrictionSchedule,
                          BuildList(policy_json));
-  }
-
-  // Trick to call RegisterLocalStatePrefs before constructing the controller.
-  static PrefService& PreInitController(TestingPrefServiceSimple& local_state) {
-    DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
-        local_state.registry());
-    return local_state;
   }
 
   void AdvanceTime(base::TimeDelta delta) {
@@ -117,19 +128,19 @@ class DeviceRestrictionScheduleControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
   MockDelegate delegate_;
-  DeviceRestrictionScheduleController controller_{
-      delegate_, PreInitController(local_state_)};
+  MockObserver observer_;
+  std::unique_ptr<DeviceRestrictionScheduleController> controller_;
 };
 
 // Should do nothing (intervals didn't change).
 TEST_F(DeviceRestrictionScheduleControllerTest, EmptyPolicy) {
-  EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
   UpdatePolicyPref(kPolicyJsonEmpty);
 }
 
 // Should do nothing (intervals didn't change).
 TEST_F(DeviceRestrictionScheduleControllerTest, InvalidPolicy) {
-  EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
   UpdatePolicyPref(kPolicyJsonInvalid);
 }
 
@@ -140,10 +151,10 @@ TEST_F(DeviceRestrictionScheduleControllerTest, NonEmptyRegularToEmptyPolicy) {
   // Make sure all EXPECT_CALLs are in sequence.
   InSequence seq;
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   UpdatePolicyPref(kPolicyJsonEmpty);
 
   // Advance for a full week. Nothing should be called anymore since the policy
@@ -151,7 +162,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest, NonEmptyRegularToEmptyPolicy) {
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(0);
   EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
   EXPECT_CALL(delegate_, ShowPostLogoutNotification()).Times(0);
-  EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
 
   AdvanceTime(base::Days(7));
 }
@@ -165,10 +176,10 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   InSequence seq;
 
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(false));
-  EXPECT_CALL(delegate_, BlockLogin(true)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   UpdatePolicyPref(kPolicyJsonInvalid);
 
   // Advance for a full week. Nothing should be called anymore since the policy
@@ -176,7 +187,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(0);
   EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
   EXPECT_CALL(delegate_, ShowPostLogoutNotification()).Times(0);
-  EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(_)).Times(0);
 
   AdvanceTime(base::Days(7));
 }
@@ -188,7 +199,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRegularStart) {
   // Make sure all EXPECT_CALLs are in sequence.
   InSequence seq;
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
   // Upcoming logout notification should be shown at Wed 11:30.
@@ -203,12 +214,12 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRegularStart) {
   EXPECT_CALL(delegate_, IsUserLoggedIn())
       .Times(1)
       .WillOnce(DoAll(EXPECT_TIME(Day::kWednesday, 12, 0), Return(true)));
-  EXPECT_CALL(delegate_, BlockLogin(true))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 12, 0));
 
   // Next regular period should start at Wed 21:00.
-  EXPECT_CALL(delegate_, BlockLogin(false))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 21, 0));
 
@@ -223,12 +234,12 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRegularStart) {
   EXPECT_CALL(delegate_, IsUserLoggedIn())
       .Times(1)
       .WillOnce(DoAll(EXPECT_TIME(Day::kFriday, 18, 0), Return(true)));
-  EXPECT_CALL(delegate_, BlockLogin(true))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kFriday, 18, 0));
 
   // Next regular period should start at Mon 06:00.
-  EXPECT_CALL(delegate_, BlockLogin(false))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kMonday, 6, 0));
 
@@ -244,11 +255,11 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
   InSequence seq;
 
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1);
-  EXPECT_CALL(delegate_, BlockLogin(true)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
   // Next regular period should start at Mon 06:00.
-  EXPECT_CALL(delegate_, BlockLogin(false))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kMonday, 6, 0));
 
@@ -264,12 +275,12 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
   EXPECT_CALL(delegate_, IsUserLoggedIn())
       .Times(1)
       .WillOnce(DoAll(EXPECT_TIME(Day::kWednesday, 12, 0), Return(true)));
-  EXPECT_CALL(delegate_, BlockLogin(true))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 12, 0));
 
   // Next regular period should start at Wed 21:00.
-  EXPECT_CALL(delegate_, BlockLogin(false))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 21, 0));
 
@@ -285,7 +296,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
   EXPECT_CALL(delegate_, IsUserLoggedIn())
       .Times(1)
       .WillOnce(DoAll(EXPECT_TIME(Day::kFriday, 18, 0), Return(true)));
-  EXPECT_CALL(delegate_, BlockLogin(true))
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kFriday, 18, 0));
 
@@ -303,7 +314,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   InSequence seq;
 
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(true));
-  EXPECT_CALL(delegate_, BlockLogin(true)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
   EXPECT_TRUE(local_state_.GetBoolean(
@@ -321,7 +332,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   InSequence seq;
 
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(false));
-  EXPECT_CALL(delegate_, BlockLogin(true)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(true)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
   EXPECT_FALSE(local_state_.HasPrefPath(
@@ -338,7 +349,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   // Make sure all EXPECT_CALLs are in sequence.
   InSequence seq;
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(true));
   EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(1);
   UpdatePolicyPref(kPolicyJson);
@@ -356,7 +367,7 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
   // Make sure all EXPECT_CALLs are in sequence.
   InSequence seq;
 
-  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(observer_, OnRestrictionScheduleStateChanged(false)).Times(1);
   EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(false));
   EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
   UpdatePolicyPref(kPolicyJson);

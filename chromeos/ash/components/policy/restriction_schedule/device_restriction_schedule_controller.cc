@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
@@ -63,6 +64,18 @@ void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
       false);
 }
 
+bool DeviceRestrictionScheduleController::RestrictionScheduleEnabled() const {
+  return state_ == State::kRestricted;
+}
+
+void DeviceRestrictionScheduleController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DeviceRestrictionScheduleController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void DeviceRestrictionScheduleController::OnPolicyUpdated() {
   const base::Value::List& policy_value =
       registrar_.prefs()->GetList(chromeos::prefs::kDeviceRestrictionSchedule);
@@ -82,12 +95,12 @@ void DeviceRestrictionScheduleController::Run() {
   // Update state.
   const base::Time current_time = base::Time::Now();
   const std::optional<base::Time> next_run_time = GetNextRunTime(current_time);
-  const State state = GetCurrentState(current_time);
+  state_ = GetCurrentState(current_time);
 
   // Set up timers if there's a schedule (`intervals_` isn't empty).
   if (next_run_time.has_value()) {
     // Show end session notification in regular state.
-    if (state == State::kRegular) {
+    if (state_ == State::kRegular) {
       StartNotificationTimer(current_time, next_run_time.value());
     }
 
@@ -96,7 +109,7 @@ void DeviceRestrictionScheduleController::Run() {
   }
 
   // Schedule a post-logout notification if necessary.
-  if (state == State::kRestricted && delegate_->IsUserLoggedIn()) {
+  if (state_ == State::kRestricted && delegate_->IsUserLoggedIn()) {
     registrar_.prefs()->SetBoolean(
         chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
         true);
@@ -104,7 +117,9 @@ void DeviceRestrictionScheduleController::Run() {
 
   // Block or unblock login. This needs to be the last statement since it could
   // cause a restart to the login-screen.
-  delegate_->BlockLogin(state == State::kRestricted);
+  for (auto& observer : observers_) {
+    observer.OnRestrictionScheduleStateChanged(state_ == State::kRestricted);
+  }
 }
 
 void DeviceRestrictionScheduleController::MaybeShowUpcomingLogoutNotification(

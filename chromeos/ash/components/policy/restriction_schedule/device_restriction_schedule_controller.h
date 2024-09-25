@@ -10,6 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
@@ -29,10 +31,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
-
-    // Blocks login and displays login screen banner if enabled.
-    virtual void BlockLogin(bool enabled) = 0;
+    virtual ~Delegate() = default;
 
     // Checks if a user is logged in.
     virtual bool IsUserLoggedIn() const = 0;
@@ -42,6 +41,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
     // Shows a login-screen notification after the forced logout.
     virtual void ShowPostLogoutNotification() = 0;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the restriction schedule state changes. `enabled` is set to
+    // true if restriction schedule is enabled, and false otherwise.
+    virtual void OnRestrictionScheduleStateChanged(bool enabled) = 0;
   };
 
   DeviceRestrictionScheduleController(Delegate& delegate,
@@ -54,6 +60,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
       const DeviceRestrictionScheduleController&) = delete;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  bool RestrictionScheduleEnabled() const;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   enum class State { kRegular, kRestricted };
@@ -71,8 +82,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   // `delegate_` has to outlive `DeviceRestrictionScheduleController`.
   const raw_ref<Delegate> delegate_;
   PrefChangeRegistrar registrar_;
+  base::ObserverList<Observer> observers_;
 
   std::vector<WeeklyTimeIntervalChecked> intervals_;
+  State state_ = State::kRegular;
 
   base::WallClockTimer run_timer_;
   base::WallClockTimer notification_timer_;

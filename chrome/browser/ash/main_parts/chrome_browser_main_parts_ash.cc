@@ -1243,6 +1243,11 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     misconfigured_user_cleaner_->ScheduleCleanup();
 
+    // `DeviceRestrictionScheduleController` has to outlive
+    // `DeviceDisablingManager` and `ChromeSessionManager`.
+    g_browser_process->platform_part()
+        ->InitializeDeviceRestrictionScheduleController();
+
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());

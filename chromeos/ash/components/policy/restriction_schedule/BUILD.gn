@@ -7,6 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("restriction_schedule") {
+  visibility = [
+    ":unit_tests",
+    "//chromeos/ash/components/policy",
+  ]
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
   public = [

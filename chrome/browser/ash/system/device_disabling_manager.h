@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace policy {
@@ -49,7 +50,8 @@ namespace system {
 //   session running in the background.
 //   When the device is re-enabled, Chrome is restarted once more to resume the
 //   regular login screen flows from a known-good point.
-class DeviceDisablingManager {
+class DeviceDisablingManager
+    : public policy::DeviceRestrictionScheduleController::Observer {
  public:
   using DeviceDisabledCheckCallback = base::OnceCallback<void(bool)>;
 
@@ -85,7 +87,7 @@ class DeviceDisablingManager {
   DeviceDisablingManager(const DeviceDisablingManager&) = delete;
   DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
 
-  ~DeviceDisablingManager();
+  ~DeviceDisablingManager() override;
 
   // Must be called after construction.
   void Init();
@@ -123,7 +125,10 @@ class DeviceDisablingManager {
   // Cache the disabled message and inform observers if it changed.
   void CacheDisabledMessageAndNotify(const std::string& disabled_message);
 
-  void UpdateFromCrosSettings();
+  // DeviceRestrictionScheduleController::Observer:
+  void OnRestrictionScheduleStateChanged(bool enabled) override;
+
+  void Update();
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_;
