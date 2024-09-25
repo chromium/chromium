@@ -348,6 +348,9 @@ after discussions on the right group.
       <annotation id="remoting_directory_send_heartbeat"/>
       <annotation id="remoting_corp_send_heartbeat"/>
       <annotation id="remoting_corp_update_remote_access_host"/>
+      <annotation id="remoting_cloud_generate_host_token"/>
+      <annotation id="remoting_cloud_reauthorize_host"/>
+      <annotation id="remoting_cloud_verify_session_token"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
