@@ -69,6 +69,10 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
     content_setting_bubble_model_->OnLearnMoreClicked();
   }
 
+  std::u16string get_message_for_test() const {
+    return content_setting_bubble_model_->bubble_content().message;
+  }
+
  protected:
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
