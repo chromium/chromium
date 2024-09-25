@@ -55,6 +55,7 @@ build_webui("build") {
     "drag_and_drop_handler.ts",
     "extensions.ts",
     "item_mixin.ts",
+    "item_mixin_lit.ts",
     "item_util.ts",
     "mv2_deprecation_delegate.ts",
     "mv2_deprecation_util.ts",
@@ -73,6 +74,7 @@ build_webui("build") {
   css_files = [
     "code_section.css",
     "drop_overlay.css",
+    "error_page.css",
     "load_error.css",
     "shared_style.css",
     "shared_vars.css",
