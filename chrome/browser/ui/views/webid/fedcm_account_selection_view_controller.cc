@@ -63,6 +63,11 @@ FedCmAccountSelectionViewController::CreateAccountSelectionView(
     AccountSelectionView::Delegate* delegate) {
   auto account_selection_view =
       std::make_unique<FedCmAccountSelectionView>(delegate);
+  if (tab_->IsInForeground()) {
+    account_selection_view->OnTabForegrounded();
+  } else {
+    account_selection_view->OnTabBackgrounded();
+  }
   account_selection_view_ = account_selection_view->GetWeakPtr();
   return account_selection_view;
 }
