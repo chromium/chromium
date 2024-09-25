@@ -54,7 +54,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
-    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
 })
 @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
@@ -63,11 +62,10 @@ public class SyncPromoControllerTest {
             SyncPromoController.NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS;
     private static final long TIME_SINCE_FIRST_SHOWN_LIMIT_MS =
             TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;
-    private static final int RESET_AFTER_HOURS =
-            SyncPromoController.NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS;
-    private static final long RESET_AFTER_MS = RESET_AFTER_HOURS * DateUtils.HOUR_IN_MILLIS;
+    private static final int RESET_AFTER_DAYS = SyncPromoController.NTP_SYNC_PROMO_RESET_AFTER_DAYS;
+    private static final long RESET_AFTER_MS = RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
     private static final int MAX_SIGN_IN_PROMO_IMPRESSIONS =
-            SyncPromoController.NTP_SYNC_PROMO_NTP_COUNT_LIMIT;
+            SyncPromoController.SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS;
 
     private static final AccountPickerBottomSheetStrings BOTTOM_SHEET_STRINGS =
             new AccountPickerBottomSheetStrings.Builder(

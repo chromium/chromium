@@ -378,7 +378,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kEnablePasswordsAccountStorageForNonSyncingUsers,
     &syncer::kReadingListEnableSyncTransportModeUponSignIn,
     &syncer::kReplaceSyncPromosWithSignInPromos,
-    &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &syncer::kWebApkBackupAndRestoreBackend,
     &syncer::kUnoPhase2FollowUp,

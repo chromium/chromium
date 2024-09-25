@@ -111,19 +111,15 @@ public class SyncPromoController {
     private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
-    private static final int NTP_SYNC_PROMO_RESET_AFTER_DAY = 30;
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
-    private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
-            "SyncAndroidNTPPromoMaxImpressions";
 
-    @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_COUNT_LIMIT = 5;
+    @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
+
+    @VisibleForTesting static final int SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS = 5;
 
     @VisibleForTesting
     static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
             336; // 14 days in hours.
-
-    @VisibleForTesting
-    static final int NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS = 672; // 28 days in hours.
 
     @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
 
@@ -155,16 +151,12 @@ public class SyncPromoController {
     private @Nullable ImpressionTracker mImpressionTracker;
 
     private static long getNTPSyncPromoResetAfterMillis() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            return NTP_SYNC_PROMO_RESET_AFTER_DAY * DateUtils.DAY_IN_MILLIS;
-        }
-        return NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS * DateUtils.HOUR_IN_MILLIS;
+        return NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
     }
 
     /**
      * If the signin promo card has been hidden for longer than the {@link
-     * NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS}, resets the impression counts, {@link
+     * NTP_SYNC_PROMO_RESET_AFTER_DAYS}, resets the impression counts, {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
@@ -198,17 +190,6 @@ public class SyncPromoController {
                 ChromeSharedPreferences.getInstance()
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         return firstShownTime > 0 && currentTime - firstShownTime >= timeSinceFirstShownLimitMs;
-    }
-
-    private static int getNTPMaxImpressions() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-                    SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS,
-                    5);
-        }
-        return NTP_SYNC_PROMO_NTP_COUNT_LIMIT;
     }
 
     private static boolean canShowSettingsPromo() {
@@ -396,7 +377,7 @@ public class SyncPromoController {
                         .readInt(
                                 getPromoShowCountPreferenceName(
                                         SigninAccessPoint.NTP_FEED_TOP_PROMO));
-        if (promoShowCount >= getNTPMaxImpressions()) {
+        if (promoShowCount >= SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS) {
             return false;
         }
 
@@ -593,10 +574,8 @@ public class SyncPromoController {
                     ChromeSharedPreferences.getInstance()
                             .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
             if (currentTime - lastShownTime
-                            < NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE
-                                    * DateUtils.MINUTE_IN_MILLIS
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+                    < NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE
+                            * DateUtils.MINUTE_IN_MILLIS) {
                 return;
             }
             if (ChromeSharedPreferences.getInstance()

@@ -22,11 +22,6 @@ inline constexpr base::FeatureParam<int>
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kSyncAndroidLimitNTPPromoImpressions);
-inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
-    &kSyncAndroidLimitNTPPromoImpressions, "SyncAndroidNTPPromoMaxImpressions",
-    5};
-
 // Controls whether to show a batch upload card in Android unified settings
 // panel.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);

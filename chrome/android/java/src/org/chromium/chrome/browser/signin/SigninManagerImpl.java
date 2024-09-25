@@ -624,16 +624,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // Should be set at start of sign-out flow.
         assert mSignOutState != null;
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            // After sign-out, reset the Sync promo show count, so the user will see Sync promos
-            // again.
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                    SigninPreferencesManager.SyncPromoAccessPointId.NTP),
-                            0);
-        }
+        // After sign-out, reset the Sync promo show count, so the user will see Sync promos
+        // again.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                        0);
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
         if (mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
             // We don't reload the accounts if they are not yet available.

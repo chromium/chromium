@@ -110,10 +110,6 @@ import java.util.Map;
 @DisableFeatures({
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.WEB_FEED_ONBOARDING,
-    // TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not
-    // available to provide a default value. This should be enabled if the feature is enabled by
-    // default or removed if the flag is removed.
-    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
     ChromeFeatureList.FEED_CONTAINMENT
 })
 @EnableFeatures({
