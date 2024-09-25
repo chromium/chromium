@@ -84,6 +84,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   autofill::FormDataImporter* GetFormDataImporter() override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;

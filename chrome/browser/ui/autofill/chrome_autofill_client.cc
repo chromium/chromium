@@ -339,6 +339,12 @@ syncer::SyncService* ChromeAutofillClient::GetSyncService() {
 }
 
 signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
+  return const_cast<signin::IdentityManager*>(
+      std::as_const(*this).GetIdentityManager());
+}
+
+const signin::IdentityManager* ChromeAutofillClient::GetIdentityManager()
+    const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());

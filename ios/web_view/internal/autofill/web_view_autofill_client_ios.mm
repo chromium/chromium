@@ -130,6 +130,12 @@ syncer::SyncService* WebViewAutofillClientIOS::GetSyncService() {
 }
 
 signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
+  return const_cast<signin::IdentityManager*>(
+      std::as_const(*this).GetIdentityManager());
+}
+
+const signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager()
+    const {
   return identity_manager_;
 }
 

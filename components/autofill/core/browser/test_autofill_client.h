@@ -155,6 +155,11 @@ class TestAutofillClientTemplate : public T {
   syncer::SyncService* GetSyncService() override { return test_sync_service_; }
 
   signin::IdentityManager* GetIdentityManager() override {
+    return const_cast<signin::IdentityManager*>(
+        std::as_const(*this).GetIdentityManager());
+  }
+
+  const signin::IdentityManager* GetIdentityManager() const override {
     return identity_test_env_.identity_manager();
   }
 

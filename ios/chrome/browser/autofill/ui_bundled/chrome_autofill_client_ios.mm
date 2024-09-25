@@ -154,6 +154,12 @@ syncer::SyncService* ChromeAutofillClientIOS::GetSyncService() {
 }
 
 signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
+  return const_cast<signin::IdentityManager*>(
+      std::as_const(*this).GetIdentityManager());
+}
+
+const signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager()
+    const {
   return identity_manager_;
 }
 

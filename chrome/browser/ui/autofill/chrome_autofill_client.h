@@ -114,6 +114,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() override;
   StrikeDatabase* GetStrikeDatabase() override;

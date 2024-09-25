@@ -106,6 +106,11 @@ signin::IdentityManager* AndroidAutofillClient::GetIdentityManager() {
   return nullptr;
 }
 
+const signin::IdentityManager* AndroidAutofillClient::GetIdentityManager()
+    const {
+  return nullptr;
+}
+
 autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }

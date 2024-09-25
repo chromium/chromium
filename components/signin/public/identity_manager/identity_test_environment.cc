@@ -398,6 +398,10 @@ IdentityTestEnvironment::~IdentityTestEnvironment() {
 }
 
 IdentityManager* IdentityTestEnvironment::identity_manager() {
+  return const_cast<IdentityManager*>(std::as_const(*this).identity_manager());
+}
+
+const IdentityManager* IdentityTestEnvironment::identity_manager() const {
   DCHECK(raw_identity_manager_ || owned_identity_manager_);
   DCHECK(!(raw_identity_manager_ && owned_identity_manager_));
 
