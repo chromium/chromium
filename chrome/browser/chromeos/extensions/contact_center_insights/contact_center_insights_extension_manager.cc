@@ -9,11 +9,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
@@ -24,64 +22,6 @@
 using ::extensions::ComponentLoader;
 
 namespace chromeos {
-namespace {
-
-class ContactCenterInsightsExtensionManagerFactory
-    : public ProfileKeyedServiceFactory {
- public:
-  ContactCenterInsightsExtensionManagerFactory();
-  ContactCenterInsightsExtensionManagerFactory(
-      const ContactCenterInsightsExtensionManagerFactory&) = delete;
-  ContactCenterInsightsExtensionManagerFactory& operator=(
-      const ContactCenterInsightsExtensionManagerFactory&) = delete;
-  ~ContactCenterInsightsExtensionManagerFactory() override;
-
-  // Returns an instance of `ContactCenterInsightsExtensionManager` for the
-  // given profile.
-  ContactCenterInsightsExtensionManager* GetForProfile(Profile* profile);
-
- private:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-};
-
-ContactCenterInsightsExtensionManagerFactory::
-    ContactCenterInsightsExtensionManagerFactory()
-    : ProfileKeyedServiceFactory(
-          "ContactCenterInsightsExtensionManager",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
-
-ContactCenterInsightsExtensionManagerFactory::
-    ~ContactCenterInsightsExtensionManagerFactory() = default;
-
-ContactCenterInsightsExtensionManager*
-ContactCenterInsightsExtensionManagerFactory::GetForProfile(Profile* profile) {
-  DCHECK(profile);
-  return static_cast<ContactCenterInsightsExtensionManager*>(
-      GetServiceForBrowserContext(profile, true));
-}
-
-KeyedService*
-ContactCenterInsightsExtensionManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  auto* const profile = Profile::FromBrowserContext(context);
-  auto* const component_loader = ::extensions::ExtensionSystem::Get(profile)
-                                     ->extension_service()
-                                     ->component_loader();
-  return new ContactCenterInsightsExtensionManager(
-      component_loader, profile,
-      std::make_unique<ContactCenterInsightsExtensionManager::Delegate>());
-}
-
-}  // namespace
 
 void ContactCenterInsightsExtensionManager::Delegate::InstallExtension(
     ComponentLoader* component_loader) {
@@ -106,14 +46,6 @@ bool ContactCenterInsightsExtensionManager::Delegate::IsExtensionInstalled(
       extension_misc::kContactCenterInsightsExtensionId);
 }
 
-// static
-ContactCenterInsightsExtensionManager*
-ContactCenterInsightsExtensionManager::GetForProfile(Profile* profile) {
-  return static_cast<ContactCenterInsightsExtensionManagerFactory*>(
-             GetFactory())
-      ->GetForProfile(profile);
-}
-
 ContactCenterInsightsExtensionManager::ContactCenterInsightsExtensionManager(
     ComponentLoader* component_loader,
     Profile* profile,
@@ -126,14 +58,6 @@ ContactCenterInsightsExtensionManager::ContactCenterInsightsExtensionManager(
 
 ContactCenterInsightsExtensionManager::
     ~ContactCenterInsightsExtensionManager() = default;
-
-// static
-BrowserContextKeyedServiceFactory*
-ContactCenterInsightsExtensionManager::GetFactory() {
-  static base::NoDestructor<ContactCenterInsightsExtensionManagerFactory>
-      g_factory;
-  return g_factory.get();
-}
 
 void ContactCenterInsightsExtensionManager::Init() {
   if (CanInstallExtension()) {
@@ -181,11 +105,6 @@ void ContactCenterInsightsExtensionManager::RemoveExtensionIfInstalled() {
   if (delegate_->IsExtensionInstalled(component_loader_)) {
     delegate_->UninstallExtension(component_loader_);
   }
-}
-
-// static
-void ContactCenterInsightsExtensionManager::EnsureFactoryBuilt() {
-  ContactCenterInsightsExtensionManager::GetFactory();
 }
 
 }  // namespace chromeos
