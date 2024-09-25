@@ -41,6 +41,7 @@ source_set("model") {
     "//components/autofill/core/browser",
     "//components/browser_sync",
     "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",

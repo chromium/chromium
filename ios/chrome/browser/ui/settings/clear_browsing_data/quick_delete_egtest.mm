@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
@@ -184,6 +185,21 @@ void NoDeleteBrowsingDataDialogHistogram(
                            browsing_data::kDeleteBrowsingDataDialogHistogram)],
       @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was logged.",
       static_cast<int>(action));
+}
+
+// Asserts if the History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog
+// histogram for bucket of `choice` was logged once.
+void ExpectClearBrowsingDataCookieOrCacheDeletedHistogram(
+    browsing_data::CookieOrCacheDeletionChoice choice) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(choice)
+          forHistogram:
+              @"History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog"],
+      @"History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog for "
+      @"choice %d histogram not logged.",
+      choice);
 }
 
 // Returns the given `string` with the first letter capitalized.
@@ -1111,6 +1127,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Set pref to select deletion of cookies.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1127,6 +1145,13 @@ NSString* CapitalizeFirstLetter(NSString* string) {
           ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
               IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectClearBrowsingDataCookieOrCacheDeletedHistogram(
+      browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies);
 }
 
 // Tests that cookies are not shown as a possible type to be deleted on the
@@ -1135,6 +1160,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Set pref to keep cookies.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -1178,6 +1205,13 @@ NSString* CapitalizeFirstLetter(NSString* string) {
           ContainsPartialText(CapitalizeFirstLetter(l10n_util::GetNSString(
               IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectClearBrowsingDataCookieOrCacheDeletedHistogram(
+      browsing_data::CookieOrCacheDeletionChoice::kOnlyCache);
 }
 
 // Tests that cache is not shown as a possible type to be deleted on the

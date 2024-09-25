@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #import "components/browsing_data/core/counters/autofill_counter.h"
 #import "components/browsing_data/core/counters/history_counter.h"
 #import "components/browsing_data/core/counters/passwords_counter.h"
@@ -285,6 +286,22 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
                                         std::move(delayedCompletion), params);
   }
+
+  browsing_data::CookieOrCacheDeletionChoice choice;
+  if (IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_CACHE)) {
+    choice =
+        IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_COOKIES)
+            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
+            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
+  } else {
+    choice =
+        IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_COOKIES)
+            ? browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies
+            : browsing_data::CookieOrCacheDeletionChoice::
+                  kNeitherCookiesNorCache;
+  }
+  base::UmaHistogramEnumeration(
+      "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice);
 }
 
 - (void)updateHistorySelection:(BOOL)selected {

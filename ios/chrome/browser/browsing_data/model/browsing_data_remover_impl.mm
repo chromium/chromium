@@ -24,6 +24,7 @@
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/language/core/browser/url_language_histogram.h"
@@ -86,16 +87,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-// A helper enum to report the deletion of cookies and/or cache. Do not
-// reorder the entries, as this enum is passed to UMA.
-enum CookieOrCacheDeletionChoice {
-  NEITHER_COOKIES_NOR_CACHE,
-  ONLY_COOKIES,
-  ONLY_CACHE,
-  BOTH_COOKIES_AND_CACHE,
-  MAX_CHOICE_VALUE
-};
 
 template <typename T>
 void IgnoreArgumentHelper(base::OnceClosure callback, T unused_argument) {
@@ -727,20 +718,21 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   RemoveDataFromWKWebsiteDataStore(delete_begin, mask);
 
   // Record the combined deletion of cookies and cache.
-  CookieOrCacheDeletionChoice choice;
+  browsing_data::CookieOrCacheDeletionChoice choice;
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_CACHE)) {
-    choice = IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES)
-                 ? BOTH_COOKIES_AND_CACHE
-                 : ONLY_CACHE;
+    choice =
+        IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES)
+            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
+            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
   } else {
     choice = IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES)
-                 ? ONLY_COOKIES
-                 : NEITHER_COOKIES_NOR_CACHE;
+                 ? browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies
+                 : browsing_data::CookieOrCacheDeletionChoice::
+                       kNeitherCookiesNorCache;
   }
 
   UMA_HISTOGRAM_ENUMERATION(
-      "History.ClearBrowsingData.UserDeletedCookieOrCache", choice,
-      MAX_CHOICE_VALUE);
+      "History.ClearBrowsingData.UserDeletedCookieOrCache", choice);
 }
 
 void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(

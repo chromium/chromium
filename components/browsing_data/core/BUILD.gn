@@ -51,6 +51,10 @@ static_library("core") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("cookie_or_cache_deletion_choice") {
+  sources = [ "cookie_or_cache_deletion_choice.h" ]
+}
+
 if (is_android) {
   java_cpp_enum("browsing_data_utils_javagen") {
     # External code should depend on ":java" instead.
@@ -62,11 +66,17 @@ if (is_android) {
     visibility = [ ":*" ]
     sources = [ "clear_browsing_data_tab.h" ]
   }
+  java_cpp_enum("cookie_or_cache_deletion_choice_javagen") {
+    # External code should depend on ":java" instead.
+    visibility = [ ":*" ]
+    sources = [ "cookie_or_cache_deletion_choice.h" ]
+  }
 
   android_library("java") {
     srcjar_deps = [
       ":browsing_data_utils_javagen",
       ":clear_browsing_data_tab_javagen",
+      ":cookie_or_cache_deletion_choice_javagen",
     ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }

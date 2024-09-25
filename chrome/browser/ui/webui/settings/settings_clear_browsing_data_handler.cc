@@ -33,6 +33,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/common/pref_names.h"
@@ -216,19 +217,19 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   base::flat_set<BrowsingDataType> data_types(std::move(data_type_vector));
 
   // Record the deletion of cookies and cache.
-  content::BrowsingDataRemover::CookieOrCacheDeletionChoice choice =
-      content::BrowsingDataRemover::NEITHER_COOKIES_NOR_CACHE;
+  browsing_data::CookieOrCacheDeletionChoice choice =
+      browsing_data::CookieOrCacheDeletionChoice::kNeitherCookiesNorCache;
   if (data_types.find(BrowsingDataType::SITE_DATA) != data_types.end()) {
-    choice = data_types.find(BrowsingDataType::CACHE) != data_types.end()
-                 ? content::BrowsingDataRemover::BOTH_COOKIES_AND_CACHE
-                 : content::BrowsingDataRemover::ONLY_COOKIES;
+    choice =
+        data_types.find(BrowsingDataType::CACHE) != data_types.end()
+            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
+            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies;
   } else if (data_types.find(BrowsingDataType::CACHE) != data_types.end()) {
-    choice = content::BrowsingDataRemover::ONLY_CACHE;
+    choice = browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
   }
 
   UMA_HISTOGRAM_ENUMERATION(
-      "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice,
-      content::BrowsingDataRemover::MAX_CHOICE_VALUE);
+      "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice);
 
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);

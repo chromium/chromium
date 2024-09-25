@@ -418,7 +418,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         RecordHistogram.recordEnumeratedHistogram(
                 "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog",
                 choice,
-                CookieOrCacheDeletionChoice.MAX_CHOICE_VALUE);
+                CookieOrCacheDeletionChoice.MAX_VALUE);
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",

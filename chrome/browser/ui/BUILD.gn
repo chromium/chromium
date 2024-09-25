@@ -467,6 +467,7 @@ static_library("ui") {
     "//components/browser_sync",
     "//components/browsing_data/content",
     "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
     "//components/browsing_topics",
     "//components/browsing_topics/mojom:mojo_bindings",
     "//components/captive_portal/content",

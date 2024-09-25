@@ -95,6 +95,7 @@ source_set("browser") {
     "//components/attribution_reporting:data_host_mojom",
     "//components/attribution_reporting:mojom",
     "//components/back_forward_cache:enum",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
     "//components/browsing_topics/common:common",
     "//components/cbor",
     "//components/discardable_memory/common",
