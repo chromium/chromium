@@ -74,6 +74,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
 
+  CHECK(tab.GetBrowserWindowInterface());
+
   tab_subscriptions_.push_back(
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
