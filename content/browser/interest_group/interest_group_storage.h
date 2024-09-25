@@ -205,6 +205,11 @@ class CONTENT_EXPORT InterestGroupStorage {
   std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
   GetBiddingAndAuctionServerKeys(const url::Origin& coordinator);
 
+  // Returns various resource limits, as configured by feature params.
+  static size_t MaxOwnerRegularInterestGroups();
+  static size_t MaxOwnerNegativeInterestGroups();
+  static size_t MaxOwnerStorageSize();
+
   base::Time GetLastMaintenanceTimeForTesting() const;
 
   static int GetCurrentVersionNumberForTesting();

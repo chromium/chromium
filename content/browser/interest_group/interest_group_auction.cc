@@ -431,6 +431,20 @@ ReportBuyersConfigForPaBuyers(
   return it->second;
 }
 
+// Helps compute various % utilization PA metrics. Caps at 110%, since not
+// all caps are hard-enforced.
+double PercentMetric(size_t numerator, size_t denominator) {
+  if (denominator == 0) {
+    return 0.0;
+  }
+  return std::min(100.0 * numerator / denominator, 110.0);
+}
+
+// Bounds to 1.1 of upper bound.
+double SoftBound(size_t value, size_t cap) {
+  return std::min(static_cast<double>(value), 1.1 * cap);
+}
+
 // This encodes which particular generateBid/scoreAd executions are to be used
 // for "reserved.once" per given auction phase.
 using PrivateAggregationReservedOnceReps =
@@ -1556,14 +1570,12 @@ class InterestGroupAuction::BuyerHelper
           code_fetch_time_.GetMeanLatency();
     }
     buyer_metrics_.participating_interest_group_count = bid_states_.size();
-    if (buyer_metrics_.participating_interest_group_count) {
-      buyer_metrics_.percent_scripts_timeout =
-          100.0 * bidder_scripts_timed_out_ /
-          buyer_metrics_.participating_interest_group_count;
-      buyer_metrics_.percent_igs_cumulative_timeout =
-          100.0 * num_bids_affected_by_cumulative_timeout_ /
-          buyer_metrics_.participating_interest_group_count;
-    }
+    buyer_metrics_.percent_scripts_timeout =
+        PercentMetric(bidder_scripts_timed_out_,
+                      buyer_metrics_.participating_interest_group_count);
+    buyer_metrics_.percent_igs_cumulative_timeout =
+        PercentMetric(num_bids_affected_by_cumulative_timeout_,
+                      buyer_metrics_.participating_interest_group_count);
 
     // We compute `cumulative-buyer-time` based on when we start the timer;
     // `cumulative_buyer_timeout_` and `start_measuring_cumulative_time_` will
@@ -1584,6 +1596,23 @@ class InterestGroupAuction::BuyerHelper
           stop_measuring_cumulative_time_ - start_measuring_cumulative_time_,
           *cumulative_buyer_timeout_);
     }
+  }
+
+  void SetStorageMetrics(int regular_igs,
+                         int negative_igs,
+                         size_t igs_storage_used) {
+    buyer_metrics_.regular_igs = SoftBound(
+        regular_igs, InterestGroupStorage::MaxOwnerRegularInterestGroups());
+    buyer_metrics_.percent_regular_igs_quota_used = PercentMetric(
+        regular_igs, InterestGroupStorage::MaxOwnerRegularInterestGroups());
+    buyer_metrics_.negative_igs = SoftBound(
+        negative_igs, InterestGroupStorage::MaxOwnerNegativeInterestGroups());
+    buyer_metrics_.percent_negative_igs_quota_used = PercentMetric(
+        negative_igs, InterestGroupStorage::MaxOwnerNegativeInterestGroups());
+    buyer_metrics_.igs_storage_used = SoftBound(
+        igs_storage_used, InterestGroupStorage::MaxOwnerStorageSize());
+    buyer_metrics_.percent_igs_storage_quota_used = PercentMetric(
+        igs_storage_used, InterestGroupStorage::MaxOwnerStorageSize());
   }
 
   void GetInterestGroupsThatBidAndReportBidCounts(
@@ -4338,10 +4367,8 @@ void InterestGroupAuction::FillInSellerParticipantDataMetrics() {
   if (code_fetch_time_.GetNumRecords() != 0) {
     seller_metrics_.average_code_fetch_time = code_fetch_time_.GetMeanLatency();
   }
-  if (seller_scripts_ran_) {
-    seller_metrics_.percent_scripts_timeout =
-        100.0 * seller_scripts_timed_out_ / seller_scripts_ran_;
-  }
+  seller_metrics_.percent_scripts_timeout =
+      PercentMetric(seller_scripts_timed_out_, seller_scripts_ran_);
 }
 
 uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
@@ -4483,6 +4510,22 @@ void InterestGroupAuction::OnInterestGroupRead(
   }
   std::vector<SingleStorageInterestGroup> interest_groups =
       read_interest_groups->GetInterestGroups();
+
+  // Compute PA base values about resource usage.
+  int positive_groups = 0;
+  int negative_groups = 0;
+  size_t storage_used = 0;
+  for (const SingleStorageInterestGroup& group : interest_groups) {
+    if (group->interest_group.additional_bid_key.has_value()) {
+      ++negative_groups;
+    } else {
+      ++positive_groups;
+    }
+
+    storage_used += group->interest_group.EstimateSize();
+  }
+
+  // Report info on read as a delegatable metric as well.
   for (const SingleStorageInterestGroup& group : interest_groups) {
     if (ReportInterestGroupCount(group->interest_group,
                                  read_interest_groups->size())) {
@@ -4554,7 +4597,8 @@ void InterestGroupAuction::OnInterestGroupRead(
       interest_groups[0]->interest_group.owner);
   auto buyer_helper =
       std::make_unique<BuyerHelper>(this, std::move(interest_groups));
-
+  buyer_helper->SetStorageMetrics(positive_groups, negative_groups,
+                                  storage_used);
   // BuyerHelper may filter out additional interest groups on construction.
   if (buyer_helper->has_potential_bidder()) {
     buyer_helpers_.emplace_back(std::move(buyer_helper));

@@ -1358,15 +1358,16 @@ BuildPrivateAggregationForEventRequest(
 }
 
 auction_worklet::mojom::PrivateAggregationRequestPtr
-BuildPrivateAggregationForBaseValue(
+BuildPrivateAggregationForScaledBaseValue(
     absl::uint128 bucket,
+    double scale,
     auction_worklet::mojom::BaseValue base_value,
     auction_worklet::mojom::EventTypePtr event_type,
     std::optional<uint64_t> filtering_id = std::nullopt) {
   auction_worklet::mojom::AggregatableReportForEventContribution contribution(
       auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
       auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
-          auction_worklet::mojom::SignalValue::New(base_value, /*scale=*/1.0,
+          auction_worklet::mojom::SignalValue::New(base_value, scale,
                                                    /*offset=*/0)),
       filtering_id, std::move(event_type));
 
@@ -1375,6 +1376,16 @@ BuildPrivateAggregationForBaseValue(
           NewForEventContribution(contribution.Clone()),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
+}
+
+auction_worklet::mojom::PrivateAggregationRequestPtr
+BuildPrivateAggregationForBaseValue(
+    absl::uint128 bucket,
+    auction_worklet::mojom::BaseValue base_value,
+    auction_worklet::mojom::EventTypePtr event_type,
+    std::optional<uint64_t> filtering_id = std::nullopt) {
+  return BuildPrivateAggregationForScaledBaseValue(
+      bucket, /*scale=*/1.0, base_value, std::move(event_type), filtering_id);
 }
 
 // Builds a RealTimeReportingContribution with given `bucket` and
@@ -17176,8 +17187,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
   // Create multiple IGs per buyers with different properties, to test IG-count
   // related metrics.
   std::vector<StorageInterestGroup> bidders;
-  // bidder1 has 4 IGs with ads, one without; but the limit is 3 so we expect
-  // only 3 to participate.
+  // bidder1 has 4 IGs with ads, one without, and further one negative one;
+  // but the limit is 3 so we expect only 3 to participate.
   bidders.emplace_back(MakeInterestGroup(
       kBidder1, kBidder1Name, kBidder1Url,
       /*trusted_bidding_signals_url=*/std::nullopt,
@@ -17194,6 +17205,11 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
   bidders.emplace_back(MakeInterestGroup(
       kBidder1, "5", kBidder1Url, /*trusted_bidding_signals_url=*/std::nullopt,
       /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders.emplace_back(
+      MakeInterestGroup(blink::TestInterestGroupBuilder(kBidder1, "neg1")
+                            .SetAdditionalBidKey(make_optional(
+                                blink::InterestGroup::AdditionalBidKey()))
+                            .Build()));
   mock_auction_process_manager_->SetExpectedBuyerBidTimeout(
       "2", base::Milliseconds(500));
   mock_auction_process_manager_->SetExpectedBuyerBidTimeout(
@@ -17209,7 +17225,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
     --priority;
   }
 
-  // bidder2 has 2 IGs with ads.
+  // bidder2 has 2 IGs with ads, 1 w/o ads, plus two negative ones.
   bidders.emplace_back(MakeInterestGroup(
       kBidder2, kBidder2Name, kBidder2Url,
       /*trusted_bidding_signals_url=*/std::nullopt,
@@ -17220,10 +17236,29 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
   bidders.emplace_back(MakeInterestGroup(
       kBidder2, "7", kBidder2Url, /*trusted_bidding_signals_url=*/std::nullopt,
       /*trusted_bidding_signals_keys=*/{}, /*ad_url=*/std::nullopt));
+  bidders.emplace_back(
+      MakeInterestGroup(blink::TestInterestGroupBuilder(kBidder2, "neg1")
+                            .SetAdditionalBidKey(make_optional(
+                                blink::InterestGroup::AdditionalBidKey()))
+                            .Build()));
+  bidders.emplace_back(MakeInterestGroup(
+      blink::TestInterestGroupBuilder(kBidder2, "neg2")
+          .SetAdditionalBidKey(blink::InterestGroup::AdditionalBidKey())
+          .Build()));
   mock_auction_process_manager_->SetExpectedBuyerBidTimeout(
       "6", base::Milliseconds(150));
   mock_auction_process_manager_->SetExpectedBuyerBidTimeout(
       "7", base::Milliseconds(150));
+
+  // Compute how much storage we used for each owner.
+  size_t size1 = 0, size2 = 0;
+  for (const auto& ig : bidders) {
+    if (ig.interest_group.owner.IsSameOriginWith(kBidder1)) {
+      size1 += ig.interest_group.EstimateSize();
+    } else {
+      size2 += ig.interest_group.EstimateSize();
+    }
+  }
 
   StartAuction(kSellerUrl, std::move(bidders));
 
@@ -17250,6 +17285,38 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
       bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
           /*bucket=*/100 * i + 1,
           auction_worklet::mojom::BaseValue::kPercentScriptsTimeout,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+          /*bucket=*/100 * i + 2,
+          auction_worklet::mojom::BaseValue::kRegularInterestGroupsUsed,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForScaledBaseValue(
+          /*bucket=*/100 * i + 3,
+          /*scale=*/InterestGroupStorage::MaxOwnerRegularInterestGroups() /
+              100.0,
+          auction_worklet::mojom::BaseValue::
+              kPercentRegularInterestGroupQuotaUsed,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+          /*bucket=*/100 * i + 4,
+          auction_worklet::mojom::BaseValue::kNegativeInterestGroupsUsed,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForScaledBaseValue(
+          /*bucket=*/100 * i + 5,
+          /*scale=*/InterestGroupStorage::MaxOwnerNegativeInterestGroups() /
+              100.0,
+          auction_worklet::mojom::BaseValue::
+              kPercentNegativeInterestGroupQuotaUsed,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+          /*bucket=*/100 * i + 6,
+          auction_worklet::mojom::BaseValue::kInterestGroupStorageUsed,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForScaledBaseValue(
+          /*bucket=*/100 * i + 7,
+          /*scale=*/InterestGroupStorage::MaxOwnerStorageSize() / 100.0,
+          auction_worklet::mojom::BaseValue::
+              kPercentInterestGroupStorageQuotaUsed,
           Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
       // For bidder 0, mark 2 as timed out, for bidder 1 mark all as timed out.
       bidder_worklets[i]->SetScriptTimedOut(i == 1 ? true : ig == 2);
@@ -17349,25 +17416,50 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
-          testing::Pair(
-              kBidder1,
-              // 3 IGs are actually useful; 1 times out so 33% timed out.
-              ElementsAreRequests(
-                  BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/3),
-                  BuildPrivateAggregationRequest(/*bucket=*/1,
-                                                 /*value=*/33))),
-          testing::Pair(
-              kBidder2,
-              // 2 IGs w/ads; all "time out"; but reporting doesn't.
-              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
-                                                                 /*value=*/2),
-                                  BuildPrivateAggregationRequest(/*bucket=*/101,
-                                                                 /*value=*/100),
-                                  BuildPrivateAggregationRequest(/*bucket=*/50,
-                                                                 /*value=*/2),
-                                  BuildPrivateAggregationRequest(/*bucket=*/51,
-                                                                 /*value=*/0))),
+          testing::Pair(kBidder1,
+                        // 3 IGs are actually useful; 1 times out so 33% timed
+                        // out. 5 regular IGs, 1 negative.
+                        ElementsAreRequests(
+                            BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                           /*value=*/3),
+                            BuildPrivateAggregationRequest(/*bucket=*/1,
+                                                           /*value=*/33),
+                            BuildPrivateAggregationRequest(/*bucket=*/2,
+                                                           /*value=*/5),
+                            BuildPrivateAggregationRequest(/*bucket=*/3,
+                                                           /*value=*/5),
+                            BuildPrivateAggregationRequest(/*bucket=*/4,
+                                                           /*value=*/1),
+                            BuildPrivateAggregationRequest(/*bucket=*/5,
+                                                           /*value=*/1),
+                            BuildPrivateAggregationRequest(/*bucket=*/6,
+                                                           /*value=*/size1),
+                            BuildPrivateAggregationRequest(/*bucket=*/7,
+                                                           /*value=*/size1))),
+          testing::Pair(kBidder2,
+                        // 2 participating IGs; all "time out"; but reporting
+                        // doesn't. 3 positive IGs, 2 negative total.
+                        ElementsAreRequests(
+                            BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                           /*value=*/2),
+                            BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                           /*value=*/100),
+                            BuildPrivateAggregationRequest(/*bucket=*/102,
+                                                           /*value=*/3),
+                            BuildPrivateAggregationRequest(/*bucket=*/103,
+                                                           /*value=*/3),
+                            BuildPrivateAggregationRequest(/*bucket=*/104,
+                                                           /*value=*/2),
+                            BuildPrivateAggregationRequest(/*bucket=*/105,
+                                                           /*value=*/2),
+                            BuildPrivateAggregationRequest(/*bucket=*/106,
+                                                           /*value=*/size2),
+                            BuildPrivateAggregationRequest(/*bucket=*/107,
+                                                           /*value=*/size2),
+                            BuildPrivateAggregationRequest(/*bucket=*/50,
+                                                           /*value=*/2),
+                            BuildPrivateAggregationRequest(/*bucket=*/51,
+                                                           /*value=*/0))),
           testing::Pair(kSeller,
                         // No IG metric for sellers; timeouts do exist.
                         // Seller scoring timeouts is 1 out of 2.

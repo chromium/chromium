@@ -79,6 +79,21 @@ std::optional<double> GetBaseValue(
       return participant_data.percent_igs_cumulative_timeout;
     case auction_worklet::mojom::BaseValue::kCumulativeBuyerTime:
       return participant_data.cumulative_buyer_time.InMillisecondsF();
+    case auction_worklet::mojom::BaseValue::kRegularInterestGroupsUsed:
+      return participant_data.regular_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentRegularInterestGroupQuotaUsed:
+      return participant_data.percent_regular_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kNegativeInterestGroupsUsed:
+      return participant_data.negative_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentNegativeInterestGroupQuotaUsed:
+      return participant_data.percent_negative_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kInterestGroupStorageUsed:
+      return participant_data.igs_storage_used;
+    case auction_worklet::mojom::BaseValue::
+        kPercentInterestGroupStorageQuotaUsed:
+      return participant_data.percent_igs_storage_quota_used;
   }
   NOTREACHED();
 }
@@ -246,6 +261,19 @@ CalculateContributionBucketAndValue(
 }
 
 }  // namespace
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData() =
+    default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    const PrivateAggregationParticipantData& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    const PrivateAggregationParticipantData& other) = default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    PrivateAggregationParticipantData&& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    PrivateAggregationParticipantData&& other) = default;
 
 PrivateAggregationKey::PrivateAggregationKey(
     url::Origin reporting_origin,

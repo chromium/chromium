@@ -5454,13 +5454,9 @@ constexpr base::TimeDelta InterestGroupStorage::kUpdateFailedBackoffPeriod;
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
     : path_to_database_(DBPath(path)),
       max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
-      max_owner_regular_interest_groups_(
-          blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get()),
-      max_owner_negative_interest_groups_(
-          blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner
-              .Get()),
-      max_owner_storage_size_(
-          blink::features::kInterestGroupStorageMaxStoragePerOwner.Get()),
+      max_owner_regular_interest_groups_(MaxOwnerRegularInterestGroups()),
+      max_owner_negative_interest_groups_(MaxOwnerNegativeInterestGroups()),
+      max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
       db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
@@ -6098,6 +6094,21 @@ InterestGroupStorage::GetBiddingAndAuctionServerKeys(
     return {base::Time::Min(), {}};
   }
   return DoGetBiddingAndAuctionServerKeys(*db_, coordinator);
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerRegularInterestGroups() {
+  return blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerNegativeInterestGroups() {
+  return blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerStorageSize() {
+  return blink::features::kInterestGroupStorageMaxStoragePerOwner.Get();
 }
 
 base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {

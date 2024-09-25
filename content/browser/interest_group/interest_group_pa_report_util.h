@@ -49,6 +49,14 @@ struct CONTENT_EXPORT PrivateAggregationTimings {
 };
 
 struct CONTENT_EXPORT PrivateAggregationParticipantData {
+  PrivateAggregationParticipantData();
+  PrivateAggregationParticipantData(const PrivateAggregationParticipantData&);
+  PrivateAggregationParticipantData& operator=(
+      const PrivateAggregationParticipantData&);
+  PrivateAggregationParticipantData(PrivateAggregationParticipantData&&);
+  PrivateAggregationParticipantData& operator=(
+      PrivateAggregationParticipantData&&);
+
   // These metrics are set on bidders only; on sellers they are always 0.
 
   // Number of interest groups that got selected to make bids (after filtering,
@@ -56,6 +64,12 @@ struct CONTENT_EXPORT PrivateAggregationParticipantData {
   int participating_interest_group_count = 0;
   double percent_igs_cumulative_timeout = 0;
   base::TimeDelta cumulative_buyer_time;
+  int regular_igs = 0;
+  double percent_regular_igs_quota_used = 0;
+  int negative_igs = 0;
+  double percent_negative_igs_quota_used = 0;
+  size_t igs_storage_used = 0;
+  double percent_igs_storage_quota_used = 0;
 
   // These metrics are set for both bidders and sellers.
   base::TimeDelta average_code_fetch_time;
