@@ -866,6 +866,10 @@ group("gn_all") {
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing:chrome_for_testing" ]
   }
+
+  if (checkout_src_internal) {
+    deps += [ "//internal:all" ]
+  }
 }
 
 # All Rust targets. This is provided for convenience while developing Rust to
