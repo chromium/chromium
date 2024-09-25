@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Error: Underlying page renderer exited unexpectedly"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
+<!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
 
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 

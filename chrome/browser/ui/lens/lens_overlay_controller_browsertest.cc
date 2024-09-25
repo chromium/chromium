@@ -40,9 +40,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
-#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
@@ -59,6 +57,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -125,7 +125,8 @@ constexpr char kCheckSearchboxInput[] =
     "(function() {const root = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
     "const searchboxInputLoaded = "
-    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "  "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return  searchboxInputLoaded;})();";
 
 constexpr char kRequestNotificationsScript[] = R"(
@@ -142,7 +143,8 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "const iframeSrcLoaded = "
     "  root.getElementById('results').src.includes('q=' + $1);"
     "const searchboxInputLoaded = "
-    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "  "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
@@ -153,7 +155,8 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "const stickPresent = "
     "  root.getElementById('results').src.includes('stick=');"
     "const searchboxInputLoaded = "
-    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "  "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && stickPresent && "
     "  searchboxInputLoaded;})();";
 
@@ -162,7 +165,8 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
     "const searchboxRoot = appRoot.getElementById('searchbox').shadowRoot;"
     "const thumbContainer = searchboxRoot.getElementById('thumbnailContainer');"
-    "const thumbnailRoot = searchboxRoot.getElementById('thumbnail').shadowRoot;"
+    "const thumbnailRoot = "
+    "searchboxRoot.getElementById('thumbnail').shadowRoot;"
     "const imageSrc = thumbnailRoot.getElementById('image').src;"
     "return window.getComputedStyle(thumbContainer).display !== 'none' && "
     "       imageSrc.startsWith('data:image/jpeg');})();";
@@ -208,12 +212,12 @@ void ClickBubbleDialogButton(
   button->OnMouseReleased(event);
 }
 
-const lens::mojom::GeometryPtr kTestGeometry =
-    lens::mojom::Geometry::New(lens::mojom::CenterRotatedBox::New(
+const lens::mojom::GeometryPtr kTestGeometry = lens::mojom::Geometry::New(
+    lens::mojom::CenterRotatedBox::New(
         gfx::RectF(0.1, 0.1, 0.8, 0.8),
         0.1,
         lens::mojom::CenterRotatedBox_CoordinateType::kNormalized),
-        std::vector<lens::mojom::PolygonPtr>());
+    std::vector<lens::mojom::PolygonPtr>());
 const lens::mojom::OverlayObjectPtr kTestOverlayObject =
     lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
 const lens::mojom::TextPtr kTestText =

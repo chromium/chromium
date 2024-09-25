@@ -14525,7 +14525,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Omnibox button"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
+<!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
 
 <enum name="LensRegionSearchAspectRatio">
   <summary>

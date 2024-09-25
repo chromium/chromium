@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"

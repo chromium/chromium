@@ -14,7 +14,6 @@ source_set("lens") {
   public = [
     "lens_overlay_controller.h",
     "lens_overlay_entry_point_controller.h",
-    "lens_overlay_invocation_source.h",
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
     "lens_side_panel_untrusted_ui.h",
@@ -28,7 +27,6 @@ source_set("lens") {
     "lens_overlay_controller.cc",
     "lens_overlay_controller_glue.cc",
     "lens_overlay_controller_glue.h",
-    "lens_overlay_dismissal_source.h",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
@@ -69,6 +67,7 @@ source_set("lens") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/find_in_page",
+    "//components/lens",
     "//content/public/browser",
   ]
 

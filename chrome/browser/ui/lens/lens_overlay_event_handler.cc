@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 
 namespace lens {
 
