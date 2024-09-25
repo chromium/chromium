@@ -18,7 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -32,7 +32,7 @@ import org.chromium.ui.text.SpanApplier;
  * preferences.
  */
 public class FingerprintingProtectionSettingsFragment extends PreferenceFragmentCompat
-        implements SettingsPage {
+        implements EmbeddableSettingsPage {
     // Must match key in fp_protection_preferences.xml.
     private static final String PREF_FP_PROTECTION_SWITCH = "fp_protection_switch";
 

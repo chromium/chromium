@@ -21,14 +21,15 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 
 import java.util.Map;
 
 /** Preference fragment to allow users to control use of the Android payment apps on device. */
-public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat implements SettingsPage {
+public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override

@@ -11,10 +11,11 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /** An embeddable settings fragment that has several preference inside. */
-public class TestSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
+public class TestEmbeddableFragment extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     public static final String EXTRA_TITLE = "title";
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

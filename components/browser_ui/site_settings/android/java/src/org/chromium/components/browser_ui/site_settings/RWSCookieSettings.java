@@ -13,8 +13,8 @@ import androidx.preference.Preference;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Related Website Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
 public class RWSCookieSettings extends BaseSiteSettingsFragment
-        implements SettingsPage, Preference.OnPreferenceChangeListener {
+        implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
     public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
     public static final String SUBTITLE = "subtitle";
     public static final String BULLET_TWO = "bullet_two";

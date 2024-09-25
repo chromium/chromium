@@ -50,7 +50,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -67,15 +67,15 @@ import java.util.Locale;
  *
  * <p>This activity displays a single {@link Fragment}, typically a {@link
  * PreferenceFragmentCompat}. There are two types of fragments shown in the activity:
- * <i>embeddable</i> fragments that implement {@link SettingsPage}, and <i>standalone</i> fragments
- * that do not implement it. Embeddable fragments may be embedded into a column in the multi-column
- * settings UI, if it is enabled and the window is large enough. Standalone fragments, in contrast,
- * are always shown as occupying the whole window.
+ * <i>embeddable</i> fragments that implement {@link EmbeddableSettingsPage}, and <i>standalone</i>
+ * fragments that do not implement it. Embeddable fragments may be embedded into a column in the
+ * multi-column settings UI, if it is enabled and the window is large enough. Standalone fragments,
+ * in contrast, are always shown as occupying the whole window.
  *
  * <p>Embeddable fragments must not modify the activity UI outside of the fragment, e.g. the
  * activity title and the action bar, because the same activity instance is shared among multiple
  * fragments as the user navigates through the settings. Instead, fragments should implement methods
- * in {@link SettingsPage} to ask the activity to update its UI appropriately.
+ * in {@link EmbeddableSettingsPage} to ask the activity to update its UI appropriately.
  *
  * <p>Standalone fragments may modify the activity UI as needed. A standalone fragment is always
  * launched with a fresh settings activity instance that is not shared with other fragments.
@@ -503,8 +503,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 return;
             }
 
-            // TitleUpdater is enabled only when the fragment implements SettingsPage.
-            SettingsPage settingsFragment = (SettingsPage) fragment;
+            // TitleUpdater is enabled only when the fragment implements EmbeddableSettingsPage.
+            EmbeddableSettingsPage settingsFragment = (EmbeddableSettingsPage) fragment;
 
             if (mCurrentPageTitle != null) {
                 mCurrentPageTitle.removeObserver(mSetTitleCallback);

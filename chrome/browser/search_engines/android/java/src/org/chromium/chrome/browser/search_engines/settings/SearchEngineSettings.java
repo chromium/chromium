@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
@@ -27,7 +27,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
  * <p>TODO(crbug.com/41473490): Add on scroll shadow to action bar.
  */
 public class SearchEngineSettings extends ListFragment
-        implements SettingsPage, ProfileDependentSetting {
+        implements EmbeddableSettingsPage, ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;
     private Profile mProfile;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

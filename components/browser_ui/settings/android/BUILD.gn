@@ -7,12 +7,12 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
+    "java/src/org/chromium/components/browser_ui/settings/EmbeddableSettingsPage.java",
     "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsLauncher.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
-    "java/src/org/chromium/components/browser_ui/settings/SettingsPage.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",

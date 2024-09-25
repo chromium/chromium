@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.Toast;
 
@@ -26,7 +26,7 @@ import java.util.Calendar;
 
 /** Settings fragment that displays information about Chrome. */
 public class AboutChromeSettings extends PreferenceFragmentCompat
-        implements SettingsPage, Preference.OnPreferenceClickListener {
+        implements EmbeddableSettingsPage, Preference.OnPreferenceClickListener {
     private static final int TAPS_FOR_DEVELOPER_SETTINGS = 7;
 
     private static final String PREF_APPLICATION_VERSION = "application_version";

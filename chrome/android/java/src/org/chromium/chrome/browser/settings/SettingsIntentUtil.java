@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 public class SettingsIntentUtil {
     private SettingsIntentUtil() {}
@@ -58,9 +58,9 @@ public class SettingsIntentUtil {
     /**
      * Checks if a given fragment is a standalone fragment.
      *
-     * <p>A fragment is standalone if it does not implement {@link SettingsPage}. Such fragments are
-     * shown in separate activities and have full control over the whole UI. See {@link
-     * SettingsActivity} for details.
+     * <p>A fragment is standalone if it does not implement {@link EmbeddableSettingsPage}. Such
+     * fragments are shown in separate activities and have full control over the whole UI. See
+     * {@link SettingsActivity} for details.
      */
     private static boolean isStandaloneFragment(
             @NonNull Context context, @Nullable String fragmentName) {
@@ -75,6 +75,6 @@ public class SettingsIntentUtil {
             throw new RuntimeException(e);
         }
 
-        return !SettingsPage.class.isAssignableFrom(fragmentClass);
+        return !EmbeddableSettingsPage.class.isAssignableFrom(fragmentClass);
     }
 }

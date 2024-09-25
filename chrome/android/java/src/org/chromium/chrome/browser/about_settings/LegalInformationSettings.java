@@ -11,11 +11,12 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Fragment to display legal information about Chrome. */
-public class LegalInformationSettings extends PreferenceFragmentCompat implements SettingsPage {
+public class LegalInformationSettings extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override

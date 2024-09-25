@@ -19,14 +19,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment to manage settings for ip protection. */
-public class IpProtectionSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
+public class IpProtectionSettingsFragment extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     // Must match key in ip_protection_preferences.xml.
     private static final String PREF_IP_PROTECTION_SWITCH = "ip_protection_switch";
 

@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.settings;
 import org.chromium.base.supplier.ObservableSupplier;
 
 /**
- * The base interface that setting page fragments should implement.
+ * The base interface for embeddable settings page fragments.
  *
  * <p>Fragments implementing this interface are called <i>embeddable</i>; otherwise they are
  * considered <i>standalone</i>.
@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
  *
  * <p>Standalone fragments are shown as a whole and has better control of the activity.
  */
-public interface SettingsPage {
+public interface EmbeddableSettingsPage {
     /**
      * Returns the title of the current setting page.
      *

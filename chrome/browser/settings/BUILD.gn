@@ -78,7 +78,7 @@ android_library("test_support_java") {
 android_library("junit_test_support") {
   testonly = true
   sources = [
-    "android/java/src/org/chromium/chrome/browser/settings/TestSettingsFragment.java",
+    "android/java/src/org/chromium/chrome/browser/settings/TestEmbeddableFragment.java",
     "android/java/src/org/chromium/chrome/browser/settings/TestStandaloneFragment.java",
   ]
   deps = [

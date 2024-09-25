@@ -10,7 +10,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /**
  * Base class for settings in Chrome.
@@ -19,7 +19,7 @@ import org.chromium.components.browser_ui.settings.SettingsPage;
  * convenience.
  */
 public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompat
-        implements SettingsPage, ProfileDependentSetting {
+        implements EmbeddableSettingsPage, ProfileDependentSetting {
     private Profile mProfile;
 
     /**

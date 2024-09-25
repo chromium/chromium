@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -45,7 +45,7 @@ import java.util.Collection;
  * to populate the LanguageItem list and provide callbacks for adding and removing items.
  */
 public abstract class LanguageItemListFragment extends Fragment
-        implements SettingsPage, ProfileDependentSetting {
+        implements EmbeddableSettingsPage, ProfileDependentSetting {
     // Request code for returning from Select Language Fragment
     private static final int REQUEST_CODE_SELECT_LANGUAGE = 1;
 
