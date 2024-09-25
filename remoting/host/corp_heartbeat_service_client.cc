@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/strings/stringize_macros.h"
-#include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/host/host_details.h"
 #include "remoting/host/version.h"
@@ -18,10 +17,11 @@ namespace remoting {
 
 CorpHeartbeatServiceClient::CorpHeartbeatServiceClient(
     const std::string& directory_id,
-    OAuthTokenGetter* oauth_token_getter,
+    const std::string& refresh_token,
+    const std::string& service_account_email,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
-      client_(oauth_token_getter, url_loader_factory) {}
+      client_(refresh_token, service_account_email, url_loader_factory) {}
 
 CorpHeartbeatServiceClient::~CorpHeartbeatServiceClient() = default;
 

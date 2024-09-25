@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_CORP_HEARTBEAT_SERVICE_CLIENT_H_
 #define REMOTING_HOST_CORP_HEARTBEAT_SERVICE_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -23,14 +24,13 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
-class OAuthTokenGetter;
-
 // HeartbeatServiceClient implementation which is used for Corp hosts.
 class CorpHeartbeatServiceClient : public HeartbeatServiceClient {
  public:
   CorpHeartbeatServiceClient(
       const std::string& directory_id,
-      OAuthTokenGetter* oauth_token_getter,
+      const std::string& refresh_token,
+      const std::string& service_account_email,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CorpHeartbeatServiceClient(const CorpHeartbeatServiceClient&) = delete;

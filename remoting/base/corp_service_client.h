@@ -26,6 +26,7 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
+class OAuthTokenGetter;
 class ProtobufHttpStatus;
 
 // A helper class that communicates with backend services using the Corp API.
@@ -44,8 +45,13 @@ class CorpServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<internal::RemoteAccessHostV1Proto>)>;
 
+  // C'tor to use for unauthenticated service requests.
+  explicit CorpServiceClient(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // C'tor to use for authenticated requests using the device robot account.
   CorpServiceClient(
-      OAuthTokenGetter* oauth_token_getter,
+      const std::string& refresh_token,
+      const std::string& service_account_email,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~CorpServiceClient();
 
@@ -85,6 +91,7 @@ class CorpServiceClient {
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
+  std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;
 };
 

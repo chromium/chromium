@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringize_macros.h"
 #include "net/http/http_request_headers.h"
+#include "remoting/base/corp_auth_util.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
@@ -21,10 +22,20 @@
 namespace remoting {
 
 CorpServiceClient::CorpServiceClient(
-    OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
-                   oauth_token_getter,
+                   /*oauth_token_getter=*/nullptr,
+                   url_loader_factory) {}
+
+CorpServiceClient::CorpServiceClient(
+    const std::string& refresh_token,
+    const std::string& service_account_email,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : oauth_token_getter_(CreateCorpTokenGetter(url_loader_factory,
+                                                service_account_email,
+                                                refresh_token)),
+      http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
+                   oauth_token_getter_.get(),
                    url_loader_factory) {}
 
 CorpServiceClient::~CorpServiceClient() = default;
@@ -234,6 +245,8 @@ void CorpServiceClient::ExecuteRequest(
     request_config->api_key = internal::GetRemotingCorpApiKey();
     request_config->authenticated = false;
   } else {
+    // Authenticated calls must provide an OAuthTokenGetter instance.
+    CHECK(oauth_token_getter_);
     request_config->authenticated = true;
   }
   request_config->provide_certificate = true;
