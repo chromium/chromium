@@ -365,10 +365,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AccessibleNode* GetAccessibleNode() const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
-  static void TokenVectorFromAttribute(Element* element,
-                                       Vector<String>&,
-                                       const QualifiedName&);
-
   // Serialize the properties of this node into |node_data|.
   void Serialize(ui::AXNodeData* node_data, ui::AXMode accessibility_mode) const;
 

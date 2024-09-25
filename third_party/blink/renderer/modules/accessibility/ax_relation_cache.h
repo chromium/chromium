@@ -73,7 +73,7 @@ class AXRelationCache {
 
   void MarkOldAndNewRelationSourcesDirty(
       Element& element,
-      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_id_map);
+      HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_id_map);
 
   // Update the related maps with the css anchor that |positioned_node| is
   // anchored to. If there are multiple anchors, we assume the anchors are used
@@ -99,9 +99,9 @@ class AXRelationCache {
   // an element with that id appears later, it can be added when you call
   // UpdateRelatedTree.
   void UpdateReverseRelations(
-      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+      HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_map,
       Node* relation_source,
-      const Vector<String>& target_ids);
+      const Vector<AtomicString>& target_ids);
 
   void UpdateReverseTextRelations(Element& relation_source,
                                   const QualifiedName& attr_name);
@@ -109,7 +109,7 @@ class AXRelationCache {
   // Update map of ids to related objects for aria-labelledby/aria-describedby.
   void UpdateReverseTextRelations(Element& relation_source);
   void UpdateReverseTextRelations(Element& relation_source,
-                                  const Vector<String>& target_ids);
+                                  const Vector<AtomicString>& target_ids);
 
   void UpdateReverseActiveDescendantRelations(Element& relation_source);
   void UpdateReverseOwnsRelations(Element& relation_source);
@@ -191,10 +191,10 @@ class AXRelationCache {
   void UpdateRelatedText(Node*);
 
   // Get ids that the element points to via aria-labelledby/describedby.
-  Vector<String> GetTextRelationIds(Element& relation_source);
+  Vector<AtomicString> GetTextRelationIds(Element& relation_source);
   // Get ids that the element points to via aria-controls, aria-details,
   // aria-flowto and aria-errormessage.
-  Vector<String> GetOtherRelationIds(Element& relation_source);
+  Vector<AtomicString> GetOtherRelationIds(Element& relation_source);
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
@@ -205,7 +205,7 @@ class AXRelationCache {
                                        const Vector<AXID>&);
   void GetReverseRelated(
       const AtomicString& target_id_attr,
-      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+      HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_map,
       HeapVector<Member<AXObject>>& sources);
   void MaybeRestoreParentOfOwnedChild(AXID removed_child_axid);
 
@@ -241,10 +241,11 @@ class AXRelationCache {
   //   quickly determine if it affects the source node of a relationship.
   // - When text changes, we can recompute any label or description based on it
   //   and fire the appropriate change events.
-  HashMap<String, HashSet<DOMNodeId>> id_attr_to_owns_relation_mapping_;
-  HashMap<String, HashSet<DOMNodeId>> id_attr_to_text_relation_mapping_;
-  HashMap<String, HashSet<DOMNodeId>> id_attr_to_active_descendant_mapping_;
-  HashMap<String, HashSet<DOMNodeId>> id_attr_to_other_relation_mapping_;
+  HashMap<AtomicString, HashSet<DOMNodeId>> id_attr_to_owns_relation_mapping_;
+  HashMap<AtomicString, HashSet<DOMNodeId>> id_attr_to_text_relation_mapping_;
+  HashMap<AtomicString, HashSet<DOMNodeId>>
+      id_attr_to_active_descendant_mapping_;
+  HashMap<AtomicString, HashSet<DOMNodeId>> id_attr_to_other_relation_mapping_;
 
   // HTML id attributes that at one time have had a <label for> pointing to it.
   // IDs are not necessarily removed from this set. It is not necessary to
@@ -262,10 +263,6 @@ class AXRelationCache {
   // will be computed, and if it's different than before, ChildrenChanged
   // will be fired on all affected nodes.
   HashSet<DOMNodeId> owner_ids_to_update_;
-
-  // A map from a source AXObject to the id attribute values for relations
-  // targets that are not yet in the DOM tree.
-  HashMap<String, Vector<AXID>> incomplete_relations_;
 
   // For each DOM node, the most recent id attribute value processed.
   HashMap<DOMNodeId, AtomicString> registered_id_attributes_;

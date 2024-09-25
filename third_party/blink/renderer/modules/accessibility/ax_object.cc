@@ -5121,21 +5121,6 @@ String AXObject::TextFromElements(
 }
 
 // static
-void AXObject::TokenVectorFromAttribute(Element* element,
-                                        Vector<String>& tokens,
-                                        const QualifiedName& attribute) {
-  if (!element)
-    return;
-
-  String attribute_value = element->FastGetAttribute(attribute).GetString();
-  if (attribute_value.empty())
-    return;
-
-  attribute_value = attribute_value.SimplifyWhiteSpace();
-  attribute_value.Split(' ', tokens);
-}
-
-// static
 bool AXObject::ElementsFromAttribute(Element* from,
                                      HeapVector<Member<Element>>& elements,
                                      const QualifiedName& attribute) {

@@ -19,6 +19,15 @@
 
 namespace blink {
 
+namespace {
+void IdsFromAttribute(Element& element,
+                      Vector<AtomicString>& ids,
+                      const QualifiedName& attr_name) {
+  SpaceSplitString split_ids(element.FastGetAttribute(attr_name));
+  ids.AppendRange(split_ids.begin(), split_ids.end());
+}
+}  // namespace
+
 AXRelationCache::AXRelationCache(AXObjectCacheImpl* object_cache)
     : object_cache_(object_cache) {}
 
@@ -102,9 +111,8 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   CheckElementWasProcessed(element);
 
   // Check aria-owns.
-  Vector<String> owns_ids;
-  AXObject::TokenVectorFromAttribute(&element, owns_ids,
-                                     html_names::kAriaOwnsAttr);
+  Vector<AtomicString> owns_ids;
+  IdsFromAttribute(element, owns_ids, html_names::kAriaOwnsAttr);
   for (const auto& owns_id : owns_ids) {
     DCHECK(id_attr_to_owns_relation_mapping_.Contains(owns_id))
         << element << " with aria-owns=" << owns_id
@@ -124,7 +132,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   }
 
   // Check aria-labelledby, aria-describedby.
-  Vector<String> target_ids = GetTextRelationIds(element);
+  Vector<AtomicString> target_ids(GetTextRelationIds(element));
   for (const auto& target_id : target_ids) {
     DCHECK(id_attr_to_text_relation_mapping_.Contains(target_id))
         << element << " with aria-labelledby/describedby=" << target_id
@@ -264,27 +272,29 @@ AXObject* AXRelationCache::ValidatedAriaOwner(const AXObject* child) {
   return nullptr;
 }
 
-Vector<String> AXRelationCache::GetTextRelationIds(Element& relation_source) {
-  Vector<String> ids_1, ids_2, ids_3;
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_1,
-                                     html_names::kAriaLabelledbyAttr);
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_2,
-                                     html_names::kAriaLabeledbyAttr);
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_3,
-                                     html_names::kAriaDescribedbyAttr);
-  ids_1.AppendVector(ids_2);
-  ids_1.AppendVector(ids_3);
-  return ids_1;
+Vector<AtomicString> AXRelationCache::GetTextRelationIds(
+    Element& relation_source) {
+  SpaceSplitString ids_1(
+      relation_source.FastGetAttribute(html_names::kAriaLabelledbyAttr));
+  SpaceSplitString ids_2(
+      relation_source.FastGetAttribute(html_names::kAriaLabeledbyAttr));
+  SpaceSplitString ids_3(
+      relation_source.FastGetAttribute(html_names::kAriaDescribedbyAttr));
+  Vector<AtomicString> ids;
+  ids.AppendRange(ids_1.begin(), ids_1.end());
+  ids.AppendRange(ids_2.begin(), ids_2.end());
+  ids.AppendRange(ids_3.begin(), ids_3.end());
+  return ids;
 }
 
 // Update reverse relation map, where relation_source is related to target_ids.
 // TODO Support when HasExplicitlySetAttrAssociatedElement() == true.
 void AXRelationCache::UpdateReverseRelations(
-    HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+    HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_map,
     Node* relation_source,
-    const Vector<String>& target_ids) {
+    const Vector<AtomicString>& target_ids) {
   // Add entries to reverse map.
-  for (const String& target_id : target_ids) {
+  for (const AtomicString& target_id : target_ids) {
     auto result = id_attr_to_node_map.insert(target_id, HashSet<DOMNodeId>());
     result.stored_value->value.insert(relation_source->GetDomNodeId());
   }
@@ -299,8 +309,8 @@ void AXRelationCache::UpdateReverseTextRelations(Element& relation_source) {
 void AXRelationCache::UpdateReverseTextRelations(
     Element& relation_source,
     const QualifiedName& attr_name) {
-  Vector<String> ids;
-  AXObject::TokenVectorFromAttribute(&relation_source, ids, attr_name);
+  Vector<AtomicString> ids;
+  IdsFromAttribute(relation_source, ids, attr_name);
   UpdateReverseTextRelations(relation_source, ids);
 
   // Process relations such as element.ariaDescribedByElements.
@@ -325,9 +335,9 @@ void AXRelationCache::UpdateReverseTextRelations(
 
 void AXRelationCache::UpdateReverseTextRelations(
     Element& relation_source,
-    const Vector<String>& target_ids) {
+    const Vector<AtomicString>& target_ids) {
   // Get a list of ids that are new targets of text relations.
-  Vector<String> new_target_ids;
+  Vector<AtomicString> new_target_ids;
   for (const auto& id : target_ids) {
     if (!id_attr_to_text_relation_mapping_.Contains(id)) {
       new_target_ids.push_back(id);
@@ -340,8 +350,8 @@ void AXRelationCache::UpdateReverseTextRelations(
 
   // Mark all of the new text relation targets dirty.
   TreeScope& scope = relation_source.GetTreeScope();
-  for (const String& id : new_target_ids) {
-    if (Element* target = scope.getElementById(AtomicString(id))) {
+  for (const AtomicString& id : new_target_ids) {
+    if (Element* target = scope.getElementById(id)) {
       // Mark root of label dirty so that we can change inclusion states as
       // necessary (label subtrees are included in the tree even if hidden).
       if (object_cache_->lifecycle().StateAllowsImmediateTreeUpdates()) {
@@ -373,28 +383,29 @@ void AXRelationCache::UpdateReverseActiveDescendantRelations(
 }
 
 void AXRelationCache::UpdateReverseOwnsRelations(Element& relation_source) {
-  Vector<String> owned_id_vector;
-  AXObject::TokenVectorFromAttribute(&relation_source, owned_id_vector,
-                                     html_names::kAriaOwnsAttr);
+  Vector<AtomicString> owned_id_vector;
+  IdsFromAttribute(relation_source, owned_id_vector, html_names::kAriaOwnsAttr);
   // Track reverse relations for future tree updates.
   UpdateReverseRelations(id_attr_to_owns_relation_mapping_, &relation_source,
                          owned_id_vector);
 }
 
-Vector<String> AXRelationCache::GetOtherRelationIds(Element& relation_source) {
-  Vector<String> ids_1, ids_2, ids_3, ids_4;
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_1,
-                                     html_names::kAriaControlsAttr);
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_2,
-                                     html_names::kAriaDetailsAttr);
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_3,
-                                     html_names::kAriaErrormessageAttr);
-  AXObject::TokenVectorFromAttribute(&relation_source, ids_4,
-                                     html_names::kAriaFlowtoAttr);
-  ids_1.AppendVector(ids_2);
-  ids_1.AppendVector(ids_3);
-  ids_1.AppendVector(ids_4);
-  return ids_1;
+Vector<AtomicString> AXRelationCache::GetOtherRelationIds(
+    Element& relation_source) {
+  SpaceSplitString ids_1(
+      relation_source.FastGetAttribute(html_names::kAriaControlsAttr));
+  SpaceSplitString ids_2(
+      relation_source.FastGetAttribute(html_names::kAriaDetailsAttr));
+  SpaceSplitString ids_3(
+      relation_source.FastGetAttribute(html_names::kAriaErrormessageAttr));
+  SpaceSplitString ids_4(
+      relation_source.FastGetAttribute(html_names::kAriaFlowtoAttr));
+  Vector<AtomicString> ids;
+  ids.AppendRange(ids_1.begin(), ids_1.end());
+  ids.AppendRange(ids_2.begin(), ids_2.end());
+  ids.AppendRange(ids_3.begin(), ids_3.end());
+  ids.AppendRange(ids_4.begin(), ids_4.end());
+  return ids;
 }
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& relation_source) {
@@ -634,7 +645,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
   // need to be further validated to determine if they introduce a cycle or are
   // already owned by another element.
 
-  Vector<String> owned_id_vector;
+  Vector<AtomicString> owned_id_vector;
   for (const auto& element : attr_associated_elements) {
     CHECK(element);
     if (!IsValidOwnsRelation(const_cast<AXObject*>(owner), *element)) {
@@ -724,12 +735,11 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     // Figure out the children that are owned by this object and are in the
     // tree.
     TreeScope& scope = element->GetTreeScope();
-    Vector<String> owned_id_vector;
-    owner->TokenVectorFromAttribute(element, owned_id_vector,
-                                    html_names::kAriaOwnsAttr);
+    SpaceSplitString owned_id_vector(
+        element->FastGetAttribute(html_names::kAriaOwnsAttr));
     HeapVector<Member<Element>> valid_owned_child_elements;
-    for (const String& id_name : owned_id_vector) {
-      Element* child_element = scope.getElementById(AtomicString(id_name));
+    for (AtomicString id_name : owned_id_vector) {
+      Element* child_element = scope.getElementById(id_name);
       if (!child_element ||
           !IsValidOwnsRelation(const_cast<AXObject*>(owner), *child_element)) {
         continue;
@@ -890,7 +900,7 @@ bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
 // Fill source_objects with AXObjects for relations pointing to target.
 void AXRelationCache::GetReverseRelated(
     const AtomicString& target_id_attr,
-    HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+    HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_map,
     HeapVector<Member<AXObject>>& source_objects) {
   if (target_id_attr == g_null_atom) {
     return;
@@ -1079,7 +1089,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
 
 void AXRelationCache::MarkOldAndNewRelationSourcesDirty(
     Element& element,
-    HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_id_map) {
+    HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_id_map) {
   HeapVector<Member<AXObject>> related_sources;
   const AtomicString& id_attr = element.GetIdAttribute();
 
