@@ -7736,6 +7736,8 @@ static_library("browser") {
         "speech/extension_api/tts_engine_extension_api_chromeos.h",
         "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
         "speech/extension_api/tts_engine_extension_observer_chromeos.h",
+        "speech/extension_api/tts_engine_extension_observer_chromeos_factory.cc",
+        "speech/extension_api/tts_engine_extension_observer_chromeos_factory.h",
       ]
       deps += [
         "//chromeos/services/tts/public/mojom",

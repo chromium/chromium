@@ -28,7 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -430,7 +430,7 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensure we're observing newly added engines for the given context.
-  TtsEngineExtensionObserverChromeOS::GetInstance(
+  TtsEngineExtensionObserverChromeOSFactory::GetForProfile(
       Profile::FromBrowserContext(context));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 #include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
@@ -100,7 +101,7 @@ void BindLanguagePacks(
 void BindGoogleTtsStream(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver) {
-  TtsEngineExtensionObserverChromeOS::GetInstance(
+  TtsEngineExtensionObserverChromeOSFactory::GetForProfile(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
       ->BindGoogleTtsStream(std::move(receiver));
 }

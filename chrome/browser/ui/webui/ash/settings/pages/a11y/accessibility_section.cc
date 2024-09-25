@@ -22,6 +22,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/facegaze_settings_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/select_to_speak_handler.h"
@@ -1797,7 +1798,7 @@ void AccessibilitySection::UpdateTextToSpeechEnginesSearchTags() {
   updater.RemoveSearchTags(GetTextToSpeechEnginesSearchConcepts());
 
   const std::set<std::string>& extensions =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile())
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile())
           ->engine_extension_ids();
   if (!extensions.empty()) {
     updater.AddSearchTags(GetTextToSpeechEnginesSearchConcepts());

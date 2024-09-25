@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chromeos/services/tts/tts_service.h"
 #endif  // IS_CHROMEOS_ASH
 
@@ -647,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, VoicesAreCached) {
 IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStream) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   TtsEngineExtensionObserverChromeOS* engine_observer =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile());
   mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
       engine_observer->tts_service_for_testing();
   chromeos::tts::TtsService tts_service(
@@ -663,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStream) {
 IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   TtsEngineExtensionObserverChromeOS* engine_observer =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile());
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile());
   mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
       engine_observer->tts_service_for_testing();
   chromeos::tts::TtsService tts_service(

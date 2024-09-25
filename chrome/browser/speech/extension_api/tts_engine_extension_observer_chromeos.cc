@@ -5,10 +5,8 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 
 #include "base/check.h"
-#include "base/memory/singleton.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -17,7 +15,6 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/event_router_factory.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace {
@@ -77,55 +74,6 @@ void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
 }
 
 }  // namespace
-
-// Factory to load one instance of TtsExtensionLoaderChromeOs per profile.
-class TtsEngineExtensionObserverChromeOSFactory
-    : public ProfileKeyedServiceFactory {
- public:
-  static TtsEngineExtensionObserverChromeOS* GetForProfile(Profile* profile) {
-    return static_cast<TtsEngineExtensionObserverChromeOS*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static TtsEngineExtensionObserverChromeOSFactory* GetInstance() {
-    return base::Singleton<TtsEngineExtensionObserverChromeOSFactory>::get();
-  }
-
- private:
-  friend struct base::DefaultSingletonTraits<
-      TtsEngineExtensionObserverChromeOSFactory>;
-
-  TtsEngineExtensionObserverChromeOSFactory()
-      : ProfileKeyedServiceFactory(
-            "TtsEngineExtensionObserverChromeOS",
-            // If given an incognito profile (including the Chrome OS login
-            // profile), share the service with the original profile.
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kRedirectedToOriginal)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kRedirectedToOriginal)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-                .Build()) {
-    DependsOn(extensions::EventRouterFactory::GetInstance());
-  }
-
-  ~TtsEngineExtensionObserverChromeOSFactory() override {}
-
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override {
-    return new TtsEngineExtensionObserverChromeOS(
-        static_cast<Profile*>(profile));
-  }
-};
-
-TtsEngineExtensionObserverChromeOS*
-TtsEngineExtensionObserverChromeOS::GetInstance(Profile* profile) {
-  return TtsEngineExtensionObserverChromeOSFactory::GetInstance()
-      ->GetForProfile(profile);
-}
 
 TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
     Profile* profile)
@@ -275,9 +223,4 @@ void TtsEngineExtensionObserverChromeOS::CreateTtsServiceIfNeeded() {
         tts_service->reset();
       },
       &tts_service_));
-}
-
-// static
-void TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt() {
-  TtsEngineExtensionObserverChromeOSFactory::GetInstance();
 }

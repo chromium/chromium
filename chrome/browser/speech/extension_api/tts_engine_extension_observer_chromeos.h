@@ -24,8 +24,6 @@ class TtsEngineExtensionObserverChromeOS
       public extensions::EventRouter::Observer,
       public extensions::ExtensionRegistryObserver {
  public:
-  static TtsEngineExtensionObserverChromeOS* GetInstance(Profile* profile);
-
   TtsEngineExtensionObserverChromeOS(
       const TtsEngineExtensionObserverChromeOS&) = delete;
   TtsEngineExtensionObserverChromeOS& operator=(
@@ -61,8 +59,6 @@ class TtsEngineExtensionObserverChromeOS
   mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_for_testing() {
     return &tts_service_;
   }
-
-  static void EnsureFactoryBuilt();
 
  private:
   explicit TtsEngineExtensionObserverChromeOS(Profile* profile);

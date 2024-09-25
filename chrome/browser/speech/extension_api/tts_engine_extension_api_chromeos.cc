@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -69,7 +70,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
   // audio params.
   playback_tts_stream_.reset();
 
-  TtsEngineExtensionObserverChromeOS::GetInstance(profile)
+  TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile)
       ->BindPlaybackTtsStream(
           playback_tts_stream_.BindNewPipeAndPassReceiver(),
           audio_parameters_.Clone(),
