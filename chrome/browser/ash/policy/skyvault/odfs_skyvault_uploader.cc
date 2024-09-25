@@ -51,7 +51,7 @@ static int64_t g_id_counter = 0;
 base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     Profile* profile,
     const base::FilePath& path,
-    FileType file_type,
+    UploadTrigger trigger,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
     std::optional<const gfx::Image> thumbnail) {
@@ -60,12 +60,12 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
   DCHECK(file_system_context);
   base::FilePath tmp_dir;
   CHECK((base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path)) ||
-        file_type == FileType::kMigration);
+        trigger == UploadTrigger::kMigration);
   auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
       new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
-                               file_type, std::move(progress_callback),
+                               trigger, std::move(progress_callback),
                                thumbnail);
 
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
@@ -78,7 +78,7 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
 base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     Profile* profile,
     const base::FilePath& path,
-    FileType file_type,
+    UploadTrigger trigger,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     UploadDoneCallback upload_callback_with_error,
     const base::FilePath& target_path) {
@@ -90,15 +90,15 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
 
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader;
-  switch (file_type) {
-    case FileType::kDownload:
-    case FileType::kScreenCapture:
+  switch (trigger) {
+    case UploadTrigger::kDownload:
+    case UploadTrigger::kScreenCapture:
       CHECK(base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path));
       odfs_skyvault_uploader = new OdfsSkyvaultUploader(
-          profile, ++g_id_counter, file_system_url, file_type,
+          profile, ++g_id_counter, file_system_url, trigger,
           std::move(progress_callback), std::nullopt);
       break;
-    case FileType::kMigration:
+    case UploadTrigger::kMigration:
       odfs_skyvault_uploader = OdfsMigrationUploader::Create(
           profile, ++g_id_counter, file_system_url, target_path);
       break;
@@ -126,7 +126,7 @@ OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     Profile* profile,
     int64_t id,
     const storage::FileSystemURL& file_system_url,
-    FileType file_type,
+    UploadTrigger trigger,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     std::optional<const gfx::Image> thumbnail)
     : profile_(profile),
@@ -134,7 +134,7 @@ OdfsSkyvaultUploader::OdfsSkyvaultUploader(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       id_(id),
       file_system_url_(file_system_url),
-      file_type_(file_type),
+      trigger_(trigger),
       progress_callback_(std::move(progress_callback)),
       thumbnail_(thumbnail) {}
 
@@ -153,7 +153,7 @@ base::FilePath OdfsSkyvaultUploader::GetDestinationFolderPath(
 void OdfsSkyvaultUploader::RequestSignIn(
     base::OnceCallback<void(base::File::Error)> on_sign_in_cb) {
   policy::skyvault_ui_utils::ShowSignInNotification(
-      profile_, id_, file_type_, file_system_url_.path(),
+      profile_, id_, trigger_, file_system_url_.path(),
       std::move(on_sign_in_cb), thumbnail_);
 }
 
@@ -341,7 +341,7 @@ OdfsMigrationUploader::OdfsMigrationUploader(
     : OdfsSkyvaultUploader(profile,
                            id,
                            file_system_url,
-                           FileType::kMigration,
+                           UploadTrigger::kMigration,
                            /*progress_callback=*/base::DoNothing(),
                            std::nullopt),
       target_path_(target_path) {}

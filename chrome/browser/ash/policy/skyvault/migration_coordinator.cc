@@ -133,8 +133,7 @@ void OneDriveMigrationUploader::Run() {
     base::FilePath target_path =
         GetDestinationPath(profile_, file_path, destination_dir_);
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-        profile_, file_path,
-        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
+        profile_, file_path, UploadTrigger::kMigration,
         // No need to show progress updates.
         /*progress_callback=*/base::DoNothing(),
         /*upload_callback=*/

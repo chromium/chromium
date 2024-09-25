@@ -217,7 +217,7 @@ MigrationNotificationManager::ShowOneDriveSignInNotification(
   if (sign_in_callbacks_.empty()) {
     policy::skyvault_ui_utils::ShowSignInNotification(
         Profile::FromBrowserContext(context_), /*id=*/0,
-        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
+        UploadTrigger::kMigration,
         /*file_path=*/base::FilePath(),
         base::BindOnce(&MigrationNotificationManager::OnSignInResponse,
                        weak_factory_.GetWeakPtr()));

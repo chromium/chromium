@@ -30,7 +30,7 @@ enum NotificationButtonIndex {
 void ShowSignInNotification(
     Profile* profile,
     int64_t id,
-    ash::cloud_upload::OdfsSkyvaultUploader::FileType file_type,
+    local_user_files::UploadTrigger trigger,
     const base::FilePath& file_path,
     base::OnceCallback<void(base::File::Error)> signin_callback,
     std::optional<const gfx::Image> thumbnail = std::nullopt);

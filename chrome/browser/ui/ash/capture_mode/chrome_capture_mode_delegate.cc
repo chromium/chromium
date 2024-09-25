@@ -394,8 +394,7 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
             path);
     auto notification_ptr = notification.get();
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-        profile, path,
-        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
+        profile, path, policy::local_user_files::UploadTrigger::kScreenCapture,
         base::BindRepeating(
             &policy::skyvault::SkyvaultCaptureUploadNotification::
                 UpdateProgress,

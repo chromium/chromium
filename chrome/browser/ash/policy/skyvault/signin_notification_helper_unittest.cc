@@ -29,17 +29,17 @@ constexpr int kId = 123;
 class SignInNotificationHelperTest
     : public testing::Test,
       public ::testing::WithParamInterface<
-          std::tuple<ash::cloud_upload::OdfsSkyvaultUploader::FileType,
+          std::tuple<policy::local_user_files::UploadTrigger,
                      /*notification_id*/ std::string>> {
  public:
   static std::string ParamToName(const testing::TestParamInfo<ParamType> info) {
     auto [file_type, id] = info.param;
     switch (file_type) {
-      case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload:
+      case policy::local_user_files::UploadTrigger::kDownload:
         return "download";
-      case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture:
+      case policy::local_user_files::UploadTrigger::kScreenCapture:
         return "screen_capture";
-      case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration:
+      case policy::local_user_files::UploadTrigger::kMigration:
         return "migration";
     }
   }
@@ -88,8 +88,7 @@ TEST_P(SignInNotificationHelperTest, ClickOnCancel) {
 TEST_P(SignInNotificationHelperTest, CloseNotification) {
   auto [file_type, notification_id] = GetParam();
   const bool with_image =
-      file_type ==
-      ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture;
+      file_type == policy::local_user_files::UploadTrigger::kScreenCapture;
 
   base::MockCallback<base::RepeatingCallback<void(base::File::Error)>> mock_cb;
   std::optional<const gfx::Image> thumbnail =
@@ -116,17 +115,14 @@ INSTANTIATE_TEST_SUITE_P(
     SkyVault,
     SignInNotificationHelperTest,
     ::testing::Values(
-        std::make_tuple(
-            ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,
-            base::StrCat({kDownloadSignInNotificationPrefix,
-                          base::NumberToString(kId)})),
-        std::make_tuple(
-            ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
-            kMigrationSignInNotification),
-        std::make_tuple(
-            ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
-            base::StrCat({kScreenCaptureSignInNotificationIdPrefix,
-                          base::NumberToString(kId)}))),
+        std::make_tuple(policy::local_user_files::UploadTrigger::kDownload,
+                        base::StrCat({kDownloadSignInNotificationPrefix,
+                                      base::NumberToString(kId)})),
+        std::make_tuple(policy::local_user_files::UploadTrigger::kMigration,
+                        kMigrationSignInNotification),
+        std::make_tuple(policy::local_user_files::UploadTrigger::kScreenCapture,
+                        base::StrCat({kScreenCaptureSignInNotificationIdPrefix,
+                                      base::NumberToString(kId)}))),
 
     SignInNotificationHelperTest::ParamToName);
 

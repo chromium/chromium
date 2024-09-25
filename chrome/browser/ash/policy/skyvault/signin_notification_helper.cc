@@ -101,12 +101,12 @@ void SignInNotificationDelegate::Click(
 void ShowSignInNotification(
     Profile* profile,
     int64_t id,
-    ash::cloud_upload::OdfsSkyvaultUploader::FileType file_type,
+    local_user_files::UploadTrigger trigger,
     const base::FilePath& file_path,
     base::OnceCallback<void(base::File::Error)> signin_callback,
     std::optional<const gfx::Image> thumbnail) {
-  switch (file_type) {
-    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload: {
+  switch (trigger) {
+    case local_user_files::UploadTrigger::kDownload: {
       message_center::RichNotificationData rich_notification_data;
       rich_notification_data.should_make_spoken_feedback_for_popup_updates =
           false;
@@ -146,7 +146,7 @@ void ShowSignInNotification(
 
       break;
     }
-    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture: {
+    case local_user_files::UploadTrigger::kScreenCapture: {
       message_center::RichNotificationData rich_notification_data;
       rich_notification_data.vector_small_image = &ash::kCaptureModeIcon;
       if (thumbnail.has_value()) {
@@ -190,7 +190,7 @@ void ShowSignInNotification(
 
       break;
     }
-    case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration: {
+    case local_user_files::UploadTrigger::kMigration: {
       message_center::RichNotificationData optional_fields;
       optional_fields.never_timeout = true;
       auto notification = ash::CreateSystemNotificationPtr(

@@ -39,6 +39,14 @@ enum class MigrationUploadError {
   kCancelled,           // Upload explicitly cancelled.
 };
 
+// The event or action that triggers an upload to the cloud.
+enum class UploadTrigger {
+  kDownload = 0,
+  kScreenCapture = 1,
+  kMigration = 2,
+  kMaxValue = kMigration,
+};
+
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
 bool LocalUserFilesAllowed();

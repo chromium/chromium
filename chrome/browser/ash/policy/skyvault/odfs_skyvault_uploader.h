@@ -19,6 +19,7 @@
 namespace ash::cloud_upload {
 
 using policy::local_user_files::MigrationUploadError;
+using policy::local_user_files::UploadTrigger;
 
 // Uploads the file to Microsoft OneDrive and calls the `upload_callback_` with
 // the result of the file upload, which is when `OdfsSkyvaultUploader` goes out
@@ -31,14 +32,6 @@ class OdfsSkyvaultUploader
   using UploadDoneCallback =
       base::OnceCallback<void(storage::FileSystemURL,
                               std::optional<MigrationUploadError>)>;
-  // Type of the file to be uploaded to OneDrive whether it's a downloaded file
-  // or a screencapture file, ...etc.
-  enum class FileType {
-    kDownload = 0,
-    kScreenCapture = 1,
-    kMigration = 2,
-    kMaxValue = kMigration,
-  };
 
   // Uploads the file at `path` to the OneDrive root directory.
   //
@@ -55,7 +48,7 @@ class OdfsSkyvaultUploader
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
-      FileType file_type,
+      UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
       base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
       std::optional<const gfx::Image> thumbnail = std::nullopt);
@@ -82,7 +75,7 @@ class OdfsSkyvaultUploader
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
-      FileType file_type,
+      UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
       UploadDoneCallback upload_callback,
       const base::FilePath& target_path);
@@ -100,7 +93,7 @@ class OdfsSkyvaultUploader
   OdfsSkyvaultUploader(Profile* profile,
                        int64_t id,
                        const storage::FileSystemURL& file_system_url,
-                       FileType file_type,
+                       UploadTrigger trigger,
                        base::RepeatingCallback<void(int64_t)> progress_callback,
                        std::optional<const gfx::Image> thumbnail);
   ~OdfsSkyvaultUploader() override;
@@ -152,8 +145,8 @@ class OdfsSkyvaultUploader
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
 
-  // The type of the file to be uploaded.
-  FileType file_type_;
+  // The event or action that initiated the file upload.
+  const UploadTrigger trigger_;
 
   // Progress callback repeatedly run with progress updates.
   base::RepeatingCallback<void(int64_t)> progress_callback_;

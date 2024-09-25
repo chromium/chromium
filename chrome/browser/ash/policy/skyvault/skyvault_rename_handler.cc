@@ -111,7 +111,7 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
     case CloudProvider::kOneDrive:
       ash::cloud_upload::OdfsSkyvaultUploader::Upload(
           profile_, download_item_->GetTargetFilePath(),
-          ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,
+          policy::local_user_files::UploadTrigger::kDownload,
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),
           base::BindOnce(&SkyvaultRenameHandler::OnOneDriveUploadDone,

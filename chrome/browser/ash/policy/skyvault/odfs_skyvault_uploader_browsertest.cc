@@ -22,6 +22,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 using policy::local_user_files::SkyvaultOneDriveTest;
+using policy::local_user_files::UploadTrigger;
 
 namespace ash::cloud_upload {
 
@@ -62,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), true);
 
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUploadWithTarget) {
       std::optional<policy::local_user_files::MigrationUploadError>>
       upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kMigration,
+      profile(), source_file_path, UploadTrigger::kMigration,
       progress_callback.Get(), upload_callback.GetCallback(),
       base::FilePath(target_path));
 
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, CancelledUpload) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   base::WeakPtr<OdfsSkyvaultUploader> uploader = OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   uploader->Cancel();
   EXPECT_EQ(upload_callback.Get<bool>(), false);
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailToUploadDueToMemoryError) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), false);
 
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   added_run_loop.Run();
 
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   added_run_loop.Run();
 
