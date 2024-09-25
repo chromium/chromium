@@ -123,7 +123,8 @@ VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue)) {
+    for (auto* effect :
+         delegate->GetAvailableEffects(VcEffectType::kSetValue)) {
       effects.push_back(effect);
     }
   }
@@ -136,7 +137,7 @@ VideoConferenceTrayEffectsManager::GetToggleEffects() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    for (auto* effect : delegate->GetAvailableEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
     }
   }
@@ -226,7 +227,7 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
 
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
-    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    for (auto* effect : delegate->GetAvailableEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
     }
   }
@@ -243,7 +244,7 @@ void VideoConferenceTrayEffectsManager::RemoveTileControllers(
   if (!features::IsVcDlcUiEnabled()) {
     return;
   }
-  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+  for (auto* effect : delegate->GetAllEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     if (base::Contains(controller_for_effect_id_, id)) {
       controller_for_effect_id_.erase(id);
