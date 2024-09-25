@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/profile/profile_controller.h"
 
+#import "ios/chrome/app/profile/post_restore_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
@@ -65,6 +66,7 @@
   [_state addAgent:[[DiscoverFeedProfileAgent alloc] init]];
 
   [_state addAgent:[[ProfileActivityProfileAgent alloc] init]];
+  [_state addAgent:[[PostRestoreProfileAgent alloc] init]];
 }
 
 @end

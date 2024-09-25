@@ -34,8 +34,29 @@ source_set("profile_controller") {
   deps = [
     ":profile",
     "//base",
+    "//ios/chrome/app/profile:post_restore_profile_agent",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
+  ]
+}
+
+source_set("post_restore_profile_agent") {
+  sources = [
+    "post_restore_profile_agent.h",
+    "post_restore_profile_agent.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:signin_util",
   ]
 }
 
@@ -43,18 +64,35 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "observing_profile_agent_unittest.mm",
+    "post_restore_profile_agent_unittest.mm",
     "profile_controller_unittest.mm",
     "profile_state_unittest.mm",
     "scene_observing_profile_agent_unittest.mm",
   ]
   deps = [
+    ":post_restore_profile_agent",
     ":profile",
     ":profile_controller",
     "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile/test:test_support",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

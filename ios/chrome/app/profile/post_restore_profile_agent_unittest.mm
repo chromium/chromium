@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/post_restore_app_agent.h"
+#import "ios/chrome/app/profile/post_restore_profile_agent.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/values.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -25,62 +25,58 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 using ::testing::_;
-using ::testing::AnyNumber;
 using testing::NiceMock;
 
 namespace {
+
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
+
+// Creates a mock PromosManager.
+std::unique_ptr<KeyedService> CreateMockPromosManager(
+    web::BrowserState* context) {
+  return std::make_unique<NiceMock<MockPromosManager>>();
+}
+
 }  // namespace
 
-// Tests the PostRestoreAppAgent.
-class PostRestoreAppAgentTest : public PlatformTest {
+// Tests the PostRestoreProfileAgent.
+class PostRestoreProfileAgentTest : public PlatformTest {
  public:
-  explicit PostRestoreAppAgentTest() { CreateAppAgent(); }
-
-  void CreateAppAgent() {
-    app_agent_ =
-        [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
-                                     authenticationService:CreateAuthService()
-                                           identityManager:GetIdentityManager()
-                                               prefService:pref_service()];
-    mockAppState_ = OCMClassMock([AppState class]);
-    [app_agent_ setAppState:mockAppState_];
-  }
-
-  MockPromosManager* CreatePromosManager() {
-    promos_manager_ = std::make_unique<NiceMock<MockPromosManager>>();
-
-    return promos_manager_.get();
-  }
-
-  AuthenticationService* CreateAuthService() {
+  explicit PostRestoreProfileAgentTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
+                              base::BindOnce(&CreateMockPromosManager));
     browser_state_ = std::move(builder).Build();
+
+    promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
+        PromosManagerFactory::GetForProfile(browser_state_.get()));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    return auth_service_;
+        AuthenticationServiceFactory::GetForProfile(browser_state_.get());
+
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_.profile = browser_state_.get();
+
+    profile_agent_ = [[PostRestoreProfileAgent alloc] init];
+    [profile_state_ addAgent:profile_agent_];
   }
 
-  signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser_state_.get());
-  }
+  void TriggerProfileStateChange() {
+    [profile_agent_ profileState:profile_state_
+        didTransitionToInitStage:ProfileInitStage::InitStageProfileLoaded
+                   fromInitStage:ProfileInitStage::InitStageLoadProfile];
 
-  void MockAppStateChange(InitStage initStage) {
-    OCMStub([mockAppState_ initStage]).andReturn(initStage);
-    [app_agent_ appState:mockAppState_
-        didTransitionFromInitStage:InitStageStart];
+    [profile_agent_ profileState:profile_state_
+        didTransitionToInitStage:ProfileInitStage::InitStageFinal
+                   fromInitStage:ProfileInitStage::InitStageNormalUI];
   }
 
   void SetFakePreRestoreAccountInfo() {
@@ -107,52 +103,47 @@ class PostRestoreAppAgentTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<MockPromosManager> promos_manager_;
+  raw_ptr<NiceMock<MockPromosManager>> promos_manager_;
   raw_ptr<AuthenticationService> auth_service_;
-  id mockAppState_;
-  PostRestoreAppAgent* app_agent_;
+  PostRestoreProfileAgent* profile_agent_;
+  ProfileState* profile_state_;
 };
 
-// Tests the logic of whether a promo should be registered.
-TEST_F(PostRestoreAppAgentTest, MaybeRegisterPromo) {
+// Tests the logic of whether a promo should be registered when there is no pre
+// restore info.
+TEST_F(PostRestoreProfileAgentTest, MaybeRegisterPromo) {
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
       .Times(0);
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(_))
       .Times(0);
 
-  // Scenarios which should not register a promo.
+  // Scenario which should not register a promo.
   ClearPreRestoreIdentity(pref_service());
-  MockAppStateChange(InitStageFinal);
-
-  SetFakePreRestoreAccountInfo();
-  MockAppStateChange(InitStageFinal);
-
-  ClearPreRestoreIdentity(pref_service());
-  MockAppStateChange(InitStageFinal);
+  TriggerProfileStateChange();
 }
 
 // Tests that the alert promo is registered.
-TEST_F(PostRestoreAppAgentTest, RegisterPromoAlert) {
+TEST_F(PostRestoreProfileAgentTest, RegisterPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::PostRestoreSignInAlert))
       .Times(1);
 
   SetFakePreRestoreAccountInfo();
-  MockAppStateChange(InitStageFinal);
+  TriggerProfileStateChange();
 }
 
 // Tests that the reauth prompt is disabled.
-TEST_F(PostRestoreAppAgentTest, RegisterPromoDisablesReauthPrompt) {
+TEST_F(PostRestoreProfileAgentTest, RegisterPromoDisablesReauthPrompt) {
   SetFakePreRestoreAccountInfo();
   auth_service_->SetReauthPromptForSignInAndSync();
   EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
-  MockAppStateChange(InitStageFinal);
+  TriggerProfileStateChange();
   EXPECT_FALSE(auth_service_->ShouldReauthPromptForSignInAndSync());
 }
 
 // Tests that the alert promo is deregistered with the right conditions.
-TEST_F(PostRestoreAppAgentTest, DeregisterPromoAlert) {
+TEST_F(PostRestoreProfileAgentTest, DeregisterPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
   EXPECT_CALL(*promos_manager_.get(),
               DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
@@ -160,13 +151,13 @@ TEST_F(PostRestoreAppAgentTest, DeregisterPromoAlert) {
 
   SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(pref_service());
-  MockAppStateChange(InitStageFinal);
+  TriggerProfileStateChange();
 }
 
 // Tests that if a signin occurs, the promo is deregistered.
-TEST_F(PostRestoreAppAgentTest, DeregisterPromoOnSignin) {
+TEST_F(PostRestoreProfileAgentTest, DeregisterPromoOnSignin) {
   SetFakePreRestoreAccountInfo();
-  MockAppStateChange(InitStageFinal);
+  TriggerProfileStateChange();
 
   EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
   EXPECT_CALL(*promos_manager_.get(),

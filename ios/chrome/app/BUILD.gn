@@ -73,7 +73,6 @@ source_set("unit_tests") {
   sources = [
     "app_metrics_app_state_agent_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
-    "post_restore_app_agent_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
     "variations_app_state_agent_unittest.mm",
@@ -82,7 +81,6 @@ source_set("unit_tests") {
     ":app",
     ":app_internal",
     ":app_metrics_app_state_agent",
-    ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     ":variations_app_state_agent",
     "//base",
@@ -125,10 +123,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
-    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/main",
@@ -419,25 +413,6 @@ source_set("docking_promo_app_agent") {
   ]
 }
 
-source_set("post_restore_app_agent") {
-  sources = [
-    "post_restore_app_agent.h",
-    "post_restore_app_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager/objc",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/browser/promos_manager/model",
-    "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/signin/model:signin_util",
-  ]
-}
-
 source_set("search_engine_choice_app_agent") {
   sources = [
     "search_engine_choice_app_agent.h",
@@ -502,7 +477,6 @@ source_set("app_internal") {
     ":identity_confirmation_app_agent",
     ":launch_screen_ui",
     ":mode",
-    ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     ":search_engine_choice_app_agent",
     ":tests_hook",

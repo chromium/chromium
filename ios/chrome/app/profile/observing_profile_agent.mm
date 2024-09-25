@@ -20,8 +20,8 @@
 }
 
 - (void)setProfileState:(ProfileState*)profileState {
-  // This should only be called once!
-  DCHECK(!_profileState);
+  // This should only be called once with a non nil value!
+  DCHECK(!_profileState || !profileState);
   _profileState = profileState;
   [profileState addObserver:self];
 }

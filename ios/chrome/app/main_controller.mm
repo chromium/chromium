@@ -53,7 +53,6 @@
 #import "ios/chrome/app/identity_confirmation_app_agent.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
-#import "ios/chrome/app/post_restore_app_agent.h"
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -101,7 +100,6 @@
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/profile/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
@@ -132,7 +130,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
@@ -561,25 +558,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
   //
   // TODO(crbug.com/40190949): Stop watching for a crash if this is a background
   // fetch.
-  if (_appState.userInteracted)
+  if (_appState.userInteracted) {
     GetApplicationContext()->GetMetricsService()->OnAppEnterForeground();
+  }
 
   web::WebUIIOSControllerFactory::RegisterFactory(
       ChromeWebUIIOSControllerFactory::GetInstance());
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
-
-  // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
-  ProfileIOS* profile = defaultProfile.state.profile;
-  [self.appState
-      addAgent:[[PostRestoreAppAgent alloc]
-                   initWithPromosManager:PromosManagerFactory::
-                                             GetForBrowserState(profile)
-                   authenticationService:AuthenticationServiceFactory::
-                                             GetForBrowserState(profile)
-                         identityManager:IdentityManagerFactory::GetForProfile(
-                                             profile)
-                             prefService:profile->GetPrefs()]];
 
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {
