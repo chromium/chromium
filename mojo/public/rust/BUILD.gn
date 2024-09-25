@@ -77,6 +77,9 @@ rust_static_library("mojo_system") {
   inputs = bindgen_output
   rustenv = [ "BINDGEN_RS_FILE=" +
               rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
+
+  # TODO(crbug.com/369430130): reenable this warning.
+  rustflags = [ "-Aimproper-ctypes" ]
 }
 
 rust_static_library("mojo_system_test_support") {
