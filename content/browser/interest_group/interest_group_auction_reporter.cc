@@ -1241,8 +1241,7 @@ bool InterestGroupAuctionReporter::CheckReportUrl(const GURL& url) {
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
                browser_context_, url::Origin::Create(url),
-               PrivacySandboxInvokingAPI::kProtectedAudience,
-               /*post_impression_reporting=*/false)) {
+               PrivacySandboxInvokingAPI::kProtectedAudience)) {
     errors_.push_back(base::StringPrintf(
         "The reporting destination %s is not attested for Protected Audience.",
         url.spec().c_str()));

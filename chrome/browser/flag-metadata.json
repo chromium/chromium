@@ -3224,11 +3224,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-fenced-frames-reporting-attestations-changes",
-    "owners": [ "lbrady@google.com", "shivanisha@chromium.org", "xiaochenzh@chromium.org", "chrome-fenced-frames-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-fingerprinting-protection-blocklist",
     "owners": [
       "rizvis@google.com",

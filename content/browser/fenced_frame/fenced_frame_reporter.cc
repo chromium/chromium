@@ -640,19 +640,11 @@ bool FencedFrameReporter::SendReportInternal(
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
                browser_context_, url::Origin::Create(destination_url),
-               invoking_api_, /*post_impression_reporting=*/true)) {
-    error_message = base::StrCat({
-        "The reporting destination '",
-        ReportingDestinationAsString(reporting_destination),
-        "' is not attested for '",
-        InvokingAPIAsString(invoking_api_),
-        "'",
-        (base::FeatureList::IsEnabled(
-             blink::features::kFencedFramesReportingAttestationsChanges) &&
-         invoking_api_ == PrivacySandboxInvokingAPI::kProtectedAudience)
-            ? " or 'Attribution Reporting'."
-            : ".",
-    });
+               invoking_api_)) {
+    error_message = base::StrCat(
+        {"The reporting destination '",
+         ReportingDestinationAsString(reporting_destination),
+         "' is not attested for '", InvokingAPIAsString(invoking_api_), "'"});
     console_message_level = blink::mojom::ConsoleMessageLevel::kError;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;

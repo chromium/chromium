@@ -121,8 +121,7 @@ bool AreAllowedReportingOriginsAttested(
              ->browser()
              ->IsPrivacySandboxReportingDestinationAttested(
                  browser_context, origin,
-                 PrivacySandboxInvokingAPI::kProtectedAudience,
-                 /*post_impression_reporting=*/true)) {
+                 PrivacySandboxInvokingAPI::kProtectedAudience)) {
       return false;
     }
   }

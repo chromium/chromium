@@ -8206,14 +8206,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFencedFramesDeveloperModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFramesDefaultMode)},
 
-    {"enable-fenced-frames-reporting-attestations-changes",
-     flag_descriptions::kEnableFencedFramesReportingAttestationsChangeName,
-     flag_descriptions::
-         kEnableFencedFramesReportingAttestationsChangeDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kFencedFramesReportingAttestationsChanges)},
-
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},

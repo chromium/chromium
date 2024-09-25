@@ -840,12 +840,6 @@ const base::FeatureParam<double> kMinimumEntropyForLCP{
 // trials.
 BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Relax the attestation requirement of post-impression beacons from Protected
-// Audience only to either Protected Audience or Attribution Reporting.
-BASE_FEATURE(kFencedFramesReportingAttestationsChanges,
-             "FencedFramesReportingAttestationsChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable sending event-level reports through reportEvent() in cross-origin
 // subframes. This requires opt-in both from the cross-origin subframe that is
 // sending the beacon as well as the document that contains information about

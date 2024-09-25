@@ -479,9 +479,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFencedFramesCrossOriginEventReportingAllTraffic);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFencedFramesReportingAttestationsChanges);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFencedFramesAutomaticBeaconCredentials);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
