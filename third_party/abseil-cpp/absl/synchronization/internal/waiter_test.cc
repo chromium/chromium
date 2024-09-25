@@ -32,10 +32,6 @@
 #include "absl/time/time.h"
 #include "gtest/gtest.h"
 
-#ifdef ABSL_INTERNAL_HAVE_WIN32_WAITER
-#include <windows.h>
-#endif
-
 // Test go/btm support by randomizing the value of clock_gettime() for
 // CLOCK_MONOTONIC. This works by overriding a weak symbol in glibc.
 // We should be resistant to this randomization when !SupportsSteadyClock().
@@ -56,42 +52,6 @@ extern "C" int clock_gettime(clockid_t c, struct timespec* ts) {
   return __clock_gettime(c, ts);
 }
 #endif
-
-#ifdef ABSL_INTERNAL_HAVE_WIN32_WAITER
-// Returns the "interrupt time bias" from KUSER_SHARED_DATA, which is in units
-// of 100ns.
-static uint64_t GetSuspendTime() {
-  return *reinterpret_cast<uint64_t volatile*>(
-      0x7FFE0000 /* KUSER_SHARED_DATA */ + 0x3B0);
-}
-
-// Like GetTickCount(), but excludes suspend time.
-static unsigned int GetTickCountExcludingSuspend() {
-  unsigned int result;
-  uint64_t prev_bias;
-  uint64_t bias = GetSuspendTime();
-  do {
-    prev_bias = bias;
-    result = GetTickCount();
-    bias = GetSuspendTime();
-  } while (bias != prev_bias);
-  return result - bias / 10000;
-}
-#endif
-
-struct BenchmarkTime {
-  absl::Time time;
-  absl::Time vtime;
-};
-
-static BenchmarkTime BenchmarkNow() {
-  absl::Time now = absl::Now();
-  absl::Time vnow = now;
-#ifdef ABSL_INTERNAL_HAVE_WIN32_WAITER
-  vnow = absl::UnixEpoch() + absl::Milliseconds(GetTickCountExcludingSuspend());
-#endif
-  return {now, vnow};
-}
 
 namespace {
 
@@ -126,10 +86,10 @@ TYPED_TEST_P(WaiterTest, WaitNoTimeout) {
     absl::SleepFor(absl::Seconds(1));
     waiter.Post();
   });
-  BenchmarkTime start = BenchmarkNow();
+  absl::Time start = absl::Now();
   EXPECT_TRUE(
       waiter.Wait(absl::synchronization_internal::KernelTimeout::Never()));
-  absl::Duration waited = BenchmarkNow().vtime - start.vtime;
+  absl::Duration waited = absl::Now() - start;
   EXPECT_GE(waited, WithTolerance(absl::Seconds(2)));
 }
 
@@ -143,10 +103,10 @@ TYPED_TEST_P(WaiterTest, WaitDurationWoken) {
     absl::SleepFor(absl::Milliseconds(500));
     waiter.Post();
   });
-  BenchmarkTime start = BenchmarkNow();
+  absl::Time start = absl::Now();
   EXPECT_TRUE(waiter.Wait(
       absl::synchronization_internal::KernelTimeout(absl::Seconds(10))));
-  absl::Duration waited = BenchmarkNow().vtime - start.vtime;
+  absl::Duration waited = absl::Now() - start;
   EXPECT_GE(waited, WithTolerance(absl::Milliseconds(500)));
   EXPECT_LT(waited, absl::Seconds(2));
 }
@@ -161,30 +121,30 @@ TYPED_TEST_P(WaiterTest, WaitTimeWoken) {
     absl::SleepFor(absl::Milliseconds(500));
     waiter.Post();
   });
-  BenchmarkTime start = BenchmarkNow();
+  absl::Time start = absl::Now();
   EXPECT_TRUE(waiter.Wait(absl::synchronization_internal::KernelTimeout(
-      start.time + absl::Seconds(10))));
-  absl::Duration waited = BenchmarkNow().vtime - start.vtime;
+      start + absl::Seconds(10))));
+  absl::Duration waited = absl::Now() - start;
   EXPECT_GE(waited, WithTolerance(absl::Milliseconds(500)));
   EXPECT_LT(waited, absl::Seconds(2));
 }
 
 TYPED_TEST_P(WaiterTest, WaitDurationReached) {
   TypeParam waiter;
-  BenchmarkTime start = BenchmarkNow();
+  absl::Time start = absl::Now();
   EXPECT_FALSE(waiter.Wait(
       absl::synchronization_internal::KernelTimeout(absl::Milliseconds(500))));
-  absl::Duration waited = BenchmarkNow().vtime - start.vtime;
+  absl::Duration waited = absl::Now() - start;
   EXPECT_GE(waited, WithTolerance(absl::Milliseconds(500)));
   EXPECT_LT(waited, absl::Seconds(1));
 }
 
 TYPED_TEST_P(WaiterTest, WaitTimeReached) {
   TypeParam waiter;
-  BenchmarkTime start = BenchmarkNow();
+  absl::Time start = absl::Now();
   EXPECT_FALSE(waiter.Wait(absl::synchronization_internal::KernelTimeout(
-      start.time + absl::Milliseconds(500))));
-  absl::Duration waited = BenchmarkNow().vtime - start.vtime;
+      start + absl::Milliseconds(500))));
+  absl::Duration waited = absl::Now() - start;
   EXPECT_GE(waited, WithTolerance(absl::Milliseconds(500)));
   EXPECT_LT(waited, absl::Seconds(1));
 }

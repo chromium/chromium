@@ -2841,7 +2841,6 @@ class raw_hash_set {
       :  // Hash, equality and allocator are copied instead of moved because
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
-         // TODO(b/296061262): move instead of copying hash/eq/alloc.
          // Note: we avoid using exchange for better generated code.
         settings_(PolicyTraits::transfer_uses_memcpy() || !that.is_full_soo()
                       ? std::move(that.common())
@@ -3831,7 +3830,6 @@ class raw_hash_set {
     destructor_impl();
     move_common(that.is_full_soo(), that.alloc_ref(), common(),
                 std::move(that.common()));
-    // TODO(b/296061262): move instead of copying hash/eq/alloc.
     hash_ref() = that.hash_ref();
     eq_ref() = that.eq_ref();
     CopyAlloc(alloc_ref(), that.alloc_ref(),
@@ -3870,7 +3868,6 @@ class raw_hash_set {
     // We can't take over that's memory so we need to move each element.
     // While moving elements, this should have that's hash/eq so copy hash/eq
     // before moving elements.
-    // TODO(b/296061262): move instead of copying hash/eq.
     hash_ref() = that.hash_ref();
     eq_ref() = that.eq_ref();
     return move_elements_allocs_unequal(std::move(that));
