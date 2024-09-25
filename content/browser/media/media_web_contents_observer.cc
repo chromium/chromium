@@ -138,6 +138,7 @@ MediaWebContentsObserver::MediaWebContentsObserver(
 MediaWebContentsObserver::~MediaWebContentsObserver() = default;
 
 void MediaWebContentsObserver::WebContentsDestroyed() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   use_after_free_checker_.check();
   AudioStreamMonitor* audio_stream_monitor =
       web_contents_impl()->audio_stream_monitor();
@@ -162,6 +163,7 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
 
 void MediaWebContentsObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   use_after_free_checker_.check();
 
   GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
@@ -249,6 +251,10 @@ void MediaWebContentsObserver::MaybeUpdateAudibleState() {
 }
 
 bool MediaWebContentsObserver::HasActiveEffectivelyFullscreenVideo() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(!fullscreen_player_.has_value() ||
+        picture_in_picture_allowed_in_fullscreen_.has_value());
   if (!web_contents()->IsFullscreen() || !fullscreen_player_)
     return false;
 
@@ -261,7 +267,10 @@ bool MediaWebContentsObserver::HasActiveEffectivelyFullscreenVideo() const {
 
 bool MediaWebContentsObserver::IsPictureInPictureAllowedForFullscreenVideo()
     const {
-  DCHECK(picture_in_picture_allowed_in_fullscreen_.has_value());
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(fullscreen_player_.has_value());
+  CHECK(picture_in_picture_allowed_in_fullscreen_.has_value());
 
   return *picture_in_picture_allowed_in_fullscreen_;
 }
@@ -542,6 +551,10 @@ void MediaWebContentsObserver::OnMediaMetadataChanged(
 void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
     const MediaPlayerId& player_id,
     blink::WebFullscreenVideoStatus fullscreen_status) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(!fullscreen_player_.has_value() ||
+        picture_in_picture_allowed_in_fullscreen_.has_value());
   switch (fullscreen_status) {
     case blink::WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled:
       fullscreen_player_ = player_id;
