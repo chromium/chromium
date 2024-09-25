@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -815,13 +816,51 @@ const CGFloat kMenuSymbolSize = 18;
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = 14;
 
+  // Presenting the bottom sheet adds a gesture recognizer on the main window
+  // which in turn causes the touches on Lens Overlay to get canceled.
+  // To prevent such a behavior, extract the recognizers added as a consequence
+  // of presenting and allow touches to be delivered to views.
+  __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
+      [self panGestureRecognizersOnWindow];
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
       presentViewController:_resultViewController
                    animated:YES
                  completion:^{
                    [weakSelf adjustSelectionOcclusionInsets];
+                   [weakSelf handlePanRecognizersAddedAfter:
+                                 panRecognizersBeforePresenting];
                  }];
+}
+
+- (NSSet<UIPanGestureRecognizer*>*)panGestureRecognizersOnWindow {
+  NSMutableSet<UIPanGestureRecognizer*>* panRecognizersOnWindow =
+      [[NSMutableSet alloc] init];
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!sceneWindow) {
+    return panRecognizersOnWindow;
+  }
+
+  for (UIGestureRecognizer* recognizer in sceneWindow.gestureRecognizers) {
+    if (recognizer &&
+        [recognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+      [panRecognizersOnWindow addObject:(UIPanGestureRecognizer*)recognizer];
+    }
+  }
+
+  return panRecognizersOnWindow;
+}
+
+// Allow touches from gesture recognizers added by UIKit as a consequence of
+// presenting a view controller.
+- (void)handlePanRecognizersAddedAfter:
+    (NSSet<UIGestureRecognizer*>*)panRecognizersBeforePresenting {
+  NSMutableSet<UIGestureRecognizer*>* panRecognizersAfterPresenting =
+      [[self panGestureRecognizersOnWindow] mutableCopy];
+  [panRecognizersAfterPresenting minusSet:panRecognizersBeforePresenting];
+  for (UIGestureRecognizer* recognizer in panRecognizersAfterPresenting) {
+    recognizer.cancelsTouchesInView = NO;
+  }
 }
 
 @end
