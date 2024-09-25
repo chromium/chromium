@@ -777,17 +777,10 @@ void MultiDeviceSection::AddLoadTimeData(
       "isSmartLockSignInRemoved",
       base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved));
 
-  if (base::FeatureList::IsEnabled(features::kPhoneHubAppStreamingBetaBadge)) {
-    html_source->AddString(
-        "multidevicePhoneHubAppsItemTitle",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_BETA_TITLE));
-  } else {
-    html_source->AddString(
-        "multidevicePhoneHubAppsItemTitle",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
-  }
+  html_source->AddString(
+      "multidevicePhoneHubAppsItemTitle",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
 
   html_source->AddBoolean("isQuickShareV2Enabled",
                           chromeos::features::IsQuickShareV2Enabled());

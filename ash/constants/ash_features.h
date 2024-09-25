@@ -793,8 +793,6 @@ extern const base::FeatureParam<base::TimeDelta>
     kPhoneHubCameraRollThrottleInterval;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubFeatureSetupErrorHandling);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kPhoneHubAppStreamingBetaBadge);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPhoneHubCallNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubMonochromeNotificationIcons);

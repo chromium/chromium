@@ -2458,11 +2458,6 @@ BASE_FEATURE(kPhoneHubFeatureSetupErrorHandling,
              "PhoneHubFeatureSetupErrorHandling",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Determine should we display Beta badge for Eche.
-BASE_FEATURE(kPhoneHubAppStreamingBetaBadge,
-             "kPhoneHubAppStreamingBetaBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the incoming/ongoing call notification feature in Phone Hub.
 BASE_FEATURE(kPhoneHubCallNotification,
              "PhoneHubCallNotification",
