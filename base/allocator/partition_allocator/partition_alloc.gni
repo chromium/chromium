@@ -27,8 +27,15 @@ if (is_nacl) {
   assert(false, "Unknown CPU: $current_cpu")
 }
 
-# Increases the size of the empty slot span ring.
-use_large_empty_slot_span_ring = is_mac
+# Makes the number of empty slot spans that can remain committed larger in
+# foreground mode compared to background mode
+# (see `PartitionRoot::AdjustFor(Background|Foreground)`).
+#
+# Foreground/background modes are used by default on macOS so this must be
+# true on that platform. It's also true on other platforms to allow experiments.
+#
+# TODO(crbug.com/329199197): Clean this up when experiments are complete.
+use_large_empty_slot_span_ring = true
 
 has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)

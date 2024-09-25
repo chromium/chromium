@@ -348,8 +348,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   ReadOnlySuperPageExtentEntry* first_extent = nullptr;
   ReadOnlyDirectMapExtent* direct_map_list
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
-  ReadOnlySlotSpanMetadata*
-      global_empty_slot_span_ring[internal::kMaxFreeableSpans] PA_GUARDED_BY(
+  ReadOnlySlotSpanMetadata* global_empty_slot_span_ring
+      [internal::kMaxEmptySlotSpanRingSize] PA_GUARDED_BY(
           internal::PartitionRootLock(this)) = {};
   int16_t global_empty_slot_span_ring_index
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = 0;
@@ -609,7 +609,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   void EnableLargeEmptySlotSpanRing() {
     ::partition_alloc::internal::ScopedGuard locker{
         internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size = internal::kMinFreeableSpans;
+    global_empty_slot_span_ring_size =
+        internal::kBackgroundEmptySlotSpanRingSize;
   }
 
   void DumpStats(const char* partition_name,
@@ -823,18 +824,20 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     max_empty_slot_spans_dirty_bytes_shift = 2;
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size = internal::kMaxFreeableSpans;
+    global_empty_slot_span_ring_size =
+        internal::kForegroundEmptySlotSpanRingSize;
   }
 
   void AdjustForBackground() {
     max_empty_slot_spans_dirty_bytes_shift = 3;
-    // ShrinkEmptySlotSpansRing() will iterate through kMaxFreeableSpans, so
-    // no need to for this to free any empty pages now.
+    // ShrinkEmptySlotSpansRing() will iterate through
+    // kMaxEmptySlotSpanRingSize, so no need to free empty pages now.
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size = internal::kMinFreeableSpans;
+    global_empty_slot_span_ring_size =
+        internal::kBackgroundEmptySlotSpanRingSize;
     if (global_empty_slot_span_ring_index >=
-        static_cast<int16_t>(internal::kMinFreeableSpans)) {
+        static_cast<int16_t>(internal::kBackgroundEmptySlotSpanRingSize)) {
       global_empty_slot_span_ring_index = 0;
     }
   }

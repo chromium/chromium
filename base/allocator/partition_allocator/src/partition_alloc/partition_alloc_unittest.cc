@@ -2392,7 +2392,7 @@ TEST_P(PartitionAllocTest, FreeCache) {
 
   // Also check that a slot span that is bouncing immediately between empty and
   // used does not get freed.
-  for (size_t i = 0; i < kMaxFreeableSpans * 2; ++i) {
+  for (size_t i = 0; i < kMaxEmptySlotSpanRingSize * 2; ++i) {
     ptr = allocator.root()->Alloc(big_size, type_name);
     EXPECT_TRUE(slot_span->get_freelist_head());
     allocator.root()->Free(ptr);
@@ -5488,7 +5488,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
 
   // Constants used here don't work with USE_LARGE_EMPTY_SLOT_SPAN_RING.
 #if !PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
-  constexpr size_t single_slot_too_many_count = kMaxFreeableSpans + 10;
+  constexpr size_t single_slot_too_many_count = kMaxEmptySlotSpanRingSize + 10;
   for (size_t i = 0; i < single_slot_too_many_count; i++) {
     void* ptr = root->Alloc(single_slot_size);
     single_slot_allocated_memory.push_back(ptr);
@@ -5501,7 +5501,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
 
   // Overflow still works.
   EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
-            kMaxFreeableSpans * bucket_size);
+            kMaxEmptySlotSpanRingSize * bucket_size);
 #endif
 }
 
@@ -5888,7 +5888,7 @@ TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
   // global_empty_slot_span_ring_index to one less than max.
   allocator.root()->AdjustForForeground();
   allocator.root()->SetGlobalEmptySlotSpanRingIndexForTesting(
-      internal::kMaxFreeableSpans - 1);
+      internal::kMaxEmptySlotSpanRingSize - 1);
 
   // Switch to the smaller size, allocate, free, and clear the empty cache.
   allocator.root()->AdjustForBackground();
