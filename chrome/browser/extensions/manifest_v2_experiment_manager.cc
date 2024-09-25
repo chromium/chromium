@@ -74,12 +74,6 @@ constexpr PrefMap kMV2DeprecationExtensionDisabledAcknowledgedPref = {
     "mv2_deprecation_disabled_ack", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
-// Stores the bit for whether the user has acknowledged the MV2 deprecation
-// notice for a given extension in the unsupported stage.
-constexpr PrefMap kMV2DeprecationExtensionUnsupportedAcknowledgedPref = {
-    "mv2_deprecation_unsupported_ack", PrefType::kBool,
-    PrefScope::kExtensionSpecific};
-
 // Stores a bit for whether the extension has been disabled as part of the
 // MV2 deprecation.
 constexpr PrefMap kMV2DeprecationDidDisablePref = {
@@ -180,7 +174,7 @@ PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
     case MV2ExperimentStage::kDisableWithReEnable:
       return kMV2DeprecationExtensionDisabledAcknowledgedPref;
     case MV2ExperimentStage::kUnsupported:
-      return kMV2DeprecationExtensionUnsupportedAcknowledgedPref;
+      NOTREACHED();
   }
 }
 
@@ -335,7 +329,9 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
 bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
     const ExtensionId& extension_id) {
   // There is no notice for kNone stage, thus it cannot be acknowledged.
-  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+  // The notice cannot be acknowledged in kUnsupported stage.
+  if (experiment_stage_ == MV2ExperimentStage::kNone ||
+      experiment_stage_ == MV2ExperimentStage::kUnsupported) {
     return false;
   }
 
