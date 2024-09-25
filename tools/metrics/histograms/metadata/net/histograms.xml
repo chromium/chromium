@@ -5314,7 +5314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.RstStreamReceived" enum="Http2WireErrorCodes"
-    expires_after="2024-10-06">
+    expires_after="2025-09-23">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5369,8 +5369,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyStreamsAbandonedPerSession" units="units"
-    expires_after="2024-10-06">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-09-23">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The number of pushed, but abandoned streams over a single session.
@@ -5378,8 +5378,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyStreamsPerSession" units="units"
-    expires_after="2024-10-06">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-09-23">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The number of streams issued over a single session.</summary>
 </histogram>
