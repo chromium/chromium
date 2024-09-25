@@ -81,8 +81,9 @@
   }
 
   #warnings {
-    color: var(--error-color);
+    display: flex;
     flex: 1;
+    flex-direction: row;
     margin-bottom: 8px;
   }
 
@@ -92,15 +93,14 @@
   }
 
   .message-icon {
+    color: var(--error-color);
     height: 18px;
     margin-inline-end: 4px;
     vertical-align: top;
     width: 18px;
+    flex-shrink: 0
   }
 
-  #warnings .message-icon {
-    --iron-icon-fill-color: var(--error-color);
-  }
 
   #allowlist-warning .message-icon {
     --iron-icon-fill-color: var(--warning-color);
@@ -228,14 +228,16 @@
       <template is="dom-if"
           if="[[showSevereWarnings(data.disableReasons.*, data.*)]]">
         <div id="warnings">
-          <cr-icon class="message-icon" icon="cr:error"></cr-icon>
-          <span id="runtime-warnings" aria-describedby="a11yAssociation"
+          <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
+          <span id="runtime-warnings" class="cr-secondary-text"
+              aria-describedby="a11yAssociation"
               hidden$="[[!data.runtimeWarnings.length]]">
             <template is="dom-repeat" items="[[data.runtimeWarnings]]">
               [[item]]
             </template>
           </span>
-          <span id="suspicious-warning" aria-describedby="a11yAssociation"
+          <span id="suspicious-warning" class="cr-secondary-text"
+              aria-describedby="a11yAssociation"
               hidden$="[[!data.disableReasons.suspiciousInstall]]">
             $i18n{itemSuspiciousInstall}
             <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
@@ -243,11 +245,13 @@
               $i18n{learnMore}
             </a>
           </span>
-          <span id="corrupted-warning" aria-describedby="a11yAssociation"
+          <span id="corrupted-warning" class="cr-secondary-text"
+              aria-describedby="a11yAssociation"
               hidden$="[[!data.disableReasons.corruptInstall]]">
             $i18n{itemCorruptInstall}
           </span>
-          <span id="blocklisted-warning"><!-- No whitespace
+          <span id="blocklisted-warning"
+              class="cr-secondary-text"><!-- No whitespace
             -->[[data.blocklistText]]<!-- so we can use :empty in css.
          --></span>
         </div>
@@ -255,8 +259,8 @@
       <template is="dom-if"
           if="[[showMv2DeprecationWarning_(data.disableReasons.*, data.*)]]">
           <div id="warnings">
-            <cr-icon class="message-icon" icon="cr:error"></cr-icon>
-            <span id="mv2-deprecation-warning"
+            <cr-icon class="message-icon" icon="cr:error-outline"></cr-icon>
+            <span id="mv2-deprecation-warning" class="cr-secondary-text"
                 aria-describedby="a11yAssociation">
               $i18n{mv2DeprecationUnsupportedExtensionOffText}
             </span>
