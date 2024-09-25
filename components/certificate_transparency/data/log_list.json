@@ -1,6 +1,6 @@
 {
-  "version": "45.23",
-  "log_list_timestamp": "2024-09-24T12:54:21Z",
+  "version": "46.1",
+  "log_list_timestamp": "2024-09-25T12:56:08Z",
   "operators": [
     {
       "name": "Google",
@@ -794,8 +794,8 @@
           "url": "https://ct2026-a.trustasia.com/log2026a/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-03T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-09-20T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -810,8 +810,8 @@
           "url": "https://ct2026-b.trustasia.com/log2026b/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-03T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-09-20T00:00:00Z"
             }
           },
           "temporal_interval": {
