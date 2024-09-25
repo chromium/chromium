@@ -5,6 +5,8 @@
 source_set("ui") {
   sources = [
     "drive_file_picker_consumer.h",
+    "drive_file_picker_empty_view.h",
+    "drive_file_picker_empty_view.mm",
     "drive_file_picker_item.h",
     "drive_file_picker_item.mm",
     "drive_file_picker_mutator.h",

@@ -1647,6 +1647,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_EMPTY_FOLDER_MESSAGE" desc="The message to display when a Drive folder is empty. [iOS only]">
+        This folder is empty
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_NO_MATCHING_RESULTS_MESSAGE" desc="The message to display when a Drive search/filter yields an empty list of results. [iOS only]">
+        No matching results
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE" desc="Title for My Drive folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the My Drive folder in Google Drive, the translation must be similar. [iOS only]">
         My Drive
       </message>

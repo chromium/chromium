@@ -8,6 +8,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_empty_view.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
@@ -99,9 +100,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // A loading indocator displayed when the next page is being fetched.
   UIActivityIndicatorView* _loadingIndicator;
 
-  // A loading indocator displayed in the background while the items are being
-  // fetched.
+  // Background views.
   UIActivityIndicatorView* _backgroundLoadingIndicator;
+  UIView* _backgroundEmptyFolderView;
+  UIView* _backgroundNoMatchingResultView;
 
   // Next page availability.
   BOOL _nextPageAvailable;
@@ -117,7 +119,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     [self initFilterActions];
     [self initSortActions];
     [self initSortingDirectionSymbols];
-    [self initBackgroundLoadingIndicator];
+    [self initBackgroundViews];
     _nextPageAvailable = YES;
     _items = [NSMutableArray array];
   }
@@ -156,8 +158,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
   self.navigationController.toolbarHidden = NO;
-
-  self.tableView.backgroundView = _backgroundLoadingIndicator;
 
   _loadingIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -425,11 +425,13 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
 }
 
-// Initializes `_backgroundLoadingIndicator`.
-- (void)initBackgroundLoadingIndicator {
+// Initializes background views.
+- (void)initBackgroundViews {
   _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-  _backgroundLoadingIndicator.hidesWhenStopped = YES;
+  _backgroundEmptyFolderView = [DriveFilePickerEmptyView emptyDriveFolderView];
+  _backgroundNoMatchingResultView =
+      [DriveFilePickerEmptyView noMatchingResultView];
 }
 
 // Returns the action corresponding to a given `sortingCriteria`.
@@ -503,15 +505,31 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 #pragma mark - DriveFilePickerConsumer
 
-- (void)setLoadingIndicatorVisible:(BOOL)visible {
-  if (visible) {
-    // Clear the list of presented list of items so the background is visible.
-    NSDiffableDataSourceSnapshot* snapshot =
-        [[NSDiffableDataSourceSnapshot alloc] init];
-    [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-    [_backgroundLoadingIndicator startAnimating];
-  } else {
+- (void)setBackground:(DriveFilePickerBackground)background {
+  UIView* newBackgroundView;
+  switch (background) {
+    case DriveFilePickerBackground::kNoBackground:
+      newBackgroundView = nil;
+      break;
+    case DriveFilePickerBackground::kLoadingIndicator:
+      newBackgroundView = _backgroundLoadingIndicator;
+      break;
+    case DriveFilePickerBackground::kEmptyFolder:
+      newBackgroundView = _backgroundEmptyFolderView;
+      break;
+    case DriveFilePickerBackground::kNoMatchingResults:
+      newBackgroundView = _backgroundNoMatchingResultView;
+      break;
+  }
+  if (self.tableView.backgroundView == newBackgroundView) {
+    return;
+  }
+  if (self.tableView.backgroundView == _backgroundLoadingIndicator) {
     [_backgroundLoadingIndicator stopAnimating];
+  }
+  self.tableView.backgroundView = newBackgroundView;
+  if (self.tableView.backgroundView == _backgroundLoadingIndicator) {
+    [_backgroundLoadingIndicator startAnimating];
   }
 }
 

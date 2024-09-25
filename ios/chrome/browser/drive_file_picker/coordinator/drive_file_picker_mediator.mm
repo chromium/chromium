@@ -408,7 +408,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [_consumer setFilter:_filter];
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
-  [_consumer setLoadingIndicatorVisible:YES];
+  [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -611,8 +611,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   if (_searchText.length == 0 || previousSearchText.length == 0) {
     // When switching from zero-state to non-zero-state search or the other way
     // around, items are trashed and the loading indicator is presented.
-    _fetchedDriveItems = {};
-    [self.consumer setLoadingIndicatorVisible:YES];
+    [self clearItems];
+    [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   }
   // Fetching new items is delayed when `_searchText` is modified, to ensure
   // modifying it very frequently does not equally too frequent API calls. This
@@ -631,6 +631,16 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 #pragma mark - Private
+
+// Clears items in the mediator and consumer.
+- (void)clearItems {
+  _fetchedDriveItems = {};
+  [self.consumer populateItems:@[]
+                        append:NO
+              showSearchHeader:NO
+             nextPageAvailable:NO
+                      animated:NO];
+}
 
 - (void)setShouldShowSearchItems:(BOOL)shouldShowSearchItems {
   if (shouldShowSearchItems == _shouldShowSearchItems) {
@@ -654,8 +664,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   }
   // When switching between search items and non-search items, the list of items
   // is cleared and the loading indicator is presented.
-  _fetchedDriveItems = {};
-  [self.consumer setLoadingIndicatorVisible:YES];
+  [self clearItems];
+  [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   // When showing search items, the title is hidden.
   [self.consumer setTitle:_shouldShowSearchItems ? nil : _title];
   [self fetchItemsAppending:NO delayed:YES animated:NO];
@@ -760,8 +770,6 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 // animated into the consumer.
 - (void)handleListItemsResponse:(const DriveListResult&)result
                        animated:(BOOL)animated {
-  [self.consumer setLoadingIndicatorVisible:NO];
-
   // Remember old item identifiers so they can be reconfigured if they also show
   // up in `result.items`.
   NSMutableSet<NSString*>* previousIdentifiers = [NSMutableSet set];
@@ -810,6 +818,19 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
                       animated:animated];
   // If some items were already in the previous list, reconfigure these items.
   [self.consumer reconfigureItemsWithIdentifiers:itemsToReconfigure];
+  // Update background of the file picker view.
+  if (res.count != 0) {
+    // If there are items to present, then clear the background.
+    [self.consumer setBackground:DriveFilePickerBackground::kNoBackground];
+  } else if (_shouldShowSearchItems ||
+             _filter != DriveFilePickerFilter::kShowAllFiles) {
+    // If there are no items during search or while applying a filter, then show
+    // "No matching results" as explanation.
+    [self.consumer setBackground:DriveFilePickerBackground::kNoMatchingResults];
+  } else {
+    // Otherwise, show "Empty folder" as explanation.
+    [self.consumer setBackground:DriveFilePickerBackground::kEmptyFolder];
+  }
 }
 
 - (void)identityUpdatedWithSelectedIdentity:

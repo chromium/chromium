@@ -42,4 +42,12 @@ enum class DriveFilePickerFilter {
   kShowAllFiles,
 };
 
+// Enum values for the background of the file picker.
+enum class DriveFilePickerBackground {
+  kNoBackground,
+  kLoadingIndicator,
+  kEmptyFolder,
+  kNoMatchingResults,
+};
+
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSTANTS_H_

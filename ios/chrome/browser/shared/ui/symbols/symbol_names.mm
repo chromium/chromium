@@ -270,6 +270,7 @@ NSString* const kPersonTwoSymbol = @"person.2";
 NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
 NSString* const kPauseButton = @"pause.circle";
 NSString* const kPlayButton = @"play.circle";
+NSString* const kFolderSymbol = @"folder";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

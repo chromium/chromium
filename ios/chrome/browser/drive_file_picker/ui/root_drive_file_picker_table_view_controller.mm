@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/root_drive_file_picker_table_view_controller.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
@@ -288,7 +289,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
              animated:(BOOL)animated {
 }
 
-- (void)setLoadingIndicatorVisible:(BOOL)visible {
+- (void)setBackground:(DriveFilePickerBackground)background {
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {

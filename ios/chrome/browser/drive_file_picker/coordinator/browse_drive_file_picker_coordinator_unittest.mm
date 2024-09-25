@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/fake_drive_file_picker_handler.h"
@@ -11,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
@@ -22,6 +24,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
     root_view_controller_ = [[UIViewController alloc] init];
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:root_view_controller_];
@@ -65,6 +68,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   UIViewController* root_view_controller_;
   UINavigationController* navigation_controller_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

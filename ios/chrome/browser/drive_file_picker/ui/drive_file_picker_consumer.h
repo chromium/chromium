@@ -21,8 +21,8 @@
 // Sets the title of the consumer in the navigation bar.
 - (void)setTitle:(NSString*)title;
 
-// Sets whether the loading indicator should be visible.
-- (void)setLoadingIndicatorVisible:(BOOL)visible;
+// Sets the background of the file picker view.
+- (void)setBackground:(DriveFilePickerBackground)background;
 
 // Either replaces presented items with new ones (`append` is NO) or appends new
 // items to presented ones (`append` is YES). If `showSearchHeader` is YES then

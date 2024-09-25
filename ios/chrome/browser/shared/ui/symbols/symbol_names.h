@@ -261,6 +261,7 @@ extern NSString* const kPersonTwoSymbol;
 extern NSString* const kSquareFilledOnSquareSymbol;
 extern NSString* const kPauseButton;
 extern NSString* const kPlayButton;
+extern NSString* const kFolderSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

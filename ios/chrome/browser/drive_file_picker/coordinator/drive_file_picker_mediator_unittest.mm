@@ -98,6 +98,9 @@
 - (void)setTitle:(NSString*)title {
 }
 
+- (void)setBackground:(DriveFilePickerBackground)background {
+}
+
 - (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
                append:(BOOL)append
      showSearchHeader:(BOOL)showSearchHeader
