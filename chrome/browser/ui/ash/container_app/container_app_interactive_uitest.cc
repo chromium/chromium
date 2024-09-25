@@ -52,7 +52,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/sync/base/command_line_switches.h"
@@ -211,17 +210,8 @@ class ContainerAppInteractiveUiTestBase
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
   ContainerAppInteractiveUiTestBase(
-      std::optional<ash::LoggedInUserMixin::LogInType> login_type,
-      bool should_ignore_feature_debug_key)
+      std::optional<ash::LoggedInUserMixin::LogInType> login_type)
       : user_session_mixin_(CreateUserSessionMixin(login_type)) {
-    // Conditionally ignore the container app preinstallation debug key.
-    if (should_ignore_feature_debug_key) {
-      ignore_container_app_preinstall_debug_key_ =
-          std::make_unique<base::AutoReset<bool>>(
-              chromeos::switches::
-                  SetIgnoreContainerAppPreinstallDebugKeyForTesting());
-    }
-
     // Enable container app preinstallation.
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kContainerAppPreinstall,
@@ -392,8 +382,7 @@ class ContainerAppInteractiveUiTest
  public:
   ContainerAppInteractiveUiTest()
       : ContainerAppInteractiveUiTestBase(
-            ash::LoggedInUserMixin::LogInType::kConsumer,
-            /*should_ignore_feature_debug_key=*/false) {
+            ash::LoggedInUserMixin::LogInType::kConsumer) {
     // Disable the container app during the PRE_ session so that the subsequent
     // session containing test logic is when the app preinstallation occurs.
     if (IsPreSession()) {
@@ -847,9 +836,6 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
 enum class IneligibilityReason {
   kMinValue = 0,
   kFeatureDebugAndManagementFlagsDisabled = kMinValue,
-  kFeatureDebugKeyAbsent,
-  kFeatureDebugKeyEmpty,
-  kFeatureDebugKeyIncorrect,
   kFeatureFlagDisabled,
   kUserManaged,
   kUserTypeChild,
@@ -864,9 +850,6 @@ enum class IneligibilityReason {
 inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
   switch (reason) {
     INELIGIBILITY_REASON_CASE(kFeatureDebugAndManagementFlagsDisabled);
-    INELIGIBILITY_REASON_CASE(kFeatureDebugKeyAbsent);
-    INELIGIBILITY_REASON_CASE(kFeatureDebugKeyEmpty);
-    INELIGIBILITY_REASON_CASE(kFeatureDebugKeyIncorrect);
     INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
     INELIGIBILITY_REASON_CASE(kUserManaged);
     INELIGIBILITY_REASON_CASE(kUserTypeChild);
@@ -880,8 +863,7 @@ class ContainerAppInteractiveUiIneligibilityTest
       public WithParamInterface<IneligibilityReason> {
  public:
   ContainerAppInteractiveUiIneligibilityTest()
-      : ContainerAppInteractiveUiTestBase(GetLoginType(),
-                                          ShouldIgnoreFeatureDebugKey()) {
+      : ContainerAppInteractiveUiTestBase(GetLoginType()) {
     scoped_feature_list_.InitWithFeatureStates(
         {{chromeos::features::kContainerAppPreinstall, IsFeatureFlagEnabled()},
          {chromeos::features::kContainerAppPreinstallDebug,
@@ -892,21 +874,6 @@ class ContainerAppInteractiveUiIneligibilityTest
 
  private:
   // ContainerAppInteractiveUiTestBase:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    ContainerAppInteractiveUiTestBase::SetUpDefaultCommandLine(command_line);
-
-    // Feature debug key.
-    if (IsFeatureDebugKeyEmpty()) {
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kContainerAppPreinstallDebugKey,
-          base::EmptyString());
-    } else if (IsFeatureDebugKeyIncorrect()) {
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kContainerAppPreinstallDebugKey,
-          "<INCORRECT_KEY>");
-    }
-  }
-
   void SetUpOnMainThread() override {
     // Web app preinstallation times out for child user types due to failure to
     // install some default web apps. Since this test suite only cares about the
@@ -943,18 +910,6 @@ class ContainerAppInteractiveUiIneligibilityTest
            IneligibilityReason::kFeatureDebugAndManagementFlagsDisabled;
   }
 
-  // Returns whether the feature debug key is empty given test
-  // parameterization.
-  bool IsFeatureDebugKeyEmpty() const {
-    return GetParam() == IneligibilityReason::kFeatureDebugKeyEmpty;
-  }
-
-  // Returns whether the feature debug key is incorrect given test
-  // parameterization.
-  bool IsFeatureDebugKeyIncorrect() const {
-    return GetParam() == IneligibilityReason::kFeatureDebugKeyIncorrect;
-  }
-
   // Returns whether the feature flag is enabled given test parameterization.
   bool IsFeatureFlagEnabled() const {
     return GetParam() != IneligibilityReason::kFeatureFlagDisabled;
@@ -963,23 +918,8 @@ class ContainerAppInteractiveUiIneligibilityTest
   // Returns whether the feature management flag is enabled given test
   // parameterization.
   bool IsFeatureManagementFlagEnabled() const {
-    // Disable the feature management flag when attempting to enable the feature
-    // via the debug flag. Otherwise the debug flag/key will not be considered.
-    if (!ShouldIgnoreFeatureDebugKey()) {
-      return false;
-    }
     return GetParam() !=
            IneligibilityReason::kFeatureDebugAndManagementFlagsDisabled;
-  }
-
-  // Returns whether the feature debug key should be ignored given test
-  // parameterization.
-  bool ShouldIgnoreFeatureDebugKey() const {
-    return !std::set<IneligibilityReason>(
-                {IneligibilityReason::kFeatureDebugKeyAbsent,
-                 IneligibilityReason::kFeatureDebugKeyEmpty,
-                 IneligibilityReason::kFeatureDebugKeyIncorrect})
-                .contains(GetParam());
   }
 
   // Used to enable/disable the container app preinstallation based on test
