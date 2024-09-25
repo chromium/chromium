@@ -75,6 +75,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CrosDisks.Error.Fuse.Start.archive" enum="FuseArchiveError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the archive FUSE program when it starts or fails to
+    daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.rar" enum="Rar2fsError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the RAR FUSE program when it starts or fails to daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.zip" enum="FuseZipError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ZIP FUSE program when it starts or fails to daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.{FileSystem}" enum="DaemonError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the {FileSystem} FUSE program when it starts or fails to
+    daemonize.
+  </summary>
+  <token key="FileSystem">
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="exFAT"/>
+    <variant name="fuseblk.ntfs" summary="NTFS"/>
+    <variant name="fusebox"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs" summary="SSHFS"/>
+  </token>
+</histogram>
+
 <histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
     expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -139,36 +185,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the fuse-archive program, which is called every time a
-    user opens various archive files in ChromeOS Files App.
-  </summary>
-</histogram>
-
-<histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the ZIP mounting program mount-zip, which is called every
-    time a user opens a ZIP archive in ChromeOS Files App.
-  </summary>
-</histogram>
-
-<histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the RAR mounting program rar2fs, which is called every
-    time a user opens a RAR archive in ChromeOS Files App.
-  </summary>
-</histogram>
-
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
     enum="CrosDisksFilesystemType" expires_after="2025-03-01">
   <owner>fdegros@chromium.org</owner>
@@ -194,6 +210,26 @@ chromium-metrics-reviews@google.com.
     <variant name="drivefs" summary="DriveFS"/>
     <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
     <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
+    <variant name="fusebox"/>
+    <variant name="rar" summary="RAR"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="zip" summary="ZIP"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Time.Fuse.Start.{FileSystem}" units="ms"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the {FileSystem} FUSE daemon to start and daemonize.
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="exFAT"/>
+    <variant name="fuseblk.ntfs" summary="NTFS"/>
     <variant name="fusebox"/>
     <variant name="rar" summary="RAR"/>
     <variant name="smbfs"/>
