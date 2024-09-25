@@ -186,13 +186,19 @@ gen_config_files linux/arm-neon-cpu-detect \
   "${toolchain}/armv7-linux-gcc.cmake ${all_platforms}"
 
 reset_dirs linux/arm64-cpu-detect
+# Note clang is use to allow detection of SVE/SVE2; gcc as of version 13 is
+# missing the required arm_neon_sve_bridge.h header.
 gen_config_files linux/arm64-cpu-detect \
-  "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
+  "${toolchain}/arm64-linux-clang.cmake ${all_platforms}"
 
-# Copy linux configurations and modify for Windows.
+# Generate linux configurations and modify for Windows.
 reset_dirs win/arm64-cpu-detect
-cp "${CFG}/linux/arm64-cpu-detect/config"/* \
-  "${CFG}/win/arm64-cpu-detect/config/"
+# There are known problems with LLVM-based compilers targeting Windows for
+# SVE code generation. Since there are no client Windows devices that
+# support SVE(2) at this time, disable SVE(2) on AArch64 Windows targets.
+gen_config_files win/arm64-cpu-detect \
+  "${toolchain}/arm64-linux-clang.cmake -DENABLE_SVE=0 -DENABLE_SVE2=0 \
+   ${all_platforms}"
 convert_to_windows "${CFG}/win/arm64-cpu-detect/config/aom_config.h"
 )
 
