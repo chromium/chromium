@@ -27,7 +27,7 @@ each histogram.
 </variants>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskMigrated" enum="Boolean"
-    expires_after="2024-07-10">
+    expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -40,7 +40,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskQueuedTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -54,7 +54,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskThreadTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -68,7 +68,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskTotalTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -82,7 +82,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationTaskWallTime.{CoreType}"
-    units="microseconds" expires_after="2024-07-10">
+    units="microseconds" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationThreadTimePercent.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -112,7 +112,7 @@ each histogram.
 
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -127,7 +127,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax.{CoreType}"
-    units="%" expires_after="2024-07-10">
+    units="%" expires_after="2025-03-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
