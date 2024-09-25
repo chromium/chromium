@@ -16,7 +16,6 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -25,8 +24,6 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -41,7 +38,6 @@
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -59,11 +55,6 @@
 namespace lens {
 
 namespace {
-
-const int kMaxDownloadBytes = 1024 * 1024;
-const int kTranslateTaskCompletionID = 198158;
-const int kCopyTextTaskCompletionID = 198153;
-const int kSelectTextTaskCompletionID = 198157;
 
 // The name string for the header for variations information.
 constexpr char kClientDataHeader[] = "X-Client-Data";
@@ -210,14 +201,19 @@ LensOverlayQueryController::LensOverlayQueryController(
       identity_manager_(identity_manager),
       profile_(profile),
       invocation_source_(invocation_source),
-      use_dark_mode_(use_dark_mode) {
+      use_dark_mode_(use_dark_mode),
+      gen204_controller_(
+          std::make_unique<lens::LensOverlayGen204Controller>(invocation_source,
+                                                              profile)) {
   encoding_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   encoding_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
 }
 
-LensOverlayQueryController::~LensOverlayQueryController() = default;
+LensOverlayQueryController::~LensOverlayQueryController() {
+  EndQuery();
+}
 
 void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
@@ -235,6 +231,7 @@ void LensOverlayQueryController::StartQueryFlow(
   underlying_content_type_ = underlying_content_type;
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
+  gen204_controller_->SetGen204Id(gen204_id_);
 
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
@@ -243,6 +240,8 @@ void LensOverlayQueryController::StartQueryFlow(
 }
 
 void LensOverlayQueryController::EndQuery() {
+  gen204_controller_->OnQueryFlowEnd(
+      request_id_generator_->GetBase32EncodedAnalyticsId());
   full_image_endpoint_fetcher_.reset();
   interaction_endpoint_fetcher_.reset();
   cluster_info_received_callback_.Reset();
@@ -344,43 +343,8 @@ void LensOverlayQueryController::SendMultimodalRequest(
 
 void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
     lens::mojom::UserAction user_action) {
-  if (lens::features::GetLensOverlaySendTaskCompletionGen204() &&
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
-    int task_id;
-    switch (user_action) {
-      case mojom::UserAction::kTextSelection:
-        task_id = kSelectTextTaskCompletionID;
-        break;
-      case mojom::UserAction::kCopyText:
-        task_id = kCopyTextTaskCompletionID;
-        break;
-      case mojom::UserAction::kTranslateText:
-        task_id = kTranslateTaskCompletionID;
-        break;
-      default:
-        // Other user actions should not send an associated gen204 ping.
-        return;
-    }
-    std::string query = base::StringPrintf(
-        "gen_204?uact=4&rcid=%d&cad=%s", task_id,
-        request_id_generator_->GetBase32EncodedAnalyticsId().c_str());
-    auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
-                              ->search_terms_data()
-                              .GoogleBaseURLValue())
-                         .Resolve(query);
-    fetch_url =
-        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = fetch_url;
-    task_completion_gen204_loader_ = network::SimpleURLLoader::Create(
-        std::move(request), kTrafficAnnotationTag);
-    task_completion_gen204_loader_->DownloadToString(
-        profile_->GetURLLoaderFactory().get(),
-        base::BindOnce(
-            &LensOverlayQueryController::OnTaskCompletionGen204LoaderComplete,
-            base::Unretained(this)),
-        kMaxDownloadBytes);
-  }
+  gen204_controller_->SendTaskCompletionGen204IfEnabled(
+      request_id_generator_->GetBase32EncodedAnalyticsId(), user_action);
 }
 
 void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
@@ -486,30 +450,7 @@ void LensOverlayQueryController::PerformFetchRequest(
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
     int64_t latency_ms) {
-  if (lens::features::GetLensOverlaySendLatencyGen204() &&
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
-    std::string query =
-        base::StringPrintf("gen_204?atyp=csi&%s=%s&rt=fpof.%s&s=web",
-                           kGen204IdentifierQueryParameter,
-                           base::NumberToString(gen204_id_).c_str(),
-                           base::NumberToString(latency_ms).c_str());
-    auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
-                              ->search_terms_data()
-                              .GoogleBaseURLValue())
-                         .Resolve(query);
-    fetch_url =
-        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = fetch_url;
-    latency_gen204_loader_ = network::SimpleURLLoader::Create(
-        std::move(request), kTrafficAnnotationTag);
-    latency_gen204_loader_->DownloadToString(
-        profile_->GetURLLoaderFactory().get(),
-        base::BindOnce(
-            &LensOverlayQueryController::OnLatencyGen204LoaderComplete,
-            base::Unretained(this)),
-        kMaxDownloadBytes);
-  }
+  gen204_controller_->SendLatencyGen204IfEnabled(latency_ms);
 }
 
 LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
@@ -907,16 +848,6 @@ void LensOverlayQueryController::OnImageCropReady(
       request_index, region.Clone(), query_text, object_id, selection_type,
       additional_search_query_params, image_crop,
       ref_counted_logs->client_logs());
-}
-
-void LensOverlayQueryController::OnLatencyGen204LoaderComplete(
-    std::unique_ptr<std::string> response_body) {
-  latency_gen204_loader_.reset();
-}
-
-void LensOverlayQueryController::OnTaskCompletionGen204LoaderComplete(
-    std::unique_ptr<std::string> response_body) {
-  task_completion_gen204_loader_.reset();
 }
 
 void LensOverlayQueryController::InteractionFetchResponseHandler(

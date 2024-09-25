@@ -351,6 +351,7 @@ after discussions on the right group.
       <annotation id="remoting_cloud_generate_host_token"/>
       <annotation id="remoting_cloud_reauthorize_host"/>
       <annotation id="remoting_cloud_verify_session_token"/>
+      <annotation id="lens_overlay_gen204"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

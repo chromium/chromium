@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
@@ -280,14 +281,6 @@ class LensOverlayQueryController {
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
       std::optional<lens::ImageCrop> image_crop);
 
-  // Handles the response from a latency gen204 request.
-  void OnLatencyGen204LoaderComplete(
-      std::unique_ptr<std::string> response_body);
-
-  // Handles the response from a task completion gen204 request.
-  void OnTaskCompletionGen204LoaderComplete(
-      std::unique_ptr<std::string> response_body);
-
   // Handles the endpoint fetch response for an interaction request.
   void InteractionFetchResponseHandler(
       std::unique_ptr<EndpointResponse> response);
@@ -419,12 +412,6 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
-  // Loader used for latency gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> latency_gen204_loader_;
-
-  // Loader used for task completion gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> task_completion_gen204_loader_;
-
   // Task runner used to encode/downscale the JPEG images on a separate thread.
   scoped_refptr<base::TaskRunner> encoding_task_runner_;
 
@@ -470,6 +457,9 @@ class LensOverlayQueryController {
 
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_;
+
+  // The controller for sending gen204 pings.
+  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

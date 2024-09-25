@@ -30,6 +30,8 @@ source_set("lens") {
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
+    "lens_overlay_gen204_controller.cc",
+    "lens_overlay_gen204_controller.h",
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
     "lens_overlay_proto_converter.cc",

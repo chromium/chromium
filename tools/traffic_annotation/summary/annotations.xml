@@ -493,4 +493,5 @@ Refer to README.md for content description and update process.
  <item id="remoting_cloud_generate_host_token" added_in_milestone="131" content_hash_code="0147c5dd" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_cloud_reauthorize_host" added_in_milestone="131" content_hash_code="046e5c5b" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="remoting_cloud_verify_session_token" added_in_milestone="131" content_hash_code="07850d01" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="lens_overlay_gen204" added_in_milestone="131" content_hash_code="0522c289" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_gen204_controller.cc" />
 </annotations>
