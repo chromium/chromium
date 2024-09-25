@@ -376,7 +376,7 @@ Chrome has different notions of invalidation throughout the system.
 Finally, damage is another word for “draw invalidation”.
 It’s the part of the screen that needs to be redrawn.
 
-There’s two types of damage: invalidation damage and expose damage.
+There are two types of damage: invalidation damage and expose damage.
 Invalidation damage is due to raster invalidation, where a part of a texture has changed and the screen needs to be updated.
 Expose damage is when a layer goes away, gets added for the first time, or gets reordered.
 There’s no raster invalidation in these cases, but the screen still needs to be updated.
