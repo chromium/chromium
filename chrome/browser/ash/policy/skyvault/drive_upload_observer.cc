@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -42,11 +43,12 @@ void OnUploadDone(scoped_refptr<DriveUploadObserver> drive_upload_observer,
 void DriveUploadObserver::Observe(
     Profile* profile,
     base::FilePath file_path,
+    UploadTrigger trigger,
     int64_t file_bytes,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     base::OnceCallback<void(bool)> upload_callback) {
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
-      new DriveUploadObserver(profile, file_path, file_bytes,
+      new DriveUploadObserver(profile, file_path, trigger, file_bytes,
                               std::move(progress_callback));
 
   // Keep `drive_upload_observer` alive until the upload is done.
@@ -57,6 +59,7 @@ void DriveUploadObserver::Observe(
 DriveUploadObserver::DriveUploadObserver(
     Profile* profile,
     base::FilePath file_path,
+    UploadTrigger trigger,
     int64_t file_bytes,
     base::RepeatingCallback<void(int64_t)> progress_callback)
     : profile_(profile),
@@ -66,6 +69,7 @@ DriveUploadObserver::DriveUploadObserver(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
       observed_local_path_(file_path),
       file_bytes_(file_bytes),
+      trigger_(trigger),
       progress_callback_(std::move(progress_callback)) {}
 
 DriveUploadObserver::~DriveUploadObserver() = default;

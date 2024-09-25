@@ -101,6 +101,7 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
     case CloudProvider::kGoogleDrive:
       ash::cloud_upload::DriveUploadObserver::Observe(
           profile_, download_item_->GetTargetFilePath(),
+          policy::local_user_files::UploadTrigger::kDownload,
           download_item_->GetTotalBytes(),
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),

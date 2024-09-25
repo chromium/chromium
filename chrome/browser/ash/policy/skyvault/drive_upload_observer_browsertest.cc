@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/skyvault_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +31,9 @@ using testing::_;
 namespace {
 
 const int64_t kFileSize = 123456;
+
+const policy::local_user_files::UploadTrigger kTrigger =
+    policy::local_user_files::UploadTrigger::kDownload;
 
 }  // namespace
 
@@ -151,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ImmediatelyUpload) {
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   EXPECT_CALL(upload_callback, Run(/*success=*/true));
   DriveUploadObserver::Observe(
-      profile(), drive_root_dir().AppendASCII(test_file_name), kFileSize,
-      progress_callback.Get(), upload_callback.Get());
+      profile(), drive_root_dir().AppendASCII(test_file_name), kTrigger,
+      kFileSize, progress_callback.Get(), upload_callback.Get());
 
   auto it = source_files_.find(source_file_path);
   SimulateDriveUploadQueued(it->second);
@@ -173,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, SuccessfulSync) {
   EXPECT_CALL(progress_callback, Run(/*bytes_so_far=*/kFileSize));
   EXPECT_CALL(upload_callback, Run(/*success=*/true));
   DriveUploadObserver::Observe(
-      profile(), drive_root_dir().AppendASCII(test_file_name), kFileSize,
-      progress_callback.Get(), upload_callback.Get());
+      profile(), drive_root_dir().AppendASCII(test_file_name), kTrigger,
+      kFileSize, progress_callback.Get(), upload_callback.Get());
 
   auto it = source_files_.find(source_file_path);
   SimulateDriveUploadInProgress(kFileSize / 4, it->second);
@@ -194,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ErrorSync) {
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
   EXPECT_CALL(upload_callback, Run(/*success=*/false));
   DriveUploadObserver::Observe(
-      profile(), drive_root_dir().AppendASCII(test_file_name), kFileSize,
-      progress_callback.Get(), upload_callback.Get());
+      profile(), drive_root_dir().AppendASCII(test_file_name), kTrigger,
+      kFileSize, progress_callback.Get(), upload_callback.Get());
 
   SetUpObservers();
 
@@ -219,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoSyncUpdates) {
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
       new DriveUploadObserver(profile(),
                               drive_root_dir().AppendASCII(test_file_name),
-                              kFileSize, progress_callback.Get());
+                              kTrigger, kFileSize, progress_callback.Get());
   drive_upload_observer->Run(upload_callback.Get());
 
   EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());
@@ -256,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoFileMetadata) {
   scoped_refptr<DriveUploadObserver> drive_upload_observer =
       new DriveUploadObserver(profile(),
                               drive_root_dir().AppendASCII(test_file_name),
-                              kFileSize, progress_callback.Get());
+                              kTrigger, kFileSize, progress_callback.Get());
   drive_upload_observer->Run(upload_callback.Get());
 
   EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());
