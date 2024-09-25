@@ -563,12 +563,26 @@ if (include_enterprise_companion_in_installer) {
         [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
   }
 
+  if (is_asan) {
+    bundle_data("updater_bundle_helpers_enterprise_companion_asan_dylib") {
+      sources = [ "$root_out_dir/${enterprise_companion_product_full_name}.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+      outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}.app/Contents/MacOS/{{source_file_part}}" ]
+      public_deps =
+          [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
+    }
+  }
+
   group("updater_bundle_helpers_enterprise_companion") {
     public_deps = [
       ":updater_bundle_helpers_enterprise_companion_executable",
       ":updater_bundle_helpers_enterprise_companion_pkginfo",
       ":updater_bundle_helpers_enterprise_companion_plist",
     ]
+
+    if (is_asan) {
+      public_deps +=
+          [ ":updater_bundle_helpers_enterprise_companion_test_asan_dylib" ]
+    }
   }
 
   bundle_data("updater_bundle_helpers_enterprise_companion_test_executable") {
@@ -592,12 +606,27 @@ if (include_enterprise_companion_in_installer) {
         [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
   }
 
+  if (is_asan) {
+    bundle_data("updater_bundle_helpers_enterprise_companion_test_asan_dylib") {
+      sources = [ "$root_out_dir/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+      outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/{{source_file_part}}" ]
+      public_deps = [
+        "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+      ]
+    }
+  }
+
   group("updater_bundle_helpers_enterprise_companion_test") {
     public_deps = [
       ":updater_bundle_helpers_enterprise_companion_test_executable",
       ":updater_bundle_helpers_enterprise_companion_test_pkginfo",
       ":updater_bundle_helpers_enterprise_companion_test_plist",
     ]
+
+    if (is_asan) {
+      public_deps +=
+          [ ":updater_bundle_helpers_enterprise_companion_test_asan_dylib" ]
+    }
   }
 }
 
