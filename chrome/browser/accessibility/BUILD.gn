@@ -14,12 +14,10 @@ if (!is_android) {
 
     deps = [
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
-      "//components/live_caption",
       "//components/live_caption:constants",
       "//components/soda",
       "//components/soda:constants",

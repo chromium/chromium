@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
-#include "chrome/browser/ash/accessibility/live_caption/user_microphone_caption_service_factory.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
@@ -267,7 +266,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   TokenHandleFetcher::EnsureFactoryBuilt();
   TrustedVaultBackendServiceFactoryAsh::GetInstance();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
-  UserMicrophoneCaptionServiceFactory::GetInstance();
 }
 
 }  // namespace ash

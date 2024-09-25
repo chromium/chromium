@@ -143,7 +143,8 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
 
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_) {
-    const auto language_code = GetLanguageCode();
+    const auto language_code =
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
     auto* soda_installer = speech::SodaInstaller::GetInstance();
     // Only trigger an install when the language is not already installed.
     if (!soda_installer->IsSodaInstalled(
@@ -154,12 +155,7 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return enabled_via_babel_orca_ ||
-         profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
-#else
   return profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
-#endif
 }
 
 void LiveCaptionController::StartLiveCaption() {
@@ -169,7 +165,8 @@ void LiveCaptionController::StartLiveCaption() {
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
   // that time.
   if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(GetLanguageCode()))) {
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_prefs_)))) {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
@@ -185,22 +182,9 @@ void LiveCaptionController::StopLiveCaption() {
 
 void LiveCaptionController::OnSodaInstalled(
     speech::LanguageCode language_code) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Return early IFF the language code is neither for live caption nor
-  // microphone caption and we're waiting on babel orca.
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_)
-          ? !enabled_via_babel_orca_ ||
-                !prefs::IsLanguageCodeForMicrophoneCaption(language_code,
-                                                           profile_prefs_)
-          : false) {
-    return;
-  }
-#else
   if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_)) {
     return;
   }
-#endif
-
   // Live Caption should always be enabled when this is called. If Live Caption
   // has been disabled, then this should not be observing the SodaInstaller
   // anymore.
@@ -265,16 +249,6 @@ void LiveCaptionController::DestroyUI() {
   }
 }
 
-std::string LiveCaptionController::GetLanguageCode() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (enabled_via_babel_orca_) {
-    return prefs::GetUserMicrophoneCaptionLanguage(profile_prefs_);
-  }
-#endif
-
-  return prefs::GetLiveCaptionLanguageCode(profile_prefs_);
-}
-
 bool LiveCaptionController::DispatchTranscription(
     CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
@@ -329,11 +303,6 @@ void LiveCaptionController::OnToggleFullscreen(
   CreateUI();
 }
 #endif
-
-void LiveCaptionController::ToggleLiveCaptionForBabelOrca(bool enabled) {
-  enabled_via_babel_orca_ = enabled;
-  OnLiveCaptionEnabledChanged();
-}
 
 void LiveCaptionController::OnCaptionStyleUpdated() {
   // Metrics are recorded when passing the caption prefs to the browser, so do

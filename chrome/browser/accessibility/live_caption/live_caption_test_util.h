@@ -34,10 +34,6 @@ class LiveCaptionBrowserTest : public InProcessBrowserTest {
   // Enables/disables the live translate pref.
   void SetLiveTranslateEnabled(bool enabled);
 
-  // Enables/disables LiveCaption for Babel Orca. Unlike SetLiveCaptionEnabled
-  // this function does not install SODA.
-  void ToggleLiveCaptionForBabelOrca(bool enabled);
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

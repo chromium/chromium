@@ -35,13 +35,13 @@ SpeechRecognitionClientBrowserInterface::
   // Unretained is safe because |this| owns the pref_change_registrar_.
   pref_change_registrar_->Add(
       prefs::kLiveCaptionEnabled,
-      base::BindRepeating(
-          &SpeechRecognitionClientBrowserInterface::OnLiveCaptionPrefChange,
-          base::Unretained(this)));
+      base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
+                              OnSpeechRecognitionAvailabilityChanged,
+                          base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveCaptionLanguageCode,
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
-                              OnLiveCaptionLanguageChanged,
+                              OnSpeechRecognitionLanguageChanged,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveCaptionMaskOffensiveWords,
@@ -49,14 +49,6 @@ SpeechRecognitionClientBrowserInterface::
                               OnSpeechRecognitionMaskOffensiveWordsChanged,
                           base::Unretained(this)));
   speech::SodaInstaller::GetInstance()->AddObserver(this);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  pref_change_registrar_->Add(
-      prefs::kUserMicrophoneCaptionLanguageCode,
-      base::BindRepeating(
-          &SpeechRecognitionClientBrowserInterface::OnBabelOrcaLanguageChanged,
-          base::Unretained(this)));
-#endif
 }
 
 SpeechRecognitionClientBrowserInterface::
@@ -75,7 +67,7 @@ void SpeechRecognitionClientBrowserInterface::
         mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
             pending_remote) {
   speech_recognition_availibility_observers_.Add(std::move(pending_remote));
-  OnSpeechRecognitionAvailabilityChanged(availability_);
+  OnSpeechRecognitionAvailabilityChanged();
 }
 
 void SpeechRecognitionClientBrowserInterface::BindRecognizerToRemoteClient(
@@ -94,103 +86,39 @@ void SpeechRecognitionClientBrowserInterface::BindRecognizerToRemoteClient(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SpeechRecognitionClientBrowserInterface::
-    BindBabelOrcaSpeechRecognitionBrowserObserver(
-        mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
-            pending_remote) {
-  babel_orca_speech_recognition_availability_observers_.Add(
-      std::move(pending_remote));
-  OnSpeechRecognitionAvailabilityChanged(availability_);
-}
-#endif
-
 void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_) &&
-      availability_.IsWaitingOnLiveCaption()) {
-    NotifyObservers(CopyAvailabilityAndFlipLiveCaption(
-        profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled)));
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (prefs::IsLanguageCodeForMicrophoneCaption(language_code,
-                                                profile_prefs_) &&
-      availability_.IsWaitingOnBabelOrca()) {
-    NotifyObservers(CopyAvailabilityAndFlipBabelOrca(/*enabled=*/true));
-  }
-#endif
-}
-
-SpeechRecognitionClientBrowserInterface::Availability
-SpeechRecognitionClientBrowserInterface::CopyAvailabilityAndFlipLiveCaption(
-    bool enabled) {
-  return {enabled ? AvailabilityState::kReady : AvailabilityState::kDisabled,
-          availability_.babel_orca_availability};
-}
-
-SpeechRecognitionClientBrowserInterface::Availability
-SpeechRecognitionClientBrowserInterface::CopyAvailabilityAndFlipBabelOrca(
-    bool enabled) {
-  return {
-      availability_.live_caption_availability,
-      enabled ? AvailabilityState::kReady : AvailabilityState::kDisabled,
-  };
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SpeechRecognitionClientBrowserInterface::
-    ChangeBabelOrcaSpeechRecognitionAvailability(bool enabled) {
-  OnSpeechRecognitionAvailabilityChanged(
-      CopyAvailabilityAndFlipBabelOrca(enabled));
-}
-#endif
-
-void SpeechRecognitionClientBrowserInterface::OnLiveCaptionPrefChange() {
-  OnSpeechRecognitionAvailabilityChanged(CopyAvailabilityAndFlipLiveCaption(
-      profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled)));
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
+    return;
+  NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
 }
 
 void SpeechRecognitionClientBrowserInterface::
-    OnSpeechRecognitionAvailabilityChanged(
-        const Availability& new_availability) {
-  Availability availability_copy = new_availability;
+    OnSpeechRecognitionAvailabilityChanged() {
+  if (speech_recognition_availibility_observers_.empty())
+    return;
 
-  if (new_availability.IsBabelOrcaAvailable() &&
-      !IsBabelOrcaSodaPackAvailable()) {
-    availability_copy.babel_orca_availability = AvailabilityState::kWaiting;
+  bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+
+  if (enabled) {
+    const std::string live_caption_locale =
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+            speech::GetLanguageCode(live_caption_locale))) {
+      NotifyObservers(enabled);
+    }
+  } else {
+    NotifyObservers(enabled);
   }
-
-  if (new_availability.IsLiveCaptionAvailable() &&
-      !IsLiveCaptionSodaPackAvailable()) {
-    availability_copy.live_caption_availability = AvailabilityState::kWaiting;
-  }
-
-  NotifyObservers(availability_copy);
 }
 
-void SpeechRecognitionClientBrowserInterface::OnLiveCaptionLanguageChanged() {
-  if (!IsLiveCaptionSodaPackAvailable()) {
-    availability_.live_caption_availability = AvailabilityState::kWaiting;
-  }
-
+void SpeechRecognitionClientBrowserInterface::
+    OnSpeechRecognitionLanguageChanged() {
+  const std::string language =
+      prefs::GetLiveCaptionLanguageCode(profile_prefs_);
   for (auto& observer : speech_recognition_availibility_observers_) {
-    observer->SpeechRecognitionLanguageChanged(
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_));
+    observer->SpeechRecognitionLanguageChanged(language);
   }
-}
-
-void SpeechRecognitionClientBrowserInterface::OnBabelOrcaLanguageChanged() {
-// No-op on non ChromeOS builds.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!IsBabelOrcaSodaPackAvailable()) {
-    availability_.babel_orca_availability = AvailabilityState::kWaiting;
-  }
-
-  for (auto& observer : babel_orca_speech_recognition_availability_observers_) {
-    observer->SpeechRecognitionLanguageChanged(
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_));
-  }
-#endif
 }
 
 void SpeechRecognitionClientBrowserInterface::
@@ -202,51 +130,10 @@ void SpeechRecognitionClientBrowserInterface::
   }
 }
 
-void SpeechRecognitionClientBrowserInterface::NotifyObservers(
-    const Availability& new_availability) {
-  // Only notify if availability has changed.
-  if (new_availability.LiveCaptionChanged(availability_) &&
-      !new_availability.IsWaitingOnLiveCaption()) {
-    NotifyLiveCaptionObservers(new_availability);
-  }
-  if (new_availability.BabelOrcaChanged(availability_) &&
-      !new_availability.IsWaitingOnBabelOrca()) {
-    NotifyBabelOrcaObservers(new_availability);
-  }
-  // Copy availability back.
-  availability_ = new_availability;
-}
-
-void SpeechRecognitionClientBrowserInterface::NotifyLiveCaptionObservers(
-    const Availability& new_availability) {
+void SpeechRecognitionClientBrowserInterface::NotifyObservers(bool enabled) {
   for (auto& observer : speech_recognition_availibility_observers_) {
-    observer->SpeechRecognitionAvailabilityChanged(
-        new_availability.IsLiveCaptionAvailable());
+    observer->SpeechRecognitionAvailabilityChanged(enabled);
   }
-}
-
-void SpeechRecognitionClientBrowserInterface::NotifyBabelOrcaObservers(
-    const Availability& new_availability) {
-  for (auto& observer : babel_orca_speech_recognition_availability_observers_) {
-    observer->SpeechRecognitionAvailabilityChanged(
-        new_availability.IsBabelOrcaAvailable());
-  }
-}
-
-bool SpeechRecognitionClientBrowserInterface::IsBabelOrcaSodaPackAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-      speech::GetLanguageCode(
-          prefs::GetUserMicrophoneCaptionLanguage(profile_prefs_)));
-#else
-  return false;
-#endif
-}
-
-bool SpeechRecognitionClientBrowserInterface::IsLiveCaptionSodaPackAvailable() {
-  return speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-      speech::GetLanguageCode(
-          prefs::GetLiveCaptionLanguageCode(profile_prefs_)));
 }
 
 }  // namespace speech

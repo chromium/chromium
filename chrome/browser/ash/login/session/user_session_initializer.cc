@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
-#include "chrome/browser/ash/accessibility/live_caption/user_microphone_caption_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
@@ -260,8 +259,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (captions::IsLiveCaptionFeatureSupported() &&
       features::IsSystemLiveCaptionEnabled()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
-
-    UserMicrophoneCaptionServiceFactory::GetInstance()->GetForProfile(profile);
   }
 
   g_browser_process->platform_part()->InitializePrimaryProfileServices(profile);

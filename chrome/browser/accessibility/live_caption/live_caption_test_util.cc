@@ -9,10 +9,8 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -70,11 +68,6 @@ void LiveCaptionBrowserTest::CreatedBrowserMainParts(
 
 void LiveCaptionBrowserTest::SetLiveCaptionEnabled(bool enabled) {
   SetLiveCaptionEnabledOnProfile(enabled, browser()->profile());
-}
-
-void LiveCaptionBrowserTest::ToggleLiveCaptionForBabelOrca(bool enabled) {
-  LiveCaptionControllerFactory::GetForProfile(browser()->profile())
-      ->ToggleLiveCaptionForBabelOrca(enabled);
 }
 
 void LiveCaptionBrowserTest::SetLiveCaptionEnabledOnProfile(bool enabled,
