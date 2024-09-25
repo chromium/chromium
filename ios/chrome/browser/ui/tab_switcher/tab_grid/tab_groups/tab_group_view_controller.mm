@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/i18n/time_formatting.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -62,7 +63,7 @@ constexpr CGFloat kSpace = 8;
   // The blur background.
   UIVisualEffectView* _blurView;
   // Currently displayed group.
-  const TabGroup* _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
   // Whether the `Back` button or the `Esc` key has been tapped.
   BOOL _backButtonTapped;
   // Title view displayed in the navigation bar containing group title and

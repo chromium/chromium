@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
@@ -107,7 +108,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   /// WebState for lens results.
   std::unique_ptr<web::WebState> _webState;
   /// WebState delegate from the browser.
-  web::WebStateDelegate* _browserWebStateDelegate;
+  raw_ptr<web::WebStateDelegate> _browserWebStateDelegate;
   /// Web state policy decider.
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
   /// Whether the browser is off the record.

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -162,7 +163,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
-  TestChromeBrowserState* browser_state_;
+  raw_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
@@ -170,7 +171,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   id dispatcher_;
-  LensOverlayTabHelper* tab_helper_;
+  raw_ptr<LensOverlayTabHelper> tab_helper_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]

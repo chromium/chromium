@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -138,7 +139,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
 
  protected:
   AccountMenuViewController* view_controller_;
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
   id<AccountMenuMutator> mutator_;
   FakeAccountMenuDataSource* data_source_ =
       [[FakeAccountMenuDataSource alloc] init];
@@ -147,8 +148,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
   NSIndexPath* path_for_sign_out_ = [NSIndexPath indexPathForRow:0 inSection:1];
   NSIndexPath* path_for_add_account_ = [NSIndexPath indexPathForRow:1
                                                           inSection:0];
-  AuthenticationService* authentication_service_;
-  FakeSystemIdentityManager* fake_system_identity_manager_;
+  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   base::UserActionTester user_actions_;
 
   // Verify that all mocks expectation are fulfilled.

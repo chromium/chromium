@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -16,8 +17,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation PageInfoAboutThisSiteMediator {
-  web::WebState* _webState;
-  page_info::AboutThisSiteService* _service;
+  raw_ptr<web::WebState> _webState;
+  raw_ptr<page_info::AboutThisSiteService> _service;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState

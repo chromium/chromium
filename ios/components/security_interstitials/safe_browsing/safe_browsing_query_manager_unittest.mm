@@ -86,11 +86,11 @@ ACTION_P4(VerifySyncQueryFinished,
           is_url_sync_safe,
           is_url_async_safe) {
   const SafeBrowsingQueryManager::QueryData& query_data = arg0;
-  const SafeBrowsingQueryManager::Query& query = query_data.query;
+  const SafeBrowsingQueryManager::Query& query = *query_data.query;
   EXPECT_EQ(expected_url, query.url);
   EXPECT_EQ(expected_http_method, query.http_method);
 
-  const SafeBrowsingQueryManager::Result& result = query_data.result;
+  const SafeBrowsingQueryManager::Result& result = *query_data.result;
   if (is_url_sync_safe && is_url_async_safe) {
     EXPECT_FALSE(result.resource);
     EXPECT_TRUE(result.proceed);
@@ -114,11 +114,11 @@ ACTION_P4(VerifyAsyncQueryFinished,
           is_url_sync_safe,
           is_url_async_safe) {
   const SafeBrowsingQueryManager::QueryData& query_data = arg0;
-  const SafeBrowsingQueryManager::Query& query = query_data.query;
+  const SafeBrowsingQueryManager::Query& query = *query_data.query;
   EXPECT_EQ(expected_url, query.url);
   EXPECT_EQ(expected_http_method, query.http_method);
 
-  const SafeBrowsingQueryManager::Result& result = query_data.result;
+  const SafeBrowsingQueryManager::Result& result = *query_data.result;
   if (is_url_sync_safe && is_url_async_safe) {
     EXPECT_FALSE(result.resource);
     EXPECT_TRUE(result.proceed);

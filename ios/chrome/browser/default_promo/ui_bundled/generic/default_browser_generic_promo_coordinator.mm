@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -36,7 +37,7 @@ using base::UserMetricsAction;
   // Default browser promo command handler.
   id<DefaultBrowserGenericPromoCommands> _defaultBrowserPromoHandler;
   // Feature engagement tracker reference.
-  feature_engagement::Tracker* _tracker;
+  raw_ptr<feature_engagement::Tracker> _tracker;
   // Contains all the stats that needs to be recorded for all promo actions.
   PromoStatistics* _promoStats;
   // TODO(crbug.com/357836827): Transparent view to block user interaction

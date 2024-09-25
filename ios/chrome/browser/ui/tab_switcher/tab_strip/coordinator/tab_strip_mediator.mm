@@ -198,7 +198,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   std::unique_ptr<WebStateListFaviconDriverObserver>
       _webStateListFaviconObserver;
   // Browser list.
-  BrowserList* _browserList;
+  raw_ptr<BrowserList> _browserList;
 
   // List of items in the tab strip when a drag operation starts.
   // Should be set back to `nil` when the drag operation ends.

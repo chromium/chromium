@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -90,13 +91,13 @@ class SafeBrowsingQueryManager
     ~QueryData();
 
     // The SafeBrowsingQueryManager related to the query.
-    SafeBrowsingQueryManager* manager;
+    raw_ptr<SafeBrowsingQueryManager> manager;
     // The underlying query.
-    const SafeBrowsingQueryManager::Query& query;
+    raw_ref<const SafeBrowsingQueryManager::Query> query;
     // The type of query.
     const QueryType type;
     // The result of the query.
-    const SafeBrowsingQueryManager::Result& result;
+    raw_ref<const SafeBrowsingQueryManager::Result> result;
     // The PerformedCheck for a query.
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
   };

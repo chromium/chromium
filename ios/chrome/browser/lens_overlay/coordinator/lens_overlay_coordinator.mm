@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
@@ -107,7 +108,7 @@ const CGFloat kMenuSymbolSize = 18;
   ContextMenuConfigurationProvider* _resultContextMenuProvider;
 
   /// The tab helper associated with the current UI.
-  LensOverlayTabHelper* _associatedTabHelper;
+  raw_ptr<LensOverlayTabHelper> _associatedTabHelper;
 
   /// Coordinator of the omnibox.
   OmniboxCoordinator* _omniboxCoordinator;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -68,7 +69,7 @@
   // Identity whose Drive is being browsed.
   id<SystemIdentity> _identity;
 
-  drive::DriveService* _driveService;
+  raw_ptr<drive::DriveService> _driveService;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;

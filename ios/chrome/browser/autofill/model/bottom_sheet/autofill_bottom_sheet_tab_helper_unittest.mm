@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -94,7 +95,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
-  AutofillBottomSheetTabHelper* helper_;
+  raw_ptr<AutofillBottomSheetTabHelper> helper_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;

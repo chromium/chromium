@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
@@ -210,7 +211,7 @@ class TabsCloserTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
-  tab_groups::FakeTabGroupSyncService* fake_tab_group_service_;
+  raw_ptr<tab_groups::FakeTabGroupSyncService> fake_tab_group_service_;
 };
 
 // Tests how a TabsCloser behaves when presented with a Browser containing

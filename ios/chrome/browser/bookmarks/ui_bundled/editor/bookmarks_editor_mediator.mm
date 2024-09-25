@@ -48,7 +48,7 @@
   base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
   raw_ptr<syncer::SyncService> _syncService;
   // The folder in which was the bookmark when the view was opened.
-  const bookmarks::BookmarkNode* _originalFolder;
+  raw_ptr<const bookmarks::BookmarkNode> _originalFolder;
   // Authentication service for this mediator.
   base::WeakPtr<AuthenticationService> _authenticationService;
 }

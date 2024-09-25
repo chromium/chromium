@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/memory/raw_ptr.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
@@ -48,8 +49,8 @@
   // Number of unread items in reading list model.
   NSInteger _readingListUnreadCount;
   //  ShortcutsConfig* _shortcutsConfig;
-  feature_engagement::Tracker* _tracker;
-  AuthenticationService* _authService;
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<AuthenticationService> _authService;
   ShortcutsConsumerList* _consumers;
 }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/credential_provider_migrator_app_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -59,7 +60,7 @@ class CredentialProviderMigratorPasskeyModelObserver
   __weak CredentialProviderMigratorAppAgent* agent_;
 
   // The passkey model being observed.
-  webauthn::PasskeyModel* passkey_model_;
+  raw_ptr<webauthn::PasskeyModel> passkey_model_;
 };
 
 }  // namespace

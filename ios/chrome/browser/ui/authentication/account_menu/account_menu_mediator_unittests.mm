@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -138,11 +139,11 @@ class AccountMenuMediatorTest : public PlatformTest {
   id<AccountMenuMediatorDelegate> delegate_;
   id<AccountMenuConsumer> consumer_;
   AccountMenuMediator* mediator_;
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
-  AuthenticationService* authentication_service_;
-  FakeSystemIdentityManager* fake_system_identity_manager_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
  private:
   // Signs in kPrimaryIdentity as primary identity.

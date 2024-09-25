@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -24,7 +25,7 @@
 @end
 
 @implementation TabGroupIndicatorMediator {
-  ProfileIOS* _profile;
+  raw_ptr<ProfileIOS> _profile;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;

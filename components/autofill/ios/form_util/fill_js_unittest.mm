@@ -8,6 +8,7 @@
 #import <array>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/no_destructor.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -124,7 +125,7 @@ class FillJsTest : public web::WebTestWithWebState,
   // TODO(crbug.com/359538514): Remove this variable and use
   // FormUtilJavaScriptFeature::GetInstance() once Autofill in the isolated
   // world is launched.
-  FormUtilJavaScriptFeature* form_util_java_script_feature_ = nullptr;
+  raw_ptr<FormUtilJavaScriptFeature> form_util_java_script_feature_ = nullptr;
 };
 
 TEST_P(FillJsTest, GetCanonicalActionForForm) {

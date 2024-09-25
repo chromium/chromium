@@ -96,7 +96,7 @@ NSString* CreationText(base::Time creation_date) {
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
   // A list of Browsers.
-  BrowserList* _browserList;
+  raw_ptr<BrowserList> _browserList;
 }
 
 - (instancetype)initWithTabGroupSyncService:

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/saved_tab_groups/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -24,14 +25,14 @@ namespace utils {
 
 // Struct containing local tab group information.
 struct LocalTabGroupInfo {
-  const TabGroup* tab_group = nil;
-  WebStateList* web_state_list = nil;
-  Browser* browser = nil;
+  raw_ptr<const TabGroup> tab_group = nullptr;
+  raw_ptr<WebStateList> web_state_list = nullptr;
+  raw_ptr<Browser> browser = nullptr;
 };
 
 // Struct containing local tab information.
 struct LocalTabInfo {
-  const TabGroup* tab_group = nil;
+  raw_ptr<const TabGroup> tab_group = nullptr;
   int index_in_group = WebStateList::kInvalidIndex;
 };
 

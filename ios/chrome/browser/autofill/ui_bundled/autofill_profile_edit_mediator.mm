@@ -49,7 +49,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   raw_ptr<autofill::AutofillProfile> _autofillProfile;
 
   // Used for editing autofill profile.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // This property is for an interface which sends a response about saving the
   // edited profile.

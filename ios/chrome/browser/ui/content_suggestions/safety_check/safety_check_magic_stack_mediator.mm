@@ -66,7 +66,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 @end
 
 @implementation SafetyCheckMagicStackMediator {
-  IOSChromeSafetyCheckManager* _safetyCheckManager;
+  raw_ptr<IOSChromeSafetyCheckManager> _safetyCheckManager;
   // Observer for Safety Check changes.
   std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
   // Bridge to listen to pref changes.

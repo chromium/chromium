@@ -5,6 +5,7 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
@@ -82,8 +83,9 @@ class TestAutofillJavaScriptFeatureContainer {
   TestAutofillJavaScriptFeatureContainer& operator=(
       const TestAutofillJavaScriptFeatureContainer&) = delete;
 
-  FormUtilJavaScriptFeature* form_util_java_script_feature_ = nullptr;
-  FormHandlersJavaScriptFeature* form_handlers_java_script_feature_ = nullptr;
+  raw_ptr<FormUtilJavaScriptFeature> form_util_java_script_feature_ = nullptr;
+  raw_ptr<FormHandlersJavaScriptFeature> form_handlers_java_script_feature_ =
+      nullptr;
 };
 
 // Test fixture for verifying the registration of remote frame tokens associated

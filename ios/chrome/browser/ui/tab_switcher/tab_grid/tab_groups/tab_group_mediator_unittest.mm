@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -77,7 +78,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
  protected:
   TabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
-  const TabGroup* tab_group_;
+  raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;

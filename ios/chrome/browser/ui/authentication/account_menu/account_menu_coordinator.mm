@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
@@ -65,9 +66,9 @@
 
 @implementation AccountMenuCoordinator {
   UINavigationController* _navigationController;
-  AuthenticationService* _authenticationService;
-  signin::IdentityManager* _identityManager;
-  PrefService* _prefService;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<PrefService> _prefService;
   // Dismiss callback for account details view.
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
@@ -81,7 +82,7 @@
       _syncEncryptionPassphraseTableViewController;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
 
   // Block the UI when the identity removal or switch is in progress.
   std::unique_ptr<ScopedUIBlocker> _UIBlocker;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
@@ -12,10 +13,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_utils.h"
 
 @implementation TabGroupItem {
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   NSMutableDictionary<NSNumber*, GroupTabInfo*>* _tabGroupInfos;
   base::WeakPtr<const TabGroup> _tabGroup;
-  const void* _tabGroupIdentifier;
+  raw_ptr<const void> _tabGroupIdentifier;
   NSUUID* _requestUUID;
 }
 

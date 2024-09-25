@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -98,7 +99,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  web::FakeWebState* web_state_ptr_;
+  raw_ptr<web::FakeWebState> web_state_ptr_;
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;

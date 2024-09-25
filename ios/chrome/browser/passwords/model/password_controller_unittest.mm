@@ -158,7 +158,7 @@ PasswordController* CreatePasswordController(
     PrefService* pref_service,
     web::WebState* web_state,
     password_manager::PasswordStoreInterface* store,
-    MockPasswordManagerClient** weak_client) {
+    raw_ptr<MockPasswordManagerClient>* weak_client) {
   auto client = std::make_unique<NiceMock<MockPasswordManagerClient>>(
       pref_service, store);
   auto reuse_detection_client = std::make_unique<
@@ -505,7 +505,7 @@ class PasswordControllerTest : public PlatformTest {
 
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
 
-  MockPasswordManagerClient* weak_client_;
+  raw_ptr<MockPasswordManagerClient> weak_client_;
 };
 
 struct FindPasswordFormTestData {
@@ -1289,7 +1289,7 @@ class PasswordControllerTestSimple : public PlatformTest {
   autofill::TestAutofillClient autofill_client_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
-  MockPasswordManagerClient* weak_client_;
+  raw_ptr<MockPasswordManagerClient> weak_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
 };

@@ -86,7 +86,7 @@ class SpotlightBookmarkModelBridge;
   NSInteger _reindexInterruptionCount;
 
   // PrefService per a browser state.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
 }
 
 + (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:

@@ -5,6 +5,7 @@
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -109,7 +110,7 @@ class FakeSafeBrowsingUrlCheckerImpl
     return url.host() == FakeSafeBrowsingService::kUnsafeHost;
   }
 
-  FakeSafeBrowsingClient* client_ = nullptr;
+  raw_ptr<FakeSafeBrowsingClient> client_ = nullptr;
   bool is_async_check_ = false;
 };
 

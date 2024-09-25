@@ -169,7 +169,7 @@ class CredentialProviderService
       account_password_store_;
 
   // Passkey store.
-  webauthn::PasskeyModel* passkey_model_;
+  raw_ptr<webauthn::PasskeyModel> passkey_model_;
 
   // Identity manager to observe.
   const raw_ptr<signin::IdentityManager> identity_manager_;

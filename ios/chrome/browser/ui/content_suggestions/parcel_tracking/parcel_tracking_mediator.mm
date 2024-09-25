@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -32,7 +33,7 @@
 @implementation ParcelTrackingMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
-  UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
   raw_ptr<PrefService> _prefService;
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;

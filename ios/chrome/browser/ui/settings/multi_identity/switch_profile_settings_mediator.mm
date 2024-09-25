@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/prefs/pref_service.h"
@@ -30,7 +31,7 @@
 
 @implementation SwitchProfileSettingsMediator {
   NSString* _activeProfileName;
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // List of all items to represent each existing profile and each managed
   // identity without a profile.
   NSMutableArray<SwitchProfileSettingsItem*>* _profileItems;

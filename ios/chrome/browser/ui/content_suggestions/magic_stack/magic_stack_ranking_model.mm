@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -59,10 +60,11 @@
 @end
 
 @implementation MagicStackRankingModel {
-  segmentation_platform::SegmentationPlatformService* _segmentationService;
-  commerce::ShoppingService* _shoppingService;
-  PrefService* _prefService;
-  PrefService* _localState;
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      _segmentationService;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<PrefService> _localState;
   // The latest module ranking returned from the SegmentationService.
   NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
   // YES if the module ranking has been received from the SegmentationService.

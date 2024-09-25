@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -47,7 +48,7 @@ using signin_metrics::AccessPoint;
   id<SystemIdentity> _newIdentity;
 
   // Browser.
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
 
   // BaseViewController to present the signout dialogs on top of it.
   UIViewController* _baseViewController;

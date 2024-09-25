@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -152,8 +153,8 @@ class TabsClosureUtilTest : public PlatformTest {
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
 
-  web::WebState* web_state0_;
-  web::WebState* web_state1_;
+  raw_ptr<web::WebState> web_state0_;
+  raw_ptr<web::WebState> web_state1_;
 };
 
 // Tests `GetTabsInfoForCache` with several time ranges.

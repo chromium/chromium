@@ -42,7 +42,7 @@
   ReauthenticationModule* _reauthenticationModule;
 
   // PersonalDataManager
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 }
 
 // The view controller presented above the keyboard where the user can select

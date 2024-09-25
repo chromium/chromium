@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -102,7 +103,7 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<AuthenticationService> auth_service_;
   base::test::ScopedFeatureList scoped_feature_list_;

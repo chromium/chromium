@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/memory/raw_ptr.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -158,8 +159,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   id<BrowserCommands> mock_browser_commands_handler_;
   AccountMenuViewController* view_controller_;
   AccountMenuMediator* mediator_;
-  AuthenticationService* authentication_service_;
-  FakeSystemIdentityManager* fake_system_identity_manager_;
+  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   // The view owned by the view controller.
   UIView* view_;
   // The navigation controller of the view controller.

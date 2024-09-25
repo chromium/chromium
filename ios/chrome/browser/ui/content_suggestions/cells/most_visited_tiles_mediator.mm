@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -73,8 +74,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // Whether incognito mode is available.
   BOOL _incognitoAvailable;
   BOOL _recordedPageImpression;
-  PrefService* _prefService;
-  UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
   // Consumer of model updates when MVTs are in the Magic Stack.
   id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
 }

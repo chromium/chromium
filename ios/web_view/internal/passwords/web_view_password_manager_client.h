@@ -6,8 +6,10 @@
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_MANAGER_CLIENT_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -137,8 +139,8 @@ class WebViewPasswordManagerClient
 
   web::WebState* web_state_;
   syncer::SyncService* sync_service_;
-  PrefService* pref_service_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<autofill::LogManager> log_manager_;
   password_manager::PasswordStoreInterface* profile_store_;
   password_manager::PasswordStoreInterface* account_store_;

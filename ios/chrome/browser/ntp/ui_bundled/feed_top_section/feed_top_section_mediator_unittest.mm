@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator+testing.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -19,9 +23,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator+testing.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mutator.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -66,8 +67,8 @@ class FeedTopSectionMediatorTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  AuthenticationService* fake_authentication_service_;
-  PrefService* fake_pref_service_;
+  raw_ptr<AuthenticationService> fake_authentication_service_;
+  raw_ptr<PrefService> fake_pref_service_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> fake_profile_;
   FeedTopSectionMediator* feed_top_section_mediator_;

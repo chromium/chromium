@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -63,7 +64,7 @@ class SigninUtilTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/counters/autofill_counter.h"
 #import "components/browsing_data/core/counters/history_counter.h"
@@ -205,7 +206,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   QuickDeleteMediator* mediator_;
   id consumer_;
-  history::HistoryService* history_service_;
+  raw_ptr<history::HistoryService> history_service_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
   FakeBrowsingDataCounterWrapperProducer*
       fake_browsing_data_counter_wrapper_producer_;

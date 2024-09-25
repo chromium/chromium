@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
 
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
@@ -33,7 +34,7 @@
 
 @implementation ManualFillPlusAddressMediator {
   // The favicon loader used in the cell.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
 
   // Used to fetch plus addresses.
   raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;

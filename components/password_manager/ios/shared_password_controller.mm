@@ -127,7 +127,7 @@ class PasswordAutofillAgentDelegateImpl
   }
 
  private:
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 };
 
 AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(

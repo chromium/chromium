@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -106,7 +107,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
   // Feature engagement tracker for notifying promo events.
-  feature_engagement::Tracker* _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
   // Time to ensure that the updates to the consumer are only happening once all
   // the updates are complete.
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
