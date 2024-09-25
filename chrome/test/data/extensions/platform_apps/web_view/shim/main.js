@@ -3889,6 +3889,27 @@ function testBluetoothDisabled() {
   document.body.appendChild(webview);
 }
 
+function testCannotLockKeyboard() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+
+  webview.addEventListener('loadstop', async () => {
+    const lockKeyboard = () => {
+      return navigator.keyboard.lock();
+    };
+
+    try {
+      await evalInWebView(webview, lockKeyboard, []);
+      // The attempt to lock the keyboard should fail.
+      embedder.test.fail();
+    } catch {
+      embedder.test.succeed();
+    }
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -4037,6 +4058,7 @@ embedder.test.testList = {
   'testCannotRequestFonts': testCannotRequestFonts,
   'testSerialDisabled': testSerialDisabled,
   'testBluetoothDisabled': testBluetoothDisabled,
+  'testCannotLockKeyboard': testCannotLockKeyboard,
 };
 
 onload = function() {
