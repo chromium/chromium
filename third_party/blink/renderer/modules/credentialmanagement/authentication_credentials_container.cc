@@ -1262,6 +1262,14 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
+  if (IsDigitalIdentityCredentialType(*options) &&
+      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+          resolver->GetExecutionContext())) {
+    DiscoverDigitalIdentityCredentialFromExternalSource(
+        resolver, exception_state, *options);
+    return promise;
+  }
+
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
   if (options->hasPublicKey()) {
@@ -1511,14 +1519,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
     GetForIdentity(script_state, resolver, *options, *options->identity());
-    return promise;
-  }
-
-  if (IsDigitalIdentityCredentialType(*options) &&
-      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
-          resolver->GetExecutionContext())) {
-    DiscoverDigitalIdentityCredentialFromExternalSource(
-        resolver, exception_state, *options);
     return promise;
   }
 
