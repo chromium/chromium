@@ -2001,13 +2001,21 @@ class TabImpl implements Tab {
             WebContents webContents =
                     WebContentsStateBridge.restoreContentsFromByteBuffer(
                             mWebContentsState, isHidden());
+
+            String failedRestoreUrl = UrlConstants.NTP_URL;
             if (webContents == null) {
                 // State restore failed, just create a new empty web contents as that is the best
-                // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
-                // an error page instead of a blank page in that case (and the last loaded URL).
+                // that can be done at this point.
                 webContents = WebContentsFactory.createWebContents(mProfile, isHidden(), false);
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
+
+                if (!mUrl.getSpec().isEmpty()) {
+                    failedRestoreUrl = mUrl.getSpec();
+                } else if (!TextUtils.isEmpty(
+                        mWebContentsState.getFallbackUrlForRestorationFailure())) {
+                    failedRestoreUrl = mWebContentsState.getFallbackUrlForRestorationFailure();
+                }
             }
             Supplier<CompositorViewHolder> compositorViewHolderSupplier =
                     getActivity().getCompositorViewHolderSupplier();
@@ -2018,8 +2026,7 @@ class TabImpl implements Tab {
             initWebContents(webContents);
 
             if (!restored) {
-                String url = mUrl.getSpec().isEmpty() ? UrlConstants.NTP_URL : mUrl.getSpec();
-                loadUrl(new LoadUrlParams(url, PageTransition.GENERATED));
+                loadUrl(new LoadUrlParams(failedRestoreUrl, PageTransition.GENERATED));
             }
         } finally {
             TraceEvent.end("Tab.unfreezeContents");

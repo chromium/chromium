@@ -841,6 +841,10 @@ public class TabPersistentStore {
         }
 
         if (tabState != null) {
+            if (tabState.contentsState != null) {
+                tabState.contentsState.setFallbackUrlForRestorationFailure(tabToRestore.url);
+            }
+
             @TabRestoreMethod int tabRestoreMethod = TabRestoreMethod.TAB_STATE;
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
