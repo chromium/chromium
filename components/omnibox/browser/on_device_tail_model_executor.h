@@ -43,7 +43,6 @@ class OnDeviceTailModelExecutor {
     ModelInput(std::string prefix,
                std::string previous_query,
                size_t max_num_suggestions);
-    ~ModelInput();
 
     std::string prefix;
     std::string previous_query;
@@ -86,6 +85,9 @@ class OnDeviceTailModelExecutor {
     RnnCellStates();
     RnnCellStates(size_t num_layer, size_t state_size);
     RnnCellStates(const RnnCellStates& other);
+    RnnCellStates(RnnCellStates&& other) noexcept;
+    RnnCellStates& operator=(const RnnCellStates& other);
+    RnnCellStates& operator=(RnnCellStates&& other) noexcept;
     ~RnnCellStates();
 
     bool operator==(const RnnCellStates& other) const {
@@ -97,7 +99,8 @@ class OnDeviceTailModelExecutor {
 
     // Cell states, see definitions at
     // https://github.com/tensorflow/lingvo/blob/master/lingvo/core/rnn_cell.py#L221.
-    std::vector<std::vector<float>> c_i, m_i;
+    std::vector<std::vector<float>> c_i;
+    std::vector<std::vector<float>> m_i;
   };
 
   // The struct which holds the output from subgraph `rnn_step_`.
@@ -128,6 +131,9 @@ class OnDeviceTailModelExecutor {
     BeamNode();
     BeamNode(int num_layer, int state_size);
     BeamNode(const BeamNode& other);
+    BeamNode(BeamNode&& other) noexcept;
+    BeamNode& operator=(const BeamNode& other);
+    BeamNode& operator=(BeamNode&& other) noexcept;
     ~BeamNode();
 
     bool operator>(const BeamNode& other) const {

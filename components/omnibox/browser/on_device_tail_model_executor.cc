@@ -107,8 +107,6 @@ OnDeviceTailModelExecutor::ModelInput::ModelInput(std::string prefix,
       previous_query(std::move(previous_query)),
       max_num_suggestions(max_num_suggestions) {}
 
-OnDeviceTailModelExecutor::ModelInput::~ModelInput() = default;
-
 OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates() = default;
 
 OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates(size_t num_layer,
@@ -120,10 +118,18 @@ OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates(size_t num_layer,
 }
 
 OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates(
-    const RnnCellStates& other) {
-  c_i = other.c_i;
-  m_i = other.m_i;
-}
+    const RnnCellStates& other) = default;
+
+OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates(
+    RnnCellStates&& other) noexcept = default;
+
+OnDeviceTailModelExecutor::RnnCellStates&
+OnDeviceTailModelExecutor::RnnCellStates::operator=(
+    const RnnCellStates& other) = default;
+
+OnDeviceTailModelExecutor::RnnCellStates&
+OnDeviceTailModelExecutor::RnnCellStates::operator=(
+    RnnCellStates&& other) noexcept = default;
 
 OnDeviceTailModelExecutor::RnnCellStates::~RnnCellStates() = default;
 
@@ -149,13 +155,17 @@ OnDeviceTailModelExecutor::BeamNode::BeamNode() = default;
 OnDeviceTailModelExecutor::BeamNode::BeamNode(int num_layer, int state_size)
     : states(num_layer, state_size) {}
 
-OnDeviceTailModelExecutor::BeamNode::BeamNode(const BeamNode& other) {
-  token_ids = other.token_ids;
-  rnn_step_cache_key = other.rnn_step_cache_key;
-  constraint_prefix = other.constraint_prefix;
-  states = other.states;
-  log_prob = other.log_prob;
-}
+OnDeviceTailModelExecutor::BeamNode::BeamNode(const BeamNode& other) = default;
+
+OnDeviceTailModelExecutor::BeamNode::BeamNode(BeamNode&& other) noexcept =
+    default;
+
+OnDeviceTailModelExecutor::BeamNode&
+OnDeviceTailModelExecutor::BeamNode::operator=(const BeamNode& other) = default;
+
+OnDeviceTailModelExecutor::BeamNode&
+OnDeviceTailModelExecutor::BeamNode::operator=(BeamNode&& other) noexcept =
+    default;
 
 OnDeviceTailModelExecutor::BeamNode::~BeamNode() = default;
 
@@ -746,9 +756,8 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
   }
 
   // Construct predictions from the beam node stored in the completed queue.
-  while (!completed_candidates.empty()) {
-    const BeamNode beam(std::move(completed_candidates.top()));
-    completed_candidates.pop();
+  for (; !completed_candidates.empty(); completed_candidates.pop()) {
+    const BeamNode& beam = completed_candidates.top();
     if (beam.token_ids.size() < 3 ||
         !tokenizer_->IsBeginQueryTokenId(beam.token_ids.front()) ||
         !tokenizer_->IsEndQueryTokenId(beam.token_ids.back())) {
