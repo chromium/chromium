@@ -8,9 +8,6 @@
 #include "ash/ash_export.h"
 #include "ui/events/event_rewriter.h"
 
-namespace ui {
-class MouseEvent;
-}
 
 namespace ash {
 
@@ -35,8 +32,9 @@ class ASH_EXPORT DisableTrackpadEventRewriter : public ui::EventRewriter {
   void HandleKeyEvent(const ui::KeyEvent* event);
   void HandleEscapeKeyPress();
   void ResetEscapeKeyPressTracking();
-  ui::EventDispatchDetails HandleMouseEvent(const ui::MouseEvent* event,
-                                            const Continuation continuation);
+  ui::EventDispatchDetails HandleMouseOrScrollEvent(
+      const ui::Event& event,
+      const Continuation continuation);
 
   bool enabled_ = false;
   int escape_press_count_ = 0;

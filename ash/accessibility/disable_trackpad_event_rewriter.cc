@@ -13,6 +13,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
+#include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
@@ -71,8 +72,8 @@ int GetInternalTrackpadDeviceId() {
   return ui::InputDevice::kInvalidId;
 }
 
-bool IsFromInternalTrackpad(const ui::MouseEvent* event) {
-  return event->source_device_id() == GetInternalTrackpadDeviceId();
+bool IsFromInternalTrackpad(const ui::Event& event) {
+  return event.source_device_id() == GetInternalTrackpadDeviceId();
 }
 
 constexpr base::TimeDelta kEnableTrackpadKeyPressWindow = base::Seconds(3);
@@ -107,15 +108,15 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::RewriteEvent(
     HandleKeyEvent(event.AsKeyEvent());
   }
 
-  if (event.IsMouseEvent()) {
-    return HandleMouseEvent(event.AsMouseEvent(), continuation);
+  if (event.IsMouseEvent() || event.IsScrollEvent()) {
+    return HandleMouseOrScrollEvent(event, continuation);
   }
 
   return SendEvent(continuation, &event);
 }
 
-ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseEvent(
-    const ui::MouseEvent* event,
+ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseOrScrollEvent(
+    const ui::Event& event,
     const Continuation continuation) {
   DisableTrackpadMode disable_trackpad_mode =
       Shell::Get()->accessibility_controller()->GetDisableTrackpadMode();
@@ -124,19 +125,22 @@ ui::EventDispatchDetails DisableTrackpadEventRewriter::HandleMouseEvent(
 
   switch (disable_trackpad_mode) {
     case DisableTrackpadMode::kNever:
-      return SendEvent(continuation, event);
+      Shell::Get()->cursor_manager()->ShowCursor();
+      return SendEvent(continuation, &event);
 
     case DisableTrackpadMode::kAlways:
       if (is_internal_trackpad_event) {
+        Shell::Get()->cursor_manager()->HideCursor();
         return DiscardEvent(continuation);
       }
-      return SendEvent(continuation, event);
+      return SendEvent(continuation, &event);
 
     case DisableTrackpadMode::kOnExternalMouseConnected:
       if (is_internal_trackpad_event && is_external_device_connected) {
+        Shell::Get()->cursor_manager()->HideCursor();
         return DiscardEvent(continuation);
       }
-      return SendEvent(continuation, event);
+      return SendEvent(continuation, &event);
   }
 }
 

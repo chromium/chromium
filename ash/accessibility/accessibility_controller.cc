@@ -2902,7 +2902,7 @@ void AccessibilityController::UpdateDisableTrackpadFromPrefs() {
       !::features::IsAccessibilityDisableTrackpadEnabled()) {
     return;
   }
-  // TODO(b:354176487): Send trackpad mode to event rewriter
+
   disable_trackpad_event_rewriter_->SetEnabled(
       active_user_prefs_->GetInteger(
           prefs::kAccessibilityDisableTrackpadMode) !=

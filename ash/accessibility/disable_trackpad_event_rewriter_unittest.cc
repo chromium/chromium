@@ -24,6 +24,7 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
@@ -168,6 +169,7 @@ TEST_F(DisableTrackpadEventRewriterTest, MouseButtonsCanceledInAlwaysMode) {
   SimulateOnlyInternalTrackpadConnected();
 
   generator()->PressLeftButton();
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
   EXPECT_EQ(0U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(0U, event_recorder()->events().size());
@@ -249,12 +251,14 @@ TEST_F(DisableTrackpadEventRewriterTest,
 
   SimulateOnlyInternalTrackpadConnected();
   generator()->PressLeftButton();
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
   EXPECT_EQ(1U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(2U, event_recorder()->events().size());
 
   SimulateExternalMouseConnected();
   generator()->PressLeftButton();
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
   EXPECT_EQ(2U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(2U, event_recorder()->events().size());
@@ -266,6 +270,7 @@ TEST_F(DisableTrackpadEventRewriterTest, ExternalMouseAllowedWhenConnected) {
   generator()->set_mouse_source_device_id(kInternalTrackpadDeviceId);
 
   SimulateOnlyInternalTrackpadConnected();
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
   generator()->PressLeftButton();
   EXPECT_EQ(1U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
@@ -274,6 +279,7 @@ TEST_F(DisableTrackpadEventRewriterTest, ExternalMouseAllowedWhenConnected) {
   SimulateExternalMouseConnected();
   generator()->set_mouse_source_device_id(kUsbMouseDeviceId);
   generator()->PressLeftButton();
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
   EXPECT_EQ(3U, event_recorder()->events().size());
   generator()->ReleaseLeftButton();
   EXPECT_EQ(4U, event_recorder()->events().size());
