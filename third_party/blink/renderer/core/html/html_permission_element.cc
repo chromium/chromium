@@ -318,22 +318,24 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
     return;
   }
 
-  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-    AddConsoleError(
-        String::Format("The permission '%s' is not allowed in fenced frame",
-                       GetType().Utf8().c_str()));
-    return;
-  }
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    if (frame->IsInFencedFrameTree()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed in fenced frame",
+                         GetType().Utf8().c_str()));
+      return;
+    }
 
-  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
-      !GetExecutionContext()
-           ->GetContentSecurityPolicy()
-           ->HasEnforceFrameAncestorsDirectives()) {
-    AddConsoleError(
-        String::Format("The permission '%s' is not allowed without the CSP "
-                       "'frame-ancestors' directive present.",
-                       GetType().Utf8().c_str()));
-    return;
+    if (frame->IsCrossOriginToOutermostMainFrame() &&
+        !GetExecutionContext()
+             ->GetContentSecurityPolicy()
+             ->HasEnforceFrameAncestorsDirectives()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed without the CSP "
+                         "'frame-ancestors' directive present.",
+                         GetType().Utf8().c_str()));
+      return;
+    }
   }
 
   for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
@@ -958,15 +960,17 @@ HTMLPermissionElement::GetClickingEnabledState() const {
     return {false, AtomicString("type_invalid")};
   }
 
-  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-    return {false, AtomicString("illegal_subframe")};
-  }
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    if (frame->IsInFencedFrameTree()) {
+      return {false, AtomicString("illegal_subframe")};
+    }
 
-  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
-      !GetExecutionContext()
-           ->GetContentSecurityPolicy()
-           ->HasEnforceFrameAncestorsDirectives()) {
-    return {false, AtomicString("illegal_subframe")};
+    if (frame->IsCrossOriginToOutermostMainFrame() &&
+        !GetExecutionContext()
+             ->GetContentSecurityPolicy()
+             ->HasEnforceFrameAncestorsDirectives()) {
+      return {false, AtomicString("illegal_subframe")};
+    }
   }
 
   for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
