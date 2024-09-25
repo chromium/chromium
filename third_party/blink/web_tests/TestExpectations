@@ -2609,6 +2609,8 @@ crbug.com/369236542 [ Mac13-arm64 ] virtual/fsa-incognito/external/wpt/fs/FileSy
 crbug.com/369270133 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/368657256 external/wpt/css/css-text-decor/text-emphasis-position-auto-001.html [ Failure ]
 crbug.com/368512272 [ Mac12 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html [ Timeout ]
+crbug.com/368512272 [ Mac12 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.html [ Failure Pass ]
+crbug.com/368512272 [ Mac12-arm64 ] external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.html [ Failure Pass ]
 crbug.com/368657257 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/destroyGraph.https.any.html?npu [ Skip Timeout ]
 crbug.com/368464070 external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Timeout ]
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-022.html [ Failure ]
