@@ -7,6 +7,10 @@ module gpu.mojom;
 
 struct SharedImageCapabilities {
   bool supports_scanout_shared_images;
+
+  [EnableIf=is_win]
+  bool supports_scanout_shared_images_for_software_video_frames;
+
   bool supports_luminance_shared_images;
   bool supports_r16_shared_images;
   bool supports_native_nv12_mappable_shared_images;
