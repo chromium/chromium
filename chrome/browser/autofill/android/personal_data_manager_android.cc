@@ -768,9 +768,24 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
         Iban::Guid(ConvertJavaStringToUTF8(Java_Iban_getGuid(env, jiban))));
     iban->set_record_type(Iban::RecordType::kLocalIban);
   } else {
-    // Support for server IBANs isn't available yet on Android.
+    // Server IBANs shouldn't use PopulateNativeIbanFromJava().
     NOTREACHED();
   }
+}
+
+// TODO(crbug.com/369626137): Move test functions to a new test helper file.
+void PersonalDataManagerAndroid::AddServerIbanForTest(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jiban) {
+  std::unique_ptr<Iban> iban = std::make_unique<Iban>();
+  iban->set_nickname(
+      ConvertJavaStringToUTF16(Java_Iban_getNickname(env, jiban)));
+  iban->set_identifier(
+      Iban::InstrumentId(Java_Iban_getInstrumentId(env, jiban)));
+  iban->set_record_type(Iban::RecordType::kServerIban);
+  personal_data_manager_->payments_data_manager().AddServerIbanForTest(
+      std::move(iban));  // IN-TEST
+  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
@@ -787,10 +802,10 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
 }
 
 ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetLocalIbansForSettings(JNIEnv* env) {
+PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_ibans_list;
   for (const Iban* iban :
-       personal_data_manager_->payments_data_manager().GetLocalIbans()) {
+       personal_data_manager_->payments_data_manager().GetIbans()) {
     j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
   }
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(

@@ -453,6 +453,10 @@ void PaymentsDataManager::Refresh() {
   }
 }
 
+void PaymentsDataManager::AddServerIbanForTest(std::unique_ptr<Iban> iban) {
+  server_ibans_.push_back(std::move(iban));
+}
+
 const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
   auto iter = FindElementByGUID(local_ibans_, guid);
   return iter != local_ibans_.end() ? iter->get() : nullptr;

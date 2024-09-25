@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -304,16 +305,27 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             getPreferenceScreen().addPreference(card_pref);
         }
 
-        // Display local IBANs.
-        for (Iban iban : personalDataManager.getLocalIbansForSettings()) {
+        boolean showLocalIbans =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN);
+        boolean showServerIbans =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN);
+
+        // Display all IBANs.
+        for (Iban iban : personalDataManager.getIbansForSettings()) {
+            if ((iban.getRecordType() == IbanRecordType.LOCAL_IBAN && !showLocalIbans)
+                    || (iban.getRecordType() == IbanRecordType.SERVER_IBAN && !showServerIbans)) {
+                continue;
+            }
             Preference iban_pref = new Preference(getStyledContext());
             iban_pref.setIcon(R.drawable.iban_icon);
             iban_pref.setSingleLineTitle(false);
             iban_pref.setTitle(iban.getLabel());
             iban_pref.setSummary(iban.getNickname());
-            iban_pref.setFragment(AutofillLocalIbanEditor.class.getName());
-            Bundle args = iban_pref.getExtras();
-            args.putString(AutofillEditorBase.AUTOFILL_GUID, iban.getGuid());
+            if (iban.getRecordType() == IbanRecordType.LOCAL_IBAN) {
+                iban_pref.setFragment(AutofillLocalIbanEditor.class.getName());
+                Bundle args = iban_pref.getExtras();
+                args.putString(AutofillEditorBase.AUTOFILL_GUID, iban.getGuid());
+            }
             getPreferenceScreen().addPreference(iban_pref);
             iban_pref.setKey(PREF_IBAN);
         }

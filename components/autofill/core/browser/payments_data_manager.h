@@ -118,6 +118,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Reloads all payments data from the database.
   void Refresh();
 
+  // Add a server IBAN to the cached list of IBANs in PaymentsDataManager.
+  void AddServerIbanForTest(std::unique_ptr<Iban> iban);
+
   // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
   // with the specified `guid`.
   const Iban* GetIbanByGUID(const std::string& guid) const;

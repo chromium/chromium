@@ -225,20 +225,26 @@ public class AutofillPaymentMethodsFragmentTest {
                     .setAccountNumberSuffix("account_number_suffix")
                     .build();
 
-    private static final Iban VALID_BELGIUM_IBAN =
+    private static final Iban VALID_BELGIUM_LOCAL_IBAN =
             new Iban.Builder()
                     .setLabel("")
                     .setNickname("My IBAN")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("BE71096123456769")
                     .build();
-    private static final Iban VALID_RUSSIA_IBAN =
+    private static final Iban VALID_RUSSIA_LOCAL_IBAN =
             new Iban.Builder()
                     .setLabel("")
                     .setNickname("")
                     .setRecordType(IbanRecordType.UNKNOWN)
                     .setValue("RU0204452560040702810412345678901")
                     .build();
+    private static final Iban VALID_SERVER_IBAN =
+            Iban.createServer(
+                    /* instrumentId= */ 100L,
+                    /* label= */ "FR •••0189",
+                    /* nickname= */ "My IBAN",
+                    /* value= */ "");
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -1141,8 +1147,24 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
     public void testAddTwoIbans_displaysTwoLocalIbans() throws Exception {
-        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
-        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_IBAN);
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_LOCAL_IBAN);
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_LOCAL_IBAN);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertEquals(
+                2, getPreferenceCountWithKey(activity, AutofillPaymentMethodsFragment.PREF_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN,
+        ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN
+    })
+    public void testAddTwoIbans_displaysLocalAndServerIbans() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_LOCAL_IBAN);
+        mAutofillTestHelper.addServerIban(VALID_SERVER_IBAN);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -1153,8 +1175,8 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
-    public void testIbanWithNickname_displaysLabelAndNickname() throws Exception {
-        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+    public void testLocalIbanWithNickname_displaysLabelAndNickname() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_LOCAL_IBAN);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference ibanPreference = getFirstPaymentMethodPreference(activity);
@@ -1166,14 +1188,50 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
-    public void testIbanWithoutNickname_displaysLabelOnly() throws Exception {
-        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_IBAN);
+    public void testLocalIbanWithoutNickname_displaysLabelOnly() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_RUSSIA_LOCAL_IBAN);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference ibanPreference = getFirstPaymentMethodPreference(activity);
 
         assertThat(ibanPreference.getTitle().toString()).contains("RU");
         assertThat(ibanPreference.getSummary().toString()).contains("");
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    public void testLocalIban_notShownWhenFeatureDisabled() throws Exception {
+        mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_LOCAL_IBAN);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN})
+    public void testServerIbanWithNickname_displaysNickname() throws Exception {
+        mAutofillTestHelper.addServerIban(VALID_SERVER_IBAN);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference ibanPreference = getFirstPaymentMethodPreference(activity);
+
+        assertThat(ibanPreference.getSummary().toString()).isEqualTo("My IBAN");
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SERVER_IBAN})
+    public void testServerIban_notShownWhenFeatureDisabled() throws Exception {
+        mAutofillTestHelper.addServerIban(VALID_SERVER_IBAN);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_IBAN));
     }
 
     @Test

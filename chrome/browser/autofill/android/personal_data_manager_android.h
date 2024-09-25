@@ -285,14 +285,18 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       Iban* iban);
 
+  // Add a server IBAN. Used only in tests.
+  void AddServerIbanForTest(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& jiban);
+
   // Return IBAN with the specified `jguid`, or Null if there is no IBAN with
   // the specified `jguid`.
   base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Returns an array of stored local IBANs.
-  base::android::ScopedJavaLocalRef<jobjectArray> GetLocalIbansForSettings(
+  // Returns an array of all stored IBANs.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetIbansForSettings(
       JNIEnv* env);
 
   // Adds or modifies a local IBAN. If `jiban`'s GUID is an empty string we

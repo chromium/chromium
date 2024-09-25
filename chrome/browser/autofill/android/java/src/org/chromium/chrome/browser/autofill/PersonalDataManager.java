@@ -495,7 +495,8 @@ public class PersonalDataManager implements Destroyable {
             return mGuid;
         }
 
-        public Long getInstrumentId() {
+        @CalledByNative("Iban")
+        public long getInstrumentId() {
             assert mInstrumentId != null;
             assert mRecordType == IbanRecordType.SERVER_IBAN;
             return mInstrumentId;
@@ -879,14 +880,21 @@ public class PersonalDataManager implements Destroyable {
                         /* includeCountry= */ false);
     }
 
+    public void addServerIbanForTest(Iban iban) {
+        ThreadUtils.assertOnUiThread();
+        assert iban.getRecordType() == IbanRecordType.SERVER_IBAN;
+        PersonalDataManagerJni.get()
+                .addServerIbanForTest(mPersonalDataManagerAndroid, iban); // IN-TEST
+    }
+
     public Iban getIban(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getIbanByGuid(mPersonalDataManagerAndroid, guid);
     }
 
-    public Iban[] getLocalIbansForSettings() {
+    public Iban[] getIbansForSettings() {
         ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get().getLocalIbansForSettings(mPersonalDataManagerAndroid);
+        return PersonalDataManagerJni.get().getIbansForSettings(mPersonalDataManagerAndroid);
     }
 
     public String addOrUpdateLocalIban(Iban iban) {
@@ -1334,9 +1342,11 @@ public class PersonalDataManager implements Destroyable {
 
         AutofillImageFetcher getOrCreateJavaImageFetcher(long nativePersonalDataManagerAndroid);
 
+        void addServerIbanForTest(long nativePersonalDataManagerAndroid, Iban iban); // IN-TEST
+
         Iban getIbanByGuid(long nativePersonalDataManagerAndroid, String guid);
 
-        Iban[] getLocalIbansForSettings(long nativePersonalDataManagerAndroid);
+        Iban[] getIbansForSettings(long nativePersonalDataManagerAndroid);
 
         String addOrUpdateLocalIban(long nativePersonalDataManagerAndroid, Iban iban);
 

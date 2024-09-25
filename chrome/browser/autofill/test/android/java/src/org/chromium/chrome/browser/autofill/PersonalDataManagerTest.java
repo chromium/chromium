@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -18,8 +20,9 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +62,6 @@ import java.util.concurrent.TimeoutException;
 public class PersonalDataManagerTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
-
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private AutofillTestHelper mHelper;
@@ -91,6 +93,25 @@ public class PersonalDataManagerTest {
                 .setPhoneNumber("555 123-4567")
                 .setEmailAddress("jm@example.com")
                 .build();
+    }
+
+    private static Matcher<Iban> ibanMatcher(
+            final @IbanRecordType int recordType, final String nickname) {
+        return new TypeSafeMatcher<Iban>() {
+            @Override
+            protected boolean matchesSafely(Iban iban) {
+                return iban.getRecordType() == recordType && iban.getNickname().equals(nickname);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description
+                        .appendText("an Iban with recordType ")
+                        .appendValue(recordType)
+                        .appendText(" and nickname ")
+                        .appendValue(nickname);
+            }
+        };
     }
 
     @Test
@@ -1288,31 +1309,31 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testGetLocalIbansForSettings() throws TimeoutException {
+    public void testGetIbansForSettings() throws TimeoutException {
         Iban ibanOne =
                 new Iban.Builder()
                         .setLabel("")
-                        .setNickname("My IBAN")
+                        .setNickname("My local IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
                         .setValue("CH56 0483 5012 3456 7800 9")
                         .build();
         Iban ibanTwo =
-                new Iban.Builder()
-                        .setLabel("")
-                        .setNickname("My work IBAN")
-                        .setRecordType(IbanRecordType.UNKNOWN)
-                        .setValue("FR76 3000 6000 0112 3456 7890 189")
-                        .build();
+                Iban.createServer(
+                        /* instrumentId= */ 100L,
+                        /* label= */ "CH •••8009",
+                        /* nickname= */ "My server IBAN",
+                        /* value= */ "");
 
-        String ibanOneGuid = mHelper.addOrUpdateLocalIban(ibanOne);
-        String ibanTwoGuid = mHelper.addOrUpdateLocalIban(ibanTwo);
+        mHelper.addOrUpdateLocalIban(ibanOne);
+        mHelper.addServerIban(ibanTwo);
 
-        Iban[] actualIbans = mHelper.getLocalIbansForSettings();
+        Iban[] actualIbans = mHelper.getIbansForSettings();
 
-        MatcherAssert.assertThat(
+        assertThat(
                 Arrays.asList(actualIbans),
-                Matchers.containsInAnyOrder(
-                        mHelper.getIban(ibanOneGuid), mHelper.getIban(ibanTwoGuid)));
+                containsInAnyOrder(
+                        ibanMatcher(IbanRecordType.LOCAL_IBAN, "My local IBAN"),
+                        ibanMatcher(IbanRecordType.SERVER_IBAN, "My server IBAN")));
     }
 
     @Test

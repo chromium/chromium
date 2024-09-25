@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
@@ -313,14 +314,21 @@ public class AutofillTestHelper {
                 () -> getPersonalDataManagerForLastUsedProfile().getDateNDaysAgoForTesting(days));
     }
 
+    public void addServerIban(final Iban iban) throws TimeoutException {
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        runOnUiThreadBlocking(
+                () -> getPersonalDataManagerForLastUsedProfile().addServerIbanForTest(iban));
+        mOnPersonalDataChangedHelper.waitForCallback(callCount);
+    }
+
     public Iban getIban(final String guid) {
         return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getIban(guid));
     }
 
-    Iban[] getLocalIbansForSettings() throws TimeoutException {
+    Iban[] getIbansForSettings() throws TimeoutException {
         return runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().getLocalIbansForSettings());
+                () -> getPersonalDataManagerForLastUsedProfile().getIbansForSettings());
     }
 
     public String addOrUpdateLocalIban(final Iban iban) throws TimeoutException {
@@ -358,16 +366,20 @@ public class AutofillTestHelper {
                                         .deleteCreditCard(card.getGUID()));
             }
         }
-        for (Iban iban : getLocalIbansForSettings()) {
-            runOnUiThreadBlocking(
-                    () -> getPersonalDataManagerForLastUsedProfile().deleteIban(iban.getGuid()));
+        for (Iban iban : getIbansForSettings()) {
+            if (iban.getRecordType() != IbanRecordType.SERVER_IBAN) {
+                runOnUiThreadBlocking(
+                        () ->
+                                getPersonalDataManagerForLastUsedProfile()
+                                        .deleteIban(iban.getGuid()));
+            }
         }
         // Ensure all data is cleared. Waiting for a single callback for each operation is not
         // enough since tests or production code can also trigger callbacks and not consume them.
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         while (getProfilesForSettings().size() > 0
                 || getCreditCardsForSettings().size() > 0
-                || getLocalIbansForSettings().length > 0) {
+                || getIbansForSettings().length > 0) {
             mOnPersonalDataChangedHelper.waitForCallback(callCount);
             callCount = mOnPersonalDataChangedHelper.getCallCount();
         }
