@@ -32,9 +32,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
-  # https://crbug.com/1282372
-  "security.NetworkListenersARC",
-
   # https://crbug.com/1307940
   "policy.URLCheck.blocklist",
 
