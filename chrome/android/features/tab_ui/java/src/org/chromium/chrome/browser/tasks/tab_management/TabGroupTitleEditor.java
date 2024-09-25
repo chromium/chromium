@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -47,12 +51,32 @@ public abstract class TabGroupTitleEditor {
     }
 
     /**
-     * This method uses {@code title} to update the {@link PropertyModel} of the group which
-     * contains {@code tab}. Concrete class need to specify how to update title in
-     * {@link PropertyModel}.
+     * Returns a displayable title for a given tab group by root id. While this function can help
+     * some UI surfaces, sometimes it is difficult to follow MVC with this approach.
      *
-     * @param tab     The {@link Tab} whose relevant tab group's title will be updated.
-     * @param title   The tab group title to update.
+     * @param context To load resources from.
+     * @param tabGroupModelFilter To read tab and tab group data from.
+     * @param rootId The identifying id of the tab group.
+     * @return A non-null string that can be shown to users.
+     */
+    public static String getDisplayableTitle(
+            Context context, TabGroupModelFilter tabGroupModelFilter, int rootId) {
+        @Nullable String explicitTitle = tabGroupModelFilter.getTabGroupTitle(rootId);
+        if (TextUtils.isEmpty(explicitTitle)) {
+            int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            return getDefaultTitle(context, tabCount);
+        } else {
+            return explicitTitle;
+        }
+    }
+
+    /**
+     * This method uses {@code title} to update the {@link PropertyModel} of the group which
+     * contains {@code tab}. Concrete class need to specify how to update title in {@link
+     * PropertyModel}.
+     *
+     * @param tab The {@link Tab} whose relevant tab group's title will be updated.
+     * @param title The tab group title to update.
      */
     protected abstract void updateTabGroupTitle(Tab tab, String title);
 
