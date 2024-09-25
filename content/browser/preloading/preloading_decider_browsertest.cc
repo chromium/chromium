@@ -33,8 +33,6 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
-            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
             {blink::features::kPreloadingHeuristicsMLModel,
              {{"enact_candidates", "true"}}},
             {blink::features::kPrerender2InNewTab, {}},

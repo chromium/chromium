@@ -289,19 +289,6 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
        PrefetchOnPointerEventHeuristics) {
   const auto [event_type, eagerness] = GetParam();
 
-  base::test::ScopedFeatureList scoped_features;
-  switch (event_type) {
-    case EventType::kPointerDown:
-      scoped_features.InitWithFeatures(
-          {blink::features::kSpeculationRulesPointerDownHeuristics}, {});
-      break;
-
-    case EventType::kPointerHover:
-      scoped_features.InitWithFeatures(
-          {blink::features::kSpeculationRulesPointerHoverHeuristics}, {});
-      break;
-  }
-
   MockContentBrowserClient browser_client;
 
   auto* preloading_decider =
@@ -396,19 +383,6 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
 TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
        PrerenderOnPointerEventHeuristics) {
   const auto [event_type, eagerness] = GetParam();
-
-  base::test::ScopedFeatureList scoped_features;
-  switch (event_type) {
-    case EventType::kPointerDown:
-      scoped_features.InitWithFeatures(
-          {blink::features::kSpeculationRulesPointerDownHeuristics}, {});
-      break;
-
-    case EventType::kPointerHover:
-      scoped_features.InitWithFeatures(
-          {blink::features::kSpeculationRulesPointerHoverHeuristics}, {});
-      break;
-  }
 
   MockContentBrowserClient browser_client;
 
@@ -989,11 +963,8 @@ class PreloadingDeciderMLModelTest
  public:
   PreloadingDeciderMLModelTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {blink::features::kPreloadingHeuristicsMLModel,
-             {{"enact_candidates", GetParam() ? "true" : "false"}}},
-            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
-        },
+        {{blink::features::kPreloadingHeuristicsMLModel,
+          {{"enact_candidates", GetParam() ? "true" : "false"}}}},
         {});
   }
 
@@ -1060,14 +1031,10 @@ class PreloadingDeciderMLModelActiveTest : public PreloadingDeciderTest {
  public:
   PreloadingDeciderMLModelActiveTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {
-            {blink::features::kPreloadingHeuristicsMLModel,
-             {{"enact_candidates", "true"},
-              {"prefetch_moderate_threshold", "40"},
-              {"prerender_moderate_threshold", "60"}}},
-            {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
-            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
-        },
+        {{blink::features::kPreloadingHeuristicsMLModel,
+          {{"enact_candidates", "true"},
+           {"prefetch_moderate_threshold", "40"},
+           {"prerender_moderate_threshold", "60"}}}},
         {});
   }
 

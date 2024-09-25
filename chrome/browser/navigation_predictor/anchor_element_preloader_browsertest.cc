@@ -57,9 +57,8 @@ class AnchorElementPreloaderBrowserTest
         {{blink::features::kNavigationPredictor,
           GetNavigationPredictorFieldTrialParams()},
          {blink::features::kAnchorElementInteraction,
-          GetAnchorElementInteractionFieldTrialParams()},
-         {blink::features::kSpeculationRulesPointerDownHeuristics, {}}},
-        {blink::features::kSpeculationRulesPointerHoverHeuristics});
+          GetAnchorElementInteractionFieldTrialParams()}},
+        {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data/preload");

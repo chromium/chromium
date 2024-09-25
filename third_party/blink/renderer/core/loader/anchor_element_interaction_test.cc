@@ -73,18 +73,11 @@ class AnchorElementInteractionTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
 
-    SetFeatureList();
-
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementInteractionHost::Name_,
         WTF::BindRepeating(&AnchorElementInteractionTest::Bind,
                            WTF::Unretained(this)));
     WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
-  }
-
-  virtual void SetFeatureList() {
-    feature_list_.InitWithFeatures(
-        {features::kSpeculationRulesPointerHoverHeuristics}, {});
   }
 
   void TearDown() override {
@@ -111,7 +104,6 @@ class AnchorElementInteractionTest : public SimTest {
   }
 
   std::vector<std::unique_ptr<MockAnchorElementInteractionHost>> hosts_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AnchorElementInteractionTest, SingleAnchor) {

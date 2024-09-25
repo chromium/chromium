@@ -9829,13 +9829,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
 
 class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderEagernessBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kSpeculationRulesPointerDownHeuristics},
-         {blink::features::kSpeculationRulesPointerHoverHeuristics}},
-        {});
-  }
-
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     PrerenderBrowserTest::SetUp();
@@ -9965,8 +9958,6 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
 
     return gfx::ToFlooredPoint(gfx::PointF(x, y));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 namespace {

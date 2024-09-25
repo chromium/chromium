@@ -807,10 +807,6 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
 
 TEST_F(AnchorElementMetricsSenderTest,
        AnchorElementInteractionTrackerSendsPointerEvents) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kSpeculationRulesPointerHoverHeuristics}, {});
-
   String source("https://example.com/p1");
 
   SimRequest main_resource(source, "text/html");

@@ -286,11 +286,6 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kSpeculationRulesPointerHoverHeuristics)) {
-    return;
-  }
-
   if (event_type == event_type_names::kPointerover) {
     hover_event_candidates_.insert(
         url, HoverEventCandidate{

@@ -205,14 +205,9 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerDownHeuristics)) {
-    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
-                        PreloadingConfidence{100},
-                        /*fallback_to_preconnect=*/true);
-  } else {
-    preconnector_.MaybePreconnect(url);
-  }
+  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
+                      PreloadingConfidence{100},
+                      /*fallback_to_preconnect=*/true);
 }
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -263,14 +258,11 @@ void PreloadingDecider::OnPointerHover(
       /*max_score=*/500,
       /*buckets=*/100);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerHoverHeuristics)) {
-    // Preconnecting on hover events should not be done if the link is not safe
-    // to prefetch or prerender.
-    constexpr bool fallback_to_preconnect = false;
-    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
-                        PreloadingConfidence{100}, fallback_to_preconnect);
-  }
+  // Preconnecting on hover events should not be done if the link is not safe
+  // to prefetch or prerender.
+  constexpr bool fallback_to_preconnect = false;
+  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
+                      PreloadingConfidence{100}, fallback_to_preconnect);
 }
 
 void PreloadingDecider::MaybeEnactCandidate(
@@ -372,16 +364,10 @@ void PreloadingDecider::UpdateSpeculationCandidates(
                (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
                ui::PageTransitionIsNewNavigation(page_transition);
       });
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerDownHeuristics)) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
-  }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerHoverHeuristics)) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
-  }
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
   if (base::FeatureList::IsEnabled(
           blink::features::kPreloadingHeuristicsMLModel) &&
       behavior_config_->ml_model_enacts_candidates()) {
