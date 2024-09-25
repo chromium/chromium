@@ -292,7 +292,7 @@ bool NavigationTransitionUtils::
 
   NavigationControllerImpl& navigation_controller =
       navigation_request.frame_tree_node()->navigator().controller();
-  auto* entry = navigation_controller.GetLastCommittedEntry();
+  auto* last_committed_entry = navigation_controller.GetLastCommittedEntry();
 
   // Remove the screenshot from the destination before checking the conditions.
   // We might not capture for this navigation due to some conditions, but the
@@ -301,8 +301,9 @@ bool NavigationTransitionUtils::
   RemoveScreenshotFromDestination(navigation_controller, destination_entry);
 
   if (gfx::Animation::PrefersReducedMotion()) {
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
   }
@@ -310,8 +311,9 @@ bool NavigationTransitionUtils::
   if (navigation_request.frame_tree_node()
           ->GetParentOrOuterDocumentOrEmbedder()) {
     // No support for embedded pages (including GuestView or fenced frames).
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kCacheMissEmbeddedPages);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kCacheMissEmbeddedPages);
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
   }
@@ -319,11 +321,12 @@ bool NavigationTransitionUtils::
   if (!navigation_request.IsInMainFrame()) {
     // See crbug.com/40896219: We will present the fallback UX for navigations
     // in the subframes.
-    if (!entry->navigation_transition_data()
+    if (!last_committed_entry->navigation_transition_data()
              .cache_hit_or_miss_reason()
              .has_value()) {
-      entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-          CacheHitOrMissReason::kCacheMissSubframe);
+      last_committed_entry->navigation_transition_data()
+          .set_cache_hit_or_miss_reason(
+              CacheHitOrMissReason::kCacheMissSubframe);
     }
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
@@ -332,8 +335,8 @@ bool NavigationTransitionUtils::
   if (navigation_request.frame_tree_node()
           ->current_frame_host()
           ->LoadedWithCacheControlNoStoreHeader()) {
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kCacheMissCCNS);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(CacheHitOrMissReason::kCacheMissCCNS);
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
   }
@@ -351,8 +354,9 @@ bool NavigationTransitionUtils::
       // If we're navigating away from a crashed frame, it's not possible to
       // get a screenshot and fallback UI should be used instead.
       InvokeTestCallbackForNoScreenshot(navigation_request);
-      entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-          CacheHitOrMissReason::kNavigateAwayFromCrashedPage);
+      last_committed_entry->navigation_transition_data()
+          .set_cache_hit_or_miss_reason(
+              CacheHitOrMissReason::kNavigateAwayFromCrashedPage);
       return false;
     case NavigationRequest::EarlyRenderFrameHostSwapType::kInitialFrame:
       // TODO(khushalsagar): Confirm whether this is needed for Chrome's NTP
@@ -371,8 +375,9 @@ bool NavigationTransitionUtils::
     // navigation.
     CHECK(!current_rfh->IsRenderFrameLive());
     InvokeTestCallbackForNoScreenshot(navigation_request);
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kNavigateAwayFromCrashedPageNoEarlySwap);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kNavigateAwayFromCrashedPageNoEarlySwap);
     return false;
   }
 
@@ -380,8 +385,9 @@ bool NavigationTransitionUtils::
   if (auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
       !window_android || !window_android->GetCompositor()) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kNoRootWindowOrCompositor);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kNoRootWindowOrCompositor);
     return false;
   }
 #endif
@@ -395,22 +401,27 @@ bool NavigationTransitionUtils::
     // screenshot the page if we navigate the WebContents again before the UI
     // embeds
     InvokeTestCallbackForNoScreenshot(navigation_request);
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kBrowserNotEmbeddingValidSurfaceId);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kBrowserNotEmbeddingValidSurfaceId);
     return false;
   }
 
-  int request_sequence = navigation_controller.GetLastCommittedEntry()
-                             ->navigation_transition_data()
+  // https://crbug.com/369356401: It's possible to issue two CopyOutputRequests
+  // against the last committed entry. Bump the `copy_output_request_sequence()`
+  // to prevent double-caching the screenshot.
+  last_committed_entry->navigation_transition_data()
+      .increment_copy_output_request_sequence();
+  int request_sequence = last_committed_entry->navigation_transition_data()
                              .copy_output_request_sequence();
   bool copied_via_delegate =
       navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
-          base::BindOnce(
-              &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
-              navigation_request.GetWeakPtr(),
-              navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-              /*is_copied_from_embedder=*/true, request_sequence,
-              SupportsETC1NonPowerOfTwo(navigation_request)));
+          base::BindOnce(&CacheScreenshotImpl,
+                         navigation_controller.GetWeakPtr(),
+                         navigation_request.GetWeakPtr(),
+                         last_committed_entry->GetUniqueID(),
+                         /*is_copied_from_embedder=*/true, request_sequence,
+                         SupportsETC1NonPowerOfTwo(navigation_request)));
 
   if (!copied_via_delegate && only_use_embedder_screenshot) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
@@ -430,17 +441,17 @@ bool NavigationTransitionUtils::
 
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
-      base::BindOnce(
-          &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
-          navigation_request.GetWeakPtr(),
-          navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-          /*is_copied_from_embedder=*/false, request_sequence,
-          SupportsETC1NonPowerOfTwo(navigation_request)));
+      base::BindOnce(&CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
+                     navigation_request.GetWeakPtr(),
+                     last_committed_entry->GetUniqueID(),
+                     /*is_copied_from_embedder=*/false, request_sequence,
+                     SupportsETC1NonPowerOfTwo(navigation_request)));
 
   ++g_num_copy_requests_issued_for_testing;
 
-  entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-      CacheHitOrMissReason::kSentScreenshotRequest);
+  last_committed_entry->navigation_transition_data()
+      .set_cache_hit_or_miss_reason(
+          CacheHitOrMissReason::kSentScreenshotRequest);
 
   return true;
 }
