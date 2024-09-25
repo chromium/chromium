@@ -1144,6 +1144,15 @@ void RenderFrameHostManager::UnloadOldFrame(
         base::UmaHistogramBoolean("BackForwardCache.ProcessReuse.CrossSite",
                                   is_same_process);
       }
+      if (old_render_frame_host->GetSiteInstance()
+              ->GetRelatedActiveContentsCount() > 0) {
+        SCOPED_CRASH_KEY_NUMBER("rvh-double", "related_active_contents",
+                                old_render_frame_host->GetSiteInstance()
+                                    ->GetRelatedActiveContentsCount());
+        SCOPED_CRASH_KEY_BOOL("rvh-double", "is_same_process", is_same_process);
+        base::debug::DumpWithoutCrashing();
+      }
+
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
@@ -5226,6 +5235,34 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   if (old_render_frame_host)
     old_render_frame_host->SetRenderFrameHostOwner(nullptr);
 
+  if (render_frame_host_) {
+    SiteInstanceGroupId sig_id =
+        render_frame_host_->GetSiteInstance()->group()->GetId();
+    bool rfh_in_bfcache =
+        GetNavigationController()
+            .GetBackForwardCache()
+            .IsRenderFrameHostWithSIGInBackForwardCacheForDebugging(sig_id);
+    bool rfph_in_bfcache =
+        GetNavigationController()
+            .GetBackForwardCache()
+            .IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
+                sig_id);
+    bool rvh_in_bfcache =
+        GetNavigationController()
+            .GetBackForwardCache()
+            .IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
+                *static_cast<RenderViewHostImpl*>(
+                    render_frame_host_->GetRenderViewHost()));
+    if (rfh_in_bfcache || rfph_in_bfcache || rvh_in_bfcache) {
+      SCOPED_CRASH_KEY_BOOL("rvh-double", "rfh_in_bfcache", rfh_in_bfcache);
+      SCOPED_CRASH_KEY_BOOL("rvh-double", "rfph_in_bfcache", rfph_in_bfcache);
+      SCOPED_CRASH_KEY_BOOL("rvh-double", "rvh_in_bfcache", rvh_in_bfcache);
+      SCOPED_CRASH_KEY_NUMBER("rvh-double", "related_active_contents",
+                              render_frame_host_->GetSiteInstance()
+                                  ->GetRelatedActiveContentsCount());
+      base::debug::DumpWithoutCrashing();
+    }
+  }
   return old_render_frame_host;
 }
 
