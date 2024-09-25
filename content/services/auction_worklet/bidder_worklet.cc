@@ -538,14 +538,28 @@ void BidderWorklet::BeginGenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_generate_bid_deps",
                                     trace_id);
   if (trusted_signals_request_manager_) {
-    generate_bid_task->trusted_bidding_signals_request =
-        trusted_signals_request_manager_->RequestBiddingSignals(
-            generate_bid_task->bidder_worklet_non_shared_params->name,
-            trusted_bidding_signals_keys,
-            generate_bid_task->bidder_worklet_non_shared_params
-                ->max_trusted_bidding_signals_url_length,
-            base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
-                           base::Unretained(this), generate_bid_task));
+    if (trusted_signals_request_manager_->HasPublicKey()) {
+      DCHECK(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2Support));
+      generate_bid_task->trusted_bidding_signals_request =
+          trusted_signals_request_manager_->RequestKVv2BiddingSignals(
+              generate_bid_task->bidder_worklet_non_shared_params->name,
+              trusted_bidding_signals_keys,
+              generate_bid_task->interest_group_join_origin,
+              generate_bid_task->bidder_worklet_non_shared_params
+                  ->execution_mode,
+              base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                             base::Unretained(this), generate_bid_task));
+    } else {
+      generate_bid_task->trusted_bidding_signals_request =
+          trusted_signals_request_manager_->RequestBiddingSignals(
+              generate_bid_task->bidder_worklet_non_shared_params->name,
+              trusted_bidding_signals_keys,
+              generate_bid_task->bidder_worklet_non_shared_params
+                  ->max_trusted_bidding_signals_url_length,
+              base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                             base::Unretained(this), generate_bid_task));
+    }
     return;
   }
 

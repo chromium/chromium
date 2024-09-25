@@ -27,10 +27,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/cbor/writer.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -44,6 +47,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,7 +87,20 @@ const uint8_t kToyWasm[] = {
     0x7f, 0x00, 0x41, 0xfb, 0x00, 0x0b, 0x07, 0x0e, 0x01, 0x0a, 0x74,
     0x65, 0x73, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x73, 0x74, 0x03, 0x00};
 
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
+
 const char kWasmUrl[] = "https://foo.test/helper.wasm";
+const uint8_t kKeyId = 0xFF;
 
 // Packs kToyWasm into a std::string.
 std::string ToyWasm() {
@@ -366,6 +383,8 @@ class BidderWorkletTest : public testing::Test {
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/false);
     experiment_group_id_ = std::nullopt;
+    public_key_ = nullptr;
+
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
     browser_signal_top_level_seller_origin_.reset();
@@ -733,7 +752,8 @@ class BidderWorkletTest : public testing::Test {
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
         /*trusted_bidding_signals_slot_size_param=*/"", top_window_origin_,
-        permissions_policy_state_.Clone(), experiment_group_id_, nullptr);
+        permissions_policy_state_.Clone(), experiment_group_id_,
+        public_key_ ? public_key_.Clone() : nullptr);
 
     shared_storage_hosts_.resize(NumThreads());
 
@@ -1017,6 +1037,7 @@ class BidderWorkletTest : public testing::Test {
   url::Origin top_window_origin_;
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   std::optional<uint16_t> experiment_group_id_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
   url::Origin browser_signal_seller_origin_;
   std::optional<url::Origin> browser_signal_top_level_seller_origin_;
 
@@ -13991,6 +14012,182 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
       /*expected_pa_requests=*/{},
       /*expected_non_kanon_pa_requests=*/{},
       std::move(expected_real_time_contributions));
+}
+
+class BidderWorkletKVv2Test : public BidderWorkletTest {
+ public:
+  BidderWorkletKVv2Test() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kFledgeTrustedSignalsKVv2Support}, {});
+
+    public_key_ = mojom::TrustedSignalsPublicKey::New(
+        std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                    sizeof(kTestPublicKey)),
+        kKeyId);
+  }
+
+ protected:
+  static std::string GenerateResponseBody(
+      const std::string& request_body,
+      const std::string& response_json_content) {
+    // Decrypt the request.
+    auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+        kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+        EVP_HPKE_AES_256_GCM);
+    CHECK(response_key_config.ok()) << response_key_config.status();
+
+    auto ohttp_gateway =
+        quiche::ObliviousHttpGateway::Create(
+            std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                        sizeof(kTestPrivateKey)),
+            response_key_config.value())
+            .value();
+
+    auto received_request = ohttp_gateway.DecryptObliviousHttpRequest(
+        request_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
+    CHECK(received_request.ok()) << received_request.status();
+
+    // Build response body.
+    cbor::Value::MapValue compression_group;
+    compression_group.try_emplace(cbor::Value("compressionGroupId"),
+                                  cbor::Value(0));
+    compression_group.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
+    compression_group.try_emplace(
+        cbor::Value("content"),
+        cbor::Value(test::ToCborVector(response_json_content)));
+
+    cbor::Value::ArrayValue compression_groups;
+    compression_groups.emplace_back(std::move(compression_group));
+
+    cbor::Value::MapValue body_map;
+    body_map.try_emplace(cbor::Value("compressionGroups"),
+                         cbor::Value(std::move(compression_groups)));
+
+    cbor::Value body_value(std::move(body_map));
+    std::optional<std::vector<uint8_t>> maybe_body_bytes =
+        cbor::Writer::Write(body_value);
+    CHECK(maybe_body_bytes);
+
+    std::string response_body = test::CreateKVv2ResponseBody(
+        base::as_string_view(maybe_body_bytes.value()));
+    auto response_context =
+        std::move(received_request).value().ReleaseContext();
+
+    // Encrypt the response body.
+    auto maybe_response = ohttp_gateway.CreateObliviousHttpResponse(
+        response_body, response_context,
+        kTrustedSignalsKVv2EncryptionResponseMediaType);
+    CHECK(maybe_response.ok()) << maybe_response.status();
+
+    return maybe_response->EncapsulateAndSerialize();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BidderWorkletKVv2Test, GenerateBidTrustedBiddingSignals) {
+  const char kJson[] =
+      R"([{
+          "id": 1,
+          "dataVersion": 101,
+          "keyGroupOutputs": [
+            {
+              "tags": [
+                "interestGroupNames"
+              ],
+              "keyValues": {
+                "Fred": {
+                  "value": "{\"priorityVector\":{\"foo\":1}}"
+                }
+              }
+            },
+            {
+              "tags": [
+                "keys"
+              ],
+              "keyValues": {
+                "key1": {
+                  "value": "1"
+                },
+                "key2": {
+                  "value": "[2]"
+                }
+              }
+            }
+          ]
+        }])";
+
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://url.test/kvv2-test/");
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+
+  auto bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateGenerateBidScript(
+                            R"({ad: trustedBiddingSignals, bid:1,
+            render:"https://response.test/"})"));
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(bidder_worklet.get());
+
+  // Decrypt request and encrypt response.
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(1, url_loader_factory_.NumPending());
+  const network::ResourceRequest* pending_request;
+  ASSERT_TRUE(url_loader_factory_.IsPending(
+      interest_group_trusted_bidding_signals_url_->spec(), &pending_request));
+
+  std::string request_body =
+      std::string(pending_request->request_body->elements()
+                      ->at(0)
+                      .As<network::DataElementBytes>()
+                      .AsStringPiece());
+  std::string response_body = GenerateResponseBody(request_body, kJson);
+
+  std::string headers =
+      base::StringPrintf("%s\nContent-Type: %s", kAllowFledgeHeader,
+                         "message/ad-auction-trusted-signals-request");
+  AddResponse(&url_loader_factory_,
+              interest_group_trusted_bidding_signals_url_.value(),
+              kAdAuctionTrustedSignalsMimeType,
+              /*charset=*/std::nullopt, response_body, headers);
+
+  generate_bid_run_loop_->Run();
+  generate_bid_run_loop_.reset();
+
+  ASSERT_EQ(0UL, bid_errors_.size());
+  ASSERT_EQ(1UL, bids_.size());
+
+  mojom::BidderWorkletBidPtr expected_bid = mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      R"({"key1":1,"key2":[2]})", 1, /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+
+  auto actual_bid = std::move(bids_[0]);
+  EXPECT_EQ(expected_bid->bid_role, actual_bid->bid_role);
+  EXPECT_EQ(expected_bid->ad, actual_bid->ad);
+  EXPECT_EQ(expected_bid->selected_buyer_and_seller_reporting_id,
+            actual_bid->selected_buyer_and_seller_reporting_id);
+  EXPECT_EQ(expected_bid->bid, actual_bid->bid);
+  EXPECT_EQ(blink::PrintableAdCurrency(expected_bid->bid_currency),
+            blink::PrintableAdCurrency(actual_bid->bid_currency));
+  EXPECT_EQ(expected_bid->ad_descriptor.url, actual_bid->ad_descriptor.url);
+  EXPECT_EQ(expected_bid->ad_descriptor.size, actual_bid->ad_descriptor.size);
+  if (!expected_bid->ad_component_descriptors) {
+    EXPECT_FALSE(actual_bid->ad_component_descriptors);
+  } else {
+    EXPECT_THAT(
+        *actual_bid->ad_component_descriptors,
+        ::testing::ElementsAreArray(*expected_bid->ad_component_descriptors));
+  }
+  if (!expected_bid->bid_duration.is_zero()) {
+    EXPECT_GE(actual_bid->bid_duration, expected_bid->bid_duration);
+  }
+  EXPECT_EQ(101, data_version_);
 }
 
 }  // namespace

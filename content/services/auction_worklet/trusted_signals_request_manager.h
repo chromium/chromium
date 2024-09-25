@@ -157,6 +157,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   const GURL& trusted_signals_url() const { return trusted_signals_url_; }
 
+  bool HasPublicKey();
+
  private:
   struct BatchedTrustedSignalsRequest;
 

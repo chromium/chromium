@@ -492,6 +492,10 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
   return;
 }
 
+bool TrustedSignalsRequestManager::HasPublicKey() {
+  return !public_key_.is_null();
+}
+
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
     TrustedSignalsRequestManager* trusted_signals_request_manager,
     const std::string& interest_group_name,
