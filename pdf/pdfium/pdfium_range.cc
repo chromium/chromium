@@ -31,6 +31,11 @@ bool IsIgnorableCharacter(char16_t c) {
   return c == kZeroWidthSpace || c == kPDFSoftHyphenMarker;
 }
 
+// static
+PDFiumRange PDFiumRange::AllTextOnPage(PDFiumPage* page) {
+  return PDFiumRange(page, 0, page->GetCharCount());
+}
+
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
     : page_unload_preventer_(page),
       page_(page),
