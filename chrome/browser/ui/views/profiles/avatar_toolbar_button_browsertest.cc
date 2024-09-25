@@ -715,6 +715,20 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
+// Checks that "Sync paused" has higher priority than passphrase errors.
+// Regression test for https://crbug.com/368997513
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SyncPausedWithPassphraseError) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  AccountInfo account_info =
+      EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
+  SimulatePassphraseError();
+  SimulateSyncPaused();
+  ExpectSyncPaused(avatar_button);
+}
+
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
