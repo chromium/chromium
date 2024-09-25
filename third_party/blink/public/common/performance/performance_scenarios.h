@@ -124,6 +124,10 @@ class BLINK_COMMON_EXPORT ScopedReadOnlyScenarioMemory {
   ScopedReadOnlyScenarioMemory& operator=(const ScopedReadOnlyScenarioMemory&) =
       delete;
 
+  // Returns a pointer to the mapping registered for `scope`, if any.
+  static scoped_refptr<RefCountedScenarioMapping> GetMappingForTesting(
+      Scope scope);
+
  private:
   Scope scope_;
 };

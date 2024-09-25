@@ -66,12 +66,28 @@ interface Renderer {
   CreateAssociatedAgentSchedulingGroup(
     pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
 
-  // Transfers the ReadOnlySharedMemoryRegion which is used to communicate the
-  // `std::atomic<base::TimeTicks>` representing the time at which this renderer
-  // was last upgraded to run at foreground priority or a null TimeTicks if it's
-  // currently running at best-effort priority.
-  TransferSharedLastForegroundTime(
-      mojo_base.mojom.ReadOnlySharedMemoryRegion last_foreground_time_region);
+  // Transfers the ReadOnlySharedMemoryRegions which are used to communicate
+  // state values between the browser and the renderer. If any region handle is
+  // invalid, the renderer will use default state instead of reading from that
+  // memory region.
+  //
+  // `last_foreground_time_region` contains a `std::atomic<base::TimeTicks>`
+  // representing the time at which this renderer was last upgraded to run at
+  // foreground priority or a null TimeTicks if it's currently running at
+  // best-effort priority.
+  //
+  // `performance_scenario_region` contains a list of `std::atomic` enums
+  // representing scenarios local to the renderer that it should use when
+  // making performance decisions.
+  //
+  // `global_performance_scenario_region` contains a list of `std::atomic`
+  // enums representing global scenarios that  the renderer should use when
+  // making performance decisions.
+  TransferSharedMemoryRegions(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion? last_foreground_time_region,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion? performance_scenario_region,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion?
+          global_performance_scenario_region);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.

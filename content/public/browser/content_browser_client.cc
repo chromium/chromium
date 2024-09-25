@@ -1782,4 +1782,15 @@ bool ContentBrowserClient::IsSaveableNavigation(
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
 #endif
 
+base::ReadOnlySharedMemoryRegion
+ContentBrowserClient::GetPerformanceScenarioRegionForProcess(
+    RenderProcessHost* process_host) {
+  return base::ReadOnlySharedMemoryRegion();
+}
+
+base::ReadOnlySharedMemoryRegion
+ContentBrowserClient::GetGlobalPerformanceScenarioRegion() {
+  return base::ReadOnlySharedMemoryRegion();
+}
+
 }  // namespace content

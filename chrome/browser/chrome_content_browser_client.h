@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -1081,6 +1082,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_WIN)
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
 #endif
+
+  base::ReadOnlySharedMemoryRegion GetPerformanceScenarioRegionForProcess(
+      content::RenderProcessHost* process_host) override;
+  base::ReadOnlySharedMemoryRegion GetGlobalPerformanceScenarioRegion()
+      override;
 
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);

@@ -1867,10 +1867,15 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
     CHECK(last_foreground_time_region_.has_value());
   }
 
-  // Duplicate the ReadOnlySharedMemoryRegion so it can be shared again if this
-  // host switches to hosting a new renderer.
-  renderer_interface_->TransferSharedLastForegroundTime(
-      last_foreground_time_region_->DuplicateReadOnlyRegion());
+  // The RenderProcessHostImpl can be reused to host a new renderer process
+  // (such as when recovering from a renderer crash). Need to transfer
+  // duplicates of all handles in case this happens, so that the original
+  // handles can be shared again with the new process.
+  renderer_interface_->TransferSharedMemoryRegions(
+      last_foreground_time_region_->DuplicateReadOnlyRegion(),
+      GetContentClient()->browser()->GetPerformanceScenarioRegionForProcess(
+          this),
+      GetContentClient()->browser()->GetGlobalPerformanceScenarioRegion());
 }
 
 void RenderProcessHostImpl::ResetChannelProxy() {

@@ -281,6 +281,7 @@
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
@@ -8793,4 +8794,15 @@ void ChromeContentBrowserClient::OnUiaProviderRequested(
 void ChromeContentBrowserClient::SetSamplingProfiler(
     std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler) {
   sampling_profiler_ = std::move(sampling_profiler);
+}
+
+base::ReadOnlySharedMemoryRegion
+ChromeContentBrowserClient::GetPerformanceScenarioRegionForProcess(
+    content::RenderProcessHost* process_host) {
+  return performance_manager::GetSharedScenarioRegionForProcess(*process_host);
+}
+
+base::ReadOnlySharedMemoryRegion
+ChromeContentBrowserClient::GetGlobalPerformanceScenarioRegion() {
+  return performance_manager::GetGlobalSharedScenarioRegion();
 }

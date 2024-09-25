@@ -652,6 +652,11 @@ namespace internal {
 BASE_EXPORT void SetSharedLastForegroundTimeForMetrics(
     const std::atomic<TimeTicks>* last_foreground_time_ref);
 
+// Returns the pointer passed to SetSharedLastForegroundTimeForMetrics, or
+// nullptr if it was never called.
+BASE_EXPORT const std::atomic<TimeTicks>*
+GetSharedLastForegroundTimeForMetricsForTesting();
+
 // Reports whether the interval [`now - range`, `now`] overlaps with a period
 // where this process was running at Process::Priority::kBestEffort. Defaults to
 // false if `last_foreground_time_ref` was never set (e.g. in processes not

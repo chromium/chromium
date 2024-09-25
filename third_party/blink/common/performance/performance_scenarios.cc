@@ -66,6 +66,12 @@ ScopedReadOnlyScenarioMemory::~ScopedReadOnlyScenarioMemory() {
   MappingPtrForScope(scope_).reset();
 }
 
+// static
+scoped_refptr<RefCountedScenarioMapping>
+ScopedReadOnlyScenarioMemory::GetMappingForTesting(Scope scope) {
+  return MappingPtrForScope(scope);
+}
+
 SharedAtomicRef<LoadingScenario> GetLoadingScenario(Scope scope) {
   scoped_refptr<RefCountedScenarioMapping> mapping = MappingPtrForScope(scope);
   return SharedAtomicRef<LoadingScenario>(

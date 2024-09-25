@@ -1363,6 +1363,11 @@ void SetSharedLastForegroundTimeForMetrics(
                                    std::memory_order_release);
 }
 
+const std::atomic<TimeTicks>*
+GetSharedLastForegroundTimeForMetricsForTesting() {
+  return g_last_foreground_time_ref.load(std::memory_order_acquire);
+}
+
 bool OverlapsBestEffortRange(TimeTicks sample_time, TimeDelta sample_interval) {
   // std::memory_order_acquire semantics required as documented above to make
   // sure the memory pointed to by the stored `const std::atomic<TimeTicks>*`

@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -3034,6 +3035,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   // satisfied, and false when the request was refused.
   virtual void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
+
+  // Returns a handle to a shared memory region to hold performance scenario
+  // state for the given process, or an invalid handle if there is none. The
+  // result can be transferred to the child process and passed to a
+  // ScopedReadOnlyScenarioMemory object with Scope::kCurrentProcess (see
+  // //third_party/blink/public/common/performance/performance_scenarios.h)
+  virtual base::ReadOnlySharedMemoryRegion
+  GetPerformanceScenarioRegionForProcess(RenderProcessHost* process_host);
+
+  // Returns a handle to a shared memory region to hold performance scenario
+  // state for all processes, or an invalid handle if there is none. The result
+  // can be transferred to a child process and passed to a
+  // ScopedReadOnlyScenarioMemory object with Scope::kGlobal
+  // (see//third_party/blink/public/common/performance/performance_scenarios.h)
+  virtual base::ReadOnlySharedMemoryRegion GetGlobalPerformanceScenarioRegion();
 };
 
 }  // namespace content
