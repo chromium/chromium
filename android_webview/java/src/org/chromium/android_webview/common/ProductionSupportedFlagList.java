@@ -1067,6 +1067,9 @@ public final class ProductionSupportedFlagList {
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_LAZY_FETCH_HAND_WRITING_ICON, "Fetch Hand Writing icon lazily"),
+        Flag.baseFeature(
+                ContentFeatures.IGNORE_DUPLICATE_NAVS,
+                "Ignore duplicate navigations, keeping the older navigations instead."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

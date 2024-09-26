@@ -520,6 +520,17 @@ BASE_FEATURE(kIdbPrioritizeForegroundClients,
              "IdbPrioritizeForegroundClients",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether we ignore duplicate navigations or not, in favor of
+// preserving the already ongoing navigation.
+BASE_FEATURE(kIgnoreDuplicateNavs,
+             "IgnoreDuplicateNavs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDuplicateNavThreshold,
+                   &kIgnoreDuplicateNavs,
+                   "duplicate_nav_threshold",
+                   base::Milliseconds(2000));
+
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
 

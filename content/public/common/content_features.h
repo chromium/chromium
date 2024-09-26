@@ -124,6 +124,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdbPrioritizeForegroundClients);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIgnoreDuplicateNavs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                          kDuplicateNavThreshold);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
 // LINT.IfChange

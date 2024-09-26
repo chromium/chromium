@@ -305,17 +305,6 @@ BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Controls whether we ignore duplicate navigations or not, in favor of
-// preserving the already ongoing navigation.
-BASE_FEATURE(kIgnoreDuplicateNavs,
-             "IgnoreDuplicateNavs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kDuplicateNavThreshold,
-                   &kIgnoreDuplicateNavs,
-                   "duplicate_nav_threshold",
-                   base::Milliseconds(2000));
-
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
