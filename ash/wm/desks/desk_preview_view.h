@@ -119,7 +119,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   size_t GetNumLayersMirrored() const;
 
   // views::Button:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

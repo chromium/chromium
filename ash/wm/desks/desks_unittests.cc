@@ -45,6 +45,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ash/style/color_util.h"
@@ -8419,6 +8420,32 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   }
 }
 
+TEST_P(DesksCloseAllTest, AccessibleName) {
+  // Create a new desk with no windows to have an expanded desks bar view with
+  // mini views.
+  NewDesk();
+  EnterOverview();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
+
+  ui::AXNodeData data;
+  mini_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role,
+            mini_view->desk_preview()->GetViewAccessibility().GetCachedRole());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
+                                       mini_view->desk()->name()));
+
+  mini_view->desk()->SetName(u"Sample Desk Name", /*set_by_user=*/true);
+
+  data = ui::AXNodeData();
+  mini_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
+                                       mini_view->desk()->name()));
+}
+
 // Tests that the shortcut to close all (Ctrl + Shift + W) on a desk mini view
 // works as expected.
 TEST_P(DesksCloseAllTest, ShortcutCloseAll) {
@@ -8795,6 +8822,22 @@ TEST_P(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
           "Ash.Desks.NumberOfWindowsClosed2.Button", 2, 1);
     }
   }
+}
+
+TEST_P(DesksCloseAllTest, DeskPreviewAccessibleProperties) {
+  NewDesk();
+  EnterOverview();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Long press on the first desk preview view.
+  DeskPreviewView* desk_preview_view =
+      GetPrimaryRootDesksBarView()->mini_views()[0]->desk_preview();
+
+  ui::AXNodeData data;
+  desk_preview_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
 }
 
 // Checks that a `DeskActionContextMenu` opens when the user long-presses a

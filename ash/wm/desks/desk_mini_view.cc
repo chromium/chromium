@@ -55,6 +55,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -271,6 +272,9 @@ DeskMiniView::DeskMiniView(
   }
 
   UpdateDeskButtonVisibility();
+  GetViewAccessibility().SetRole(
+      desk_preview_->GetViewAccessibility().GetCachedRole());
+  UpdateAccessibleName();
 }
 
 DeskMiniView::~DeskMiniView() {
@@ -651,17 +655,6 @@ gfx::Size DeskMiniView::CalculatePreferredSize(
                        desk_name_view_->GetPreferredSize().height()};
 }
 
-void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (desk_) {
-    // Add node name for the tast test. In `ash.LaunchSavedDesk`, it should have
-    // a node with the below name for the desk mini view.
-    node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kName,
-        l10n_util::GetStringFUTF8(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
-                                  desk_->name()));
-  }
-}
-
 void DeskMiniView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateFocusColor();
@@ -692,6 +685,7 @@ void DeskMiniView::OnDeskDestroyed(const Desk* desk) {
 
   DCHECK_EQ(desk_, desk);
   desk_ = nullptr;
+  UpdateAccessibleName();
 
   // No need to remove `this` as an observer; it's done automatically.
 }
@@ -700,6 +694,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   if (is_desk_name_being_modified_)
     return;
 
+  UpdateAccessibleName();
   desk_name_view_->SetText(new_name);
   desk_preview_->UpdateAccessibleName();
 
@@ -922,6 +917,18 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
                                       kLabelPreviewSpacing,
                                   text_width, desk_name_view_size.height()};
   desk_name_view_->SetBoundsRect(desk_name_view_bounds);
+}
+
+void DeskMiniView::UpdateAccessibleName() {
+  if (desk_) {
+    // Add node name for the tast test. In `ash.LaunchSavedDesk`, it should have
+    // a node with the below name for the desk mini view.
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF8(
+        IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME, desk_->name()));
+  } else {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 BEGIN_METADATA(DeskMiniView)

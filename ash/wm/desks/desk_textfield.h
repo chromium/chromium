@@ -36,7 +36,6 @@ class ASH_EXPORT DeskTextfield : public SystemTextfield {
       const views::SizeBounds& available_size) const override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;

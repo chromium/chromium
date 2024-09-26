@@ -150,7 +150,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // Desk::Observer:
@@ -189,6 +188,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);
+
+  void UpdateAccessibleName();
 
   const raw_ptr<DeskBarViewBase> owner_bar_;
 

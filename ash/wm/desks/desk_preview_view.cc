@@ -430,6 +430,8 @@ DeskPreviewView::DeskPreviewView(
 
   RecreateDeskContentsMirrorLayers();
 
+  GetViewAccessibility().SetRoleDescription(
+      l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
   UpdateAccessibleName();
 
   AddAccelerator(ui::Accelerator(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN));
@@ -600,14 +602,6 @@ void DeskPreviewView::AcceptSelection() {
 
 size_t DeskPreviewView::GetNumLayersMirrored() const {
   return GetNumDescendants(desk_mirrored_contents_layer_tree_owner_->root());
-}
-
-void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
 }
 
 void DeskPreviewView::Layout(PassKey) {
