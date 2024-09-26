@@ -173,7 +173,7 @@ suite('FlagsAppTest', function() {
     assertFalse(isVisible(clearSearch));
   });
 
-  test('restart toast shown and relaunch event fired', function() {
+  test('ResetAllClick', async function() {
     const restartToast = app.getRequiredElement('#needs-restart');
     const restartButton =
         app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
@@ -183,11 +183,30 @@ suite('FlagsAppTest', function() {
     // The restartButton should be disabled so that it is not in the tab order.
     assertTrue(restartButton.disabled);
 
-    // The reset all button is clicked and restart toast becomes visible.
+    let defaultExperiments = app.getRequiredElement('#default-experiments')
+                                 .querySelectorAll('flags-experiment');
+    assertEquals(supportedFeatures.length, defaultExperiments.length);
+
+    // Need to turn `needsRestart` to true, so that the toast is not dismissed
+    // after re-fetching the backend data below.
+    const data: ExperimentalFeaturesData =
+        structuredClone(experimentalFeaturesData);
+    data.needsRestart = true;
+    browserProxy.setFeatureData(data);
+
+    // The "Reset all" button is clicked, the restart toast becomes visible and
+    // the experiment data is re-requested from the backend.
+    browserProxy.reset();
     resetAllButton.click();
     assertTrue(restartToast.classList.contains('show'));
+    await browserProxy.whenCalled('requestExperimentalFeatures');
 
-    // The restart button is clicked and a browserRestart event fired.
+    // Check that the same number of experiments is rendered after re-rendering.
+    defaultExperiments = app.getRequiredElement('#default-experiments')
+                             .querySelectorAll('flags-experiment');
+    assertEquals(supportedFeatures.length, defaultExperiments.length);
+
+    // The restart button is clicked and a request to restart is sent.
     assertFalse(restartButton.disabled);
     restartButton.click();
     return browserProxy.whenCalled('restartBrowser');

@@ -10,7 +10,7 @@ import './strings.m.js';
 import './experiment.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {CustomElement, emptyHTML} from 'chrome://resources/js/custom_element.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -439,6 +439,7 @@ export class FlagsAppElement extends CustomElement {
 
   private renderExperiments(
       features: Feature[], container: HTMLElement, unsupported = false) {
+    container.innerHTML = emptyHTML();
     for (const feature of features) {
       const experiment = document.createElement('flags-experiment');
       experiment.unsupported = unsupported;
