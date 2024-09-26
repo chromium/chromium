@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
@@ -28,7 +29,8 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   Init(std::move(params));
-  SetContentsView(std::make_unique<TabAppSelectionView>());
+  SetContentsView(std::make_unique<TabAppSelectionView>(
+      static_cast<BirchCoralItem*>(coral_chip->GetItem())));
   widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
       &TabAppSelectionHost::GetDesiredBoundsInScreen, base::Unretained(this)));
   SetBounds(GetDesiredBoundsInScreen());

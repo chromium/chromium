@@ -54,6 +54,7 @@ class TabAppSelectionViewTest : public AshTestBase {
 
     std::vector<std::string> app_ids;
     app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+    app_ids.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
 
     coral_provider_->set_items(
         {BirchCoralItem(u"Title", u"Text", /*page_urls=*/page_urls,
@@ -123,8 +124,8 @@ TEST_F(TabAppSelectionViewTest, CloseSelectorItems) {
       views::AsViewClass<TabAppSelectionView>(menu->GetContentsView());
   ASSERT_TRUE(selection_view);
 
-  // Currently there are 3 tabs and 2 apps and they are hardcoded. There should
-  // be 2 subtitles.
+  // Currently there are 3 tabs and 2 apps and they are hardcoded in
+  // `TabAppSelectionViewTest`. There should be 2 subtitles.
   ASSERT_TRUE(selection_view->GetViewByID(TabAppSelectionView::kTabSubtitleID));
   ASSERT_TRUE(selection_view->GetViewByID(TabAppSelectionView::kAppSubtitleID));
   EXPECT_EQ(5u, selection_view->item_views_.size());

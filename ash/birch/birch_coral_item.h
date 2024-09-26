@@ -28,6 +28,8 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   bool operator==(const BirchCoralItem& rhs) const;
   ~BirchCoralItem() override;
 
+  const std::vector<GURL> page_urls() const { return page_urls_; }
+  const std::vector<std::string> app_ids() const { return app_ids_; }
   int cluster_id() const { return cluster_id_; }
 
   // BirchItem:

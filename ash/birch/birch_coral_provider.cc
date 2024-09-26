@@ -188,8 +188,11 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     page_urls.emplace_back(("https://www.reddit.com/"));
     page_urls.emplace_back(("https://www.figma.com/"));
     page_urls.emplace_back(("https://www.notion.so/"));
+    page_urls.emplace_back(("https://www.nhl.com/"));
+
     std::vector<std::string> app_ids;
     app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+    app_ids.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
 
     Shell::Get()->birch_model()->SetCoralItems({BirchCoralItem(
         u"CoralTitle", u"CoralText", page_urls, app_ids, /*cluster_id=*/0)});

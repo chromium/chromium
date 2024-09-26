@@ -4,12 +4,16 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/typography.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
@@ -102,6 +106,8 @@ class TabAppSelectionView::TabAppSelectionItemView
 
   explicit TabAppSelectionItemView(InitParams params)
       : type_(params.type), owner_(params.owner) {
+    // TODO(http://b/361326120): Add a default icon.
+    views::Label* title;
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
         .SetAccessibleName(u"TempAccessibleName")
@@ -119,7 +125,7 @@ class TabAppSelectionView::TabAppSelectionItemView
                 .SetImageSize(gfx::Size(kImageSize, kImageSize))
                 .SetPreferredSize(kImagePreferredSize),
             views::Builder<views::Label>()
-                .SetText(u"Title")
+                .CopyAddressTo(&title)
                 .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                 .SetProperty(views::kBoxLayoutFlexKey,
                              views::BoxLayoutFlexSpecification())
@@ -153,12 +159,24 @@ class TabAppSelectionView::TabAppSelectionItemView
         delegate->GetFaviconForUrl(params.identifier, /*lacros_profile_id=*/0,
                                    std::move(set_icon_image_callback),
                                    &cancelable_favicon_task_tracker_);
+        title->SetText(base::UTF8ToUTF16(params.identifier));
         return;
       }
       case InitParams::Type::kApp: {
         //  The callback may be called synchronously.
         delegate->GetIconForAppId(params.identifier, kImageSize,
                                   std::move(set_icon_image_callback));
+
+        // Retrieve the title from the app registry cache, which may be null in
+        // tests.
+        if (apps::AppRegistryCache* cache =
+                apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+                    Shell::Get()->session_controller()->GetActiveAccountId())) {
+          cache->ForOneApp(params.identifier,
+                           [&title](const apps::AppUpdate& update) {
+                             title->SetText(base::UTF8ToUTF16(update.Name()));
+                           });
+        }
         return;
       }
     }
@@ -228,7 +246,7 @@ END_METADATA
 
 // -----------------------------------------------------------------------------
 // TabAppSelectionView:
-TabAppSelectionView::TabAppSelectionView() {
+TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -261,8 +279,8 @@ TabAppSelectionView::TabAppSelectionView() {
 
   // TODO(http://b/361326120): Grab the lists of tabs and apps from the model or
   // provider.
-  const int num_tabs = 3;
-  const int num_apps = 2;
+  const size_t num_tabs = coral_item->page_urls().size();
+  const size_t num_apps = coral_item->app_ids().size();
   item_views_.reserve(num_tabs + num_apps);
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
   auto create_item_view =
@@ -280,17 +298,16 @@ TabAppSelectionView::TabAppSelectionView() {
 
   if (num_tabs > 0) {
     contents->AddChildView(CreateSubtitle(u"Tabs", kTabSubtitleID));
-    for (int i = 0; i < num_tabs; ++i) {
+    for (const GURL& gurl : coral_item->page_urls()) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
-                       "https://www.nhl.com/");
+                       gurl.spec());
     }
   }
 
   if (num_apps > 0) {
     contents->AddChildView(CreateSubtitle(u"Apps", kAppSubtitleID));
-    for (int i = 0; i < num_apps; ++i) {
-      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp,
-                       "odknhmnlageboeamepcngndbggdpaobj");
+    for (const std::string& app_id : coral_item->app_ids()) {
+      create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app_id);
     }
   }
 
