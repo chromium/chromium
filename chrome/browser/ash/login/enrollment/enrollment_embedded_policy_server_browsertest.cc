@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -50,6 +51,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -1465,6 +1467,170 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for app to be launched.
   KioskSessionInitializedWaiter().Wait();
+}
+
+// Test suite for a feature that allows to skip the Gaia screen by reusing the
+// credentials saved during enrollment. It depends on the
+// EnrollmentEmbeddedPolicyServerBase for a successful enrollment and the fake
+// Gaia server setup.
+class EnrollmentAddUserTest : public EnrollmentEmbeddedPolicyServerBase {
+ public:
+  EnrollmentAddUserTest() {
+    feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
+  }
+
+ protected:
+  static constexpr test::UIPath kReuseAccountButtonPath = {
+      "account-selection", "reuseAccountButton"};
+  static constexpr test::UIPath kSigninAgainButtonPath = {"account-selection",
+                                                          "signinAgainButton"};
+  static constexpr test::UIPath kNextButtonPath = {"account-selection",
+                                                   "nextButton"};
+  static constexpr test::UIPath kDialogPath = {"account-selection",
+                                               "accountSelectionDialog"};
+  static constexpr test::UIPath kReuseAccountCardLabel = {
+      "account-selection", "reuseAccountCardLabel"};
+  void WaitForLDHSwitch() {
+    // After the enrollment, the current LoginDisplayHost is destroyed, and a
+    // new one is created in its place. During this switch the session state is
+    // changed to LOGIN_PRIMARY, hence we use RunUntil to wait for the state to
+    // change, signaling that the LDH switch is done.
+    EXPECT_TRUE(base::test::RunUntil([]() {
+      return session_manager::SessionManager::Get()->session_state() ==
+             session_manager::SessionState::LOGIN_PRIMARY;
+    }));
+  }
+
+  void WaitForAccountSelectionDialog() {
+    test::OobeJS().CreateVisibilityWaiter(true, kDialogPath)->Wait();
+  }
+
+  void ExpectAccountSelectionDialog() {
+    test::OobeJS().ExpectVisiblePath(kReuseAccountButtonPath);
+    test::OobeJS().ExpectVisiblePath(kSigninAgainButtonPath);
+    test::OobeJS().ExpectVisiblePath(kNextButtonPath);
+    // Make sure that the UI is displaying the correct email address.
+    test::OobeJS().ExpectElementText(
+        "Use " + std::string(FakeGaiaMixin::kFakeUserEmail),
+        kReuseAccountCardLabel);
+  }
+
+  void WaitForAndExpectAccountSelectionScreen() {
+    OobeScreenWaiter(AccountSelectionScreenView::kScreenId).Wait();
+    WaitForAccountSelectionDialog();
+    ExpectAccountSelectionDialog();
+  }
+
+  void ExpectCredentialsCleared() {
+    EXPECT_FALSE(host()->GetWizardContext()->timebound_user_context_holder);
+  }
+
+  void ExpectCredentials() {
+    EXPECT_TRUE(host()->GetWizardContext()->timebound_user_context_holder);
+  }
+
+  void TriggerCredentialsTimeout() {
+    host()
+        ->GetWizardContext()
+        ->timebound_user_context_holder->TriggerTimeoutForTesting();
+  }
+
+  void EnrollAndWaitForAccountSelectionScreen() {
+    TriggerEnrollmentAndSignInSuccessfully();
+    enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+    enrollment_ui_.LeaveSuccessScreen();
+
+    // Wait for the creation of the new LDH before attaching an event observer.
+    WaitForLDHSwitch();
+    host()->GetWizardController()->SkipPostLoginScreensForTesting();
+    WaitForAndExpectAccountSelectionScreen();
+  }
+
+  void ExpectTokenRevocation(bool expect_token_revoked) {
+    std::unique_ptr<MockOAuth2TokenRevoker> mock_token_revoker =
+        std::make_unique<MockOAuth2TokenRevoker>();
+    EXPECT_CALL(*mock_token_revoker, Start(FakeGaiaMixin::kFakeRefreshToken))
+        .Times(::testing::Exactly(expect_token_revoked ? 1 : 0));
+    TimeboundUserContextHolder* holder =
+        host()->GetWizardContext()->timebound_user_context_holder.get();
+    CHECK(holder);
+    holder->InjectTokenRevokerForTesting(std::move(mock_token_revoker));
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// By default the option for reusing the account from enrollment should be
+// selected. Just pressing the next button should result in a sign in.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, NoSelection) {
+  EnrollAndWaitForAccountSelectionScreen();
+  ExpectTokenRevocation(/*expect_token_revoked=*/false);
+  test::OobeJS().ExpectHasAttribute("checked", kReuseAccountButtonPath);
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  test::WaitForPrimaryUserSessionStart();
+}
+
+// Testing the button for continuing with the enrollment account. Make sure that
+// that swtiching back and forth between options works.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, SelectReuseAccount) {
+  EnrollAndWaitForAccountSelectionScreen();
+  ExpectTokenRevocation(/*expect_token_revoked=*/false);
+  test::OobeJS().ExpectHasAttribute("checked", kReuseAccountButtonPath);
+  test::OobeJS().ClickOnPath(kSigninAgainButtonPath);
+  test::OobeJS().ExpectHasAttribute("checked", kSigninAgainButtonPath);
+  test::OobeJS().ClickOnPath(kReuseAccountButtonPath);
+  test::OobeJS().ExpectHasAttribute("checked", kReuseAccountButtonPath);
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  test::WaitForPrimaryUserSessionStart();
+}
+
+// Testing the button for signing in again.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, SelectDifferentAccount) {
+  EnrollAndWaitForAccountSelectionScreen();
+  ExpectTokenRevocation(/*expect_token_revoked=*/true);
+  test::OobeJS().ClickOnPath(kSigninAgainButtonPath);
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+// If the tokens expire while the account selection screen is shown, it should
+// advance to the gaia screen.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest,
+                       TokenExpirationOnAccountSelectionScreen) {
+  EnrollAndWaitForAccountSelectionScreen();
+  ExpectTokenRevocation(/*expect_token_revoked=*/true);
+  TriggerCredentialsTimeout();
+  ExpectCredentialsCleared();
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+// If the tokens expire while the gaia scren is shown, it should have no impact.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, TokenExpirationOnGaiaScreen) {
+  EnrollAndWaitForAccountSelectionScreen();
+  ExpectTokenRevocation(/*expect_token_revoked=*/true);
+  test::OobeJS().ClickOnPath(kSigninAgainButtonPath);
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  TriggerCredentialsTimeout();
+  ExpectCredentialsCleared();
+  EXPECT_EQ(host()->GetWizardController()->current_screen()->screen_id(),
+            GaiaView::kScreenId);
+}
+
+// If the tokens expire while the enrollment done screen is shown the account
+// selection screen shouldn't be shown.
+IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest,
+                       TokenExpirationOnEnrollmentDoneScreen) {
+  TriggerEnrollmentAndSignInSuccessfully();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  ExpectCredentials();
+  ExpectTokenRevocation(/*expect_token_revoked=*/true);
+  TriggerCredentialsTimeout();
+  ExpectCredentialsCleared();
+  enrollment_ui_.LeaveSuccessScreen();
+
+  WaitForLDHSwitch();
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 }  // namespace
