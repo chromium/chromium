@@ -5829,7 +5829,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="241" label="ContentSecurityPolicyReportOnlyInMeta"/>
   <int value="242" label="PrefixedMediaSourceOpen"/>
   <int value="243" label="ResetReferrerPolicy"/>
-  <int value="244" label="CaseInsensitiveAttrSelectorMatch"/>
+  <int value="244" label="OBSOLETE_CaseInsensitiveAttrSelectorMatch"/>
   <int value="245" label="CaptureAttributeAsBoolean"/>
   <int value="246" label="FormNameAccessForImageElement"/>
   <int value="247" label="FormNameAccessForPastNamesMap"/>

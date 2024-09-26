@@ -623,14 +623,15 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
 static bool AttributeValueMatches(const Attribute& attribute_item,
                                   CSSSelector::MatchType match,
                                   const AtomicString& selector_value,
-                                  TextCaseSensitivity case_sensitivity) {
+                                  bool case_insensitive) {
   const AtomicString& value = attribute_item.Value();
   switch (match) {
     case CSSSelector::kAttributeExact:
-      if (case_sensitivity == kTextCaseSensitive) {
-        return selector_value == value;
-      }
-      return EqualIgnoringASCIICase(selector_value, value);
+      // Comparing AtomicStrings for equality is very cheap,
+      // so even for a case-insensitive match, we test that first.
+      return selector_value == value ||
+             (case_insensitive &&
+              EqualIgnoringASCIICase(selector_value, value));
     case CSSSelector::kAttributeSet:
       return true;
     case CSSSelector::kAttributeList: {
@@ -642,8 +643,9 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
 
       unsigned start_search_at = 0;
       while (true) {
-        wtf_size_t found_pos =
-            value.Find(selector_value, start_search_at, case_sensitivity);
+        wtf_size_t found_pos = value.Find(
+            selector_value, start_search_at,
+            case_insensitive ? kTextCaseASCIIInsensitive : kTextCaseSensitive);
         if (found_pos == kNotFound) {
           return false;
         }
@@ -663,22 +665,30 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       if (selector_value.empty()) {
         return false;
       }
-      return value.Contains(selector_value, case_sensitivity);
+      return value.Contains(selector_value, case_insensitive
+                                                ? kTextCaseASCIIInsensitive
+                                                : kTextCaseSensitive);
     case CSSSelector::kAttributeBegin:
       if (selector_value.empty()) {
         return false;
       }
-      return value.StartsWith(selector_value, case_sensitivity);
+      return value.StartsWith(selector_value, case_insensitive
+                                                  ? kTextCaseASCIIInsensitive
+                                                  : kTextCaseSensitive);
     case CSSSelector::kAttributeEnd:
       if (selector_value.empty()) {
         return false;
       }
-      return value.EndsWith(selector_value, case_sensitivity);
+      return value.EndsWith(selector_value, case_insensitive
+                                                ? kTextCaseASCIIInsensitive
+                                                : kTextCaseSensitive);
     case CSSSelector::kAttributeHyphen:
       if (value.length() < selector_value.length()) {
         return false;
       }
-      if (!value.StartsWith(selector_value, case_sensitivity)) {
+      if (!value.StartsWith(selector_value, case_insensitive
+                                                ? kTextCaseASCIIInsensitive
+                                                : kTextCaseSensitive)) {
         return false;
       }
       // It they start the same, check for exact match or following '-':
@@ -707,11 +717,16 @@ static bool AnyAttributeMatches(Element& element,
 
   // NOTE: For kAttributeSet, this is a bogus pointer but never used.
   const AtomicString& selector_value = selector.Value();
-  TextCaseSensitivity case_sensitivity =
-      (selector.AttributeMatch() ==
-       CSSSelector::AttributeMatchType::kCaseInsensitive)
-          ? kTextCaseASCIIInsensitive
-          : kTextCaseSensitive;
+
+  // Legacy dictates that values of some attributes should be compared in
+  // a case-insensitive manner regardless of whether the case insensitive
+  // flag is set or not (but an explicit case sensitive flag will override
+  // that, by causing LegacyCaseInsensitiveMatch() never to be set).
+  const bool case_insensitive =
+      selector.AttributeMatch() ==
+          CSSSelector::AttributeMatchType::kCaseInsensitive ||
+      (selector.LegacyCaseInsensitiveMatch() &&
+       IsA<HTMLDocument>(element.GetDocument()));
 
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
@@ -734,40 +749,10 @@ static bool AnyAttributeMatches(Element& element,
     }
 
     if (AttributeValueMatches(attribute_item, match, selector_value,
-                              case_sensitivity)) {
+                              case_insensitive)) {
       return true;
     }
 
-    if (case_sensitivity == kTextCaseASCIIInsensitive) {
-      if (selector_attr.NamespaceURI() != g_star_atom) {
-        return false;
-      }
-      continue;
-    }
-
-    // Legacy dictates that values of some attributes should be compared in
-    // a case-insensitive manner regardless of whether the case insensitive
-    // flag is set or not.
-    bool legacy_case_insensitive = IsA<HTMLDocument>(element.GetDocument()) &&
-                                   !selector.IsCaseSensitiveAttribute();
-
-    // If case-insensitive, re-check, and count if result differs.
-    // See http://code.google.com/p/chromium/issues/detail?id=327060
-    if (legacy_case_insensitive &&
-        AttributeValueMatches(attribute_item, match, selector_value,
-                              kTextCaseASCIIInsensitive)) {
-      // If the `s` modifier is in the attribute selector, return false
-      // despite of legacy_case_insensitive.
-      if (selector.AttributeMatch() ==
-          CSSSelector::AttributeMatchType::kCaseSensitiveAlways) {
-        DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
-        return false;
-      }
-
-      UseCounter::Count(element.GetDocument(),
-                        WebFeature::kCaseInsensitiveAttrSelectorMatch);
-      return true;
-    }
     if (selector_attr.NamespaceURI() != g_star_atom) {
       return false;
     }

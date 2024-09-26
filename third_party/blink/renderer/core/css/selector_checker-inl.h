@@ -56,7 +56,7 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
       case CSSSelector::kAttributeExact:
         if (selector->AttributeMatch() ==
                 CSSSelector::AttributeMatchType::kCaseInsensitive ||
-            !selector->IsCaseSensitiveAttribute()) {
+            selector->LegacyCaseInsensitiveMatch()) {
           // We don't bother with case-insensitive attribute checks,
           // for simplicity and avoiding the extra tests. (We probably
           // could revisit this in the future if needed.)

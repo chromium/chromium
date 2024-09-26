@@ -208,17 +208,16 @@ static void CollectElementsByTagName(
   }
 }
 
+// TODO(sesse): Reduce the duplication against SelectorChecker.
 static bool AttributeValueMatchesExact(const Attribute& attribute_item,
                                        const AtomicString& selector_value,
-                                       TextCaseSensitivity case_sensitivity) {
+                                       bool case_insensitive) {
   const AtomicString& value = attribute_item.Value();
   if (value.IsNull()) {
     return false;
   }
-  if (case_sensitivity == kTextCaseSensitive) {
-    return selector_value == value;
-  }
-  return EqualIgnoringASCIICase(selector_value, value);
+  return selector_value == value ||
+         (case_insensitive && EqualIgnoringASCIICase(selector_value, value));
 }
 
 // SynchronizeAttribute() is rather expensive to call. We can determine ahead of
@@ -249,17 +248,15 @@ static void CollectElementsByAttributeExact(
     typename SelectorQueryTrait::OutputType& output) {
   const QualifiedName& selector_attr = selector.Attribute();
   const AtomicString& selector_value = selector.Value();
-  const TextCaseSensitivity case_sensitivity =
-      (selector.AttributeMatch() ==
-       CSSSelector::AttributeMatchType::kCaseInsensitive)
-          ? kTextCaseASCIIInsensitive
-          : kTextCaseSensitive;
   const bool is_html_doc = IsA<HTMLDocument>(root_node.GetDocument());
   // Legacy dictates that values of some attributes should be compared in
   // a case-insensitive manner regardless of whether the case insensitive
-  // flag is set or not.
-  const bool legacy_case_insensitive =
-      is_html_doc && !selector.IsCaseSensitiveAttribute();
+  // flag is set or not (but an explicit case sensitive flag will override
+  // that, by causing LegacyCaseInsensitiveMatch() never to be set).
+  const bool case_insensitive =
+      selector.AttributeMatch() ==
+          CSSSelector::AttributeMatchType::kCaseInsensitive ||
+      (selector.LegacyCaseInsensitiveMatch() && is_html_doc);
   const bool needs_synchronize_attribute =
       NeedsSynchronizeAttribute(selector_attr, is_html_doc);
 
@@ -291,7 +288,7 @@ static void CollectElementsByAttributeExact(
       }
 
       if (AttributeValueMatchesExact(attribute_item, selector_value,
-                                     case_sensitivity)) {
+                                     case_insensitive)) {
         SelectorQueryTrait::AppendElement(output, element);
         if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
           return;
@@ -299,34 +296,6 @@ static void CollectElementsByAttributeExact(
         break;
       }
 
-      if (case_sensitivity == kTextCaseASCIIInsensitive) {
-        if (selector_attr.NamespaceURI() != g_star_atom) {
-          break;
-        }
-        continue;
-      }
-
-      // If case-insensitive, re-check, and count if result differs.
-      // See http://code.google.com/p/chromium/issues/detail?id=327060
-      if (legacy_case_insensitive &&
-          AttributeValueMatchesExact(attribute_item, selector_value,
-                                     kTextCaseASCIIInsensitive)) {
-        // If the `s` modifier is in the attribute selector, return false
-        // despite of legacy_case_insensitive.
-        if (selector.AttributeMatch() ==
-            CSSSelector::AttributeMatchType::kCaseSensitiveAlways) {
-          DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
-          break;
-        }
-
-        UseCounter::Count(element.GetDocument(),
-                          WebFeature::kCaseInsensitiveAttrSelectorMatch);
-        SelectorQueryTrait::AppendElement(output, element);
-        if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
-          return;
-        }
-        break;
-      }
       if (selector_attr.NamespaceURI() != g_star_atom) {
         break;
       }

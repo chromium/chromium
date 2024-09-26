@@ -105,8 +105,9 @@ CSSSelector::CSSSelector(MatchType match_type,
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
-          IsCaseSensitiveAttributeField::encode(
-              HTMLDocument::IsCaseSensitiveAttribute(attribute))),
+          LegacyCaseInsensitiveMatchField::encode(
+              !HTMLDocument::IsCaseSensitiveAttribute(attribute) &&
+              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways)),
       data_(attribute) {
   DCHECK_EQ(match_type, kAttributeSet);
 }
@@ -125,8 +126,9 @@ CSSSelector::CSSSelector(MatchType match_type,
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
-          IsCaseSensitiveAttributeField::encode(
-              HTMLDocument::IsCaseSensitiveAttribute(attribute))),
+          LegacyCaseInsensitiveMatchField::encode(
+              !HTMLDocument::IsCaseSensitiveAttribute(attribute) &&
+              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways)),
       data_(MakeGarbageCollected<RareData>(value)) {
   DCHECK(IsAttributeSelector());
   data_.rare_data_->attribute_ = attribute;

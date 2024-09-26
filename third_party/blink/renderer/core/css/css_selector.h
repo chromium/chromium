@@ -468,7 +468,7 @@ class CORE_EXPORT CSSSelector {
   // http://www.w3.org/TR/css3-selectors/#attrnmsp
   const QualifiedName& Attribute() const;
   AttributeMatchType AttributeMatch() const;
-  bool IsCaseSensitiveAttribute() const;
+  bool LegacyCaseInsensitiveMatch() const;
   // Returns the argument of a parameterized selector. For example, :lang(en-US)
   // would have an argument of en-US.
   // Note that :nth-* selectors don't store an argument and just store the
@@ -657,7 +657,7 @@ class CORE_EXPORT CSSSelector {
   // Used for attribute selector (with value). Real type is AttributeMatchType.
   using AttributeMatchField =
       IsCoveredByBucketingField::DefineNextValue<unsigned, 2>;
-  using IsCaseSensitiveAttributeField =
+  using LegacyCaseInsensitiveMatchField =
       AttributeMatchField::DefineNextValue<bool, 1>;
   // 4 free bits here.
   BitField bits_;
@@ -793,9 +793,9 @@ inline CSSSelector::AttributeMatchType CSSSelector::AttributeMatch() const {
   return static_cast<AttributeMatchType>(bits_.get<AttributeMatchField>());
 }
 
-inline bool CSSSelector::IsCaseSensitiveAttribute() const {
+inline bool CSSSelector::LegacyCaseInsensitiveMatch() const {
   DCHECK(IsAttributeSelector());
-  return bits_.get<IsCaseSensitiveAttributeField>();
+  return bits_.get<LegacyCaseInsensitiveMatchField>();
 }
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
@@ -833,7 +833,7 @@ inline CSSSelector::CSSSelector()
             IsImplicitlyAddedField::encode(false) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            IsCaseSensitiveAttributeField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false)),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -846,7 +846,7 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
             IsImplicitlyAddedField::encode(tag_is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            IsCaseSensitiveAttributeField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false)),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
@@ -859,7 +859,7 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
             IsImplicitlyAddedField::encode(is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            IsCaseSensitiveAttributeField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false)),
       data_(parent_rule) {}
 
 inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
@@ -875,7 +875,7 @@ inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
             IsImplicitlyAddedField::encode(is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            IsCaseSensitiveAttributeField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false)),
       data_(pseudo_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)

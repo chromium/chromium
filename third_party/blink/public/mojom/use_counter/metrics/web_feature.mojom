@@ -156,8 +156,7 @@ enum WebFeature {
   kPrefixedTransform3dMediaFeature = 237,
   kPrefixedStorageQuota = 240,
   kResetReferrerPolicy = 243,
-  // Case-insensitivity dropped from specification.
-  kCaseInsensitiveAttrSelectorMatch = 244,
+  kOBSOLETE_CaseInsensitiveAttrSelectorMatch = 244,
   kFormNameAccessForImageElement = 246,
   kFormNameAccessForPastNamesMap = 247,
   kFormAssociationByParser = 248,
