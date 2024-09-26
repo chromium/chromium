@@ -929,6 +929,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Callback method to handle the intent results and pass on the path to the native
      * SelectFileDialog.
+     *
      * @param resultCode The result code whether the intent returned successfully.
      * @param results The results of the requested intent.
      */
@@ -990,6 +991,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             Uri[] filePathArray = new Uri[itemCount];
             for (int i = 0; i < itemCount; ++i) {
                 filePathArray[i] = clipData.getItemAt(i).getUri();
+                // Check if the caller has permission to access the uri if it is a content uri.
+                if (ContentResolver.SCHEME_CONTENT.equals(filePathArray[i].getScheme())
+                        && !doesCallerHavePermissionForUri(filePathArray[i])) {
+                    onFileNotSelected();
+                    return;
+                }
             }
             GetDisplayNameTask task =
                     new GetDisplayNameTask(
@@ -1011,6 +1018,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
         if (ContentResolver.SCHEME_CONTENT.equals(results.getScheme())) {
             Uri uri = results.getData();
+            // Check if the caller has permission to access the uri.
+            if (!doesCallerHavePermissionForUri(uri)) {
+                onFileNotSelected();
+                return;
+            }
             if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)) {
                 ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
                 try {
@@ -1735,6 +1747,37 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
         int index = type.indexOf('/');
         return index > 0 && index < type.length() - 1;
+    }
+
+    /**
+     * Returns whether the current caller of the activity can access a content Uri. This method can
+     * only be called inside onNewIntent() or onActivityResult() and may throw an exception if
+     * called in other methods.
+     *
+     * @param uri Uri for permission check.
+     * @return Whether the caller has permission to access uri.
+     */
+    @SuppressLint("NewApi")
+    public boolean doesCallerHavePermissionForUri(Uri uri) {
+        assert ThreadUtils.runningOnUiThread();
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+                || !UiAndroidFeatureMap.isEnabled(
+                        UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION)) {
+            return true;
+        }
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) {
+            return false;
+        }
+        try {
+            return activity.getCurrentCaller()
+                            .checkContentUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    == PackageManager.PERMISSION_GRANTED;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to check caller's permission.", e);
+        }
+        return false;
     }
 
     @CalledByNative

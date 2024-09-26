@@ -17,11 +17,13 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
@@ -1262,5 +1264,21 @@ public class SelectFileDialogTest {
                             + " Method: "
                             + method);
         }
+    }
+
+    /**
+     * TODO(b/281539662): Add a test for checking the caller permission when Robolectrics supports
+     * Android V.
+     */
+    @Test
+    @EnableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIntentPermissionNotCheckedOnLowerSDKVersions() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        Mockito.verify(windowAndroid, Mockito.times(0)).getActivity();
+        selectFileDialog.onIntentCompleted(
+                Activity.RESULT_OK,
+                new Intent(Intent.ACTION_VIEW, Uri.parse("content://com.android.xyz/xyz")));
     }
 }
