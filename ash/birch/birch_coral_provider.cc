@@ -48,6 +48,7 @@ namespace ash {
 namespace {
 
 constexpr size_t kMaxClusterCount = 2;
+BirchCoralProvider* g_instance = nullptr;
 
 bool HasValidClusterCount(size_t num_clusters) {
   return num_clusters <= kMaxClusterCount;
@@ -158,6 +159,8 @@ std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
 
 BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     : birch_model_(birch_model) {
+  g_instance = this;
+
   if (features::IsTabClusterUIEnabled()) {
     Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   }
@@ -168,6 +171,12 @@ BirchCoralProvider::~BirchCoralProvider() {
   if (features::IsTabClusterUIEnabled()) {
     Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
   }
+
+  g_instance = nullptr;
+}
+
+BirchCoralProvider* BirchCoralProvider::Get() {
+  return g_instance;
 }
 
 void BirchCoralProvider::OnTabItemAdded(TabClusterUIItem* tab_item) {
@@ -181,6 +190,13 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
 void BirchCoralProvider::RequestBirchDataFetch() {
+  // TODO(yulunwu) make appropriate data request, send data to backend.
+  if (HasValidPostLoginData()) {
+    HandlePostLoginDataRequest();
+  } else {
+    HandleInSessionDataRequest();
+  }
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoral)) {
     // TODO(owenzhang): Remove placeholder page_urls.
@@ -197,13 +213,6 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     Shell::Get()->birch_model()->SetCoralItems({BirchCoralItem(
         u"CoralTitle", u"CoralText", page_urls, app_ids, /*cluster_id=*/0)});
     return;
-  }
-
-  // TODO(yulunwu) make appropriate data request, send data to backend.
-  if (HasValidPostLoginData()) {
-    HandlePostLoginDataRequest();
-  } else {
-    HandleInSessionDataRequest();
   }
 }
 

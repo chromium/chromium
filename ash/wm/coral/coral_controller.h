@@ -73,6 +73,9 @@ class ASH_EXPORT CoralController {
   void CacheEmbeddings(const CoralRequest& request,
                        base::OnceCallback<void(bool)> callback);
 
+  // Creates a new desk for the content group.
+  void OpenNewDeskWithGroup(CoralResponse::Group group);
+
  private:
   base::WeakPtrFactory<CoralController> weak_factory_{this};
 };

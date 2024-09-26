@@ -26,6 +26,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   BirchCoralProvider& operator=(const BirchCoralProvider&) = delete;
   ~BirchCoralProvider() override;
 
+  static BirchCoralProvider* Get();
+
   const base::flat_map<int, coral::mojom::GroupPtr>& groups() const {
     return groups_;
   }

@@ -5,6 +5,7 @@
 #include "ash/birch/birch_coral_item.h"
 
 #include "ash/birch/birch_coral_grouped_icon_image.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_model.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
@@ -123,21 +124,30 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
   temp_group->entities.push_back(
       coral::mojom::EntityKey::NewTabUrl(GURL("https://www.nhl.com/")));
 
+  // Pick first half of the tabs from request for testing.
+  const auto& request_items =
+      BirchCoralProvider::Get()->GetCoralRequestForTest().content();
+  std::vector<coral::mojom::TabPtr> tabs;
+  for (const auto& item : request_items) {
+    if (item->is_tab()) {
+      tabs.push_back(std::move(item->get_tab()));
+    }
+  }
+
+  for (size_t i = 0; i < tabs.size() / 2; i++) {
+    temp_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(tabs[i]->url));
+  }
+
+  // TODO(http://b/365839564): Handle save for later case.
+
+  // TODO(http://b/365839465): Handle post-login case.
   if (is_post_login) {
     Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(temp_group));
     return;
   }
 
-  DesksController* desks_controller = DesksController::Get();
-  if (!desks_controller->CanCreateDesks()) {
-    return;
-  }
-
-  desks_controller->NewDesk(DesksCreationRemovalSource::kCoral,
-                            base::UTF8ToUTF16(temp_group->title));
-  desks_controller->ActivateDesk(desks_controller->desks().back().get(),
-                                 DesksSwitchSource::kCoral);
-  Shell::Get()->coral_delegate()->OpenNewDeskWithGroup(std::move(temp_group));
+  Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(temp_group));
 }
 
 // TODO(b/362530155): Consider refactoring icon loading logic into
