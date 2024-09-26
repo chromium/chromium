@@ -6,6 +6,7 @@
 import collections
 import decimal
 import functools
+import logging
 import math
 import statistics
 
@@ -59,16 +60,13 @@ def DetectViaStdDevOutlier(mixin_stats: tasks.MixinStats,
 
   bad_machines = BadMachineList()
 
-  failure_rates = []
-  for _, bot_stats in mixin_stats.IterBots():
-    failure_rates.append(float(bot_stats.failed_tasks) / bot_stats.total_tasks)
-
+  failure_rates = mixin_stats.GetOverallFailureRates()
   mean = statistics.mean(failure_rates)
   stddev = statistics.pstdev(failure_rates)
   threshold = mean + stddev_multiplier * stddev
 
   for bot_id, bot_stats in mixin_stats.IterBots():
-    bot_failure_rate = float(bot_stats.failed_tasks) / bot_stats.total_tasks
+    bot_failure_rate = bot_stats.overall_failure_rate
     if bot_failure_rate <= threshold:
       continue
     reason = (f'Had a failure rate of {bot_failure_rate} despite a fleet-wide '
@@ -115,6 +113,59 @@ def DetectViaRandomChance(mixin_stats: tasks.MixinStats,
               f'failed despite a fleet-wide average failed task rate of '
               f'{average_failure_rate}. The probability of this happening '
               f'randomly is {p}.')
+    bad_machines.AddBadMachine(bot_id, reason)
+
+  return bad_machines
+
+
+def DetectViaInterquartileRange(mixin_stats: tasks.MixinStats, mixin_name: str,
+                                iqr_multiplier: float) -> 'BadMachineList':
+  """Detects bad machines by looking for for bots whose failure rate is above
+  Q3 + |iqr_multiplier| * IQR, which is a standard way of looking for outliers
+  in data.
+
+  See https://en.wikipedia.org/wiki/Interquartile_range#Outliers.
+
+  Args:
+    mixin_stats: A tasks.MixinStats containing the task stats for the hardware
+        fleet being checked.
+    mixin_name: The name of the mixin being checked. For debugging purposes.
+    iqr_multiplier: How many multiples of the IQR above the third quartile a
+        failure rate has to be to be considered an outlier.
+
+  Returns:
+    A BadMachineList containing any bad machines found.
+  """
+  if mixin_stats.total_tasks <= 0:
+    raise ValueError('mixin_stats needs to contain data')
+  if iqr_multiplier <= 0:
+    raise ValueError('iqr_multiplier must be positive')
+
+  bad_machines = BadMachineList()
+  failure_rates = mixin_stats.GetOverallFailureRates()
+  if len(failure_rates) <= 4:
+    logging.info(
+        'Quartiles require at least 5 samples to be meaningful. Mixin %s only '
+        'provided %d samples.', mixin_name, len(failure_rates))
+    return bad_machines
+
+  quartiles = statistics.quantiles(failure_rates, n=4, method='inclusive')
+  iqr = quartiles[2] - quartiles[0]
+
+  if iqr == 0:
+    logging.info(
+        'Mixin %s resulted in an IQR of 0, which is not useful for detecting '
+        'outliers.', mixin_name)
+    return bad_machines
+
+  upper_bound = quartiles[2] + iqr_multiplier * iqr
+
+  for bot_id, bot_stats in mixin_stats.IterBots():
+    bot_failure_rate = bot_stats.overall_failure_rate
+    if bot_failure_rate <= upper_bound:
+      continue
+    reason = (f'Failure rate of {bot_failure_rate} is above the IQR-based '
+              f'upper bound of {upper_bound}.')
     bad_machines.AddBadMachine(bot_id, reason)
 
   return bad_machines

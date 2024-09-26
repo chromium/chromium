@@ -210,6 +210,130 @@ class DetectViaRandomChanceUnittest(unittest.TestCase):
     self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
 
 
+class DetectViaInterquartileRangeUnittest(unittest.TestCase):
+
+  def testInputChecking(self):
+    """Tests that invalid inputs are checked."""
+    # No tasks.
+    mixin_stats = tasks.MixinStats()
+    mixin_stats.Freeze()
+    with self.assertRaises(ValueError):
+      detection.DetectViaInterquartileRange(mixin_stats, 'mixin_name', 1.5)
+
+    # Non-positive iqr_multiplier.
+    mixin_stats = tasks.MixinStats()
+    mixin_stats.AddStatsForBotAndSuite('bot', 'suite', 1, 0)
+    mixin_stats.Freeze()
+    with self.assertRaises(ValueError):
+      detection.DetectViaInterquartileRange(mixin_stats, 'mixin_name', 0)
+
+    # Less than the number of samples needed for quartiles to be meaningful.
+    mixin_stats = tasks.MixinStats()
+    mixin_stats.AddStatsForBotAndSuite('bot-1', 'suite', 99, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-2', 'suite', 1, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-3', 'suite', 1, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-4', 'suite', 1, 0)
+    mixin_stats.Freeze()
+
+    with self.assertLogs(level='INFO') as log_manager:
+      bad_machine_list = detection.DetectViaInterquartileRange(
+          mixin_stats, 'mixin_name', 1.5)
+      for line in log_manager.output:
+        if ('Quartiles require at least 5 samples to be meaningful. Mixin '
+            'mixin_name only provided 4 samples.') in line:
+          break
+      else:
+        self.fail('Did not find expected log line')
+    self.assertEqual(bad_machine_list.bad_machines, {})
+
+    # IQR ends up being 0.
+    mixin_stats = tasks.MixinStats()
+    mixin_stats.AddStatsForBotAndSuite('bot-1', 'suite', 99, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-2', 'suite', 1, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-3', 'suite', 1, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-4', 'suite', 1, 0)
+    mixin_stats.AddStatsForBotAndSuite('bot-5', 'suite', 1, 0)
+    mixin_stats.Freeze()
+
+    with self.assertLogs(level='INFO') as log_manager:
+      bad_machine_list = detection.DetectViaInterquartileRange(
+          mixin_stats, 'mixin_name', 1.5)
+      for line in log_manager.output:
+        if ('Mixin mixin_name resulted in an IQR of 0, which is not useful for '
+            'detecting outliers.') in line:
+          break
+      else:
+        self.fail('Did not find expected log line')
+    self.assertEqual(bad_machine_list.bad_machines, {})
+
+  def testSmallGoodFleet(self):
+    """Tests behavior when there are no bad machines."""
+    mixin_stats = tasks.MixinStats()
+    for i in range(10):
+      mixin_stats.AddStatsForBotAndSuite(f'good-bot-{i}', 'suite', 100, i % 5)
+    mixin_stats.Freeze()
+
+    bad_machine_list = detection.DetectViaInterquartileRange(
+        mixin_stats, 'mixin_name', 1.5)
+    self.assertEqual(bad_machine_list.bad_machines, {})
+
+  def testOneClearlyBadMachineSmallFleet(self):
+    """Tests behavior when there is a single clearly bad machine."""
+    mixin_stats = tasks.MixinStats()
+    # We need > 4 samples in order for quartiles to be meaningful.
+    mixin_stats.AddStatsForBotAndSuite('bad-bot', 'suite', 100, 99)
+    for i in range(10):
+      mixin_stats.AddStatsForBotAndSuite(f'good-bot-{i}', 'suite', 100, i % 5)
+    mixin_stats.Freeze()
+
+    bad_machine_list = detection.DetectViaInterquartileRange(
+        mixin_stats, 'mixin_name', 1.5)
+    expected_bad_machines = {
+        'bad-bot': [('Failure rate of 0.99 is above the IQR-based upper bound '
+                     'of 0.07250000000000001.')],
+    }
+    self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
+
+  def testSeveralBadMachinesLargeFleet(self):
+    """Tests behavior when there are several bad machines in a large fleet."""
+    mixin_stats = tasks.MixinStats()
+    for i in range(98):
+      mixin_stats.AddStatsForBotAndSuite(f'bot-{i}', 'suite', 100, i % 5)
+    mixin_stats.AddStatsForBotAndSuite('bot-98', 'suite', 100, 15)
+    mixin_stats.AddStatsForBotAndSuite('bot-99', 'suite', 100, 20)
+    mixin_stats.AddStatsForBotAndSuite('bot-100', 'suite', 100, 50)
+    mixin_stats.Freeze()
+
+    bad_machine_list = detection.DetectViaInterquartileRange(
+        mixin_stats, 'mixin_name', 1.5)
+    expected_bad_machines = {
+        'bot-98': [('Failure rate of 0.15 is above the IQR-based upper bound '
+                    'of 0.06.')],
+        'bot-99': [('Failure rate of 0.2 is above the IQR-based upper bound '
+                    'of 0.06.')],
+        'bot-100': [('Failure rate of 0.5 is above the IQR-based upper bound '
+                     'of 0.06.')],
+    }
+    self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
+
+  def testSmallFlakyFleet(self):
+    """Tests behavior when there's a bad machine in a small, flaky fleet."""
+    mixin_stats = tasks.MixinStats()
+    mixin_stats.AddStatsForBotAndSuite('bad-bot', 'suite', 100, 50)
+    for i in range(9):
+      mixin_stats.AddStatsForBotAndSuite(f'good-bot-{i}', 'suite', 100,
+                                         25 + i % 5)
+    mixin_stats.Freeze()
+
+    bad_machine_list = detection.DetectViaInterquartileRange(
+        mixin_stats, 'mixin_name', 1.5)
+    expected_bad_machines = {
+        'bad-bot': [('Failure rate of 0.5 is above the IQR-based upper bound '
+                     'of 0.31000000000000005.')],
+    }
+    self.assertEqual(bad_machine_list.bad_machines, expected_bad_machines)
+
+
 class IndependentEventHelpersUnittest(unittest.TestCase):
 
   def testChanceOfExactlyNIndependentEvents(self):
