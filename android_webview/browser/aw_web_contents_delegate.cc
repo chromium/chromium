@@ -19,6 +19,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -123,24 +124,22 @@ void AwWebContentsDelegate::RunFileChooser(
     return;
   }
 
-  int mode_flags = 0;
-  if (params.mode == FileChooserParams::Mode::kUploadFolder ||
-      params.mode == FileChooserParams::Mode::kOpenMultiple) {
-    // Folder implies multiple in Chrome.
-    mode_flags = static_cast<int>(FileChooserParams::Mode::kOpenMultiple);
-  } else if (params.mode == FileChooserParams::Mode::kSave) {
-    // Save not supported, so cancel it.
+  // Only allow Open, OpenMultiple and UploadFolder for pre-FSA code.
+  // TODO(b/364980165): Add check for
+  // base::android::BuildInfo::GetInstance()->target_sdk_version()
+  if (!base::FeatureList::IsEnabled(features::kWebViewFileSystemAccess) &&
+      params.mode != FileChooserParams::Mode::kOpen &&
+      params.mode != FileChooserParams::Mode::kOpenMultiple &&
+      params.mode != FileChooserParams::Mode::kUploadFolder) {
     listener->FileSelectionCanceled();
     return;
-  } else {
-    DCHECK_EQ(FileChooserParams::Mode::kOpen, params.mode);
   }
   DCHECK(!file_select_listener_)
       << "Multiple concurrent FileChooser requests are not supported.";
   file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(), mode_flags,
+      render_frame_host->GetRoutingID(), params.mode,
       ConvertUTF16ToJavaString(env,
                                base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr
@@ -149,6 +148,10 @@ void AwWebContentsDelegate::RunFileChooser(
           ? nullptr
           : ConvertUTF8ToJavaString(env, params.default_file_name.value()),
       params.use_media_capture);
+}
+
+bool AwWebContentsDelegate::UseFileChooserForFileSystemAccess() const {
+  return true;
 }
 
 WebContents* AwWebContentsDelegate::AddNewContents(

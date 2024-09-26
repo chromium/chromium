@@ -145,6 +145,8 @@ source_set("browser") {
     "debugging_metrics_provider.h",
     "enterprise_authentication_app_link_policy_handler.cc",
     "enterprise_authentication_app_link_policy_handler.h",
+    "file_system_access/aw_file_system_access_permission_context.cc",
+    "file_system_access/aw_file_system_access_permission_context.h",
     "find_helper.cc",
     "find_helper.h",
     "icon_helper.cc",

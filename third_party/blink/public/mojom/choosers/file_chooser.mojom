@@ -13,7 +13,8 @@ import "url/mojom/url.mojom";
 // chooser dialog.
 struct FileChooserParams {
   enum Mode {
-    // Requires that the file exists before allowing the user to pick it.
+    // For opening a single file (not directory). Requires that the file exists
+    // before allowing the user to pick it.
     kOpen,
 
     // Like Open, but allows picking multiple files to open.
@@ -22,7 +23,12 @@ struct FileChooserParams {
     // Like Open, but selects a folder for upload.  This mode returns multiple
     // FileChooserFileInfo objects for descendant files, rather than a single
     // FileChooserFileInfo for the selected directory.
+    // This is used for <input type="file" webkitdirectory> and for drag-drop of
+    // a directory.
     kUploadFolder,
+
+    // For opening a single directory. Requires that the directory exists.
+    kOpenDirectory,
 
     // Allows picking a nonexistent file, and prompts to overwrite if the file
     // already exists. This is not for Blink but for PPAPI.

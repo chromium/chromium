@@ -38,6 +38,7 @@ class AwWebContentsDelegate
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  bool UseFileChooserForFileSystemAccess() const override;
   // See //android_webview/docs/how-does-on-create-window-work.md for more
   // details.
   content::WebContents* AddNewContents(

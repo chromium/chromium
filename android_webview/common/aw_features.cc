@@ -49,6 +49,12 @@ BASE_FEATURE(kWebViewExitReasonMetric,
              "WebViewExitReasonMetric",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable JS FileSystemAccess API.
+// TODO(b/364980165): Add targetSdkVersion checks before enabling.
+BASE_FEATURE(kWebViewFileSystemAccess,
+             "WebViewFileSystemAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
 // the app's theme is dark.
 BASE_FEATURE(kWebViewForceDarkModeMatchTheme,

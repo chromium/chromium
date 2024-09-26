@@ -252,6 +252,12 @@ void WebContentsDelegate::RunFileChooser(
   listener->FileSelectionCanceled();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool WebContentsDelegate::UseFileChooserForFileSystemAccess() const {
+  return false;
+}
+#endif
+
 void WebContentsDelegate::EnumerateDirectory(
     WebContents* web_contents,
     scoped_refptr<FileSelectListener> listener,

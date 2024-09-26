@@ -226,15 +226,16 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     public void runFileChooser(
             final int processId,
             final int renderId,
-            final int modeFlags,
+            final int blinkFileChooserParamsMode,
             String acceptTypes,
             String title,
             String defaultFilename,
             boolean capture) {
-        int correctedModeFlags = FileModeConversionHelper.convertFileChooserMode(modeFlags);
+        int webChromeClientMode =
+                FileModeConversionHelper.convertFileChooserMode(blinkFileChooserParamsMode);
         AwContentsClient.FileChooserParamsImpl params =
                 new AwContentsClient.FileChooserParamsImpl(
-                        correctedModeFlags, acceptTypes, title, defaultFilename, capture);
+                        webChromeClientMode, acceptTypes, title, defaultFilename, capture);
 
         mContentsClient.showFileChooser(
                 new Callback<String[]>() {
@@ -249,12 +250,16 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                         if (results == null) {
                             AwWebContentsDelegateJni.get()
                                     .filesSelectedInChooser(
-                                            processId, renderId, correctedModeFlags, null, null);
+                                            processId, renderId, webChromeClientMode, null, null);
                             return;
                         }
                         GetDisplayNameTask task =
                                 new GetDisplayNameTask(
-                                        mContext, processId, renderId, correctedModeFlags, results);
+                                        mContext,
+                                        processId,
+                                        renderId,
+                                        webChromeClientMode,
+                                        results);
                         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 },

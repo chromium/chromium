@@ -442,6 +442,11 @@ class CONTENT_EXPORT WebContentsDelegate {
                               scoped_refptr<FileSelectListener> listener,
                               const blink::mojom::FileChooserParams& params);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Set to true if RunFileChooser() should be used for FileSystemAccess APIs.
+  virtual bool UseFileChooserForFileSystemAccess() const;
+#endif
+
   // Request to enumerate a directory.  This is equivalent to running the file
   // chooser in directory-enumeration mode and having the user select the given
   // directory.

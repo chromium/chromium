@@ -464,6 +464,11 @@ AwBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
+content::FileSystemAccessPermissionContext*
+AwBrowserContext::GetFileSystemAccessPermissionContext() {
+  return &fsa_permission_context_;
+}
+
 content::ReduceAcceptLanguageControllerDelegate*
 AwBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;

@@ -16,6 +16,7 @@
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
+#include "android_webview/browser/file_system_access/aw_file_system_access_permission_context.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
@@ -130,6 +131,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
+  content::FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext() override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   std::unique_ptr<download::InProgressDownloadManager>
@@ -206,6 +209,7 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<content::OriginTrialsControllerDelegate>
       origin_trials_controller_delegate_;
 
+  AwFileSystemAccessPermissionContext fsa_permission_context_;
   SimpleFactoryKey simple_factory_key_;
 
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher_;

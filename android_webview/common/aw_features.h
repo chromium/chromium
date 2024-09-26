@@ -24,6 +24,7 @@ BASE_DECLARE_FEATURE(kWebViewDragDropFiles);
 BASE_DECLARE_FEATURE(kWebViewEnumerateDevicesCache);
 BASE_DECLARE_FEATURE(kWebViewExitReasonMetric);
 BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
+BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
 BASE_DECLARE_FEATURE(kWebViewHitTestInBlinkOnTouchStart);
 BASE_DECLARE_FEATURE(kWebViewImageDrag);
