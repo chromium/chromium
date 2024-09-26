@@ -182,6 +182,7 @@ android_resources("java_resources") {
     "java/res/drawable-v23/sheet_background.xml",
     "java/res/drawable-v31/app_menu_bg.xml",
     "java/res/drawable-v31/dialog_bg_no_shadow.xml",
+    "java/res/drawable-v31/dialog_bg_tinted.xml",
     "java/res/drawable-v31/menu_bg_tinted.xml",
     "java/res/drawable-v31/modern_toolbar_text_box_background.xml",
     "java/res/drawable-v31/sheet_background.xml",

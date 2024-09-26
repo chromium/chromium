@@ -120,7 +120,7 @@ found in the LICENSE file.
 
     <!-- Find in Page dimensions -->
     <dimen name="find_in_page_popup_width">375dp</dimen>
-    <dimen name="find_in_page_popup_height">60dp</dimen>
+    <dimen name="find_in_page_popup_height">64dp</dimen>
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- NTP dimensions -->
