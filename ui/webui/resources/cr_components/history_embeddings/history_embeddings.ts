@@ -17,7 +17,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -102,7 +102,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       },
       answerSource_: {
         type: Object,
-        computed: 'computeAnswerSource_(searchResult_.items)',
+        computed: 'computeAnswerSource_(loadingAnswer_, searchResult_.items)',
         value: null,
       },
     };
@@ -169,14 +169,33 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private computeAnswerSource_(): SearchResultItem|null {
-    if (!this.enableAnswers_) {
+    if (!this.enableAnswers_ || this.loadingAnswer_) {
       return null;
     }
-    return this.searchResult_.items.find(item => item.answerData) || null;
+    return this.searchResult_?.items.find(item => item.answerData) || null;
   }
 
   private computeIsEmpty_(): boolean {
     return !this.loadingResults_ && this.searchResult_?.items.length === 0;
+  }
+
+  private getAnswerOrError_(): string|undefined {
+    // TODO(b/348689167): Move strings into a grdp file.
+    switch (this.searchResult_.answerStatus) {
+      case AnswerStatus.kUnspecified:
+        // Still loading or in an undefined state.
+        return undefined;
+      case AnswerStatus.kSuccess:
+        return this.searchResult_.answer;
+      case AnswerStatus.kUnanswerable:
+        return 'Sorry, can\'t help you with that.';
+      case AnswerStatus.kModelUnavailable:
+      case AnswerStatus.kExecutionFailure:
+      case AnswerStatus.kExecutionCanceled:
+        return 'Something went wrong. Please try again later.';
+      default:
+        assertNotReached();
+    }
   }
 
   private getFavicon_(item: SearchResultItem|undefined): string {

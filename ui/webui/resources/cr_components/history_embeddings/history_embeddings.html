@@ -273,7 +273,7 @@ a {
         </cr-loading-gradient>
       </div>
       <div class="answer" hidden="[[loadingAnswer_]]">
-        [[searchResult_.answer]]
+        [[getAnswerOrError_(searchResult_.*)]]
       </div>
       <a class="answer-source" hidden="[[!answerSource_]]"
           href="[[answerSource_.url.url]]" target="_blank">
@@ -298,7 +298,7 @@ a {
         </svg>
       </cr-loading-gradient>
     </div>
-    <div class="result-items">
+    <div class="result-items" hidden$="[[loadingResults_]]">
       <template is="dom-repeat" items="[[searchResult_.items]]">
         <template is="dom-if" if="[[enableImages_]]">
           <a class="result-item" href="[[item.url.url]]" target="_blank"

@@ -465,5 +465,37 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           getFaviconForPageURL(mockResults[1]!.url.url, true),
           favicons[1]!.style.backgroundImage);
     });
+
+    test('DisplaysAnswererErrors', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      async function updateAnswerStatus(status: AnswerStatus) {
+        element.searchResultChangedForTesting({
+          query: 'some query',
+          answer: '',
+          answerStatus: status,
+          items: [...mockResults],
+        });
+        return flushTasks();
+      }
+
+      await updateAnswerStatus(AnswerStatus.kUnanswerable);
+      const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
+      assertTrue(!!errorEl);
+      assertTrue(isVisible(errorEl));
+      assertEquals('Sorry, can\'t help you with that.', errorEl.innerText);
+
+      await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
+      assertTrue(isVisible(errorEl));
+      assertEquals(
+          'Something went wrong. Please try again later.', errorEl.innerText);
+
+      await updateAnswerStatus(AnswerStatus.kExecutionCanceled);
+      assertTrue(isVisible(errorEl));
+      assertEquals(
+          'Something went wrong. Please try again later.', errorEl.innerText);
+    });
   });
 });
