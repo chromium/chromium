@@ -68,9 +68,10 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       if (item->is_resizable_by_user_javascript) {
         max_byte_length = base::checked_cast<size_t>(item->max_byte_length);
       }
-      ArrayBufferContents contents(big_buffer.size(), max_byte_length, 1,
-                                   ArrayBufferContents::kNotShared,
-                                   ArrayBufferContents::kDontInitialize);
+      ArrayBufferContents contents(
+          big_buffer.size(), max_byte_length, 1,
+          ArrayBufferContents::kNotShared, ArrayBufferContents::kDontInitialize,
+          ArrayBufferContents::AllocationFailureBehavior::kCrash);
       // Check if we allocated the backing store of the ArrayBufferContents
       // correctly.
       CHECK_EQ(contents.DataLength(), big_buffer.size());

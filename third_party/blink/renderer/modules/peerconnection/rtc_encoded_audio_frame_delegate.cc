@@ -49,12 +49,11 @@ DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer(
     }
 
     auto data = webrtc_frame_->GetData();
-    contents =
-        ArrayBufferContents(data.size(), 1, ArrayBufferContents::kNotShared,
-                            ArrayBufferContents::kDontInitialize);
-    if (!contents.Data()) [[unlikely]] {
-      OOM_CRASH(data.size());
-    }
+    contents = ArrayBufferContents(
+        data.size(), 1, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+    CHECK(contents.IsValid());
     contents.ByteSpan().copy_from(data);
   }
   return DOMArrayBuffer::Create(std::move(contents));
