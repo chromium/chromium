@@ -147,13 +147,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector
-            (testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled)]) {
-    config.features_disabled.push_back(
-        kClearDeviceDataOnSignOutForManagedUsers);
-  } else {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  }
+  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+
   if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)] ||
       [self isRunningTest:@selector
             (FLAKY_testAccessiblityStringForSignedInUserWithoutName)]) {
@@ -293,7 +288,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
+// TODO(crbug.com/369617405): Disabled due to flakiness.
+- (void)DISABLED_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
