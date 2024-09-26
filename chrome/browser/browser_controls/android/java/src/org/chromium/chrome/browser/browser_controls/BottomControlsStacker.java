@@ -29,15 +29,17 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     /** Enums that defines the type and position for each bottom controls. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-        LayerType.BOTTOM_TOOLBAR,
+        LayerType.TABSTRIP_TOOLBAR,
         LayerType.READ_ALOUD_PLAYER,
+        LayerType.BOTTOM_TOOLBAR,
         LayerType.BOTTOM_CHIN,
         LayerType.TEST_BOTTOM_LAYER
     })
     public @interface LayerType {
-        int BOTTOM_TOOLBAR = 0;
+        int TABSTRIP_TOOLBAR = 0;
         int READ_ALOUD_PLAYER = 1;
-        int BOTTOM_CHIN = 2;
+        int BOTTOM_TOOLBAR = 2;
+        int BOTTOM_CHIN = 3;
 
         // Layer that's used for testing.
         int TEST_BOTTOM_LAYER = 100;
@@ -94,8 +96,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // The pre-defined stack order for different bottom controls.
     private static final @LayerType int[] STACK_ORDER =
             new int[] {
-                LayerType.BOTTOM_TOOLBAR,
+                LayerType.TABSTRIP_TOOLBAR,
                 LayerType.READ_ALOUD_PLAYER,
+                LayerType.BOTTOM_TOOLBAR,
                 LayerType.BOTTOM_CHIN,
                 LayerType.TEST_BOTTOM_LAYER
             };

@@ -340,7 +340,7 @@ class BottomControlsMediator
 
     @Override
     public int getType() {
-        return LayerType.BOTTOM_TOOLBAR;
+        return LayerType.TABSTRIP_TOOLBAR;
     }
 
     @Override

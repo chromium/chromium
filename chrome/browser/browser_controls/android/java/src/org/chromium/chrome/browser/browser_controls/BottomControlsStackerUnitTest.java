@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
         shadows = {ShadowLooper.class})
 @EnableFeatures(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
 public class BottomControlsStackerUnitTest {
-    private static final @LayerType int TOP_LAYER = LayerType.BOTTOM_TOOLBAR;
+    private static final @LayerType int TOP_LAYER = LayerType.TABSTRIP_TOOLBAR;
     private static final @LayerType int MID_LAYER = LayerType.READ_ALOUD_PLAYER;
     private static final @LayerType int BOTTOM_LAYER = LayerType.TEST_BOTTOM_LAYER;
 
