@@ -167,6 +167,32 @@ class Operation:
     return properties
 
 
+class Dictionary:
+  """Represents an API type and processes the details of it.
+
+  Given an IDLNode of class Dictionary, converts it into a Python dictionary
+  representing a custom "type" for the API.
+
+  Attributes:
+    node: The IDLNode for the Dictionary definition that represents this type.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+
+  def process(self) -> dict:
+    properties = OrderedDict()
+    # TODO(crbug.com/340297705): Add proper processing of the properties for
+    # types.
+
+    result = {
+        'id': self.node.GetName(),
+        'properties': properties,
+        'type': 'object'
+    }
+    return result
+
+
 class Namespace:
   """Represents an API namespace and processes individual details of it.
 
@@ -193,9 +219,16 @@ class Namespace:
 
   def process(self) -> dict:
     functions = []
+    types = []
 
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
+
+    # Types are defined as dictionaries at the top level of the IDL file, which
+    # are found on the parent node of the Interface being processed for this
+    # namespace.
+    for node in self.namespace.GetParent().GetListOf('Dictionary'):
+      types.append(Dictionary(node).process())
 
     nodoc = 'nodoc' in [
         attribute.GetName()
@@ -205,6 +238,7 @@ class Namespace:
     return {
         'namespace': self.name,
         'functions': functions,
+        'types': types,
         'nodoc': nodoc,
     }
 
@@ -249,7 +283,10 @@ class IDLSchema:
     idl_type = GetTypeName(attributes[0])
 
     namespace_node = GetChildWithName(self.idl, idl_type)
-    namespace = Namespace(api_name, namespace_node)
+    namespace = Namespace(
+        api_name,
+        namespace_node,
+    )
     namespaces.append(namespace.process())
 
     return namespaces

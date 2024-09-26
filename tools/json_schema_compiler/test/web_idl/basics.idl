@@ -4,6 +4,12 @@
 
 // Example WebIDL compatible schema for testing API definition features.
 // This will be added to as support for each features is implemented.
+
+dictionary ExampleType {
+  DOMString someString;
+  double someNumber;
+};
+
 interface TestWebIdl {
 
   static void returnsVoid();

@@ -12,7 +12,14 @@ def getFunction(schema, name):
   for item in schema['functions']:
     if item['name'] == name:
       return item
-  raise KeyError('Missing function %s' % name)
+  raise KeyError('Could not find "function" with name "%s" in schema' % name)
+
+
+def getType(schema, name):
+  for item in schema['types']:
+    if item['id'] == name:
+      return item
+  raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
 def getReturns(schema, name):
@@ -64,8 +71,23 @@ class WebIdlSchemaTest(unittest.TestCase):
         getReturns(schema, 'returnsDOMString'),
     )
 
+  # Tests that Dictionaries defined on the top level of the IDL file are
+  # processed into types on the resulting namespace.
+  # TODO(crbug.com/340297705): Also check that the "properties" key is correctly
+  # added to the processed result.
+  def testApiTypesOnNamespace(self):
+    schema = self.idl_basics
+    self.assertEqual(
+        {
+            'id': 'ExampleType',
+            'properties': {},
+            'type': 'object'
+        },
+        getType(schema, 'ExampleType'),
+    )
+
   # Tests that if the nodoc extended attribute is not specified on the API
-  # interface the related attribute is set to false after processing
+  # interface the related attribute is set to false after processing.
   def testNodocUnspecifiedOnNamespace(self):
     self.assertFalse(self.idl_basics['nodoc'])
 
