@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download.h"
@@ -29,6 +32,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace bruschetta {
@@ -42,6 +46,8 @@ namespace {
 // Should be synced with the value in the chromiumos repo:
 // src/platform2/vtpm/backends/attested_virtual_endorsement.cc
 constexpr char kVtpmEkLabel[] = "vtpm-ek";
+constexpr uint64_t kBruschettaRequiredMemory =
+    12ULL * 1024 * 1024 * 1024;  // 12 GiB
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath boot_disk_path,
@@ -82,6 +88,27 @@ void BruschettaInstallerImpl::Cancel() {
 
 void BruschettaInstallerImpl::Install(std::string vm_name,
                                       std::string config_id) {
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kDisableBruschettaInstallChecks)) {
+    uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    // Physical memory reporting never lines up with exact GB definitions, allow
+    // for some wiggle room.
+    if (physical_memory < 0.85 * kBruschettaRequiredMemory) {
+      Error(BruschettaInstallResult::kNotEnoughMemoryError);
+      LOG(ERROR) << "System memory of " << physical_memory
+                 << " less than required " << kBruschettaRequiredMemory;
+      return;
+    }
+    const std::optional<std::string_view> attested_device_id =
+        ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+            ash::system::kAttestedDeviceIdKey);
+    if (!attested_device_id.has_value()) {
+      Error(BruschettaInstallResult::kNoAdidError);
+      LOG(ERROR) << "No ADID is available";
+      return;
+    }
+  }
+
   if (install_running_) {
     LOG(ERROR) << "Install requested while an install is already running";
     return;

@@ -95,6 +95,12 @@ std::u16string GetDetailedErrorMessage(
           IDS_BRUSCHETTA_INSTALLER_GENERIC_DLC_ERROR_MESSAGE,
           bruschetta::BruschettaInstallResultString(error));
 
+    case bruschetta::BruschettaInstallResult::kNoAdidError:
+    case bruschetta::BruschettaInstallResult::kNotEnoughMemoryError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_UNINSTALLABLE_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
     default:
       // Everything else gets a generic error, they can get dedicated error
       // messages later if it's useful.
