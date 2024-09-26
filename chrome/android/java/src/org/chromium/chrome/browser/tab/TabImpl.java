@@ -1339,26 +1339,32 @@ class TabImpl implements Tab {
                     mNativePageSmoothTransitionDelegate.cancel();
                     mNativePageSmoothTransitionDelegate = null;
                 } else if (isNativePage()) {
-                    // This means the ntp is fully showing now. Reset back to 1f.
+                    // May reach this if a navigation is committed in the mid of gesture.
                     getView().setAlpha(1f);
                 }
                 return;
             case AnimationStage.OTHER:
+                if (isNativePage()) {
+                    // A transition is starting. Hide the Java view to present that.
+                    getView().setAlpha(0f);
+                }
+                return;
+            case AnimationStage.WAITING_FOR_EMBEDDER_CONTENT_FOR_COMMITTED_ENTRY:
                 if (mNativePageSmoothTransitionDelegate != null) {
+                    // Navigating back to native pages.
                     mNativePageSmoothTransitionDelegate.start(
                             () -> {
                                 getWebContents().onContentForNavigationEntryShown();
                                 notifyContentChanged();
                             });
                     mNativePageSmoothTransitionDelegate = null;
-                } else if (isNativePage()) {
-                    // Do a hidden transition for NTP view.
-                    getView().setAlpha(0.f);
+                } else if (isNativePage()) { // Navigation from native page was cancelled.
+                    if (getView().getAlpha() != 1f) {
+                        // This means the content/ is waiting for the NTP to be fully visible.
+                        getView().setAlpha(1f);
+                        getView().post(getWebContents()::onContentForNavigationEntryShown);
+                    }
                 }
-                return;
-            case AnimationStage.INVOKE_ANIMATION:
-                // invoking animation is in-progress. Wait for it to be finished.
-                return;
         }
     }
 

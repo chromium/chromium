@@ -70,6 +70,7 @@ namespace content {
 namespace {
 
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
+using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using NavType = BackForwardTransitionAnimationManager::NavigationDirection;
 using base::test::TestFuture;
 using testing::AssertionFailure;
@@ -4301,6 +4302,17 @@ IN_PROC_BROWSER_TEST_F(
             ChildrenInOrder(*GetViewLayer()));
 
   ASSERT_TRUE(did_cancel.Wait());
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  EXPECT_EQ(GetAnimationManager()->GetCurrentAnimationStage(),
+            AnimationStage::kWaitingForEmbedderContentForCommittedEntry);
+  TestFuture<AnimatorForTesting::State> did_finish;
+  GetAnimator()->set_on_impl_destroyed(did_finish.GetCallback());
+
+  GetAnimationManager()->OnContentForNavigationEntryShown();
+
+  EXPECT_EQ(did_finish.Get(), AnimatorForTesting::State::kAnimationFinished);
   EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 }
 

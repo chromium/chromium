@@ -37,6 +37,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
     // Indicates that an ongoing gesture has invoked. An animation to remove the
     // content of the entry the user is navigation away from is in progress.
     kInvokeAnimation,
+    // Indicates that animation manager is waiting for the embedder to show
+    // its content.
+    kWaitingForEmbedderContentForCommittedEntry,
     // All other stages for an active animation.
     kOther,
   };

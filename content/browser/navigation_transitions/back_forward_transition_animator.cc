@@ -493,12 +493,14 @@ void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
         "BackForwardTransitionAnimator::OnContentForNavigationEntryShown");
     return;
   }
-  // The embedder has finished cross-fading from the screenshot to the new
-  // content. Unregister `this` from the `RenderWidgetHost` to stop the
-  // `OnRenderWidgetHostDestroyed()` notification.
-  CHECK(new_render_widget_host_);
-  new_render_widget_host_->RemoveObserver(animation_manager_);
-  new_render_widget_host_ = nullptr;
+  if (!embedder_live_content_clone_) {
+    // The embedder has finished cross-fading from the screenshot to the new
+    // content. Unregister `this` from the `RenderWidgetHost` to stop the
+    // `OnRenderWidgetHostDestroyed()` notification.
+    CHECK(new_render_widget_host_);
+    new_render_widget_host_->RemoveObserver(animation_manager_);
+    new_render_widget_host_ = nullptr;
+  }
   AdvanceAndProcessState(State::kAnimationFinished);
 }
 
@@ -506,6 +508,8 @@ AnimationStage BackForwardTransitionAnimator::GetCurrentAnimationStage() {
   switch (state_) {
     case State::kDisplayingInvokeAnimation:
       return AnimationStage::kInvokeAnimation;
+    case State::kWaitingForContentForNavigationEntryShown:
+      return AnimationStage::kWaitingForEmbedderContentForCommittedEntry;
     case State::kAnimationFinished:
     case State::kAnimationAborted:
       return AnimationStage::kNone;
@@ -1157,7 +1161,11 @@ void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
     return;
   }
   effect_.RemoveAllKeyframeModels();
-  AdvanceAndProcessState(State::kAnimationFinished);
+  if (embedder_live_content_clone_) {
+    AdvanceAndProcessState(State::kWaitingForContentForNavigationEntryShown);
+  } else {
+    AdvanceAndProcessState(State::kAnimationFinished);
+  }
 }
 
 void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
@@ -1219,6 +1227,7 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
              // The renderer acks the BeforeUnload message to proceed the
              // navigation, BEFORE the cancel animation finishes.
              to == State::kDisplayingInvokeAnimation ||
+             to == State::kWaitingForContentForNavigationEntryShown ||
              to == State::kAnimationAborted;
     case State::kAnimationFinished:
     case State::kAnimationAborted:
