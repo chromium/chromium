@@ -755,6 +755,7 @@ source_set("extensions") {
     "//chrome/browser:primitives",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/feedback",
     "//chrome/browser/importer",
     "//chrome/browser/picture_in_picture",

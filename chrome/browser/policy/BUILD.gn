@@ -282,6 +282,7 @@ source_set("policy_specific_browser_tests") {
 
     deps += [
       "//chrome/browser/autofill",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",

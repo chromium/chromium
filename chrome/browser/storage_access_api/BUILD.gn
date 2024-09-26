@@ -28,6 +28,7 @@ source_set("storage_access_api") {
   ]
 
   deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/first_party_sets",
     "//chrome/common",
     "//components/content_settings/browser",

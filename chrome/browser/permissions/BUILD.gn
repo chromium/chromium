@@ -68,6 +68,7 @@ source_set("permissions") {
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
@@ -195,6 +196,7 @@ source_set("unit_tests") {
   deps = [
     ":permissions",
     ":permissions_proto",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions/system",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
@@ -246,6 +248,7 @@ if (!is_android) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
@@ -278,6 +281,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions/system",
       "//chrome/test:test_support",
       "//components/content_settings/browser",

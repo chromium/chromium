@@ -18,6 +18,9 @@ static_library("test_support") {
     "supervision_mixin.cc",
     "supervision_mixin.h",
   ]
+
+  deps = [ "//chrome/browser/content_settings:content_settings_factory" ]
+
   public_deps = [
     ":child_accounts",
     "//base",

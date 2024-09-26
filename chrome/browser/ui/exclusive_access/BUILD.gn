@@ -45,6 +45,7 @@ source_set("exclusive_access") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
@@ -113,6 +114,7 @@ if (!is_android) {
 
     deps = [
       ":test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/ui:ui_features",
       "//components/content_settings/core/browser",
     ]
@@ -129,6 +131,7 @@ if (!is_android) {
       ]
       deps = [
         ":test_support",
+        "//chrome/browser/content_settings:content_settings_factory",
         "//chrome/browser/ui:test_support",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//components/blocked_content",

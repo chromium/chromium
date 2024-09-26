@@ -38,6 +38,7 @@ source_set("smart_card") {
 
     deps = [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
       "//components/permissions",
@@ -60,6 +61,7 @@ if (is_chromeos) {
     ]
     deps = [
       ":smart_card",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions",
       "//chrome/test:test_support",
       "//content/test:test_support",
@@ -78,6 +80,7 @@ if (is_chromeos) {
     deps = [
       ":smart_card",
       "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
