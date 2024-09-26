@@ -52,12 +52,11 @@ StarView::StarView(CommandUpdater* command_updater,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "BookmarksStar",
-                         false),
-      browser_(browser) {
-  DCHECK(browser_);
+                         false) {
+  DCHECK(browser);
 
   edit_bookmarks_enabled_.Init(
-      bookmarks::prefs::kEditBookmarksEnabled, browser_->profile()->GetPrefs(),
+      bookmarks::prefs::kEditBookmarksEnabled, browser->profile()->GetPrefs(),
       base::BindRepeating(&StarView::EditBookmarksPrefUpdated,
                           base::Unretained(this)));
   SetID(VIEW_ID_STAR_BUTTON);
@@ -101,11 +100,6 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
       break;
   }
   UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point);
-}
-
-void StarView::ExecuteCommand(ExecuteSource source) {
-  OnExecuting(source);
-  chrome::BookmarkCurrentTab(browser_);
 }
 
 views::BubbleDialogDelegate* StarView::GetBubble() const {

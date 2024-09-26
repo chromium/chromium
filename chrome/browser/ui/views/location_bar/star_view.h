@@ -34,15 +34,12 @@ class StarView : public PageActionIconView {
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
-  void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   void EditBookmarksPrefUpdated();
-
-  const raw_ptr<Browser> browser_;
 
   BooleanPrefMember edit_bookmarks_enabled_;
 };
