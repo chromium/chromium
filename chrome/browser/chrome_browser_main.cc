@@ -354,10 +354,6 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/shell_dialogs/select_file_dialog_lacros.h"
-#endif
-
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
 #endif
@@ -1515,9 +1511,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   ui::SelectFileDialog::SetFactory(
       std::make_unique<ChromeSelectFileDialogFactory>());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<ui::SelectFileDialogLacros::Factory>());
 #endif  // BUILDFLAG(IS_WIN)
 
   // In headless mode provide alternate SelectFileDialog factory overriding

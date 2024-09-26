@@ -134,20 +134,6 @@ component("shell_dialogs") {
   if (is_fuchsia) {
     sources += [ "select_file_dialog_fuchsia.cc" ]
   }
-
-  # TODO(crbug.com/40118868): Rename is_chromeos_lacros.
-  if (is_chromeos_lacros) {
-    sources += [
-      "select_file_dialog_lacros.cc",
-      "select_file_dialog_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//mojo/public/cpp/bindings",
-      "//ui/platform_window",
-    ]
-  }
 }
 
 test("shell_dialogs_unittests") {

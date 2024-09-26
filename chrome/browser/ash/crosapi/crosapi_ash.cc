@@ -102,7 +102,6 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
-#include "chrome/browser/ash/crosapi/select_file_ash.h"
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/speech_recognition_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
@@ -337,7 +336,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
-      select_file_ash_(std::make_unique<SelectFileAsh>()),
       sharesheet_ash_(std::make_unique<SharesheetAsh>()),
       smart_reader_manager_ash_(std::make_unique<ash::SmartReaderManagerAsh>()),
       speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
@@ -999,9 +997,9 @@ void CrosapiAsh::BindSearchControllerRegistry(
   search_provider_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindSelectFile(
-    mojo::PendingReceiver<mojom::SelectFile> receiver) {
-  select_file_ash_->BindReceiver(std::move(receiver));
+void CrosapiAsh::REMOVED_0(
+    mojo::PendingReceiver<mojom::SelectFileDeprecated> receiver) {
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindSensorHalClient(

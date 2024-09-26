@@ -8,13 +8,11 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-// The type of dialog to open. The integer values intentionally do not match
-// ui::SelectFileDialog::Type because there is no "none" value and kOpenFile
-// is the common case.
-[Stable, Extensible]
-enum SelectFileDialogType {
+// Deprecated.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.SelectFileDialogType"]
+enum SelectFileDialogTypeDeprecated {
   // For opening a file.
-  kOpenFile = 0,
+  [Default] kOpenFile = 0,
 
   // Like kOpenFile, but allowing multiple files to open.
   kOpenMultiFile = 1,
@@ -32,11 +30,11 @@ enum SelectFileDialogType {
   kSaveAsFile = 5,
 };
 
-// Specifies which type of paths the caller can handle.
-[Stable, Extensible]
-enum AllowedPaths {
+// Deprecated.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.AllowedPaths"]
+enum AllowedPathsDeprecated {
   // Any type of path, whether local/native or remote/virtual.
-  kAnyPath,
+  [Default] kAnyPath,
   // Set when the caller cannot handle virtual volumes (e.g. File System
   // Provider [FSP] volumes like "File System for Dropbox"). When opening files,
   // the dialog will create a native replica of the file and return its path.
@@ -48,107 +46,106 @@ enum AllowedPaths {
   kAnyPathOrUrl,
 };
 
-// Information about the types of files used by the dialog.
-[Stable]
-struct SelectFileTypeInfo {
+// Deprecated.
+[Stable, RenamedFrom="crosapi.mojom.SelectFileTypeInfo"]
+struct SelectFileTypeInfoDeprecated {
   // The list of allowed file extensions. For example:
   // { { "htm", "html" }, { "txt" } }
   // Only pass more than one extension in the inner vector if the extensions
   // are equivalent.
-  array<array<string>> extensions@0;
+  array<array<string>> REMOVED_0@0;
 
   // Overrides the system descriptions of specified extensions. For example,
   // when saving a web page, "Webpage, HTML only" is used for {"htm", "html"}
   // and "Webpage, Single File" is used for {"mhtml"}. Length must match the
   // length of |extensions|. If empty or if the length doesn't match then
   // the system descriptions will be used.
-  array<mojo_base.mojom.String16> extension_description_overrides@1;
+  array<mojo_base.mojom.String16> REMOVED_1@1;
 
   // One-based index of the file type (in the extensions list) to select by
   // default. Zero means no selection. (The index is one-based for consistency
   // with the C++ code and because mojo doesn't allow nullable primitive types.)
   // For example, when saving a web page, we use the index of {"mhtml"} so the
   // user sees "Webpage, Single File" as the default choice.
-  int32 default_file_type_index@2;
+  int32 REMOVED_2@2;
 
   // Whether or not there will be a filter added for all files (*.*).
-  bool include_all_files@3;
+  bool REMOVED_3@3;
 
   // Types of paths/volumes allowed. Unrelated to file extensions.
-  AllowedPaths allowed_paths@4;
+  AllowedPathsDeprecated REMOVED_4@4;
 };
 
-// Options for the select file dialog.
-[Stable]
-struct SelectFileOptions {
+// Deprecated.
+[Stable, RenamedFrom="crosapi.mojom.SelectFileOptions"]
+struct SelectFileOptionsDeprecated {
   // Dialog type.
-  SelectFileDialogType type@0;
+  SelectFileDialogTypeDeprecated REMOVED_0@0;
 
   // Window title.
-  mojo_base.mojom.String16 title@1;
+  mojo_base.mojom.String16 REMOVED_1@1;
 
   // Default path to open.
-  mojo_base.mojom.FilePath default_path@2;
+  mojo_base.mojom.FilePath REMOVED_2@2;
 
   // Optional file type configuration. In the common case for file open (Ctrl-O)
   // this is null.
-  SelectFileTypeInfo? file_types@3;
+  SelectFileTypeInfoDeprecated? REMOVED_3@3;
 
   // Internal window ID for the top-level shell window that owns the dialog.
   // If provided, the dialog will be window-modal to that shell window.
   // If empty, a modeless dialog will be opened on the default display.
-  string owning_shell_window_id@4;
+  string REMOVED_4@4;
 
   // Optional URL of the caller that created the dialog.
-  [MinVersion=1]url.mojom.Url? caller@5;
+  [MinVersion=1]url.mojom.Url? REMOVED_5@5;
 };
 
-// Result of the select file dialog.
-[Stable, Extensible]
-enum SelectFileResult {
+// Deprecated.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.SelectFileResult"]
+enum SelectFileResultDeprecated {
   // Everything worked.
-  kSuccess = 0,
+  [Default] kSuccess = 0,
 
   // Failed because the dialog couldn't find the owning top-level window.
   kInvalidShellWindow = 1,
 };
 
-// Information about the selected file or files.
-[Stable]
-struct SelectedFileInfo {
+// Deprecated.
+[Stable, RenamedFrom="crosapi.mojom.SelectedFileInfo"]
+struct SelectedFileInfoDeprecated {
   // Path to the file, as seen in the UI.
-  mojo_base.mojom.FilePath file_path@0;
+  mojo_base.mojom.FilePath REMOVED_0@0;
 
   // The actual local path to the selected file. This can be a snapshot file
   // with a human unreadable name like /blah/.d41d8cd98f00b204e9800998ecf8427e.
   // |local_path| can differ from |file_path| for drive files (e.g.
   // /drive_cache/temporary/d41d8cd98f00b204e9800998ecf8427e vs.
   // /special/drive/foo.txt).
-  mojo_base.mojom.FilePath local_path@1;
+  mojo_base.mojom.FilePath REMOVED_1@1;
 
   // Optional display name of the file. UTF-8 encoded. If empty, the UI should
   // display the base name portion of |file_path|.
-  string display_name@2;
+  string REMOVED_2@2;
 
   // Optional URL to access the file. If the caller can use a URL to access a
   // file, |url| should be used instead of |local_path|. For example, when
   // opening a .gdoc file from Google Drive the |local_path| is a placeholder
   // file that should be "opened" by navigating to docs.google.com.
-  url.mojom.Url? url@3;
+  url.mojom.Url? REMOVED_3@3;
 };
 
-// Select file dialog interface. Wrapper around the C++ SelectFileDialog
-// class. Called from lacros-chrome. Implemented in ash-chrome using the
-// file manager dialog.
-[Stable, Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125"]
-interface SelectFile {
+// Deprecated.
+[Stable, Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125",
+    RenamedFrom="crosapi.mojom.SelectFile"]
+interface SelectFileDeprecated {
   // Selects one or more files. If the dialog is closed or canceled without
   // selecting a file, or if there is an error, |files| will be empty.
   // When saving a file or opening a single file, |file_type_index| is the
   // one-based index of the selected file type from the SelectFileTypeInfo
   // extension list, otherwise it is zero.
-  Select@0(SelectFileOptions options) =>
-      (SelectFileResult result,
-       array<SelectedFileInfo> files,
+  Select@0(SelectFileOptionsDeprecated options) =>
+      (SelectFileResultDeprecated result,
+       array<SelectedFileInfoDeprecated> files,
        int32 file_type_index);
 };

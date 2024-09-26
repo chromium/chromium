@@ -662,9 +662,9 @@ interface Crosapi {
   // Added in M86.
   BindScreenManager@1(pending_receiver<ScreenManager> receiver);
 
-  // Binds the SelectFile interface for open/save dialogs.
+  // Deprecated.
   // Added in M86.
-  BindSelectFile@0(pending_receiver<SelectFile> receiver);
+  REMOVED_0@0(pending_receiver<SelectFileDeprecated> receiver);
 
   // Binds the SensorHalClient interface for IIO sensors' data.
   // Added in M90.

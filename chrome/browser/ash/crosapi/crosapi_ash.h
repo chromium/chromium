@@ -140,7 +140,6 @@ class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
 class SearchProviderAsh;
-class SelectFileAsh;
 class SharesheetAsh;
 class SpeechRecognitionAsh;
 class StructuredMetricsServiceAsh;
@@ -401,8 +400,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingRemote<mojom::SearchControllerFactory> remote) override;
   void BindSearchControllerRegistry(
       mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) override;
-  void BindSelectFile(
-      mojo::PendingReceiver<mojom::SelectFile> receiver) override;
+  void REMOVED_0(
+      mojo::PendingReceiver<mojom::SelectFileDeprecated> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
@@ -798,7 +797,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
-  std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;

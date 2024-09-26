@@ -484,6 +484,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   if (owner.is_lacros) {
     // SelectFileAsh (Lacros) is opening the dialog: only show fusebox volumes
     // in File Manager UI to return real file descriptors to SelectFileAsh.
+    // TODO(crbug.com/369851375): Delete this; Lacros has sunset.
     volume_filter.push_back("fusebox-only");
   } else if (use_media_store_filter) {
     // ArcSelectFile is opening the dialog: add 'media-store-files-only' filter

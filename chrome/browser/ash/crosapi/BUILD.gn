@@ -252,8 +252,6 @@ static_library("crosapi") {
     "search_controller_ash.h",
     "search_provider_ash.cc",
     "search_provider_ash.h",
-    "select_file_ash.cc",
-    "select_file_ash.h",
     "sharesheet_ash.cc",
     "sharesheet_ash.h",
     "speech_recognition_ash.cc",

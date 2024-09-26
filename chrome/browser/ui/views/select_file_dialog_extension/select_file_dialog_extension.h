@@ -101,6 +101,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     // owned by a particular window, aka "modeless" dialog.
     std::optional<std::string> lacros_window_id;
     // Set to true only if SelectFileAsh opened the dialog.
+    // TODO(crbug.com/369851375): Delete this; Lacros has sunset.
     bool is_lacros = false;
     // The URL or Component type of the caller that opened the dialog (Save
     // As/File Picker).
