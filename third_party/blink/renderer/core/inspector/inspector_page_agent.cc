@@ -1058,7 +1058,7 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
     return;
   }
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
-  if (!script_state) {
+  if (!script_state || !v8_session_) {
     return;
   }
 
@@ -1083,7 +1083,7 @@ void InspectorPageAgent::EvaluateScriptOnNewDocument(
                       *DOMWrapperWorld::EnsureIsolatedWorld(
                           ToIsolate(window->GetFrame()), world->GetWorldId()));
   }
-  if (!script_state) {
+  if (!script_state || !v8_session_) {
     return;
   }
 
@@ -1998,6 +1998,11 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_resource_content_loader_);
   visitor->Trace(isolated_worlds_);
   InspectorBaseAgent::Trace(visitor);
+}
+
+void InspectorPageAgent::Dispose() {
+  InspectorBaseAgent::Dispose();
+  v8_session_ = nullptr;
 }
 
 protocol::Response InspectorPageAgent::getOriginTrials(
