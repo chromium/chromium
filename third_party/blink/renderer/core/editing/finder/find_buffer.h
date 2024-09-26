@@ -21,6 +21,15 @@ class Node;
 class OffsetMapping;
 class WebString;
 
+enum class RubySupport {
+  // No support.
+  kDisabled,
+  // Support if a target IFC contains a <ruby>.
+  kEnabledIfNecessary,
+  // Support always.
+  kEnabledForcefully,
+};
+
 // Buffer for find-in-page, collects text until it meets a block/other
 // delimiters. Uses TextSearcherICU to find match in buffer.
 // See doc at https://goo.gl/rnXjBu
@@ -28,10 +37,8 @@ class CORE_EXPORT FindBuffer {
   STACK_ALLOCATED();
 
  public:
-  using RubySupport = base::StrongAlias<class RubySupportTag, bool>;
-
   explicit FindBuffer(const EphemeralRangeInFlatTree& range,
-                      RubySupport ruby_support = RubySupport(false));
+                      RubySupport ruby_support = RubySupport::kDisabled);
 
   static EphemeralRangeInFlatTree FindMatchInRange(
       const EphemeralRangeInFlatTree& range,

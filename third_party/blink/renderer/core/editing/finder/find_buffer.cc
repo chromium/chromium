@@ -266,7 +266,8 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
 
     FindBuffer buffer(
         EphemeralRangeInFlatTree(start_position, range.EndPosition()),
-        RubySupport(options.IsRubySupported()));
+        options.IsRubySupported() ? RubySupport::kEnabledIfNecessary
+                                  : RubySupport::kDisabled);
     FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
       if (!options.IsBackwards()) {

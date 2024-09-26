@@ -124,7 +124,8 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
 
     while (search_start < search_end) {
       // Find in the whole block.
-      FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
+      FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end),
+                        RubySupport::kEnabledIfNecessary);
       FindResults match_results =
           buffer.FindMatches(search_text_, find_options);
       bool yielded_while_iterating_results = false;
