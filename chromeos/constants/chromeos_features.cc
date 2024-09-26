@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -377,10 +376,7 @@ bool IsContainerAppPreinstallDebugEnabled() {
   if (base::FeatureList::IsEnabled(kFeatureManagementContainerAppPreinstall)) {
     return false;
   }
-  if (!base::FeatureList::IsEnabled(kContainerAppPreinstallDebug)) {
-    return false;
-  }
-  return switches::IsContainerAppPreinstallDebugKeyMatched();
+  return base::FeatureList::IsEnabled(kContainerAppPreinstallDebug);
 }
 
 bool IsCrosComponentsEnabled() {
