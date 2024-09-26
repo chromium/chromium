@@ -175,6 +175,8 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -296,6 +298,10 @@ try_.orchestrator_builder(
     ),
     compilator = "mac14-arm64-rel-compilator",
     contact_team_email = "bling-engprod@google.com",
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     main_list_view = "try",
     tryjob = try_.job(
         # TODO (crbug.com/338209817): move out of
@@ -432,6 +438,8 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
@@ -590,6 +598,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # b/346598710
         "chromium.luci_analysis_v2": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
