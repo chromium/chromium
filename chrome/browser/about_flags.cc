@@ -10237,10 +10237,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-idle-manager", flag_descriptions::kArcIdleManagerName,
      flag_descriptions::kArcIdleManagerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
-
-    {"arc-sleep", flag_descriptions::kArcS2IdleName,
-     flag_descriptions::kArcS2IdleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableArcS2Idle)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

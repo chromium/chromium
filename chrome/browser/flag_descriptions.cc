@@ -6044,10 +6044,6 @@ const char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vcpu on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
-const char kArcS2IdleName[] = "Enable ARC sleep";
-const char kArcS2IdleDescription[] =
-    "ARC will try to sleep while Android's doze mode is active.";
-
 const char kArcSwitchToKeyMintDaemonName[] = "Switch to KeyMint Daemon.";
 const char kArcSwitchToKeyMintDaemonDesc[] =
     "Switch from Keymaster Daemon to KeyMint Daemon. Must be switched on/off "

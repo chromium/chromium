@@ -371,11 +371,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "arc-sleep",
-    "owners": [ "stevensd@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "arc-switch-to-keymint-daemon",
     "owners": [ "yaohuali@chromium.org" ],
     "expiry_milestone": 123
