@@ -28,12 +28,14 @@
     z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
-  .button-container.button-container {
+  .button-container,
+  #searchboxContainer  {
     transition: opacity 150ms, visibility 150ms;
   }
 
   :host([should-fade-out-buttons]) .button-container,
-  :host(:not([initial-flash-animation-has-ended])) .button-container {
+  :host(:not([initial-flash-animation-has-ended])) .button-container,
+  :host(:not([initial-flash-animation-has-ended])) #searchboxContainer {
     opacity: 0;
     visibility: hidden;
   }
