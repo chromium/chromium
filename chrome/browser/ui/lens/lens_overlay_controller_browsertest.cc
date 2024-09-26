@@ -2343,113 +2343,189 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUIWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::INJECTED_IMAGE);
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
+      "&gsc=2&hl=en-US&cs=0");
+  content::TestNavigationObserver first_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->LoadURLInResultsFrame(first_search_url);
+  first_observer.WaitForNavigationFinished();
+
+  // The search query history stack should be empty and the currently loaded
+  // query should be set.
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  const auto first_search_query =
+      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(first_search_query);
+  EXPECT_TRUE(first_search_query->search_query_text_.empty());
+  VerifySearchQueryParameters(first_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(first_search_query->search_query_url_,
+                            first_search_url);
+  EXPECT_FALSE(first_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_EQ(first_search_query->selected_region_, kTestRegion);
+  EXPECT_FALSE(first_search_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_EQ(first_search_query->selected_region_bitmap_.width(), 100);
+  EXPECT_EQ(first_search_query->selected_region_bitmap_.height(), 100);
+  EXPECT_FALSE(first_search_query->selected_text_);
+  EXPECT_EQ(first_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
+
+  // Loading a url in the side panel should show the results page.
+  const GURL second_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
       "&gsc=2&hl=en-US&cs=0");
   // Do the full image translate query first so it gets attached to the query.
   const std::string source_lang = "auto";
   const std::string target_lang = "fi";
+  content::TestNavigationObserver second_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->IssueTranslateFullPageRequestForTesting(source_lang, target_lang);
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+  second_observer.WaitForNavigationFinished();
 
-  // The search query history stack should be empty and the currently loaded
-  // query should be set.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
-  EXPECT_TRUE(loaded_search_query);
-  EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
-  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
-                            first_search_url);
-  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
-  EXPECT_FALSE(loaded_search_query->selected_region_);
-  EXPECT_TRUE(loaded_search_query->selected_text_);
-  EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
-  EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  EXPECT_TRUE(loaded_search_query->translate_options_);
-  EXPECT_EQ(loaded_search_query->translate_options_->source_language,
+  // The search query history stack should be size 1.
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  const auto second_search_query =
+      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(second_search_query);
+  EXPECT_EQ(second_search_query->search_query_text_, "oranges");
+  VerifySearchQueryParameters(second_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(second_search_query->search_query_url_,
+                            second_search_url);
+  EXPECT_TRUE(second_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(second_search_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_FALSE(second_search_query->selected_region_);
+  EXPECT_TRUE(second_search_query->selected_text_);
+  EXPECT_EQ(second_search_query->selected_text_->first, 20);
+  EXPECT_EQ(second_search_query->selected_text_->second, 200);
+  EXPECT_TRUE(second_search_query->translate_options_);
+  EXPECT_EQ(second_search_query->translate_options_->source_language,
             source_lang);
-  EXPECT_EQ(loaded_search_query->translate_options_->target_language,
+  EXPECT_EQ(second_search_query->translate_options_->target_language,
             target_lang);
-  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+  EXPECT_EQ(second_search_query->lens_selection_type_,
             lens::SELECT_TEXT_HIGHLIGHT);
+  VerifySearchQueryParameters(second_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(second_observer.last_navigation_url(),
+                            second_search_url);
 
   // Loading a second url in the side panel should show the results page.
-  const GURL second_search_url(
+  const GURL third_search_url(
       "https://www.google.com/"
       "search?source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=2"
       "&hl=en-US&cs=0");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
-  content::TestNavigationObserver first_observer(
+  content::TestNavigationObserver third_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueEndTranslateModeRequestForTesting();
-  controller->LoadURLInResultsFrame(second_search_url);
-  first_observer.WaitForNavigationFinished();
+  controller->LoadURLInResultsFrame(third_search_url);
+  third_observer.WaitForNavigationFinished();
 
-  // The search query history stack should have 1 entry and the currently loaded
-  // query should be set to the new query
-  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
-  EXPECT_TRUE(loaded_search_query);
-  EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
-  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
-  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
-                            second_search_url);
-  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
-  EXPECT_FALSE(loaded_search_query->selected_region_);
-  EXPECT_FALSE(loaded_search_query->selected_text_);
-  EXPECT_FALSE(loaded_search_query->translate_options_);
-  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+  // The search query history stack should have 2 entries and the currently
+  // loaded query should be set to the new query
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
+  const auto third_search_query =
+      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(third_search_query);
+  EXPECT_EQ(third_search_query->search_query_text_, "kiwi");
+  VerifySearchQueryParameters(third_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(third_search_query->search_query_url_,
+                            third_search_url);
+  EXPECT_TRUE(third_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(third_search_query->selected_region_);
+  EXPECT_FALSE(third_search_query->selected_text_);
+  EXPECT_FALSE(third_search_query->translate_options_);
+  EXPECT_EQ(third_search_query->lens_selection_type_,
             lens::UNKNOWN_SELECTION_TYPE);
-  VerifySearchQueryParameters(first_observer.last_navigation_url());
-  VerifyTextQueriesAreEqual(first_observer.last_navigation_url(),
-                            second_search_url);
+  VerifySearchQueryParameters(third_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(third_observer.last_navigation_url(),
+                            third_search_url);
+
   // Popping the query should load the previous query into the results frame.
-  content::TestNavigationObserver second_observer(
+  content::TestNavigationObserver fourth_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  second_observer.WaitForNavigationFinished();
+  fourth_observer.WaitForNavigationFinished();
 
-  // The search query history stack should be empty and the currently loaded
+  // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the previous query.
-  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
-  loaded_search_query = controller->get_loaded_search_query_for_testing();
-  EXPECT_TRUE(loaded_search_query);
-  EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
-  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
-                            first_search_url);
-  EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
-  EXPECT_FALSE(loaded_search_query->selected_region_);
-  EXPECT_TRUE(loaded_search_query->selected_text_);
-  EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
-  EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  EXPECT_TRUE(loaded_search_query->translate_options_);
-  EXPECT_EQ(loaded_search_query->translate_options_->source_language,
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  const auto first_popped_query =
+      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(first_popped_query);
+  EXPECT_EQ(first_popped_query->search_query_text_, "oranges");
+  VerifySearchQueryParameters(first_popped_query->search_query_url_);
+  VerifyTextQueriesAreEqual(first_popped_query->search_query_url_,
+                            second_search_url);
+  EXPECT_TRUE(first_popped_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_FALSE(first_popped_query->selected_region_);
+  EXPECT_TRUE(first_popped_query->selected_text_);
+  EXPECT_EQ(first_popped_query->selected_text_->first, 20);
+  EXPECT_EQ(first_popped_query->selected_text_->second, 200);
+  EXPECT_TRUE(first_popped_query->translate_options_);
+  EXPECT_EQ(first_popped_query->translate_options_->source_language,
             source_lang);
-  EXPECT_EQ(loaded_search_query->translate_options_->target_language,
+  EXPECT_EQ(first_popped_query->translate_options_->target_language,
             target_lang);
-  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+  EXPECT_EQ(first_popped_query->lens_selection_type_,
             lens::SELECT_TEXT_HIGHLIGHT);
-  VerifySearchQueryParameters(second_observer.last_navigation_url());
-  VerifyTextQueriesAreEqual(second_observer.last_navigation_url(),
-                            first_search_url);
+  VerifySearchQueryParameters(fourth_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(fourth_observer.last_navigation_url(),
+                            second_search_url);
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   fake_controller->FlushForTesting();
   EXPECT_EQ(fake_controller->fake_overlay_page_.source_language_, source_lang);
   EXPECT_EQ(fake_controller->fake_overlay_page_.target_language_, target_lang);
+
+  // Popping the query should load the previous query into the results frame.
+  content::TestNavigationObserver fifth_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->PopAndLoadQueryFromHistory();
+  // The full sequence of events necessary to load Lens search results is not
+  // currently testable, so load the expected URL manually.
+  controller->LoadURLInResultsFrame(first_search_url);
+  fifth_observer.WaitForNavigationFinished();
+
+  // The search query history stack should be empty and the currently loaded
+  // query should be set.
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  const auto second_popped_query =
+      controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(second_popped_query);
+  EXPECT_TRUE(second_popped_query->search_query_text_.empty());
+  VerifySearchQueryParameters(second_popped_query->search_query_url_);
+  VerifyTextQueriesAreEqual(second_popped_query->search_query_url_,
+                            first_search_url);
+  EXPECT_FALSE(second_popped_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_EQ(second_popped_query->selected_region_, kTestRegion);
+  EXPECT_FALSE(second_popped_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_EQ(second_popped_query->selected_region_bitmap_.width(), 100);
+  EXPECT_EQ(second_popped_query->selected_region_bitmap_.height(), 100);
+  EXPECT_FALSE(second_popped_query->selected_text_);
+  EXPECT_EQ(second_popped_query->lens_selection_type_, lens::INJECTED_IMAGE);
+  EXPECT_FALSE(second_popped_query->translate_options_);
+  fake_controller->FlushForTesting();
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.source_language_.empty());
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.target_language_.empty());
 }
 
 // TODO(crbug.com/342390515): Test flaky on Windows.

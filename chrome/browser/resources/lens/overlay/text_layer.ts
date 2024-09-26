@@ -279,7 +279,7 @@ export class TextLayerElement extends PolymerElement {
         (e: CustomEvent<TranslateState>) => {
           this.shouldRenderTranslateWords = e.detail.translateModeEnabled;
           this.currentTranslateLanguage = e.detail.targetLanguage;
-          if (this.shouldRenderTranslateWords) {
+          if (e.detail.shouldUnselectWords) {
             this.unselectWords();
           }
         });
