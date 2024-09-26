@@ -35,10 +35,10 @@ IOSFeedEnabledMetricsProvider::~IOSFeedEnabledMetricsProvider() = default;
 
 void IOSFeedEnabledMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  // Log whether the Feed can be displayed for each loaded BrowserStates.
-  for (ChromeBrowserState* browser_state :
+  // Log whether the Feed can be displayed for each loaded profile.
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     base::UmaHistogramBoolean(kFeedEnabledHistogram,
-                              CanDisplayFeed(browser_state->GetPrefs()));
+                              CanDisplayFeed(profile->GetPrefs()));
   }
 }

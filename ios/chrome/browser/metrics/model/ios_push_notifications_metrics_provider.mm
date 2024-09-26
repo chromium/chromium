@@ -80,9 +80,9 @@ void RecordHistogramForPushNotificationReportInfo(
 }
 
 // Returns the signed-in `gaia_id` or an empty string if not signed-in.
-std::string GetSignedInGaiaId(ChromeBrowserState* browser_state) {
+std::string GetSignedInGaiaId(ProfileIOS* profile) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
 
   for (signin::ConsentLevel consent_level : kConsentLevels) {
     if (!identity_manager->HasPrimaryAccount(consent_level)) {
@@ -112,10 +112,10 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
                                   settings.authorizationStatus, 5);
   }];
 
-  // Report the enabled client IDs for each loaded BrowserState.
-  for (ChromeBrowserState* browser_state :
+  // Report the enabled client IDs for each loaded profile.
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    const std::string gaia_id = GetSignedInGaiaId(browser_state);
+    const std::string gaia_id = GetSignedInGaiaId(profile);
     for (const auto& info : kPushNotificationReportInfos) {
       RecordHistogramForPushNotificationReportInfo(info, gaia_id);
     }

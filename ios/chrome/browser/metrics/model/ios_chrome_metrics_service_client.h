@@ -106,9 +106,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // ProfileManagerObserverIOS:
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileCreated(ProfileManagerIOS* manager,
-                        ChromeBrowserState* profile) override;
+                        ProfileIOS* profile) override;
   void OnProfileLoaded(ProfileManagerIOS* manager,
-                       ChromeBrowserState* profile) override;
+                       ProfileIOS* profile) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -144,7 +144,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Register to observe events on a Profile's services.
   // Returns true if registration was successful.
-  bool RegisterForProfileEvents(ChromeBrowserState* profile);
+  bool RegisterForProfileEvents(ProfileIOS* profile);
 
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);

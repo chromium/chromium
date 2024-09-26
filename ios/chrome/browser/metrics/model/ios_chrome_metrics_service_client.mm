@@ -435,12 +435,11 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   }
 
   int open_tabs_count = 0;
-  for (ChromeBrowserState* browser_state :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     // Iterate through regular Browser and OTR Browser to find the corresponding
     // tab.
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state);
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
     std::set<Browser*> browsers =
         browser_list->BrowsersOfType(BrowserList::BrowserType::kAll);
 
@@ -472,13 +471,13 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
 }
 
 bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
-    ChromeBrowserState* profile) {
+    ProfileIOS* profile) {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
+      ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS);
   ObserveServiceForDeletions(history_service);
   syncer::SyncService* sync =
-      SyncServiceFactory::GetInstance()->GetForBrowserState(profile);
+      SyncServiceFactory::GetInstance()->GetForProfile(profile);
   StartObserving(sync, profile->GetPrefs());
   return (history_service != nullptr && sync != nullptr);
 }
@@ -552,16 +551,14 @@ void IOSChromeMetricsServiceClient::OnProfileManagerDestroyed(
   profile_manager_observation_.Reset();
 }
 
-void IOSChromeMetricsServiceClient::OnProfileCreated(
-    ProfileManagerIOS* manager,
-    ChromeBrowserState* profile) {
+void IOSChromeMetricsServiceClient::OnProfileCreated(ProfileManagerIOS* manager,
+                                                     ProfileIOS* profile) {
   // Nothing to do, the Profile is not fully loaded, and it is not possible to
   // access the KeyedService yet.
 }
 
-void IOSChromeMetricsServiceClient::OnProfileLoaded(
-    ProfileManagerIOS* manager,
-    ChromeBrowserState* profile) {
+void IOSChromeMetricsServiceClient::OnProfileLoaded(ProfileManagerIOS* manager,
+                                                    ProfileIOS* profile) {
   if (!RegisterForProfileEvents(profile)) {
     notification_listeners_active_ = false;
   }

@@ -30,14 +30,14 @@ class DemographicsClient
   base::Time GetNetworkTime() const override;
 
  private:
-  // Returns the browser state for which metrics will be gathered. Once a
-  // suitable browser state has been found, future calls will continue to return
+  // Returns the profile for which metrics will be gathered. Once a
+  // suitable profile has been found, future calls will continue to return
   // the same value so that reported metrics are consistent (unless that browser
   // state becomes invalid).
-  ChromeBrowserState* GetCachedBrowserState();
+  ProfileIOS* GetCachedProfile();
 
-  // Weak pointer to the cached ChromeBrowserState.
-  base::WeakPtr<ChromeBrowserState> chrome_browser_state_;
+  // Weak pointer to the cached ProfileIOS.
+  base::WeakPtr<ProfileIOS> profile_;
 };
 
 }  // namespace metrics

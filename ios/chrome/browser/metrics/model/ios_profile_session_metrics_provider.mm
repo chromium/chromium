@@ -25,7 +25,7 @@ class IOSProfileSessionMetricsProvider : public metrics::MetricsProvider {
   }
 
  private:
-  static std::vector<ChromeBrowserState*> GetLoadedProfiles() {
+  static std::vector<ProfileIOS*> GetLoadedProfiles() {
     return GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
   }
 

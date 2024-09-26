@@ -51,14 +51,13 @@ IOSProfileSessionDurationsServiceFactory::
 std::unique_ptr<KeyedService>
 IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<IOSProfileSessionDurationsService>(
-      sync_service, browser_state->GetPrefs(), identity_manager);
+      sync_service, profile->GetPrefs(), identity_manager);
 }
 
 web::BrowserState*

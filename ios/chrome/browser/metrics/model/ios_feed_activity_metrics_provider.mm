@@ -16,11 +16,10 @@
 
 namespace {
 
-// Returns the activity bucket from `browser_state`.
-FeedActivityBucket FeedActivityBucketForBrowserState(
-    ChromeBrowserState* browser_state) {
+// Returns the activity bucket from `profile`.
+FeedActivityBucket FeedActivityBucketForBrowserState(ProfileIOS* profile) {
   const int activity_bucket =
-      browser_state->GetPrefs()->GetInteger(kActivityBucketKey);
+      profile->GetPrefs()->GetInteger(kActivityBucketKey);
   switch (activity_bucket) {
     case base::to_underlying(FeedActivityBucket::kNoActivity):
     case base::to_underlying(FeedActivityBucket::kLowActivity):
@@ -45,10 +44,9 @@ IOSFeedActivityMetricsProvider::~IOSFeedActivityMetricsProvider() = default;
 void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Log the activity bucket of all loaded BrowserStates.
-  for (ChromeBrowserState* browser_state :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    base::UmaHistogramEnumeration(
-        kAllFeedsActivityBucketsByProviderHistogram,
-        FeedActivityBucketForBrowserState(browser_state));
+    base::UmaHistogramEnumeration(kAllFeedsActivityBucketsByProviderHistogram,
+                                  FeedActivityBucketForBrowserState(profile));
   }
 }

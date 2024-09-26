@@ -38,11 +38,10 @@ GoogleGroupsManagerFactory::GoogleGroupsManagerFactory()
 std::unique_ptr<KeyedService>
 GoogleGroupsManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<GoogleGroupsManager>(
-      *GetApplicationContext()->GetLocalState(),
-      browser_state->GetProfileName(), *browser_state->GetPrefs());
+      *GetApplicationContext()->GetLocalState(), profile->GetProfileName(),
+      *profile->GetPrefs());
 }
 
 bool GoogleGroupsManagerFactory::ServiceIsCreatedWithBrowserState()

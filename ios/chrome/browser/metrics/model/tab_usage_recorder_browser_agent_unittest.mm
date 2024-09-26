@@ -48,8 +48,8 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
  protected:
   TabUsageRecorderBrowserAgentTest()
       : application_(OCMClassMock([UIApplication class])) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
     tab_usage_recorder_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
@@ -93,7 +93,7 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_;

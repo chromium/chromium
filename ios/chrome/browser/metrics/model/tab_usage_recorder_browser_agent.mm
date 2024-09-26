@@ -29,8 +29,8 @@ BROWSER_USER_DATA_KEY_IMPL(TabUsageRecorderBrowserAgent)
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     : restore_start_time_(base::TimeTicks::Now()),
       web_state_list_(browser->GetWebStateList()),
-      prerender_service_(PrerenderServiceFactory::GetForBrowserState(
-          browser->GetBrowserState())) {
+      prerender_service_(
+          PrerenderServiceFactory::GetForProfile(browser->GetProfile())) {
   browser->AddObserver(this);
 
   DCHECK(web_state_list_);
@@ -40,9 +40,9 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     web_state->AddObserver(this);
   }
 
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   session_restoration_service_observation_.Observe(
-      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+      SessionRestorationServiceFactory::GetForProfile(profile));
 
   // Register for backgrounding and foregrounding notifications. It is safe for
   // the block to capture a pointer to `this` as they are unregistered in the

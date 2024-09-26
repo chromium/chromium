@@ -40,11 +40,11 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   web_state_forwarder_ =
       std::make_unique<AllWebStateObservationForwarder>(web_state_list_, this);
 
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   session_restoration_service_observation_.Observe(
-      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
+      SessionRestorationServiceFactory::GetForProfile(profile));
 
-  is_off_record_ = browser_state->IsOffTheRecord();
+  is_off_record_ = profile->IsOffTheRecord();
   is_inactive_ = browser->IsInactive();
 }
 

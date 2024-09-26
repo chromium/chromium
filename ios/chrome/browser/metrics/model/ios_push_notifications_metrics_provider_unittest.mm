@@ -62,34 +62,33 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Creates a TestChromeBrowserState and pretends it is signed-in with
+  // Creates a TestProfileIOS and pretends it is signed-in with
   // `identity` if not nil.
-  void AddBrowserState(const std::string& name, FakeSystemIdentity* identity) {
-    TestChromeBrowserState::Builder builder;
+  void AddProfile(const std::string& name, FakeSystemIdentity* identity) {
+    TestProfileIOS::Builder builder;
     builder.SetName(name);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
 
-    ChromeBrowserState* browser_state =
+    ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
+        profile, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     if (identity) {
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager())
           ->AddIdentity(identity);
 
-      AuthenticationServiceFactory::GetForBrowserState(browser_state)
-          ->SignIn(identity,
-                   signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+      AuthenticationServiceFactory::GetForProfile(profile)->SignIn(
+          identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
     }
   }
 
-  void AddBrowserState(const std::string& name) {
-    AddBrowserState(name, /*identity=*/nil);
+  void AddProfile(const std::string& name) {
+    AddProfile(name, /*identity=*/nil);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -104,7 +103,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
 // Push notification autorization and no other data when there are no
-// ChromeBrowserState loaded.
+// ProfileIOS loaded.
 TEST_F(IOSPushNotificationsMetricsProviderTest,
        ProvideCurrentSessionData_NoBrowserState) {
   IOSPushNotificationsMetricsProvider provider;
@@ -144,13 +143,13 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
 // Push notification autorization and the data for each notification
-// client for the loaded ChromeBrowserState.
+// client for the loaded ProfileIOS.
 TEST_F(IOSPushNotificationsMetricsProviderTest,
        ProvideCurrentSessionData_OneBrowserState) {
   IOSPushNotificationsMetricsProvider provider;
 
   // Add one BrowserState and record the metrics.
-  AddBrowserState("Default");
+  AddProfile("Default");
   provider.ProvideCurrentSessionData(/*uma_proto*/ nullptr);
 
   // The status of the notification authorization must always be logged
@@ -186,15 +185,15 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
 
 // Tests that ProvideCurrentSessionData(...) records the status of the
 // Push notification autorization and the data for each notification
-// client for the loaded ChromeBrowserStates.
+// client for the loaded ProfileIOS.
 TEST_F(IOSPushNotificationsMetricsProviderTest,
        ProvideCurrentSessionData_MultipleBrowserStates) {
   IOSPushNotificationsMetricsProvider provider;
 
   // Add a few BrowserStates and record the metrics.
-  AddBrowserState("Profile1");
-  AddBrowserState("Profile2");
-  AddBrowserState("Profile3", [FakeSystemIdentity fakeIdentity1]);
+  AddProfile("Profile1");
+  AddProfile("Profile2");
+  AddProfile("Profile3", [FakeSystemIdentity fakeIdentity1]);
   provider.ProvideCurrentSessionData(/*uma_proto*/ nullptr);
 
   // The status of the notification authorization must always be logged

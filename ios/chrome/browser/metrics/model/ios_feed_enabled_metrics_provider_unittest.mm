@@ -110,14 +110,14 @@ class IOSFeedEnabledMetricsProviderTest
         GetParam());
   }
 
-  // Creates a new TestChromeBrowserState with `name` and configured with
+  // Creates a new TestProfileIOS with `name` and configured with
   // `config` (possibly disabling some preferences).
   void CreateBrowserState(const std::string& name,
                           const FeedMetricsConfig& param) {
-    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
-        std::move(TestChromeBrowserState::Builder().SetName(name)));
+    ProfileIOS* profile = profile_manager_.AddProfileWithBuilder(
+        std::move(TestProfileIOS::Builder().SetName(name)));
 
-    PrefService* prefs = browser_state->GetPrefs();
+    PrefService* prefs = profile->GetPrefs();
     return std::visit(
         base::Overloaded{[](const FeedAblationEnabled&) {},
                          [prefs](const FeedAblationDisabled& config) {
