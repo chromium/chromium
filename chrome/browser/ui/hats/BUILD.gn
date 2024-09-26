@@ -56,7 +56,6 @@ source_set("impl") {
   deps = [
     ":hats",
     "//chrome/browser:browser_process",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui",
     "//chrome/browser/ui/safety_hub",
     "//chrome/common",
@@ -102,7 +101,6 @@ if (!is_android) {
       ":hats",
       ":test_support",
       "//base/test:test_support",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
       "//chrome/common",
       "//chrome/common:chrome_features",

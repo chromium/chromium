@@ -46,8 +46,6 @@ source_set("impl") {
   deps = [
     ":file_system_access",
     "//chrome/browser:browser_process",
-    "//chrome/browser/content_settings",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/browser/ui/file_system_access",
@@ -84,7 +82,6 @@ if (!is_android) {
       ":file_system_access",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -116,8 +113,6 @@ source_set("unit_tests") {
   deps = [
     ":file_system_access",
     "//base/test:test_support",
-    "//chrome/browser/content_settings",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",
     "//components/sync_preferences:test_support",

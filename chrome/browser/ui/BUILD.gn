@@ -362,12 +362,6 @@ static_library("ui") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
-    "//chrome/browser/content_settings",
-    "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/content_settings:content_settings_factory_impl",
-    "//chrome/browser/content_settings:content_settings_util",
-    "//chrome/browser/content_settings:content_settings_util_impl",
-    "//chrome/browser/content_settings:impl",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",
@@ -733,10 +727,6 @@ static_library("ui") {
 
     # TODO(crbug.com/): It includes //c/b/ui/browser_dialogs.h and //c/b/ui/url_identity.h
     "//chrome/browser/ui/file_system_access:impl",
-
-    "//chrome/browser/content_settings:content_settings_factory_impl",
-    "//chrome/browser/content_settings:impl",
-    "//chrome/browser/content_settings:content_settings_util_impl",
   ]
 
   if (enable_vr && is_win) {

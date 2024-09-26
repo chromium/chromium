@@ -13,7 +13,6 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/browser",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",

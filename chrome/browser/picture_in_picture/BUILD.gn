@@ -76,7 +76,6 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:generated_resources",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/permissions",
       "//chrome/browser/picture_in_picture",
@@ -144,7 +143,6 @@ if (!is_android) {
       "//base/test:test_support",
       "//build:chromeos_buildflags",
       "//chrome/browser",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
