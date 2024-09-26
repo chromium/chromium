@@ -96,7 +96,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     /**
      * Retrieve fallback icon for a given suggestion. Must be completed synchromously.
      *
-     * @param suggestion AutocompleteMatch instance to retrieve fallback icon for
+     * @param match AutocompleteMatch instance to retrieve fallback icon for
      * @return OmniboxDrawableState that can be immediately applied to suggestion view
      */
     protected @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch match) {

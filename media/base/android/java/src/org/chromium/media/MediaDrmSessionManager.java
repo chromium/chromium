@@ -81,10 +81,10 @@ class MediaDrmSessionManager {
         }
 
         /**
-         * Create session ID for temporary license session. The DRM session ID is
-         * used as EME session ID.
+         * Create session ID for temporary license session. The DRM session ID is used as EME
+         * session ID.
          *
-         * @param drmIdAsEmeId Raw DRM session ID created by MediaDrm.
+         * @param drmId Raw DRM session ID created by MediaDrm.
          * @return Session ID with DRM session ID as EME session ID.
          */
         static SessionId createTemporarySessionId(byte[] drmId) {

@@ -676,12 +676,12 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     /**
      * Similar to getLaunchIntentForDownload(), but only works for download that is stored as a
      * content Uri.
-     * @param context    Context of the app.
+     *
      * @param contentUri Uri of the download.
      * @param isSupportedMimeType Whether the MIME type is supported by browser.
      * @param originalUrl The original url of the downloaded file
-     * @param referrer   Referrer of the downloaded file.
-     * @param mimeType   MIME type of the downloaded file.
+     * @param referrer Referrer of the downloaded file.
+     * @param mimeType MIME type of the downloaded file.
      * @return the intent to launch for the given download item.
      */
     private static @Nullable Intent getLaunchIntentFromDownloadUri(
@@ -745,7 +745,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     /**
      * Return whether a download item can be resolved to any activity.
      *
-     * @param context Context of the app.
      * @param download A download item.
      * @param isSupportedMimeType Whether the MIME type is supported by browser.
      * @return true if the download item can be resolved, or false otherwise.
@@ -841,7 +840,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     /**
      * Called when a download fails.
      *
-     * @param fileName Name of the download file.
      * @param reason Reason of failure reported by android DownloadManager
      */
     @VisibleForTesting
@@ -862,9 +860,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Open the Activity which shows a list of all downloads.
-     * @param context Application context
-     * @param otrProfileID The {@link OTRProfileID} to determine whether to open download page
-     * in incognito profile. If null, download page will be opened in normal profile.
+     *
+     * @param otrProfileID The {@link OTRProfileID} to determine whether to open download page in
+     *     incognito profile. If null, download page will be opened in normal profile.
      * @param source The source where the user action coming from.
      */
     @CalledByNative
@@ -1446,8 +1444,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Checks whether the download will be immediately opened after completion.
+     *
      * @param downloadItem The download item to be opened.
-     * @return True if the download will be auto-opened, false otherwise.
      */
     public void checkIfDownloadWillAutoOpen(DownloadItem downloadItem, Callback<Boolean> callback) {
         assert (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE);

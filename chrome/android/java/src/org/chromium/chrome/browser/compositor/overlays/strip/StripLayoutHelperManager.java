@@ -107,8 +107,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class handles managing which {@link StripLayoutHelper} is currently active and dispatches
- * all input and model events to the proper destination.
+ * This class handles managing which StripLayoutHelper is currently active and dispatches all input
+ * and model events to the proper destination.
  */
 public class StripLayoutHelperManager
         implements SceneOverlay,
@@ -396,26 +396,25 @@ public class StripLayoutHelperManager
     }
 
     /**
-     * Creates an instance of the {@link StripLayoutHelperManager}.
+     * Creates an instance of the StripLayoutHelperManager.
      *
-     * @param context The current Android {@link Context}.
-     * @param managerHost The parent {@link LayoutManagerHost}.
-     * @param updateHost The parent {@link LayoutUpdateHost}.
-     * @param renderHost The {@link LayoutRenderHost}.
+     * @param context The current Android Context.
+     * @param managerHost The parent LayoutManagerHost.
+     * @param updateHost The parent LayoutUpdateHost.
+     * @param renderHost The LayoutRenderHost.
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
-     * @param tabModelStartupInfoSupplier A supplier for the {@link TabModelStartupInfo}.
-     * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
-     *     to lifecycle events.
-     * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link TabDragSource} for
-     *     drag and drop.
-     * @param dragDropDelegate @{@link DragAndDropDelegate} passed to @{@link TabDragSource} to
-     *     initiate tab drag and drop.
-     * @param toolbarContainerView @{link View} passed to @{link TabDragSource} for drag and drop.
-     * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param browserControlsStateProvider @{@link BrowserControlsStateProvider} for drag drop.
-     * @param toolbarManager The {@link ToolbarManager} instance.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
+     * @param tabModelStartupInfoSupplier A supplier for the TabModelStartupInfo.
+     * @param lifecycleDispatcher The ActivityLifecycleDispatcher for registering this class to
+     *     lifecycle events.
+     * @param multiInstanceManager MultiInstanceManager passed to TabDragSource for drag and drop.
+     * @param dragDropDelegate @DragAndDropDelegate passed to @TabDragSource to initiate tab drag
+     *     and drop.
+     * @param toolbarContainerView View passed to TabDragSource for drag and drop.
+     * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
+     * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
+     * @param browserControlsStateProvider @BrowserControlsStateProvider for drag drop.
+     * @param toolbarManager The ToolbarManager instance.
+     * @param desktopWindowStateProvider The DesktopWindowStateProvider for the app header.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -1161,10 +1160,11 @@ public class StripLayoutHelperManager
     }
 
     /**
-     * Sets the {@link TabModelSelector} that this {@link StripLayoutHelperManager} will visually
-     * represent, and various objects associated with it.
-     * @param modelSelector The {@link TabModelSelector} to visually represent.
-     * @param tabCreatorManager The {@link TabCreatorManager}, used to create new tabs.
+     * Sets the TabModelSelector that this StripLayoutHelperManager will visually represent, and
+     * various objects associated with it.
+     *
+     * @param modelSelector The TabModelSelector to visually represent.
+     * @param tabCreatorManager The TabCreatorManager, used to create new tabs.
      */
     public void setTabModelSelector(
             TabModelSelector modelSelector, TabCreatorManager tabCreatorManager) {
@@ -1427,7 +1427,7 @@ public class StripLayoutHelperManager
     /**
      * Updates all internal resources and dimensions.
      *
-     * @param context The current Android {@link Context}.
+     * @param context The current Android Context.
      */
     public void onContextChanged(Context context) {
         mContext = context;

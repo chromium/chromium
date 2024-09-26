@@ -24,7 +24,7 @@ public class NfcTagHandler {
     /**
      * Factory method that creates NfcTagHandler for a given NFC Tag.
      *
-     * @param tag @see android.nfc.Tag
+     * @see android.nfc.Tag
      * @return NfcTagHandler or null when unsupported Tag is provided.
      */
     public static NfcTagHandler create(Tag tag) {

@@ -32,7 +32,6 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     private Supplier<Integer> mTabIdSupplier;
 
     /**
-     * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
      *     on.
@@ -63,7 +62,6 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     /**
      * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
      *
-     * @param anchorView The view to anchor the menu on.
      * @return The on click listener.
      */
     public View.OnClickListener getOnClickListener() {

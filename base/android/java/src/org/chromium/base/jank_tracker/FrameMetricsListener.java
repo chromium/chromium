@@ -78,7 +78,6 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
     /**
      * Toggles recording into FrameMetricsStore. When recording is stopped, reports accumulated
      * metrics.
-     * @param isRecording
      */
     public void setIsListenerRecording(boolean isRecording) {
         mIsRecording.set(isRecording);

@@ -1073,7 +1073,7 @@ public class UrlOverridingTest {
         // instead.
         mActivityTestRule.loadUrlInNewTab(
                 "chrome://about/",
-                /** incognito* */
+                /* incognito* */
                 true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
@@ -1844,7 +1844,7 @@ public class UrlOverridingTest {
         // instead.
         mActivityTestRule.loadUrlInNewTab(
                 "chrome://about/",
-                /** incognito* */
+                /* incognito* */
                 true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);

@@ -136,12 +136,7 @@ class OverScrollGlow {
         }
     }
 
-    /**
-     * Set touch delta values indicating the current amount of overscroll.
-     *
-     * @param deltaX
-     * @param deltaY
-     */
+    /** Set touch delta values indicating the current amount of overscroll. */
     public void setOverScrollDeltas(int deltaX, int deltaY) {
         mOverScrollDeltaX += deltaX;
         mOverScrollDeltaY += deltaY;

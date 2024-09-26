@@ -57,8 +57,6 @@ public class ChromeActionModeHandler {
 
     /**
      * @param activityTabProvider {@link ActivityTabProvider} instance.
-     * @param actionBarObserver observer called when the contextual action bar's visibility has
-     *     changed.
      * @param showWebSearch Whether 'Web Search' option will be shown.
      * @param searchCallback Callback to run when search action is selected in the action mode.
      * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be

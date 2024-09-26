@@ -68,7 +68,7 @@ public class IncognitoTabLauncher extends Activity {
 
         Intent chromeLauncherIntent = IntentHandler.createTrustedOpenNewTabIntent(this, true);
 
-        /**
+        /*
          * The method IntentHandler.createTrustedOpenNewTabIntent creates a new intent and the
          * SESSION_TOKEN information about the original intent via getIntent() is lost in that
          * process. We extract the package name from the SESSION_TOKEN and store the value in new

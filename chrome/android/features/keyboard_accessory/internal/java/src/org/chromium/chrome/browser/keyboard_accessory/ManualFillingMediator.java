@@ -771,7 +771,6 @@ class ManualFillingMediator
     /**
      * Uses the keyboard (if available) to determine the height of the accessory sheet.
      *
-     * @param rootView Root view of the current content view.
      * @return The estimated keyboard height or enough space to display at least three suggestions.
      */
     private @Px int calculateAccessorySheetHeight() {

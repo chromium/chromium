@@ -1164,7 +1164,7 @@ class AutocompleteMediator
      *
      * <p>This typically happens as a result of soft keyboard being shown or hidden.
      *
-     * @param newHeightPx New height of the suggestion list in pixels.
+     * @param newHeight New height of the suggestion list in pixels.
      */
     public void onSuggestionDropdownHeightChanged(@Px int newHeight) {
         // Report the dropdown height whenever we intend to - or do show soft keyboard. This

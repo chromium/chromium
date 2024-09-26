@@ -27,7 +27,7 @@ public class PasswordManagerLauncher {
      *
      * @param context current activity context
      * @param profile the {@link Profile} associated with the passwords.
-     * @param referer specifies on whose behalf the PasswordManager will be opened
+     * @param referrer specifies on whose behalf the PasswordManager will be opened
      * @param modalDialogManagerSupplier ModalDialogManager supplier to be used by loading dialog.
      * @param managePasskeys the content to be managed
      */

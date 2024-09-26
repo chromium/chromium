@@ -29,10 +29,7 @@ public class StackScroller {
     private static float sViscousFluidScale;
     private static float sViscousFluidNormalize;
 
-    /**
-     * Creates an StackScroller with a viscous fluid scroll interpolator and flywheel.
-     * @param context
-     */
+    /** Creates an StackScroller with a viscous fluid scroll interpolator and flywheel. */
     public StackScroller(Context context) {
         mFlywheel = true;
         mScrollerX = new SplineStackScroller(context);

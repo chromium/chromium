@@ -104,9 +104,10 @@ public class LaunchMetrics {
 
     /**
      * Records metrics about the state of the homepage on launch.
+     *
      * @param showHomeButton Whether the home button is shown.
      * @param homepageIsNtp Whether the homepage is set to the NTP.
-     * @param homepageUrl The homepage GURL.
+     * @param homepageGurl The homepage GURL.
      */
     public static void recordHomePageLaunchMetrics(
             boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl) {

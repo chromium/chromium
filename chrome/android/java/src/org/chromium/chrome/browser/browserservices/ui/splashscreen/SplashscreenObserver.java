@@ -11,8 +11,9 @@ public interface SplashscreenObserver {
 
     /**
      * Called when the splash screen is hidden.
+     *
      * @param startTimestamp Time that the splash screen was shown.
-     * @param endTimestap Time that the splash screen was hidden.
+     * @param endTimestamp Time that the splash screen was hidden.
      */
     void onSplashscreenHidden(long startTimestamp, long endTimestamp);
 }

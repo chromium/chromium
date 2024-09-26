@@ -51,7 +51,6 @@ class TabListViewBinder {
      *
      * @param view The view to bind to.
      * @param model The model to bind.
-     * @param viewType The view type to bind.
      */
     public static void bindTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {

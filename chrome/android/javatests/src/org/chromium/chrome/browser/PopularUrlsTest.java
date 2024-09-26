@@ -383,7 +383,6 @@ public class PopularUrlsTest {
      * Navigate to all the pages listed in the input.
      *
      * @param perf Whether this is a performance test or stability test.
-     * @throws IOException
      */
     public void loadPages(boolean perf) throws IOException {
         OutputStreamWriter outputWriter = null;

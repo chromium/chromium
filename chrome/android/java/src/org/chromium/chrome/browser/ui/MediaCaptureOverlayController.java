@@ -85,17 +85,14 @@ public class MediaCaptureOverlayController implements UnownedUserData {
 
     /**
      * Make this instance of MediaCaptureOverlayController available through the activity's window.
+     *
      * @param window A {@link WindowAndroid} to attach to.
-     * @param manager The {@link MediaCaptureOverlayController} to attach.
      */
     private static void attach(WindowAndroid window, MediaCaptureOverlayController overlay) {
         KEY.attachToHost(window.getUnownedUserDataHost(), overlay);
     }
 
-    /**
-     * Detach the provided MediaCaptureOverlayController from any host it is associated with.
-     * @param manager The {@link MediaCaptureOverlayController} to detach.
-     */
+    /** Detach the provided MediaCaptureOverlayController from any host it is associated with. */
     private static void detach(MediaCaptureOverlayController overlay) {
         KEY.detachFromAllHosts(overlay);
     }

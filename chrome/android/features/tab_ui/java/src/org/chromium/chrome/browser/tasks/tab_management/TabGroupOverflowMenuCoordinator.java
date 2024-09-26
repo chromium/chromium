@@ -286,14 +286,14 @@ public abstract class TabGroupOverflowMenuCoordinator {
     }
 
     /**
-     * Creates a menu view and renders it within an @{@link AnchoredPopupWindow}
+     * Creates a menu view and renders it within an {@link AnchoredPopupWindow}
      *
      * @param anchorViewRectProvider Rect provider for view to anchor the menu.
      * @param tabId ID of Tab the menu needs to be shown for.
      * @param horizontalOverlapAnchor If true, horizontally overlaps menu with the anchor view.
      * @param verticalOverlapAnchor If true, vertically overlaps menu with the anchor view.
      * @param animStyle Animation style to apply for menu show/hide.
-     * @param horizontalOrientation @{@link HorizontalOrientation} to use for the menu position.
+     * @param horizontalOrientation {@link HorizontalOrientation} to use for the menu position.
      * @param activity Activity to get resources and decorView for menu.
      */
     protected void createAndShowMenu(

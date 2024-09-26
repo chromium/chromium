@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
 public class TabArchiver implements TabWindowManager.Observer {
-    @FunctionalInterface
     /** Provides the current timestamp. */
+    @FunctionalInterface
     public interface Clock {
         long currentTimeMillis();
     }

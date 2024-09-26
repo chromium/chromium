@@ -33,7 +33,7 @@ public class HostBrowserClassLoader {
      * Gets / creates ClassLoader for WebAPK dex.
      *
      * @param context WebAPK's context.
-     * @param canaryClassname Class to load to check that ClassLoader is valid.
+     * @param canaryClassName Class to load to check that ClassLoader is valid.
      * @return The ClassLoader.
      */
     public static ClassLoader getClassLoaderInstance(
@@ -97,7 +97,6 @@ public class HostBrowserClassLoader {
      * updates SharedPreferences.
      *
      * @param preferences WebAPK's SharedPreferences.
-     * @param remoteContext
      * @return The new "runtime dex" version number. -1 if there is no new version number.
      */
     private static int checkForNewRuntimeDexVersion(
@@ -135,7 +134,6 @@ public class HostBrowserClassLoader {
     /**
      * Returns the first integer in an asset file's contents.
      *
-     * @param context
      * @param assetName The name of the asset.
      * @return The first integer.
      */

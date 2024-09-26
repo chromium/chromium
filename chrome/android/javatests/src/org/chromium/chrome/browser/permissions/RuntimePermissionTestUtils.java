@@ -154,7 +154,6 @@ public class RuntimePermissionTestUtils {
      *     skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
      *     missing permission prompt dialog (0 if not applicable).
-     * @throws Exception
      */
     public static void runTest(
             final PermissionTestRule permissionTestRule,

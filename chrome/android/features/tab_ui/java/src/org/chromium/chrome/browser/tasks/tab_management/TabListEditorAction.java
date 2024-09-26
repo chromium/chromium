@@ -214,10 +214,10 @@ public abstract class TabListEditorAction {
     }
 
     /**
-     * Actions should override this to decide if an action should be enabled and
-     * to provide the enabled state and count to the PropertyModel.
+     * Actions should override this to decide if an action should be enabled and to provide the
+     * enabled state and count to the PropertyModel.
+     *
      * @param tabIds the list of selected tab ids.
-     * @return Whether the action should be enabled.
      */
     public abstract void onSelectionStateChange(List<Integer> tabIds);
 

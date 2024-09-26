@@ -210,16 +210,13 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * Initializes the {@link LayoutTab} from data extracted from a {@link Tab}.
-     * As this function may be expensive and can be delayed we initialize it as a separately.
+     * Initializes the {@link LayoutTab} from data extracted from a {@link Tab}. As this function
+     * may be expensive and can be delayed we initialize it as a separately.
      *
-     * @param backgroundColor       The color of the page background.
-     * @param fallbackThumbnailId   The id of a cached thumbnail to show if the current
-     *                              thumbnail is unavailable, or {@link Tab.INVALID_TAB_ID}
-     *                              if none exists.
-     * @param shouldStall           Whether the tab should display a desaturated thumbnail and
-     *                              wait for the content layer to load.
-     * @param canUseLiveTexture     Whether the tab can use a live texture when being displayed.
+     * @param backgroundColor The color of the page background.
+     * @param shouldStall Whether the tab should display a desaturated thumbnail and wait for the
+     *     content layer to load.
+     * @param canUseLiveTexture Whether the tab can use a live texture when being displayed.
      */
     public void initFromHost(
             int backgroundColor,

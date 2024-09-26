@@ -903,8 +903,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         /**
          * @param signOutCallback Hooks to call before/after data wiping phase of sign-out.
-         * @param shouldWipeUserData Flag to wipe user data as requested by the user and enforced
-         *         for managed users.
+         * @param dataWipeAction Flag to wipe user data as requested by the user and enforced for
+         *     managed users.
          */
         SignOutState(
                 @Nullable SignOutCallback signOutCallback, @DataWipeAction int dataWipeAction) {

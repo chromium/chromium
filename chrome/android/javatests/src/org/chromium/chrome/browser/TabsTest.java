@@ -414,8 +414,6 @@ public class TabsTest {
     /**
      * Verify that opening a new tab and navigating immediately sets a size on the newly created
      * renderer. https://crbug.com/434477.
-     *
-     * @throws TimeoutException
      */
     @Test
     @SmallTest
@@ -892,9 +890,9 @@ public class TabsTest {
                 new File(
                         tabStateDir,
                         TabStateFileManager.getTabStateFilename(
-                                incognitoModel.getTabAt(0).getId(), true, false
-                                /** isFlatBuffer= */
-                                ));
+                                incognitoModel.getTabAt(0).getId(),
+                                true,
+                                /* isFlatBuffer= */ false));
 
         assertFileExists(normalTabFile, true);
         assertFileExists(incognitoTabFile, true);

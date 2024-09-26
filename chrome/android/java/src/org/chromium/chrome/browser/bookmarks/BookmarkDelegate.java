@@ -58,7 +58,7 @@ public interface BookmarkDelegate {
     /**
      * Closes the Bookmark UI (if on phone) and opens the given list of bookmarks in new tabs.
      *
-     * @param bookmarks Bookmarks to open.
+     * @param bookmark Bookmarks to open.
      * @param incognito Whether the bookmarks should be opened in an incognito tab.
      */
     void openBookmarksInNewTabs(List<BookmarkId> bookmark, boolean incognito);

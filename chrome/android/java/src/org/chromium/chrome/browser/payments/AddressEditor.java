@@ -113,7 +113,6 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     /**
      * Builds an address editor.
      *
-     * @param personalDataManager
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditor(PersonalDataManager personalDataManager, boolean saveToDisk) {

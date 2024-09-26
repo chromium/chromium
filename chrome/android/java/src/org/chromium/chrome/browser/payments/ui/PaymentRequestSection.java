@@ -275,7 +275,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     /**
      * Changes the appearance of the title.
      *
-     * @param resId @see android.widget.TextView#setTextAppearance(int id).
+     * @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setTitleAppearance(int resId) {
         mTitleView.setTextAppearance(resId);
@@ -284,7 +284,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     /**
      * Changes the appearance of the summary.
      *
-     * @param resId @see android.widget.TextView#setTextAppearance(int id).
+     * @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setSummaryAppearance(int leftResId, int rightResId) {
         mSummaryLeftTextView.setTextAppearance(leftResId);
@@ -1175,11 +1175,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             setSummaryText(null, null);
         }
 
-        /**
-         * Registers the delegate to be notified when this OptionSection gains or loses focus.
-         *
-         * @param delegate The delegate to notify.
-         */
+        /** Registers the delegate to be notified when this OptionSection gains or loses focus. */
         public void setOptionSectionFocusChangedObserver(FocusChangedObserver observer) {
             mFocusChangedObserver = observer;
         }

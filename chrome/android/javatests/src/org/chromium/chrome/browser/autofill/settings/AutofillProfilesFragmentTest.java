@@ -484,7 +484,7 @@ public class AutofillProfilesFragmentTest {
                         .setFullName("Account Updated #0")
                         .setCompanyName("Google")
                         .setStreetAddress("")
-                        /** Street address is required in US but already missing. */
+                        /* Street address is required in US but already missing. */
                         .setRegion("California")
                         .setLocality("Los Angeles")
                         .setPostalCode("90291")

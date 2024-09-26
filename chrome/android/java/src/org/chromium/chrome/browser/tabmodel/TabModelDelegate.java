@@ -26,7 +26,8 @@ public interface TabModelDelegate {
 
     /**
      * Request to the native TabRestoreService to restore the most recently closed tab.
-     * @param tabModel The model requesting the restore.
+     *
+     * @param model The model requesting the restore.
      */
     default void openMostRecentlyClosedEntry(TabModel model) {}
 

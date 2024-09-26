@@ -290,7 +290,7 @@ public class FeedSurfaceMediator
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
         mUiConfig = uiConfig;
 
-        /**
+        /*
          * When feature flag isNewTabSearchEngineUrlAndroidEnabled is enabled, the Feeds may be
          * hidden without showing its header. Therefore, FeedSurfaceMediator needs to observe
          * whether the DSE is changed and update Pref.ENABLE_SNIPPETS_BY_DSE even when Feeds isn't

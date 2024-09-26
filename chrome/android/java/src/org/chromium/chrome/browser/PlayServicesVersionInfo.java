@@ -45,10 +45,8 @@ public class PlayServicesVersionInfo {
     }
 
     /**
-     *
-     * @param context A Context with which to retrieve the PackageManager.
      * @return The version code for the Google Play Services installed on the device or -1 if the
-     *         package is not found.
+     *     package is not found.
      */
     public static int getApkVersionNumber() {
         int ret =

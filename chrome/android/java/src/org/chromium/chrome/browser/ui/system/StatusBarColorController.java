@@ -483,9 +483,9 @@ public class StatusBarColorController
 
     /**
      * Takes status bar indicator into account in status bar color computation.
-     * @param color The status bar color without the status indicator's color taken into
-     *              consideration. (as specified in
-     *              {@link getStatusBarColorWithoutStatusIndicator()}).
+     *
+     * @param darkenedBaseColor The status bar color without the status indicator's color taken into
+     *     consideration. (as specified in {@link getStatusBarColorWithoutStatusIndicator()}).
      * @return The resulting color.
      */
     private @ColorInt int applyStatusBarIndicatorColor(@ColorInt int darkenedBaseColor) {

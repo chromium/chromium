@@ -240,8 +240,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * the current page.
      *
      * @param url The URL to open.
+     * @param referrer The attribution impression to associate with the navigation.
      * @param navigateToTab Whether or not to navigate to the new page.
-     * @param impression The attribution impression to associate with the navigation.
      * @param additionalNavigationParams Additional information that needs to be passed to the
      *     navigation request.
      */

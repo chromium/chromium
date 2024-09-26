@@ -1817,11 +1817,7 @@ public class SiteSettingsTest {
         resetSite(address);
     }
 
-    /**
-     * Sets Allow Camera Enabled to be false and make sure it is set correctly.
-     *
-     * @throws Exception
-     */
+    /** Sets Allow Camera Enabled to be false and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1845,11 +1841,7 @@ public class SiteSettingsTest {
                 /* isDialog= */ true);
     }
 
-    /**
-     * Sets Allow Camera Enabled to be true and make sure it is set correctly.
-     *
-     * @throws Exception
-     */
+    /** Sets Allow Camera Enabled to be true and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1872,11 +1864,7 @@ public class SiteSettingsTest {
                 /* isDialog= */ true);
     }
 
-    /**
-     * Sets Allow Mic Enabled to be false and make sure it is set correctly.
-     *
-     * @throws Exception
-     */
+    /** Sets Allow Mic Enabled to be false and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -1900,11 +1888,7 @@ public class SiteSettingsTest {
                 true);
     }
 
-    /**
-     * Sets Allow Mic Enabled to be true and make sure it is set correctly.
-     *
-     * @throws Exception
-     */
+    /** Sets Allow Mic Enabled to be true and make sure it is set correctly. */
     @Test
     @SmallTest
     @Feature({"Preferences"})

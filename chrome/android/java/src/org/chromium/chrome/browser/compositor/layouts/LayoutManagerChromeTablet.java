@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -38,16 +37,13 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
-/**
- * {@link LayoutManagerChromeTablet} is the specialization of {@link LayoutManagerChrome} for the
- * tablet.
- */
+/** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // Tab Strip
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
     // Internal State
-    /** A {@link LayerTitleCache} instance that stores all title/favicon bitmaps as CC resources. */
+    /** A LayerTitleCache instance that stores all title/favicon bitmaps as CC resources. */
     // This cache should not be cleared in LayoutManagerImpl#emptyCachesExcept(), since that method
     // is currently called when returning to the static layout, which is when these titles will be
     // visible. See https://crbug.com/1329293.
@@ -57,28 +53,25 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             new ObservableSupplierImpl<>();
 
     /**
-     * Creates an instance of a {@link LayoutManagerChromePhone}.
+     * Creates an instance of a LayoutManagerChromePhone.
      *
-     * @param host A {@link LayoutManagerHost} instance.
-     * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
+     * @param host A LayoutManagerHost instance.
+     * @param contentContainer A ViewGroup for Android views to be bound to.
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *     controls.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param lifecycleDispatcher @{@link ActivityLifecycleDispatcher} to be passed to TabStrip
-     *     helper.
-     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
-     * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link StripLayoutHelper}
-     *     to support tab drag and drop.
-     * @param dragAndDropDelegate @{@link DragAndDropDelegate} passed to {@link
-     *     StripLayoutHelperManager} to initiate tab drag and drop.
-     * @param toolbarContainerView @{link View} passed to @{link StripLayoutHelper} to support tab
+     * @param browserControlsStateProvider The BrowserControlsStateProvider for top controls.
+     * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
+     * @param topUiThemeColorProvider ThemeColorProvider for top UI.
+     * @param lifecycleDispatcher @ActivityLifecycleDispatcher to be passed to TabStrip helper.
+     * @param hubLayoutDependencyHolder The dependency holder for creating HubLayout.
+     * @param multiInstanceManager MultiInstanceManager passed to StripLayoutHelper to support tab
      *     drag and drop.
-     * @param tabHoverCardViewStub The {@link ViewStub} representing the strip tab hover card.
-     * @param toolbarManager The {@link ToolbarManager} instance.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
+     * @param dragAndDropDelegate @DragAndDropDelegate passed to StripLayoutHelperManager to
+     *     initiate tab drag and drop.
+     * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
+     * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
+     * @param toolbarManager The ToolbarManager instance.
+     * @param desktopWindowStateProvider The DesktopWindowStateProvider for the app header.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,

@@ -330,7 +330,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * Initialize the maximize button for side sheet CCT. Create one if not instantiated.
      *
      * @param maximizedOnInit {@code true} if the side sheet is starting in maximized state.
-     * @param onMaximizeClicked Callback to invoke when maximize button gets clicked.
      */
     public void initSideSheetMaximizeButton(
             boolean maximizedOnInit, MaximizeButtonCallback callback) {

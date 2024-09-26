@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +42,6 @@ public class HubProvider {
     private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
 
     /**
-     * @param context The Android {@link Context} for the Hub.
      * @param profileProviderSupplier Used to fetch dependencies.
      * @param orderController The {@link PaneOrderController} for the Hub.
      * @param backPressManager The {@link BackPressManager} for the activity.

@@ -157,12 +157,7 @@ class ContextualSearchFakeServer
             mNodeId = nodeId;
         }
 
-        /**
-         * Simulates a fake search.
-         *
-         * @throws InterruptedException
-         * @throws TimeoutException
-         */
+        /** Simulates a fake search. */
         public abstract void simulate() throws InterruptedException, TimeoutException;
 
         /**
@@ -391,12 +386,7 @@ class ContextualSearchFakeServer
             }
         }
 
-        /**
-         * Finishes the resolving of a slow-resolving search.
-         *
-         * @throws InterruptedException
-         * @throws TimeoutException
-         */
+        /** Finishes the resolving of a slow-resolving search. */
         void finishResolve() throws InterruptedException, TimeoutException {
             // Simulate a Search Term Resolution.
             simulateSearchTermResolution();
@@ -669,7 +659,6 @@ class ContextualSearchFakeServer
      *
      * @param searchTerm The string to use for the Search Term and Display Text.
      * @return a {@link ResolvedSearchTerm} that includes some sample Related Searches of all types.
-     * @throws JSONException
      */
     public ResolvedSearchTerm buildResolvedSearchTermWithRelatedSearches(String searchTerm)
             throws JSONException {

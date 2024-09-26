@@ -103,9 +103,9 @@ public class DownloadController {
 
     /**
      * Enqueue a request to download a file using Android DownloadManager.
+     *
      * @param url Url to download.
      * @param userAgent User agent to use.
-     * @param contentDisposition Content disposition of the request.
      * @param mimeType MIME type.
      * @param cookie Cookie to use.
      * @param referrer Referrer to use.

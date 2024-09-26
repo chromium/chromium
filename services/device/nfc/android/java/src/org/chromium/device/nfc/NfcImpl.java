@@ -181,11 +181,11 @@ public class NfcImpl implements Nfc {
     }
 
     /**
-     * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC
-     * device is in proximity and has NdefMessage.
-     * @see Nfc#watch(int id, Watch_Response callback)
+     * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC device
+     * is in proximity and has NdefMessage.
      *
-     * @param client @see NfcClient
+     * @see Nfc#watch(int id, Watch_Response callback)
+     * @see NfcClient
      */
     @Override
     public void setClient(NfcClient client) {

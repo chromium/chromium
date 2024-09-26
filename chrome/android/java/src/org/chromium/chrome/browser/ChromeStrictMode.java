@@ -45,7 +45,7 @@ public class ChromeStrictMode {
      * corrupted. Since each individual user has a very small chance of uploading each violation,
      * and we have a hard cap of 3 per session, this will not affect performance too much.
      *
-     * @param violationInfo The violation info from the StrictMode violation in question.
+     * @param violation The violation info from the StrictMode violation in question.
      */
     @UiThread
     private static void reportStrictModeViolation(Violation violation) {

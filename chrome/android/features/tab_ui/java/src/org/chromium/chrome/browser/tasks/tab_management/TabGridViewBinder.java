@@ -57,7 +57,6 @@ class TabGridViewBinder {
      *
      * @param view The view to bind to.
      * @param model The model to bind.
-     * @param viewType The view type to bind.
      */
     public static void bindTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
@@ -106,7 +105,6 @@ class TabGridViewBinder {
      *
      * @param view The view to bind to.
      * @param model The model to bind.
-     * @param viewType The view type to bind.
      */
     private static void onBindAll(
             ViewLookupCachingFrameLayout view,

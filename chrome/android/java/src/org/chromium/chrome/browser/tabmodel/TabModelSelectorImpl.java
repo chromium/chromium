@@ -57,9 +57,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      *
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
-     * @param tabModelFilterFactory
-     * @param nextTabPolicySupplier
-     * @param asyncTabParamsManager
      * @param supportUndo Whether a tab closure can be undone.
      * @param activityType Type of the activity for the tab model selector.
      */

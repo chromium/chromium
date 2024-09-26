@@ -200,10 +200,7 @@ public class OverlayPanelManager {
         mContainerViewGroup = null;
     }
 
-    /**
-     * Set the resource loader for all OverlayPanels.
-     * @param host The OverlayPanel host.
-     */
+    /** Set the resource loader for all OverlayPanels. */
     public void setDynamicResourceLoader(DynamicResourceLoader loader) {
         mDynamicResourceLoader = loader;
         for (OverlayPanel p : mPanelSet) {

@@ -115,7 +115,7 @@ public class NfcBlocklist {
      * Returns true if tag is blocked, otherwise false. A tag is blocked if it is part of
      * STATIC_HISTORICAL_BYTES or server provided historical bytes.
      *
-     * @param tag @see android.nfc.Tag
+     * @see android.nfc.Tag
      * @return true if tag is blocked, otherwise false.
      */
     public boolean isTagBlocked(Tag tag) {
@@ -138,10 +138,9 @@ public class NfcBlocklist {
     }
 
     /**
-     * Returns true if historical bytes are part of
-     * STATIC_HISTORICAL_BYTES or server provided historical bytes.
+     * Returns true if historical bytes are part of STATIC_HISTORICAL_BYTES or server provided
+     * historical bytes.
      *
-     * @param byte[] historical bytes from a NFC tag
      * @return true if historical bytes are blocked, otherwise false.
      */
     @VisibleForTesting

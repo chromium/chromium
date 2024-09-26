@@ -242,7 +242,7 @@ public class PersistedTabDataTest {
         ThreadVerifierMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in ThreadVerifierMockPersistedTabData */
+                    /* unused in ThreadVerifierMockPersistedTabData */
                     );
         }
 
@@ -265,7 +265,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabDataGet(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 
@@ -282,7 +282,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 

@@ -80,7 +80,6 @@ public class NotificationSuspender {
      *
      * <p>This allows re-displaying these notification later.
      *
-     * @param notifications The origins for which all notification resources to store.
      * @param callback The origins for which all notification resources to store.
      */
     public void storeNotificationResourcesFromOrigins(
@@ -132,11 +131,7 @@ public class NotificationSuspender {
         unsuspendNotificationsFromOrigins(getOriginsForDomains(fqdns));
     }
 
-    /**
-     * Unsuspends notifications from the given origins.
-     *
-     * @param fqdns The list of domain strings to unsuspend notifications from.
-     */
+    /** Unsuspends notifications from the given origins. */
     public void unsuspendNotificationsFromOrigins(List<Uri> origins) {
         if (origins.isEmpty()) {
             return;

@@ -317,11 +317,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return insets;
     }
 
-    /**
-     * Get the safe area from the WindowInsets, store it and notify any observers.
-     *
-     * @param insets The WindowInsets containing the safe area.
-     */
+    /** Get the safe area from the WindowInsets, store it and notify any observers. */
     private void updateCurrentSafeArea() {
         Rect newSafeArea = new Rect(mDisplayCutoutRect);
         newSafeArea.bottom += mBottomInsetsForEdgeToEdge;

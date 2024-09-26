@@ -38,7 +38,6 @@ public class StrictButtonPressController implements ModalDialogProperties.Contro
 
     /**
      * @param modalDialogManager The global modal dialog manager.
-     * @param onClick The handler for clicks.
      */
     public StrictButtonPressController(
             ModalDialogManager modalDialogManager, Callback<Integer> onButtonClick) {

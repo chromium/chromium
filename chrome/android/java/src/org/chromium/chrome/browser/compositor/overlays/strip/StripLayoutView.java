@@ -82,7 +82,7 @@ public abstract class StripLayoutView implements VirtualView {
 
     /**
      * @param incognito The incognito state of the view.
-     * @param clickHandler @{@link StripLayoutViewOnClickHandler} for this view.
+     * @param clickHandler StripLayoutViewOnClickHandler for this view.
      */
     protected StripLayoutView(boolean incognito, StripLayoutViewOnClickHandler clickHandler) {
         mIsIncognito = incognito;

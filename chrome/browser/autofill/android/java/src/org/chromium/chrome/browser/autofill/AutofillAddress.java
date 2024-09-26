@@ -68,7 +68,6 @@ public class AutofillAddress extends EditableOption {
      *
      * @param context The context where this address was created.
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      */
     public AutofillAddress(
             Context context, AutofillProfile profile, PersonalDataManager personalDataManager) {
@@ -227,7 +226,6 @@ public class AutofillAddress extends EditableOption {
      * renderer.
      *
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      * @return int The completion status.
      */
     public static @CompletionStatus int checkAddressCompletionStatus(

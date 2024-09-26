@@ -112,7 +112,6 @@ public final class OmniboxImageSupplierUnitTest {
      * Confirm the type of icon reported to the caller.
      *
      * @param bitmap The expected bitmap.
-     * @param type The expected favicon type.
      */
     private void verifyReturnedIcon(@Nullable Bitmap bitmap) {
         verify(mCallback1, times(1)).onResult(eq(bitmap));

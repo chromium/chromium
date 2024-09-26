@@ -1336,8 +1336,6 @@ public class TabPersistentStore {
      * If a global max tab ID has not been computed and stored before, then check all the state
      * folders and calculate a new global max tab ID to be used. Must be called before any new tabs
      * are created.
-     *
-     * @throws IOException
      */
     private void checkAndUpdateMaxTabId() throws IOException {
         if (ChromeSharedPreferences.getInstance()
@@ -1528,8 +1526,8 @@ public class TabPersistentStore {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /** Migrate Tab to new FlatBuffer format. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     class MigrateTabTask extends AsyncTask<Void> {
         Tab mTab;
         int mId;

@@ -36,11 +36,11 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
 
     /**
      * Create an action for closing tabs.
+     *
      * @param context to load drawable from.
      * @param showMode whether to show an action view.
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
-     * @param isIncognito whether the current tab model is incognito this will update dynamically.
      */
     public static TabListEditorAction createAction(
             Context context,

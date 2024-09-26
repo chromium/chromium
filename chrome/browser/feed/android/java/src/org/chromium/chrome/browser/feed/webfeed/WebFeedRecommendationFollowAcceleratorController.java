@@ -44,8 +44,8 @@ public class WebFeedRecommendationFollowAcceleratorController {
         }
     }
 
-    @VisibleForTesting
     /** Put the web feed name into a passed in UserDataHost. */
+    @VisibleForTesting
     public static void associateWebFeedWithUserData(UserDataHost host, byte[] webFeedName) {
         host.setUserData(AssociatedWebFeedData.class, new AssociatedWebFeedData(webFeedName));
     }

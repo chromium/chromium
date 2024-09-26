@@ -748,8 +748,6 @@ public class ClipboardImpl extends Clipboard
     /**
      * Conditionally show a toast to avoid duplicate notifications in Android 13+
      * https://developer.android.com/develop/ui/views/touch-and-input/copy-paste#duplicate-notifications
-     *
-     * @param stringId
      */
     private void showToastIfNeeded(@StringRes int stringId) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return;

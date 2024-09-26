@@ -73,11 +73,7 @@ public class UndoIntegrationTest {
         SnackbarManager.setDurationForTesting(1500);
     }
 
-    /**
-     * Test that a tab that is closing can't open other windows.
-     *
-     * @throws TimeoutException
-     */
+    /** Test that a tab that is closing can't open other windows. */
     @Test
     @LargeTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)

@@ -824,8 +824,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     /**
      * This method should only be called once per context menu shown.
+     *
      * @param currentTab The currentTab for which the app menu is showing.
-     * @param logging Whether logging should be performed in this check.
      * @return Whether the translate menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

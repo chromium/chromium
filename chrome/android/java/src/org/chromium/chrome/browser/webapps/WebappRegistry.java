@@ -128,9 +128,9 @@ public class WebappRegistry {
     /**
      * Registers the existence of a web app, creates a SharedPreference entry for it, and runs the
      * supplied callback (if not null) on the UI thread with the resulting WebappDataStorage object.
+     *
      * @param webappId The id of the web app to register.
      * @param callback The callback to run with the WebappDataStorage argument.
-     * @return The storage object for the web app.
      */
     public void register(final String webappId, final FetchWebappDataStorageCallback callback) {
         new AsyncTask<WebappDataStorage>() {

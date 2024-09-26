@@ -98,7 +98,7 @@ public interface NewTabPageDelegate {
      * bar has focus and has completed the focus animation. 0 is when the URL bar is does not have
      * any focus.
      *
-     * @param percent The percentage of the URL bar focus animation.
+     * @param fraction The percentage of the URL bar focus animation.
      */
     default void setUrlFocusChangeAnimationPercent(float fraction) {}
 

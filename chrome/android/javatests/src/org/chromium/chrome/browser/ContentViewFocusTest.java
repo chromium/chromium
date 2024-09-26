@@ -209,11 +209,7 @@ public class ContentViewFocusTest {
         Assert.assertFalse("Unexpected focus change", haveFocusChanges());
     }
 
-    /**
-     * Verify ContentView window focus changes propagate to contents.
-     *
-     * @throws Exception
-     */
+    /** Verify ContentView window focus changes propagate to contents. */
     @Test
     @MediumTest
     public void testPauseTriggersBlur() throws Exception {

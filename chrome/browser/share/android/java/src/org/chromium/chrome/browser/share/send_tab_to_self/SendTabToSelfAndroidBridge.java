@@ -75,7 +75,6 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param webContents WebContents where a navigation was just completed.
-     * @param profile Profile to which |webContents| belongs.
      */
     public static void updateActiveWebContents(WebContents webContents) {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);

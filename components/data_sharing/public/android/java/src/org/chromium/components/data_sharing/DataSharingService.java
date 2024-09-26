@@ -227,7 +227,7 @@ public interface DataSharingService {
     /**
      * Ensure that an existing group is visible for new user to join.
      *
-     * @param groupName The name of the group to be created.
+     * @param groupId The name of the group to be created.
      * @param callback Return a created group data on success.
      */
     void ensureGroupVisibility(String groupId, Callback<GroupDataOrFailureOutcome> callback);

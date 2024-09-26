@@ -24,8 +24,7 @@ public class SubscriptionFlagManager {
     /**
      * Given an appId and a senderId, this methods builds a unique identifier for a subscription.
      * Currently implementation concatenates both senderId and appId.
-     * @param appId
-     * @param senderId
+     *
      * @return The unique identifier for the subscription.
      */
     public static String buildSubscriptionUniqueId(final String appId, final String senderId) {

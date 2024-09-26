@@ -69,7 +69,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @param activity The activity that hosts this TabModelOrchestrator.
      * @param profileProviderSupplier Supplies the {@link ProfileProvider} for the activity.
      * @param tabCreatorManager Manager for the {@link TabCreator} for the {@link TabModelSelector}.
-     * @param nextTabPolicyProvider Policy for what to do when a tab is closed.
+     * @param nextTabPolicySupplier Policy for what to do when a tab is closed.
      * @param mismatchedIndicesHandler Handles when indices are mismatched.
      * @param selectorIndex Which index to use when requesting a selector.
      * @return Whether the creation was successful. It may fail is we reached the limit of number of

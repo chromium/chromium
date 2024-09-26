@@ -99,8 +99,8 @@ public class EntryManager {
 
     /**
      * Generates the bitmap of content within the bounds passed.
+     *
      * @param bounds bounds to generate the bitmap from.
-     * @param updateMemoryUsage The callback to be notified of the bitmap memory usage.
      * @return The new entry that generates the bitmap.
      */
     public LongScreenshotsEntry generateEntry(Rect bounds) {

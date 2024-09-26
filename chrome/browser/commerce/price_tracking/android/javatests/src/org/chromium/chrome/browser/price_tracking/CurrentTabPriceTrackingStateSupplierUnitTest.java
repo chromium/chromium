@@ -46,8 +46,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Optional;
 
-@RunWith(BaseRobolectricTestRunner.class)
 /** Unit tests for {@link CurrentTabPriceTrackingStateSupplier} */
+@RunWith(BaseRobolectricTestRunner.class)
 public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();

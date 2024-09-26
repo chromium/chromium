@@ -40,7 +40,7 @@ public interface SigninAndHistorySyncActivityLauncher {
      * UI if sign-in is not allowed. Returns a boolean indicating whether the activity was launched.
      *
      * @param profile the current profile.
-     * @param bottomSheetString the strings shown in the sign-in bottom sheet.
+     * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if
      *     there's no account on the device.
      * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if
@@ -50,7 +50,9 @@ public interface SigninAndHistorySyncActivityLauncher {
      * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    boolean launchActivityIfAllowed(Context context, Profile profile,
+    boolean launchActivityIfAllowed(
+            Context context,
+            Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
@@ -62,7 +64,7 @@ public interface SigninAndHistorySyncActivityLauncher {
      * flow is dedicated to enabling history sync. Shows error UI if sign-in is not allowed.
      *
      * @param profile the current profile.
-     * @param bottomSheetString the strings shown in the sign-in bottom sheet.
+     * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if *
      *     there's no account on the device.
      * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if *
@@ -70,8 +72,10 @@ public interface SigninAndHistorySyncActivityLauncher {
      * @param signinAccessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    void launchActivityForHistorySyncDedicatedFlow(@NonNull Context context,
-            @NonNull Profile profile, @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+    void launchActivityForHistorySyncDedicatedFlow(
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint);

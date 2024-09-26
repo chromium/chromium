@@ -270,10 +270,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         return false;
     }
 
-    /**
-     * Sets {@link HistoryNavigationCoordinator} object.
-     * @param layout {@link HistoryNavigationCoordinator} object.
-     */
+    /** Sets {@link HistoryNavigationCoordinator} object. */
     public void setNavigationCoordinator(HistoryNavigationCoordinator navigationHandler) {
         mNavigationCoordinator = navigationHandler;
     }

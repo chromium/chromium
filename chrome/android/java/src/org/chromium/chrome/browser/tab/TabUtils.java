@@ -340,7 +340,7 @@ public class TabUtils {
                         (float) newHeight / drawable.getIntrinsicHeight());
         m.setScale(scale, scale);
 
-        /**
+        /*
          * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
          * center-aligned. |destination width - scaled width| is the width that is out of view
          * bounds. We need to translate the drawable (to left) by half of this distance.

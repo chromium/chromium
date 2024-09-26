@@ -705,8 +705,7 @@ public class WarmupManager {
     /**
      * Returns a spare WebContents or null, depending on the availability of one.
      *
-     * The parameters are the same as for {@link WebContentsFactory#createWebContents()}.
-     * @param forCCT Whether this WebContents is being taken by CCT.
+     * <p>The parameters are the same as for {@link WebContentsFactory#createWebContents()}.
      *
      * @return a WebContents, or null.
      */

@@ -46,8 +46,6 @@ public interface MotionEventHandler {
      *
      * @param x The X position of the event in the host view space in dp.
      * @param y The Y position of the event in the host view space in dp.
-     * @param velocityX
-     * @param velocityY
      */
     void fling(float x, float y, float velocityX, float velocityY);
 

@@ -103,7 +103,7 @@ class KeyboardAccessoryProperties {
          *
          * @param type A {@link Type}.
          * @param action An {@link Action}.
-         * @param caption A {@link StringRes} to describe the bar item.
+         * @param captionId A {@link StringRes} to describe the bar item.
          */
         BarItem(@Type int type, @Nullable Action action, @StringRes int captionId) {
             mType = type;

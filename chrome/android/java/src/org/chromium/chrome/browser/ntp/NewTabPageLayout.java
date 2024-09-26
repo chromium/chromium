@@ -675,7 +675,7 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     void onUrlFocusAnimationChanged() {
-        /**
+        /*
          * Avoid Y-translation when animation is disabled, view is moving or on tablet form-factor.
          * Context for tablets - Unlike phones, this method is not called on tablets during URL
          * focus post NTP load. However when physical keyboard is present, we try to auto-focus URL

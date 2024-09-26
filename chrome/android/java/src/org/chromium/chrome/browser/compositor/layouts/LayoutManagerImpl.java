@@ -846,8 +846,8 @@ public class LayoutManagerImpl
     /**
      * Should be called when a tab creating event is triggered (called before the tab is done being
      * created).
-     * @param sourceId    The id of the creating tab if any.
-     * @param url         The url of the created tab.
+     *
+     * @param sourceId The id of the creating tab if any.
      * @param isIncognito Whether or not created tab will be incognito.
      */
     protected void tabCreating(int sourceId, boolean isIncognito) {

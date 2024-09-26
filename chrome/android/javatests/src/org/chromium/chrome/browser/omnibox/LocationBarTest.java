@@ -535,10 +535,7 @@ public class LocationBarTest {
                         .getServer()
                         .getURLWithHostName(HOSTNAME, "/");
         // Test when incognito is true.
-        mActivityTestRule.loadUrlInNewTab(
-                url,
-                /** incognito = */
-                true);
+        mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ true);
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         ThreadUtils.runOnUiThreadBlocking(
@@ -551,10 +548,7 @@ public class LocationBarTest {
 
         // Test when incognito is false.
         doReturn(true).when(mLensController).isLensEnabled(any());
-        mActivityTestRule.loadUrlInNewTab(
-                url,
-                /** incognito = */
-                false);
+        mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         ThreadUtils.runOnUiThreadBlocking(
@@ -583,10 +577,7 @@ public class LocationBarTest {
                         .getServer()
                         .getURLWithHostName(HOSTNAME, "/");
         // Test when search engine is not Google.
-        mActivityTestRule.loadUrlInNewTab(
-                url,
-                /** incognito = */
-                false);
+        mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -599,10 +590,7 @@ public class LocationBarTest {
         // Test when search engine is Google.
         doReturn(true).when(mLensController).isLensEnabled(any());
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mActivityTestRule.loadUrlInNewTab(
-                url,
-                /** incognito = */
-                false);
+        mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         ThreadUtils.runOnUiThreadBlocking(

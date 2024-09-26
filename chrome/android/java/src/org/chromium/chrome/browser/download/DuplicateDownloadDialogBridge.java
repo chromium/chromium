@@ -80,8 +80,7 @@ public class DuplicateDownloadDialogBridge {
 
     /**
      * Called when user accepts the download
-     * @param guid GUID of the download.
-     * @param filePath Path of the download file.
+     *
      * @param callbackId Pointer to the native callback.
      */
     private void onConfirmed(long callbackId, boolean accepted) {

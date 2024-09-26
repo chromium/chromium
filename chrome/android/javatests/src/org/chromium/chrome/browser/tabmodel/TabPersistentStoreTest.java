@@ -1459,7 +1459,6 @@ public class TabPersistentStoreTest {
      *     TabPersistentStore currently creates a new tab with the last known URL, in which case the
      *     new tab's id won't match the id in the metadata file.
      * @return A {@link TestTabModelSelector} with the restored tabs.
-     * @throws Exception
      */
     private TestTabModelSelector createAndRestoreRealTabModelImpls(
             TabModelMetaDataInfo info, boolean restoreIncognito, boolean expectMatchingIds)

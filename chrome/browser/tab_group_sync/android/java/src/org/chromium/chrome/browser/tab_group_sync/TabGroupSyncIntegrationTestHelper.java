@@ -369,7 +369,7 @@ public class TabGroupSyncIntegrationTestHelper {
      * Verifies the synced tab group matches the local data.
      *
      * @param index The index of the tab group.
-     * @param expectedTabGroups The expected tab group.
+     * @param expectedGroup The expected tab group.
      */
     public void verifyGroupInfoMatchesLocalData(int index, GroupInfo expectedGroup) {
         TabGroupModelFilter filter = getTabGroupFilter();

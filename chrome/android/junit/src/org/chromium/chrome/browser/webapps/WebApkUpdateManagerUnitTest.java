@@ -672,9 +672,9 @@ public class WebApkUpdateManagerUnitTest {
 
     /**
      * Tries to complete update request.
-     * @param updateManager
+     *
      * @param result The result of the update task. Emulates the proto creation as always
-     *               succeeding.
+     *     succeeding.
      */
     private static void tryCompletingUpdate(
             TestWebApkUpdateManager updateManager,

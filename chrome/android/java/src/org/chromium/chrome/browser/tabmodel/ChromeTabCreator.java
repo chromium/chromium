@@ -494,7 +494,6 @@ public class ChromeTabCreator extends TabCreator {
      * several link from the same application, we reuse the same tab so as to not open too many
      * tabs.
      *
-     * @param url the URL to open
      * @param appId the ID of the application that triggered that URL navigation.
      * @param forceNewTab whether the URL should be opened in a new tab. If false, an existing tab
      *     already opened by the same app will be reused.

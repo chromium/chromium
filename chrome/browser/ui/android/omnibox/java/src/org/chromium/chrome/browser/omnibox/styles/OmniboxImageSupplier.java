@@ -210,11 +210,7 @@ public class OmniboxImageSupplier {
         mIconGenerator = generator;
     }
 
-    /**
-     * Overrides ImageFetcher instance for testing.
-     *
-     * @param generator ImageFetcher instance to use
-     */
+    /** Overrides ImageFetcher instance for testing. */
     void setImageFetcherForTesting(@Nullable ImageFetcher fetcher) {
         mImageFetcher = fetcher;
     }

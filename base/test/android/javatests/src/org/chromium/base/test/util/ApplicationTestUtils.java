@@ -87,10 +87,10 @@ public class ApplicationTestUtils {
      * triggered by running the provided trigger.
      *
      * @param activityClass The class type to wait for.
-     * @param state The Activity {@link Stage} to wait for an activity of the right class type to
-     *         reach.
+     * @param stage The Activity {@link Stage} to wait for an activity of the right class type to
+     *     reach.
      * @param uiThreadTrigger The Runnable that will trigger the state change to wait for. The
-     *         Runnable will be run on the UI thread
+     *     Runnable will be run on the UI thread
      */
     public static <T extends Activity> T waitForActivityWithClass(
             Class<? extends Activity> activityClass, Stage stage, Runnable uiThreadTrigger) {
@@ -102,7 +102,7 @@ public class ApplicationTestUtils {
      * triggered by running the provided trigger.
      *
      * @param activityClass The class type to wait for.
-     * @param state The Activity {@link Stage} to wait for an activity of the right class type to
+     * @param stage The Activity {@link Stage} to wait for an activity of the right class type to
      *     reach.
      * @param uiThreadTrigger The Runnable that will trigger the state change to wait for, which
      *     will be run on the UI thread.

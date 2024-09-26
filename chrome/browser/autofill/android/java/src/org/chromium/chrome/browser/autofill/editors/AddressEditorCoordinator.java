@@ -131,10 +131,8 @@ public class AddressEditorCoordinator {
     }
 
     /**
-     * Sets the runnable deleting the current autofill profile, e.g. when the user selects
-     * the delete option in the menu and confirms autofill profile deletion.
-     *
-     * @param deleteRunnable A {@link Runnable} deleting the current profile.
+     * Sets the runnable deleting the current autofill profile, e.g. when the user selects the
+     * delete option in the menu and confirms autofill profile deletion.
      */
     public void setAllowDelete(boolean allowDelete) {
         mMediator.setAllowDelete(allowDelete);

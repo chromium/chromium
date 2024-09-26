@@ -77,7 +77,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     public interface ClassHook {
         /**
          * @param targetContext the instrumentation context that will be used during the test.
-         * @param testMethod the test method to be run.
          */
         public void run(Context targetContext, Class<?> testClass);
     }

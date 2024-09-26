@@ -26,7 +26,7 @@ public class SavePageRequest {
      * <p>NOTE: This does not mirror all fields so it cannot be used to create a full
      * SavePageRequest on its own.
      *
-     * @param savePageResult Result of the saving. Uses {@see
+     * @param state Result of the saving. Uses {@see
      *     org.chromium.components.offlinepages.RequestState} enum.
      * @param requestId The unique ID of the request.
      * @param url The URL to download

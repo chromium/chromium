@@ -105,10 +105,10 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             TabCreator tabCreator) {
         super(
                 new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
-                /** isSiteSettingsAvailable= */
-                SiteSettingsHelper.isSiteSettingsAvailable(webContents),
-                /** cookieControlsShown= */
-                CookieControlsBridge.isCookieControlsEnabled(Profile.fromWebContents(webContents)));
+                /* isSiteSettingsAvailable= */ SiteSettingsHelper.isSiteSettingsAvailable(
+                        webContents),
+                /* cookieControlsShown= */ CookieControlsBridge.isCookieControlsEnabled(
+                        Profile.fromWebContents(webContents)));
         mContext = context;
         mWebContents = webContents;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;

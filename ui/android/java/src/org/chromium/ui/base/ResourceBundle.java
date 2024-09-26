@@ -37,7 +37,8 @@ public final class ResourceBundle {
 
     /**
      * Sets the available locale pak files.
-     * @param uncompressed Locales that have pak files.
+     *
+     * @param locales Locales that have pak files.
      */
     public static void setAvailablePakLocales(String[] locales) {
         assert sAvailableLocales == null;

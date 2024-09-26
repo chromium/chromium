@@ -132,7 +132,8 @@ public class WebFeedBridge {
 
     /**
      * Returns the Web Feed id for the web feed associated with this page.
-     * @param url The URL for which the status is being requested.
+     *
+     * @param id The URL for which the status is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
     public static void queryWebFeedId(String id, Callback<QueryResult> callback) {

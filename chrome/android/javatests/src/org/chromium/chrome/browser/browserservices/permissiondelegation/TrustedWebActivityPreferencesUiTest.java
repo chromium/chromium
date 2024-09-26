@@ -59,8 +59,6 @@ public class TrustedWebActivityPreferencesUiTest {
     /**
      * Tests that the 'Managed by' section appears correctly and that it contains our registered
      * website.
-     *
-     * @throws Exception
      */
     @Test
     @SmallTest

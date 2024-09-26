@@ -163,7 +163,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                     OmniboxFocusReason.DRAG_DROP_TO_OMNIBOX);
             recordDropType(DropType.CHROME_TEXT);
         } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK)) {
-            /**
+            /*
              * This parsing is based on the implementation in DragAndDropDelegateImpl#BuildClipData.
              * Ideally we should handle build / parsing in a similar place to keep things
              * consistent. TODO(crbug.com/40277338): Build ClipData and parse link URL using a

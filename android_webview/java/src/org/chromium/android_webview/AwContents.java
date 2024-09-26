@@ -3265,9 +3265,9 @@ public class AwContents implements SmartClipProvider {
      *
      * @param jsObjectName The name for the injected JavaScript object for this {@link
      *     WebMessageListener}.
-     * @param allowedOrigins A list of matching rules for the allowed origins. The JavaScript object
-     *     will be injected when the frame's origin matches any one of the allowed origins. If a
-     *     wildcard "*" is provided, it will inject JavaScript object to all frames.
+     * @param allowedOriginRules A list of matching rules for the allowed origins. The JavaScript
+     *     object will be injected when the frame's origin matches any one of the allowed origins.
+     *     If a wildcard "*" is provided, it will inject JavaScript object to all frames.
      * @param listener The {@link WebMessageListener} to be called when received onPostMessage().
      * @throws IllegalArgumentException if one of the allowedOriginRules is invalid or one of
      *     jsObjectName and allowedOriginRules is {@code null}.
@@ -3312,8 +3312,6 @@ public class AwContents implements SmartClipProvider {
      * immediately remove the JavaScript object/WebMessageListener mapping pair. So any messages
      * from the JavaScript object will be dropped. However the JavaScript object will only be
      * removed for future navigations.
-     *
-     * @param listener The {@link WebMessageListener} to be removed. Can not be {@code null}.
      */
     public void removeWebMessageListener(@NonNull String jsObjectName) {
         if (TRACE) Log.i(TAG, "%s removeWebMessageListener=%s", this, jsObjectName);
@@ -3469,9 +3467,8 @@ public class AwContents implements SmartClipProvider {
     /**
      * Send a MessageEvent to main frame.
      *
-     * @param message      The String message for the JavaScript MessageEvent.
      * @param targetOrigin The expected target frame's origin.
-     * @param sentPorts    ports for the JavaScript MessageEvent.
+     * @param sentPorts ports for the JavaScript MessageEvent.
      */
     public void postMessageToMainFrame(
             MessagePayload messagePayload, String targetOrigin, MessagePort[] sentPorts) {
@@ -4182,7 +4179,6 @@ public class AwContents implements SmartClipProvider {
      *
      * @param callback the callback to be invoked
      * @param requestId the id passed to {@link AwContents#insertVisualStateCallback}
-     * @param result true if the callback should succeed and false otherwise
      */
     @CalledByNative
     public void invokeVisualStateCallback(

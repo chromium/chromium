@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +24,6 @@ public class HubManagerFactory {
     /**
      * Creates a new instance of {@link HubManagerImpl}.
      *
-     * @param context The {@link Context} hosting the Hub.
      * @param profileProviderSupplier Used to fetch dependencies.
      * @param paneListBuilder The {@link PaneListBuilder} which is consumed to build a {@link
      *     PaneManager}.

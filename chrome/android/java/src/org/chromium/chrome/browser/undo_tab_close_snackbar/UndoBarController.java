@@ -152,7 +152,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     /**
      * Shows an undo close all bar. Based on user actions, this will cause a call to either {@link
      * TabModel#commitTabClosure(int)} or {@link TabModel#cancelTabClosure(int)} to be called for
-     * each tab in {@code closedTabIds}. This will happen unless {@code
+     * each tab in {@code closedTabs}. This will happen unless {@code
      * SnackbarManager#removeFromStackForData(Object)} is called.
      *
      * @param closedTabs A list of tabs that were closed.

@@ -1126,7 +1126,6 @@ public class IntentHandler {
      * @param text Text to examine.
      * @param prefix The prefix on which to extract Strings.
      * @param results The list to insert results into.
-     * @return A possibly empty list of URL Strings.
      */
     private static void extractStringsWithPrefix(String text, String prefix, List<String> results) {
         int i = 0;

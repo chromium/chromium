@@ -194,7 +194,6 @@ public class StripLayoutTab extends StripLayoutView {
      *
      * @param context An Android context for accessing system resources.
      * @param id The id of the {@link Tab} to visually represent.
-     * @param delegate The delegate for additional strip tab functionality.
      * @param loadTrackerCallback The {@link TabLoadTrackerCallback} to be notified of loading state
      *     changes.
      * @param updateHost The {@link LayoutRenderHost}.
@@ -310,7 +309,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * @param newTitle The title that would be used in the new accessibility description.
-     * @param resId The String resource ID the description would use.
+     * @param newA11yTabstripIdentifierResId The String resource ID the description would use.
      * @return True if the accessibility description should be updated, false if the resulting
      *     description would match the current description.
      */

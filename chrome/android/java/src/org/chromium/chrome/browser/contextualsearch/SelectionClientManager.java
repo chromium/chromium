@@ -55,8 +55,8 @@ public class SelectionClientManager {
         mIsSmartSelectionEnabledInChrome = mOptionalSelectionClient != null;
     }
 
-    @VisibleForTesting
     /** Test-only constructor. */
+    @VisibleForTesting
     SelectionClientManager(SelectionClient optionalSelectionClient, boolean enableSmartSelection) {
         mOptionalSelectionClient = optionalSelectionClient;
         mIsSmartSelectionEnabledInChrome = enableSmartSelection;

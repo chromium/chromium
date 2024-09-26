@@ -94,8 +94,6 @@ public class TabBuilder {
     /**
      * Sets a flag indicating to initialize renderer during WebContents creation.
      *
-     * @param boolean initializeRenderer to initialize renderer or not.
-     *
      * @return {@link TabBuilder} creating the Tab.
      */
     public TabBuilder setInitializeRenderer(boolean initializeRenderer) {

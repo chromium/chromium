@@ -108,7 +108,7 @@ public class SearchActivityUtils {
      * Resolve the {@link requestOmniboxForResult}.
      *
      * @param activity the activity resolving the request
-     * @param url optional URL dictating how to resolve the request: null/invalid/empty value
+     * @param params optional URL dictating how to resolve the request: null/invalid/empty value
      *     results with canceled request; anything else resolves request successfully
      */
     /* package */ static void resolveOmniboxRequestForResult(

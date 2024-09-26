@@ -68,7 +68,6 @@ class TabGroupRowMediator {
 
     /**
      * @param context Used to load resources and create views.
-     * @param savedTabGroup
      * @param tabGroupModelFilter Used to read current tab groups.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.

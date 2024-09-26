@@ -2464,7 +2464,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
-     * @param tab the {@link Tab} to find the group index of.
+     * @param tabId the {@link Tab} to find the group index of.
      * @return the index for the tab group within {@link mModel}
      */
     int getIndexForTabIdWithRelatedTabs(int tabId) {

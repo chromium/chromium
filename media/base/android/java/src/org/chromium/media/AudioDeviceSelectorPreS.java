@@ -112,7 +112,7 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
     private void registerForBluetoothScoIntentBroadcast() {
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
 
-        /** BroadcastReceiver implementation which handles changes in BT SCO. */
+        /* BroadcastReceiver implementation which handles changes in BT SCO. */
         mBluetoothScoReceiver =
                 new BroadcastReceiver() {
                     @Override

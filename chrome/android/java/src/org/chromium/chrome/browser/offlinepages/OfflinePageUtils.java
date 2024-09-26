@@ -401,10 +401,10 @@ public class OfflinePageUtils {
     }
 
     /**
-     * Check to see if the offline page is sharable.
+     * Check to see if the offline page is shareable.
+     *
      * @param offlinePageBridge Bridge to native code for offline pages use.
-     * @param offlinePage Page to check for sharability.
-     * @param pageUri Uri of the page to check.
+     * @param offlinePage Page to check for shareability.
      * @return true if this page can be shared.
      */
     public static boolean isOfflinePageShareable(

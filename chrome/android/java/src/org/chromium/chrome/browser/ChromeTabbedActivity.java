@@ -1782,11 +1782,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    /**
-     * Processes a url view intent.
-     *
-     * @param url The url from the intent.
-     */
+    /** Processes a url view intent. */
     private void processUrlViewIntent(
             LoadUrlParams loadUrlParams,
             @TabOpenType int tabOpenType,

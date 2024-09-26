@@ -53,7 +53,7 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
 
     @Override
     protected boolean shouldShowDisclosure() {
-        /** Has a disclosure been dismissed for this client package before? */
+        /* Has a disclosure been dismissed for this client package before? */
         return !mBrowserServicesStore.hasUserAcceptedTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
     }

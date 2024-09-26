@@ -27,7 +27,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  */
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     /**
-     * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param isTabGroupSyncEnabled Whether to show the delete group option.
      * @param identityManager Used for checking the current account.

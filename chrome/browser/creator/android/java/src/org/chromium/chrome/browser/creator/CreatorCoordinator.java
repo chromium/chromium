@@ -218,8 +218,7 @@ public class CreatorCoordinator
     /**
      * Query for webfeedId if we don't have it, and then create the FeedStream.
      *
-     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     * @param feedActionDelegate Interface for Feed actions implemented by the Browser.
      */
     public void queryFeedStream(
             FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {
@@ -262,8 +261,7 @@ public class CreatorCoordinator
     /**
      * Create the FeedStream and bind it to the RecyclerView.
      *
-     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     * @param feedActionDelegate Interface for Feed actions implemented by the Browser.
      */
     private void initFeedStream(
             FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {

@@ -402,7 +402,7 @@ public class OmniboxMetrics {
     /**
      * Translate the pageClass to a histogram suffix.
      *
-     * @param histogram Histogram prefix.
+     * @param prefix Histogram prefix.
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */

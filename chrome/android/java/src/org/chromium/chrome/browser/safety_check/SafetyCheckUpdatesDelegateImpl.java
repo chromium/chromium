@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.safety_check;
 
-import android.content.Context;
-
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -26,9 +24,7 @@ public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegat
     private OmahaService mOmaha;
 
     /**
-     * Creates a new instance of the glue class to be passed to
-     * {@link SafetyCheckSettingsFragment}.
-     * @param context A {@link Context} object, used by Omaha.
+     * Creates a new instance of the glue class to be passed to {@link SafetyCheckSettingsFragment}.
      */
     public SafetyCheckUpdatesDelegateImpl() {
         mOmaha = OmahaService.getInstance();

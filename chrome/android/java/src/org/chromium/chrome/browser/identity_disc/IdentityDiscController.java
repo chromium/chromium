@@ -221,8 +221,8 @@ public class IdentityDiscController
         assert mProfileDataCache != null;
 
         if (accountEmail.equals(CoreAccountInfo.getEmailFrom(getSignedInAccountInfo()))) {
-            /**
-             * We need to call {@link notifyObservers(false)} before caling
+            /*
+             * We need to call {@link notifyObservers(false)} before calling
              * {@link notifyObservers(true)}. This is because {@link notifyObservers(true)} has been
              * called in {@link setProfile()}, and without calling {@link notifyObservers(false)},
              * the ObservableSupplierImpl doesn't propagate the call. See https://cubug.com/1137535.

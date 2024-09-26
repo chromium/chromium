@@ -1120,7 +1120,6 @@ public class ContextualSearchInstrumentationBase {
      *
      * @param initialState The initial state of the panel at the beginning of an operation that
      *     should not change the panel state.
-     * @throws InterruptedException
      */
     protected void assertPanelStillInState(final @PanelState int initialState)
             throws InterruptedException {

@@ -130,7 +130,6 @@ public class LocationBarLayout extends FrameLayout {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
-     * @param searchEngineUtils Allows querying the state of the search engine logo feature.
      */
     @CallSuper
     public void initialize(

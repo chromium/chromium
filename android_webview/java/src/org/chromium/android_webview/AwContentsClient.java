@@ -564,7 +564,7 @@ public abstract class AwContentsClient {
          * This method takes a list of types to accept, which could be file extensions, MIME types,
          * or a sub-category of MIME types such as image/*, video/*, etc., and returns a list of
          * MIME types.
-         * @param acceptTypesList
+         *
          * @return An array of MIME types to accept in the file selector
          */
         private String[] getMimeTypesToAccept(String[] acceptTypesList) {

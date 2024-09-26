@@ -1575,7 +1575,7 @@ public class StripLayoutHelper
             // Set container opacity.
             setTabContainerVisible(currTab, currTabSelected, currTabHovered);
 
-            /**
+            /*
              * Start divider should be visible when: 1. prevTab is dragged off of the strip OR 2.
              * currTab container is hidden and (a) prevTab has trailing margin (ie: currTab is start
              * of group or an individual tab) OR (b) prevTab container is also hidden.
@@ -1595,7 +1595,7 @@ public class StripLayoutHelper
             }
             currTab.setStartDividerVisible(startDividerVisible);
 
-            /**
+            /*
              * End divider should be applied when: 1. currTab container is hidden and (a) currTab's
              * trailing margin > 0 (i.e. is last tab in group) OR (b) currTab is last tab in strip
              * (as the last tab does not have trailing margin)

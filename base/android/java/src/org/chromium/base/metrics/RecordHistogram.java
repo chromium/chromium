@@ -213,11 +213,11 @@ public class RecordHistogram {
     /**
      * Records a sample in a histogram of sizes in KB. This is the Java equivalent of the
      * UMA_HISTOGRAM_MEMORY_KB C++ macro.
-     * <p>
-     * Good for sizes up to about 500MB.
+     *
+     * <p>Good for sizes up to about 500MB.
      *
      * @param name name of the histogram
-     * @param sizeInkB Sample to record in KB
+     * @param sizeInKB Sample to record in KB
      */
     public static void recordMemoryKBHistogram(String name, int sizeInKB) {
         UmaRecorderHolder.get().recordExponentialHistogram(name, sizeInKB, 1000, 500000, 50);

@@ -337,11 +337,7 @@ public class NavigateTest {
                         mActivityTestRule.getActivity().getActivityTab()));
     }
 
-    /**
-     * Test re-direct functionality for a web-page.
-     *
-     * @throws Exception
-     */
+    /** Test re-direct functionality for a web-page. */
     @Test
     @MediumTest
     @Feature({"Navigation"})
@@ -714,8 +710,6 @@ public class NavigateTest {
     /**
      * Test that if the browser launches a renderer initiated intent towards itself, the url load
      * will be renderer initiated and has the correct origin.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest

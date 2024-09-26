@@ -52,11 +52,11 @@ class QrCodeShareMediator {
 
     /**
      * The QrCodeScanMediator constructor.
+     *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialog The {@link Runnable} to close the dialog.
      * @param url The url to create the QRCode.
-     * @param permissionDelegate The delegate to help with downloading QRCode.
      */
     QrCodeShareMediator(
             Context context,

@@ -102,7 +102,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param tab The current {@link Tab}.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
      * @param feedLauncher {@link FeedLauncher}
-     * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param creatorActivityClass {@link CreatorActivity} for launching the Creator Activity.

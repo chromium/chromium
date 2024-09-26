@@ -326,7 +326,6 @@ public class TabModelMergingTest {
      * @param activity The activity whose state will be observed.
      * @param expected If true, wait until activity is on the {@code state}; otherwise, wait util
      *     activity is on any state other than {@code state}.
-     * @throws TimeoutException
      */
     private void waitForActivityStateChange(
             @ActivityState int state, Activity activity, boolean expected) throws TimeoutException {

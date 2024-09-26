@@ -37,9 +37,10 @@ public class LinkToTextIPHController {
 
     /**
      * Creates an {@link LinkToTextIPHController}.
-     * @param ObservableSupplier<Tab> An {@link ObservableSupplier} for {@link Tab} where the IPH
-     *         will be rendered.
-     * @param TabModelSelector The {@link TabModelSelector} to open a new tab.
+     *
+     * @param tabSupplier An {@link ObservableSupplier} for {@link Tab} where the IPH will be
+     *     rendered.
+     * @param tabModelSelector The {@link TabModelSelector} to open a new tab.
      */
     public LinkToTextIPHController(
             ObservableSupplier<Tab> tabSupplier,

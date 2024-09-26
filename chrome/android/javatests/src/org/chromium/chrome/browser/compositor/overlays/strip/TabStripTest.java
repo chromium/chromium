@@ -1419,11 +1419,7 @@ public class TabStripTest {
         compareTabStripWithModel(false);
     }
 
-    /**
-     * Check scrolling tab strip validity and auto-scrolling.
-     *
-     * @throws ExecutionException
-     */
+    /** Check scrolling tab strip validity and auto-scrolling. */
     private void checkTabStrips() throws ExecutionException {
         TabModel model = sActivityTestRule.getActivity().getCurrentTabModel();
         int selectedTabIndex = model.index();

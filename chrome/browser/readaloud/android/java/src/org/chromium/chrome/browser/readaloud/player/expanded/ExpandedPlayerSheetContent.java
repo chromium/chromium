@@ -241,7 +241,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     /**
-     * @param percentProgress out of 1.0
+     * @param percent out of 1.0
      */
     public void setProgress(float percent) {
         mSeekBar.setProgress((int) (percent * mSeekBar.getMax()), true);
