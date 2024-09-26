@@ -4,6 +4,8 @@
 
 // Subpages
 import './ai_page/ai_tab_organization_subpage.js';
+import './ai_page/history_search_page.js';
+import './ai_page/offer_writing_help_page.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_section.js';
 import './autofill_page/autofill_prediction_improvements_section.js';
@@ -14,7 +16,6 @@ import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
 import './simple_confirmation_dialog.js';
-import './people_page/history_search_page.js';
 import './privacy_page/anti_abuse_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
@@ -112,6 +113,8 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.j
 
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
+export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
+export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';

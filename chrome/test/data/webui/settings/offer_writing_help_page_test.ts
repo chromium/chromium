@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsOfferWritingHelpPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, CrSettingsPrefs} from 'chrome://settings/settings.js';
+import type {SettingsOfferWritingHelpPageElement} from 'chrome://settings/lazy_load.js';
+import {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
