@@ -435,13 +435,12 @@ This collects each top-level device metric type. For example,
   <token key="DlcType" variants="CrasDlcType"/>
 </histogram>
 
-<histogram name="Cras.DlcManagerStatus.RetriedTimesOnSuccess.{DlcType}"
-    units="count" expires_after="2025-02-02">
+<histogram name="Cras.DlcManagerStatus.ElapsedTimeHistogramOnSuccess.{DlcType}"
+    units="seconds" expires_after="2025-02-02">
   <owner>hunghsienchen@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    If the installation of {DlcType} succeeded, records how many times retried
-    until success.
+    If the installation of {DlcType} succeeded, records the elapsed time.
   </summary>
   <token key="DlcType" variants="CrasDlcType"/>
 </histogram>
