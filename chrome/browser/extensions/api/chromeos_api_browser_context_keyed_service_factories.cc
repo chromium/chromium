@@ -5,7 +5,7 @@
 #include "chrome/browser/extensions/api/chromeos_api_browser_context_keyed_service_factories.h"
 
 #include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_factory.h"
-#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager.h"
+#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
@@ -31,7 +31,7 @@ namespace chromeos_extensions {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   chromeos::ContactCenterInsightsExtensionManagerFactory::GetInstance();
-  chromeos::DeskApiExtensionManager::EnsureFactoryBuilt();
+  chromeos::DeskApiExtensionManagerFactory::GetInstance();
   chromeos::ExtensionPlatformKeysServiceFactory::GetInstance();
   chromeos::VpnServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)

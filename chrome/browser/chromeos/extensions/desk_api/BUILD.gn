@@ -10,6 +10,8 @@ static_library("desk_api") {
   sources = [
     "desk_api_extension_manager.cc",
     "desk_api_extension_manager.h",
+    "desk_api_extension_manager_factory.cc",
+    "desk_api_extension_manager_factory.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

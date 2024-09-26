@@ -176,7 +176,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_factory.h"
-#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager.h"
+#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -1517,7 +1517,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
     ::chromeos::ContactCenterInsightsExtensionManagerFactory::GetForProfile(
         profile);
 
-    ::chromeos::DeskApiExtensionManager::GetForProfile(profile);
+    ::chromeos::DeskApiExtensionManagerFactory::GetForProfile(profile);
   }
 #endif
 
