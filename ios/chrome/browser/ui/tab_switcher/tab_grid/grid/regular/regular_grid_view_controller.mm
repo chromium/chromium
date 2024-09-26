@@ -155,8 +155,13 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   _tabsClosureAnimation =
       [[TabsClosureAnimation alloc] initWithWindow:self.view.window
                                          gridCells:gridCells];
+
   [_tabsClosureAnimation animateWithCompletion:^{
     [weakSelf onTabsClosureAnimationEndWithCompletion:completionHandler];
+    base::TimeDelta delta = base::Time::Now() - startTime;
+    base::UmaHistogramMicrosecondsTimes(
+        "Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration",
+        delta);
   }];
 
   base::TimeDelta delta = base::Time::Now() - startTime;
