@@ -6,7 +6,7 @@ License File: LICENSE.txt
 License Android Compatible: yes
 Security Critical: no
 Shipped: no
-Revision: 2a2ec65789f63c135a68a7990b6426922c785825
+Revision: a9e83f0e2f20f416a1c0b8cffd0e0e2258cf8960
 
 Description:
 This directory contains the partial source code for the passkeys enclave. The
