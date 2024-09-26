@@ -64,12 +64,11 @@ IOSChromeProfileInvalidationProviderFactory::
 std::unique_ptr<KeyedService>
 IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   auto identity_provider =
       std::make_unique<invalidation::ProfileIdentityProvider>(
-          IdentityManagerFactory::GetForProfile(browser_state));
+          IdentityManagerFactory::GetForProfile(profile));
 
   return std::make_unique<ProfileInvalidationProvider>(
       std::move(identity_provider));

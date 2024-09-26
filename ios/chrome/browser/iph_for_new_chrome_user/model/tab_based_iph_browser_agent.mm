@@ -27,8 +27,7 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
       engagement_tracker_(
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              browser->GetBrowserState())) {
+          feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile())) {
   browser->AddObserver(this);
   url_loading_notifier_->AddObserver(this);
 }

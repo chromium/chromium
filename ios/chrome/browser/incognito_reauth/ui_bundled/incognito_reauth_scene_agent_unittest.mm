@@ -50,7 +50,7 @@ namespace {
 class IncognitoReauthSceneAgentTest : public PlatformTest {
  public:
   IncognitoReauthSceneAgentTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         scene_state_([[SceneState alloc] initWithAppState:nil]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
         stub_reauth_module_([[StubReauthenticationModule alloc] init]),
@@ -65,7 +65,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     // 1. sceneState.browserProviderInterface.incognitoBrowserProvider
     //            .browser->GetWebStateList()->count()
     // 2. sceneState.browserProviderInterface.hasIncognitoBrowserProvider
-    test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    test_browser_ = std::make_unique<TestBrowser>(profile_.get());
     for (int i = 0; i < tab_count; ++i) {
       test_browser_->GetWebStateList()->InsertWebState(
           std::make_unique<web::FakeWebState>(),
@@ -94,7 +94,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   // The scene state that the agent works with.
   SceneState* scene_state_;

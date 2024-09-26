@@ -109,20 +109,18 @@
 class UserActivityBrowserAgentTest : public PlatformTest {
  public:
   UserActivityBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     AppState* app_state = CreateMockAppState(InitStageFinal);
 
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state
+                                                    profile:profile_.get()];
 
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     scene_controller_ =
         [[FakeSceneController alloc] initWithSceneState:scene_state_];
     scene_state_.controller = scene_controller_;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Create the UserActivity Browser Agent.
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
@@ -161,8 +159,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
 
   // Set pref kIncognitoModeAvailability to kForced and make it a managed pref.
   void ForceIncognitoMode() {
-    PrefService* pref_service = browser_state_->GetPrefs();
-    browser_state_->GetTestingPrefService()->SetManagedPref(
+    PrefService* pref_service = profile_->GetPrefs();
+    profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(true));
 
@@ -177,8 +175,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   // Set pref kIncognitoModeAvailability to kDisabled and make it a managed
   // pref.
   void DisableIncognitoMode() {
-    PrefService* pref_service = browser_state_->GetPrefs();
-    browser_state_->GetTestingPrefService()->SetManagedPref(
+    PrefService* pref_service = profile_->GetPrefs();
+    profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(true));
 
@@ -198,7 +196,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
  private:
   std::unique_ptr<TestBrowser> browser_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 #pragma mark - Tests.

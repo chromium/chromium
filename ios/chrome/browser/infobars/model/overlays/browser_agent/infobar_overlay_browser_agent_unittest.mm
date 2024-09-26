@@ -60,8 +60,8 @@ class InfobarOverlayBrowserAgentTest
     : public testing::TestWithParam<InfobarOverlayType> {
  public:
   InfobarOverlayBrowserAgentTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         interaction_handler_builder_(InfobarType::kInfobarTypeConfirm) {
     // Add an activated WebState into whose queues infobar OverlayRequests will
     // be added.
@@ -143,7 +143,7 @@ class InfobarOverlayBrowserAgentTest
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   std::map<InfobarOverlayType, FakeInfobarOverlayRequestSupport>

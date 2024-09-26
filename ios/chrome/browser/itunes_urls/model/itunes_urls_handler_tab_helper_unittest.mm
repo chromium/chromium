@@ -19,9 +19,8 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
  protected:
   ITunesUrlsHandlerTabHelperTest()
       : fake_handler_([[FakeWebContentHandler alloc] init]),
-        chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
-    web_state_.SetBrowserState(
-        chrome_browser_state_->GetOriginalChromeBrowserState());
+        profile_(TestProfileIOS::Builder().Build()) {
+    web_state_.SetBrowserState(profile_->GetOriginalProfile());
     ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
   }
@@ -54,15 +53,14 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeWebContentHandler* fake_handler_;
   web::FakeWebState web_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Verifies that iTunes URLs are not handled when in off the record mode.
 TEST_F(ITunesUrlsHandlerTabHelperTest, NoHandlingInOffTheRecordMode) {
   NSString* url = @"http://itunes.apple.com/us/app/app_name/id123";
   EXPECT_TRUE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
-  web_state_.SetBrowserState(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+  web_state_.SetBrowserState(profile_->GetOffTheRecordProfile());
   EXPECT_FALSE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
 }
 

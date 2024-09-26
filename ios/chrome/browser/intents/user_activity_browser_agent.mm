@@ -99,7 +99,7 @@ NSArray* CompatibleModeForActivityType(NSString* activity_type) {
 BROWSER_USER_DATA_KEY_IMPL(UserActivityBrowserAgent)
 
 UserActivityBrowserAgent::UserActivityBrowserAgent(Browser* browser)
-    : browser_(browser), browser_state_(browser->GetBrowserState()) {
+    : browser_(browser), profile_(browser->GetProfile()) {
   SceneState* scene_state = browser_->GetSceneState();
   connection_information_ = scene_state.controller;
   tab_opener_ = scene_state.controller;
@@ -175,7 +175,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
                 completeURL:GURL(kChromeUINewTabURL)
             applicationMode:ApplicationModeForTabOpening::NORMAL];
 
-    if (IsIncognitoModeForced(browser_state_->GetPrefs())) {
+    if (IsIncognitoModeForced(profile_->GetPrefs())) {
       // Set incognito mode to yes if only incognito mode is available.
       startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
     }
@@ -543,7 +543,7 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
 
   if (connection_information_.startupParameters.imageSearchData) {
     TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+        ios::TemplateURLServiceFactory::GetForProfile(profile_);
 
     NSData* image_data =
         connection_information_.startupParameters.imageSearchData;
@@ -585,7 +585,7 @@ BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
     NSUserActivity* user_activity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSArray* array = CompatibleModeForActivityType(user_activity.activityType);
-  PrefService* pref_service = browser_state_->GetPrefs();
+  PrefService* pref_service = profile_->GetPrefs();
   if (IsIncognitoModeDisabled(pref_service)) {
     return [array containsObject:kRegularMode];
   }
@@ -817,7 +817,7 @@ GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
     NSString* search_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TemplateURLService* template_url_Service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+      ios::TemplateURLServiceFactory::GetForProfile(profile_);
 
   const TemplateURL* default_url =
       template_url_Service->GetDefaultSearchProvider();
