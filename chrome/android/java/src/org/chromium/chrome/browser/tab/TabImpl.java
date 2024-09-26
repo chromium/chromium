@@ -1346,7 +1346,10 @@ class TabImpl implements Tab {
             case AnimationStage.OTHER:
                 if (isNativePage()) {
                     // A transition is starting. Hide the Java view to present that.
-                    getView().setAlpha(0f);
+                    // Wait until the content/ draws the transition.
+                    CompositorViewHolder viewHolder =
+                            getActivity().getCompositorViewHolderSupplier().get();
+                    viewHolder.requestRender(() -> getView().setAlpha(0f));
                 }
                 return;
             case AnimationStage.WAITING_FOR_EMBEDDER_CONTENT_FOR_COMMITTED_ENTRY:
