@@ -541,6 +541,14 @@ std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
   return std::vector<wchar_t>(multi_sz, scan + 1);
 }
 
+// static
+bool InstallServiceWorkItemImpl::IsComServiceInstalled(const GUID& clsid) {
+  std::wstring appid_reg_path = GetComAppidRegistryPath(clsid);
+  return base::win::RegKey(HKEY_LOCAL_MACHINE, appid_reg_path.c_str(),
+                           KEY_QUERY_VALUE)
+      .HasValue(L"LocalService");
+}
+
 std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDescription() const {
   DCHECK(service_.IsValid());
 

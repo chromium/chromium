@@ -83,6 +83,10 @@ class InstallServiceWorkItem : public WorkItem {
                             const std::vector<GUID>& clsids,
                             const std::vector<GUID>& iids);
 
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
  private:
   friend class InstallServiceWorkItemTest;
 

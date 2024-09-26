@@ -116,6 +116,10 @@ class InstallServiceWorkItemImpl {
   // terminated with '\0\0'. Return an empty vector if the input is nullptr.
   static std::vector<wchar_t> MultiSzToVector(const wchar_t* multi_sz);
 
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
  private:
   class ScHandleTraits {
    public:

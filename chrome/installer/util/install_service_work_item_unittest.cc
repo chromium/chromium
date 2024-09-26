@@ -235,7 +235,9 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
 
+  ASSERT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   ASSERT_TRUE(item->Do());
+  EXPECT_TRUE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
   EXPECT_TRUE(GetImpl(item.get())->OpenService());
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
 
@@ -246,6 +248,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 
   EXPECT_TRUE(IsServiceGone(item.get()));
   ExpectServiceCOMRegistrationAbsent();
+  EXPECT_FALSE(InstallServiceWorkItem::IsComServiceInstalled(kClsid));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
