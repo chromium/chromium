@@ -30821,6 +30821,7 @@ Called by update_net_error_codes.py.-->
   <int value="411" label="PYZW"/>
   <int value="412" label="ZST"/>
   <int value="413" label="IQY"/>
+  <int value="414" label="LIBRARY-MS"/>
 </enum>
 
 <enum name="ScanFailureProgress">
