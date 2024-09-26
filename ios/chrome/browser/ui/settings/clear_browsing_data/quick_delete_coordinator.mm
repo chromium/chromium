@@ -106,8 +106,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [self animateDismissalWithCompletion:nil];
   [self disconnect];
 }
 
@@ -216,9 +215,18 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   [applicationCommandsHandler
       displayTabGridInMode:TabGridOpeningMode::kRegular];
 
-  [_viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:dismissCompletionBlock];
+  // Dismissal of the bottom sheet needs to be dispatched asyncronously so the
+  // animation to the tab grid and the dismissal animation are not in conflict,
+  // and as such avoiding jittering.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](__typeof(self) strongSelf,
+             ProceduralBlock dismissCompletionBlock) {
+            [strongSelf animateDismissalWithCompletion:dismissCompletionBlock];
+            [strongSelf disconnect];
+          },
+          weakSelf, dismissCompletionBlock));
 }
 
 - (void)blockOtherWindows {
@@ -253,6 +261,14 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 }
 
 #pragma mark - Private
+
+// Dismisses the `_viewController` with animation. `completionBlock` is run when
+// the dismissal has completed.
+- (void)animateDismissalWithCompletion:(ProceduralBlock)completionBlock {
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completionBlock];
+}
 
 // Triggers the tabs closure animation on the tab grid for the WebStates in
 // `tabsToClose`, for the groups in `groupsWithTabsToClose`, and if
