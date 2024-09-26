@@ -137,7 +137,17 @@ class SessionStore {
   // instance must not exist at any time.
   std::unique_ptr<WriteBatch> CreateWriteBatch(
       syncer::OnceModelErrorHandler error_handler);
-  void DeleteAllDataAndMetadata();
+
+  using RecreateEmptyStoreCallback =
+      base::OnceCallback<std::unique_ptr<SessionStore>(
+          const std::string& cache_guid,
+          SyncSessionsClient* sessions_client)>;
+
+  // Deletes all data and metadata from the `session_store` and destroys it.
+  // Returns a callback that allows synchronously re-creating an empty
+  // SessionStore, by reusing the underlying DataTypeStore.
+  static RecreateEmptyStoreCallback DeleteAllDataAndMetadata(
+      std::unique_ptr<SessionStore> session_store);
 
   // TODO(crbug.com/41295474): Avoid exposing a mutable tracker, because that
   // bypasses the consistency-enforcing API.
@@ -159,6 +169,12 @@ class SessionStore {
   static void OnReadAllData(std::unique_ptr<Builder> builder,
                             const std::optional<syncer::ModelError>& error);
 
+  static std::unique_ptr<SessionStore> RecreateEmptyStore(
+      SessionInfo local_session_info_without_session_tag,
+      std::unique_ptr<syncer::DataTypeStore> underlying_store,
+      const std::string& cache_guid,
+      SyncSessionsClient* sessions_client);
+
   // |sessions_client| must not be null and must outlive this object.
   SessionStore(const SessionInfo& local_session_info,
                std::unique_ptr<syncer::DataTypeStore> underlying_store,
@@ -169,7 +185,7 @@ class SessionStore {
   const SessionInfo local_session_info_;
 
   // In charge of actually persisting changes to disk.
-  const std::unique_ptr<syncer::DataTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   const raw_ptr<SyncSessionsClient> sessions_client_;
 

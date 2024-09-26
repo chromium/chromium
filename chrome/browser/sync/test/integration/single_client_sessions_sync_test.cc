@@ -42,6 +42,7 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/test/sessions_hierarchy.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -52,6 +53,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -69,10 +71,17 @@ using sessions_helper::NavigateTabForward;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
 using sessions_helper::ScopedWindowMap;
+using sessions_helper::SessionEntitiesChecker;
 using sessions_helper::SyncedSessionVector;
 using sessions_helper::WaitForTabsToLoad;
 using sessions_helper::WindowsMatch;
 using sync_sessions::SessionSyncTestHelper;
+using testing::_;
+using testing::UnorderedElementsAre;
+
+MATCHER_P(SessionHeader, session_tag, "") {
+  return arg.has_header() && arg.session_tag() == session_tag;
+}
 
 static const char* kBaseFragmentURL =
     "data:text/html,<html><title>Fragment</title><body></body></html>";
@@ -226,8 +235,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
   }
 
   // Block until the expected hierarchy is recorded on the FakeServer for
-  // profile 0. This will time out if the hierarchy is never
-  // recorded.
+  // profile 0. This will time out if the hierarchy is never recorded.
   void WaitForHierarchyOnServer(
       const fake_server::SessionsHierarchy& hierarchy) {
     SessionHierarchyMatchChecker checker(hierarchy, GetSyncService(0),
@@ -374,6 +382,49 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
   }
   EXPECT_TRUE(found_header);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Regression test for crbug.com/361256057.
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(CheckInitialState(0));
+
+  std::string first_cache_guid;
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    first_cache_guid = prefs.GetCacheGuid();
+  }
+
+  // Note: The only tab that exists is an NTP, which is not interesting and thus
+  // not uploaded. So the only SESSIONS entity on the server is now a header.
+  ASSERT_TRUE(SessionEntitiesChecker(
+                  UnorderedElementsAre(SessionHeader(first_cache_guid)))
+                  .Wait());
+
+  // Disable Sync, then turn it on again with a different account.
+  GetClient(0)->SignOutPrimaryAccount();
+  GetClient(0)->SetUsernameForFutureSignins("account2@gmail.com");
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+
+  std::string second_cache_guid;
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    second_cache_guid = prefs.GetCacheGuid();
+  }
+  ASSERT_NE(first_cache_guid, second_cache_guid);
+
+  // Ensure that a session header with the new cache GUID was uploaded.
+  EXPECT_TRUE(SessionEntitiesChecker(
+                  UnorderedElementsAre(SessionHeader(first_cache_guid),
+                                       SessionHeader(second_cache_guid)))
+                  .Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
