@@ -16,12 +16,13 @@ namespace captions {
 // additional helpers. See in_process_browser_test.h.
 class LiveCaptionBrowserTest : public InProcessBrowserTest {
  public:
-  LiveCaptionBrowserTest();
+  LiveCaptionBrowserTest() = default;
   ~LiveCaptionBrowserTest() override = default;
   LiveCaptionBrowserTest(const LiveCaptionBrowserTest&) = delete;
   LiveCaptionBrowserTest& operator=(const LiveCaptionBrowserTest&) = delete;
 
   // InProcessBrowserTest:
+  void SetUp() override;
   void CreatedBrowserMainParts(content::BrowserMainParts*) override;
 
  protected:

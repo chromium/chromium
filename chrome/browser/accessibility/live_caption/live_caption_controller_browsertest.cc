@@ -59,11 +59,7 @@ Profile* CreateProfile() {
 
 class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
  public:
-  LiveCaptionControllerTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kConch);
-#endif
-  }
+  LiveCaptionControllerTest() = default;
   ~LiveCaptionControllerTest() override = default;
   LiveCaptionControllerTest(const LiveCaptionControllerTest&) = delete;
   LiveCaptionControllerTest& operator=(const LiveCaptionControllerTest&) =
@@ -160,7 +156,6 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
  private:
   std::unique_ptr<CaptionBubbleContextBrowser> caption_bubble_context_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, ProfilePrefsAreRegistered) {
