@@ -770,10 +770,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (!this.data) {
       return true;
     }
-    if (this.data && this.data.fileExternallyRemoved) {
+    if (this.data.fileExternallyRemoved) {
       return false;
     }
-    return this.completelyOnDisk_;
+    switch (this.data.state) {
+      case State.kComplete:
+      case State.kInProgress:
+        return true;
+      case State.kCancelled:
+      case State.kInterrupted:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsDangerous_(): boolean {
