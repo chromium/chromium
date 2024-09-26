@@ -20,8 +20,7 @@ ash::TabClusterUIItem::Info GenerateTabItemInfo(
     content::WebContents* web_contents) {
   ash::TabClusterUIItem::Info info;
   info.title = base::UTF16ToUTF8(web_contents->GetTitle());
-  info.source = base::StrCat({web_contents->GetVisibleURL().host(),
-                              web_contents->GetVisibleURL().path()});
+  info.source = web_contents->GetVisibleURL().spec();
   info.browser_window =
       chrome::FindBrowserWithTab(web_contents)->window()->GetNativeWindow();
   return info;

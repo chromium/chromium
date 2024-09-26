@@ -138,19 +138,17 @@ std::unordered_set<coral::mojom::AppPtr> GetInSessionAppData() {
       continue;
     }
 
-    // Skip windows that do not associate with a full restore app id.
-    const std::string app_id = saved_desk_util::GetAppId(window);
-    if (app_id.empty()) {
+    const std::string* app_id_key = window->GetProperty(kAppIDKey);
+    if (!app_id_key) {
       continue;
     }
 
-    const std::string* app_id_key = window->GetProperty(kAppIDKey);
     auto app_mojom = coral::mojom::App::New();
     app_mojom->title =
-        (!app_id_key || IsArcWindow(window))
+        IsArcWindow(window)
             ? base::UTF16ToUTF8(window->GetTitle())
             : shell->saved_desk_delegate()->GetAppShortName(*app_id_key);
-    app_mojom->id = std::move(app_id);
+    app_mojom->id = std::move(*app_id_key);
     app_data.insert(std::move(app_mojom));
   }
   return app_data;

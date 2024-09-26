@@ -105,15 +105,15 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tab_data,
               testing::UnorderedElementsAre(
-                  *Tab::New("examples1.com", GURL("examples1.com/")),
-                  *Tab::New("examples2.com", GURL("examples2.com/")),
-                  *Tab::New("examples3.com", GURL("examples3.com/"))));
+                  *Tab::New("examples1.com", GURL("https://examples1.com/")),
+                  *Tab::New("examples2.com", GURL("https://examples2.com/")),
+                  *Tab::New("examples3.com", GURL("https://examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(app_data,
               testing::UnorderedElementsAre(
-                  *App::New("Gmail", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
-                  *App::New("YouTube", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
+                  *App::New("Gmail", "gdkbjbkdgeggmfkjbfohmimchmkikbid"),
+                  *App::New("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
                   *App::New("Explore", "nbljnnecbjbmifnoehiemkgefbnpoeak"),
                   *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
                   *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
@@ -165,14 +165,14 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
   // Comparing the collected tab data with the expected tab data.
   EXPECT_THAT(tab_data,
               testing::UnorderedElementsAre(
-                  *Tab::New("examples1.com", GURL("examples1.com/")),
-                  *Tab::New("examples2.com", GURL("examples2.com/")),
-                  *Tab::New("examples3.com", GURL("examples3.com/"))));
+                  *Tab::New("examples1.com", GURL("https://examples1.com/")),
+                  *Tab::New("examples2.com", GURL("https://examples2.com/")),
+                  *Tab::New("examples3.com", GURL("https://examples3.com/"))));
 
   // Comparing the collected app data with the expected app data in mru order.
   EXPECT_THAT(app_data,
               testing::UnorderedElementsAre(
-                  *App::New("YouTube", "mgndgikekgjfcpckkfioiadnlibdjbkf"),
+                  *App::New("YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"),
                   *App::New("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
                   *App::New("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
