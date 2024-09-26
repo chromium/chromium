@@ -949,7 +949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2024-11-01">
+    units="characters" expires_after="2025-11-01">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
