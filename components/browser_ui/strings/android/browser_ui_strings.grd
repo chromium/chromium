@@ -618,17 +618,17 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="The header label of Tracking Protection page.">
         Tracking Protection
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view for when a site has a TPCD grant. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view if all cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SUBTITLE_COOKIES_LIMITED" desc="Description text in the Page Info dialog to indicate that third-party cookies are limited on this site.">
         Third-party cookies limited
