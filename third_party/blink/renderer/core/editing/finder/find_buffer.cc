@@ -41,11 +41,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
-namespace {
 
 // Returns true if the search should ignore the given |node|'s contents. In
 // other words, we don't need to recurse into the node's children.
-bool ShouldIgnoreContents(const Node& node) {
+bool FindBuffer::ShouldIgnoreContents(const Node& node) {
   if (node.getNodeType() == Node::kCommentNode) {
     return true;
   }
@@ -95,7 +94,7 @@ bool ShouldIgnoreContents(const Node& node) {
               DisplayLockActivationReason::kFindInPage));
 }
 
-std::optional<UChar> CharConstantForNode(const Node& node) {
+std::optional<UChar> FindBuffer::CharConstantForNode(const Node& node) {
   if (!IsA<HTMLElement>(node)) {
     return std::nullopt;
   }
@@ -107,6 +106,8 @@ std::optional<UChar> CharConstantForNode(const Node& node) {
   }
   return kNonCharacter;
 }
+
+namespace {
 
 // Returns the first ancestor element that isn't searchable. In other words,
 // either ShouldIgnoreContents() returns true for it or it has a display: none
@@ -122,8 +123,9 @@ Node* GetOutermostNonSearchableAncestor(const Node& node) {
       display_none = element_ancestor;
       continue;
     }
-    if (ShouldIgnoreContents(*element_ancestor))
+    if (FindBuffer::ShouldIgnoreContents(*element_ancestor)) {
       return element_ancestor;
+    }
     if (display_none)
       return display_none;
   }
@@ -157,7 +159,7 @@ Node* GetVisibleTextNode(Node& start_node) {
   // Move to first text node that's visible.
   while (node) {
     const ComputedStyle* style = EnsureComputedStyleForFind(*node);
-    if (ShouldIgnoreContents(*node) ||
+    if (FindBuffer::ShouldIgnoreContents(*node) ||
         (style && style->Display() == EDisplay::kNone)) {
       // This element and its descendants are not visible, skip it.
       node = Direction::NextSkippingSubtree(*node);

@@ -61,6 +61,9 @@ class CORE_EXPORT FindBuffer {
   static Node* ForwardVisibleTextNode(Node& start_node);
   static Node* BackwardVisibleTextNode(Node& start_node);
 
+  static bool ShouldIgnoreContents(const Node& node);
+  static std::optional<UChar> CharConstantForNode(const Node& node);
+
   // Finds all the match for |search_text| in |buffer_|.
   FindResults FindMatches(const WebString& search_text,
                           const blink::FindOptions options);
