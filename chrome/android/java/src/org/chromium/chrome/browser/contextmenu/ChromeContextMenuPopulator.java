@@ -78,6 +78,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -97,6 +98,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
             "ContextMenu.LensSupportStatus";
+    private final boolean mIsDownloadRestrictedByPolicy;
 
     // True when the tracker indicates IPH in the form of "new" label needs to be shown.
     private Boolean mShowEphemeralTabNewLabel;
@@ -238,10 +240,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mContext = context;
         mParams = params;
         mNativeDelegate = nativeDelegate;
+        mIsDownloadRestrictedByPolicy = DownloadUtils.isDownloadRestrictedByPolicy(getProfile());
     }
 
     /**
      * Gets the link of the item or empty text if the Url is empty.
+     *
      * @return A string with the link or an empty string.
      */
     public static String createUrlText(ContextMenuParams params) {
@@ -307,7 +311,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             createListItem(
                                     Item.SAVE_LINK_AS,
                                     /* showInProductHelp= */ false,
-                                    !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
+                                    !mIsDownloadRestrictedByPolicy));
                 }
                 if (!mParams.isImage()
                         && ReadingListUtils.isReadingListSupported(mParams.getLinkUrl())) {
@@ -373,7 +377,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         createListItem(
                                 Item.SAVE_IMAGE,
                                 /* showInProductHelp= */ false,
-                                !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
+                                !mIsDownloadRestrictedByPolicy));
             }
 
             if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
@@ -412,7 +416,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     createListItem(
                             Item.SAVE_VIDEO,
                             /* showInProductHelp= */ false,
-                            !DownloadUtils.isDownloadRestrictedByPolicy(getProfile())));
+                            !mIsDownloadRestrictedByPolicy));
             groupedItems.add(new Pair<>(R.string.contextmenu_video_title, videoGroup));
         }
 
@@ -566,18 +570,24 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getLinkText(), TabContextMenuItemDelegate.ClipboardType.LINK_TEXT);
         } else if (itemId == R.id.contextmenu_save_image) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_IMAGE);
-            if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
+            if (mIsDownloadRestrictedByPolicy) {
+                showDownloadRestrictedToast();
+            } else if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
                 mNativeDelegate.startDownload(false);
             }
         } else if (itemId == R.id.contextmenu_save_video) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_VIDEO);
-            if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
+            if (mIsDownloadRestrictedByPolicy) {
+                showDownloadRestrictedToast();
+            } else if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
                 mNativeDelegate.startDownload(false);
             }
         } else if (itemId == R.id.contextmenu_save_link_as) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_LINK);
             GURL url = mParams.getUnfilteredLinkUrl();
-            if (mItemDelegate.startDownload(url, true)) {
+            if (mIsDownloadRestrictedByPolicy) {
+                showDownloadRestrictedToast();
+            } else if (mItemDelegate.startDownload(url, true)) {
                 mNativeDelegate.startDownload(true);
             }
         } else if (itemId == R.id.contextmenu_share_link) {
@@ -1054,5 +1064,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private boolean enableShareFromContextMenu() {
         return ShareUtils.enableShareForAutomotive(
                 mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.WEB_APP);
+    }
+
+    private void showDownloadRestrictedToast() {
+        Toast.makeText(
+                        mContext,
+                        R.string.download_message_single_download_blocked,
+                        Toast.LENGTH_SHORT)
+                .show();
     }
 }

@@ -56,6 +56,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -187,6 +188,7 @@ public class ContextMenuTest {
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         CriteriaHelper.pollUiThread(() -> tab.isUserInteractable() && !tab.isLoading());
         setupLensChipDelegate();
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
     }
 
     @After
@@ -199,6 +201,7 @@ public class ContextMenuTest {
                         mMenuCoordinator = null;
                     }
                 });
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(null);
     }
 
     @Test
@@ -571,6 +574,28 @@ public class ContextMenuTest {
     @LargeTest
     public void testSaveVideo() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("videoDOMElement", R.id.contextmenu_save_video, FILENAME_WEBM);
+    }
+
+    @Test
+    @MediumTest
+    public void testSaveImageBlockedByPolicy()
+            throws TimeoutException, SecurityException, IOException {
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        int downloadCount = sDownloadTestRule.getAllDownloads().size();
+        Tab tab = sDownloadTestRule.getActivity().getActivityTab();
+        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
+
+        // Click should not trigger any download
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                mMenuCoordinator.clickListItemForTesting(
+                                        R.id.contextmenu_save_image));
+        int newCount = sDownloadTestRule.getAllDownloads().size();
+        Assert.assertEquals(downloadCount, newCount);
+
+        // The context menu should still show.
+        Assert.assertTrue(mMenuCoordinator.getDialogForTest().isShowing());
     }
 
     /**
