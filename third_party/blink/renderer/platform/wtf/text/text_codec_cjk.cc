@@ -418,93 +418,47 @@ uint32_t Gb18030RangesPointer(UChar32 code_point) {
 }
 
 // https://unicode-org.atlassian.net/browse/ICU-22357
-// TODO(yyanagisawa): rename function names in comment
-// The 2-byte values are handled correctly by values from gb18030()
-// but these need to be exceptions from gb18030Ranges().
-static std::optional<uint32_t> Gb18030_2022Encode(UChar32 codePoint) {
+// The 2-byte values are handled correctly by values from
+// EnsureGb18030EncodeTable() but these need to be exceptions from
+// Gb18030Ranges().
+static std::optional<uint16_t> Gb18030AsymmetricEncode(UChar32 codePoint) {
   switch (codePoint) {
     case 0xE81E:
-      return 0x82359037;
+      return 0xFE59;
     case 0xE826:
-      return 0x82359038;
+      return 0xFE61;
     case 0xE82B:
-      return 0x82359039;
+      return 0xFE66;
     case 0xE82C:
-      return 0x82359130;
+      return 0xFE67;
     case 0xE832:
-      return 0x82359131;
+      return 0xFE6D;
     case 0xE843:
-      return 0x82359132;
+      return 0xFE7E;
     case 0xE854:
-      return 0x82359133;
+      return 0xFE90;
     case 0xE864:
-      return 0x82359134;
+      return 0xFEA0;
     case 0xE78D:
-      return 0x84318236;
+      return 0xA6D9;
     case 0xE78F:
-      return 0x84318237;
+      return 0xA6DB;
     case 0xE78E:
-      return 0x84318238;
+      return 0xA6DA;
     case 0xE790:
-      return 0x84318239;
+      return 0xA6DC;
     case 0xE791:
-      return 0x84318330;
+      return 0xA6DD;
     case 0xE792:
-      return 0x84318331;
+      return 0xA6DE;
     case 0xE793:
-      return 0x84318332;
+      return 0xA6DF;
     case 0xE794:
-      return 0x84318333;
+      return 0xA6EC;
     case 0xE795:
-      return 0x84318334;
+      return 0xA6ED;
     case 0xE796:
-      return 0x84318335;
-  }
-  return std::nullopt;
-}
-static std::optional<UChar32> Gb18030_2022Decode(uint8_t first,
-                                                 uint8_t second,
-                                                 uint8_t third,
-                                                 uint8_t fourth) {
-  switch (static_cast<uint32_t>(first) << 24 |
-          static_cast<uint32_t>(second) << 16 |
-          static_cast<uint32_t>(third) << 8 | fourth) {
-    case 0x82359037:
-      return 0xE81E;
-    case 0x82359038:
-      return 0xE826;
-    case 0x82359039:
-      return 0xE82B;
-    case 0x82359130:
-      return 0xE82C;
-    case 0x82359131:
-      return 0xE832;
-    case 0x82359132:
-      return 0xE843;
-    case 0x82359133:
-      return 0xE854;
-    case 0x82359134:
-      return 0xE864;
-    case 0x84318236:
-      return 0xE78D;
-    case 0x84318237:
-      return 0xE78F;
-    case 0x84318238:
-      return 0xE78E;
-    case 0x84318239:
-      return 0xE790;
-    case 0x84318330:
-      return 0xE791;
-    case 0x84318331:
-      return 0xE792;
-    case 0x84318332:
-      return 0xE793;
-    case 0x84318333:
-      return 0xE794;
-    case 0x84318334:
-      return 0xE795;
-    case 0x84318335:
-      return 0xE796;
+      return 0xA6F3;
   }
   return std::nullopt;
 }
@@ -526,19 +480,14 @@ Vector<uint8_t> EncodeGbShared(StringView string,
       AppendUnencodableReplacement(code_point, handling, result);
       continue;
     }
-    if (is_gbk == IsGbk::kYes) {
-      if (code_point == 0x20AC) {
-        result.push_back(0x80);
-        continue;
-      }
-    } else {
-      if (auto encoded = Gb18030_2022Encode(code_point)) {
-        result.push_back(*encoded >> 24);
-        result.push_back(*encoded >> 16);
-        result.push_back(*encoded >> 8);
-        result.push_back(*encoded);
-        continue;
-      }
+    if (is_gbk == IsGbk::kYes && code_point == 0x20AC) {
+      result.push_back(0x80);
+      continue;
+    }
+    if (auto encoded = Gb18030AsymmetricEncode(code_point)) {
+      result.push_back(*encoded >> 8);
+      result.push_back(*encoded);
+      continue;
     }
     auto pointer_range =
         FindInSortedPairs(EnsureGb18030EncodeIndexForEncode(), code_point);
@@ -964,10 +913,6 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
       uint8_t first = std::exchange(first_, 0x00);
       uint8_t second = std::exchange(second_, 0x00);
       uint8_t third = std::exchange(third_, 0x00);
-      if (auto codePoint = Gb18030_2022Decode(first, second, third, byte)) {
-        result.Append(*codePoint);
-        return SawError::kNo;
-      }
       if (auto code_point = IndexGb18030RangesCodePoint(
               ((first - 0x81) * 10 * 126 * 10) + ((second - 0x30) * 10 * 126) +
               ((third - 0x81) * 10) + byte - 0x30)) {
