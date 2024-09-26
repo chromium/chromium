@@ -1495,12 +1495,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
   UniquePosition position_before = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_before));
   if (!position_before.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   const ProcessorEntity* target_entity =
@@ -1525,12 +1520,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   const ProcessorEntity* target_entity =
@@ -1558,22 +1548,16 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid() || !position_before.IsValid()) {
-    DVLOG(1) << "Invalid unique position";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
-    // Do not CHECK because the metadata is loaded from the disk and might
-    // contain corrupted data. Generate some consistent unique position on best
-    // effort.
-    return UniquePositionForInitialEntity(target_client_tag_hash);
+    return GenerateFallbackUniquePosition(target_client_tag_hash);
   }
 
   if (!position_before.LessThan(position_after)) {
-    DVLOG(1) << "Error while generating unique position between positions"
-             << " which are in an unxepected order";
-    // TODO(crbug.com/351357559): add a metric or report a model error.
     // The order in sync metadata is incorrect due to inconsistency with the
     // model. This normally should not happen but generate some meaningful
     // unique position to prevent data loss (in case the bridge verifies unique
     // position validness).
+    base::UmaHistogramEnumeration("Sync.DataTypeUniquePositionIncorrectOrder",
+                                  DataTypeHistogramValue(type_));
     return UniquePosition::After(
                position_before,
                UniquePosition::GenerateSuffix(target_client_tag_hash))
@@ -1669,6 +1653,14 @@ void ClientTagBasedDataTypeProcessor::ReportBridgeErrorForTest() {
 
   CHECK(!model_error_.has_value());
   ReportError(ModelError(FROM_HERE, "Reported error from test"));
+}
+
+sync_pb::UniquePosition
+ClientTagBasedDataTypeProcessor::GenerateFallbackUniquePosition(
+    const ClientTagHash& client_tag_hash) const {
+  base::UmaHistogramEnumeration("Sync.DataTypeUniquePositionError",
+                                DataTypeHistogramValue(type_));
+  return UniquePositionForInitialEntity(client_tag_hash);
 }
 
 }  // namespace syncer

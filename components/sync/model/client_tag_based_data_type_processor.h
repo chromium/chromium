@@ -262,6 +262,12 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // Reports error and records a metric about |site| where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
 
+  // Generates some consistent unique position on best effort if it can't be
+  // calculated. Unique positions are stored in sync metadata and loaded from
+  // the disk on browser startup, so they should not be CHECKed for validness.
+  sync_pb::UniquePosition GenerateFallbackUniquePosition(
+      const ClientTagHash& client_tag_hash) const;
+
   /////////////////////
   // Processor state //
   /////////////////////

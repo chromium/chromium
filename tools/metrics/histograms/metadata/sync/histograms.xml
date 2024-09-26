@@ -855,6 +855,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.DataTypeUniquePositionError" enum="SyncDataTypes"
+    expires_after="2025-09-22">
+  <owner>rushans@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the data type for which a unique position in the correct order could
+    not be generated. Recorded for each failed attempt of unique position
+    generation (normally, for each local entity creation or update). This metric
+    should be compared against Sync.DataTypeEntityChange3 to compare with the
+    total number of incremental updates.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeUniquePositionIncorrectOrder"
+    enum="SyncDataTypes" expires_after="2025-09-22">
+  <owner>rushans@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    This histogram is similar to Sync.DataTypeUniquePositionError but it is
+    recorded only when the incorrect order of valid unique positions is detected
+    (as opposed to invalid unique positions). Recorded whenever an incorrect
+    order is detected while generating unique position between two entities.
+    This metric should be compared against Sync.DataTypeEntityChange3 to compare
+    with the total number of incremental updates.
+  </summary>
+</histogram>
+
 <histogram name="Sync.DataTypeUpdateDrop.{Reason}" enum="SyncDataTypes"
     expires_after="2024-12-30">
   <owner>treib@chromium.org</owner>
