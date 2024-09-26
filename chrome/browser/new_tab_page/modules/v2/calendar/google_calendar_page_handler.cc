@@ -27,6 +27,7 @@
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
 
@@ -169,6 +170,10 @@ GoogleCalendarPageHandler::GoogleCalendarPageHandler(
 GoogleCalendarPageHandler::~GoogleCalendarPageHandler() = default;
 
 void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback),
+      std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+
   // Do not grab data if it is within 12 hours since the module was dismissed.
   base::Time dismiss_time =
       pref_service_->GetTime(kGoogleCalendarLastDismissedTimePrefName);
@@ -191,7 +196,7 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
         std::make_unique<google_apis::calendar::CalendarApiEventsRequest>(
             sender_.get(), url_generator_,
             base::BindOnce(&GoogleCalendarPageHandler::OnRequestComplete,
-                           base::Unretained(this), std::move(callback)),
+                           weak_factory_.GetWeakPtr(), std::move(callback)),
             /*start_time=*/base::Time::Now() +
                 ntp_features::kNtpCalendarModuleWindowStartDeltaParam.Get(),
             /*end_time=*/base::Time::Now() +
