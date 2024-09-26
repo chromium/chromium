@@ -484,9 +484,9 @@ export class TextLayerElement extends PolymerElement {
       const normalizedCenterX = centerX / this.selectionOverlayRect.width;
       const normalizedCenterY = centerY / this.selectionOverlayRect.height;
       const normalizedWidth =
-          boundingRect.width / this.selectionOverlayRect.width;
+          wordSpanElement.offsetWidth / this.selectionOverlayRect.width;
       const normalizedHeight =
-          boundingRect.height / this.selectionOverlayRect.height;
+          wordSpanElement.offsetHeight / this.selectionOverlayRect.height;
       assert(translatedLine.line.geometry);
       const rotation = translatedLine.line.geometry.boundingBox.rotation;
 
