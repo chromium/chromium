@@ -45,7 +45,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'cast_junit_test_lists',
     'cast_media_unittests',
     'cast_shell',
-    'cast_shell_apk',
+    'cast_browser_apk',
     'cast_shell_browsertests',
     'cast_shell_junit_tests',
     'cast_shell_unittests',

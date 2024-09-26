@@ -59,7 +59,7 @@ shared_library_with_jni("libcast_shell_android") {
     ":common_apk_deps",
     "//chromecast/cast_core:core_runtime_lib_simple",
   ]
-  java_targets = [ "//chromecast:cast_shell_apk" ]
+  java_targets = [ "//chromecast:cast_browser_apk" ]
 }
 
 shared_library_with_jni("libcast_browser_android") {
@@ -76,7 +76,7 @@ shared_library_with_jni("libcast_browser_android") {
     "//chromecast/cast_core:core_runtime_lib_simple",
     "//components/module_installer/android:native",
   ]
-  java_targets = [ "//chromecast:cast_shell_apk" ]
+  java_targets = [ "//chromecast:cast_browser_apk" ]
 }
 
 group("native") {

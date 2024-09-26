@@ -1,8 +1,8 @@
 {
   "Cast Android (dbg)": {
     "additional_compile_targets": [
-      "cast_junit_test_lists",
-      "cast_shell_apk"
+      "cast_browser_apk",
+      "cast_junit_test_lists"
     ],
     "isolated_scripts": [
       {

@@ -670,7 +670,7 @@ targets.bundle(
 targets.bundle(
     name = "chromium_android_cast_receiver",
     additional_compile_targets = [
-        "cast_shell_apk",
+        "cast_browser_apk",
     ],
 )
 

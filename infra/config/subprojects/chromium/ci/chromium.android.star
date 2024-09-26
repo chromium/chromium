@@ -624,7 +624,7 @@ ci.builder(
         ],
         additional_compile_targets = [
             "cast_junit_test_lists",
-            "cast_shell_apk",
+            "cast_browser_apk",
         ],
         mixins = [
             "has_native_resultdb_integration",

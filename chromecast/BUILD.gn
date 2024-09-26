@@ -32,7 +32,7 @@ group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
   if (is_android) {
-    deps += [ ":cast_shell_apk" ]
+    deps += [ ":cast_browser_apk" ]
   } else if (!is_fuchsia) {
     data_deps += [
       ":cast_browser",
@@ -617,11 +617,11 @@ buildflag_header("chromecast_buildflags") {
 }
 
 if (is_android) {
-  android_assets("cast_shell_apk_assets") {
+  android_assets("cast_browser_apk_assets") {
     sources = [ "$root_out_dir/assets/cast_shell.pak" ]
 
     deps = [
-      ":cast_shell_apk_locale_assets",
+      ":cast_browser_apk_locale_assets",
       ":cast_shell_pak",
       "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
@@ -629,7 +629,7 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_assets("cast_shell_apk_locale_assets") {
+  android_assets("cast_browser_apk_locale_assets") {
     renaming_sources = []
     renaming_destinations = []
 
@@ -644,7 +644,7 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_apk("cast_shell_apk") {
+  android_apk("cast_browser_apk") {
     enable_lint = true
     lint_baseline_file = "android/lint-baseline.xml"
     lint_suppressions_file = "android/lint-suppressions.xml"
@@ -661,7 +661,7 @@ if (is_android) {
         [ "//chromecast/android:libcast_shell_android__jni_registration" ]
 
     deps = [
-      ":cast_shell_apk_assets",
+      ":cast_browser_apk_assets",
       "//base:base_java",
       "//build/android:build_java",
       "//chromecast/android:libcast_shell_android",

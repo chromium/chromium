@@ -1,8 +1,8 @@
 {
   "android-cast-arm64-dbg": {
     "additional_compile_targets": [
+      "cast_browser_apk",
       "cast_junit_test_lists",
-      "cast_shell_apk",
       "cast_test_lists"
     ],
     "gtest_tests": [

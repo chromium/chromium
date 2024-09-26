@@ -253,6 +253,10 @@
     "label": "//chromecast/base:cast_base_unittests",
     "type": "console_test_launcher",
   },
+  "cast_browser_apk": {
+    "label": "//chromecast:cast_browser_apk",
+    "type": "additional_compile_target",
+  },
   "cast_cast_core_unittests": {
     "label": "//chromecast/cast_core:cast_cast_core_unittests",
     "type": "console_test_launcher",
@@ -295,10 +299,6 @@
   },
   "cast_shell": {
     "label": "//chromecast:cast_shell",
-    "type": "additional_compile_target",
-  },
-  "cast_shell_apk": {
-    "label": "//chromecast:cast_shell_apk",
     "type": "additional_compile_target",
   },
   "cast_shell_browsertests": {
