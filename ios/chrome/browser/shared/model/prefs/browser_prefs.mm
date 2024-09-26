@@ -770,11 +770,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 0);
 }
 
-// TODO(crbug.com/367245358) To be removed.
-void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  RegisterProfilePrefs(registry);
-}
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);

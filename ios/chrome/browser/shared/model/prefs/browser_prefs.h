@@ -18,9 +18,6 @@ class PrefRegistrySyncable;
 // Registers all prefs that will be used via the local state PrefService.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-// TODO(crbug.com/367245358) To be removed.
-void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry);
-
 // Registers all prefs that will be used via a PrefService attached to a
 // profile.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
