@@ -479,16 +479,16 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 
   <!-- Embedded permission prompts: text -->
   <message name="IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED" desc="Text informing the user that their administrator has blocked a permission for a site">
-    Your administrator blocked your <ph name="permission">$1<ex>camera</ex></ph> for this site
+    Your administrator doesn't allow <ph name="permission">$1<ex>camera</ex></ph> for this site
   </message>
   <message name="IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED" desc="Text informing the user that their administrator has allowed a permission for a site">
-    <ph name="permission">$1<ex>Camera</ex></ph> allowed
+    Your administrator allows <ph name="permission">$1<ex>camera</ex></ph> for this site
   </message>
   <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED" desc="Text informing the user that they already granted permission to the site">
     You have allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
-    <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
-    You previously chose don’t allow for this site
+  <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
+    You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> for this site
   </message>
   <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
     To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, give Chrome access
@@ -507,15 +507,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera and microphone permissions">
     camera and microphone
-  </message>
-    <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the camera permission">
-    Camera
-  </message>
-  <message name="IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the microphone permission">
-    Microphone
-  </message>
-  <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the camera and microphone permissions">
-    Camera and microphone
   </message>
   <message name="IDS_MACOS_NAME_FRAGMENT" desc="Text fragment identifying the macOS">
     macOS

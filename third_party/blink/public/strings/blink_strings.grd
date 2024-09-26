@@ -389,7 +389,10 @@ below:
         Use microphone and camera
       </message>
       <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
-        Share location
+        Use location
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
+        Use precise location
       </message>
       <message name="IDS_PERMISSION_REQUEST_CAMERA_ALLOWED" desc="Label for a permission element when camera access is allowed">
         Camera allowed
@@ -401,7 +404,10 @@ below:
         Camera and microphone allowed
       </message>
       <message name="IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED" desc="Label for a permission element when geolocation access is allowed">
-        Sharing location allowed
+        Location allowed
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED" desc="Label for a permission element when geolocation access is allowed">
+        Precise location allowed
       </message>
 
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
