@@ -1377,9 +1377,13 @@ void HWNDMessageHandler::OnAppbarAutohideEdgesChanged() {
   // This triggers querying WM_NCCALCSIZE again.
   RECT client;
   GetWindowRect(hwnd(), &client);
+
+  // Add SWP_NOZORDER and SWP_NOACTIVATE flags to SetWindowPos to preserve the
+  // correct Z-order after restarting maximized browsers. Without these flags,
+  // SetWindowPos would always bring the current window to the top.
   SetWindowPos(hwnd(), nullptr, client.left, client.top,
                client.right - client.left, client.bottom - client.top,
-               SWP_FRAMECHANGED);
+               SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 void HWNDMessageHandler::SetInitialFocus() {
