@@ -59,6 +59,7 @@ window.onload = () => {
 
   promise_test (async () => {
     await waitForScrollReset(standardDivFast);
+    await waitForCompositorCommit();
 
     // Click on the track part just above the down arrow.
     await clickScroll(SCROLLBAR_BUTTON_FWD.x,
@@ -72,6 +73,7 @@ window.onload = () => {
 
   promise_test (async () => {
     await waitForScrollReset(standardDivFast);
+    await waitForCompositorCommit();
 
     // Testing the vertical scrollbar thumb.
     const dx = 0;
@@ -98,6 +100,7 @@ window.onload = () => {
       return;
 
     await waitForScrollReset(standardDivFast);
+    await waitForCompositorCommit();
 
     // Click on the Down arrow for standardRectFast.
     await clickScroll(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y,
@@ -111,6 +114,7 @@ window.onload = () => {
 
   promise_test (async () => {
     await waitForScrollReset(standardDivFast);
+    await waitForCompositorCommit();
 
     // Testing forward scroll on vertical scrollbar. Mac uses "Option" key
     // instead of "Shift". The Option key is mapped to "Alt" in GPUbenchmarking.
