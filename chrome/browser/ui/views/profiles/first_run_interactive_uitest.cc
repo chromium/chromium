@@ -86,8 +86,6 @@ const DeepQuery kSearchEngineChoiceActionButton{"search-engine-choice-app",
 
 enum class SyncButtonsFeatureConfig : int {
   // Deprecated: kDisabled = 0,
-  // For the rest of the cases the kMinorModeRestrictionsForHistorySyncOptIn
-  // feature shall be enabled.
   // Simulate async load resulting in not-equal buttons.
   kAsyncNotEqualButtons = 1,
   // Simulate async load resulting in equal buttons.

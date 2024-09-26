@@ -55,19 +55,14 @@ using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
 
-// Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
-// that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
-// capability.
-struct MinorModeRestrictions {
-  // Related capability value
-  signin::Tribool capability = signin::Tribool::kTrue;
-};
+// Configures the can_show_history_sync_opt_ins_without_minor_mode_restrictions
+// account capability, which determines minor mode restrictions status.
+using MinorModeRestrictions =
+    base::StrongAlias<class MinorModeRestrictionsTag, signin::Tribool>;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
-    .capability = signin::Tribool::kTrue};
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
-    .capability = signin::Tribool::kFalse};
+constexpr MinorModeRestrictions kWithUnrestrictedUser(signin::Tribool::kTrue);
+constexpr MinorModeRestrictions kWithRestrictedUser(signin::Tribool::kFalse);
 #endif
 
 struct SyncConfirmationTestParam {
@@ -76,7 +71,7 @@ struct SyncConfirmationTestParam {
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
   bool is_sync_promo = false;
-  MinorModeRestrictions minor_mode_restrictions;
+  MinorModeRestrictions minor_mode_restrictions = kWithUnrestrictedUser;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -102,10 +97,10 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     // Restricted mode is only implemented for these platforms.
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -136,11 +131,11 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -210,7 +205,7 @@ class SyncConfirmationUIWindowPixelTest
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -279,7 +274,7 @@ class SyncConfirmationUIDialogPixelTest
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style,
                                             GetParam().is_sync_promo);

@@ -6034,11 +6034,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "minor-mode-restrictions-for-history-sync-opt-in",
-    "owners": [ "tju@chromium.org", "chrome-kids-team@google.com"],
-    "expiry_milestone": 127
-  },
-  {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
     "owners": ["jlebel@chromium.org", "chrome-signin-team@google.com"],
     // Used for automated testing of Gaia cookie restoration in iOS.
