@@ -217,6 +217,7 @@ class CrashUtil;
 }
 namespace chromeos {
 class BlockingMethodCaller;
+class ChromeOsCdmFactory;
 namespace system {
 bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
@@ -799,6 +800,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class android_webview::
       OverlayProcessorWebView;                     // http://crbug.com/341151462
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
+  friend class chromeos::ChromeOsCdmFactory;       // http://crbug.com/368792274
   friend class viz::
       DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
   friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
