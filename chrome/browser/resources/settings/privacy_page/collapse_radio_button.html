@@ -16,6 +16,10 @@
         opacity: var(--cr-disabled-opacity);
       }
 
+      :host([disabled]) #labelWrapper {
+        opacity: 1;
+      }
+
       cr-collapse {
         margin-inline-end: 0;
         margin-inline-start: calc(var(--cr-radio-button-label-spacing, 20px)

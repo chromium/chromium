@@ -58,10 +58,10 @@
          * triggered when clicking anywhere in :host. */
         pointer-events: none;
         --cr-radio-button-checked-color: var(--color-radio-foreground-disabled,
-            var(--cr-fallback-color-disabled-background));
+            var(--cr-fallback-color-disabled-foreground));
         --cr-radio-button-unchecked-color:
             var(--color-radio-foreground-disabled,
-                var(--cr-fallback-color-disabled-background));
+                var(--cr-fallback-color-disabled-foreground));
       }
 
       :host(:not([disabled])) {
