@@ -113,6 +113,17 @@ public class SuggestionsListAnimationDriverTest {
     }
 
     @Test
+    public void testTimeoutCancelledByOnPrepare() {
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
+        mDriver.onOmniboxSessionStateChange(true);
+
+        mDriver.onPrepare(mImeAnimation);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mShowRunnable).run();
+    }
+
+    @Test
     public void testShowAnimation() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

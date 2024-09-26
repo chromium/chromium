@@ -152,7 +152,7 @@ public class SuggestionsListAnimationDriver
             return;
         }
 
-        mHandler.removeCallbacks(null);
+        mHandler.removeCallbacksAndMessages(null);
         mAnimation = animation;
         mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
         mShowSuggestionsListCallback.run();
