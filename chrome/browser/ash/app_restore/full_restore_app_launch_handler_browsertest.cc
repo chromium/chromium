@@ -37,6 +37,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
@@ -1414,7 +1415,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     test_app_restore_info_observer_.Reset();
 
     auto* arc_task_handler =
-        app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
+        app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile());
     ASSERT_TRUE(arc_task_handler);
 
     arc_app_queue_restore_handler_ =
@@ -2110,7 +2111,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   ASSERT_FALSE(task_id_to_app_id().empty());
 
   // Simulate Play Store is disabled.
-  app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())
+  app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile())
       ->OnArcPlayStoreEnabledChanged(/*enabled=*/false);
   widget1->CloseNow();
 
@@ -2341,7 +2342,7 @@ class ArcAppQueueRestoreHandlerArcAppBrowserTest
   void OnAppConnectionReady() {
     if (!arc_app_queue_restore_handler_) {
       arc_app_queue_restore_handler_ =
-          app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())
+          app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile())
               ->GetFullRestoreArcAppQueueRestoreHandler();
     }
     arc_app_queue_restore_handler_->OnAppConnectionReady();

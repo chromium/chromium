@@ -34,6 +34,7 @@
 #include "base/version_info/version_info.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
@@ -853,7 +854,8 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 
 void FullRestoreService::OnAppTerminating() {
   if (auto* arc_task_handler =
-          app_restore::AppRestoreArcTaskHandler::GetForProfile(profile_)) {
+          app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
+              profile_)) {
     arc_task_handler->Shutdown();
   }
   app_launch_handler_.reset();

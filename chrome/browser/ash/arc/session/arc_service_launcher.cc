@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/arc/adbd/arc_adbd_monitor_bridge.h"
@@ -323,7 +324,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   CertStoreService::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   ash::ApkWebAppService::Get(profile);
-  ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+  ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
   ArcInitialOptInMetricsRecorder::GetForProfile(profile);
   ArcChromeFeatureFlagsBridge::GetForBrowserContext(profile);
 

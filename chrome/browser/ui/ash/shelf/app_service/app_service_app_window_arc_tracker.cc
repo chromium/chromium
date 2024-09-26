@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -117,8 +118,9 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
   if (arc_session_manager)
     arc_session_manager->AddObserver(this);
 
-  auto* arc_handler = ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(
-      observed_profile_);
+  auto* arc_handler =
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
+          observed_profile_);
   if (arc_handler)
     arc_handler->OnShelfReady();
 }
@@ -766,8 +768,9 @@ void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
   session_id_to_arc_app_window_info_.erase(session_id);
 
   // Close the ghost window.
-  auto* arc_handler = ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(
-      observed_profile_);
+  auto* arc_handler =
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
+          observed_profile_);
   if (arc_handler && arc_handler->window_handler())
     arc_handler->window_handler()->CloseWindow(session_id);
 }

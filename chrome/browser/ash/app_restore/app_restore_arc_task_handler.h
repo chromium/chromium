@@ -48,8 +48,6 @@ class AppRestoreArcTaskHandler : public KeyedService,
                                  public ArcAppListPrefs::Observer,
                                  public arc::ArcSessionManagerObserver {
  public:
-  static AppRestoreArcTaskHandler* GetForProfile(Profile* profile);
-
   explicit AppRestoreArcTaskHandler(Profile* profile);
   AppRestoreArcTaskHandler(const AppRestoreArcTaskHandler&) = delete;
   AppRestoreArcTaskHandler& operator=(const AppRestoreArcTaskHandler&) = delete;
