@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 
 #include <algorithm>
@@ -59,36 +54,12 @@ namespace blink {
 
 namespace {
 
-// Check for a CSS prefix.
-// Passed prefix is all lowercase.
-// First character of the prefix within the property name may be upper or
-// lowercase.
-// Other characters in the prefix within the property name must be lowercase.
-// The prefix within the property name must be followed by a capital letter.
-bool HasCSSPropertyNamePrefix(const AtomicString& property_name,
-                              const char* prefix) {
-#if DCHECK_IS_ON()
-  DCHECK(*prefix);
-  for (const char* p = prefix; *p; ++p) {
-    DCHECK(IsASCIILower(*p));
-  }
-  DCHECK(property_name.length());
-#endif
-
-  if (ToASCIILower(property_name[0]) != prefix[0]) {
-    return false;
-  }
-
-  unsigned length = property_name.length();
-  for (unsigned i = 1; i < length; ++i) {
-    if (!prefix[i]) {
-      return IsASCIIUpper(property_name[i]);
-    }
-    if (property_name[i] != prefix[i]) {
-      return false;
-    }
-  }
-  return false;
+// Returns true if the camel cased property name for CSSOM access has the
+// 'webkit' or 'Webkit' prefix - both valid as idl names for -webkit- prefixed
+// properties.
+bool HasWebkitPrefix(const AtomicString& property_name) {
+  return property_name.StartsWith("webkit") ||
+         property_name.StartsWith("Webkit");
 }
 
 CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
@@ -104,7 +75,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
   unsigned i = 0;
   bool has_seen_dash = false;
 
-  if (HasCSSPropertyNamePrefix(property_name, "webkit")) {
+  if (HasWebkitPrefix(property_name)) {
     builder.Append('-');
   } else if (IsASCIIUpper(property_name[0])) {
     return CSSPropertyID::kInvalid;
