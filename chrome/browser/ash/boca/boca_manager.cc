@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -34,12 +33,6 @@ BocaManager::BocaManager(
       boca_session_manager_(std::move(boca_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)) {
   AddObservers();
-}
-
-// Static
-BocaManager* BocaManager::GetForProfile(Profile* profile) {
-  return static_cast<BocaManager*>(
-      BocaManagerFactory::GetInstance()->GetForProfile(profile));
 }
 
 BocaManager::BocaManager(Profile* profile) {

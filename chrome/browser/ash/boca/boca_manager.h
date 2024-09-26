@@ -24,7 +24,6 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::SessionClientImpl> session_client_impl,
       std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
       std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl);
-  static BocaManager* GetForProfile(Profile* profile);
 
   explicit BocaManager(Profile* profile);
   ~BocaManager() override;
