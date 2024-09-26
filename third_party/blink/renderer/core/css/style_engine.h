@@ -745,8 +745,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
  private:
   void UpdateCounters(const Element& element,
                       CountersAttachmentContext& context);
-  void UpdateLayoutCounters(const Element& element,
-                            const LayoutObject& layout_object,
+  void UpdateLayoutCounters(const LayoutObject& layout_object,
                             CountersAttachmentContext& context);
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;

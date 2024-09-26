@@ -777,14 +777,14 @@ void StyleEngine::UpdateCounters() {
 // Recursively look for potential LayoutCounters to update,
 // since in case of ::marker they can be deep child of original
 // pseudo element's layout object.
-void StyleEngine::UpdateLayoutCounters(const Element& element,
-                                       const LayoutObject& layout_object,
+void StyleEngine::UpdateLayoutCounters(const LayoutObject& layout_object,
                                        CountersAttachmentContext& context) {
+  // Check out the parameter list ^^^
   for (LayoutObject* child = layout_object.NextInPreOrder(&layout_object);
        child; child = child->NextInPreOrder(&layout_object)) {
     if (auto* layout_counter = DynamicTo<LayoutCounter>(child)) {
       Vector<int> counter_values =
-          context.GetCounterValues(element, layout_counter->Identifier(),
+          context.GetCounterValues(layout_object, layout_counter->Identifier(),
                                    layout_counter->Separator().IsNull());
       layout_counter->UpdateCounter(std::move(counter_values));
     }
@@ -793,9 +793,10 @@ void StyleEngine::UpdateLayoutCounters(const Element& element,
 
 void StyleEngine::UpdateCounters(const Element& element,
                                  CountersAttachmentContext& context) {
-  context.EnterElement(element);
+  LayoutObject* layout_object = element.GetLayoutObject();
   // Manually update list item ordinals here.
-  if (LayoutObject* layout_object = element.GetLayoutObject()) {
+  if (layout_object) {
+    context.EnterObject(*layout_object);
     if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
       if (!ng_list_item->Ordinal().ExplicitValue().has_value()) {
         ng_list_item->Ordinal().MarkDirty();
@@ -810,7 +811,7 @@ void StyleEngine::UpdateCounters(const Element& element,
     }
     if (element.GetComputedStyle() &&
         !element.GetComputedStyle()->ContentBehavesAsNormal()) {
-      UpdateLayoutCounters(element, *layout_object, context);
+      UpdateLayoutCounters(*layout_object, context);
     }
   }
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(element); child;
@@ -819,7 +820,9 @@ void StyleEngine::UpdateCounters(const Element& element,
       UpdateCounters(*child_element, context);
     }
   }
-  context.LeaveElement(element);
+  if (layout_object) {
+    context.LeaveObject(*layout_object);
+  }
 }
 
 void StyleEngine::ShadowRootInsertedToDocument(ShadowRoot& shadow_root) {

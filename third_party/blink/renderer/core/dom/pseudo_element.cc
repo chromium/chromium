@@ -322,9 +322,14 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   if (pseudo_id_ == kPseudoIdMarker) {
     LayoutObject* originating_layout = parentNode()->GetLayoutObject();
     if (!originating_layout || !originating_layout->IsListItem()) {
-      context.counters_context.EnterElement(*this);
+      const LayoutObject* layout_object = GetLayoutObject();
+      if (layout_object) {
+        context.counters_context.EnterObject(*layout_object);
+      }
       Node::AttachLayoutTree(context);
-      context.counters_context.LeaveElement(*this);
+      if (layout_object) {
+        context.counters_context.LeaveObject(*layout_object);
+      }
       return;
     }
   }
@@ -337,7 +342,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   if (!layout_object)
     return;
 
-  context.counters_context.EnterElement(*this);
+  context.counters_context.EnterObject(*layout_object);
 
   // This is to ensure that bypassing the CanHaveGeneratedChildren() check in
   // LayoutTreeBuilderForElement::ShouldCreateLayoutObject() does not result in
@@ -352,7 +357,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       if (ListMarker* marker = ListMarker::Get(layout_object))
         marker->UpdateMarkerContentIfNeeded(*layout_object);
       if (style.ContentBehavesAsNormal()) {
-        context.counters_context.LeaveElement(*this);
+        context.counters_context.LeaveObject(*layout_object);
         return;
       }
       break;
@@ -360,7 +365,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdScrollNextButton:
     case kPseudoIdScrollPrevButton:
       if (style.ContentBehavesAsNormal()) {
-        context.counters_context.LeaveElement(*this);
+        context.counters_context.LeaveObject(*layout_object);
         return;
       }
       break;
@@ -373,7 +378,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       break;
     }
     default: {
-      context.counters_context.LeaveElement(*this);
+      context.counters_context.LeaveObject(*layout_object);
       return;
     }
   }
@@ -398,7 +403,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
           if (context.counters_context.AttachmentRootIsDocumentElement()) {
             Vector<int> counter_values =
                 context.counters_context.GetCounterValues(
-                    *this, layout_counter->Identifier(),
+                    *layout_object, layout_counter->Identifier(),
                     layout_counter->Separator().IsNull());
             layout_counter->UpdateCounter(std::move(counter_values));
           } else {
@@ -410,7 +415,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       }
     }
   }
-  context.counters_context.LeaveElement(*this);
+  context.counters_context.LeaveObject(*layout_object);
 }
 
 bool PseudoElement::CanGenerateContent() const {

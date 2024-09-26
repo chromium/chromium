@@ -3368,8 +3368,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
     return;
   }
 
-  if (!IsPseudoElement()) {
-    context.counters_context.EnterElement(*this);
+  if (!IsPseudoElement() && layout_object) {
+    context.counters_context.EnterObject(*layout_object);
   }
 
   AttachPrecedingPseudoElements(children_context);
@@ -3390,8 +3390,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   AttachSucceedingPseudoElements(children_context);
 
-  if (!IsPseudoElement()) {
-    context.counters_context.LeaveElement(*this);
+  if (!IsPseudoElement() && layout_object) {
+    context.counters_context.LeaveObject(*layout_object);
   }
 
   if (layout_object) {
@@ -3504,14 +3504,16 @@ void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
 
   DetachSucceedingPseudoElements(performing_reattach);
 
+  LayoutObject* layout_object = GetLayoutObject();
   AttachContext context;
-  context.parent = GetLayoutObject();
+  context.parent = layout_object;
   context.performing_reattach = performing_reattach;
   context.use_previous_in_flow = true;
   context.next_sibling_valid = true;
 
   if (!IsPseudoElement()) {
-    context.counters_context.EnterElement(*this);
+    DCHECK(layout_object);
+    context.counters_context.EnterObject(*layout_object);
   }
 
   AttachPrecedingPseudoElements(context);
@@ -3529,7 +3531,8 @@ void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
   AttachSucceedingPseudoElements(context);
 
   if (!IsPseudoElement()) {
-    context.counters_context.LeaveElement(*this);
+    DCHECK(layout_object);
+    context.counters_context.LeaveObject(*layout_object);
   }
 
   ClearChildNeedsReattachLayoutTree();

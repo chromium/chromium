@@ -15,6 +15,7 @@
 namespace blink {
 
 class Element;
+class LayoutObject;
 
 // This class is used to keep track of the current counter values for a
 // document.
@@ -23,9 +24,9 @@ class CORE_EXPORT CountersAttachmentContext {
   STACK_ALLOCATED();
 
   struct CounterEntry : public GarbageCollected<CounterEntry> {
-    CounterEntry(const Element& element, int value)
-        : element(&element), value(value) {}
-    Member<const Element> element;
+    CounterEntry(const LayoutObject& layout_object, int value)
+        : layout_object(&layout_object), value(value) {}
+    Member<const LayoutObject> layout_object;
     int value;
 
     void Trace(Visitor*) const;
@@ -44,10 +45,10 @@ class CORE_EXPORT CountersAttachmentContext {
 
   CountersAttachmentContext();
 
-  void EnterElement(const Element& element);
-  void LeaveElement(const Element& element);
+  void EnterObject(const LayoutObject&);
+  void LeaveObject(const LayoutObject&);
   // only_last = true for counter(), = false for counters().
-  Vector<int> GetCounterValues(const Element& element,
+  Vector<int> GetCounterValues(const LayoutObject&,
                                const AtomicString& counter_name,
                                bool only_last);
   void SetAttachmentRootIsDocumentElement() {
@@ -59,14 +60,14 @@ class CORE_EXPORT CountersAttachmentContext {
   static bool ElementGeneratesListItemCounter(const Element& element);
 
  private:
-  void CreateCounter(const Element& element,
+  void CreateCounter(const LayoutObject&,
                      const AtomicString& counter_name,
                      int value);
-  void RemoveStaleCounters(const Element& element,
+  void RemoveStaleCounters(const LayoutObject&,
                            const AtomicString& counter_name);
-  void RemoveCounterIfAncestorExists(const Element& element,
+  void RemoveCounterIfAncestorExists(const LayoutObject&,
                                      const AtomicString& counter_name);
-  void UpdateCounterValue(const Element& element,
+  void UpdateCounterValue(const LayoutObject&,
                           const AtomicString& counter_name,
                           unsigned counter_type,
                           int counter_value);
