@@ -270,6 +270,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   const BackForwardCacheBlockingDetails& GetBackForwardCacheBlockingDetails()
       const;
 
+  // This is called when out-of-process Network Service crashes,
+  // or when DevTools updates its network interception.
+  void UpdateSubresourceLoaderFactories();
+
   base::WeakPtr<ServiceWorkerClient> GetServiceWorkerClient();
 
   mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
@@ -302,9 +306,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       RenderFrameHostImpl* ancestor_render_frame_host,
       bool* bypass_redirect_checks);
 
-  // Updates subresource loader factories. This is supposed to be called when
-  // out-of-process Network Service crashes.
-  void UpdateSubresourceLoaderFactories();
+  void OnNetworkServiceCrash();
 
   void OnMojoDisconnect();
 

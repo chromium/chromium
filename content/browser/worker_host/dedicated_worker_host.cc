@@ -867,16 +867,31 @@ void DedicatedWorkerHost::ObserveNetworkServiceCrash(
           .BindNewPipeAndPassReceiver(),
       std::move(params));
   network_service_connection_error_handler_holder_.set_disconnect_handler(
-      base::BindOnce(&DedicatedWorkerHost::UpdateSubresourceLoaderFactories,
+      base::BindOnce(&DedicatedWorkerHost::OnNetworkServiceCrash,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
+void DedicatedWorkerHost::OnNetworkServiceCrash() {
   DCHECK(IsOutOfProcessNetworkService());
   DCHECK(subresource_loader_updater_.is_bound());
   DCHECK(network_service_connection_error_handler_holder_);
   DCHECK(!network_service_connection_error_handler_holder_.is_connected());
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      worker_process_host_->GetStoragePartition());
+  // Start observing Network Service crash again.
+  ObserveNetworkServiceCrash(storage_partition_impl);
+
+  UpdateSubresourceLoaderFactories();
+}
+
+void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
+  // Ignore DevTools attempts to update loader factories before
+  // the main script started loading.
+  if (!subresource_loader_updater_.is_bound()) {
+    return;
+  }
 
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       worker_process_host_->GetStoragePartition());
@@ -891,9 +906,6 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
   auto partition_domain =
       ancestor_render_frame_host->GetSiteInstance()->GetPartitionDomain(
           storage_partition_impl);
-
-  // Start observing Network Service crash again.
-  ObserveNetworkServiceCrash(storage_partition_impl);
 
   // If this is a nested worker, there is no creator frame and
   // |creator_render_frame_host| will be null.
