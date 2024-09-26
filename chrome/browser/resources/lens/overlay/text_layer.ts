@@ -779,8 +779,8 @@ export class TextLayerElement extends PolymerElement {
       const textMetrics = this.context.measureText(text);
 
       // Check if the text fits within the container
-      const textHeight = textMetrics.actualBoundingBoxAscent +
-          textMetrics.actualBoundingBoxDescent;
+      const textHeight = textMetrics.fontBoundingBoxAscent +
+          textMetrics.fontBoundingBoxDescent;
       if (textMetrics.width >= lineWidth || textHeight >= lineHeight) {
         high = mid - 1;
       } else {
