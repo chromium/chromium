@@ -24,7 +24,7 @@ BASE_FEATURE(kSkipCheckForAccountManagementOnSignin,
 
 BASE_FEATURE(kHideSettingsSignInPromo,
              "HideSettingsSignInPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
              "UseConsentLevelSigninForLegacyAccountEmailPref",
@@ -112,7 +112,7 @@ BASE_FEATURE(kForceStartupSigninPromo,
 // restore.
 BASE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup,
              "RestoreSignedInAccountAndSettingsFromBackup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,

@@ -9027,6 +9027,21 @@
             ]
         }
     ],
+    "EnableBatchUploadFromSettings": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBatchUploadFromSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
@@ -24033,31 +24048,6 @@
                     "enable_features": [
                         "ExplicitBrowserSigninUIOnDesktop",
                         "SyncEnableContactInfoDataTypeInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UnoPhase2Android": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Phase2",
-                    "enable_features": [
-                        "EnableBatchUploadFromSettings",
-                        "EnablePasswordsAccountStorageForNonSyncingUsers",
-                        "FeedBottomSyncStringRemoval",
-                        "HideSettingsSignInPromo",
-                        "ReadingListEnableSyncTransportModeUponSignIn",
-                        "ReplaceSyncPromosWithSignInPromos",
-                        "RestoreSignedInAccountAndSettingsFromBackup",
-                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
-                        "SyncEnableContactInfoDataTypeInTransportMode",
-                        "SyncEnableWalletMetadataInTransportMode",
-                        "SyncEnableWalletOfferInTransportMode"
                     ]
                 }
             ]
