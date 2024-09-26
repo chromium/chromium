@@ -274,14 +274,14 @@ void FocusModeSoundsView::OnPlayerError() {
       ErrorMessageToast::ButtonActionType::kDismiss);
 }
 
-void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
-  auto* sounds_controller =
-      FocusModeController::Get()->focus_mode_sounds_controller();
+void FocusModeSoundsView::UpdateSoundsView(
+    bool is_soundscape_type,
+    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
+        playlists) {
   if (is_soundscape_type) {
     if (!soundscape_container_) {
       return;
     }
-    const auto& playlists = sounds_controller->soundscape_playlists();
     if (playlists.size() != kFocusModePlaylistViewsNum) {
       ShowErrorMessageForType(
           is_soundscape_type,
@@ -294,7 +294,6 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
     if (!youtube_music_container_) {
       return;
     }
-    const auto& playlists = sounds_controller->youtube_music_playlists();
     if (playlists.size() != kFocusModePlaylistViewsNum) {
       if (!youtube_music_container_->IsAlternateViewVisible()) {
         ShowErrorMessageForType(

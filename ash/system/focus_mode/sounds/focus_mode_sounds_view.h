@@ -54,7 +54,10 @@ class ASH_EXPORT FocusModeSoundsView
 
  private:
   // Updates this view based on `is_soundscape_type`.
-  void UpdateSoundsView(bool is_soundscape_type);
+  void UpdateSoundsView(
+      bool is_soundscape_type,
+      const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
+          playlists);
 
   // Updates the playback state for all of the playlists under
   // `soundscape_container_` and `youtube_music_container_`.

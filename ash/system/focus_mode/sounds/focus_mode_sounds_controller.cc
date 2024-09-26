@@ -301,8 +301,6 @@ FocusModeSoundsController::FocusModeSoundsController(const std::string& locale)
     : youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
   soundscape_delegate_ = FocusModeSoundscapeDelegate::Create(locale);
-  soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
-  youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
   // Default sound sections to enabled.
   enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
@@ -480,6 +478,7 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
 
 void FocusModeSoundsController::TogglePlaylist(
     const focus_mode_util::SelectedPlaylist& playlist_data) {
+  CHECK_LT(playlist_data.list_position, kFocusModePlaylistViewsNum);
   if (playlist_data.state != focus_mode_util::SoundState::kNone) {
     // When the user toggles a selected playlist, we will deselect it.
     ResetSelectedPlaylist();
@@ -735,21 +734,17 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
           std::make_unique<Playlist>(selected_playlist_.id,
                                      selected_playlist_.title,
                                      selected_playlist_.thumbnail));
+      selected_playlist_.list_position = 1;
     } else {
       ResetSelectedPlaylist();
     }
   }
 
-  if (is_soundscape_type) {
-    soundscape_playlists_.swap(sorted_playlists);
-  } else {
-    youtube_music_playlists_.swap(sorted_playlists);
-  }
-
   // Only trigger the observer function when all the thumbnails are finished
   // downloading.
   // TODO(b/321071604): We may need to update this once caching is implemented.
-  std::move(update_sounds_view_callback).Run(is_soundscape_type);
+  std::move(update_sounds_view_callback)
+      .Run(is_soundscape_type, std::move(sorted_playlists));
 }
 
 void FocusModeSoundsController::OnPrefChanged() {

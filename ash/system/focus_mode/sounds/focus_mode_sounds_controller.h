@@ -42,8 +42,6 @@ class ASH_EXPORT FocusModeSoundsController
     : public media_session::mojom::AudioFocusObserver,
       public media_session::mojom::MediaControllerObserver {
  public:
-  using UpdateSoundsViewCallback = base::OnceCallback<void(bool)>;
-
   // The data used to display on the focus panel. It will include a playlist id,
   // a string of its title, and the downloaded thumbnail for the playlist cover
   // currently. We will add the stream info in future.
@@ -87,14 +85,6 @@ class ASH_EXPORT FocusModeSoundsController
 
   // Called by `FocusModeTrackProvider::ReportPlayerError`.
   void ReportPlayerError();
-
-  const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {
-    return soundscape_playlists_;
-  }
-  const std::vector<std::unique_ptr<Playlist>>& youtube_music_playlists()
-      const {
-    return youtube_music_playlists_;
-  }
 
   const focus_mode_util::SelectedPlaylist& selected_playlist() const {
     return selected_playlist_;
@@ -146,6 +136,9 @@ class ASH_EXPORT FocusModeSoundsController
   // Soundscape type or the YouTube Music type of playlists; however, if
   // `ImageDownloader` doesn't exists or if there is an empty thumbnail
   // downloaded, `update_sounds_view_callback` will be not triggered.
+  using UpdateSoundsViewCallback =
+      base::OnceCallback<void(bool,
+                              const std::vector<std::unique_ptr<Playlist>>&)>;
   void DownloadPlaylistsForType(
       const bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback);
@@ -167,14 +160,6 @@ class ASH_EXPORT FocusModeSoundsController
   bool ShouldDisplayYouTubeMusicFreeTrial() const;
   void SavePrefForDisplayYouTubeMusicFreeTrial();
 
-  void set_soundscape_playlists_for_testing(
-      std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {
-    soundscape_playlists_.swap(soundscape_playlists);
-  }
-  void set_youtube_music_playlists_for_testing(
-      std::vector<std::unique_ptr<Playlist>> youtube_music_playlists) {
-    youtube_music_playlists_.swap(youtube_music_playlists);
-  }
   void set_selected_playlist_for_testing(
       const focus_mode_util::SelectedPlaylist& playlist) {
     selected_playlist_ = playlist;
@@ -209,8 +194,6 @@ class ASH_EXPORT FocusModeSoundsController
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
   std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
 
-  std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
-  std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
 
   focus_mode_util::SelectedPlaylist selected_playlist_;
   focus_mode_util::SoundType sound_type_ =
