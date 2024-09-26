@@ -2674,4 +2674,34 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
                  {kIsSharedStorageBlockSiteSettingSpecific, &kFalse_}});
 }
 
+class PrivacySandboxSettingsCookieControlsModeTest
+    : public PrivacySandboxSettingsTest {
+ public:
+  PrivacySandboxSettingsCookieControlsModeTest() {
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kAddLimit3pcsSetting},
+        {content_settings::features::kTrackingProtection3pcd});
+  }
+};
+
+TEST_F(PrivacySandboxSettingsCookieControlsModeTest,
+       OnFirstPartySetsEnabledChangedCalledWhen3pcBlockingChanges) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
+
+  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
+  privacy_sandbox_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));
+  prefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kLimited));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
+  prefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 }  // namespace privacy_sandbox

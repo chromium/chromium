@@ -49,6 +49,8 @@ namespace privacy_sandbox {
 
 namespace {
 
+using ::content_settings::CookieControlsMode;
+
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 constexpr char kBlockedTopicsBlockTimeKey[] = "blockedOn";
 
@@ -190,6 +192,11 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
       base::BindRepeating(
           &PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCookieControlsMode,
+      base::BindRepeating(
+          &PrivacySandboxSettingsImpl::OnCookieControlsModePrefChanged,
           base::Unretained(this)));
 }
 
@@ -869,6 +876,23 @@ void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   }
 }
 
+void PrivacySandboxSettingsImpl::OnCookieControlsModePrefChanged() {
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kAddLimit3pcsSetting)) {
+    return;
+  }
+
+  CookieControlsMode mode = static_cast<CookieControlsMode>(
+      pref_change_registrar_.prefs()->GetInteger(prefs::kCookieControlsMode));
+  if (mode == CookieControlsMode::kOff ||
+      mode == CookieControlsMode::kIncognitoOnly) {
+    return;
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
+  }
+}
+
 void PrivacySandboxSettingsImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -981,10 +1005,11 @@ void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
 }
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
-  // FPS should be on in the 3PCD experiment unless all 3PC are blocked.
-  if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
+  if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled() ||
+      base::FeatureList::IsEnabled(privacy_sandbox::kAddLimit3pcsSetting)) {
+    return cookie_settings_->AreThirdPartyCookiesLimited();
   }
+
   return pref_service_->GetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
