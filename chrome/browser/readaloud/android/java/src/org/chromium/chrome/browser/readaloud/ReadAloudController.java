@@ -62,6 +62,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
+import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksFactory;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
@@ -135,7 +136,6 @@ public class ReadAloudController
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
     @Nullable private ReadAloudPlaybackHooks mPlaybackHooks;
-    @Nullable private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
     @Nullable private Highlighter mHighlighter;
     @Nullable private Highlighter.Config mHighlighterConfig;
     @Nullable private Extractor mExtractor;
@@ -943,10 +943,14 @@ public class ReadAloudController
 
     private void maybeInitializePlaybackHooks() {
         if (mPlaybackHooks == null) {
-            mPlaybackHooks =
-                    sPlaybackHooksForTesting != null
-                            ? sPlaybackHooksForTesting
-                            : ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
+            ReadAloudPlaybackHooksFactory factory =
+                    ServiceLoaderUtil.maybeCreate(ReadAloudPlaybackHooksFactory.class);
+            if (factory != null) {
+                mPlaybackHooks = factory.getForProfile(mProfileSupplier.get());
+            } else {
+                mPlaybackHooks =
+                        ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
+            }
             mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
             mPlayerCoordinator.addObserver(this);
         }
@@ -1757,8 +1761,7 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setPlaybackHooks(ReadAloudPlaybackHooks hooks) {
-        sPlaybackHooksForTesting = hooks;
-        ResettersForTesting.register(() -> sPlaybackHooksForTesting = null);
+        ServiceLoaderUtil.setInstanceForTesting(ReadAloudPlaybackHooksFactory.class, (a) -> hooks);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
