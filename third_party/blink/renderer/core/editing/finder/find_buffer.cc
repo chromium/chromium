@@ -371,7 +371,7 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
   return GetVisibleTextNode<BackwardDirection>(start_node);
 }
 
-FindResults FindBuffer::FindMatches(const WebString& search_text,
+FindResults FindBuffer::FindMatches(const String& search_text,
                                     const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
   // empty), or when something went wrong in layout, in which case

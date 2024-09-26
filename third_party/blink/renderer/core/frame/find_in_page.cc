@@ -166,7 +166,7 @@ bool WebLocalFrameImpl::FindForTesting(int identifier,
 }
 
 bool FindInPage::FindInternal(int identifier,
-                              const WebString& search_text,
+                              const String& search_text,
                               const mojom::blink::FindOptions& options,
                               bool wrap_within_frame,
                               bool* active_now) {

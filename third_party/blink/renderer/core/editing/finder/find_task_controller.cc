@@ -38,7 +38,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
   FindTask(FindTaskController* controller,
            Document* document,
            int identifier,
-           const WebString& search_text,
+           const String& search_text,
            const mojom::blink::FindOptions& options)
       : document_(document),
         controller_(controller),
@@ -198,7 +198,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
   Member<Document> document_;
   Member<FindTaskController> controller_;
   const int identifier_;
-  const WebString search_text_;
+  const String search_text_;
   mojom::blink::FindOptionsPtr options_;
 };
 
@@ -215,7 +215,7 @@ int FindTaskController::GetMatchYieldCheckInterval() const {
 
 void FindTaskController::StartRequest(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink", "FindInPageRequest",
@@ -243,7 +243,7 @@ void FindTaskController::CancelPendingRequest() {
 
 void FindTaskController::RequestFindTask(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options) {
   DCHECK_EQ(find_task_, nullptr);
   DCHECK_EQ(identifier, current_find_identifier_);
@@ -253,7 +253,7 @@ void FindTaskController::RequestFindTask(
 
 void FindTaskController::DidFinishTask(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options,
     bool finished_whole_request,
     PositionInFlatTree next_starting_position,

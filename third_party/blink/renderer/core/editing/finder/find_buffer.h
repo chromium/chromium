@@ -19,7 +19,6 @@ class FindResults;
 class LayoutBlockFlow;
 class Node;
 class OffsetMapping;
-class WebString;
 
 enum class RubySupport {
   // No support.
@@ -65,7 +64,7 @@ class CORE_EXPORT FindBuffer {
   static std::optional<UChar> CharConstantForNode(const Node& node);
 
   // Finds all the match for |search_text| in |buffer_|.
-  FindResults FindMatches(const WebString& search_text,
+  FindResults FindMatches(const String& search_text,
                           const blink::FindOptions options);
 
   // Gets a flat tree range corresponding to text in the [start_index,

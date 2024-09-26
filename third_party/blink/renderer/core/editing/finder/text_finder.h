@@ -34,7 +34,6 @@
 #include "base/cancelable_callback.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -53,7 +52,7 @@ class WebLocalFrameImpl;
 class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
  public:
   bool Find(int identifier,
-            const WebString& search_text,
+            const String& search_text,
             const mojom::blink::FindOptions& options,
             bool wrap_within_frame,
             bool* active_now = nullptr);
@@ -72,7 +71,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // Starts brand new scoping request: resets the scoping state and
   // asynchronously calls scopeStringMatches().
   void StartScopingStringMatches(int identifier,
-                                 const WebString& search_text,
+                                 const String& search_text,
                                  const mojom::blink::FindOptions& options);
 
   // Cancels any outstanding requests for scoping string matches on the frame.
@@ -151,7 +150,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   struct AsyncScrollContext {
     // Copy of parameters to FindInternal so that it can be called again later.
     int identifier;
-    WebString search_text;
+    String search_text;
     mojom::blink::FindOptions options;
     bool wrap_within_frame;
     Persistent<Range> first_match;
@@ -165,7 +164,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // Same as Find but with extra internal parameters used to track incremental
   // attempts to scroll to the next match when the first/previous was hidden.
   bool FindInternal(int identifier,
-                    const WebString& search_text,
+                    const String& search_text,
                     const mojom::blink::FindOptions& options,
                     bool wrap_within_frame,
                     bool* active_now = nullptr,
