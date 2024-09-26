@@ -534,13 +534,6 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
 
   // data: URL loads always have HTTP status code 200.
   EXPECT_EQ(200, current_rfh->last_http_status_code());
-  // If there is no base URL, then the URL is loaded like a regular data: URL,
-  // for which origin_to_commit should be set.
-  if (base_url_empty()) {
-    EXPECT_TRUE(data_observer.origin_to_commit().has_value());
-  } else {
-    EXPECT_FALSE(data_observer.origin_to_commit().has_value());
-  }
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());

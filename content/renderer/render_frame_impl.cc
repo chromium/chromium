@@ -2729,9 +2729,10 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   // `origin_to_commit` must only be set on failed navigations or  data: URL
-  // navigations.
+  // navigations, except when kUseBrowserCalculatedOrigin is enabled.
   CHECK(!commit_params->origin_to_commit ||
-        common_params->url.SchemeIs(url::kDataScheme));
+        common_params->url.SchemeIs(url::kDataScheme) ||
+        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
                       common_params->url);
 

@@ -15092,10 +15092,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
   }
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
-  // `origin_to_commit` is currently only set only on failed navigations or
-  // data: URL navigations.
   if (commit_params->origin_to_commit) {
-    DCHECK(common_params->url.SchemeIs(url::kDataScheme));
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
+        common_params->url.SchemeIs(url::kDataScheme));
     CHECK_EQ(commit_params->origin_to_commit.value(),
              navigation_request->browser_side_origin_to_commit_with_debug_info()
                  .first.value());

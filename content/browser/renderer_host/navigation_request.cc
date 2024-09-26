@@ -8097,7 +8097,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   commit_params_->is_load_data_with_base_url = IsLoadDataWithBaseURL();
 
-  // Set origin_to_commit for:
+  // Set origin_to_commit for all cases if kUseBrowserCalculatedOrigin is
+  // enabled, and for these two cases otherwise:
   // 1) Error pages, which should always commit in an opaque origin (with the
   // precursor reflecting the destination URL).
   // 2) data: URLs, which should also be opaque.
@@ -8111,10 +8112,13 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // lead to ambiguous cases where multiple data: SiteInstances will be in the
   // same group. However, when the base URL is empty, LoadDataWithBaseURL is
   // treated like a regular data: URL.
-  if (is_error || (common_params_->url.SchemeIs(url::kDataScheme) &&
-                   !IsLoadDataWithBaseURL())) {
+  if (base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
+      is_error ||
+      (common_params_->url.SchemeIs(url::kDataScheme) &&
+       !IsLoadDataWithBaseURL())) {
     commit_params_->origin_to_commit = origin_to_commit;
-    CHECK(!is_error || commit_params_->origin_to_commit->opaque());
+    CHECK(base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
+          !is_error || origin_to_commit->opaque());
   }
 
   if (!IsSameDocument()) {
