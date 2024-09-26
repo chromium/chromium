@@ -4426,6 +4426,9 @@ extern const char kUseAnnotatedAccountIdDescription[];
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 
+extern const char kUseLegacyDHCPCDName[];
+extern const char kUseLegacyDHCPCDDescription[];
+
 extern const char kVcDlcUiName[];
 extern const char kVcDlcUiDescription[];
 

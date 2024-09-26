@@ -9076,6 +9076,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "use-legacy-dhcpcd",
+    "owners": [ "chenzikai@google.com", "cros-networking@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "use_messages_staging_url",
     "owners": [ "azeemarshad@chromium.org", "khorimoto@chromium.org", "jonmann@chromium.org" ],
     // This flag is required for QA and dogfood testing.

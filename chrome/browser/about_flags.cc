@@ -4818,6 +4818,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosExtensionPrintingName,
      flag_descriptions::kLacrosExtensionPrintingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosExtensionPrinting)},
+    {"use-legacy-dhcpcd", flag_descriptions::kUseLegacyDHCPCDName,
+     flag_descriptions::kUseLegacyDHCPCDDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kUseLegacyDHCPCD)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

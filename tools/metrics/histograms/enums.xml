@@ -19321,6 +19321,7 @@ from previous Chrome versions.
   <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
   <int value="-390734327" label="WallpaperGooglePhotosIntegration:disabled"/>
   <int value="-390624541" label="RestrictedApiOrigins:disabled"/>
+  <int value="-389708179" label="UseLegacyDHCPCD:disabled"/>
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
@@ -23017,6 +23018,7 @@ from previous Chrome versions.
   <int value="1139226452" label="enable-nacl-debug"/>
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
+  <int value="1140016513" label="UseLegacyDHCPCD:enabled"/>
   <int value="1140375528" label="CrabbyAvif:enabled"/>
   <int value="1140513364" label="IdentityStatusConsistency:disabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
