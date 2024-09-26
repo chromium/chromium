@@ -59,7 +59,7 @@ class OffTheRecordProfileIOSImpl final : public ProfileIOS {
   bool IsOffTheRecord() const override;
 
  private:
-  friend class ChromeBrowserStateImpl;
+  friend class ProfileIOSImpl;
 
   // `original_chrome_browser_state_` is the non-incognito
   // ProfileIOS instance that owns this instance.
