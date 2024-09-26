@@ -2320,7 +2320,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
-                (groupTitle).getBottomIndicatorWidth(),
+                groupTitle.getBottomIndicatorWidth(),
                 EPSILON);
     }
 
@@ -2368,7 +2368,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
-                (groupTitle).getBottomIndicatorWidth(),
+                groupTitle.getBottomIndicatorWidth(),
                 EPSILON);
     }
 
@@ -2398,7 +2398,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
-                (groupTitle).getBottomIndicatorWidth(),
+                groupTitle.getBottomIndicatorWidth(),
                 0.1f);
 
         // Act: Call on close tab button handler.
@@ -2682,7 +2682,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
-                (groupTitle).getBottomIndicatorWidth(),
+                groupTitle.getBottomIndicatorWidth(),
                 EPSILON);
     }
 
@@ -2722,7 +2722,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
-                (groupTitle).getBottomIndicatorWidth(),
+                groupTitle.getBottomIndicatorWidth(),
                 EPSILON);
     }
 

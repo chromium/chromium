@@ -39,7 +39,7 @@ public class DefaultSearchEngineDialogHelperUtils {
                 () -> {
                     ViewGroup options = rootView.findViewById(OPTION_LAYOUT_ID);
                     options.getChildAt(0).performClick();
-                    sSelectedEngine = (String) (options.getChildAt(0).getTag());
+                    sSelectedEngine = (String) options.getChildAt(0).getTag();
                 });
 
         // Wait for the OK button to be clicakble.

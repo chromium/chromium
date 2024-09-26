@@ -564,7 +564,7 @@ public class FeedSurfaceCoordinator
         Toolbar toolbar = mToolbarSupplier.get();
         // If the ToolbarLayout isn't visible, we shouldn't change the toolbar_hairline to be
         // visible.
-        if (toolbar == null || !toolbar.isBrowsingModeToolbarVisible() && isVisible) {
+        if (toolbar == null || (!toolbar.isBrowsingModeToolbarVisible() && isVisible)) {
             return;
         }
         toolbar.setBrowsingModeHairlineVisibility(isVisible);

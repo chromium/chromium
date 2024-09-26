@@ -233,7 +233,8 @@ public class PasswordGenerationIntegrationTest {
                     return mActivity.findViewById(R.id.passwords_sheet) != null;
                 });
         ArrayList<View> selectedViews = new ArrayList();
-        (mActivity.findViewById(R.id.passwords_sheet))
+        mActivity
+                .findViewById(R.id.passwords_sheet)
                 .findViewsWithText(
                         selectedViews,
                         mActivity.getString(R.string.password_generation_accessory_button),

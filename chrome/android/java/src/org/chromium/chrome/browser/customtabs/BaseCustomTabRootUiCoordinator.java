@@ -637,7 +637,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             int activityType = mIntentDataProvider.get().getActivityType();
                             boolean isCustomTab =
                                     activityType == ActivityType.CUSTOM_TAB
-                                            && !(mIntentDataProvider.get().isPartialCustomTab());
+                                            && !mIntentDataProvider.get().isPartialCustomTab();
                             if (isCustomTab) {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",

@@ -185,7 +185,7 @@ public class AttributionReportingTest {
                                                 new WebTriggerParams(
                                                         Uri.parse(TRIGGER_REGISTRATION_URL),
                                                         false)),
-                                        (Uri.parse(mWebServer.getBaseUrl())))));
+                                        Uri.parse(mWebServer.getBaseUrl()))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -231,7 +231,7 @@ public class AttributionReportingTest {
                                                 new WebTriggerParams(
                                                         Uri.parse(TRIGGER_REGISTRATION_URL),
                                                         false)),
-                                        (Uri.parse(mWebServer.getBaseUrl())))));
+                                        Uri.parse(mWebServer.getBaseUrl()))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -275,7 +275,7 @@ public class AttributionReportingTest {
                                                 new WebTriggerParams(
                                                         Uri.parse(TRIGGER_REGISTRATION_URL),
                                                         false)),
-                                        (Uri.parse(mWebServer.getBaseUrl())))));
+                                        Uri.parse(mWebServer.getBaseUrl()))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -322,7 +322,7 @@ public class AttributionReportingTest {
                                                 new WebTriggerParams(
                                                         Uri.parse(TRIGGER_REGISTRATION_URL),
                                                         false)),
-                                        (Uri.parse(mWebServer.getBaseUrl())))));
+                                        Uri.parse(mWebServer.getBaseUrl()))));
         verify(mMockAttributionManager, times(1))
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }

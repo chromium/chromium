@@ -490,7 +490,7 @@ public class ContextualSearchBarControl {
             float contentWidth = panelWidth - paddedIconWithMarginWidth;
             // Adjust the touch point to panel coordinates.
             xPx -= mContextualSearchPanel.getOffsetX() * mDpToPx;
-            if (isRtl && xPx > paddedIconWithMarginWidth || !isRtl && xPx < contentWidth) {
+            if ((isRtl && xPx > paddedIconWithMarginWidth) || (!isRtl && xPx < contentWidth)) {
                 // Case 2 - Bar minus icon.
                 mTouchHighlightXOffsetPx = isRtl ? paddedIconWithMarginWidth : 0;
                 mTouchHighlightWidthPx = contentWidth;

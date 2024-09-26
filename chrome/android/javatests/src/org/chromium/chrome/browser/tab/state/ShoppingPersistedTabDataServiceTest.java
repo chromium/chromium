@@ -119,11 +119,11 @@ public class ShoppingPersistedTabDataServiceTest {
     @UiThreadTest
     @SmallTest
     public void testIsShoppingPersistedTabDataEligible() {
-        Assert.assertFalse(isDataEligibleForPriceDrop((null)));
+        Assert.assertFalse(isDataEligibleForPriceDrop(null));
 
         MockTab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        Assert.assertFalse(isDataEligibleForPriceDrop((shoppingPersistedTabData)));
+        Assert.assertFalse(isDataEligibleForPriceDrop(shoppingPersistedTabData));
 
         shoppingPersistedTabData.setPriceMicros(ShoppingPersistedTabDataTestUtils.LOW_PRICE_MICROS);
         shoppingPersistedTabData.setPreviousPriceMicros(
@@ -134,15 +134,15 @@ public class ShoppingPersistedTabDataServiceTest {
         shoppingPersistedTabData.setPriceDropGurl(url);
         tab.setGurlOverrideForTesting(url);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-        Assert.assertFalse(isDataEligibleForPriceDrop((shoppingPersistedTabData)));
+        Assert.assertFalse(isDataEligibleForPriceDrop(shoppingPersistedTabData));
 
         shoppingPersistedTabData.setProductImageUrl(
                 new GURL(ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL));
-        Assert.assertFalse(isDataEligibleForPriceDrop((shoppingPersistedTabData)));
+        Assert.assertFalse(isDataEligibleForPriceDrop(shoppingPersistedTabData));
 
         shoppingPersistedTabData.setProductTitle(
                 ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE);
-        Assert.assertTrue(isDataEligibleForPriceDrop((shoppingPersistedTabData)));
+        Assert.assertTrue(isDataEligibleForPriceDrop(shoppingPersistedTabData));
     }
 
     @Test

@@ -275,13 +275,13 @@ public class FirstRunActivitySigninAndSyncTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
 
-        onView((withId(R.id.signin_fre_continue_button))).perform(scrollTo(), click());
+        onView(withId(R.id.signin_fre_continue_button)).perform(scrollTo(), click());
         completeAutoDeviceLockIfNeeded();
         pressBack();
 
-        onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     @Test

@@ -579,7 +579,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // Compute a somewhat arbitrary cut-off of 90% of the window's display width. The PiP
         // window can't be anywhere near this big, so the exact value doesn't matter. We'll ignore
         // resizes messages that are above it, since they're spurious.
-        mMaxWidth = (int) ((getWindowAndroid().getDisplay().getDisplayWidth()) * 0.95);
+        mMaxWidth = (int) (getWindowAndroid().getDisplay().getDisplayWidth() * 0.95);
 
         mCompositorView =
                 CompositorViewFactory.create(

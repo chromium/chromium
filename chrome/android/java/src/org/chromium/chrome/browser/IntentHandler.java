@@ -1028,8 +1028,7 @@ public class IntentHandler {
             context = ContextUtils.getApplicationContext();
         }
 
-        PowerManager powerManager =
-                (PowerManager) (context.getSystemService(Context.POWER_SERVICE));
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
         return powerManager.isInteractive();
     }

@@ -140,8 +140,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             //  TODO(crbug.com/40277338): Read the image bytes from localState using a util method
             Object dropData = event.getLocalState();
             TemplateUrlService urlService = mTemplateUrlServiceSupplier.get();
-            if (!urlService.isSearchByImageAvailable()
-                    || (!(dropData instanceof DropDataAndroid))) {
+            if (!urlService.isSearchByImageAvailable() || !(dropData instanceof DropDataAndroid)) {
                 handleErrorToast();
                 return;
             }

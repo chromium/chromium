@@ -382,7 +382,7 @@ public class TabGroupUiTest {
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
                                 isDescendantOfA(withId(R.id.bottom_controls))))
-                .check(matches(withEffectiveVisibility((INVISIBLE))));
+                .check(matches(withEffectiveVisibility(INVISIBLE)));
     }
 
     @Test

@@ -906,12 +906,12 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     assertEquals(Intent.ACTION_SEND, result.getAction());
                     assertEquals(httpsCanonicalUrl, result.getStringExtra(Intent.EXTRA_TEXT));
                     assertEquals("text/plain", result.getType());
                     assertEquals("1 link from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
-                }));
+                });
 
         final int shareId = R.id.tab_list_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
@@ -954,12 +954,12 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1).clickItemAtAdapterPosition(2);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     assertEquals(Intent.ACTION_SEND, result.getAction());
                     assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
                     assertEquals("text/plain", result.getType());
                     assertEquals("4 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
-                }));
+                });
 
         final int shareId = R.id.tab_list_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
@@ -1011,12 +1011,12 @@ public class SelectableTabListEditorTest {
                 .clickItemAtAdapterPosition(3);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     assertEquals(Intent.ACTION_SEND, result.getAction());
                     assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
                     assertEquals("text/plain", result.getType());
                     assertEquals("3 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
-                }));
+                });
 
         final int shareId = R.id.tab_list_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);

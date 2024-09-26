@@ -53,9 +53,9 @@ public class ColorPickerCoordinator implements ColorPicker {
             @NonNull Context context,
             @NonNull List<Integer> colors,
             @NonNull View colorPickerView,
-            @NonNull @ColorPickerType int colorPickerType,
-            @NonNull boolean isIncognito,
-            @NonNull @ColorPickerLayoutType int layoutType,
+            @ColorPickerType int colorPickerType,
+            boolean isIncognito,
+            @ColorPickerLayoutType int layoutType,
             @Nullable Runnable onColorItemClicked) {
         mContainerView = (ColorPickerContainer) colorPickerView;
 

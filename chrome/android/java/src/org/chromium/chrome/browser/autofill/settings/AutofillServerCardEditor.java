@@ -322,15 +322,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private String getEditCardLink() {
         // Check if sandbox is enabled.
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
-            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL)
-                    .append("&id=")
-                    .append(mCard.getInstrumentId())
-                    .toString();
+            return AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL + "&id=" + mCard.getInstrumentId();
         }
-        return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL)
-                .append("&id=")
-                .append(mCard.getInstrumentId())
-                .toString();
+        return AUTOFILL_MANAGE_PAYMENTS_CARDS_URL + "&id=" + mCard.getInstrumentId();
     }
 
     @Override

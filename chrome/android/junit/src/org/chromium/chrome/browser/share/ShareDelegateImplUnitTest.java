@@ -84,9 +84,9 @@ public class ShareDelegateImplUnitTest {
                 new ShareDelegateImpl(
                         mBottomSheetController,
                         mActivityLifecycleDispatcher,
-                        (() -> mTab),
-                        (() -> mTabModelSelector),
-                        (() -> mProfile),
+                        () -> mTab,
+                        () -> mTabModelSelector,
+                        () -> mProfile,
                         new ShareSheetDelegate(),
                         isCustomTab);
     }

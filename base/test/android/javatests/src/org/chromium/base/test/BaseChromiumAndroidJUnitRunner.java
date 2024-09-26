@@ -229,7 +229,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 });
 
         try {
-            idleCallback.waitForOnly((int) WAIT_FOR_IDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            idleCallback.waitForOnly(WAIT_FOR_IDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (TimeoutException ex) {
             Log.w(TAG, "Timeout while waiting for idle main thread.");
         }

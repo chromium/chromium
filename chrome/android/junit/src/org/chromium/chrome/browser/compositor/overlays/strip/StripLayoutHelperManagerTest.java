@@ -1000,7 +1000,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
-        float yCenterOfStrip = newHeight / 2;
+        float yCenterOfStrip = newHeight / 2f;
         assertFalse("Event on paddings should be ignored.", motionEventHandled(0, yCenterOfStrip));
         assertFalse("Event on paddings should be ignored.", motionEventHandled(1, yCenterOfStrip));
         assertFalse(

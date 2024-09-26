@@ -1057,8 +1057,8 @@ public class RootUiCoordinator
         }
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
-                && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                        getPrimaryDisplaySizeInInches(), originalProfile, mActivity))) {
+                && RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                        getPrimaryDisplaySizeInInches(), originalProfile, mActivity)) {
             // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
                 mActivityTabProvider

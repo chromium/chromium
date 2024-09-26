@@ -95,7 +95,7 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
     }
 
     private boolean takeCompositorScreenshot(@Nullable Activity activity) {
-        if (activity == null || !shouldTakeCompositorScreenshot((activity))) return false;
+        if (activity == null || !shouldTakeCompositorScreenshot(activity)) return false;
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);

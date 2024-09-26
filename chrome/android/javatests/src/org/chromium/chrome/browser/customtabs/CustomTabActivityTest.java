@@ -2679,7 +2679,7 @@ public class CustomTabActivityTest {
                         .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
         ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
                 (ObservableSupplierImpl<Boolean>)
-                        (navigationHandler.getHandleBackPressChangedSupplier());
+                        navigationHandler.getHandleBackPressChangedSupplier();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.Failure",
@@ -2726,7 +2726,7 @@ public class CustomTabActivityTest {
                         .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
         ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
                 (ObservableSupplierImpl<Boolean>)
-                        (navigationHandler.getHandleBackPressChangedSupplier());
+                        navigationHandler.getHandleBackPressChangedSupplier();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     handleBackPressChangedSupplier.set(false);

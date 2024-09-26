@@ -115,13 +115,13 @@ public class HomeModulesMetricsUtils {
         switch (moduleType) {
             case SINGLE_TAB:
                 return "SingleTab";
-            case (PRICE_CHANGE):
+            case PRICE_CHANGE:
                 return "PriceChange";
-            case (TAB_RESUMPTION):
+            case TAB_RESUMPTION:
                 return "TabResumption";
-            case (SAFETY_HUB):
+            case SAFETY_HUB:
                 return "SafetyHub";
-            case (EDUCATIONAL_TIP):
+            case EDUCATIONAL_TIP:
                 return "EducationalTip";
             default:
                 assert false : "Module type not supported!";
@@ -138,11 +138,11 @@ public class HomeModulesMetricsUtils {
         switch (moduleType) {
             case SINGLE_TAB:
                 return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
-            case (PRICE_CHANGE):
+            case PRICE_CHANGE:
                 return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
-            case (TAB_RESUMPTION):
+            case TAB_RESUMPTION:
                 return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
-            case (SAFETY_HUB):
+            case SAFETY_HUB:
                 return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
             default:
                 assert false : "Module type not supported!";

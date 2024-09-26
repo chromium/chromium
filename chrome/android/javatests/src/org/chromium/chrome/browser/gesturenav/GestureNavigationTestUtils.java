@@ -53,8 +53,8 @@ public final class GestureNavigationTestUtils {
         Point size = new Point();
         mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? mEdgeWidthPx / 2 : size.x - mEdgeWidthPx / 2;
-        final float endx = size.x / 2;
-        final float yMiddle = size.y / 2;
+        final float endx = size.x / 2f;
+        final float yMiddle = size.y / 2f;
         swipe(leftEdge, startx, endx, yMiddle);
     }
 
@@ -62,8 +62,8 @@ public final class GestureNavigationTestUtils {
         Point size = new Point();
         mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? mEdgeWidthPx / 2 : size.x - mEdgeWidthPx / 2;
-        final float endx = size.x / 2;
-        final float yMiddle = size.y / 2;
+        final float endx = size.x / 2f;
+        final float yMiddle = size.y / 2f;
         swipeAndHold(leftEdge, startx, endx, yMiddle);
     }
 
@@ -73,7 +73,7 @@ public final class GestureNavigationTestUtils {
         mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? 0 : size.x;
         final float endx = leftEdge ? mEdgeWidthPx : size.x - mEdgeWidthPx;
-        final float yMiddle = size.y / 2;
+        final float yMiddle = size.y / 2f;
         swipe(leftEdge, startx, endx, yMiddle);
     }
 

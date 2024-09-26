@@ -49,7 +49,7 @@ public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @Feature(("AndroidWebview"))
+    @Feature("AndroidWebview")
     public void testOriginTrialsSafeModeSavesState() {
         // Given
         assertFalse(DisableOriginTrialsSafeModeAction.isDisableOriginTrialsEnabled());
@@ -63,7 +63,7 @@ public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @Feature(("AndroidWebview"))
+    @Feature("AndroidWebview")
     public void testSafeModeOnTrialsStatus() throws Throwable {
         // Given
         SafeModeController safeModeController = SafeModeController.getInstance();
@@ -88,7 +88,7 @@ public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
-    @Feature(("AndroidWebview"))
+    @Feature("AndroidWebview")
     public void testSafeModeOffOriginTrialPolicy() throws Throwable {
         // Then
         assertTrue(

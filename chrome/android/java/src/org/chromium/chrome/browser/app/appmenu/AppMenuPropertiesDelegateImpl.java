@@ -640,9 +640,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
 
             int itemGroupId = item.getGroupId();
-            if (!(menuGroup == MenuGroup.OVERVIEW_MODE_MENU
-                            && itemGroupId == R.id.OVERVIEW_MODE_MENU
-                    || menuGroup == MenuGroup.PAGE_MENU && itemGroupId == R.id.PAGE_MENU)) {
+            if (!((menuGroup == MenuGroup.OVERVIEW_MODE_MENU
+                            && itemGroupId == R.id.OVERVIEW_MODE_MENU)
+                    || (menuGroup == MenuGroup.PAGE_MENU && itemGroupId == R.id.PAGE_MENU))) {
                 continue;
             }
 

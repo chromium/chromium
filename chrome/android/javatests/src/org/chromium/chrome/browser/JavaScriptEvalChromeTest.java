@@ -83,7 +83,7 @@ public class JavaScriptEvalChromeTest {
             }
             Assert.assertEquals(
                     "Incorrect JavaScript evaluation result on tab1",
-                    i * 2,
+                    i * 2L,
                     Integer.parseInt(
                             JavaScriptUtils.executeJavaScriptAndWaitForResult(
                                     tab1.getWebContents(), "add2()")));

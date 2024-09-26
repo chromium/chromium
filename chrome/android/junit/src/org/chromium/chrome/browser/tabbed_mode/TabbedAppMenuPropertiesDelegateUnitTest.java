@@ -176,7 +176,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);

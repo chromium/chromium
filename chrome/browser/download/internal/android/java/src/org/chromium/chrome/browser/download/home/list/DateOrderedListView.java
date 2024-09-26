@@ -276,7 +276,7 @@ class DateOrderedListView {
             // If the current item is the last of its download type in a given section and not
             // displayed in a grid, add padding below. Grid items are handled differently as
             // described in the next section.
-            if (isLastOfDownloadTypeInSection(position) && !(isGridItem(position))) {
+            if (isLastOfDownloadTypeInSection(position) && !isGridItem(position)) {
                 outRect.bottom += mVerticalPaddingPx;
             }
 

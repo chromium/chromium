@@ -796,8 +796,7 @@ class LocationBarMediator
             mLocationBarLayout.getRootView().getLocalVisibleRect(mRootViewBounds);
             float screenSizeRatio =
                     (mRootViewBounds.height()
-                            / (float)
-                                    (Math.max(mRootViewBounds.height(), mRootViewBounds.width())));
+                            / (float) Math.max(mRootViewBounds.height(), mRootViewBounds.width()));
             mUrlFocusChangeAnimator =
                     ObjectAnimator.ofFloat(
                             this, mUrlFocusChangeFractionProperty, hasFocus ? 1f : 0f);

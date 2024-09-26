@@ -3987,9 +3987,7 @@ public class StripLayoutHelper
                         targetGroupTitle, interactingGroupTitle, curIndex, true, towardEnd);
             }
 
-            if ((isLastTabInGroup(tabId))
-                    && mTabGroupIdToHide == Tab.INVALID_TAB_ID
-                    && !mIncognito) {
+            if (isLastTabInGroup(tabId) && mTabGroupIdToHide == Tab.INVALID_TAB_ID && !mIncognito) {
                 // When dragging the last tab out of group on strip, the tab group delete dialog
                 // will show and we will hide the indicators for the interacting tab group until the
                 // user confirms the next action. e.g delete tab group when user confirms the
@@ -4153,7 +4151,7 @@ public class StripLayoutHelper
 
             final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
             final float startOffset =
-                    MathUtils.flipSignIf(tabWidth, (!towardEnd) ^ LocalizationUtils.isLayoutRtl());
+                    MathUtils.flipSignIf(tabWidth, !towardEnd ^ LocalizationUtils.isLayoutRtl());
             // TODO(crbug.com/338130577): We intentionally start this outside of the
             //  "RunningAnimator" pattern so it doesn't finish early due to the subsequent
             //  #didMoveTab event. Fix this when we update #reorderTab to handle non-tab views.
@@ -4319,7 +4317,7 @@ public class StripLayoutHelper
                 // Account for group title offset.
                 if (interactingGroupTitle != null) {
                     float groupTitleWidth = interactingGroupTitle.getWidth();
-                    offset += MathUtils.flipSignIf((groupTitleWidth), shouldFlip);
+                    offset += MathUtils.flipSignIf(groupTitleWidth, shouldFlip);
                 } else {
                     offset -= (mInteractingTab.getIdealX() - oldIdealX);
                     // When the strip is scrolling, deltaX is already accounted for by idealX. This

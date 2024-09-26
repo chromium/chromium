@@ -89,7 +89,7 @@ public class TabGroupRowViewUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoHelper.doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
                 .when(mFaviconResolver)
                 .resolve(any(), any());

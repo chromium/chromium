@@ -201,7 +201,7 @@ public class TabListEditorShareActionUnitTest {
         mAction.addActionObserver(observer);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     Assert.assertEquals(Intent.ACTION_SEND, result.getAction());
                     Assert.assertEquals(
                             shareParams.getTextAndUrl(), result.getStringExtra(Intent.EXTRA_TEXT));
@@ -209,7 +209,7 @@ public class TabListEditorShareActionUnitTest {
                     Assert.assertEquals(
                             "1 link from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
                     Assert.assertNotNull(result.getClipData());
-                }));
+                });
 
         Assert.assertTrue(mAction.perform());
 
@@ -265,7 +265,7 @@ public class TabListEditorShareActionUnitTest {
         mAction.addActionObserver(observer);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     Assert.assertEquals(Intent.ACTION_SEND, result.getAction());
                     Assert.assertEquals(
                             shareParams.getTextAndUrl(), result.getStringExtra(Intent.EXTRA_TEXT));
@@ -273,7 +273,7 @@ public class TabListEditorShareActionUnitTest {
                     Assert.assertEquals(
                             "3 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
                     Assert.assertNotNull(result.getClipData());
-                }));
+                });
 
         Assert.assertTrue(mAction.perform());
 

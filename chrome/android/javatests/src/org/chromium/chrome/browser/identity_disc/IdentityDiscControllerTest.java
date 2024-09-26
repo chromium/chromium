@@ -488,7 +488,7 @@ public class IdentityDiscControllerTest {
     }
 
     private @StringRes int getSignedOutAvatarDescription() {
-        return (SigninUtils.shouldShowNewSigninFlow())
+        return SigninUtils.shouldShowNewSigninFlow()
                 ? R.string.accessibility_toolbar_btn_signed_out_identity_disc
                 : R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc;
     }

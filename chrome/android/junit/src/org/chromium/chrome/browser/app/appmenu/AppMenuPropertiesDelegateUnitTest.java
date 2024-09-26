@@ -196,8 +196,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
-        when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);

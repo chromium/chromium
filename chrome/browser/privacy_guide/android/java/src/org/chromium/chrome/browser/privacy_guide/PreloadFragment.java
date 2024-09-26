@@ -50,10 +50,10 @@ public class PreloadFragment extends PrivacyGuideBasePage
         @PreloadPagesState
         int preloadPagesState = PreloadPagesSettingsBridge.getState(getProfile());
         switch (preloadPagesState) {
-            case (PreloadPagesState.STANDARD_PRELOADING):
+            case PreloadPagesState.STANDARD_PRELOADING:
                 mStandardPreloading.setChecked(true);
                 break;
-            case (PreloadPagesState.NO_PRELOADING):
+            case PreloadPagesState.NO_PRELOADING:
                 mDisabledPreloading.setChecked(true);
                 break;
             default:

@@ -270,7 +270,7 @@ public class MediaPlayerBridge {
             if (!mTempFile.delete()) {
                 // File will be deleted when MediaPlayer releases its handler.
                 Log.e(TAG, "Failed to delete temporary file: " + mTempFile);
-                assert (false);
+                assert false;
             }
         }
     }

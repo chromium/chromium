@@ -430,7 +430,7 @@ public class LocationBarTest {
                 });
 
         ViewUtils.waitForVisibleView(withId(R.id.url_action_container));
-        onView(withId(R.id.lens_camera_button)).check((matches(not(isDisplayed()))));
+        onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
@@ -474,7 +474,7 @@ public class LocationBarTest {
                 });
 
         ViewUtils.waitForVisibleView(withId(R.id.url_action_container));
-        onView(withId(R.id.lens_camera_button)).check((matches(isDisplayed())));
+        onView(withId(R.id.lens_camera_button)).check(matches(isDisplayed()));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
 

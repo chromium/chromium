@@ -168,7 +168,7 @@ class BindingManager implements ComponentCallbacks2 {
     int getExclusiveBindingCount() {
         int exclusiveBindingCount = 0;
         for (ChildProcessConnection connection : mConnections) {
-            if ((useNotPerceptibleBinding())
+            if (useNotPerceptibleBinding()
                     ? isExclusiveNotPerceptibleBinding(connection)
                     : isExclusiveVisibleBinding(connection)) {
                 exclusiveBindingCount++;

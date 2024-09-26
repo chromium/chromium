@@ -293,7 +293,7 @@ public class OfflinePageUtils {
                         // page.
                         Uri uri;
                         try {
-                            uri = (new FileProviderHelper()).getContentUriFromFile(file);
+                            uri = new FileProviderHelper().getContentUriFromFile(file);
                         } catch (Exception e) {
                             uri = Uri.parse(tabUrl);
                         }
@@ -507,7 +507,7 @@ public class OfflinePageUtils {
                         // return the URI.
                         if (offlinePath.isEmpty()) {
                             Uri uri = Uri.parse(pageUrl);
-                            assert (isSchemeContentOrFile(uri));
+                            assert isSchemeContentOrFile(uri);
                             return uri;
                         }
 

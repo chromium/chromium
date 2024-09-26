@@ -627,7 +627,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (publisherUrl != null) {
             assert getSecurityLevelFromStateModel(tab.getWebContents())
                     != ConnectionSecurityLevel.DANGEROUS;
-            return (publisherUrl.getScheme().equals(UrlConstants.HTTPS_SCHEME))
+            return publisherUrl.getScheme().equals(UrlConstants.HTTPS_SCHEME)
                     ? ConnectionSecurityLevel.SECURE
                     : ConnectionSecurityLevel.WARNING;
         }

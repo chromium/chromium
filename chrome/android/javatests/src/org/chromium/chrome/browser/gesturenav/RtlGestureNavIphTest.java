@@ -169,7 +169,7 @@ public class RtlGestureNavIphTest {
     public void testShowIphOnFailedSwipe() throws InterruptedException {
         mRtlGestureNavIphController =
                 ((TabbedRootUiCoordinator)
-                                (mActivityTestRule.getActivity().getRootUiCoordinatorForTesting()))
+                                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                         .getRtlGestureNavIphControllerForTesting();
         Assert.assertFalse(mRtlGestureNavIphController.shouldShowOnNonEmptyStack());
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));
@@ -231,7 +231,7 @@ public class RtlGestureNavIphTest {
     public void testShowIphOnNonEmptyHistoryStack() throws InterruptedException {
         mRtlGestureNavIphController =
                 ((TabbedRootUiCoordinator)
-                                (mActivityTestRule.getActivity().getRootUiCoordinatorForTesting()))
+                                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                         .getRtlGestureNavIphControllerForTesting();
         Assert.assertTrue(mRtlGestureNavIphController.shouldShowOnNonEmptyStack());
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));

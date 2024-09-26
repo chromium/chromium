@@ -281,11 +281,10 @@ public class ActionConfirmationManager {
         final Function<Resources, String> descriptionResolver;
         if (syncingTabGroups && coreAccountInfo != null) {
             descriptionResolver =
-                    (resources ->
-                            resources.getString(
-                                    withSyncDescriptionRes, coreAccountInfo.getEmail()));
+                    resources ->
+                            resources.getString(withSyncDescriptionRes, coreAccountInfo.getEmail());
         } else {
-            descriptionResolver = (resources -> resources.getString(noSyncDescriptionRes));
+            descriptionResolver = resources -> resources.getString(noSyncDescriptionRes);
         }
 
         PrefService prefService = UserPrefs.get(mProfile);
@@ -332,7 +331,7 @@ public class ActionConfirmationManager {
             Callback<Integer> onResult) {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
-                (resources -> resources.getString(descriptionRes, formatArg));
+                resources -> resources.getString(descriptionRes, formatArg);
         ConfirmationDialogResult onDialogResult =
                 (buttonClickResult, resultStopShowing) ->
                         handleDialogResult(buttonClickResult, userActionBaseString, onResult);
@@ -368,7 +367,7 @@ public class ActionConfirmationManager {
             Callback<Integer> onResult) {
         final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
-                (resources -> resources.getString(descriptionRes, formatArg));
+                resources -> resources.getString(descriptionRes, formatArg);
         ConfirmationDialogResult onDialogResult =
                 (buttonClickResult, resultStopShowing) ->
                         handleCollaborationDialogResult(

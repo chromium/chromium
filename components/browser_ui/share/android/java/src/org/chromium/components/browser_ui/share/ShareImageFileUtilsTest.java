@@ -129,15 +129,15 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
                 .when(mMockClipboardManager)
                 .setPrimaryClip(notNull());
         doAnswer(
-                        (invocationOnMock -> {
+                        invocationOnMock -> {
                             return mPrimaryClip;
-                        }))
+                        })
                 .when(mMockClipboardManager)
                 .getPrimaryClip();
         doAnswer(
-                        (invocationOnMock -> {
+                        invocationOnMock -> {
                             return mPrimaryClipDescription;
-                        }))
+                        })
                 .when(mMockClipboardManager)
                 .getPrimaryClipDescription();
         clipboard.overrideClipboardManagerForTesting(mMockClipboardManager);

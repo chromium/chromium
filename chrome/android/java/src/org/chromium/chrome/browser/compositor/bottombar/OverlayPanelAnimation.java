@@ -130,10 +130,10 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
         // We support resize from any full width to full width, or from narrow width to narrow width
         // when the width does not change (as when the keyboard is shown/hidden).
         boolean isPanelResizeSupported =
-                isFullWidthSizePanel && wasFullWidthSizePanel
-                        || !isFullWidthSizePanel
+                (isFullWidthSizePanel && wasFullWidthSizePanel)
+                        || (!isFullWidthSizePanel
                                 && !wasFullWidthSizePanel
-                                && width == previousWidth;
+                                && width == previousWidth);
 
         // TODO(pedrosimonetti): See crbug.com/568351.
         // We can't keep the panel opened after a viewport size change when the panel's

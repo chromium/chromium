@@ -766,8 +766,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 Network network, NetworkCapabilities capabilities) {
             // Ignore inaccessible VPNs as they don't apply to Chrome.
             return capabilities == null
-                    || capabilities.hasTransport(TRANSPORT_VPN)
-                            && !mConnectivityManagerDelegate.vpnAccessible(network);
+                    || (capabilities.hasTransport(TRANSPORT_VPN)
+                            && !mConnectivityManagerDelegate.vpnAccessible(network));
         }
 
         /**

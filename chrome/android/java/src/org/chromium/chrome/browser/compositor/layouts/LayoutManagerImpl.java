@@ -225,7 +225,7 @@ public class LayoutManagerImpl
             } else {
                 boolean incognito = tab.isIncognito();
                 boolean willBeSelected =
-                        launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                        (launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
                                         && launchType
                                                 != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                                         && launchType != TabLaunchType.FROM_RECENT_TABS
@@ -233,7 +233,7 @@ public class LayoutManagerImpl
                                         && launchType != TabLaunchType.FROM_SYNC_BACKGROUND
                                         && launchType
                                                 != TabLaunchType
-                                                        .FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                                                        .FROM_COLLABORATION_BACKGROUND_IN_GROUP)
                                 || (!getTabModelSelector().isIncognitoSelected() && incognito);
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;

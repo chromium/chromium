@@ -385,7 +385,7 @@ final class CursorAnchorInfoController {
      * method provides utility for checking whether two Mojo Rect[] objects have equal elements.
      */
     private boolean mojoRectArraysEqual(Rect[] first, Rect[] second) {
-        if (first == null && second != null || first != null && second == null) return false;
+        if ((first == null && second != null) || (first != null && second == null)) return false;
         if (first == null && second == null) return true;
         if (first.length != second.length) return false;
         for (int i = 0; i < first.length; i++) {

@@ -987,7 +987,7 @@ public class ContextualSearchInstrumentationBase {
     protected void assertLoadedLowPriorityInvalidUrl() {
         String message =
                 "Expected a low priority invalid search request URL, but got "
-                        + (String.valueOf(mFakeServer.getLoadedUrl()));
+                        + String.valueOf(mFakeServer.getLoadedUrl());
         Assert.assertTrue(
                 message,
                 mFakeServer.getLoadedUrl() != null
@@ -1172,7 +1172,7 @@ public class ContextualSearchInstrumentationBase {
         // refinement from nearby taps. The double-tap timeout is sufficiently
         // short that this shouldn't conflict with tap refinement by the user.
         int doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
-        Thread.sleep(doubleTapTimeout * DOUBLE_TAP_DELAY_MULTIPLIER);
+        Thread.sleep(doubleTapTimeout * ((long) DOUBLE_TAP_DELAY_MULTIPLIER));
     }
 
     /**

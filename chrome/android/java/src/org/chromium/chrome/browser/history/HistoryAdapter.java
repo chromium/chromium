@@ -266,8 +266,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             clear(true);
             mClearOnNextQueryComplete = false;
         }
-        if (!mAreHeadersInitialized && items.size() > 0 && !mIsSearching
-                || mIsSearching && mShowAppFilter) {
+        if ((!mAreHeadersInitialized && items.size() > 0 && !mIsSearching)
+                || (mIsSearching && mShowAppFilter)) {
             setHeaders();
             mAreHeadersInitialized = true;
         }

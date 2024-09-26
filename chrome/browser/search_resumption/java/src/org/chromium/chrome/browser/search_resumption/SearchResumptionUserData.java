@@ -141,7 +141,7 @@ public class SearchResumptionUserData implements UserData {
      * @return whether the cached results has expired.
      */
     private boolean isCachedResultExpired() {
-        return (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - mTimeStampMs))
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - mTimeStampMs)
                 >= ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                         SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,

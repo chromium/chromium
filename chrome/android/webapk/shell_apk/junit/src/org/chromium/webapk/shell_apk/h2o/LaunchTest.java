@@ -704,7 +704,7 @@ public final class LaunchTest {
      */
     private void changeEnabledActivity(Class<? extends Activity> selectedActivityClass) {
         boolean enableOpaqueActivity =
-                (selectedActivityClass.getName().equals(H2OOpaqueMainActivity.class.getName()));
+                selectedActivityClass.getName().equals(H2OOpaqueMainActivity.class.getName());
         changeWebApkActivityEnabledSetting(
                 mPackageManager,
                 H2OOpaqueMainActivity.class,
@@ -723,7 +723,7 @@ public final class LaunchTest {
     private void assertOnlyEnabledMainIntentHandler(
             Class<? extends Activity> expectedEnabledActivity) {
         boolean expectedOpaqueActivityEnabled =
-                (expectedEnabledActivity.getName().equals(H2OOpaqueMainActivity.class.getName()));
+                expectedEnabledActivity.getName().equals(H2OOpaqueMainActivity.class.getName());
         Assert.assertEquals(
                 expectedOpaqueActivityEnabled,
                 isWebApkActivityEnabled(mPackageManager, H2OOpaqueMainActivity.class));

@@ -305,9 +305,9 @@ public class UrlBar extends AutocompleteEditText {
         // come from a software keyboard.
         // - If we pass the event here, it will be emitted twice (once before IME and once after),
         // - if we don't pass the event after IME, soft keyboard navigation will not work.
-        return KeyNavigationUtil.isActionDown(event)
+        return (KeyNavigationUtil.isActionDown(event)
                         && !KeyNavigationUtil.isEnter(event)
-                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false)
+                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false))
                 || super_onKeyPreIme(keyCode, event);
     }
 
@@ -319,8 +319,8 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return KeyNavigationUtil.isEnter(event)
-                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false)
+        return (KeyNavigationUtil.isEnter(event)
+                        && mKeyDownListener.map(l -> l.onKey(this, keyCode, event)).orElse(false))
                 || super_onKeyDown(keyCode, event);
     }
 

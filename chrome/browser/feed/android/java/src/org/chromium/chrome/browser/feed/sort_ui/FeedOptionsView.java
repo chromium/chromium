@@ -64,7 +64,7 @@ public class FeedOptionsView extends LinearLayout {
     private void expand() {
         // If the view's parent is not shown, we want to set this view as VISIBLE without the
         // animation, and reset the height if it was previously set by collapse() animation.
-        if (getParent() == null || !(((View) getParent()).isShown())) {
+        if (getParent() == null || !((View) getParent()).isShown()) {
             setVisibility(VISIBLE);
             setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
             return;
@@ -112,7 +112,7 @@ public class FeedOptionsView extends LinearLayout {
     private void collapse() {
         // If the view's parent is not shown, we want to set this view as GONE without the
         // animation.
-        if (getParent() == null || !(((View) getParent()).isShown())) {
+        if (getParent() == null || !((View) getParent()).isShown()) {
             setVisibility(GONE);
             return;
         }

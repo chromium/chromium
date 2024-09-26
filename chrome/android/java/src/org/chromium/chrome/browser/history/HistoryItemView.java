@@ -67,7 +67,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mRemoveButton = mEndButtonView;
         mRemoveButton.setImageResource(R.drawable.btn_delete_24dp);
-        mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
+        mRemoveButton.setContentDescription(getContext().getString(R.string.remove));
         ImageViewCompat.setImageTintList(
                 mRemoveButton,
                 AppCompatResources.getColorStateList(

@@ -151,7 +151,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 && !mProfile.isOffTheRecord()) {
             final DirectoryOption dir = dirs.get(0);
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
-                assert (!TextUtils.isEmpty(dir.location));
+                assert !TextUtils.isEmpty(dir.location);
                 DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(mProfile, dir.location);
                 mController.onDownloadLocationDialogComplete(mSuggestedPath);
             }

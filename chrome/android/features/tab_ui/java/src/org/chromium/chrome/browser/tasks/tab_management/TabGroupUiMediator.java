@@ -227,8 +227,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                         // in tab page when restore completed.
                         if (currentTab == null
                                 || (mLayoutStateProvider != null
-                                        && (mLayoutStateProvider.isLayoutVisible(
-                                                LayoutType.TAB_SWITCHER)))) {
+                                        && mLayoutStateProvider.isLayoutVisible(
+                                                LayoutType.TAB_SWITCHER))) {
                             return;
                         }
                         resetTabStripWithRelatedTabsForId(currentTab.getId());

@@ -516,15 +516,15 @@ public class PlatformNetworksManagerTest {
     private void setPermissions(
             boolean coarseLocationGranted, boolean fineLocationGranted, boolean wifiStateGranted) {
         int coarseLocationPermission =
-                (coarseLocationGranted)
+                coarseLocationGranted
                         ? PackageManager.PERMISSION_GRANTED
                         : PackageManager.PERMISSION_DENIED;
         int fineLocationPermission =
-                (fineLocationGranted)
+                fineLocationGranted
                         ? PackageManager.PERMISSION_GRANTED
                         : PackageManager.PERMISSION_DENIED;
         int wifiStatePermission =
-                (wifiStateGranted)
+                wifiStateGranted
                         ? PackageManager.PERMISSION_GRANTED
                         : PackageManager.PERMISSION_DENIED;
 

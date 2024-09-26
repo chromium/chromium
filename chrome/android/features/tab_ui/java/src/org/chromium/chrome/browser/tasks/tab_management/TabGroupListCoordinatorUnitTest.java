@@ -65,7 +65,7 @@ public class TabGroupListCoordinatorUnitTest {
     public void setUp() {
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(FAKE_NATIVE_PTR);
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
     }
 
     @Test

@@ -56,10 +56,10 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
         @SafeBrowsingState
         int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState(getProfile());
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 mEnhancedProtection.setChecked(true);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 mStandardProtection.setChecked(true);
                 break;
             default:

@@ -21,7 +21,7 @@ public class EitherId {
         private final int mLocalId;
 
         // Must provide either localId or syncId.
-        private EitherTabId(@Nullable int localId, @Nullable String syncId) {
+        private EitherTabId(int localId, @Nullable String syncId) {
             super(syncId);
             mLocalId = localId;
         }

@@ -78,7 +78,8 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
     protected void invalidateIfNeeded(boolean alwaysInvalidate) {
         View view = getView();
         if (view == null
-                || !alwaysInvalidate && mIsPanelExpandedBeyondHalf == mWasPanelExpandedBeyondHalf) {
+                || (!alwaysInvalidate
+                        && mIsPanelExpandedBeyondHalf == mWasPanelExpandedBeyondHalf)) {
             return;
         }
 

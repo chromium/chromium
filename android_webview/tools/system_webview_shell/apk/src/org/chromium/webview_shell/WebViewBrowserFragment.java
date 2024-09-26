@@ -362,7 +362,7 @@ public class WebViewBrowserFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ViewGroup viewGroup = (ViewGroup) (mWebView.getParent());
+        ViewGroup viewGroup = (ViewGroup) mWebView.getParent();
         viewGroup.removeView(mWebView);
         mWebView.destroy();
         mWebView = null;

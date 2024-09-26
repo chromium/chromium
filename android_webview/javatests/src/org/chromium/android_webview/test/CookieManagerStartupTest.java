@@ -175,7 +175,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
                     @Override
                     public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
-                        (new AwCookieManager()).getCookie("www.example.com");
+                        new AwCookieManager().getCookie("www.example.com");
                         return null;
                     }
                 };

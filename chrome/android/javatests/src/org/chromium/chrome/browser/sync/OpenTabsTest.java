@@ -197,7 +197,7 @@ public class OpenTabsTest {
     }
 
     private String makeSessionTag() {
-        return SESSION_TAG_PREFIX + (mSessionTagCounter++);
+        return SESSION_TAG_PREFIX + mSessionTagCounter++;
     }
 
     private void addFakeServerTabs(String clientName, String... urls) {

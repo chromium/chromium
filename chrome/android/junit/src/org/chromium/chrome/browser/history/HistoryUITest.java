@@ -918,7 +918,7 @@ public class HistoryUITest {
         button.findViewById(R.id.action_button).performClick();
 
         Assert.assertEquals(
-                (PAGE_INCREMENT) + " more Items should be loaded",
+                PAGE_INCREMENT + " more Items should be loaded",
                 mAdapter.getItemCount(),
                 itemCount + PAGE_INCREMENT);
     }

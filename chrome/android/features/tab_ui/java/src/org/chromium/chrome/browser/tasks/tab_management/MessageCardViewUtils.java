@@ -27,7 +27,7 @@ public class MessageCardViewUtils {
     public static void setTitleTextAppearance(
             TextView title, boolean isIncognito, boolean isLargeMessageCard) {
         int titleTextAppearance =
-                (isLargeMessageCard)
+                isLargeMessageCard
                         ? TabUiThemeProvider.getLargeMessageCardTitleTextAppearance(isIncognito)
                         : TabUiThemeProvider.getMessageCardTitleTextAppearance(isIncognito);
         title.setTextAppearance(titleTextAppearance);
@@ -43,7 +43,7 @@ public class MessageCardViewUtils {
     public static void setDescriptionTextAppearance(
             TextView description, boolean isIncognito, boolean isLargeMessageCard) {
         int descriptionTextAppearance =
-                (isLargeMessageCard)
+                isLargeMessageCard
                         ? TabUiThemeProvider.getLargeMessageCardDescriptionTextAppearance(
                                 isIncognito)
                         : TabUiThemeProvider.getMessageCardDescriptionTextAppearance(isIncognito);
@@ -60,7 +60,7 @@ public class MessageCardViewUtils {
     public static void setActionButtonTextAppearance(
             ButtonCompat actionButton, boolean isIncognito, boolean isLargeMessageCard) {
         int actionButtonTextAppearance =
-                (isLargeMessageCard)
+                isLargeMessageCard
                         ? TabUiThemeProvider.getLargeMessageCardActionButtonTextAppearance(
                                 isIncognito)
                         : TabUiThemeProvider.getMessageCardActionButtonTextAppearance(isIncognito);

@@ -318,7 +318,7 @@ public class PriceDropNotificationManagerTest {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
         long mockTimestamp =
                 System.currentTimeMillis()
-                        - 2
+                        - 2L
                                 * PriceTrackingNotificationConfig
                                         .getNotificationTimestampsStoreWindowMs();
         JSONArray jsonArray = new JSONArray();

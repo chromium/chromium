@@ -117,7 +117,7 @@ public class PaymentUiService
 
     // Reverse order of the comparator to sort in descending order of completeness scores.
     private static final Comparator<Completable> COMPLETENESS_COMPARATOR =
-            (a, b) -> (PaymentAppComparator.compareCompletablesByCompleteness(b, a));
+            (a, b) -> PaymentAppComparator.compareCompletablesByCompleteness(b, a);
     private final Comparator<PaymentApp> mPaymentAppComparator;
 
     private final boolean mIsOffTheRecord;

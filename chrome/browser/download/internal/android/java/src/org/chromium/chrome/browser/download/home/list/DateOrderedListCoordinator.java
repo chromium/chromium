@@ -170,8 +170,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
         mDownloadStorageSummaryHeightPx =
                 (int)
-                        (mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.download_storage_summary_height));
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.download_storage_summary_height);
         mSelectableListToolbarHeightPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.selectable_list_toolbar_height);

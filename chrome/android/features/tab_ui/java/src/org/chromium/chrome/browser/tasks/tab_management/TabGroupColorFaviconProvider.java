@@ -98,7 +98,7 @@ public class TabGroupColorFaviconProvider {
      * @param colorId The color id associated with the chosen color to be displayed.
      */
     public TabFaviconFetcher getFaviconFromTabGroupColorFetcher(
-            @NonNull @org.chromium.components.tab_groups.TabGroupColorId int colorId,
+            @org.chromium.components.tab_groups.TabGroupColorId int colorId,
             TabModel tabModel,
             Tab tab) {
         return new TabFaviconFetcher() {

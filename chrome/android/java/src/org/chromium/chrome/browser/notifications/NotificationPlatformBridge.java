@@ -1342,10 +1342,10 @@ public class NotificationPlatformBridge {
         sLastPreUnsubscribePreNativeTaskStartRealMillis = taskStartRealtimeMillis;
 
         Predicate<NotificationWrapper> isTappedNotification =
-                (nw -> {
+                nw -> {
                     if (nw.getMetadata().id != PLATFORM_ID) return false;
                     return nw.getMetadata().tag.equals(identifyingAttributes.notificationId);
-                });
+                };
 
         Context context = ContextUtils.getApplicationContext();
         var notificationManager = createNotificationManagerProxy(context);
@@ -1415,10 +1415,10 @@ public class NotificationPlatformBridge {
                         otherNotificationsBackups != null);
 
         Predicate<BaseNotificationManagerProxy.StatusBarNotificationProxy> isTappedNotification =
-                (sbn -> {
+                sbn -> {
                     if (sbn.getId() != PLATFORM_ID) return false;
                     return sbn.getTag().equals(identifyingAttributes.notificationId);
-                });
+                };
 
         Context context = ContextUtils.getApplicationContext();
         var notificationManager = createNotificationManagerProxy(context);

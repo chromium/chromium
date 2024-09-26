@@ -1155,8 +1155,8 @@ public class BookmarkTest {
         onView(withText("Move up")).perform(click());
 
         // Confirm that the "Google" bookmark is now on top, and that the "test" folder is 2nd
-        assertTrue((getNthBookmarkRow(1)).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
-        assertTrue((getNthBookmarkRow(2)).getTitleForTesting().equals(TEST_FOLDER_TITLE));
+        assertTrue(getNthBookmarkRow(1).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
+        assertTrue(getNthBookmarkRow(2).getTitleForTesting().equals(TEST_FOLDER_TITLE));
     }
 
     @Test
@@ -1180,8 +1180,8 @@ public class BookmarkTest {
         onView(withText("Move down")).perform(click());
 
         // Confirm that the "Google" bookmark is now on top, and that the "test" folder is 2nd
-        assertTrue((getNthBookmarkRow(1)).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
-        assertTrue((getNthBookmarkRow(2)).getTitleForTesting().equals(TEST_FOLDER_TITLE));
+        assertTrue(getNthBookmarkRow(1).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
+        assertTrue(getNthBookmarkRow(2).getTitleForTesting().equals(TEST_FOLDER_TITLE));
     }
 
     @Test

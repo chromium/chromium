@@ -525,12 +525,12 @@ public class TabGridDialogTest {
 
         // Setup the callback to verify the animation source Rect.
         TabGridDialogView.setSourceRectCallbackForTesting(
-                (result -> {
+                result -> {
                     mHasReceivedSourceRect = true;
                     assertEquals(expectedTop, result.top, 0.0);
                     assertEquals(expectedHeight, result.height(), 0.0);
                     assertEquals(expectedWidth, result.width(), 0.0);
-                }));
+                });
 
         TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
         CriteriaHelper.pollUiThread(() -> mHasReceivedSourceRect);
@@ -1049,12 +1049,12 @@ public class TabGridDialogTest {
         openSelectionEditorAndVerify(cta, 3);
 
         TabListEditorShareAction.setIntentCallbackForTesting(
-                (result -> {
+                result -> {
                     assertEquals(Intent.ACTION_SEND, result.getAction());
                     assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
                     assertEquals("text/plain", result.getType());
                     assertEquals("2 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
-                }));
+                });
 
         // Share tabs
         mSelectionEditorRobot

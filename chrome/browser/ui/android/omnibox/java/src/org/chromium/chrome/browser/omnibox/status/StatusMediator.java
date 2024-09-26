@@ -390,7 +390,7 @@ public class StatusMediator
         boolean newVisibility =
                 shouldShowVerboseStatusText()
                         && mVerboseStatusSpaceAvailable
-                        && (!mUrlHasFocus)
+                        && !mUrlHasFocus
                         && (statusText != 0);
 
         // Update status content only if it is visible.
@@ -725,8 +725,8 @@ public class StatusMediator
             @StringRes int stringId,
             boolean canShowIph) {
         if ((window != mWindowAndroid)
-                || (!url.equals(mLocationBarDataProvider.getCurrentGurl().getSpec()))
-                || (mLocationBarDataProvider.isOffTheRecord())) {
+                || !url.equals(mLocationBarDataProvider.getCurrentGurl().getSpec())
+                || mLocationBarDataProvider.isOffTheRecord()) {
             return;
         }
         resetCustomIconsStatus();

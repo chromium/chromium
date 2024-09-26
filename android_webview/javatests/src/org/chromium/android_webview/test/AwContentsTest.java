@@ -460,7 +460,7 @@ public class AwContentsTest extends AwParameterizedTest {
                             awContents.getFavicon() != null
                                     && !awContents.getFavicon().sameAs(defaultFavicon));
 
-            final Object originalFaviconSource = (new URL(faviconUrl)).getContent();
+            final Object originalFaviconSource = new URL(faviconUrl).getContent();
             final Bitmap originalFavicon =
                     BitmapFactory.decodeStream((InputStream) originalFaviconSource);
             Assert.assertNotNull(originalFavicon);

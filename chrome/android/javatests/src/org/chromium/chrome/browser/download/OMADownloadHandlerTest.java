@@ -445,7 +445,7 @@ public class OMADownloadHandlerTest {
                         ChromePreferenceKeys.DOWNLOAD_PENDING_OMA_DOWNLOADS);
         Assert.assertEquals(1, downloads.size());
         OMADownloadHandler.OMAEntry entry =
-                OMADownloadHandler.OMAEntry.parseOMAEntry((String) (downloads.toArray()[0]));
+                OMADownloadHandler.OMAEntry.parseOMAEntry((String) downloads.toArray()[0]);
         Assert.assertEquals(entry.mDownloadId, omaHandler.mDownloadId);
         Assert.assertEquals(entry.mInstallNotifyURI, INSTALL_NOTIFY_URI);
         DownloadManager manager =

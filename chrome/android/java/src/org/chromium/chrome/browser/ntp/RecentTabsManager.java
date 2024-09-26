@@ -156,7 +156,7 @@ public class RecentTabsManager
     private static int countSessionIdsRestored(Map<Integer, Boolean> sessionIdToRestoredState) {
         int count = 0;
         for (Boolean state : sessionIdToRestoredState.values()) {
-            count += (state) ? 1 : 0;
+            count += state ? 1 : 0;
         }
         return count;
     }

@@ -180,7 +180,7 @@ public class StackScroller {
 
                 final int duration = mScrollerX.mDuration;
                 if (elapsedTime < duration) {
-                    float q = (float) (elapsedTime) / duration;
+                    float q = (float) elapsedTime / duration;
                     q = viscousFluid(q);
                     mScrollerX.updateScroll(q);
                     mScrollerY.updateScroll(q);
@@ -589,7 +589,7 @@ public class StackScroller {
             // positions to scroll by.
             float increment =
                     (MAX_SNAP_SCROLL_MIN_VELOCITY - TRIPLE_SNAP_MIN_VELOCITY)
-                            / (MAX_SNAP_SCROLL - 3);
+                            / ((float) (MAX_SNAP_SCROLL - 3));
             return (int) ((Math.abs(velocity) - TRIPLE_SNAP_MIN_VELOCITY) / increment) + 3;
         }
 
@@ -867,7 +867,7 @@ public class StackScroller {
 
                 case CUBIC:
                     {
-                        final float t = (float) (currentTime) / mDuration;
+                        final float t = (float) currentTime / mDuration;
                         final float t2 = t * t;
                         final float sign = Math.signum(mVelocity);
                         distance = sign * mOver * (3.0f * t2 - 2.0f * t * t2);

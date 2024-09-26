@@ -2600,33 +2600,33 @@ public class AwContents implements SmartClipProvider {
 
     private @UrlScheme int schemeForUrl(String url) {
         if (url == null || url.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
-            return (UrlScheme.EMPTY);
+            return UrlScheme.EMPTY;
         } else if (url.startsWith("http:")) {
-            return (UrlScheme.HTTP_SCHEME);
+            return UrlScheme.HTTP_SCHEME;
         } else if (url.startsWith("https:")) {
-            return (UrlScheme.HTTPS_SCHEME);
+            return UrlScheme.HTTPS_SCHEME;
         } else if (sFileAndroidAssetPattern.matcher(url).matches()) {
-            return (UrlScheme.FILE_ANDROID_ASSET_SCHEME);
+            return UrlScheme.FILE_ANDROID_ASSET_SCHEME;
         } else if (url.startsWith("file:")) {
-            return (UrlScheme.FILE_SCHEME);
+            return UrlScheme.FILE_SCHEME;
         } else if (url.startsWith("ftp:")) {
-            return (UrlScheme.FTP_SCHEME);
+            return UrlScheme.FTP_SCHEME;
         } else if (url.startsWith("data:")) {
-            return (UrlScheme.DATA_SCHEME);
+            return UrlScheme.DATA_SCHEME;
         } else if (url.startsWith("javascript:")) {
-            return (UrlScheme.JAVASCRIPT_SCHEME);
+            return UrlScheme.JAVASCRIPT_SCHEME;
         } else if (url.startsWith("about:")) {
-            return (UrlScheme.ABOUT_SCHEME);
+            return UrlScheme.ABOUT_SCHEME;
         } else if (url.startsWith("chrome:")) {
-            return (UrlScheme.CHROME_SCHEME);
+            return UrlScheme.CHROME_SCHEME;
         } else if (url.startsWith("blob:")) {
-            return (UrlScheme.BLOB_SCHEME);
+            return UrlScheme.BLOB_SCHEME;
         } else if (url.startsWith("content:")) {
-            return (UrlScheme.CONTENT_SCHEME);
+            return UrlScheme.CONTENT_SCHEME;
         } else if (url.startsWith("intent:")) {
-            return (UrlScheme.INTENT_SCHEME);
+            return UrlScheme.INTENT_SCHEME;
         }
-        return (UrlScheme.UNKNOWN_SCHEME);
+        return UrlScheme.UNKNOWN_SCHEME;
     }
 
     /** WebView.loadDataWithBaseURL. */

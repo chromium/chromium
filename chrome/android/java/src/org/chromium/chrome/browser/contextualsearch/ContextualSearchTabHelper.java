@@ -363,7 +363,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         // and Talkback has poor interaction with Contextual Search (see
                         // http://crbug.com/399708 and http://crbug.com/396934).
                         && !manager.isRunningInCompatibilityMode()
-                        && !(mTab.isShowingErrorPage())
+                        && !mTab.isShowingErrorPage()
                         && isDeviceOnline(manager);
         if (mTab.isCustomTab() && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.

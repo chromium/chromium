@@ -151,7 +151,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 Math.min(
                         context.getResources().getDisplayMetrics().density
                                 * LONG_SWIPE_PEEK_THRESHOLD_DP,
-                        parent.getWidth() / 2);
+                        parent.getWidth() / 2f);
         mItemHeight = getSizePx(context, R.dimen.navigation_popup_item_height);
         mContentPadding =
                 getSizePx(context, R.dimen.navigation_sheet_content_top_padding)

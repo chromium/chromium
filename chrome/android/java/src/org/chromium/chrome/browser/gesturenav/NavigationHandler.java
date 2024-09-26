@@ -286,7 +286,7 @@ class NavigationHandler implements TouchEventObserver {
     private boolean canNavigate(boolean forward) {
         // Navigating back is considered always possible (actual navigation, closing
         // tab, or exiting app).
-        return !forward || mTab != null && mTab.canGoForward();
+        return !forward || (mTab != null && mTab.canGoForward());
     }
 
     /**

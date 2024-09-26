@@ -660,7 +660,7 @@ public class PersonalDataManager implements Destroyable {
     public void unregisterDataObserver(PersonalDataManagerObserver observer) {
         ThreadUtils.assertOnUiThread();
         assert (mDataObservers.size() > 0);
-        assert (mDataObservers.contains(observer));
+        assert mDataObservers.contains(observer);
         mDataObservers.remove(observer);
     }
 

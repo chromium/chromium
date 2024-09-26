@@ -75,8 +75,8 @@ public interface OmniboxSuggestionsDropdownEmbedder {
         public boolean isOnlyHorizontalDifference(@Nullable OmniboxAlignment other) {
             if (other == null) return false;
             return (this.left != other.left
-                            || this.paddingLeft != other.paddingLeft
-                                    && this.paddingRight != other.paddingRight)
+                            || (this.paddingLeft != other.paddingLeft
+                                    && this.paddingRight != other.paddingRight))
                     && (this.top == other.top && this.width == other.width);
         }
 

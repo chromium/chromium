@@ -117,13 +117,13 @@ public class TabModelSelectorImplTest {
 
         mRegularTabModel = new MockTabModel(mProfile, null);
         when(mRegularFilter.getTabModel()).thenReturn(mRegularTabModel);
-        Mockito.doAnswer((ignored -> mTabModelSelector.getCurrentModel() == mRegularTabModel))
+        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == mRegularTabModel)
                 .when(mRegularFilter)
                 .isCurrentlySelectedFilter();
 
         mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         when(mIncognitoFilter.getTabModel()).thenReturn(mIncognitoTabModel);
-        Mockito.doAnswer((ignored -> mTabModelSelector.getCurrentModel() == mIncognitoTabModel))
+        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == mIncognitoTabModel)
                 .when(mIncognitoFilter)
                 .isCurrentlySelectedFilter();
 
@@ -444,7 +444,7 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
         when(mRegularFilter.getTabModel()).thenReturn(regularModel);
-        Mockito.doAnswer((ignored -> mTabModelSelector.getCurrentModel() == regularModel))
+        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == regularModel)
                 .when(mRegularFilter)
                 .isCurrentlySelectedFilter();
         mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel);

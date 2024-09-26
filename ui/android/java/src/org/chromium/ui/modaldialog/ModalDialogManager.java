@@ -406,7 +406,7 @@ public class ModalDialogManager {
         } else {
             // Put the new dialog in pending list if the dialog type is suspended or the current
             // dialog is of higher priority.
-            if ((mSuspendedTypes.contains(dialogType))
+            if (mSuspendedTypes.contains(dialogType)
                     || (isShowing() && mCurrentPriority >= dialogPriority)) {
                 mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
                 return;

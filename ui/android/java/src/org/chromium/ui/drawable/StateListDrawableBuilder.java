@@ -140,7 +140,7 @@ public class StateListDrawableBuilder {
             result.addTransition(
                     transition.getFromId(),
                     transition.getToId(),
-                    (Drawable & Animatable) (drawable),
+                    (Drawable & Animatable) drawable,
                     false);
         }
         return result;

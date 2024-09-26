@@ -534,7 +534,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(callback).session;
 
         Uri launchedUrl = Uri.parse(mServer.getURL("/echotitle"));
-        Intent intent = (new CustomTabsIntent.Builder(session).build()).intent;
+        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setComponent(new ComponentName(mContext, ChromeLauncherActivity.class));
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(launchedUrl);
@@ -677,7 +677,7 @@ public class DetachedResourceRequestTest {
     private CustomTabsSessionToken prepareSession(Uri origin, CustomTabsCallback callback)
             throws Exception {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(callback).session;
-        Intent intent = (new CustomTabsIntent.Builder(session)).build().intent;
+        Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(mConnection.newSession(token));
         mConnection.mClientManager.setAllowParallelRequestForSession(token, true);

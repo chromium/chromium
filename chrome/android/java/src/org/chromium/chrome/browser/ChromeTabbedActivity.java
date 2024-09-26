@@ -744,8 +744,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 boolean markedForSelection) {
                             if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
                                     || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                    || type == TabLaunchType.FROM_RECENT_TABS
-                                            && !DeviceClassManager.enableAnimations()) {
+                                    || (type == TabLaunchType.FROM_RECENT_TABS
+                                            && !DeviceClassManager.enableAnimations())) {
                                 Toast.makeText(
                                                 ChromeTabbedActivity.this,
                                                 R.string.open_in_new_tab_toast,
@@ -3286,7 +3286,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void hideOverview() {
-        assert (isInOverviewMode());
+        assert isInOverviewMode();
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
             mLayoutManager.showLayout(LayoutType.BROWSING, false);
