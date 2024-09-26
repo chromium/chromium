@@ -269,6 +269,11 @@ extern const char kCredentialProviderExtensionPromoDescription[];
 extern const char kDataSharingName[];
 extern const char kDataSharingDescription[];
 
+// Title and description for the flag to enable data sharing join-only feature.
+// The feature flag is shared across other platforms (kOsAll).
+extern const char kDataSharingJoinOnlyName[];
+extern const char kDataSharingJoinOnlyDescription[];
+
 // Title and description for the flag to show the default browser tutorial from
 // an external app.
 extern const char kDefaultBrowserIntentsShowSettingsName[];
@@ -908,11 +913,6 @@ extern const char kSendUmaOverAnyNetworkDescription[];
 // Text Edit Menu option).
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
-
-// Title and description for the flag to control if Shared Tab Groups is
-// enabled.
-extern const char kSharedTabGroupsName[];
-extern const char kSharedTabGroupsDescription[];
 
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.

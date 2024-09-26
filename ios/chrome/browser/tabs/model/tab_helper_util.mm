@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
-#import "components/data_sharing/public/features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -35,6 +34,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_tab_helper.h"
+#import "ios/chrome/browser/data_sharing/model/features.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -358,9 +358,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) &&
-      IsSharedTabGroupsEnabled() && !is_off_the_record && !for_prerender) {
+  if (IsSharedTabGroupsJoinEnabled(profile) && !is_off_the_record &&
+      !for_prerender) {
     DataSharingTabHelper::CreateForWebState(web_state);
   }
 }

@@ -329,6 +329,10 @@ const char kDataSharingName[] = "Data Sharing";
 const char kDataSharingDescription[] =
     "Enabled Data Sharing related UI and features.";
 
+const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
+const char kDataSharingJoinOnlyDescription[] =
+    "Enabled Data Sharing Joining flow related UI and features.";
+
 const char kDefaultBrowserIntentsShowSettingsName[] =
     "Default Browser Intents show settings";
 const char kDefaultBrowserIntentsShowSettingsDescription[] =
@@ -609,10 +613,6 @@ const char kIOSSharedHighlightingColorChangeName[] =
 const char kIOSSharedHighlightingColorChangeDescription[] =
     "Changes the Shared Highlighting color of the text fragment"
     "away from the default yellow in iOS. Works with #scroll-to-text-ios flag.";
-
-const char kSharedTabGroupsName[] = "Shared Tab Groups";
-const char kSharedTabGroupsDescription[] =
-    "When enabled, tab groups can be shared among users.";
 
 const char kIOSSharedHighlightingAmpName[] = "Shared Highlighting on AMP pages";
 const char kIOSSharedHighlightingAmpDescription[] =

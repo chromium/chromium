@@ -8133,11 +8133,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "shared-tab-groups",
-    "owners": ["ewannpv@chromium.org", "bling-flags@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "sharing-desktop-screenshots",
     "owners": [
       "bryantchandler@chromium.org",

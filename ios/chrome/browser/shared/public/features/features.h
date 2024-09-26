@@ -436,12 +436,6 @@ BASE_DECLARE_FEATURE(kTabGroupSync);
 // Whether the tab groups should be syncing.
 bool IsTabGroupSyncEnabled();
 
-// Feature flag to enable Shared Tab Groups.
-BASE_DECLARE_FEATURE(kSharedTabGroups);
-
-// Whether the Shared Tab Groups feature is enabled.
-bool IsSharedTabGroupsEnabled();
-
 // Feature flag to enable Tab Group Indicator.
 BASE_DECLARE_FEATURE(kTabGroupIndicator);
 

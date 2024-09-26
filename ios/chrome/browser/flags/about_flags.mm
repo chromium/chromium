@@ -1868,9 +1868,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillIsolatedWorldForJavascriptIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillIsolatedWorldForJavascriptIos)},
-    {"shared-tab-groups", flag_descriptions::kSharedTabGroupsName,
-     flag_descriptions::kSharedTabGroupsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSharedTabGroups)},
     {"tab-group-indicator", flag_descriptions::kTabGroupIndicatorName,
      flag_descriptions::kTabGroupIndicatorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupIndicator)},
@@ -1878,9 +1875,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Name,
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
-    {"data-sharing", flag_descriptions::kDataSharingName,
-     flag_descriptions::kDataSharingDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
     {"ios-price-tracking-notification-promo-card",
      flag_descriptions::kPriceTrackingPromoName,
      flag_descriptions::kPriceTrackingPromoDescription, flags_ui::kOsIos,
@@ -1922,6 +1916,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tips-magic-stack", flag_descriptions::kTipsMagicStackName,
      flag_descriptions::kTipsMagicStackDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTipsMagicStack)},
+    {"data-sharing", flag_descriptions::kDataSharingName,
+     flag_descriptions::kDataSharingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
+    {"data-sharing-join-only", flag_descriptions::kDataSharingJoinOnlyName,
+     flag_descriptions::kDataSharingJoinOnlyDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
