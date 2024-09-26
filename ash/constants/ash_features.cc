@@ -2255,7 +2255,7 @@ BASE_FEATURE(kFeatureManagementOobeAiIntro,
 // Enables OOBE gemini intro feature for testing.
 BASE_FEATURE(kOobeGeminiIntroForTesting,
              "OobeGeminiIntroForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables OOBE gemini intro feature.
 BASE_FEATURE(kFeatureManagementOobeGeminiIntro,
