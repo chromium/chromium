@@ -47,6 +47,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -1049,20 +1050,7 @@ void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {
-  switch (invocation_source_) {
-    case lens::LensOverlayInvocationSource::kAppMenu:
-      return "AppMenu";
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
-      return "ContentAreaContextMenuPage";
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
-      return "ContentAreaContextMenuImage";
-    case lens::LensOverlayInvocationSource::kToolbar:
-      return "Toolbar";
-    case lens::LensOverlayInvocationSource::kFindInPage:
-      return "FindInPage";
-    case lens::LensOverlayInvocationSource::kOmnibox:
-      return "Omnibox";
-  }
+  return lens::InvocationSourceToString(invocation_source_);
 }
 
 content::WebContents*
@@ -2359,51 +2347,11 @@ void LensOverlayController::RecordTimeToFirstInteraction() {
   DCHECK(!invocation_time_.is_null());
   base::TimeDelta time_to_first_interaction =
       base::TimeTicks::Now() - invocation_time_;
-  // UMA unsliced TimeToFirstInteraction.
-  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToFirstInteraction",
-                                time_to_first_interaction,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
-  // UMA TimeToFirstInteraction sliced by entry point.
-  const auto sliced_time_to_first_interaction_histogram_name =
-      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
-      ".TimeToFirstInteraction";
-  base::UmaHistogramCustomTimes(sliced_time_to_first_interaction_histogram_name,
-                                time_to_first_interaction,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
   ukm::SourceId source_id =
       tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  // UKM unsliced TimeToFirstInteraction.
-  ukm::builders::Lens_Overlay_TimeToFirstInteraction(source_id)
-      .SetAllEntryPoints(time_to_first_interaction.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
-  // UKM TimeToFirstInteraction sliced by entry point.
-  ukm::builders::Lens_Overlay_TimeToFirstInteraction event(source_id);
-  switch (invocation_source_) {
-    case lens::LensOverlayInvocationSource::kAppMenu:
-      event.SetAppMenu(time_to_first_interaction.InMilliseconds());
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
-      event.SetContentAreaContextMenuPage(
-          time_to_first_interaction.InMilliseconds());
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
-      // Not recorded since the image menu entry point results in a search
-      // without the user having to interact with the overlay. Time to first
-      // interaction in this case is essentially zero.
-      break;
-    case lens::LensOverlayInvocationSource::kToolbar:
-      event.SetToolbar(time_to_first_interaction.InMilliseconds());
-      break;
-    case lens::LensOverlayInvocationSource::kFindInPage:
-      event.SetFindInPage(time_to_first_interaction.InMilliseconds());
-      break;
-    case lens::LensOverlayInvocationSource::kOmnibox:
-      event.SetOmnibox(time_to_first_interaction.InMilliseconds());
-      break;
-  }
-  event.Record(ukm::UkmRecorder::Get());
+  // UMA and UKM TimeToFirstInteraction.
+  lens::RecordTimeToFirstInteraction(invocation_source_,
+                                     time_to_first_interaction, source_id);
 }
 
 void LensOverlayController::RecordEndOfSessionMetrics(
@@ -2425,30 +2373,16 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
                             search_performed_in_session_);
 
-  // UMA unsliced session duration.
+  // UMA session duration.
   DCHECK(!invocation_time_.is_null());
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
-  base::UmaHistogramCustomTimes("Lens.Overlay.SessionDuration",
-                                session_duration,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
-
-  // UMA session duration sliced by entry point.
-  const auto sliced_session_duration_histogram_name =
-      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
-      ".SessionDuration";
-  base::UmaHistogramCustomTimes(sliced_session_duration_histogram_name,
-                                session_duration,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
+  lens::RecordSessionDuration(invocation_source_, session_duration);
 
   // UKM session end metrics. Includes invocation source, whether the
   // session resulted in a search, and session duration.
   ukm::SourceId source_id =
       tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  ukm::builders::Lens_Overlay_SessionEnd(source_id)
-      .SetInvocationSource(static_cast<int64_t>(invocation_source_))
-      .SetInvocationResultedInSearch(search_performed_in_session_)
-      .SetSessionDuration(session_duration.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
+  lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
+                                   search_performed_in_session_,
+                                   session_duration);
 }
