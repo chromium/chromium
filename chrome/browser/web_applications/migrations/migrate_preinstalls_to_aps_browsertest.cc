@@ -168,13 +168,13 @@ class MigratePreinstallsToApsToggleTest : public InProcessBrowserTest {
 
 // All apps should be installed as kDefault.
 IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_TurnOn) {
-  EXPECT_THAT(
-      GetAppIdsWithSources(
-          WebAppManagementTypes({WebAppManagement::Type::kDefault})),
-      testing::UnorderedElementsAre(
-          kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId, kGoogleSheetsAppId,
-          kGoogleSlidesAppId, kYoutubeAppId, kGoogleCalendarAppId));
-  ValidateHistograms(/*install=*/10, /*source_removed=*/0, /*app_removed=*/0);
+  EXPECT_THAT(GetAppIdsWithSources(
+                  WebAppManagementTypes({WebAppManagement::Type::kDefault})),
+              testing::UnorderedElementsAre(
+                  kContainerAppId, kGmailAppId, kGoogleDocsAppId,
+                  kGoogleDriveAppId, kGoogleSheetsAppId, kGoogleSlidesAppId,
+                  kYoutubeAppId, kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/11, /*source_removed=*/0, /*app_removed=*/0);
 }
 
 // Non-core apps (calendar) should be migrated to kApsDefault.
@@ -186,8 +186,8 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, TurnOn) {
                   kGoogleSheetsAppId, kGoogleSlidesAppId, kYoutubeAppId));
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
-              testing::ElementsAre(kGoogleCalendarAppId));
-  ValidateHistograms(/*install=*/6, /*source_removed=*/1, /*app_removed=*/0);
+              testing::ElementsAre(kContainerAppId, kGoogleCalendarAppId));
+  ValidateHistograms(/*install=*/6, /*source_removed=*/2, /*app_removed=*/0);
 }
 
 // Core apps will be preinstalled, we must simulate APS installing calendar.
@@ -215,14 +215,15 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_Rollback) {
 IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, Rollback) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
-              testing::UnorderedElementsAre(
-                  kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId,
-                  kGoogleSheetsAppId, kGoogleSlidesAppId, kYoutubeAppId));
+              testing::UnorderedElementsAre(kContainerAppId, kGmailAppId,
+                                            kGoogleDocsAppId, kGoogleDriveAppId,
+                                            kGoogleSheetsAppId,
+                                            kGoogleSlidesAppId, kYoutubeAppId));
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault,
                                          WebAppManagement::Type::kApsDefault})),
               testing::ElementsAre(kGoogleCalendarAppId));
-  ValidateHistograms(/*install=*/8, /*source_removed=*/0, /*app_removed=*/0);
+  ValidateHistograms(/*install=*/9, /*source_removed=*/0, /*app_removed=*/0);
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
