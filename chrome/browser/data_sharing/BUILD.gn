@@ -45,6 +45,7 @@ if (is_android) {
   android_library("tab_group_ui_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabSwitcherDelegate.java",
