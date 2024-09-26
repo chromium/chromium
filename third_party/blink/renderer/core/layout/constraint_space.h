@@ -803,17 +803,20 @@ class CORE_EXPORT ConstraintSpace final {
                          : MarginStrut();
   }
 
-  // Return true if `text-box-trim` is in effect for the block-start/end.
+  // The effective `text-box-edge` may not match the one in the `ComputedStyle`
+  // due to the propagation.
   TextBoxEdge EffectiveTextBoxEdge() const {
     return HasRareData() ? TextBoxEdge(rare_data_->effective_text_box_edge)
                          : TextBoxEdge();
   }
+  // Return true if `text-box-trim` is in effect for the block-start/end.
   bool ShouldTextBoxTrimStart() const {
     return HasRareData() && rare_data_->should_text_box_trim_start;
   }
   bool ShouldTextBoxTrimEnd() const {
     return HasRareData() && rare_data_->should_text_box_trim_end;
   }
+  // Apply `text-box-trim` to the block-end even if there are following content.
   bool ShouldForceTextBoxTrimEnd() const {
     return HasRareData() && rare_data_->should_force_text_box_trim_end;
   }
