@@ -4,6 +4,10 @@
 
 component("dwa") {
   sources = [
+    "dwa_entry_builder.cc",
+    "dwa_entry_builder.h",
+    "dwa_entry_builder_base.cc",
+    "dwa_entry_builder_base.h",
     "dwa_pref_names.cc",
     "dwa_pref_names.h",
     "dwa_recorder.cc",
@@ -33,14 +37,57 @@ component("dwa") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dwa_service_unittest.cc" ]
+  sources = [
+    "dwa_entry_builder_unittest.cc",
+    "dwa_service_unittest.cc",
+  ]
   deps = [
     ":dwa",
+    "//base",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",
+  ]
+}
+
+action("gen_dwa_builders") {
+  script = "//tools/metrics/dwa/gen_builders.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/dwa/builders_template.py",
+    "//tools/metrics/dwa/decode_template.py",
+    "//tools/metrics/dwa/codegen.py",
+  ]
+  sources = [ "//tools/metrics/dwa/dwa.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [
+    outdir + "/dwa_builders.cc",
+    outdir + "/dwa_builders.h",
+    outdir + "/dwa_decode.cc",
+    outdir + "/dwa_decode.h",
+  ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+  ]
+}
+
+static_library("dwa_builders") {
+  sources = get_target_outputs(":gen_dwa_builders")
+
+  deps = [
+    ":dwa",
+    ":gen_dwa_builders",
+    "//base",
   ]
 }

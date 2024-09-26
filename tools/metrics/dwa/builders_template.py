@@ -14,8 +14,9 @@ HEADER = codegen.Template(basename="dwa_builders.h",
 #define {file.guard_path}
 
 #include <cstdint>
+#include <string_view>
 
-#include "services/dwa_metrics/public/cpp/dwa_entry_builder_base.h"
+#include "components/metrics/dwa/dwa_entry_builder_base.h"
 
 namespace dwa {{
 namespace builders {{
@@ -38,6 +39,8 @@ class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
   static const char kEntryName[];
   static constexpr uint64_t kEntryNameHash = UINT64_C({event.hash});
 
+  {event.name}& SetContent(std::string_view content);
+
 {metric_code}
 {study_code}
 }};
@@ -48,9 +51,8 @@ class {event.name} final : public ::dwa::internal::DwaEntryBuilderBase {{
   {event.name}& Set{metric.name}(int64_t value);
 """,
                           study_template="""
-  static const char k{study.name}Name[];
-  static constexpr uint64_t k{study.name}NameHash = UINT64_C({study.hash});
-  {event.name}& Add{study.name}(int64_t value);
+  static constexpr char k{study.name}Name[] = "{study.raw_name}";
+  static constexpr uint32_t k{study.name}NameHash = UINT32_C({study.hash});
 """)
 
 IMPL = codegen.Template(
@@ -60,6 +62,8 @@ IMPL = codegen.Template(
 // source: dwa.xml
 
 #include "{file.dir_path}dwa_builders.h"
+
+#include "base/metrics/metrics_hashes.h"
 
 namespace dwa {{
 namespace builders {{
@@ -75,6 +79,7 @@ const uint64_t {event.name}::kEntryNameHash;
 
 {event.name}::{event.name}() :
   ::dwa::internal::DwaEntryBuilderBase(kEntryNameHash) {{
+  {study_code}
 }}
 
 {event.name}::{event.name}({event.name}&&) = default;
@@ -83,8 +88,12 @@ const uint64_t {event.name}::kEntryNameHash;
 
 {event.name}::~{event.name}() = default;
 
+{event.name}& {event.name}::SetContent(std::string_view content) {{
+  SetContentInternal(base::HashMetricName(content));
+  return *this;
+}}
+
 {metric_code}
-{study_code}
 """,
     metric_template="""
 const char {event.name}::k{metric.name}Name[] = "{metric.raw_name}";
@@ -96,13 +105,7 @@ const uint64_t {event.name}::k{metric.name}NameHash;
 }}
 """,
     study_template="""
-const char {event.name}::k{study.name}Name[] = "{study.raw_name}";
-const uint64_t {event.name}::k{study.name}NameHash;
-
-{event.name}& {event.name}::Add{study.name}(int64_t value) {{
-  AddStudyInternal(k{study.name}NameHash, value);
-  return *this;
-}}
+  AddToStudiesOfInterestInternal(k{study.name}Name);
 """,
 )
 
