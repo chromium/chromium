@@ -46,6 +46,7 @@
 #include "net/log/test_net_log.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
+#include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
@@ -489,6 +490,11 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
   SSLConfigService* ssl_config_service() {
     return session_deps_.ssl_config_service.get();
+  }
+
+  MockCryptoClientStreamFactory* crypto_client_stream_factory() {
+    return static_cast<MockCryptoClientStreamFactory*>(
+        session_deps_.quic_crypto_client_stream_factory.get());
   }
 
   HttpNetworkSession* http_network_session() {
@@ -3399,6 +3405,128 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkDnsAlpn) {
                   .GetAttemptManagerForTesting()
                   ->GetQuicTaskResultForTesting(),
               Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  MockConnectCompleter tls_completer;
+  SequencedSocketData tls_data;
+  tls_data.set_connect_data(MockConnect(&tls_completer));
+  socket_factory()->AddSocketDataProvider(&tls_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  quic_completer.Complete(ERR_CONNECTION_REFUSED);
+  // Fast forward to make QUIC attempt fail first.
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(pool()
+                  .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                  .GetAttemptManagerForTesting()
+                  ->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_CONNECTION_REFUSED)));
+  ASSERT_FALSE(requester.result().has_value());
+
+  tls_completer.Complete(ERR_SOCKET_NOT_CONNECTED);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_SOCKET_NOT_CONNECTED)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  MockConnectCompleter tls_completer;
+  SequencedSocketData tls_data;
+  tls_data.set_connect_data(MockConnect(&tls_completer));
+  socket_factory()->AddSocketDataProvider(&tls_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  tls_completer.Complete(ERR_SOCKET_NOT_CONNECTED);
+  // Fast forward to make TLS attempt fail first.
+  FastForwardBy(base::Milliseconds(1));
+  ASSERT_FALSE(requester.result().has_value());
+
+  quic_completer.Complete(ERR_CONNECTION_REFUSED);
+  requester.WaitForResult();
+  EXPECT_THAT(pool()
+                  .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                  .GetAttemptManagerForTesting()
+                  ->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_CONNECTION_REFUSED)));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+}
+
+// Test that NetErrorDetails is populated when a QUIC session is created but
+// it fails later.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicNetErrorDetails) {
+  // QUIC attempt will pause. When resumed, it will fail.
+  MockQuicData quic_data(quic_version());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tls_data;
+  tls_data.set_connect_data(MockConnect(ASYNC, ERR_SOCKET_NOT_CONNECTED));
+  socket_factory()->AddSocketDataProvider(&tls_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  crypto_client_stream_factory()->set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // Fast forward to make TLS attempt fail first.
+  FastForwardBy(base::Milliseconds(1));
+  quic_data.Resume();
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_QUIC_PROTOCOL_ERROR)));
+  EXPECT_EQ(requester.net_error_details().quic_connection_error,
+            quic::QUIC_PACKET_READ_ERROR);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicCanUseExistingSession) {

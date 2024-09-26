@@ -91,7 +91,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
   QuicChromiumClientSession* session() const { return session_.get(); }
 
-  void PolulateNetErrorDetails(NetErrorDetails* details) const;
+  void PopulateNetErrorDetails(NetErrorDetails* details) const;
 
  private:
   enum class State {

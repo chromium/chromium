@@ -95,7 +95,7 @@ void QuicSessionPool::DirectJob::UpdatePriority(RequestPriority old_priority,
 void QuicSessionPool::DirectJob::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_attempt_) {
-    session_attempt_->PolulateNetErrorDetails(details);
+    session_attempt_->PopulateNetErrorDetails(details);
   }
 }
 

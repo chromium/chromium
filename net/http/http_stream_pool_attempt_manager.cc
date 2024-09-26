@@ -17,6 +17,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -439,9 +440,12 @@ void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
   }
 }
 
-void HttpStreamPool::AttemptManager::OnQuicTaskComplete(int rv) {
+void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
+    int rv,
+    NetErrorDetails details) {
   CHECK(!quic_task_result_.has_value());
   quic_task_result_ = rv;
+  net_error_details_ = std::move(details);
   quic_task_.reset();
 
   const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
@@ -454,7 +458,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(int rv) {
     }
   }
 
-  if (rv != OK && group_->force_quic()) {
+  if (rv != OK && (all_tcp_based_attempts_failed_ || group_->force_quic())) {
     error_to_notify_ = rv;
     NotifyFailure();
     return;
@@ -691,6 +695,9 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();
   if (!ip_endpoint.has_value()) {
     if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
+      all_tcp_based_attempts_failed_ = true;
+    }
+    if (all_tcp_based_attempts_failed_ && !quic_task_) {
       // Tried all endpoints.
       NotifyFailure();
     }

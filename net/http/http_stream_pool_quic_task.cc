@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_error_details.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
@@ -196,8 +197,13 @@ void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
   } else if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
     quic_session_pool()->set_is_quic_known_to_work_on_current_network(false);
   }
+
+  NetErrorDetails details;
+  if (session_attempt_) {
+    session_attempt_->PopulateNetErrorDetails(&details);
+  }
   session_attempt_.reset();
-  manager_->OnQuicTaskComplete(rv);
+  manager_->OnQuicTaskComplete(rv, std::move(details));
   // `this` is deleted.
 }
 

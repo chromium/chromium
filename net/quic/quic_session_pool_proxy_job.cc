@@ -96,7 +96,7 @@ void QuicSessionPool::ProxyJob::PopulateNetErrorDetails(
 
   // Finally, return the error from the session attempt.
   if (session_attempt_) {
-    session_attempt_->PolulateNetErrorDetails(details);
+    session_attempt_->PopulateNetErrorDetails(details);
   }
 }
 

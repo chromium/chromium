@@ -149,7 +149,7 @@ class HttpStreamPool::AttemptManager
   void OnRequiredHttp11();
 
   // Called when the QuicTask owned by `this` is completed.
-  void OnQuicTaskComplete(int rv);
+  void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue();
@@ -396,6 +396,9 @@ class HttpStreamPool::AttemptManager
   // Updated when a stream attempt is considered slow. Used to calculate next
   // IPEndPoint to attempt.
   std::set<IPEndPoint> slow_ip_endpoints_;
+
+  // Set to true when all TCP/TLS attempts failed.
+  bool all_tcp_based_attempts_failed_ = false;
 
   // Initialized when one of an attempt is negotiated to use HTTP/2.
   base::WeakPtr<SpdySession> spdy_session_;

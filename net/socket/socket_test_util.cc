@@ -40,6 +40,7 @@
 #include "net/base/hex_utils.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -1765,6 +1766,10 @@ int MockUDPClientSocket::ConnectAsync(const IPEndPoint& address,
   peer_addr_ = address;
   int result = data_->connect_data().result;
   IoMode mode = data_->connect_data().mode;
+  if (data_->connect_data().completer) {
+    data_->connect_data().completer->SetCallback(std::move(callback));
+    return ERR_IO_PENDING;
+  }
   if (mode == SYNCHRONOUS) {
     return result;
   }
@@ -1785,6 +1790,10 @@ int MockUDPClientSocket::ConnectUsingNetworkAsync(
   peer_addr_ = address;
   int result = data_->connect_data().result;
   IoMode mode = data_->connect_data().mode;
+  if (data_->connect_data().completer) {
+    data_->connect_data().completer->SetCallback(std::move(callback));
+    return ERR_IO_PENDING;
+  }
   if (mode == SYNCHRONOUS) {
     return result;
   }
@@ -1803,6 +1812,10 @@ int MockUDPClientSocket::ConnectUsingDefaultNetworkAsync(
   peer_addr_ = address;
   int result = data_->connect_data().result;
   IoMode mode = data_->connect_data().mode;
+  if (data_->connect_data().completer) {
+    data_->connect_data().completer->SetCallback(std::move(callback));
+    return ERR_IO_PENDING;
+  }
   if (mode == SYNCHRONOUS) {
     return result;
   }

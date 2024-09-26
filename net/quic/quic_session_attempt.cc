@@ -116,7 +116,7 @@ int QuicSessionAttempt::Start(CompletionOnceCallback callback) {
   return rv;
 }
 
-void QuicSessionAttempt::PolulateNetErrorDetails(
+void QuicSessionAttempt::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_) {
     details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
