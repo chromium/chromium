@@ -65,7 +65,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
     private static final String NOTO_COLOR_EMOJI_COMPAT = "noto color emoji compat";
-    private static final String GOOGLE_SANS_FLEX = "google sans flex";
+    private static final String GOOGLE_SANS_FLEX = "google sans flex regular";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
