@@ -697,6 +697,19 @@ chromium-metrics-reviews@google.com.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="InProductHelp.ShownTime2.{IPHFeature}" units="ms"
+    expires_after="2025-02-09">
+  <owner>gayane@google.com</owner>
+  <owner>lpromero@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Same as InProductHelp.ShownTime.{IPHFeature} but records times up to 3
+    minutes. InProductHelp.ShownTime.{IPHFeature} can be deprecated after some
+    time to ensure continuity of information.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
 <histogram name="InProductHelp.SnoozeAction" enum="InProductHelpSnoozeAction"
     expires_after="2025-02-10">
   <owner>haileywang@chromium.org</owner>

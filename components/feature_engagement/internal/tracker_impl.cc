@@ -548,6 +548,8 @@ void TrackerImpl::RecordShownTime(const base::Feature& feature) {
 
   UmaHistogramTimes("InProductHelp.ShownTime." + feature_name,
                     time_provider_->Now() - iter->second);
+  UmaHistogramMediumTimes("InProductHelp.ShownTime2." + feature_name,
+                          time_provider_->Now() - iter->second);
   start_times_.erase(feature_name);
 }
 
