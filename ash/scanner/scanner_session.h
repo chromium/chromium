@@ -12,6 +12,8 @@
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -48,11 +50,10 @@ class ASH_EXPORT ScannerSession {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns the actions that are currently available for this session. The
-  // method will return the actions via the callback given as a param.
-  //
-  // TODO(b/363100868): Pass the required params here.
-  void FetchActions(FetchActionsCallback callback);
+  // Fetches Scanner actions that are available based on the contents of
+  // `jpeg_bytes`. The actions are returned via `callback`.
+  void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+                            FetchActionsCallback callback);
 
  private:
   void OnActionsReturned(

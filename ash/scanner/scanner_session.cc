@@ -11,6 +11,8 @@
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/types/expected.h"
 
@@ -33,10 +35,13 @@ void ScannerSession::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ScannerSession::FetchActions(FetchActionsCallback callback) {
-  delegate_->FetchActions(base::BindOnce(&ScannerSession::OnActionsReturned,
-                                         weak_ptr_factory_.GetWeakPtr(),
-                                         std::move(callback)));
+void ScannerSession::FetchActionsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+    FetchActionsCallback callback) {
+  delegate_->FetchActionsForImage(
+      jpeg_bytes,
+      base::BindOnce(&ScannerSession::OnActionsReturned,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ScannerSession::OnActionsReturned(

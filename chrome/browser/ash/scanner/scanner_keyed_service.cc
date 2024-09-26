@@ -6,6 +6,8 @@
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 
 ScannerKeyedService::ScannerKeyedService(Profile* profile) {}
@@ -16,9 +18,10 @@ ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
   return system_state_provider_.GetSystemState();
 }
 
-void ScannerKeyedService::FetchActions(
+void ScannerKeyedService::FetchActionsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     base::OnceCallback<void(ash::ScannerActionsResponse)> callback) {
-  action_provider_.FetchActions(std::move(callback));
+  action_provider_.FetchActionsForImage(jpeg_bytes, std::move(callback));
 }
 
 void ScannerKeyedService::Shutdown() {}

@@ -9,6 +9,8 @@
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
 namespace {
@@ -25,7 +27,9 @@ ScannerActionProvider::ScannerActionProvider() = default;
 
 ScannerActionProvider::~ScannerActionProvider() = default;
 
-void ScannerActionProvider::FetchActions(OnActionsResolved callback) {
+void ScannerActionProvider::FetchActionsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+    OnActionsResolved callback) {
   // TODO(b/363100868): Fetch available actions from service
   std::move(callback).Run(base::ok(std::vector<ash::ScannerAction>{
       CreateOpenUrlAction(GURL("https://www.google.com")),

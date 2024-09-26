@@ -8,6 +8,8 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 
 // Responsible for interfacing with the Scanner service. This class will fetch
@@ -24,9 +26,10 @@ class ScannerActionProvider {
   ScannerActionProvider& operator=(const ScannerActionProvider&) = delete;
   ~ScannerActionProvider();
 
-  // Fetches any actions available from the Scanner service. The response from
-  // the service will be returned in the callback given.
-  void FetchActions(OnActionsResolved callback);
+  // Fetches available actions from the Scanner service based on the contents of
+  // `jpeg_bytes`. The response from the service is returned via `callback`.
+  void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+                            OnActionsResolved callback);
 };
 
 #endif  // CHROME_BROWSER_ASH_SCANNER_SCANNER_ACTION_PROVIDER_H_

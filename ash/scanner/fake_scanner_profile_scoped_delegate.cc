@@ -11,6 +11,8 @@
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 
 namespace ash {
@@ -23,7 +25,8 @@ ScannerSystemState FakeScannerProfileScopedDelegate::GetSystemState() const {
   return ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{});
 }
 
-void FakeScannerProfileScopedDelegate::FetchActions(
+void FakeScannerProfileScopedDelegate::FetchActionsForImage(
+    scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     base::OnceCallback<void(ScannerActionsResponse)> callback) {
   std::move(callback).Run(base::ok(std::vector<ScannerAction>()));
 }

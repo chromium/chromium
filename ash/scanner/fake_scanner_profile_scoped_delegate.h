@@ -21,7 +21,8 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
 
   // ScannerProfileScopedDelegate:
   ScannerSystemState GetSystemState() const override;
-  void FetchActions(
+  void FetchActionsForImage(
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       base::OnceCallback<void(ScannerActionsResponse)> callback) override;
 };
 

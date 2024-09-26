@@ -9,6 +9,8 @@
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -22,8 +24,10 @@ class ASH_PUBLIC_EXPORT ScannerProfileScopedDelegate {
   // disabled? If so why was it disabled.
   virtual ScannerSystemState GetSystemState() const = 0;
 
-  // Fetches the actions available to the user.
-  virtual void FetchActions(
+  // Fetches Scanner actions that are available to the user based on the
+  // contents of `jpeg_bytes`. The actions response is returned via `callback`.
+  virtual void FetchActionsForImage(
+      scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       base::OnceCallback<void(ScannerActionsResponse)> callback) = 0;
 };
 
