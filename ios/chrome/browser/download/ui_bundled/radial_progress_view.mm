@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 @interface RadialProgressView ()
 
@@ -47,20 +48,33 @@
 
     [self.trackLayer addSublayer:self.progressLayer];
     [self updateProgressLayer];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+        UITraitUserInterfaceLevel.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateStrokeColorOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  BOOL differentColorAppearance = [self.traitCollection
-      hasDifferentColorAppearanceComparedToTraitCollection:
-          previousTraitCollection];
-  if (differentColorAppearance) {
-    self.trackLayer.strokeColor = self.trackTintColor.CGColor;
-    self.progressLayer.strokeColor = self.progressTintColor.CGColor;
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateStrokeColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Public
 
@@ -111,6 +125,17 @@
     _progressLayer.lineWidth = self.lineWidth;
   }
   return _progressLayer;
+}
+
+// Updates the `trackLayer` & `progressLayer` property's stroke color if the
+// change in the view's traits caused its appearance to change colors.
+- (void)updateStrokeColorOnTraitChange:(UITraitCollection*)previousCollection {
+  BOOL differentColorAppearance = [self.traitCollection
+      hasDifferentColorAppearanceComparedToTraitCollection:previousCollection];
+  if (differentColorAppearance) {
+    self.trackLayer.strokeColor = self.trackTintColor.CGColor;
+    self.progressLayer.strokeColor = self.progressTintColor.CGColor;
+  }
 }
 
 @end
