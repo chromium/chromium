@@ -29,6 +29,24 @@ enum Feature {
   EMOJI_PICKER_MOJO_SEARCH = 6,
 };
 
+// Different categories within the emoji picker
+enum Category {
+  kEmojis,
+  kSymbols,
+  kEmoticons,
+  kGifs,
+};
+
+struct EmojiVariant {
+  string base;
+  string variant;
+};
+
+struct HistoryItem {
+  string emoji;
+  mojo_base.mojom.JSTime timestamp;
+};
+
 // The below structs are used to represent the Response format from the Tenor
 // search and featured API endpoints which contains just enough information for
 // the frontend to display GIFs.
@@ -41,41 +59,33 @@ enum Status {
   kHttpError, // Every other HTTP response status code
 };
 
-// Different categories within the emoji picker
-enum Category {
-  kEmojis,
-  kSymbols,
-  kEmoticons,
-  kGifs,
-};
-
-struct TenorGifResponse {
-  string next;
-  array<GifResponse> results;
-};
-
-struct GifResponse {
-  string id;
-  string content_description;
-  GifUrls url;
-  gfx.mojom.Size preview_size;
-  gfx.mojom.Size full_size;
-};
-
 struct GifUrls {
+  // URL to the full GIF.
   url.mojom.Url full;
+  // URL to a lower-resolution preview GIF.
   url.mojom.Url preview;
+  // URL to a preview thumbnail of the GIF.
   url.mojom.Url preview_image;
 };
 
-struct EmojiVariant {
-  string base;
-  string variant;
+struct GifResponse {
+  // A unique identifier for the GIF.
+  string id;
+  // An accessible description of the GIF's contents.
+  string content_description;
+  // URLs associated with this GIF.
+  GifUrls url;
+  // The dimensions of the preview thumbnail image.
+  gfx.mojom.Size preview_size;
+  // The dimensions of the full GIF.
+  gfx.mojom.Size full_size;
 };
 
-struct HistoryItem {
-  string emoji;
-  mojo_base.mojom.JSTime timestamp;
+struct TenorGifResponse {
+  // A cursor for the next set of GIFs to fetch.
+  string next;
+  // A list of GIFs.
+  array<GifResponse> results;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
