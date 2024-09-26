@@ -336,8 +336,10 @@ class AttributionManagerImplTest : public testing::Test {
     // interacts poorly with TaskEnvironment::FastForward using day long
     // delays (we need to run the uma update every 30s for that
     // interval)
-    scoped_feature_list_.InitAndDisableFeature(
-        network::features::kGetCookiesStringUma);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{network::features::kGetCookiesStringUma,
+                               kAttributionReportDeliveryThirdRetryAttempt});
   }
 
   void SetUp() override {
@@ -2058,6 +2060,85 @@ TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
       "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 1, 1);
 }
 
+class AttributionManagerImplTestThirdRetryFeature
+    : public AttributionManagerImplTest {
+ public:
+  AttributionManagerImplTestThirdRetryFeature() {
+    // This UMA records a sample every 30s via a periodic task which
+    // interacts poorly with TaskEnvironment::FastForward using day long
+    // delays (we need to run the uma update every 30s for that
+    // interval)
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kAttributionReportDeliveryThirdRetryAttempt},
+        /*disabled_features=*/{network::features::kGetCookiesStringUma});
+  }
+};
+
+TEST_F(AttributionManagerImplTestThirdRetryFeature,
+       ReportRetryThirdRetryFeature) {
+  base::HistogramTester histograms;
+
+  bool was_report_sent = false;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          std::move(callback).Run(std::move(report),
+                                  SendResult::Sent(SentResult::kSent,
+                                                   /*status=*/0));
+          was_report_sent = true;
+        });
+  }
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  checkpoint.Call(1);
+
+  // First report delay.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(2);
+
+  // Second report delay.
+  task_environment_.FastForwardBy(base::Minutes(15));
+
+  checkpoint.Call(3);
+
+  // Third report delay.
+  task_environment_.FastForwardBy(base::Days(1));
+
+  ASSERT_TRUE(was_report_sent);
+
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure_"
+      "ThirdRetryEnabled",
+      3, 1);
+}
+
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   base::HistogramTester histograms;
 
@@ -2861,16 +2942,18 @@ TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {
   const struct {
     int failed_send_attempts;
     std::optional<base::TimeDelta> expected;
+    bool third_retry_enabled = false;
   } kTestCases[] = {
-      {1, base::Minutes(5)},
-      {2, base::Minutes(15)},
-      {3, std::nullopt},
+      {1, base::Minutes(5)},    {2, base::Minutes(15)},  {3, std::nullopt},
+      {3, base::Days(1), true}, {4, std::nullopt, true},
   };
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected,
-              GetFailedReportDelay(test_case.failed_send_attempts))
-        << "failed_send_attempts=" << test_case.failed_send_attempts;
+              GetFailedReportDelay(test_case.failed_send_attempts,
+                                   test_case.third_retry_enabled))
+        << "failed_send_attempts=" << test_case.failed_send_attempts
+        << ", third_retry_enabled=" << test_case.third_retry_enabled;
   }
 }
 

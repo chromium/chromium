@@ -357,6 +357,11 @@ class CONTENT_EXPORT AttributionManagerImpl
   // duplicated here to avoid an async call to retrieve them.
   bool debug_mode_ = false;
 
+  // Caches the
+  // `FeatureList::IsEnabled(kAttributionReportDeliveryThirdRetryAttempt` check
+  // as to reduce large map lookups.
+  bool third_retry_enabled_ = false;
+
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };
 
@@ -368,7 +373,8 @@ class CONTENT_EXPORT AttributionManagerImpl
 //
 // Exposed here for testing.
 CONTENT_EXPORT
-std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
+std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts,
+                                                    bool third_retry_enabled);
 
 }  // namespace content
 

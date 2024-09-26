@@ -4,7 +4,12 @@
 
 #include "content/browser/attribution_reporting/attribution_features.h"
 
+#include "base/feature_list.h"
+
 namespace content {
-// TODO(crbug.com/365974433): Add feature flag to gate third report delay
-// window.
+
+BASE_FEATURE(kAttributionReportDeliveryThirdRetryAttempt,
+             "AttributionReportDeliveryThirdRetryAttempt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace content
