@@ -83,7 +83,9 @@ _IGNORE_WARNINGS = (
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
+    # TODO(369195356): Remove this after cipd migration.
     'clank/third_party/google3/pg_confs/',
+    'clank/third_party/google3/cipd/pg_confs/',
 ]
 
 _DUMP_DIR_NAME = 'r8inputs_dir'
