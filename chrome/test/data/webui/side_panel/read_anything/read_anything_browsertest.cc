@@ -65,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LoadingScreen) {
                    "mocha.run()");
 }
 
-// TODO(b/369352286): This test is flaky.
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_VoiceSelectionMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
   RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
                    "mocha.run()");
 }

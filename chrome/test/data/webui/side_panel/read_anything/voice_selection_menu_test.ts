@@ -9,12 +9,18 @@ import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-pa
 import {ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
+}
+
+function isPositionedOnPage(element: HTMLElement) {
+  return !!element &&
+      !!(element.offsetWidth || element.offsetHeight ||
+         element.getClientRects().length);
 }
 
 suite('VoiceSelectionMenu', () => {
@@ -25,13 +31,11 @@ suite('VoiceSelectionMenu', () => {
   let voice2 =
       createSpeechSynthesisVoice({name: 'Google test voice 2', lang: 'lang'});
 
-  const voiceSelectionButtonSelector: string =
-      '.dropdown-voice-selection-button:not(.language-menu-button)';
-
   // If no param for enabledLangs is provided, it auto populates it with the
   // langs of the voices
-  function setAvailableVoicesAndEnabledLangs(
-      availableVoices: SpeechSynthesisVoice[], enabledLangs?: string[]) {
+  async function setAvailableVoicesAndEnabledLangs(
+      availableVoices: SpeechSynthesisVoice[],
+      enabledLangs?: string[]): Promise<void> {
     voiceSelectionMenu.availableVoices = availableVoices;
     if (enabledLangs === undefined) {
       voiceSelectionMenu.enabledLangs =
@@ -39,6 +43,7 @@ suite('VoiceSelectionMenu', () => {
     } else {
       voiceSelectionMenu.enabledLangs = enabledLangs;
     }
+    return microtasksFinished();
   }
 
   function getDropdownItemForVoice(voice: SpeechSynthesisVoice) {
@@ -48,10 +53,22 @@ suite('VoiceSelectionMenu', () => {
         ;
   }
 
-  setup(() => {
+  function openVoiceMenu(): Promise<void> {
+    stubAnimationFrame();
+    voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
+    return microtasksFinished();
+  }
+
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);
+    await microtasksFinished();
+
+    // We need an additional call to voiceSelectionMenu.get() to ensure the menu
+    // has been rendered.
+    voiceSelectionMenu.$.voiceSelectionMenu.get();
+    await microtasksFinished();
 
     // Proxy button as click target to open the menu with
     dots = document.createElement('button');
@@ -64,9 +81,7 @@ suite('VoiceSelectionMenu', () => {
 
   suite('with one voice', () => {
     setup(() => {
-      setAvailableVoicesAndEnabledLangs([voice1]);
-
-      return microtasksFinished();
+      return setAvailableVoicesAndEnabledLangs([voice1]);
     });
 
     test('it does not show dropdown before click', () => {
@@ -74,9 +89,7 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('it shows dropdown items after button click', async () => {
-      stubAnimationFrame();
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-      await microtasksFinished();
+      await openVoiceMenu();
 
       const dropdownItems: HTMLButtonElement = getDropdownItemForVoice(voice1);
       assertTrue(isPositionedOnPage(dropdownItems!));
@@ -85,36 +98,30 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('it shows language menu after button click', async () => {
-      stubAnimationFrame();
+      await openVoiceMenu();
       const button =
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+          voiceSelectionMenu.$.voiceSelectionMenu.get()
               .querySelector<HTMLButtonElement>('.language-menu-button');
+
       button!.click();
       await microtasksFinished();
 
       const languageMenuElement =
-          voiceSelectionMenu!.shadowRoot!.querySelector<LanguageMenuElement>(
+          voiceSelectionMenu.shadowRoot!.querySelector<LanguageMenuElement>(
               '#languageMenu');
       assertTrue(!!languageMenuElement);
       assertTrue(isPositionedOnPage(languageMenuElement));
     });
 
     test('when availableVoices updates', async () => {
-      setAvailableVoicesAndEnabledLangs(/*availableVoices=*/[voice1, voice2]);
-      stubAnimationFrame();
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-      await microtasksFinished();
-
-      const dropdownItems: NodeListOf<HTMLElement> =
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
-              .querySelectorAll<HTMLButtonElement>(
-                  voiceSelectionButtonSelector);
+      await setAvailableVoicesAndEnabledLangs(
+          /*availableVoices=*/[voice1, voice2]);
+      await openVoiceMenu();
 
       assertEquals(
           voice1.name, getDropdownItemForVoice(voice1).textContent!.trim());
       assertEquals(
           voice2.name, getDropdownItemForVoice(voice2).textContent!.trim());
-      assertEquals(2, dropdownItems.length);
       assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice1)));
       assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice2)));
     });
@@ -122,7 +129,6 @@ suite('VoiceSelectionMenu', () => {
 
   // <if expr="not is_chromeos">
   test('it renames non-Google voices per language', async () => {
-    const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
     const googleVoice1 =
         createSpeechSynthesisVoice({name: 'Google Gandalf', lang: 'en-US'});
     const googleVoice2 =
@@ -137,14 +143,16 @@ suite('VoiceSelectionMenu', () => {
       systemVoice1,
       systemVoice2,
     ];
-    setAvailableVoicesAndEnabledLangs(availableVoices, ['en-US', 'pt-BR']);
-    await microtasksFinished();
+    await setAvailableVoicesAndEnabledLangs(
+        availableVoices, ['en-US', 'pt-BR']);
 
+    await openVoiceMenu();
+
+    const menu = voiceSelectionMenu.$.voiceSelectionMenu.get();
     const groupTitles = menu.querySelectorAll<HTMLElement>('.lang-group-title');
     assertEquals(2, groupTitles.length);
     const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
     assertEquals(4, voiceNames.length);
-
     const englishVoice1 = groupTitles.item(0)!.nextElementSibling!;
     const englishVoice2 = englishVoice1.nextElementSibling!;
     const portugueseVoice1 = groupTitles.item(1)!.nextElementSibling!;
@@ -163,9 +171,6 @@ suite('VoiceSelectionMenu', () => {
     let previewVoice: SpeechSynthesisVoice;
 
     setup(() => {
-      // We need an additional call to voiceSelectionMenu.get() in these
-      // tests to ensure the menu has been rendered.
-      voiceSelectionMenu!.$.voiceSelectionMenu.get();
       selectedVoice =
           createSpeechSynthesisVoice({name: 'Google selected', lang: 'en-US'});
       previewVoice =
@@ -180,8 +185,7 @@ suite('VoiceSelectionMenu', () => {
         voice2,
         selectedVoice,
       ];
-      setAvailableVoicesAndEnabledLangs(availableVoices);
-      return microtasksFinished();
+      return setAvailableVoicesAndEnabledLangs(availableVoices);
     });
 
     test('it shows a checkmark for the selected voice', async () => {
@@ -195,12 +199,12 @@ suite('VoiceSelectionMenu', () => {
           getDropdownItemForVoice(selectedVoice)
               .querySelector<HTMLElement>('#check-mark')!;
 
-      assertFalse(isHiddenWithCss(checkMarkSelectedVoice));
-      assertTrue(isHiddenWithCss(checkMarkVoice0));
+      assertFalse(hasStyle(checkMarkSelectedVoice, 'visibility', 'hidden'));
+      assertTrue(hasStyle(checkMarkVoice0, 'visibility', 'hidden'));
     });
 
     test('it groups voices by language', () => {
-      const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+      const menu = voiceSelectionMenu.$.voiceSelectionMenu.get();
       const groupTitles =
           menu.querySelectorAll<HTMLElement>('.lang-group-title');
       assertEquals(2, groupTitles.length);
@@ -215,21 +219,18 @@ suite('VoiceSelectionMenu', () => {
       assertEquals(voice2.name, italianVoice.textContent!.trim());
     });
 
-    test(
-        'it only shows enabled languages with some disabled languages',
-        async () => {
-          setAvailableVoicesAndEnabledLangs(
-              voiceSelectionMenu.availableVoices, ['it-it']);
-          await microtasksFinished();
+    test('it only shows enabled languages', async () => {
+      await setAvailableVoicesAndEnabledLangs(
+          voiceSelectionMenu.availableVoices, ['it-it']);
 
-          const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
-          const groupTitles =
-              menu.querySelectorAll<HTMLElement>('.lang-group-title');
-          assertEquals(1, groupTitles.length);
+      const menu = voiceSelectionMenu.$.voiceSelectionMenu.get();
+      const groupTitles =
+          menu.querySelectorAll<HTMLElement>('.lang-group-title');
+      assertEquals(1, groupTitles.length);
 
-          const italianVoice = groupTitles.item(0)!.nextElementSibling!;
-          assertEquals(voice2.name, italianVoice.textContent!.trim());
-        });
+      const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+      assertEquals(voice2.name, italianVoice.textContent!.trim());
+    });
 
     suite('with Natural voices also available', () => {
       setup(() => {
@@ -244,14 +245,12 @@ suite('VoiceSelectionMenu', () => {
           voice2,
           selectedVoice,
         ];
-        setAvailableVoicesAndEnabledLangs(availableVoices);
-
-        return microtasksFinished();
+        return setAvailableVoicesAndEnabledLangs(availableVoices);
       });
 
       test('it orders Natural voices first', () => {
         const usEnglishDropdownItems: NodeListOf<HTMLElement> =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get().querySelectorAll(
+            voiceSelectionMenu.$.voiceSelectionMenu.get().querySelectorAll(
                 '.voice-name');
 
         assertEquals(4, usEnglishDropdownItems.length);
@@ -277,7 +276,7 @@ suite('VoiceSelectionMenu', () => {
       await microtasksFinished();
 
       const groupTitles =
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+          voiceSelectionMenu.$.voiceSelectionMenu.get()
               .querySelectorAll<HTMLElement>('.lang-group-title');
 
       assertEquals(
@@ -285,155 +284,134 @@ suite('VoiceSelectionMenu', () => {
       assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
     });
 
-    test(
-        'when voices have duplicate names languages are grouped correctly',
-        async () => {
-          const availableVoices = [
-            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
-            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
-            createSpeechSynthesisVoice({name: 'Google English', lang: 'en-UK'}),
-          ];
-          setAvailableVoicesAndEnabledLangs(availableVoices);
-          await microtasksFinished();
+    test('languages are grouped when voices have same names', async () => {
+      const availableVoices = [
+        createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'Google English', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'Google English', lang: 'en-UK'}),
+      ];
+      await setAvailableVoicesAndEnabledLangs(availableVoices);
 
-          const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
-          const groupTitles =
-              menu.querySelectorAll<HTMLElement>('.lang-group-title');
-          const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
+      const menu = voiceSelectionMenu.$.voiceSelectionMenu.get();
+      const groupTitles =
+          menu.querySelectorAll<HTMLElement>('.lang-group-title');
+      const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
-          assertEquals(2, groupTitles.length);
-          assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
-          assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
-          assertEquals(3, voiceNames.length);
-          assertEquals(
-              'Google English', voiceNames.item(0)!.textContent!.trim());
-          assertEquals(
-              'Google English', voiceNames.item(1)!.textContent!.trim());
-          assertEquals(
-              'Google English', voiceNames.item(2)!.textContent!.trim());
-        });
+      assertEquals(2, groupTitles.length);
+      assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
+      assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
+      assertEquals(3, voiceNames.length);
+      assertEquals('Google English', voiceNames.item(0)!.textContent!.trim());
+      assertEquals('Google English', voiceNames.item(1)!.textContent!.trim());
+      assertEquals('Google English', voiceNames.item(2)!.textContent!.trim());
+    });
 
-    test(
-        'when preview button is clicked it emits play preview event',
-        async () => {
-          let clickEmitted = false;
-          document.addEventListener(
-              ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
-          // Display dropdown menu
-          voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-          const previewButton =
-              getDropdownItemForVoice(voice1)
-                  .querySelector<CrIconButtonElement>('#preview-icon')!;
-          previewButton!.click();
-          await microtasksFinished();
+    test('preview button click emits play preview event', async () => {
+      let clickEmitted = false;
+      document.addEventListener(
+          ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
+      await openVoiceMenu();
+      const previewButton =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#preview-icon')!;
 
-          assertTrue(clickEmitted);
-        });
+      previewButton!.click();
+      await microtasksFinished();
 
-    suite('when preview starts playing', () => {
-      setup(() => {
-        // Display dropdown menu
-        voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
+      assertTrue(clickEmitted);
+    });
 
-        voiceSelectionMenu.previewVoicePlaying = previewVoice;
-        return microtasksFinished();
-      });
+    test('it shows preview-playing button when preview plays', async () => {
+      await openVoiceMenu();
+      voiceSelectionMenu.previewVoicePlaying = previewVoice;
+      await microtasksFinished();
 
-      test('it shows preview-playing button when preview plays', () => {
-        stubAnimationFrame();
-        const playIconVoice0 =
-            getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
-                '#preview-icon')!;
-        const playIconOfPreviewVoice =
-            getDropdownItemForVoice(previewVoice)
-                .querySelector<CrIconButtonElement>('#preview-icon')!;
+      const playIconVoice0 =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#preview-icon')!;
+      const playIconOfPreviewVoice =
+          getDropdownItemForVoice(previewVoice)
+              .querySelector<CrIconButtonElement>('#preview-icon')!;
 
-        // The play icon should flip to stop for the voice being previewed
-        assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
-        assertEquals(
-            'read-anything-20:stop-circle', playIconOfPreviewVoice.ironIcon);
-        assertStringContains(
-            playIconOfPreviewVoice.title.toLowerCase(), 'stop');
-        assertStringContains(
-            playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'stop');
-        // The play icon should remain unchanged for the other buttons
-        assertTrue(isPositionedOnPage(playIconVoice0));
-        assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
-        assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-        assertStringContains(
-            playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
-      });
+      // The play icon should flip to stop for the voice being previewed
+      assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
+      assertEquals(
+          'read-anything-20:stop-circle', playIconOfPreviewVoice.ironIcon);
+      assertStringContains(playIconOfPreviewVoice.title.toLowerCase(), 'stop');
+      assertStringContains(
+          playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'stop');
+      // The play icon should remain unchanged for the other buttons
+      assertTrue(isPositionedOnPage(playIconVoice0));
+      assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
+      assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
+      assertStringContains(
+          playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
+    });
 
-      test(
-          'when preview finishes playing it flips the button back to play icon',
-          async () => {
-            voiceSelectionMenu.previewVoicePlaying = undefined;
-            await microtasksFinished();
+    test('it shows play icon again when preview finishes', async () => {
+      await openVoiceMenu();
+      voiceSelectionMenu.previewVoicePlaying = previewVoice;
+      await microtasksFinished();
+      voiceSelectionMenu.previewVoicePlaying = undefined;
+      await microtasksFinished();
 
-            stubAnimationFrame();
-            const playIconVoice0 =
-                getDropdownItemForVoice(voice1)
-                    .querySelector<CrIconButtonElement>('#preview-icon')!;
-            const playIconOfPreviewVoice =
-                getDropdownItemForVoice(voice2)
-                    .querySelector<CrIconButtonElement>('#preview-icon')!;
+      const playIconVoice0 =
+          getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+              '#preview-icon')!;
+      const playIconOfPreviewVoice =
+          getDropdownItemForVoice(voice2).querySelector<CrIconButtonElement>(
+              '#preview-icon')!;
 
-            // All icons should be play icons because no preview is
-            // playing
-            assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
-            assertTrue(isPositionedOnPage(playIconVoice0));
-            assertEquals(
-                'read-anything-20:play-circle',
-                playIconOfPreviewVoice.ironIcon);
-            assertEquals(
-                'read-anything-20:play-circle', playIconVoice0.ironIcon);
-            assertStringContains(
-                playIconOfPreviewVoice.title.toLowerCase(), 'play');
-            assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-            assertStringContains(
-                playIconOfPreviewVoice.ariaLabel!.toLowerCase(),
-                'preview voice for');
-            assertStringContains(
-                playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
-          });
+      // All icons should be play icons because no preview is
+      // playing
+      assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
+      assertTrue(isPositionedOnPage(playIconVoice0));
+      assertEquals(
+          'read-anything-20:play-circle', playIconOfPreviewVoice.ironIcon);
+      assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
+      assertStringContains(playIconOfPreviewVoice.title.toLowerCase(), 'play');
+      assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
+      assertStringContains(
+          playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'preview voice for');
+      assertStringContains(
+          playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
     });
   });
 
   suite('with installing voices', () => {
     function setVoiceStatus(
-        status: VoiceClientSideStatusCode, ...langs: string[]): Promise<void> {
-      langs.forEach(
-          lang => VoiceNotificationManager.getInstance().onVoiceStatusChange(
-              lang, status, voiceSelectionMenu.availableVoices, true));
+        status: VoiceClientSideStatusCode, lang: string): Promise<void> {
+      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+          lang, status, voiceSelectionMenu.availableVoices, true);
       return microtasksFinished();
     }
 
-    function setOfflineError(...langs: string[]): Promise<void> {
-      langs.forEach(
-          lang => VoiceNotificationManager.getInstance().onVoiceStatusChange(
-              lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
-              voiceSelectionMenu.availableVoices, false));
+    function setOfflineError(lang: string): Promise<void> {
+      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+          voiceSelectionMenu.availableVoices, false);
       return microtasksFinished();
     }
 
     function getDownloadMessages(): HTMLElement[] {
       return Array.from(
-          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+          voiceSelectionMenu.$.voiceSelectionMenu.get()
               .querySelectorAll<HTMLElement>('.download-message'));
     }
 
     function getErrorMessages(): HTMLElement[] {
-      return Array.from(voiceSelectionMenu!.$.voiceSelectionMenu.get()
+      return Array.from(voiceSelectionMenu.$.voiceSelectionMenu.get()
                             .querySelectorAll<HTMLElement>('.error-message'));
     }
 
     setup(() => {
       VoiceNotificationManager.getInstance().clear();
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
       return microtasksFinished();
     });
 
-    test('no messages by default', () => {
+    test('no messages by default', async () => {
+      await openVoiceMenu();
+
       assertEquals(0, getDownloadMessages().length);
       assertEquals(0, getErrorMessages().length);
     });
@@ -441,14 +419,13 @@ suite('VoiceSelectionMenu', () => {
     suite('with one language', () => {
       const lang = 'fr';
 
-      setup(() => {
-        return setVoiceStatus(
+      test('shows downloading message while installing', async () => {
+        await openVoiceMenu();
+
+        await setVoiceStatus(
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
-      });
 
-      test('shows downloading message while installing', () => {
         const msgs = getDownloadMessages();
-
         assertEquals(1, msgs.length);
         assertEquals(0, getErrorMessages().length);
         assertStringContains(
@@ -456,52 +433,42 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('hides downloading message when done', async () => {
+        await openVoiceMenu();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
+
         await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang);
+
         assertEquals(0, getDownloadMessages().length);
       });
 
       test('shows error message when fail', async () => {
-        await setOfflineError(lang);
-        const msgs = getErrorMessages();
+        await openVoiceMenu();
 
+        await setOfflineError(lang);
+
+        const msgs = getErrorMessages();
         assertEquals(0, getDownloadMessages().length);
         assertEquals(1, msgs.length);
         assertStringContains(msgs[0]!.textContent!, 'Connect to the internet');
       });
 
-      test('no messages after close', async () => {
-        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-        await microtasksFinished();
-        await setVoiceStatus(
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
-        await setOfflineError(lang);
-
-        assertEquals(0, getDownloadMessages().length);
-        assertEquals(0, getErrorMessages().length);
-      });
-
-      test('shows downloading messages again after open', async () => {
-        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-        await microtasksFinished();
+      test('shows downloading messages on open', async () => {
         await setVoiceStatus(
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
 
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-        await microtasksFinished();
+        await openVoiceMenu();
 
         assertEquals(1, getDownloadMessages().length);
         assertEquals(0, getErrorMessages().length);
       });
 
-      test('does not show error messages again after open', async () => {
-        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-        await microtasksFinished();
+      test('does not show error messages on open', async () => {
         await setVoiceStatus(
             VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang);
         await setOfflineError(lang);
 
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-        await microtasksFinished();
+        await openVoiceMenu();
 
         assertEquals(0, getDownloadMessages().length);
         assertEquals(0, getErrorMessages().length);
@@ -514,15 +481,22 @@ suite('VoiceSelectionMenu', () => {
       const lang3 = 'es-es';
       const lang4 = 'hi-HI';
 
-      setup(() => {
+      async function downloadLangs(): Promise<void> {
+        await openVoiceMenu();
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1);
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang2);
+        await setVoiceStatus(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang3);
         return setVoiceStatus(
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2, lang3,
-            lang4);
-      });
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang4);
+      }
 
-      test('shows downloading messages while installing', () => {
+      test('shows downloading messages while installing', async () => {
+        await downloadLangs();
+
         const msgs = getDownloadMessages();
-
         assertEquals(4, msgs.length);
         assertStringContains(
             msgs[0]!.textContent!,
@@ -535,6 +509,8 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('hides downloading messages when done', async () => {
+        await downloadLangs();
+
         await setVoiceStatus(VoiceClientSideStatusCode.AVAILABLE, lang1);
         assertEquals(3, getDownloadMessages().length);
 
@@ -549,11 +525,14 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('shows error message when fail', async () => {
-        await setVoiceStatus(
-            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION, lang1, lang2);
-        await setOfflineError(lang3, lang4);
-        const msgs = getErrorMessages();
+        await openVoiceMenu();
 
+        await setOfflineError(lang1);
+        await setOfflineError(lang2);
+        await setOfflineError(lang3);
+        await setOfflineError(lang4);
+
+        const msgs = getErrorMessages();
         assertEquals(0, getDownloadMessages().length);
         assertEquals(4, msgs.length);
         assertStringContains(
@@ -567,28 +546,15 @@ suite('VoiceSelectionMenu', () => {
             msgs[3]!.textContent!, 'There are no हिन्दी voices');
       });
 
-      test('no messages after close', async () => {
-        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-        await microtasksFinished();
+      test('shows only downloading messages on open', async () => {
         await setVoiceStatus(
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2, lang3,
-            lang4);
-        await setOfflineError(lang1, lang2, lang3, lang4);
-
-        assertEquals(0, getDownloadMessages().length);
-        assertEquals(0, getErrorMessages().length);
-      });
-
-      test('shows only downloading messages again after open', async () => {
-        voiceSelectionMenu.$.voiceSelectionMenu.get().close();
-        await microtasksFinished();
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1);
         await setVoiceStatus(
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang1, lang2);
-        await setVoiceStatus(
-            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION, lang3, lang4);
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, lang2);
+        await setOfflineError(lang3);
+        await setOfflineError(lang4);
 
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
-        await microtasksFinished();
+        await openVoiceMenu();
 
         assertEquals(2, getDownloadMessages().length);
         assertEquals(0, getErrorMessages().length);
@@ -596,13 +562,3 @@ suite('VoiceSelectionMenu', () => {
     });
   });
 });
-
-function isHiddenWithCss(element: HTMLElement): boolean {
-  return window.getComputedStyle(element).visibility === 'hidden';
-}
-
-function isPositionedOnPage(element: HTMLElement) {
-  return !!element &&
-      !!(element.offsetWidth || element.offsetHeight ||
-         element.getClientRects().length);
-}

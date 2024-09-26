@@ -40,13 +40,14 @@ export class VoiceNotificationManager {
       onLine: boolean = window.navigator.onLine) {
     const notification =
         getNotification(language, status, availableVoices, onLine);
-    this.listeners_.forEach(
-        listener => listener.notify(language, notification));
     if (notification === NotificationType.DOWNLOADING) {
       this.downloadingLanguages_.add(language);
     } else if (this.downloadingLanguages_.has(language)) {
       this.downloadingLanguages_.delete(language);
     }
+
+    this.listeners_.forEach(
+        listener => listener.notify(language, notification));
   }
 
   static getInstance(): VoiceNotificationManager {
