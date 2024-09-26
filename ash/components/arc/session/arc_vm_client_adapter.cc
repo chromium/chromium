@@ -381,6 +381,19 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_writable(false);
   }
 
+  // Always add the ARCVM runtime system properties file as a disk at path
+  // /dev/block/vdg. We share this file as a disk image instead of using a
+  // shared directory because it needs to be accessed during early init before
+  // virtio-fs is available in Android.
+  const std::string sysprop_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/%s.runtime.prop",
+                         user_id_hash.c_str(), kArcvmEncodedName);
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_RAW);
+  disk_image->set_do_mount(true);
+  disk_image->set_path(sysprop_disk_path);
+  disk_image->set_writable(false);
+
   // Add cpus.
   request.set_cpus(cpus);
 
