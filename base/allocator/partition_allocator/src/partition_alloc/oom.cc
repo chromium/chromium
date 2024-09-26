@@ -15,6 +15,7 @@
 
 #include <array>
 #include <cstdlib>
+#include <limits>
 #endif  // PA_BUILDFLAG(IS_WIN)
 
 namespace partition_alloc {
