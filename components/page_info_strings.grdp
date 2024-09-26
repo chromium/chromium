@@ -74,13 +74,13 @@
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
-    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number.
+    Attackers on the site you tried visiting might install harmful software that steals or deletes things like your password, photos, messages, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
-    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number.
+    Attackers on the site you tried visiting might trick you into installing software or revealing things like your password, phone, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
-    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
+    Attackers on the site you tried visiting might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
   </message>
 
   <!-- Identity detail strings shared with iOS -->
