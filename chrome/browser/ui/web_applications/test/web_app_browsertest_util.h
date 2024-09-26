@@ -180,7 +180,12 @@ bool WaitForIPHToShowIfAny(Browser* browser);
 namespace test {
 
 // Denote ways to simulate click on an element.
-enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
+enum class ClickMethod {
+  kLeftClick,
+  kMiddleClick,
+  kShiftClick,
+  kRightClickLaunchApp
+};
 
 // This function simulates a click on the middle of an element matching
 // `element_id` based on the type of click passed to it.

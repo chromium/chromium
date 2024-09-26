@@ -21,6 +21,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -48,6 +50,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -219,6 +222,8 @@ std::string_view ToParamString(test::ClickMethod click) {
       return "MiddleClick";
     case test::ClickMethod::kShiftClick:
       return "ShiftClick";
+    case test::ClickMethod::kRightClickLaunchApp:
+      return "RightClick";
   }
 }
 
@@ -530,6 +535,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
+  // Trigger a right click on an HTML element, wait for the context menu to
+  // show up and mimic an `Open link in <Installed App>` flow.
+  void SimulateRightClickOnElementAndLaunchApp(content::WebContents* contents,
+                                               const std::string& element_id) {
+    base::test::TestFuture<RenderViewContextMenu*> future_callback;
+    ContextMenuNotificationObserver context_menu_observer(
+        IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP, /*event_flags=*/0,
+        future_callback.GetCallback());
+    test::SimulateClickOnElement(contents, element_id,
+                                 test::ClickMethod::kRightClickLaunchApp);
+    ASSERT_TRUE(future_callback.Wait());
+  }
+
   // The json file is of the following format:
   // { 'tests': {
   //   'TestName': { ... }
@@ -929,7 +947,11 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
-    test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
+    if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
+      test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
+    } else {
+      SimulateRightClickOnElementAndLaunchApp(contents_a, GetElementId());
+    }
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -990,6 +1012,35 @@ INSTANTIATE_TEST_SUITE_P(
             test::ClickMethod::kMiddleClick,  // Simulate middle-mouse click.
             test::ClickMethod::kShiftClick    // Simulate shift click.
             ),
+        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
+                        OpenerMode::kNoOpener  // Supply 'noopener' property.
+                        ),
+        testing::Values(
+            NavigationTarget::kSelf,    // Use target _self.
+            NavigationTarget::kFrame,   // Use named frame as target.
+            NavigationTarget::kBlank,   // User Target is _blank.
+            NavigationTarget::kNoFrame  // Target is non-existing frame.
+            )),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    RightClick,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2A  // Navigate in-scope A.
+                        ),
+        testing::Values(RedirectType::kNone),
+        testing::Values(
+            NavigationElement::kElementLink),  // Navigate via element.
+        testing::Values(
+            test::ClickMethod::kRightClickLaunchApp),  // Simulate right-mouse
+                                                       // click.
         testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
                         OpenerMode::kNoOpener  // Supply 'noopener' property.
                         ),

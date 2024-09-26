@@ -63,6 +63,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -536,6 +538,10 @@ void SimulateClickOnElement(content::WebContents* contents,
       break;
     case ClickMethod::kShiftClick:
       modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
+      break;
+    case ClickMethod::kRightClickLaunchApp:
+      button = blink::WebMouseEvent::Button::kRight;
+      modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
       break;
   }
   content::SimulateMouseClickAt(contents, modifiers, button, element_center);
