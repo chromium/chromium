@@ -15,6 +15,7 @@
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -385,13 +386,16 @@ user_education::FeaturePromoResult TestBrowserWindow::CanShowFeaturePromo(
   return feature_promo_controller_->CanShowPromo(iph_feature);
 }
 
-user_education::FeaturePromoResult TestBrowserWindow::MaybeShowFeaturePromo(
+void TestBrowserWindow::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params) {
   if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kBlockedByContext);
+    return;
   }
 
-  return feature_promo_controller_->MaybeShowPromo(std::move(params));
+  feature_promo_controller_->MaybeShowPromo(std::move(params));
 }
 
 bool TestBrowserWindow::MaybeShowStartupFeaturePromo(

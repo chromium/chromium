@@ -5330,7 +5330,7 @@ user_education::FeaturePromoResult BrowserView::CanShowFeaturePromo(
   return feature_promo_controller_->CanShowPromo(iph_feature);
 }
 
-user_education::FeaturePromoResult BrowserView::MaybeShowFeaturePromo(
+void BrowserView::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params) {
   // Trying to show a promo before the browser is initialized can result in a
   // failure to retrieve accelerators, which can cause issues for screen reader
@@ -5338,14 +5338,20 @@ user_education::FeaturePromoResult BrowserView::MaybeShowFeaturePromo(
   if (!initialized_) {
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << " before browser initialization; IPH will not be shown.";
-    return user_education::FeaturePromoResult::kError;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kError);
+    return;
   }
 
   if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kBlockedByContext);
+    return;
   }
 
-  return feature_promo_controller_->MaybeShowPromo(std::move(params));
+  feature_promo_controller_->MaybeShowPromo(std::move(params));
 }
 
 bool BrowserView::MaybeShowStartupFeaturePromo(

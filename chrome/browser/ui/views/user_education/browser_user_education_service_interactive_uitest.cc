@@ -67,22 +67,15 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
                           }),
                  EnsureFocus(kToolbarAppMenuButtonElementId, true));
   }
-
-  auto ShowHelpBubble() {
-    return CheckResult(
-        [this]() {
-          return browser()->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHWebUiHelpBubbleTestFeature);
-        },
-        user_education::FeaturePromoResult::Success(), "ShowHelpBubble()");
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceUiTest,
                        WebUIHelpBubbleTakesFocus) {
-  RunTestSequence(DoSetup(), FocusAppMenuButton(),
-                  EnsureFocus(kContentsPaneName, false), ShowHelpBubble(),
-                  EnsureFocus(kContentsPaneName, true),
-                  CheckJsResult(kMainContentsElementId, kGetActiveElementJs,
-                                "action-button-1"));
+  RunTestSequence(
+      DoSetup(), FocusAppMenuButton(), EnsureFocus(kContentsPaneName, false),
+      MaybeShowPromo(feature_engagement::kIPHWebUiHelpBubbleTestFeature,
+                     WebUiHelpBubbleShown()),
+      EnsureFocus(kContentsPaneName, true),
+      CheckJsResult(kMainContentsElementId, kGetActiveElementJs,
+                    "action-button-1"));
 }

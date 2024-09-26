@@ -113,8 +113,7 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
   EXPECT_CALL(*mock_promo_controller(),
               MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
                   feature_engagement::kIPHDesktopCustomizeChromeFeature)))
-      .Times(1)
-      .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
+      .Times(1);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
   helper()->MaybeShowFeaturePromo(
       feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());

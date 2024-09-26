@@ -77,7 +77,7 @@ class BrowserUserEducationInterface {
   // If determining whether to call this method would involve significant
   // expense, you *may* first call `CanShowFeaturePromo()` before doing the
   // required computation; otherwise just call this method.
-  virtual user_education::FeaturePromoResult MaybeShowFeaturePromo(
+  virtual void MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) = 0;
 
   // Maybe shows an in-product help promo at startup, whenever the Feature

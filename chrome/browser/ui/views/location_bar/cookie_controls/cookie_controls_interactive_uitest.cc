@@ -56,9 +56,9 @@ const char kUMABubbleReloadingTimeout[] =
     "CookieControls.Bubble.ReloadingTimeout";
 }  // namespace
 
-class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
+class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
  public:
-  explicit CookieControlsInteractiveUiBaseTest(
+  explicit CookieControlsInteractiveTestBase(
       std::vector<base::test::FeatureRef> iph_features = {})
       : InteractiveFeaturePromoTest(
             UseDefaultTrackerAllowingPromos(iph_features)) {
@@ -66,7 +66,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~CookieControlsInteractiveUiBaseTest() override = default;
+  ~CookieControlsInteractiveTestBase() override = default;
 
   void SetUp() override {
     disabled_features_.InitWithFeatures(EnabledFeatures(), DisabledFeatures());
@@ -284,7 +284,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
   base::subtle::ScopedTimeClockOverrides time_override_{
-      &CookieControlsInteractiveUiBaseTest::GetReferenceTime,
+      &CookieControlsInteractiveTestBase::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
 
   bool has_act_features_ = false;
@@ -294,14 +294,18 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
-class CookieControlsInteractiveUiTest
-    : public CookieControlsInteractiveUiBaseTest,
-      public testing::WithParamInterface<bool> {};
+class CookieControlsUiTest : public CookieControlsInteractiveTestBase,
+                             public testing::WithParamInterface<bool> {};
 
-INSTANTIATE_TEST_SUITE_P(All, CookieControlsInteractiveUiTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         CookieControlsUiTest,
+                         testing::Bool(),
+                         [](testing::TestParamInfo<bool> param) {
+                           return param.param ? "BlockThirdPartyCookies"
+                                              : "AllowThirdPartyCookies";
+                         });
 
-class CookieControlsInteractiveUiNoFeedbackTest
-    : public CookieControlsInteractiveUiTest {
+class CookieControlsInteractiveUiNoFeedbackTest : public CookieControlsUiTest {
  public:
   CookieControlsInteractiveUiNoFeedbackTest() = default;
   ~CookieControlsInteractiveUiNoFeedbackTest() override = default;
@@ -313,8 +317,7 @@ class CookieControlsInteractiveUiNoFeedbackTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
-                       BubbleOpensWhenIconPressed) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, BubbleOpensWhenIconPressed) {
   BlockThirdPartyCookies(GetParam());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -325,8 +328,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
       CheckFeedbackButtonVisible(false));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
-                       CreateExceptionPre3pcd) {
+IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, CreateExceptionPre3pcd) {
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
@@ -359,8 +361,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiNoFeedbackTest,
       CheckFeedbackButtonVisible(false), CheckStateForTemporaryException());
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
-                       RemoveExceptionPre3pcd) {
+IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveExceptionPre3pcd) {
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies();
@@ -380,8 +381,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
       CheckStateForNoException());
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
-                       IconAnimatesOnHighSiteEngagement) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, IconAnimatesOnHighSiteEngagement) {
   BlockThirdPartyCookies(GetParam());
   SetHighSiteEngagement();
   RunTestSequence(
@@ -392,16 +392,15 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
 }
 
 // Need a separate fixture to override the enabled feature list.
-class CookieControlsInteractiveUiWithCookieControlsIphTest
-    : public CookieControlsInteractiveUiBaseTest {
+class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
  public:
-  CookieControlsInteractiveUiWithCookieControlsIphTest()
-      : CookieControlsInteractiveUiBaseTest(
+  CookieControlsWithIphUiTest()
+      : CookieControlsInteractiveTestBase(
             {feature_engagement::kIPHCookieControlsFeature}) {}
-  ~CookieControlsInteractiveUiWithCookieControlsIphTest() override = default;
+  ~CookieControlsWithIphUiTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
                        ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
@@ -423,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
-                       OpenUserBypassViaIph) {
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, OpenUserBypassViaIph) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
@@ -442,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
                        OpenUserBypassViaIconWhenIphVisible) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
@@ -461,8 +459,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
-                       NotShownWhen3pcdEnabled) {
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, NotShownWhen3pcdEnabled) {
   BlockThirdPartyCookies(/*use_3pcd*/ true);
   SetHighSiteEngagement();
   RunTestSequence(
@@ -476,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
 // which cannot be easily tested here. Instead, LaCrOS has a separate feedback
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, FeedbackOpens) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, FeedbackOpens) {
   BlockThirdPartyCookies(GetParam());
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
@@ -490,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, FeedbackOpens) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadView) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, ReloadView) {
   // Test that opening the bubble, then closing it after making a change,
   // results in the reload view being displayed.
   BlockThirdPartyCookies(GetParam());
@@ -509,7 +506,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadView) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadViewTimeout) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, ReloadViewTimeout) {
   // Test that opening the bubble, then closing it after making a change,
   // results in the reload view being displayed and then timing out.
   //
@@ -537,8 +534,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, ReloadViewTimeout) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
-                       ReloadView_TabChanged_NoReload) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, ReloadView_TabChanged_NoReload) {
   // Test that opening the bubble making a change, then changing tabs while
   // the bubble is open, then re-opening the bubble on the new tab and closing
   // _doesn't_ reload the page. Regression test for crbug.com/1470275.
@@ -580,8 +576,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
-                       ReloadView_TabChanged_Reload) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, ReloadView_TabChanged_Reload) {
   // Test that opening the bubble, _not_ making a change, then changing tabs
   // while the bubble is open, then re-opening the bubble on the new tab and
   // making a change _does_ reload the page, and that on page reload the
@@ -624,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest,
                        ReloadView_TabChangedDifferentSetting_NoReload) {
   // Test that loading a page with cookies allowed, then swapping to a tab
   // where cookies are disabled, then opening and closing the bubble without
@@ -669,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
 }
 
-IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, NoReloadView) {
+IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, NoReloadView) {
   // Test that opening the bubble, then closing it without making an effective
   // change to cookie settings, does not show the reload view.
   BlockThirdPartyCookies(GetParam());
@@ -691,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest, NoReloadView) {
 }
 
 class CookieControlsInteractiveUi3pcdTest
-    : public CookieControlsInteractiveUiBaseTest,
+    : public CookieControlsInteractiveTestBase,
       public testing::WithParamInterface<testing::tuple<bool, bool>> {
  protected:
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
@@ -746,7 +741,7 @@ INSTANTIATE_TEST_SUITE_P(
                      /*show_feedback_button*/ testing::Bool()));
 
 class CookieControlsInteractiveUiTrackingProtectionTest
-    : public CookieControlsInteractiveUiBaseTest,
+    : public CookieControlsInteractiveTestBase,
       public testing::WithParamInterface<bool> {
  public:
   CookieControlsInteractiveUiTrackingProtectionTest() = default;

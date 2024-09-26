@@ -117,13 +117,20 @@ void CookieControlsIconView::MaybeShowIPH() {
   CHECK(browser_->window());
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHCookieControlsFeature);
+  params.show_promo_result_callback =
+      base::BindOnce(&CookieControlsIconView::OnShowPromoResult,
+                     weak_ptr_factory_.GetWeakPtr());
   params.close_callback = base::BindOnce(&CookieControlsIconView::OnIPHClosed,
                                          weak_ptr_factory_.GetWeakPtr());
-  if (!browser_->window()->MaybeShowFeaturePromo(std::move(params))) {
-    MaybeAnimateIcon();
-    return;
-  }
-  SetHighlighted(true);
+  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+  // Note: originally we would animate here based on whether the promo showed,
+  // but since promos are show asynchronously, the options are:
+  //  - Always animate; if the IPH shows it shows
+  //  - Always wait until we get a yes or no answer from the promo system before
+  //    deciding whether to animate
+  // Since most of the time the result should come back quickly, and if it
+  // doesn't, it's because the user is doing something else or there is another
+  // promo showing, for now, we choose the later option.
 }
 
 void CookieControlsIconView::OnShowPromoResult(

@@ -771,10 +771,9 @@ void DownloadToolbarButtonView::ShowIphPromo() {
   }
   if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
           safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
-      !profile->IsOffTheRecord() &&
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHDownloadEsbPromoFeature)) {
-    return;
+      !profile->IsOffTheRecord()) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHDownloadEsbPromoFeature);
   }
 #endif
 }

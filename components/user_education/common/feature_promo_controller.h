@@ -78,9 +78,8 @@ struct FeaturePromoParams;
 class FeaturePromoController {
  public:
   using BubbleCloseCallback = base::OnceClosure;
-  using QueuedPromoCallback =
-      base::OnceCallback<void(const base::Feature& iph_feature,
-                              FeaturePromoResult promo_result)>;
+  using ShowPromoResultCallback =
+      base::OnceCallback<void(FeaturePromoResult promo_result)>;
 
   FeaturePromoController();
   FeaturePromoController(const FeaturePromoController& other) = delete;
@@ -101,9 +100,10 @@ class FeaturePromoController {
   virtual FeaturePromoResult CanShowPromo(
       const FeaturePromoParams& params) const = 0;
 
-  // Starts the promo if possible. Returns whether it started.
-  // If the Feature Engagement backend is not initialized, returns false.
-  virtual FeaturePromoResult MaybeShowPromo(FeaturePromoParams params) = 0;
+  // Starts the promo if possible. If a result callback is specified, it will be
+  // called with the result of trying to show the promo. In cases where a promo
+  // could be queued, the callback may happen significantly later.
+  virtual void MaybeShowPromo(FeaturePromoParams params) = 0;
 
   // Tries to start the promo at a time when the Feature Engagement backend may
   // not yet be initialized. Once it is initialized (which could be
@@ -192,6 +192,11 @@ class FeaturePromoController {
   // Returns a weak pointer to this object.
   virtual base::WeakPtr<FeaturePromoController> GetAsWeakPtr() = 0;
 
+  // Posts `result` to `callback` on a fresh call stack. Requires a functioning
+  // message pump.
+  static void PostShowPromoResult(ShowPromoResultCallback callback,
+                                  FeaturePromoResult result);
+
  protected:
   friend class FeaturePromoHandle;
 
@@ -240,7 +245,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // FeaturePromoController:
   FeaturePromoResult CanShowPromo(
       const FeaturePromoParams& params) const override;
-  FeaturePromoResult MaybeShowPromo(FeaturePromoParams params) override;
+  void MaybeShowPromo(FeaturePromoParams params) override;
   bool MaybeShowStartupPromo(FeaturePromoParams params) override;
   FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const override;
@@ -565,8 +570,11 @@ struct FeaturePromoParams {
   // (i.e. non-keyed) promos.
   std::string key;
 
-  // Used for startup promos; will be called when the promo actually shows.
-  FeaturePromoController::QueuedPromoCallback queued_promo_callback;
+  // Will be called when the promo actually shows or fails to show. For queued
+  // promos, will be called when the promo is shown. For non-queued promos, will
+  // be posted immediately with the result of the request (arrives on a fresh
+  // message loop call stack).
+  FeaturePromoController::ShowPromoResultCallback show_promo_result_callback;
 
   // If a bubble was shown and `close_callback` is provided, it will be called
   // when the bubble closes. The callback must remain valid as long as the

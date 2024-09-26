@@ -80,21 +80,31 @@ class InteractiveFeaturePromoTestApi
 
   // --------------------------------------------------------------------------
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.
-  // TODO(dfried): fix these so that they work for WebUI help bubbles as well.
+
+  struct WebUiHelpBubbleShown {};
+  using ShowPromoResult =
+      std::variant<WebUiHelpBubbleShown, user_education::FeaturePromoResult>;
 
   // Possibly tries to show the promo with `params`, which should produce the
-  // `expected_result`. If the result is success, checks that the help bubble is
-  // open and the correct promo is showing.
+  // `show_promo_result`. If `show_promo_result` is not `WebUiHelpBubbleShown`
+  // and the result is success, checks that a Views help bubble is open and the
+  // correct promo is showing. For WebUI bubbles, only checks that the correct
+  // promo is showing.
   //
   // When using a mock `FeatureEngagementTracker` the tracker will be set up to
   // handle the appropriate calls.
   [[nodiscard]] MultiStep MaybeShowPromo(
       user_education::FeaturePromoParams params,
-      user_education::FeaturePromoResult expected_result =
+      ShowPromoResult show_promo_result =
           user_education::FeaturePromoResult::Success());
 
-  // Waits for the given promo to be shown.
+  // Waits for the given Views promo bubble to be shown and verifies that the
+  // correct IPH is active.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
+
+  // Checks that the promo `iph_feature` is active.
+  [[nodiscard]] StepBuilder CheckPromoIsActive(
+      const base::Feature& iph_feature);
 
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,

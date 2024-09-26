@@ -394,11 +394,11 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   const bool has_non_empty_note = !base::ranges::all_of(
       GetCurrentForms(), &std::u16string::empty,
       &password_manager::PasswordForm::GetNoteWithEmptyUniqueDisplayName);
-  if (has_non_empty_note &&
-      browser->window()->MaybeShowFeaturePromo(
-          feature_engagement::
-              kIPHPasswordsManagementBubbleDuringSigninFeature)) {
-    return;
+  // Only one of these promos will be able to show. Try the more specific one
+  // first.
+  if (has_non_empty_note) {
+    browser->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
   }
   MaybeShowPasswordManagerShortcutIPH(browser);
 }
@@ -867,11 +867,10 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Do not trigger the IPH if the sign in promo will be shown.
   if (browser && !signin::ShouldShowPasswordSignInPromo(*browser->profile())) {
-    if (browser->window()->MaybeShowFeaturePromo(
-            feature_engagement::
-                kIPHPasswordsManagementBubbleAfterSaveFeature)) {
-      return;
-    }
+    // Only one of these promos will be able to show. Try the more specific one
+    // first.
+    browser->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
     MaybeShowPasswordManagerShortcutIPH(browser);
   }
 }

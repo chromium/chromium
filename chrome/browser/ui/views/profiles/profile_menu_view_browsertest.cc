@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
+#include "components/user_education/common/feature_promo_result.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -352,8 +354,16 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for https://crbug.com/1205901
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
-  EXPECT_TRUE(browser()->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature));
+  base::RunLoop run_loop;
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHProfileSwitchFeature);
+  params.show_promo_result_callback = base::BindLambdaForTesting(
+      [&run_loop](user_education::FeaturePromoResult result) {
+        ASSERT_TRUE(result);
+        run_loop.Quit();
+      });
+  browser()->window()->MaybeShowFeaturePromo(std::move(params));
+  run_loop.Run();
   EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 

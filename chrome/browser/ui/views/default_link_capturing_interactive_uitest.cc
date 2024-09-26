@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -34,6 +33,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -250,17 +250,11 @@ class WebAppLinkCapturingIPHPromoTest
                      link_target, "");
   }
 
-  BrowserFeaturePromoController* GetFeaturePromoController(Browser* browser) {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser->window()->GetFeaturePromoControllerForTesting());
-    return promo_controller;
-  }
-
   user_education::HelpBubbleView* GetCurrentPromoBubble(Browser* browser) {
-    auto* const promo_controller = GetFeaturePromoController(browser);
-    return promo_controller->promo_bubble_for_testing()
-        ->AsA<user_education::HelpBubbleViews>()
-        ->bubble_view();
+    return views::ElementTrackerViews::GetInstance()
+        ->GetFirstMatchingViewAs<user_education::HelpBubbleView>(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+            browser->window()->GetElementContext());
   }
 
   void SetUpSiteForLinkCapturingIphBubble(const webapps::AppId& app_id) {
@@ -270,18 +264,13 @@ class WebAppLinkCapturingIPHPromoTest
   }
 
   void AcceptCustomActionIPH(Browser* app_browser) {
-    auto* custom_action_button =
-        GetCurrentPromoBubble(app_browser)
-            ->GetNonDefaultButtonForTesting(/*index=*/0);
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        custom_action_button, ui::test::InteractionTestUtil::InputType::kMouse);
+    RunTestSequenceInContext(app_browser->window()->GetElementContext(),
+                             PressNonDefaultPromoButton());
   }
 
   void DismissIPH(Browser* app_browser) {
-    auto* custom_action_button =
-        GetCurrentPromoBubble(app_browser)->GetDefaultButtonForTesting();
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        custom_action_button, ui::test::InteractionTestUtil::InputType::kMouse);
+    RunTestSequenceInContext(app_browser->window()->GetElementContext(),
+                             PressDefaultPromoButton());
   }
 
   Browser* TriggerAppLaunchIphAndGetBrowser(const webapps::AppId& app_id) {
@@ -293,9 +282,9 @@ class WebAppLinkCapturingIPHPromoTest
     EXPECT_TRUE(
         web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
     EXPECT_NE(browser(), app_browser);
-    EXPECT_TRUE(web_app::WaitForIPHToShowIfAny(app_browser));
-    EXPECT_TRUE(app_browser->window()->IsFeaturePromoActive(
-        feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
+    RunTestSequenceInContext(
+        app_browser->window()->GetElementContext(),
+        WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
     return app_browser;
   }
 };

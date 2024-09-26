@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -44,6 +45,19 @@ DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kFeaturePromoControllerNotice);
 
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
+
+void FeaturePromoController::PostShowPromoResult(
+    ShowPromoResultCallback callback,
+    FeaturePromoResult result) {
+  if (callback) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](FeaturePromoController::ShowPromoResultCallback callback,
+               FeaturePromoResult result) { std::move(callback).Run(result); },
+            std::move(callback), result));
+  }
+}
 
 struct FeaturePromoControllerCommon::ShowPromoBubbleParams {
   ShowPromoBubbleParams() = default;
@@ -107,9 +121,11 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromo(
   return result;
 }
 
-FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromo(
-    FeaturePromoParams params) {
-  return MaybeShowPromoImpl(std::move(params), ShowSource::kNormal);
+void FeaturePromoControllerCommon::MaybeShowPromo(FeaturePromoParams params) {
+  auto callback = std::move(params.show_promo_result_callback);
+  PostShowPromoResult(
+      std::move(callback),
+      MaybeShowPromoImpl(std::move(params), ShowSource::kNormal));
 }
 
 bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
@@ -327,9 +343,9 @@ bool FeaturePromoControllerCommon::EndPromo(
     FeaturePromoClosedReason close_reason) {
   const auto it = FindQueuedPromo(iph_feature);
   if (it != queued_promos_.end()) {
-    auto& cb = it->params.queued_promo_callback;
+    auto& cb = it->params.show_promo_result_callback;
     if (cb) {
-      std::move(cb).Run(iph_feature, FeaturePromoResult::kCanceled);
+      std::move(cb).Run(FeaturePromoResult::kCanceled);
     }
     queued_promos_.erase(it);
     return true;
@@ -568,16 +584,16 @@ void FeaturePromoControllerCommon::MaybeShowQueuedPromo() {
 
   // Store the data that is needed to show the promo and then remove it from
   // the queue.
-  const base::Feature* const iph_feature = &next->params.feature.get();
   FeaturePromoParams params = std::move(next->params);
   queued_promos_.erase(next);
-  QueuedPromoCallback callback = std::move(params.queued_promo_callback);
+  ShowPromoResultCallback callback =
+      std::move(params.show_promo_result_callback);
 
   // Try to start the promo, assuming the tracker was successfully initialized.
   const FeaturePromoResult result =
       MaybeShowPromoImpl(std::move(params), ShowSource::kQueue);
   if (callback) {
-    std::move(callback).Run(*iph_feature, result);
+    std::move(callback).Run(result);
   }
 
   // On failure, there may still be promos to show, so attempt to show the next
@@ -609,9 +625,9 @@ FeaturePromoControllerCommon::FindQueuedPromo(
 
 void FeaturePromoControllerCommon::FailQueuedPromos() {
   for (auto& data : queued_promos_) {
-    auto& cb = data.params.queued_promo_callback;
+    auto& cb = data.params.show_promo_result_callback;
     if (cb) {
-      std::move(cb).Run(*data.params.feature, FeaturePromoResult::kError);
+      std::move(cb).Run(FeaturePromoResult::kError);
     }
   }
   queued_promos_.clear();

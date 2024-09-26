@@ -250,7 +250,6 @@ TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
   EXPECT_CALL(*mock_promo_controller(),
               MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
                   feature_engagement::kIPHHistorySearchFeature)))
-      .Times(1)
-      .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
+      .Times(1);
   handler_->MaybeShowFeaturePromo();
 }

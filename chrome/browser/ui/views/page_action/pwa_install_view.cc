@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -161,13 +162,20 @@ void PwaInstallView::UpdateImpl() {
         &PwaInstallView::OnIphClosed, weak_ptr_factory_.GetWeakPtr(), *data);
     params.body_params =
         webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
-    const user_education::FeaturePromoResult iph_result =
-        browser_->window()->MaybeShowFeaturePromo(std::move(params));
-    if (iph_result) {
-      // Reset the iph flag when it's shown again.
-      install_icon_clicked_after_iph_shown_ = false;
-      SetHighlighted(true);
-    }
+    params.show_promo_result_callback = base::BindOnce(
+        &PwaInstallView::OnIphShown, weak_ptr_factory_.GetWeakPtr());
+    browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    iph_pending_ = true;
+  }
+}
+
+void PwaInstallView::OnIphShown(user_education::FeaturePromoResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  iph_pending_ = false;
+  // Reset the IPH flag when it's shown.
+  if (result) {
+    install_icon_clicked_after_iph_shown_ = false;
+    SetHighlighted(true);
   }
 }
 
@@ -250,6 +258,9 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
                                    const webapps::WebAppBannerData& data) {
+  if (iph_pending_) {
+    return false;
+  }
   if (blink::IsEmptyManifest(data.manifest()) || !data.manifest_id.is_valid()) {
     return false;
   }

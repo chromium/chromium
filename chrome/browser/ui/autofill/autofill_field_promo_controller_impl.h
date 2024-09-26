@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace content {
@@ -51,6 +52,8 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
 #endif
 
  private:
+  void OnShowPromoResult(user_education::FeaturePromoResult);
+
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ref<const base::Feature> feature_promo_;
   // The view sets the `element_identifier_` as its property. This is how the
@@ -59,6 +62,8 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
   base::WeakPtr<AutofillFieldPromoView> promo_view_;
   // This is a helper which detects events that should hide the promo.
   std::optional<AutofillPopupHideHelper> promo_hide_helper_;
+  base::WeakPtrFactory<AutofillFieldPromoControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

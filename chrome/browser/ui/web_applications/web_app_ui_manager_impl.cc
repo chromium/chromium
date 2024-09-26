@@ -51,6 +51,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/feature_promo_result.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -822,13 +823,15 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
   promo_params.close_callback =
       base::BindOnce(&WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing,
                      weak_ptr_factory_.GetWeakPtr(), browser, app_id);
+  promo_params.show_promo_result_callback =
+      base::BindOnce([](user_education::FeaturePromoResult result) {
+        if (result) {
+          base::RecordAction(
+              base::UserMetricsAction("LinkCapturingIPHAppBubbleShown"));
+        }
+      });
 
-  user_education::FeaturePromoResult promo_result =
-      browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
-  if (promo_result) {
-    base::RecordAction(
-        base::UserMetricsAction("LinkCapturingIPHAppBubbleShown"));
-  }
+  browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
 }
 
 void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(

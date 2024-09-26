@@ -256,7 +256,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const override;
-  user_education::FeaturePromoResult MaybeShowFeaturePromo(
+  void MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) override;
   bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;

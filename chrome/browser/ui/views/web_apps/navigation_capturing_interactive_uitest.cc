@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
@@ -106,19 +106,6 @@ class WebAppNavigationCapturingIPHPromoTest
     return app_id;
   }
 
-  BrowserFeaturePromoController* GetFeaturePromoController(Browser* browser) {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser->window()->GetFeaturePromoControllerForTesting());
-    return promo_controller;
-  }
-
-  user_education::HelpBubbleView* GetCurrentPromoBubble(Browser* browser) {
-    auto* const promo_controller = GetFeaturePromoController(browser);
-    return promo_controller->promo_bubble_for_testing()
-        ->AsA<user_education::HelpBubbleViews>()
-        ->bubble_view();
-  }
-
   content::WebContents* OpenStartPageInTab() {
     content::DOMMessageQueue message_queue;
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -147,21 +134,6 @@ class WebAppNavigationCapturingIPHPromoTest
     return contents;
   }
 
-  void AcceptCustomActionIPH(Browser* app_browser) {
-    auto* custom_action_button =
-        GetCurrentPromoBubble(app_browser)
-            ->GetNonDefaultButtonForTesting(/*index=*/0);
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        custom_action_button, ui::test::InteractionTestUtil::InputType::kMouse);
-  }
-
-  void DismissIPH(Browser* app_browser) {
-    auto* custom_action_button =
-        GetCurrentPromoBubble(app_browser)->GetDefaultButtonForTesting();
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        custom_action_button, ui::test::InteractionTestUtil::InputType::kMouse);
-  }
-
   Browser* TriggerAppLaunchIphAndGetBrowser(content::WebContents* contents,
                                             test::ClickMethod click,
                                             const std::string& elementId) {
@@ -172,16 +144,6 @@ class WebAppNavigationCapturingIPHPromoTest
     Browser* app_browser = browser_added_waiter.Wait();
     EXPECT_NE(browser(), app_browser);
     return app_browser;
-  }
-
-  bool IsNavCapturingIphVisible(bool expect_visible,
-                                Browser* app_browser,
-                                const webapps::AppId& app_id) {
-    if (expect_visible) {
-      EXPECT_TRUE(web_app::WaitForIPHToShowIfAny(app_browser));
-    }
-    return app_browser->window()->IsFeaturePromoActive(
-        feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch);
   }
 
  private:
@@ -207,8 +169,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   ASSERT_NE(nullptr, app_browser);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -227,8 +190,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kMiddleClick, kToSiteATargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -247,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kShiftClick, kToSiteBTargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id_b));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -274,8 +239,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   SimulateClickOnElement(source_contents, kToSiteBTargetBlankNoopener,
                          test::ClickMethod::kLeftClick);
 
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, browser_b, app_id));
+  RunTestSequenceInContext(
+      browser_b->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -295,9 +261,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankWithOpener);
   ASSERT_NE(nullptr, app_browser);
-
-  EXPECT_FALSE(IsNavCapturingIphVisible(/*expect_visible=*/false, app_browser,
-                                        app_id_b));
+  EXPECT_FALSE(app_browser->window()->IsFeaturePromoActive(
+      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -317,15 +282,23 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("LinkCapturingIPHAppBubbleShown"));
-
-  chrome::CloseWindow(app_browser);
-  ui_test_utils::WaitForBrowserToClose(app_browser);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "LinkCapturingIPHAppBubbleNotAccepted"));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
+      CheckResult(
+          [&]() {
+            return user_action_tester.GetActionCount(
+                "LinkCapturingIPHAppBubbleShown");
+          },
+          1),
+      Do([&]() { chrome::CloseWindow(app_browser); }),
+      WaitForHide(kBrowserViewElementId).SetTransitionOnlyOnEvent(true),
+      CheckResult(
+          [&]() {
+            return user_action_tester.GetActionCount(
+                "LinkCapturingIPHAppBubbleNotAccepted");
+          },
+          1));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -346,14 +319,22 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("LinkCapturingIPHAppBubbleShown"));
-
-  AcceptCustomActionIPH(app_browser);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "LinkCapturingIPHAppBubbleAccepted"));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
+      CheckResult(
+          [&]() {
+            return user_action_tester.GetActionCount(
+                "LinkCapturingIPHAppBubbleShown");
+          },
+          1),
+      PressNonDefaultPromoButton(),
+      CheckResult(
+          [&]() {
+            return user_action_tester.GetActionCount(
+                "LinkCapturingIPHAppBubbleAccepted");
+          },
+          1));
 }
 
 // Flaky on Mac http://crbug.com/366580804
@@ -373,11 +354,16 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
 
   Browser* app_browser = TriggerAppLaunchIphAndGetBrowser(
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
-  EXPECT_TRUE(
-      IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
-  DismissIPH(app_browser);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "LinkCapturingIPHAppBubbleNotAccepted"));
+  RunTestSequenceInContext(
+      app_browser->window()->GetElementContext(),
+      WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
+      PressDefaultPromoButton(),
+      CheckResult(
+          [&]() {
+            return user_action_tester.GetActionCount(
+                "LinkCapturingIPHAppBubbleNotAccepted");
+          },
+          1));
 }
 
 }  // namespace
