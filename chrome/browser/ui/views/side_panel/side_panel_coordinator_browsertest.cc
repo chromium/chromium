@@ -1787,8 +1787,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     // Add a kCustomizeChrome entry to the global registry with loading content
     // not available.
     std::unique_ptr<SidePanelEntry> entry1 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kCustomizeChrome,
-        base::BindRepeating([]() {
+        SidePanelEntry::Id::kCustomizeChrome, base::BindRepeating([]() {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
@@ -1800,8 +1799,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     // Add a kLens entry to the global registry with loading content not
     // available.
     std::unique_ptr<SidePanelEntry> entry2 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens,
-        base::BindRepeating([]() {
+        SidePanelEntry::Id::kLens, base::BindRepeating([]() {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
@@ -1812,8 +1810,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
 
     // Add a kAboutThisSite entry to the global registry with content available.
     std::unique_ptr<SidePanelEntry> entry3 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite,
-        base::BindRepeating([]() {
+        SidePanelEntry::Id::kAboutThisSite, base::BindRepeating([]() {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(true);
