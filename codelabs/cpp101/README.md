@@ -22,7 +22,7 @@ This tutorial will cover information across all of those guides.
 Exercise solutions are available in the [codelabs/cpp101/solutions](
 https://source.chromium.org/chromium/chromium/src/+/main:codelabs/cpp101/solutions)
 directory of the Chromium source code. Build all of the example solutions with
-`autoninja -C out/Default codelabs_cpp101`. You are encouraged to implement these
+`autoninja -C out/Default codelab_cpp101`. You are encouraged to implement these
 exercises yourself in the `codelabs/cpp101` directory.
 
 ### Prerequisite: Getting the Code
