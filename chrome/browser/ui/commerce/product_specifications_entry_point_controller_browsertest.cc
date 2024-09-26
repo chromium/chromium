@@ -637,8 +637,15 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
+// TODO(crbug.com/359368807): Re-enable on Linux MSAN once not flaky.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TestShouldExecuteEntryPointShow \
+  DISABLED_TestShouldExecuteEntryPointShow
+#else
+#define MAYBE_TestShouldExecuteEntryPointShow TestShouldExecuteEntryPointShow
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TestShouldExecuteEntryPointShow) {
+                       MAYBE_TestShouldExecuteEntryPointShow) {
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
                                                {GURL(kTestUrl2), kProductId2}};
