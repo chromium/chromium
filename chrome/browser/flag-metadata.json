@@ -3821,8 +3821,8 @@
   },
   {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
-    "owners": [ "bashi@chromium.org", "blink-network-stack@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "dtapuska@chromium.org", "blink-network-stack@google.com" ],
+    "expiry_milestone": 145
   },
   {
     "name": "enable-projector-app-debug",
