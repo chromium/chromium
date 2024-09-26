@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
-#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -164,28 +163,6 @@ const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
 
-bool MaybeCreateFullRestoreServiceForLacros() {
-  // Full restore for Lacros depends on BrowserAppInstanceRegistry to save and
-  // restore Lacros windows, so check the web apps crosapi flag to make sure
-  // BrowserAppInstanceRegistry is created.
-  if (!::full_restore::features::IsFullRestoreForLacrosEnabled() ||
-      !web_app::IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
-
-  // Lacros can be launched at the very early stage during the system startup
-  // phase. So create FullRestoreService to construct LacrosWindowHandler to
-  // observe BrowserAppInstanceRegistry for Lacros windows before the first
-  // Lacros window is created, to avoid missing any Lacros windows.
-  return FullRestoreService::GetForProfile(profile);
-}
-
 class DelegateImpl : public FullRestoreService::Delegate {
  public:
   DelegateImpl() = default;
@@ -231,20 +208,6 @@ class DelegateImpl : public FullRestoreService::Delegate {
     }
   }
 };
-
-// static
-FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("ui", "FullRestoreService::GetForProfile");
-  return static_cast<FullRestoreService*>(
-      FullRestoreServiceFactory::GetInstance()->GetForProfile(profile));
-}
-
-// static
-void FullRestoreService::MaybeCloseNotification(Profile* profile) {
-  auto* full_restore_service = FullRestoreService::GetForProfile(profile);
-  if (full_restore_service)
-    full_restore_service->MaybeCloseNotification();
-}
 
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),

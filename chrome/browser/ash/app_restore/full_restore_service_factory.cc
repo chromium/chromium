@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
@@ -43,6 +44,7 @@ FullRestoreServiceFactory* FullRestoreServiceFactory::GetInstance() {
 
 // static
 FullRestoreService* FullRestoreServiceFactory::GetForProfile(Profile* profile) {
+  TRACE_EVENT0("ui", "FullRestoreServiceFactory::GetForProfile");
   return static_cast<FullRestoreService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

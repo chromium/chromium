@@ -9,17 +9,52 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "components/app_restore/features.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace crosapi {
+
+namespace {
+
+// Returns true if FullRestoreService can be created to restore/launch Lacros
+// during the system startup phase when all of the below conditions are met:
+// 1. The FullRestoreForLacros flag is enabled.
+// 2. Lacros is enabled.
+// 3. FullRestoreService can be created for the primary profile.
+bool MaybeCreateFullRestoreServiceForLacros() {
+  // Full restore for Lacros depends on BrowserAppInstanceRegistry to save and
+  // restore Lacros windows, so check the web apps crosapi flag to make sure
+  // BrowserAppInstanceRegistry is created.
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled() ||
+      !web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  DCHECK(profile);
+
+  // Lacros can be launched at the very early stage during the system startup
+  // phase. So create FullRestoreService to construct LacrosWindowHandler to
+  // observe BrowserAppInstanceRegistry for Lacros windows before the first
+  // Lacros window is created, to avoid missing any Lacros windows.
+  return ash::full_restore::FullRestoreServiceFactory::GetForProfile(profile);
+}
+
+}  // namespace
 
 void BrowserAction::Cancel(crosapi::mojom::CreationResult reason) {
   DCHECK_NE(reason, mojom::CreationResult::kSuccess);
@@ -529,7 +564,7 @@ std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
   }
   if (chromeos::IsKioskSession() ||
       ash::floating_workspace_util::ShouldHandleRestartRestore() ||
-      ash::full_restore::MaybeCreateFullRestoreServiceForLacros()) {
+      MaybeCreateFullRestoreServiceForLacros()) {
     return std::make_unique<NoOpAction>();
   }
   return std::make_unique<NewWindowAction>(

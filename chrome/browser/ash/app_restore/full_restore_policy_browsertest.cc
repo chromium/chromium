@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -80,10 +81,12 @@ class FullRestorePolicyBrowserTest
 
 IN_PROC_BROWSER_TEST_P(FullRestorePolicyBrowserTest,
                        DefaultEnableFullRestoreAndGhostWindow) {
-  if (full_restore_enabled())
-    ASSERT_TRUE(FullRestoreService::GetForProfile(browser()->profile()));
-  else
-    ASSERT_FALSE(FullRestoreService::GetForProfile(browser()->profile()));
+  if (full_restore_enabled()) {
+    ASSERT_TRUE(FullRestoreServiceFactory::GetForProfile(browser()->profile()));
+  } else {
+    ASSERT_FALSE(
+        FullRestoreServiceFactory::GetForProfile(browser()->profile()));
+  }
 
   if (ghost_window_enabled()) {
     ASSERT_TRUE(app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(

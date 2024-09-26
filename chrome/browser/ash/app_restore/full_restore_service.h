@@ -62,13 +62,6 @@ enum class RestoreAction {
   kMaxValue = kCloseNotByUser,
 };
 
-// Returns true if FullRestoreService can be created to restore/launch Lacros
-// during the system startup phase when all of the below conditions are met:
-// 1. The FullRestoreForLacros flag is enabled.
-// 2. Lacros is enabled.
-// 3. FullRestoreService can be created for the primary profile.
-bool MaybeCreateFullRestoreServiceForLacros();
-
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
@@ -89,9 +82,6 @@ class FullRestoreService : public KeyedService,
     virtual InformedRestoreContentsData* GetInformedRestoreContentData() = 0;
     virtual void OnInformedRestoreContentsDataUpdated() = 0;
   };
-
-  static FullRestoreService* GetForProfile(Profile* profile);
-  static void MaybeCloseNotification(Profile* profile);
 
   explicit FullRestoreService(Profile* profile);
   FullRestoreService(const FullRestoreService&) = delete;

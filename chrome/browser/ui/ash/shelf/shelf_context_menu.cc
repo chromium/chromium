@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -285,10 +286,14 @@ void ShelfContextMenu::AddPinMenu(ui::SimpleMenuModel* menu_model) {
 
 bool ShelfContextMenu::ExecuteCommonCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case ash::LAUNCH_NEW:
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(
-          controller()->profile());
+    case ash::LAUNCH_NEW: {
+      if (auto* full_restore_service =
+              ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+                  controller()->profile())) {
+        full_restore_service->MaybeCloseNotification();
+      }
       [[fallthrough]];
+    }
     case ash::MENU_CLOSE:
     case ash::TOGGLE_PIN:
     case ash::SWAP_WITH_NEXT:

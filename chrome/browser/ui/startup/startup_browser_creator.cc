@@ -103,6 +103,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -790,7 +791,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
         // restore feature is enabled and the profile is a regular user
         // profile), defer the browser launching to FullRestoreService code.
         auto* full_restore_service =
-            ash::full_restore::FullRestoreService::GetForProfile(
+            ash::full_restore::FullRestoreServiceFactory::GetForProfile(
                 profile_to_open);
         if (full_restore_service) {
           full_restore_service->LaunchBrowserWhenReady();
