@@ -180,9 +180,6 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
 
   base::UmaHistogramBoolean("Sync.DataTypeStoreBackendInitializationSuccess",
                             !error.has_value());
-  // Legacy equivalent, before the metric was renamed.
-  base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
-                            !error.has_value());
   if (error) {
     DLOG(ERROR) << "Failed to initialize DataTypeStore backend: "
                 << error->ToString();

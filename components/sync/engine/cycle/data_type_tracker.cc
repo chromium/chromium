@@ -228,10 +228,6 @@ void DataTypeTracker::RecordSuccessfulCommitMessage() {
       base::UmaHistogramEnumeration(
           "Sync.DataTypeCommitMessageHasDepletedQuota",
           DataTypeHistogramValue(type_));
-      // Legacy equivalent, before the metric was renamed.
-      base::UmaHistogramEnumeration(
-          "Sync.ModelTypeCommitMessageHasDepletedQuota",
-          DataTypeHistogramValue(type_));
     }
   }
 }
@@ -384,9 +380,6 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
     bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.DataTypeCommitWithDepletedQuota",
-                                  DataTypeHistogramValue(type_));
-    // Legacy equivalent, before the metric was renamed.
-    base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   DataTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }

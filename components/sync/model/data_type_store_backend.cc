@@ -38,12 +38,7 @@ void LogDbStatusByCallingSiteIfNeeded(const std::string& calling_site,
   }
   const std::string histogram_name =
       "Sync.DataTypeStoreBackendError." + calling_site;
-  const std::string legacy_histogram_name =
-      "Sync.ModelTypeStoreBackendError." + calling_site;
   base::UmaHistogramEnumeration(histogram_name,
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-  base::UmaHistogramEnumeration(legacy_histogram_name,
                                 leveldb_env::GetLevelDBStatusUMAValue(status),
                                 leveldb_env::LEVELDB_STATUS_MAX);
 }

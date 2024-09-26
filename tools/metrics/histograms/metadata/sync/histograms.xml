@@ -1101,15 +1101,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.InvalidationPerModelType" enum="SyncDataTypes"
-    expires_after="M135">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Histogram tracks the number of invalidations received per sync data type.
-  </summary>
-</histogram>
-
 <histogram name="Sync.InvalidationsInitializationTime" units="ms"
     expires_after="2025-11-06">
   <owner>rushans@google.com</owner>
@@ -1211,49 +1202,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ModelTypeClearedOnce" enum="SyncDataTypes"
-    expires_after="M135">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded when the model (including both data and metadata) for a given data
-    type was cleared due to
-    `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`. In practice,
-    this happens only on iOS, when Chrome was just restored from an OS-level
-    backup. As a denominator, look at e.g. `Sync.InitialState2`.
-  </summary>
-</histogram>
-
-<histogram name="Sync.ModelTypeCommitMessageHasDepletedQuota"
-    enum="SyncDataTypes" expires_after="M135">
-  <owner>rushans@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded once per commit message after which the quota for the given data
-    type is depleted. If the commit cycle contains 150 commit messages for a
-    given data type and the quota has initially 100 tokens, the quota gets
-    depleted after first 100 messages and this histogram gets recorded for all
-    the remaining messages (i.e. ~50 times) for the data type. Quota is tracked
-    (and this metric gets recorded) only for data types that can be committed
-    via JS API of extensions.
-  </summary>
-</histogram>
-
-<histogram name="Sync.ModelTypeCommitWithDepletedQuota" enum="SyncDataTypes"
-    expires_after="M135">
-  <owner>rushans@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded once per local change that gets scheduled for committing with an
-    extra long nudge delay. This happens if and only if the commit quota for
-    this data type for this user is depleted. Quota is tracked (and this metric
-    gets recorded) only for data types that can be committed via JS API of
-    extensions. This metric is not very reliable as nudging for local changes
-    happens via thread hopping and there is no guarantee whether a local change
-    will nudge for commit _before_ or _after_ it actually gets committed.
-  </summary>
-</histogram>
-
 <histogram name="Sync.ModelTypeCount4{SyncDataType}" units="entries"
     expires_after="M135">
   <owner>rushans@google.com</owner>
@@ -1262,6 +1210,9 @@ chromium-metrics-reviews@google.com.
     Counts the number of entries for each data type. The count is based on
     metadata entries for the type. Recorded after sync configuration. This
     metric is used for monitoring general health of sync client-side code.
+
+    TODO(crbug.com/358120886): Remove once alerts are switched to
+    Sync.DataTypeCount.
   </summary>
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
@@ -1275,52 +1226,11 @@ chromium-metrics-reviews@google.com.
     server or updated from the server). This metric is used for monitoring
     general health of sync client-side code. Note: This is only recorded with a
     data type suffix. The base version is never recorded.
+
+    TODO(crbug.com/358120886): Remove once alerts are switched to
+    Sync.DataTypeEntityChange.
   </summary>
   <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeMemoryKB{SyncDataType}" units="KB"
-    expires_after="M135">
-  <owner>mastiz@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Estimated memory usage by sync datatype in kilobytes. Recorded after sync
-    configuration. This metric is used for monitoring general health of sync
-    client-side code.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeStoreBackendError.{Operation}"
-    enum="LevelDBStatus" expires_after="M135">
-  <owner>treib@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Records the LevelDB Status error code for DataTypeStore {Operation}
-    operations. Recorded when there is an error while communicating with the DB
-    for any data type that uses the DataTypeStore. This metric should be used
-    together with Sync.DataType[Run|Start]Failures2 to figure out the root cause
-    of the data type failure.
-  </summary>
-  <token key="Operation">
-    <variant name="DeleteData"/>
-    <variant name="GetStoreVersion"/>
-    <variant name="Init"/>
-    <variant name="ReadAllRecords"/>
-    <variant name="ReadRecords"/>
-    <variant name="WriteModifications"/>
-  </token>
-</histogram>
-
-<histogram name="Sync.ModelTypeStoreBackendInitializationSuccess"
-    enum="BooleanSuccess" expires_after="M135">
-  <owner>treib@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Records the outcome of the initialization of the DataTypeStoreBackend, which
-    typically happens once every browser startup (or more precisely, profile
-    initialization).
-  </summary>
 </histogram>
 
 <histogram

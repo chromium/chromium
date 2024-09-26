@@ -13,7 +13,6 @@ namespace syncer {
 
 namespace {
 
-const char kLegacyModelTypeMemoryHistogramPrefix[] = "Sync.ModelTypeMemoryKB.";
 const char kLegacyModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
 
 const char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
@@ -66,10 +65,6 @@ void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes) {
   std::string full_histogram_name =
       kDataTypeMemoryHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(full_histogram_name, bytes / 1024);
-
-  std::string legacy_histogram_name =
-      kLegacyModelTypeMemoryHistogramPrefix + type_string;
-  base::UmaHistogramCounts1M(legacy_histogram_name, bytes / 1024);
 }
 
 void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count) {
@@ -77,6 +72,8 @@ void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count) {
   std::string full_histogram_name = kDataTypeCountHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(full_histogram_name, count);
 
+  // TODO(crbug.com/358120886): Stop recording once alerts are switched to use
+  // Sync.DataTypeCount.
   std::string legacy_histogram_name =
       kLegacyModelTypeCountHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(legacy_histogram_name, count);
@@ -111,9 +108,6 @@ void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
 
 void SyncRecordModelClearedOnceHistogram(DataType data_type) {
   base::UmaHistogramEnumeration("Sync.DataTypeClearedOnce",
-                                DataTypeHistogramValue(data_type));
-  // Legacy equivalent, before the metric was renamed.
-  base::UmaHistogramEnumeration("Sync.ModelTypeClearedOnce",
                                 DataTypeHistogramValue(data_type));
 }
 
