@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/profile/model/profile_ios_impl.h"
+
 #import <Foundation/Foundation.h>
 
 #import <utility>
@@ -41,7 +43,6 @@
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
-#import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -358,6 +359,23 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
                                            /*success=*/false);
     }
     return;
+  }
+
+  // If the initialisation is asynchronous, then we also need to wait for
+  // the SupervisedUserSettingsService to complete its initialisation, if
+  // is not yet complete.
+  if (creation_mode == CreationMode::kAsynchronous) {
+    supervised_user::SupervisedUserSettingsService* supervised_user_settings =
+        SupervisedUserSettingsServiceFactory::GetForProfile(this);
+    if (!supervised_user_settings->IsReady()) {
+      // It is safe to use base::Unretained(...) here since `this` owns the
+      // SupervisedUserSettingsService and the callback will not be invoked
+      // after destruction of the SupervisedUserSettingsService.
+      supervised_user_settings->WaitUntilReadyToSync(
+          base::BindOnce(&ProfileIOSImpl::OnPrefsLoaded, base::Unretained(this),
+                         creation_mode, is_new_profile, success));
+      return;
+    }
   }
 
   // Migrate obsolete prefs.
