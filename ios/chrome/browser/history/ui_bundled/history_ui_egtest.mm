@@ -857,6 +857,9 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   const char olderURLString[] = "https://example.com";
   const GURL olderURL = GURL(olderURLString);
 
+  // Reset all prefs, so they're at their default value.
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+
   // Create an history entry that took place one day ago.
   const base::Time oneDayAgo = base::Time::Now() - base::Days(1);
   [ChromeEarlGrey addHistoryServiceTypedURL:olderURL visitTimestamp:oneDayAgo];

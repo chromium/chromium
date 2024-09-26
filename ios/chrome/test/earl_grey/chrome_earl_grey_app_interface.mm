@@ -1363,6 +1363,7 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (void)resetBrowsingDataPrefs {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefs->ClearPref(browsing_data::prefs::kDeleteTimePeriod);
   prefs->ClearPref(browsing_data::prefs::kDeleteBrowsingHistory);
   prefs->ClearPref(browsing_data::prefs::kCloseTabs);
   prefs->ClearPref(browsing_data::prefs::kDeleteCookies);
