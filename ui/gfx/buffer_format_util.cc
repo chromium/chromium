@@ -139,7 +139,7 @@ base::CheckedNumeric<size_t> PlaneWidthForBufferFormatChecked(
                         subsample);
 }
 
-base::CheckedNumeric<size_t> PlaneHeightForBufferFormatChecked(
+base::CheckedNumeric<size_t> PlaneHeightForBufferFormatCheckedInternal(
     size_t height,
     BufferFormat format,
     size_t plane) {
@@ -230,6 +230,20 @@ bool RowSizeForBufferFormatChecked(size_t width,
   return true;
 }
 
+bool PlaneHeightForBufferFormatChecked(size_t height,
+                                       BufferFormat format,
+                                       size_t plane,
+                                       size_t* height_in_bytes) {
+  base::CheckedNumeric<size_t> checked_height =
+      PlaneHeightForBufferFormatCheckedInternal(height, format, plane);
+  if (!checked_height.IsValid()) {
+    return false;
+  }
+
+  *height_in_bytes = checked_height.ValueOrDie();
+  return true;
+}
+
 size_t PlaneSizeForBufferFormat(const Size& size,
                                 BufferFormat format,
                                 size_t plane) {
@@ -250,7 +264,7 @@ bool PlaneSizeForBufferFormatChecked(const Size& size,
     return false;
   }
   base::CheckedNumeric<size_t> checked_plane_size = row_size;
-  checked_plane_size *= PlaneHeightForBufferFormatChecked(
+  checked_plane_size *= PlaneHeightForBufferFormatCheckedInternal(
       base::checked_cast<size_t>(size.height()), format, plane);
   if (!checked_plane_size.IsValid())
     return false;

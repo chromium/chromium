@@ -54,6 +54,13 @@ GFX_EXPORT size_t RowSizeForBufferFormat(size_t width,
     size_t plane,
     size_t* size_in_bytes);
 
+// Returns the height in bytes of the given zero-indexed |plane| of |format|.
+[[nodiscard]] GFX_EXPORT bool PlaneHeightForBufferFormatChecked(
+    size_t width,
+    BufferFormat format,
+    size_t plane,
+    size_t* height_in_bytes);
+
 // Returns the number of bytes used to the plane of a given |format|.
 GFX_EXPORT size_t PlaneSizeForBufferFormat(const Size& size,
                                            BufferFormat format,
