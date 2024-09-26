@@ -582,9 +582,9 @@ bool GpuControlList::Entry::Contains(OsType target_os_type,
   if (!conditions.Contains(target_os_type, target_os_version, gpu_info)) {
     return false;
   }
-  for (size_t ii = 0; ii < exception_size; ++ii) {
-    if (exceptions[ii].Contains(target_os_type, target_os_version, gpu_info) &&
-        !exceptions[ii].NeedsMoreInfo(gpu_info)) {
+  for (const auto& exception : exceptions) {
+    if (exception.Contains(target_os_type, target_os_version, gpu_info) &&
+        !exception.NeedsMoreInfo(gpu_info)) {
       return false;
     }
   }
@@ -638,9 +638,10 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
   if (conditions.NeedsMoreInfo(gpu_info))
     return true;
   if (consider_exceptions) {
-    for (size_t ii = 0; ii < exception_size; ++ii) {
-      if (exceptions[ii].NeedsMoreInfo(gpu_info))
+    for (const auto& exception : exceptions) {
+      if (exception.NeedsMoreInfo(gpu_info)) {
         return true;
+      }
     }
   }
   return false;
@@ -649,14 +650,13 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
 base::Value::List GpuControlList::Entry::GetFeatureNames(
     const FeatureMap& feature_map) const {
   base::Value::List feature_names;
-  for (size_t ii = 0; ii < feature_size; ++ii) {
-    auto iter = feature_map.find(features[ii]);
+  for (auto feature : features) {
+    auto iter = feature_map.find(feature);
     CHECK(iter != feature_map.end(), base::NotFatalUntil::M130);
     feature_names.Append(iter->second);
   }
-  for (size_t ii = 0; ii < disabled_extension_size; ++ii) {
-    std::string name =
-        base::StringPrintf("disable(%s)", disabled_extensions[ii]);
+  for (auto* const extension : disabled_extensions) {
+    std::string name = base::StringPrintf("disable(%s)", extension);
     feature_names.Append(name);
   }
   return feature_names;
@@ -716,8 +716,7 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
       // Only look at main entry info when deciding what to add to "features"
       // set. If we don't have enough info for an exception, it's safer if we
       // just ignore the exception and assume the exception doesn't apply.
-      for (size_t jj = 0; jj < entry.feature_size; ++jj) {
-        int32_t feature = entry.features[jj];
+      for (auto feature : entry.features) {
         if (needs_more_info_main) {
           if (!features.count(feature))
             potential_features.insert(feature);
@@ -756,8 +755,8 @@ std::vector<std::string> GpuControlList::GetDisabledExtensions() {
   std::set<std::string> disabled_extensions;
   for (auto index : active_entries_) {
     const Entry& entry = entries_[index];
-    for (size_t ii = 0; ii < entry.disabled_extension_size; ++ii) {
-      disabled_extensions.insert(entry.disabled_extensions[ii]);
+    for (auto* const extension : entry.disabled_extensions) {
+      disabled_extensions.insert(extension);
     }
   }
   return std::vector<std::string>(disabled_extensions.begin(),
@@ -768,8 +767,8 @@ std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
   std::set<std::string> disabled_webgl_extensions;
   for (auto index : active_entries_) {
     const Entry& entry = entries_[index];
-    for (size_t ii = 0; ii < entry.disabled_webgl_extension_size; ++ii) {
-      disabled_webgl_extensions.insert(entry.disabled_webgl_extensions[ii]);
+    for (auto* const extension : entry.disabled_webgl_extensions) {
+      disabled_webgl_extensions.insert(extension);
     }
   }
   return std::vector<std::string>(disabled_webgl_extensions.begin(),
@@ -786,9 +785,9 @@ void GpuControlList::GetReasons(base::Value::List& problem_list,
     problem.Set("description", entry.description);
 
     base::Value::List cr_bugs;
-    for (size_t jj = 0; jj < entry.cr_bug_size; ++jj)
-      cr_bugs.Append(
-          base::Int64ToValue(static_cast<int64_t>(entry.cr_bugs[jj])));
+    for (auto cr_bug : entry.cr_bugs) {
+      cr_bugs.Append(base::Int64ToValue(static_cast<int64_t>(cr_bug)));
+    }
     problem.Set("crBugs", std::move(cr_bugs));
 
     base::Value::List features = entry.GetFeatureNames(feature_map_);

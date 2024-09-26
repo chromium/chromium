@@ -12,7 +12,7 @@
 #define CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_EXCEPTIONS_AUTOGEN_H_
 
 namespace gpu {
-const GpuControlList::Conditions kExceptionsForEntry5[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry5 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -32,7 +32,7 @@ const GpuControlList::Conditions kExceptionsForEntry5[1] = {
          nullptr},                            // intel_gpu_generation
         &kMoreForEntry5_572251052Exception0,  // more data
     },
-};
+}};
 
 }  // namespace gpu
 

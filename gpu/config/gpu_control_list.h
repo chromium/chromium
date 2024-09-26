@@ -229,27 +229,12 @@ class GPU_EXPORT GpuControlList {
   struct GPU_EXPORT Entry {
     uint32_t id;
     const char* description;
-    size_t feature_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const int* features;
-    size_t disabled_extension_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const char* const* disabled_extensions;
-    size_t disabled_webgl_extension_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const char* const* disabled_webgl_extensions;
-    size_t cr_bug_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const uint32_t* cr_bugs;
+    base::span<const int> features;
+    base::span<const char* const> disabled_extensions;
+    base::span<const char* const> disabled_webgl_extensions;
+    base::span<const uint32_t> cr_bugs;
     Conditions conditions;
-    size_t exception_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const Conditions* exceptions;
+    base::span<const Conditions> exceptions;
 
     bool Contains(OsType os_type,
                   const std::string& os_version,

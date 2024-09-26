@@ -11,10 +11,12 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_ARRAYS_AND_STRUCTS_AUTOGEN_H_
 #define CONTENT_BROWSER_GPU_GPU_DATA_MANAGER_TESTING_ARRAYS_AND_STRUCTS_AUTOGEN_H_
 
+#include <array>
+
 #include "gpu/config/gpu_feature_type.h"
 
 namespace gpu {
-const int kFeatureListForGpuManagerTestingEntry1[1] = {
+const std::array<int, 1> kFeatureListForGpuManagerTestingEntry1 = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 
@@ -37,7 +39,7 @@ const GpuControlList::More kMoreForEntry1_572251052 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry2[1] = {
+const std::array<int, 1> kFeatureListForGpuManagerTestingEntry2 = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
 };
 
@@ -67,7 +69,7 @@ const GpuControlList::More kMoreForEntry2_572251052 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry3[1] = {
+const std::array<int, 1> kFeatureListForGpuManagerTestingEntry3 = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
 };
 
@@ -90,7 +92,7 @@ const GpuControlList::More kMoreForEntry3_572251052 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry4[2] = {
+const std::array<int, 2> kFeatureListForGpuManagerTestingEntry4 = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
 };
@@ -121,7 +123,7 @@ const GpuControlList::More kMoreForEntry4_572251052 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry5[1] = {
+const std::array<int, 1> kFeatureListForGpuManagerTestingEntry5 = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 
@@ -171,7 +173,7 @@ const GpuControlList::More kMoreForEntry5_572251052Exception0 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const int kFeatureListForGpuManagerTestingEntry6[13] = {
+const std::array<int, 13> kFeatureListForGpuManagerTestingEntry6 = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
     GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,

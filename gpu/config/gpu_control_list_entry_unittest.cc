@@ -51,7 +51,7 @@ class GpuControlListEntryTest : public testing::Test {
 
   size_t CountFeature(const Entry& entry, int feature) {
     size_t count = 0;
-    for (size_t ii = 0; ii < entry.feature_size; ++ii) {
+    for (size_t ii = 0; ii < entry.features.size(); ++ii) {
       if (entry.features[ii] == feature) {
         ++count;
       }
@@ -78,14 +78,14 @@ TEST_F(GpuControlListEntryTest, DetailedEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_DetailedEntry);
   EXPECT_EQ(kOsMacosx, entry.conditions.os_type);
   EXPECT_STREQ("GpuControlListEntryTest.DetailedEntry", entry.description);
-  EXPECT_EQ(2u, entry.cr_bug_size);
+  EXPECT_EQ(2u, entry.cr_bugs.size());
   EXPECT_EQ(1024u, entry.cr_bugs[0]);
   EXPECT_EQ(678u, entry.cr_bugs[1]);
-  EXPECT_EQ(1u, entry.feature_size);
+  EXPECT_EQ(1u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_0));
   EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info(), true));
   EXPECT_TRUE(entry.Contains(kOsMacosx, "10.6.4", gpu_info()));
-  EXPECT_EQ(2u, entry.disabled_extension_size);
+  EXPECT_EQ(2u, entry.disabled_extensions.size());
   EXPECT_STREQ("test_extension1", entry.disabled_extensions[0]);
   EXPECT_STREQ("test_extension2", entry.disabled_extensions[1]);
 }
@@ -333,7 +333,7 @@ TEST_F(GpuControlListEntryTest, NeedsMoreInfoForGlVersionEntry) {
 TEST_F(GpuControlListEntryTest, FeatureTypeAllEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_FeatureTypeAllEntry);
 
-  EXPECT_EQ(3u, entry.feature_size);
+  EXPECT_EQ(3u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_0));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_1));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_2));
@@ -342,7 +342,7 @@ TEST_F(GpuControlListEntryTest, FeatureTypeAllEntry) {
 TEST_F(GpuControlListEntryTest, FeatureTypeAllEntryWithExceptions) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryTest_FeatureTypeAllEntryWithExceptions);
-  EXPECT_EQ(2u, entry.feature_size);
+  EXPECT_EQ(2u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_1));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_2));
 }

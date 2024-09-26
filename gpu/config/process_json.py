@@ -168,8 +168,8 @@ def get_feature_set(features, total_feature_set):
 
 def write_features(feature_set, feature_name_prefix, var_name,
                    data_helper_file):
-  data_helper_file.write('const int %s[%d] = {\n' %
-                         (var_name, len(feature_set)))
+  data_helper_file.write('const std::array<int, %d> %s = {\n' %
+                         (len(feature_set), var_name))
   for feature in feature_set.keys():
     data_helper_file.write(feature_name_prefix + feature.upper())
     data_helper_file.write(',\n')
@@ -182,17 +182,16 @@ def write_disabled_extension_list(entry_kind, entry_id, data, data_file,
     var_name = 'k%sForEntry%d' % (entry_kind, entry_id)
     # define the list
     data_helper_file.write(
-        'const char* const %s[%d] = {\n' % (var_name, len(data)))
+        'const std::array<const char* const, %d> %s = {\n' %
+        (len(data), var_name))
     for item in data:
       write_string(item, data_helper_file)
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # use the list
-    data_file.write('std::size(%s),  // %s size\n' % (var_name, entry_kind))
-    data_file.write('%s,  // %s\n' % (var_name, entry_kind))
+    data_file.write('base::span(%s),  // %s\n' % (var_name, entry_kind))
   else:
-    data_file.write('0,  // %s size\n' % entry_kind)
-    data_file.write('nullptr,  // %s\n' % entry_kind)
+    data_file.write('base::span<const char* const>(),  // %s\n' % entry_kind)
 
 
 def write_gl_strings(entry_id, is_exception, exception_id, data,
@@ -287,18 +286,16 @@ def write_number_list(entry_id, data_type, name_tag, data, is_exception,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the list
-    data_helper_file.write('const %s %s[%d] = {\n' %
-                           (data_type, var_name, len(data)))
+    data_helper_file.write('const std::array<%s, %d> %s = {\n' %
+                           (data_type, len(data), var_name))
     for item in data:
       data_helper_file.write(str(item))
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('std::size(%s),  // %s size\n' % (var_name, name_tag))
-    data_file.write('%s,  // %s\n' % (var_name, name_tag))
+    data_file.write('base::span(%s),  // %s\n' % (var_name, name_tag))
   else:
-    data_file.write('0,  // %s size\n' % name_tag)
-    data_file.write('nullptr,  // %s\n' % name_tag)
+    data_file.write('base::span<const %s>(),  // %s\n' % (data_type, name_tag))
 
 
 def write_string(string, data_file):
@@ -761,12 +758,10 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     var_name = 'kFeatureListFor%sEntry%d' % (unique_symbol_id, entry_id)
     features = entry['features']
     feature_set = get_feature_set(features, total_feature_set)
-    data_file.write('std::size(%s),  // features size\n' % var_name)
-    data_file.write('%s,  // features\n' % var_name)
+    data_file.write('base::span(%s),  // features\n' % var_name)
     write_features(feature_set, feature_name_prefix, var_name, data_helper_file)
   else:
-    data_file.write('0,  // feature size\n')
-    data_file.write('nullptr,  // features\n')
+    data_file.write('base::span<const int>(),  // features\n')
   # Disabled extensions
   write_disabled_extension_list('DisabledExtensions', entry_id,
                                 entry.get('disabled_extensions', None),
@@ -792,8 +787,9 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     exceptions = entry['exceptions']
     exception_count = len(exceptions)
     exception_var = 'kExceptionsForEntry' + str(entry_id)
-    data_exception_file.write('const GpuControlList::Conditions %s[%d] = {\n' %
-                              (exception_var, exception_count))
+    data_exception_file.write(
+        'const std::array<GpuControlList::Conditions, %d> %s = {{\n' %
+        (exception_count, exception_var))
     for index in range(exception_count):
       exception = exceptions[index]
       if 'device_id' in exception and 'vendor_id' not in exception:
@@ -803,12 +799,11 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
       write_conditions(entry_id, True, index, exception, unique_symbol_id,
                        data_exception_file, data_helper_file, None)
       data_exception_file.write('},\n')
-    data_exception_file.write('};\n\n')
-    data_file.write('std::size(%s),  // exceptions count\n' % exception_var)
-    data_file.write('%s,  // exceptions\n' % exception_var)
+    data_exception_file.write('}};\n\n')
+    data_file.write('base::span(%s),  // exceptions\n' % exception_var)
   else:
-    data_file.write('0,  // exceptions count\n')
-    data_file.write('nullptr,  // exceptions\n')
+    data_file.write(
+        'base::span<const GpuControlList::Conditions>(),  // exceptions\n')
   # END
   data_file.write('},\n')
 
@@ -852,6 +847,7 @@ def process_json_file(json_filepath, list_tag,
   data_helper_file.write(_LICENSE)
   data_helper_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_helper_file, output_helper_filename, path, True)
+  data_helper_file.write('#include <array>\n\n')
   data_helper_file.write('#include "gpu/config/%s"\n\n' %
                          feature_header_filename)
   data_helper_file.write('namespace gpu {\n')

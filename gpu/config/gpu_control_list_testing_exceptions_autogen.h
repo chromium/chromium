@@ -12,7 +12,7 @@
 #define GPU_CONFIG_GPU_CONTROL_LIST_TESTING_EXCEPTIONS_AUTOGEN_H_
 
 namespace gpu {
-const GpuControlList::Conditions kExceptionsForEntry4[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry4 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -32,9 +32,9 @@ const GpuControlList::Conditions kExceptionsForEntry4[1] = {
          nullptr},                             // intel_gpu_generation
         &kMoreForEntry4_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry5[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry5 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -54,9 +54,9 @@ const GpuControlList::Conditions kExceptionsForEntry5[1] = {
          nullptr},                             // intel_gpu_generation
         &kMoreForEntry5_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry21[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry21 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -76,9 +76,9 @@ const GpuControlList::Conditions kExceptionsForEntry21[1] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry21_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry27[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry27 = {{
     {
         GpuControlList::kOsAndroid,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -98,9 +98,9 @@ const GpuControlList::Conditions kExceptionsForEntry27[1] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry27_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry29[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry29 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -120,9 +120,9 @@ const GpuControlList::Conditions kExceptionsForEntry29[1] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry29_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry44[2] = {
+const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry44 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -163,9 +163,9 @@ const GpuControlList::Conditions kExceptionsForEntry44[2] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry44_1440601243Exception1,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry51[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry51 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -185,9 +185,9 @@ const GpuControlList::Conditions kExceptionsForEntry51[1] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry51_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry65[1] = {
+const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry65 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -208,9 +208,9 @@ const GpuControlList::Conditions kExceptionsForEntry65[1] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry65_1440601243Exception0,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry73[3] = {
+const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -268,9 +268,9 @@ const GpuControlList::Conditions kExceptionsForEntry73[3] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry73_1440601243Exception2,  // more data
     },
-};
+}};
 
-const GpuControlList::Conditions kExceptionsForEntry77[2] = {
+const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {{
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -311,7 +311,7 @@ const GpuControlList::Conditions kExceptionsForEntry77[2] = {
          nullptr},                              // intel_gpu_generation
         &kMoreForEntry77_1440601243Exception1,  // more data
     },
-};
+}};
 
 }  // namespace gpu
 

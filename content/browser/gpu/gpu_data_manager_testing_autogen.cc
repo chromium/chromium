@@ -21,14 +21,10 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
     {
         1,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.0",
-        std::size(kFeatureListForGpuManagerTestingEntry1),  // features size
-        kFeatureListForGpuManagerTestingEntry1,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry1),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -49,20 +45,15 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry1_572251052,  // more data
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
+        base::span<const GpuControlList::Conditions>(),  // exceptions
     },
     {
         2,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.1",
-        std::size(kFeatureListForGpuManagerTestingEntry2),  // features size
-        kFeatureListForGpuManagerTestingEntry2,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry2),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -83,20 +74,15 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry2_572251052,  // more data
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
+        base::span<const GpuControlList::Conditions>(),  // exceptions
     },
     {
         3,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.0",
-        std::size(kFeatureListForGpuManagerTestingEntry3),  // features size
-        kFeatureListForGpuManagerTestingEntry3,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry3),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -117,20 +103,15 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry3_572251052,  // more data
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
+        base::span<const GpuControlList::Conditions>(),  // exceptions
     },
     {
         4,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.1",
-        std::size(kFeatureListForGpuManagerTestingEntry4),  // features size
-        kFeatureListForGpuManagerTestingEntry4,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry4),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -151,20 +132,15 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry4_572251052,  // more data
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
+        base::span<const GpuControlList::Conditions>(),  // exceptions
     },
     {
         5,  // id
         "GpuDataManagerImplPrivateTest.GpuSideException",
-        std::size(kFeatureListForGpuManagerTestingEntry5),  // features size
-        kFeatureListForGpuManagerTestingEntry5,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry5),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -185,20 +161,15 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry5_572251052,  // more data
         },
-        std::size(kExceptionsForEntry5),  // exceptions count
-        kExceptionsForEntry5,             // exceptions
+        base::span(kExceptionsForEntry5),  // exceptions
     },
     {
         6,  // id
         "GpuDataManagerImplPrivateTest.BlocklistAllFeatures",
-        std::size(kFeatureListForGpuManagerTestingEntry6),  // features size
-        kFeatureListForGpuManagerTestingEntry6,             // features
-        0,        // DisabledExtensions size
-        nullptr,  // DisabledExtensions
-        0,        // DisabledWebGLExtensions size
-        nullptr,  // DisabledWebGLExtensions
-        0,        // CrBugs size
-        nullptr,  // CrBugs
+        base::span(kFeatureListForGpuManagerTestingEntry6),  // features
+        base::span<const char* const>(),  // DisabledExtensions
+        base::span<const char* const>(),  // DisabledWebGLExtensions
+        base::span<const uint32_t>(),     // CrBugs
         {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -219,8 +190,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
              nullptr},                  // intel_gpu_generation
             &kMoreForEntry6_572251052,  // more data
         },
-        0,        // exceptions count
-        nullptr,  // exceptions
+        base::span<const GpuControlList::Conditions>(),  // exceptions
     },
 }};
 }  // namespace gpu
