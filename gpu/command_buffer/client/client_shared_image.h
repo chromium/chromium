@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -50,6 +51,8 @@ class GPU_EXPORT ClientSharedImage
 
     // Returns a pointer to the beginning of the plane.
     void* Memory(const uint32_t plane_index);
+
+    base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index);
 
     // Returns plane stride.
     size_t Stride(const uint32_t plane_index);

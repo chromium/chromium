@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace gpu {
@@ -125,6 +126,33 @@ bool ClientSharedImage::ScopedMapping::Init(
 void* ClientSharedImage::ScopedMapping::Memory(const uint32_t plane_index) {
   CHECK(buffer_);
   return buffer_->memory(plane_index);
+}
+
+base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
+    const uint32_t plane_index) {
+  size_t height_in_pixels;
+  size_t row_size_in_bytes;
+
+  CHECK(gfx::PlaneHeightForBufferFormatChecked(Size().height(), Format(),
+                                               plane_index, &height_in_pixels));
+  CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
+                                           plane_index, &row_size_in_bytes));
+
+  // Note that the stride might be larger than the row size due to padding. For
+  // all rows other than the last, this is legal data for the client to access
+  // as it's part of the buffer.  However, the final row is not guaranteed to
+  // have padding (it's a system-dependent internal detail). Thus, the data
+  // that is legal for the client to access should *not* include any bytes
+  // beyond the actual end of the final row.
+  size_t span_length =
+      Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
+
+  // SAFETY: The underlying platform-specific buffer generation mechanisms
+  // guarantee that the buffer contains at least `span_length` bytes following
+  // the start of the plane, as that region is by definition the memory storing
+  // the data of the plane.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(
+      reinterpret_cast<uint8_t*>(Memory(plane_index)), span_length));
 }
 
 size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
