@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/finder/chunk_graph_utils.h"
 #include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -109,6 +110,10 @@ std::optional<UChar> FindBuffer::CharConstantForNode(const Node& node) {
 
 namespace {
 
+// Characters in a buffer for a different annotation level are replaced with
+// kSkippedChar.
+constexpr UChar kSkippedChar = 0;
+
 // Returns the first ancestor element that isn't searchable. In other words,
 // either ShouldIgnoreContents() returns true for it or it has a display: none
 // style.  Returns nullptr if no such ancestor exists.
@@ -193,6 +198,16 @@ bool AreInOrder(const Node& start, const Node& end) {
     node = FlatTreeTraversal::Next(*node);
   }
   return node->isSameNode(&end);
+}
+
+bool IsIfcWithRuby(const Node& block_ancestor) {
+  if (const auto* block_flow =
+          DynamicTo<LayoutBlockFlow>(block_ancestor.GetLayoutObject())) {
+    if (const auto* node_data = block_flow->GetInlineNodeData()) {
+      return node_data->HasRuby();
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -386,9 +401,8 @@ FindResults FindBuffer::FindMatches(const String& search_text,
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
-  // TODO(crbug.com/40755728): Provide additional text buffers.
-  return FindResults(this, &text_searcher_, buffer_,
-                     /* extra_buffers */ nullptr, search_text_16_bit, options);
+  return FindResults(this, &text_searcher_, buffer_, &buffer_list_,
+                     search_text_16_bit, options);
 }
 
 void FindBuffer::CollectTextUntilBlockBoundary(
@@ -424,6 +438,29 @@ void FindBuffer::CollectTextUntilBlockBoundary(
 
   // We will also stop if we encountered/passed |end_node|.
   Node* end_node = range.EndPosition().NodeAsRangeLastNode();
+
+  bool use_chunk_graph = false;
+  if (RuntimeEnabledFeatures::FindRubyInPageEnabled()) {
+    use_chunk_graph = ruby_support == RubySupport::kEnabledForcefully ||
+                      (ruby_support == RubySupport::kEnabledIfNecessary &&
+                       IsIfcWithRuby(block_ancestor));
+  }
+  if (use_chunk_graph) {
+    auto [corpus_chunk_list, level_list, next_node] =
+        BuildChunkGraph(*node, end_node, block_ancestor, just_after_block);
+    node_after_block_ = next_node;
+
+    buffer_ = SerializeLevelInGraph(corpus_chunk_list, String(), range);
+    FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
+    buffer_list_.resize(0);
+    buffer_list_.reserve(level_list.size());
+    for (const auto& level : level_list) {
+      buffer_list_.push_back(
+          SerializeLevelInGraph(corpus_chunk_list, level, range));
+      FoldQuoteMarksAndSoftHyphens(base::span(buffer_list_.back()));
+    }
+    return;
+  }
 
   while (node && node != just_after_block) {
     if (ShouldIgnoreContents(*node)) {
@@ -534,6 +571,41 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
       index - entry->offset_in_buffer + entry->offset_in_mapping + 1));
 }
 
+Vector<UChar> FindBuffer::SerializeLevelInGraph(
+    const HeapVector<Member<CorpusChunk>>& chunk_list,
+    const String& level,
+    const EphemeralRangeInFlatTree& range) {
+  Vector<BufferNodeMapping>* mappings =
+      level.empty() ? &buffer_node_mappings_ : nullptr;
+  Vector<UChar> buffer;
+  const CorpusChunk* chunk = chunk_list[0];
+  for (wtf_size_t index = 0; chunk; ++index) {
+    if (chunk != chunk_list[index]) {
+      for (const auto& text_or_char : chunk_list[index]->TextList()) {
+        if (text_or_char.text) {
+          wtf_size_t start = buffer.size();
+          AddTextToBuffer(*text_or_char.text, range, buffer, mappings);
+          for (wtf_size_t i = start; i < buffer.size(); ++i) {
+            buffer[i] = kSkippedChar;
+          }
+        } else {
+          buffer.push_back(kSkippedChar);
+        }
+      }
+      continue;
+    }
+    for (const auto& text_or_char : chunk->TextList()) {
+      if (text_or_char.text) {
+        AddTextToBuffer(*text_or_char.text, range, buffer, mappings);
+      } else {
+        buffer.push_back(text_or_char.code_point);
+      }
+    }
+    chunk = chunk->FindNext(level);
+  }
+  return buffer;
+}
+
 void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  const EphemeralRangeInFlatTree& range,
                                  Vector<UChar>& buffer,
@@ -581,6 +653,16 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
     buffer.AppendSpan(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();
   }
+}
+
+Vector<String> FindBuffer::BuffersForTesting() const {
+  Vector<String> result;
+  result.reserve(1 + buffer_list_.size());
+  result.push_back(String(buffer_));
+  for (const auto& buffer : buffer_list_) {
+    result.push_back(String(buffer));
+  }
+  return result;
 }
 
 }  // namespace blink

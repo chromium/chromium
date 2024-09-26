@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_CHUNK_GRAPH_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_CHUNK_GRAPH_UTILS_H_
 
+#include <tuple>
+
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class Node;
 class Text;
 
 struct TextOrChar {
@@ -43,6 +46,7 @@ class CorpusChunk : public GarbageCollected<CorpusChunk> {
   void Link(CorpusChunk* next_chunk);
 
   const HeapVector<TextOrChar>& TextList() const { return text_list_; }
+  const CorpusChunk* FindNext(const String& level) const;
 
  private:
   HeapVector<TextOrChar> text_list_;
@@ -51,6 +55,12 @@ class CorpusChunk : public GarbageCollected<CorpusChunk> {
   const String level_;
   HeapVector<Member<CorpusChunk>, 1> next_list_;
 };
+
+std::tuple<HeapVector<Member<CorpusChunk>>, Vector<String>, const Node*>
+BuildChunkGraph(const Node& first_visible_text_node,
+                const Node* end_node,
+                const Node& block_ancestor,
+                const Node* just_after_block);
 
 }  // namespace blink
 

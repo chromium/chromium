@@ -934,4 +934,114 @@ TEST_F(FindBufferTest, ForwardVisibleTextNode) {
   EXPECT_EQ(String("a"), To<Text>(text)->data());
 }
 
+static String ReplaceZero(const String& chars) {
+  String result(chars);
+  result.Replace(0, '_');
+  return result;
+}
+
+TEST_F(FindBufferTest, RubyBuffersBasic) {
+  SetBodyContent(
+      "<p id=container>before <ruby id=r>base<rt>anno</ruby> after</p>");
+  FindBuffer buffer(
+      EphemeralRangeInFlatTree(
+          PositionInFlatTree(GetElementById("r")->firstChild(), 2),
+          PositionInFlatTree(GetElementById("r")->nextSibling(), 4)),
+      RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("se____ aft", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("__anno aft", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersNoRt) {
+  SetBodyContent("<p>before <rub>base</ruby> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(1u, buffer_list.size());
+  EXPECT_EQ("before base after", ReplaceZero(buffer_list[0]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersEmptyRt) {
+  SetBodyContent("<p>before <ruby>base<rt></ruby> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(1u, buffer_list.size());
+  EXPECT_EQ("before base after", ReplaceZero(buffer_list[0]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersEmptyRuby) {
+  SetBodyContent("<p>before <ruby><rt>anno</ruby> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("before ____ after", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("before anno after", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersNoRuby) {
+  SetBodyContent(
+      "<p>before <span style='display:ruby-text'>anno</span> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("before ____ after", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("before anno after", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersNonChildRt) {
+  SetBodyContent(
+      "<p>before <ruby>base <b><span "
+      "style='display:ruby-text'>anno</span></b></ruby> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("before base ____ after", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("before base anno after", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersDisplayContents) {
+  SetBodyContent(
+      "<p>before <ruby>base <b style='display:contents'><span "
+      "style='display:ruby-text'>anno</span></b></ruby> after</p>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  EXPECT_EQ("before base ____ after", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("before _____anno after", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, RubyBuffersBlockRuby) {
+  SetBodyContent(
+      "<p>before <ruby id=r style='display:block ruby'>base<rt>anno</ruby> "
+      "after</p>");
+  FindBuffer buffer(
+      EphemeralRangeInFlatTree(
+          PositionInFlatTree(GetElementById("r")->firstChild(), 2),
+          PositionInFlatTree(GetElementById("r")->nextSibling(), 4)),
+      RubySupport::kEnabledIfNecessary);
+  auto buffer_list = buffer.BuffersForTesting();
+  ASSERT_EQ(2u, buffer_list.size());
+  // The range end position is in " after", but the FindBuffer should have an
+  // IFC scope, which is <ruby> in this case.
+  EXPECT_EQ("se____", ReplaceZero(buffer_list[0]));
+  EXPECT_EQ("__anno", ReplaceZero(buffer_list[1]));
+}
+
+TEST_F(FindBufferTest, FindRuby) {
+  SetBodyContent(
+      "<p>残暑お<ruby>見<rt>み</ruby><ruby>舞<rt>ま</ruby>い"
+      "申し上げます。</p>");
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    const auto results = buffer.FindMatches(u"おみまい", FindOptions());
+    EXPECT_EQ(1u, results.CountForTesting());
+  }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    const auto results = buffer.FindMatches(u"お見舞い", FindOptions());
+    EXPECT_EQ(1u, results.CountForTesting());
+  }
+}
+
 }  // namespace blink

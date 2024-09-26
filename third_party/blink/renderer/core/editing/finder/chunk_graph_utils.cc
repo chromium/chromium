@@ -81,6 +81,8 @@ class ChunkGraphBuilder {
       // <ruby>. We don't record Text nodes until first_visible_text_node.
       node = ruby_container;
     }
+    parent_chunk_ = MakeGarbageCollected<CorpusChunk>();
+    corpus_chunk_list_.push_back(parent_chunk_);
 
     while (node && node != just_after_block) {
       if (FindBuffer::ShouldIgnoreContents(*node)) {
@@ -171,6 +173,11 @@ class ChunkGraphBuilder {
     }
     return node;
   }
+
+  const HeapVector<Member<CorpusChunk>>& ChunkList() const {
+    return corpus_chunk_list_;
+  }
+  const Vector<String>& LevelList() const { return level_list_; }
 
  private:
   CorpusChunk* PushChunk(const String& level) {
@@ -317,6 +324,47 @@ void CorpusChunk::Trace(Visitor* visitor) const {
 
 void CorpusChunk::Link(CorpusChunk* next_chunk) {
   next_list_.push_back(next_chunk);
+}
+
+const CorpusChunk* CorpusChunk::FindNext(const String& level) const {
+  if (next_list_.empty()) {
+    return nullptr;
+  }
+  const CorpusChunk* annotation_next = nullptr;
+  for (const auto& chunk : next_list_) {
+    if (chunk->level_ == kAnyLevel) {
+      return chunk;
+    } else if (level.empty() && chunk->level_ == kBaseLevel) {
+      return chunk;
+    } else if (chunk->level_ == level) {
+      annotation_next = chunk;
+    }
+  }
+  if (annotation_next) {
+    return annotation_next;
+  }
+  // A single "base" link should be assumed as "any".  The "base" doesn't have
+  // the requested level of an annotation.
+  if (next_list_.size() == 1 && next_list_[0]->level_ == kBaseLevel) {
+    return next_list_[0];
+  }
+  wtf_size_t delimiter_index = level.ReverseFind(kLevelDelimiter);
+  if (delimiter_index == kNotFound) {
+    // No link for `level`. It means the graph is incorrect.
+    return nullptr;
+  }
+  return FindNext(level.Substring(0, delimiter_index));
+}
+
+std::tuple<HeapVector<Member<CorpusChunk>>, Vector<String>, const Node*>
+BuildChunkGraph(const Node& first_visible_text_node,
+                const Node* end_node,
+                const Node& block_ancestor,
+                const Node* just_after_block) {
+  ChunkGraphBuilder builder;
+  const Node* next_node = builder.Build(first_visible_text_node, end_node,
+                                        block_ancestor, just_after_block);
+  return {builder.ChunkList(), builder.LevelList(), next_node};
 }
 
 }  // namespace blink

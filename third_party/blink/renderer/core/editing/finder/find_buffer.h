@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class CorpusChunk;
 class FindResults;
 class LayoutBlockFlow;
 class Node;
@@ -80,6 +81,8 @@ class CORE_EXPORT FindBuffer {
 
   bool IsInvalidMatch(MatchResultICU match) const;
 
+  Vector<String> BuffersForTesting() const;
+
  private:
   // Collects text for one LayoutBlockFlow located within |range| to |buffer_|,
   // might be stopped without finishing one full LayoutBlockFlow  if we
@@ -129,14 +132,22 @@ class CORE_EXPORT FindBuffer {
 
   PositionInFlatTree PositionAtEndOfCharacterAtIndex(unsigned index) const;
 
+  Vector<UChar> SerializeLevelInGraph(
+      const HeapVector<Member<CorpusChunk>>& chunk_list,
+      const String& level,
+      const EphemeralRangeInFlatTree& range);
+
   // Adds text in |text_node| that are located within |range| to |buffer|.
   void AddTextToBuffer(const Text& text_node,
                        const EphemeralRangeInFlatTree& range,
                        Vector<UChar>& buffer,
                        Vector<BufferNodeMapping>* mappings);
 
-  Node* node_after_block_ = nullptr;
+  const Node* node_after_block_ = nullptr;
   Vector<UChar> buffer_;
+  // buffer_list_ is usually empty. It contains items only if an element
+  // with display:ruby-text exists.
+  Vector<Vector<UChar>> buffer_list_;
   Vector<BufferNodeMapping> buffer_node_mappings_;
   TextSearcherICU text_searcher_;
 
