@@ -3478,7 +3478,6 @@
       "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
       "external/wpt/html/infrastructure/common-dom-interfaces/collections/htmloptionscollection.html",
       "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/semantics/forms/the-selectlist-element",
       "external/wpt/html/syntax/parsing",
       "fast/forms/color-scheme/select",
       "fast/forms/select",
