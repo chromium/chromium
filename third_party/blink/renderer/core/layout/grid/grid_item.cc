@@ -174,7 +174,8 @@ GridItemData::GridItemData(
   //   https://drafts.csswg.org/css-contain-2/#containment-layout
   //   https://drafts.csswg.org/css-contain-2/#containment-paint
   if (node.IsGrid() && !node.ShouldApplyLayoutContainment() &&
-      !node.ShouldApplyPaintContainment()) {
+      !node.ShouldApplyPaintContainment() &&
+      !style.IsContainerForSizeContainerQueries()) {
     has_subgridded_columns =
         is_parallel_with_root_grid
             ? style.GridTemplateColumns().IsSubgriddedAxis()
