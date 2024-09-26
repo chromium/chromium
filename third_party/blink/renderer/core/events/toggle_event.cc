@@ -18,7 +18,12 @@ ToggleEvent::ToggleEvent(const AtomicString& type,
                          const String& new_state)
     : Event(type, Bubbles::kNo, cancelable),
       old_state_(old_state),
-      new_state_(new_state) {}
+      new_state_(new_state) {
+  DCHECK(old_state == "closed" || old_state == "open")
+      << " old_state should be \"closed\" or \"open\". Was: " << old_state;
+  DCHECK(new_state == "closed" || new_state == "open")
+      << " new_state should be \"closed\" or \"open\". Was: " << new_state;
+}
 
 ToggleEvent::ToggleEvent(const AtomicString& type,
                          const ToggleEventInit* initializer)

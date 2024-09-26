@@ -27,9 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_DIALOG_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/events/toggle_event.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
 
@@ -90,6 +92,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 
+  bool DispatchToggleEvents(bool opening);
+  void DispatchPendingToggleEvent();
+
   bool is_modal_;
   // is_closing_ is set to true at the beginning of close() and is reset to
   // false after the call to close() finishes.
@@ -98,6 +103,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   WeakMember<Element> previously_focused_element_;
 
   Member<CloseWatcher> close_watcher_;
+
+  TaskHandle pending_toggle_event_task_;
+  Member<ToggleEvent> pending_toggle_event_;
 };
 
 }  // namespace blink
