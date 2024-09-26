@@ -1199,8 +1199,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   _unmatchedKeyDownCodes.insert(keyCode);
 
-  RenderWidgetHostViewCocoa* __attribute__((objc_precise_lifetime))
-  keepSelfAlive = self;
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
 
   // Records the current marked text state, so that we can know if the marked
   // text was deleted or not after handling the key down event.

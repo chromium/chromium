@@ -213,8 +213,7 @@ TEST_F(BrowserAccessibilityMacTest, BasicAttributeTest) {
 TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
   // Get the first child. Hold it in a precise lifetime variable. This simulates
   // what the system might do with an accessibility object.
-  BrowserAccessibilityCocoa* __attribute__((objc_precise_lifetime))
-  retainedFirstChild =
+  NS_VALID_UNTIL_END_OF_SCOPE BrowserAccessibilityCocoa* retainedFirstChild =
       [accessibility_ accessibilityHitTest:NSMakePoint(50, 50)];
   EXPECT_NSEQ(@"Child1", retainedFirstChild.accessibilityLabel);
 

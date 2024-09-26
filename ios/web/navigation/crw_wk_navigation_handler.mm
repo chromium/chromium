@@ -1178,7 +1178,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // if the download cannot be started.
 - (BOOL)onDownloadNativeTaskBridgeReadyForDownload:
     (DownloadNativeTaskBridge*)bridge {
-  __attribute__((objc_precise_lifetime))
+  NS_VALID_UNTIL_END_OF_SCOPE
   DownloadNativeTaskBridge* nativeTaskBridge = bridge;
   [_nativeTaskBridges removeObject:bridge];
   if (!self.webStateImpl)
