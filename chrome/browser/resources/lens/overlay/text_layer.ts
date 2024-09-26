@@ -768,6 +768,7 @@ export class TextLayerElement extends PolymerElement {
       text += getTextSeparator(word);
     }
 
+    const fontFamily = loadTimeData.getString('fontfamilyMd');
     let low = MIN_FONT_SIZE;
     let high = MAX_FONT_SIZE;
     // Use binary search to find optimal font size.
@@ -775,7 +776,7 @@ export class TextLayerElement extends PolymerElement {
       const mid = Math.floor((low + high) / 2);
       // The font families here should cover what is default used by the text in
       // the HTML.
-      this.context.font = `${mid}px Roboto, "Cantarell", Arial, sans-serif`;
+      this.context.font = `${mid}px ${fontFamily}`;
       const textMetrics = this.context.measureText(text);
 
       // Check if the text fits within the container
