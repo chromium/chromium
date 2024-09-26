@@ -336,12 +336,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI));
-  html_source->AddBoolean(
-      "psRedesignAdPrivacyPageEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kPsRedesignAdPrivacyPage));
-  html_source->AddBoolean(
-      "psRedesignAdPrivacyPageEnableToggles",
-      privacy_sandbox::kPsRedesignAdPrivacyPageEnableToggles.Get());
 }
 
 }  // namespace settings

@@ -1142,22 +1142,6 @@ IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
           "runMochaSuite('ManageTopicsAndAdTopicsPageState')");
 }
 
-class PrivacySandboxPageRedesign : public SettingsPrivacySandboxPageTest {
- protected:
-  PrivacySandboxPageRedesign() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPsRedesignAdPrivacyPage);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxPageRedesign, RedesignToggles) {
-  RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('PrivacySandboxPageRedesignToggles')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, ReviewNotificationPermissions) {
   RunTest("settings/review_notification_permissions_test.js", "mocha.run()");
 }

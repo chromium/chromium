@@ -11,78 +11,28 @@
   <img id="banner" alt=""
       src="chrome://settings/images/ad_privacy_banner.svg">
 </picture>
-<template is="dom-if" if="[[!enablePsReAP_]]">
-  <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
-    <cr-link-row
-        id="privacySandboxTopicsLinkRow"
-        start-icon="settings20:interests"
-        label="$i18n{adPrivacyPageTopicsLinkRowLabel}"
-        sub-label="[[computePrivacySandboxTopicsSublabel_(
-                      prefs.privacy_sandbox.m1.topics_enabled.value)]]"
-        on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
-    <cr-link-row
-        id="privacySandboxFledgeLinkRow"
-        start-icon="settings20:checklist"
-        class="hr"
-        label="$i18n{adPrivacyPageFledgeLinkRowLabel}"
-        sub-label="[[computePrivacySandboxFledgeSublabel_(
-                      prefs.privacy_sandbox.m1.fledge_enabled.value)]]"
-        on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
-  </template>
+<template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
   <cr-link-row
-      id="privacySandboxAdMeasurementLinkRow"
-      start-icon="settings20:bar-chart"
-      class$="[[measurementLinkRowClass_]]"
-      label="$i18n{adPrivacyPageAdMeasurementLinkRowLabel}"
-      sub-label="[[computePrivacySandboxAdMeasurementSublabel_(
-                   prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]"
-      on-click="onPrivacySandboxAdMeasurementClick_"></cr-link-row>
-</template>
-<template is="dom-if" if="[[enablePsReAP_]]">
-  <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
-    <cr-link-row
-        id="privacySandboxTopicsLinkRowV2"
-        start-icon="settings20:interests"
-        label="$i18n{topicsPageToggleLabel}"
-        sub-label="$i18n{topicsPageToggleSubLabelV2}"
-        on-click="onPrivacySandboxTopicsClick_">
-      <cr-toggle
-          id="topicsToggle"
-          disabled="[[!enablePsReAPToggles_]]"
-          on-change="onToggleChange_"
-          checked="[[isTopicsEnabled_(
-            prefs.privacy_sandbox.m1.topics_enabled.value)]]">
-      </cr-toggle>
-    </cr-link-row>
-    <cr-link-row
-        id="privacySandboxFledgeLinkRowV2"
-        start-icon="settings20:checklist"
-        class="hr"
-        label="$i18n{fledgePageToggleLabel}"
-        sub-label="$i18n{fledgePageToggleSubLabel}"
-        on-click="onPrivacySandboxFledgeClick_">
-      <cr-toggle
-          id="fledgeToggle"
-          disabled="[[!enablePsReAPToggles_]]"
-          on-change="onToggleChange_"
-          checked="[[isFledgeEnabled_(
-            prefs.privacy_sandbox.m1.fledge_enabled.value)]]">
-      </cr-toggle>
-    </cr-link-row>
-  </template>
+      id="privacySandboxTopicsLinkRow"
+      start-icon="settings20:interests"
+      label="$i18n{adPrivacyPageTopicsLinkRowLabel}"
+      sub-label="[[computePrivacySandboxTopicsSublabel_(
+                    prefs.privacy_sandbox.m1.topics_enabled.value)]]"
+      on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
   <cr-link-row
-      id="privacySandboxAdMeasurementLinkRowV2"
-      start-icon="settings20:bar-chart"
-      class$="[[measurementLinkRowClass_]]"
-      label="$i18n{adMeasurementPageToggleLabel}"
-      sub-label="$i18n{adMeasurementPageToggleSubLabel}"
-      on-click="onPrivacySandboxAdMeasurementClick_">
-    <cr-toggle
-        id="adMeasurementToggle"
-        disabled="[[!enablePsReAPToggles_]]"
-        on-change="onToggleChange_"
-        checked="[[isAdMeasurementEnabled_(
-          prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]">
-    </cr-toggle>
-    </cr-link-row>
+      id="privacySandboxFledgeLinkRow"
+      start-icon="settings20:checklist"
+      class="hr"
+      label="$i18n{adPrivacyPageFledgeLinkRowLabel}"
+      sub-label="[[computePrivacySandboxFledgeSublabel_(
+                    prefs.privacy_sandbox.m1.fledge_enabled.value)]]"
+      on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
 </template>
+<cr-link-row
+    id="privacySandboxAdMeasurementLinkRow"
+    start-icon="settings20:bar-chart"
+    class$="[[measurementLinkRowClass_]]"
+    label="$i18n{adPrivacyPageAdMeasurementLinkRowLabel}"
+    sub-label="[[computePrivacySandboxAdMeasurementSublabel_(
+                  prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]"
+    on-click="onPrivacySandboxAdMeasurementClick_"></cr-link-row>
