@@ -242,6 +242,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -570,12 +571,12 @@ void ProcessSingletonNotificationCallbackImpl(
 
 #if !BUILDFLAG(IS_ANDROID)
 bool ShouldInstallSodaDuringPostProfileInit(
-    const base::CommandLine& command_line) {
+    const base::CommandLine& command_line,
+    const Profile* const profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(b:369008001): Make this return base::FeatureList::IsEnabled(
-  // ash::features::kOnDeviceSpeechRecognition) once DLC can reliably accept
-  // install requests immediately upon start.
-  return false;
+  return base::FeatureList::IsEnabled(
+             ash::features::kOnDeviceSpeechRecognition) &&
+         ash::IsUserBrowserContext(const_cast<Profile*>(profile));
 #elif !BUILDFLAG(IS_CHROMEOS_LACROS)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
@@ -1374,7 +1375,7 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldInstallSodaDuringPostProfileInit(
-          *base::CommandLine::ForCurrentProcess())) {
+          *base::CommandLine::ForCurrentProcess(), profile)) {
     speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
                                                browser_process_->local_state());
   }
