@@ -217,7 +217,7 @@
     align-self: stretch;
     display: flex;
     gap: 12px;
-    height: 36px;
+    min-height: 36px;
     padding: 0 16px;
   }
 
@@ -235,6 +235,7 @@
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
+    min-width: 20px;
     width: 20px;
   }
 
@@ -260,6 +261,8 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    padding-block-end: 3px;
+    padding-block-start: 3px;
   }
 
   @keyframes initial-inset-animation {
