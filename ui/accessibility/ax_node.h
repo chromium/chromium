@@ -57,6 +57,11 @@ class AX_EXPORT AXNode final {
   static constexpr int kEmbeddedObjectCharacterLengthUTF16 =
       std::char_traits<char16_t>::length(kEmbeddedObjectCharacterUTF16);
 
+  // Default values must be consistent with AXNodeData.
+  static constexpr bool kDefaultBoolValue = AXNodeData::kDefaultBoolValue;
+  static constexpr int kDefaultIntValue = AXNodeData::kDefaultIntValue;
+  static constexpr float kDefaultFloatValue = AXNodeData::kDefaultFloatValue;
+
   template <typename NodeType,
             NodeType* (NodeType::*NextSibling)() const,
             NodeType* (NodeType::*PreviousSibling)() const,
@@ -347,19 +352,12 @@ class AX_EXPORT AXNode final {
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const {
     return data().GetBoolAttribute(attribute);
   }
-  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute, bool* value) const {
-    return data().GetBoolAttribute(attribute, value);
-  }
 
   bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
     return data().HasFloatAttribute(attribute);
   }
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const {
     return data().GetFloatAttribute(attribute);
-  }
-  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
-                         float* value) const {
-    return data().GetFloatAttribute(attribute, value);
   }
 
   const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&

@@ -108,11 +108,13 @@ std::u16string AXPlatformNodeDelegate::GetValueForControl() const {
 
   std::u16string value =
       GetString16Attribute(ax::mojom::StringAttribute::kValue);
-  float numeric_value;
-  if (GetData().IsRangeValueSupported() && value.empty() &&
-      GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                                  &numeric_value)) {
-    value = base::NumberToString16(numeric_value);
+  if (GetData().IsRangeValueSupported() && value.empty()) {
+    float numeric_value =
+        GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
+    if (numeric_value || GetData().HasFloatAttribute(
+                             ax::mojom::FloatAttribute::kValueForRange)) {
+      value = base::NumberToString16(numeric_value);
+    }
   }
   return value;
 }
@@ -639,9 +641,11 @@ bool AXPlatformNodeDelegate::GetBoolAttribute(
 bool AXPlatformNodeDelegate::GetBoolAttribute(
     ax::mojom::BoolAttribute attribute,
     bool* value) const {
-  if (node_)
-    return node_->GetBoolAttribute(attribute, value);
-  return GetData().GetBoolAttribute(attribute, value);
+  if (HasBoolAttribute(attribute)) {
+    *value = GetBoolAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 bool AXPlatformNodeDelegate::HasFloatAttribute(
@@ -661,9 +665,11 @@ float AXPlatformNodeDelegate::GetFloatAttribute(
 bool AXPlatformNodeDelegate::GetFloatAttribute(
     ax::mojom::FloatAttribute attribute,
     float* value) const {
-  if (node_)
-    return node_->GetFloatAttribute(attribute, value);
-  return GetData().GetFloatAttribute(attribute, value);
+  if (HasFloatAttribute(attribute)) {
+    *value = GetFloatAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
@@ -689,8 +695,11 @@ int AXPlatformNodeDelegate::GetIntAttribute(
 
 bool AXPlatformNodeDelegate::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                              int* value) const {
-  *value = GetIntAttribute(attribute);
-  return HasIntAttribute(attribute);
+  if (HasIntAttribute(attribute)) {
+    *value = GetIntAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&

@@ -44,6 +44,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // kInvalidAXID.
   static constexpr AXID kInvalidAXID = kInvalidAXNodeID;
 
+  static constexpr bool kDefaultBoolValue = false;
+  static constexpr int kDefaultIntValue = 0;
+  static constexpr int kDefaultFloatValue = 0;
+
   AXNodeData();
   virtual ~AXNodeData();
 
@@ -68,12 +72,9 @@ struct AX_BASE_EXPORT AXNodeData {
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const;
-  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute, bool* value) const;
 
   bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const;
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const;
-  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
-                         float* value) const;
 
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;

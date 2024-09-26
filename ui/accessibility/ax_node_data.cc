@@ -291,21 +291,11 @@ bool AXNodeData::HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
 }
 
 bool AXNodeData::GetBoolAttribute(ax::mojom::BoolAttribute attribute) const {
-  bool result;
-  if (GetBoolAttribute(attribute, &result))
-    return result;
-  return false;
-}
-
-bool AXNodeData::GetBoolAttribute(ax::mojom::BoolAttribute attribute,
-                                  bool* value) const {
   auto iter = FindInVectorOfPairs(attribute, bool_attributes);
   if (iter != bool_attributes.end()) {
-    *value = iter->second;
-    return true;
+    return iter->second;
   }
-
-  return false;
+  return kDefaultBoolValue;
 }
 
 bool AXNodeData::HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
@@ -314,21 +304,11 @@ bool AXNodeData::HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
 }
 
 float AXNodeData::GetFloatAttribute(ax::mojom::FloatAttribute attribute) const {
-  float result;
-  if (GetFloatAttribute(attribute, &result))
-    return result;
-  return 0.0;
-}
-
-bool AXNodeData::GetFloatAttribute(ax::mojom::FloatAttribute attribute,
-                                   float* value) const {
   auto iter = FindInVectorOfPairs(attribute, float_attributes);
   if (iter != float_attributes.end()) {
-    *value = iter->second;
-    return true;
+    return iter->second;
   }
-
-  return false;
+  return kDefaultFloatValue;
 }
 
 bool AXNodeData::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
@@ -341,7 +321,7 @@ int AXNodeData::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
   if (iter != int_attributes.end()) {
     return int{iter->second};
   }
-  return 0;
+  return kDefaultIntValue;
 }
 
 bool AXNodeData::HasStringAttribute(

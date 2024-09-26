@@ -955,11 +955,10 @@ void AutomationV8Bindings::AddV8Routes() {
          AXNode* node, const std::string& attribute_name) {
         auto attribute =
             ParseAXEnum<ax::mojom::BoolAttribute>(attribute_name.c_str());
-        bool attr_value;
-        if (!node->GetBoolAttribute(attribute, &attr_value))
+        if (!node->HasBoolAttribute(attribute)) {
           return;
-
-        result.Set(attr_value);
+        }
+        result.Set(node->GetBoolAttribute(attribute));
       });
   RouteNodeIDPlusAttributeFunction(
       "GetIntAttribute",
@@ -1008,10 +1007,12 @@ void AutomationV8Bindings::AddV8Routes() {
          AXNode* node, const std::string& attribute_name) {
         auto attribute =
             ParseAXEnum<ax::mojom::FloatAttribute>(attribute_name.c_str());
-        float attr_value;
 
-        if (!node->GetFloatAttribute(attribute, &attr_value))
+        if (!node->HasFloatAttribute(attribute)) {
           return;
+        }
+
+        float attr_value = node->GetFloatAttribute(attribute);
 
         double intpart, fracpart;
         fracpart = modf(attr_value, &intpart);

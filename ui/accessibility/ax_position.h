@@ -274,10 +274,6 @@ class AXPosition {
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
 
     AXPositionInstance new_position(new AXPositionType());
-    // LOG(ERROR) << "CreateTreePosition: "
-    //            << "\ntree id = " << anchor.tree()->GetAXTreeID()
-    //            << "\nanchor id = " << anchor.id()
-    //            << "\nchild index = " << child_index;
     new_position->Initialize(AXPositionKind::TREE_POSITION,
                              anchor.tree()->GetAXTreeID(), anchor.id(),
                              child_index, INVALID_OFFSET,
@@ -4927,8 +4923,6 @@ class AXPosition {
   }
 
   AXNodeID GetNextOnLineID() const {
-    LOG(ERROR) << "GetNextOnLineID";
-
     if (IsNullPosition())
       return kInvalidAXNodeID;
     DCHECK(GetAnchor());

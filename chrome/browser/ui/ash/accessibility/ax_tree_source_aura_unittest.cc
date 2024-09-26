@@ -222,8 +222,9 @@ TEST_F(AXTreeSourceAuraTest, SerializeWindowSetsClipsChildren) {
   ui::AXNodeData node_data;
   ax_tree.SerializeNode(widget_wrapper, &node_data);
   EXPECT_EQ(ax::mojom::Role::kWindow, node_data.role);
-  bool clips_children = false;
-  EXPECT_TRUE(node_data.GetBoolAttribute(
-      ax::mojom::BoolAttribute::kClipsChildren, &clips_children));
+  EXPECT_TRUE(
+      node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren));
+  bool clips_children =
+      node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren);
   EXPECT_TRUE(clips_children);
 }

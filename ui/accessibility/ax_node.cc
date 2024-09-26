@@ -956,16 +956,14 @@ bool AXNode::CanComputeIntAttribute(ax::mojom::IntAttribute attribute) const {
 }
 
 int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-  // Default value must be in sync with AXNodeData::GetIntAttribute.
-  static const int kDefaultValue = 0;
   int value = data().GetIntAttribute(attribute);
-  if (value != kDefaultValue || data().HasIntAttribute(attribute)) {
+  if (value != kDefaultIntValue || data().HasIntAttribute(attribute)) {
     return value;
   }
   if (CanComputeIntAttribute(attribute)) {
     return GetParent()->data().GetIntAttribute(attribute);
   }
-  return kDefaultValue;
+  return kDefaultIntValue;
 }
 
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
@@ -2059,14 +2057,16 @@ std::string AXNode::GetTextForRangeValue() const {
   DCHECK(data().IsRangeValueSupported());
   std::string range_value =
       GetStringAttribute(ax::mojom::StringAttribute::kValue);
-  float numeric_value;
-  if (range_value.empty() &&
-      GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                        &numeric_value)) {
-    // This method of number to string conversion creates a localized string
-    // and avoids padding with extra zeros after the decimal point.
-    // For example, 3.5 is converted to "3.5" rather than "3.50000".
-    return base::StringPrintf("%g", numeric_value);
+  if (range_value.empty()) {
+    float numeric_value =
+        GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
+    if (numeric_value != AXNode::kDefaultFloatValue ||
+        HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
+      // This method of number to string conversion creates a localized string
+      // and avoids padding with extra zeros after the decimal point.
+      // For example, 3.5 is converted to "3.5" rather than "3.50000".
+      return base::StringPrintf("%g", numeric_value);
+    }
   }
   return range_value;
 }

@@ -153,7 +153,11 @@ bool AomContentAxTree::GetBoolAttributeForAXNode(
   }
 
   ax::mojom::BoolAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->GetBoolAttribute(ax_attr, out_param);
+  bool found = node->HasBoolAttribute(ax_attr);
+  if (found) {
+    *out_param = node->GetBoolAttribute(ax_attr);
+  }
+  return found;
 }
 
 bool AomContentAxTree::GetCheckedStateForAXNode(int32_t ax_id,
@@ -174,8 +178,11 @@ bool AomContentAxTree::GetIntAttributeForAXNode(int32_t ax_id,
   if (!node)
     return false;
   ax::mojom::IntAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  *out_param = node->GetIntAttribute(ax_attr);
-  return node->HasIntAttribute(ax_attr);
+  if (node->HasIntAttribute(ax_attr)) {
+    *out_param = node->GetIntAttribute(ax_attr);
+    return true;
+  }
+  return false;
 }
 
 bool AomContentAxTree::GetRestrictionAttributeForAXNode(
@@ -202,8 +209,13 @@ bool AomContentAxTree::GetFloatAttributeForAXNode(
   ui::AXNode* node = tree_.GetFromId(ax_id);
   if (!node)
     return false;
+
   ax::mojom::FloatAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->GetFloatAttribute(ax_attr, out_param);
+  if (node->HasFloatAttribute(ax_attr)) {
+    *out_param = node->GetFloatAttribute(ax_attr);
+    return true;
+  }
+  return false;
 }
 
 bool AomContentAxTree::GetStateAttributeForAXNode(
