@@ -25,6 +25,12 @@
 // functionality once blocking is fully implemented.
 namespace fingerprinting_protection_filter {
 
+GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
+  GURL::Replacements replacements;
+  replacements.SetRefStr(fragment);
+  return url.ReplaceComponents(replacements);
+}
+
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter

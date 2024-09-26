@@ -61,6 +61,14 @@ const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
 const base::FeatureParam<bool> kEnableOn3pcBlocked{
     &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", false};
 
+const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito{
+    &kEnableFingerprintingProtectionFilter, kPerformanceMeasurementRateParam,
+    0.0};
+
+const base::FeatureParam<double> kPerformanceMeasurementRateIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito,
+    kPerformanceMeasurementRateParam, 0.0};
+
 BASE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter,
              "UseCnameAliasesForFingerprintingProtectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);

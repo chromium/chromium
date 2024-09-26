@@ -57,6 +57,8 @@ class FingerprintingProtectionPageActivationThrottle
       override;
   const char* GetNameForLogging() override;
 
+  bool GetEnablePerformanceMeasurements(bool is_incognito) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FingerprintingProtectionPageActivationThrottleTest,
                            FlagEnabledDefaultActivatedParams_IsAllowlisted);

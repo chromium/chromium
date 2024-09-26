@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
@@ -80,6 +82,10 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   }
   subresource_filter::mojom::ActivationState activation_state;
   activation_state.activation_level = activation_level;
+  // TODO(https://crbug.com/364688841): Set measure_performance bit according
+  // to performance_measurement_rate using GetEnablePerformanceMeasurements to
+  // enable collecting time-based histograms when incognito bit is piped
+  // through.
   auto* web_contents_helper =
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           navigation_handle()->GetWebContents());
@@ -99,6 +105,35 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
   UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
   UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
                             ActivationDecision::ACTIVATION_DECISION_MAX);
+}
+
+namespace {
+
+bool GetMeasurePerformance(double performance_measurement_rate) {
+  return base::ThreadTicks::IsSupported() &&
+         (performance_measurement_rate == 1 ||
+          base::RandDouble() < performance_measurement_rate);
+}
+
+bool MeasurePerformance(bool use_incognito_param) {
+  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
+      use_incognito_param
+          ? features::kEnableFingerprintingProtectionFilterInIncognito
+          : features::kEnableFingerprintingProtectionFilter,
+      features::kPerformanceMeasurementRateParam, 0.0);
+  return GetMeasurePerformance(performance_measurement_rate);
+}
+
+}  // namespace
+
+// Whether we record enhanced performance measurements is dependent on the
+// performance measurement rate which may differ between incognito and
+// non-incognito modes.
+bool FingerprintingProtectionPageActivationThrottle::
+    GetEnablePerformanceMeasurements(bool is_incognito) const {
+  bool use_incognito_param =
+      features::IsFingerprintingProtectionEnabledInIncognito(is_incognito);
+  return MeasurePerformance(use_incognito_param);
 }
 
 }  // namespace fingerprinting_protection_filter

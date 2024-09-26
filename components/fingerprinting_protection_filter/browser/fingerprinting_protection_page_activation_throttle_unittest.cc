@@ -284,4 +284,68 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
 }
 
+TEST_F(FingerprintingProtectionPageActivationThrottleTest,
+       FlagEnabled_MeasurePerformanceRate) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilter,
+      {{"performance_measurement_rate", "1.0"}});
+
+  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
+
+  EXPECT_EQ(
+      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/false),
+      true);
+}
+
+TEST_F(FingerprintingProtectionPageActivationThrottleTest,
+       IncognitoFlagEnabled_MeasurePerformanceRate) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilterInIncognito,
+      {{"performance_measurement_rate", "1.0"}});
+
+  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
+
+  EXPECT_EQ(
+      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/true),
+      true);
+}
+
+TEST_F(
+    FingerprintingProtectionPageActivationThrottleTest,
+    PerformancemanceMeasurementRateNotSet_NonIncognito_DoNotMeasurePerformance) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilter,
+      /*params*/ {});
+
+  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
+
+  EXPECT_EQ(
+      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/false),
+      false);
+}
+
+TEST_F(
+    FingerprintingProtectionPageActivationThrottleTest,
+    PerformancemanceMeasurementRateNotSet_Incognito_DoNotMeasurePerformance) {
+  base::HistogramTester histograms;
+
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilterInIncognito,
+      /*params*/ {});
+
+  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
+      /*dealer_handle_=*/nullptr, test_support_.tracking_protection_settings(),
+      test_support_.prefs());
+
+  EXPECT_EQ(
+      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/true),
+      false);
+}
+
 }  // namespace fingerprinting_protection_filter
