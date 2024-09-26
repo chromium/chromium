@@ -70,6 +70,10 @@ namespace power_bookmarks {
 class PowerBookmarkService;
 }  // namespace power_bookmarks
 
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -196,7 +200,8 @@ using UrlProductIdentifierTupleCallback =
 
 class ShoppingService : public KeyedService,
                         public base::SupportsUserData,
-                        public history::HistoryServiceObserver {
+                        public history::HistoryServiceObserver,
+                        public ProductSpecificationsSet::Observer {
  public:
   ShoppingService(
       const std::string& country_on_startup,
@@ -217,7 +222,8 @@ class ShoppingService : public KeyedService,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
-      std::unique_ptr<commerce::WebExtractor> web_extractor);
+      std::unique_ptr<commerce::WebExtractor> web_extractor,
+      sessions::TabRestoreService* tab_restore_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -433,6 +439,10 @@ class ShoppingService : public KeyedService,
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
+
+  // ProductSpecificationsSet::Observer:
+  void OnProductSpecificationsSetRemoved(
+      const ProductSpecificationsSet& set) override;
 
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
@@ -727,6 +737,12 @@ class ShoppingService : public KeyedService,
       history_service_observation_{this};
 
   const raw_ptr<history::HistoryService> history_service_;
+
+  const raw_ptr<sessions::TabRestoreService> tab_restore_service_{nullptr};
+
+  base::ScopedObservation<ProductSpecificationsService,
+                          ProductSpecificationsSet::Observer>
+      product_specifications_observation_{this};
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 

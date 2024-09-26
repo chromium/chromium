@@ -32,6 +32,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
+                                nullptr,
                                 nullptr) {
   product_specifications_service_ =
       std::make_unique<testing::NiceMock<MockProductSpecificationsService>>();

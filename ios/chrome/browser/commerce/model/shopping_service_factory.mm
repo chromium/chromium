@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -76,6 +77,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
             parcel_tracking_db::ParcelTrackingContent>::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
+  DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -106,7 +108,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
           ->GetForProfile(chrome_state),
       ios::HistoryServiceFactory::GetForProfile(
           chrome_state, ServiceAccessType::EXPLICIT_ACCESS),
-      std::make_unique<commerce::WebExtractorImpl>());
+      std::make_unique<commerce::WebExtractorImpl>(),
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(chrome_state));
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {

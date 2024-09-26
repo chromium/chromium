@@ -13,6 +13,7 @@
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
@@ -82,6 +83,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 #endif
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
+  DependsOn(TabRestoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -113,7 +115,8 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetForProfile(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      std::make_unique<commerce::WebExtractorImpl>());
+      std::make_unique<commerce::WebExtractorImpl>(),
+      TabRestoreServiceFactory::GetForProfile(profile));
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

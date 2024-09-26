@@ -12,6 +12,7 @@ include_rules = [
   "+components/prefs",
   "+components/search",
   "+components/session_proto_db/session_proto_storage.h",
+  "+components/sessions/core",
   "+components/signin/public",
   "+components/strings",
   "+components/sync",
