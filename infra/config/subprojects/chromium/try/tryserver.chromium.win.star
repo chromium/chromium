@@ -210,6 +210,10 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -421,6 +425,10 @@ try_.builder(
     cores = None,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
