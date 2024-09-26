@@ -2365,6 +2365,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.NetError{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}{AbandonedTimeBucket}"
+    enum="NetErrorCodes" expires_after="2024-12-08">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Network status codes recorded for the abandoned navigation request, with
+    potentially some suffixes detaling the navigation {BackgroundSuffix},
+    {HiddenSuffix}, {IncognitoSuffix}, {RTTBucketSuffix}.
+
+    The metric is emitted when the navigation gets abandoned.
+  </summary>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
+  <token key="AbandonedTimeBucket">
+    <variant name=""/>
+    <variant name=".AbandonedTimeAbove2000"/>
+    <variant name=".AbandonedTimeBelow100"/>
+    <variant name=".AbandonedTimeBetween100To2000"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.RendererProcessCreatedBeforeNav{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
     enum="Boolean" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>

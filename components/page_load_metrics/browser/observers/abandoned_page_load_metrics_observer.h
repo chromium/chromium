@@ -7,6 +7,7 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
+#include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace internal {
@@ -196,6 +197,9 @@ class AbandonedPageLoadMetricsObserver
   // time from the navigation start. Also updates `latest_loading_milestone_` if
   // the given milestone is newer than the current `latest_loading_milestone_`.
   void LogLoadingMilestone(NavigationMilestone milestone, base::TimeDelta time);
+
+  void LogNetError(net::Error error_code,
+                   base::TimeTicks navigation_abandon_time);
 
   bool WasBackgrounded() const {
     return !first_backgrounded_timestamp_.is_null();

@@ -135,6 +135,21 @@ const char kNavigationTypeRestoreNav[] = "RestoreNav";
 const char kNavigationTypeBrowserNav[] = "BrowserNav";
 const char kNavigationTypeRendererNav[] = "RendererNav";
 
+const char kSuffixAbandonedTimeBelow100[] = ".AbandonedTimeBelow100";
+const char kSuffixAbandonedTime100to2000[] = ".AbandonedTime100To2000";
+const char kSuffixAbandonedTimeAbove2000[] = ".AbandonedTimeAbove2000";
+
+const char* GetSuffixForAbandonedTime(base::TimeDelta request_failed_time) {
+  if (request_failed_time.InMilliseconds() < 100) {
+    return internal::kSuffixAbandonedTimeBelow100;
+  }
+  if (request_failed_time.InMilliseconds() <= 2000) {
+    return internal::kSuffixAbandonedTime100to2000;
+  }
+
+  return internal::kSuffixAbandonedTimeAbove2000;
+}
+
 }  // namespace internal
 
 std::string AbandonedPageLoadMetricsObserver::AbandonReasonToString(
@@ -700,6 +715,9 @@ AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
       LogMetricsOnAbandon(
           AbandonReason::kErrorPage,
           navigation_handle->GetNavigationHandleTiming().request_failed_time);
+      LogNetError(
+          navigation_handle->GetNetErrorCode(),
+          navigation_handle->GetNavigationHandleTiming().request_failed_time);
     }
     return STOP_OBSERVING;
   }
@@ -1096,4 +1114,32 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
   }
 
   last_logged_navigation_handle_timing_ = latest_navigation_handle_timing_;
+}
+
+void AbandonedPageLoadMetricsObserver::LogNetError(
+    net::Error error_code,
+    base::TimeTicks navigation_abandon_time) {
+  // `milestone` is only used to get `base_suffix`. Actually NetError
+  // abandonments mostly happen in the LoaderStart milestone. So we don't log
+  // the milestone explicitly not to explode the histogram combination.
+  NavigationMilestone milestone =
+      !latest_navigation_handle_timing_.loader_start_time.is_null() &&
+              navigation_abandon_time >
+                  latest_navigation_handle_timing_.loader_start_time
+          ? NavigationMilestone::kLoaderStart
+          : NavigationMilestone::kNavigationStart;
+  std::string base_suffix =
+      GetHistogramSuffix(milestone, navigation_abandon_time);
+  const std::string taken_time_suffix = internal::GetSuffixForAbandonedTime(
+      navigation_abandon_time - navigation_start_time_);
+  for (std::string additional_suffix : GetAdditionalSuffixes()) {
+    std::string suffix = base_suffix + additional_suffix;
+    // Network error codes are negative. See: src/net/base/net_error_list.h.
+    base::UmaHistogramSparse(
+        base::StrCat({GetHistogramPrefix(), "NetError", suffix}),
+        std::abs(error_code));
+    base::UmaHistogramSparse(base::StrCat({GetHistogramPrefix(), "NetError",
+                                           suffix, taken_time_suffix}),
+                             std::abs(error_code));
+  }
 }
