@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_shared_devices.h"
@@ -273,7 +274,8 @@ void CrostiniHandler::OnJavascriptDisallowed() {
 void CrostiniHandler::HandleRequestCrostiniInstallerView(
     const base::Value::List& args) {
   AllowJavascript();
-  crostini::CrostiniInstaller::GetForProfile(Profile::FromWebUI(web_ui()))
+  crostini::CrostiniInstallerFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()))
       ->ShowDialog(crostini::CrostiniUISurface::kSettings);
 }
 

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -18,14 +17,12 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -45,44 +42,6 @@ namespace crostini {
 namespace {
 using SetupResult = CrostiniInstaller::SetupResult;
 constexpr char kCrostiniSetupSourceHistogram[] = "Crostini.SetupSource";
-
-class CrostiniInstallerFactory : public ProfileKeyedServiceFactory {
- public:
-  static crostini::CrostiniInstaller* GetForProfile(Profile* profile) {
-    return static_cast<crostini::CrostiniInstaller*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniInstallerFactory* GetInstance() {
-    static base::NoDestructor<CrostiniInstallerFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniInstallerFactory>;
-
-  CrostiniInstallerFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniInstallerService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {
-    DependsOn(crostini::CrostiniManagerFactory::GetInstance());
-  }
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new crostini::CrostiniInstaller(profile);
-  }
-};
 
 constexpr int kUninitializedDiskSpace = -1;
 
@@ -224,10 +183,6 @@ crostini::mojom::InstallerError CrostiniResultToInstallerError(
 }
 
 }  // namespace
-
-CrostiniInstaller* CrostiniInstaller::GetForProfile(Profile* profile) {
-  return CrostiniInstallerFactory::GetForProfile(profile);
-}
 
 CrostiniInstaller::CrostiniInstaller(Profile* profile) : profile_(profile) {}
 
@@ -626,11 +581,6 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
   // subsequently set |state_| to |ERROR|.
   DCHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
             state_ == State::ERROR);
-}
-
-// static
-void CrostiniInstaller::EnsureFactoryBuilt() {
-  CrostiniInstallerFactory::GetInstance();
 }
 
 }  // namespace crostini

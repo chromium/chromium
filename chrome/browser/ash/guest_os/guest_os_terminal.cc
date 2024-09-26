@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -269,7 +270,8 @@ void LaunchTerminalWithIntent(
       // would bring up the installer, so keep that behaviour. Only applies to
       // the default Crostini VM, anything else is only accessible if the target
       // VM is installed.
-      auto* installer = crostini::CrostiniInstaller::GetForProfile(profile);
+      auto* installer =
+          crostini::CrostiniInstallerFactory::GetForProfile(profile);
       if (installer) {
         installer->ShowDialog(crostini::CrostiniUISurface::kAppList);
       }

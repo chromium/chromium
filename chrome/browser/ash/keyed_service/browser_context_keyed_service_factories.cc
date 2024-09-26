@@ -40,7 +40,7 @@
 #include "chrome/browser/ash/crosapi/persistent_forced_extension_keep_alive.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
-#include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
@@ -171,7 +171,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
   crostini::AnsibleManagementServiceFactory::GetInstance();
   crostini::CrostiniExportImport::EnsureFactoryBuilt();
-  crostini::CrostiniInstaller::EnsureFactoryBuilt();
+  crostini::CrostiniInstallerFactory::GetInstance();
   crostini::CrostiniMetricsService::Factory::GetInstance();
   crostini::CrostiniPackageService::EnsureFactoryBuilt();
   crostini::CrostiniPortForwarder::EnsureFactoryBuilt();

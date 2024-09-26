@@ -33,6 +33,8 @@ static_library("crostini") {
     "crostini_force_close_watcher.h",
     "crostini_installer.cc",
     "crostini_installer.h",
+    "crostini_installer_factory.cc",
+    "crostini_installer_factory.h",
     "crostini_installer_ui_delegate.h",
     "crostini_low_disk_notification.cc",
     "crostini_low_disk_notification.h",
