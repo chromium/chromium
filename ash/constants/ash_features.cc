@@ -2167,7 +2167,7 @@ BASE_FEATURE(kOobeInputMethods,
 // If enabled, SplitModifierKeyboardInfoScreen will be shown in OOBE.
 BASE_FEATURE(kOobeSplitModifierKeyboardInfo,
              "OobeSplitModifierKeyboardInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_ENABLED_BY_DEFAULT);
