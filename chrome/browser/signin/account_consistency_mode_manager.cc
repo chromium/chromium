@@ -85,12 +85,6 @@ bool CanEnableDiceForBuild() {
 
 }  // namespace
 
-// static
-AccountConsistencyModeManager* AccountConsistencyModeManager::GetForProfile(
-    Profile* profile) {
-  return AccountConsistencyModeManagerFactory::GetForProfile(profile);
-}
-
 AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
     : profile_(profile),
       account_consistency_(signin::AccountConsistencyMethod::kDisabled),
@@ -132,7 +126,7 @@ AccountConsistencyMethod AccountConsistencyModeManager::GetMethodForProfile(
   if (!ShouldBuildServiceForProfile(profile))
     return AccountConsistencyMethod::kDisabled;
 
-  return AccountConsistencyModeManager::GetForProfile(profile)
+  return AccountConsistencyModeManagerFactory::GetForProfile(profile)
       ->GetAccountConsistencyMethod();
 }
 
