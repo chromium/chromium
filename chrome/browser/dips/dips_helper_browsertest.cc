@@ -524,8 +524,16 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   }
 }
 
+// Flaky on Android: https://crbug.com/369717773
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UserClearedSitesAreNotReportedToUKM \
+  DISABLED_UserClearedSitesAreNotReportedToUKM
+#else
+#define MAYBE_UserClearedSitesAreNotReportedToUKM \
+  UserClearedSitesAreNotReportedToUKM
+#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       UserClearedSitesAreNotReportedToUKM) {
+                       MAYBE_UserClearedSitesAreNotReportedToUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   content::WebContents* web_contents = GetActiveWebContents();
   DIPSServiceImpl* dips_service =
