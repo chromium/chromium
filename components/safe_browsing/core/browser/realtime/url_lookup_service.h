@@ -88,6 +88,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   std::unique_ptr<enterprise_connectors::ClientMetadata> GetClientMetadata()
       const override;
   std::string GetMetricSuffix() const override;
+  bool CanCheckUrl(const GURL& url) override;
 
 #if defined(UNIT_TEST)
   void set_bypass_probability_for_tests(

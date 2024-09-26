@@ -68,6 +68,10 @@ void FakeRealTimeUrlLookupService::SendSampledRequest(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     SessionID session_id) {}
 
+bool FakeRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
+  return true;
+}
+
 GURL FakeRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
   return GURL();
 }

@@ -19,7 +19,9 @@
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/unified_consent/pref_names.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
@@ -240,6 +242,13 @@ std::optional<std::string> RealTimeUrlLookupService::GetDMTokenString() const {
 
 std::string RealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Consumer";
+}
+
+bool RealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
+  if (VerdictCacheManager::has_artificial_cached_url()) {
+    return true;
+  }
+  return CanGetReputationOfUrl(url);
 }
 
 bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {

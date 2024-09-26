@@ -44,6 +44,7 @@ class FakeRealTimeUrlLookupService
       const GURL& url,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       SessionID session_id) override;
+  bool CanCheckUrl(const GURL& url) override;
 
   GURL GetRealTimeLookupUrl() const override;
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override;

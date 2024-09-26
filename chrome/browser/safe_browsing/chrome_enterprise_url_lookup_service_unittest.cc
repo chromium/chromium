@@ -376,4 +376,12 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   EXPECT_FALSE(off_the_record_rt_service->CanPerformFullURLLookup());
 }
 
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl_IPAddresses) {
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckUrl(GURL("https://google.com/")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://192.168.1.1")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://172.16.2.2")));
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://127.0.0.1")));
+}
+
 }  // namespace safe_browsing

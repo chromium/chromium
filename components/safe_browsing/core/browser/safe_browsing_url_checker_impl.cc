@@ -655,8 +655,8 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
 }
 
 bool SafeBrowsingUrlCheckerImpl::CanPerformFullURLLookup(const GURL& url) {
-  return url_real_time_lookup_enabled_ &&
-         RealTimeUrlLookupServiceBase::CanCheckUrl(url);
+  return url_real_time_lookup_enabled_ && url_lookup_service_on_ui_ &&
+         url_lookup_service_on_ui_->CanCheckUrl(url);
 }
 
 }  // namespace safe_browsing

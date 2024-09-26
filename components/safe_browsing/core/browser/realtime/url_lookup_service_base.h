@@ -89,9 +89,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   ~RealTimeUrlLookupServiceBase() override;
 
-  // Returns true if |url|'s scheme can be checked.
-  static bool CanCheckUrl(const GURL& url);
-
   // Returns the SBThreatType for a combination of
   // RTLookupResponse::ThreatInfo::ThreatType and
   // RTLookupResponse::ThreatInfo::VerdictType
@@ -158,6 +155,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // nullptr if ClientMetadata is unavailable.
   virtual std::unique_ptr<enterprise_connectors::ClientMetadata>
   GetClientMetadata() const = 0;
+
+  // Returns true if `url`'s scheme can be checked, or if it should be checked
+  // anyway because of "EnterpriseRealTimeUrlCheckMode".
+  virtual bool CanCheckUrl(const GURL& url) = 0;
 
   // KeyedService:
   // Called before the actual deletion of the object.

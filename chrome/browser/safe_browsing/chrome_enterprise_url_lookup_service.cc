@@ -18,6 +18,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -31,6 +32,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -219,6 +221,14 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
 void ChromeEnterpriseRealTimeUrlLookupService::Shutdown() {
   token_fetcher_.reset();
   RealTimeUrlLookupServiceBase::Shutdown();
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
+  // Any URL can be checked in the enterprise case since URLs that might return
+  // false when passed to `safe_browsing::CanGetReputationOfUrl` could still
+  // trigger DLP rules. For example, this includes publicly routable IP
+  // addresses.
+  return true;
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()

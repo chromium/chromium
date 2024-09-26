@@ -176,9 +176,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     cache_manager_.reset();
   }
 
-  bool CanCheckUrl(const GURL& url) {
-    return RealTimeUrlLookupServiceBase::CanCheckUrl(url);
-  }
+  bool CanCheckUrl(const GURL& url) { return rt_service_->CanCheckUrl(url); }
   bool IsInBackoffMode() { return rt_service_->IsInBackoffMode(); }
   bool CanSendRTSampleRequest() {
     return rt_service_->CanSendRTSampleRequest();
