@@ -7591,7 +7591,7 @@
   {
     "name": "read-anything",
     "owners": [ "abigailbklein@google.com", "jocelyntran@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "read-anything-docs-integration",
@@ -7650,12 +7650,12 @@
   {
     "name": "read-anything-with-algorithm",
     "owners": [ "abigailbklein@google.com", "francisjp@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "read-anything-with-screen2x",
     "owners": [ "abigailbklein@google.com", "rhalavati@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "read-printer-capabilities-with-xps",
