@@ -2583,7 +2583,14 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
 };
 
 // Cancels a DnD session started by `RunShellDrag()`.
-TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
+//
+// TODO(crbug.com/332944429): Re-enable on Windows AMR64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CancelShellDrag DISABLED_CancelShellDrag
+#else
+#define MAYBE_CancelShellDrag CancelShellDrag
+#endif
+TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
   WidgetAutoclosePtr widget(new Widget);
 
   auto cancel = [&]() {
