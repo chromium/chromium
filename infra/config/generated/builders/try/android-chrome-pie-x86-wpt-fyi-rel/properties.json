@@ -44,7 +44,8 @@
           "builder": "android-chrome-pie-x86-wpt-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-chrome-pie-x86-wpt-fyi-rel/targets"
     }
   },
   "$build/reclient": {

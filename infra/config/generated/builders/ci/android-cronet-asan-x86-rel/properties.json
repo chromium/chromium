@@ -44,7 +44,8 @@
           "builder": "android-cronet-asan-x86-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-asan-x86-rel/targets"
     }
   },
   "$build/reclient": {

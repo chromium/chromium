@@ -521,6 +521,7 @@ def _variant(
         *,
         name,
         identifier,
+        generate_pyl_entry = True,
         enabled = None,
         mixins = None,
         **kwargs):
@@ -553,7 +554,8 @@ def _variant(
         mixin_values = _mixin_values(**kwargs),
     ))
 
-    graph.add_edge(keys.project(), key)
+    if generate_pyl_entry:
+        graph.add_edge(keys.project(), key)
 
 def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, variants = None, per_test_modifications = None):
     """Define a targets bundle.

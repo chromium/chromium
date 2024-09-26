@@ -1,0 +1,53 @@
+{
+  "android-chrome-pie-x86-wpt-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--no-wpt-internal",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
+          "--use-upstream-wpt",
+          "--timeout-multiplier=4"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_public_wpt",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "named_caches": [
+            {
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_28_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 36
+        },
+        "test": "chrome_public_wpt",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
+      }
+    ]
+  }
+}

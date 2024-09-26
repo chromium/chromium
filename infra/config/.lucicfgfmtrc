@@ -94,6 +94,9 @@ rules {
         # variant
         arg: "enabled"
         arg: "identifier"
+
+        # variant/mixin
+        arg: "generate_pyl_entry"
         arg: "description"
 
         # tests
@@ -114,7 +117,6 @@ rules {
         arg: "per_test_modifications"
 
         # mixin/variant/test common fields
-        arg: "generate_pyl_entry"
         arg: "args"
         arg: "precommit_args"
         arg: "android_args"

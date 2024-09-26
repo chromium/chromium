@@ -51,7 +51,8 @@
           "builder": "android-mte-arm64-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-mte-arm64-rel/targets"
     }
   },
   "$build/reclient": {

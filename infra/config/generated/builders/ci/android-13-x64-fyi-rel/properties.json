@@ -41,7 +41,8 @@
           "builder": "android-13-x64-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-13-x64-fyi-rel/targets"
     }
   },
   "$build/reclient": {

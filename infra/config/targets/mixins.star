@@ -115,6 +115,7 @@ targets.mixin(
 
 targets.mixin(
     name = "12l-fyi-x64-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_fyi.textpb",
     ],
@@ -180,6 +181,7 @@ targets.mixin(
 
 targets.mixin(
     name = "13-google-atd-x64-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
     ],
@@ -201,6 +203,7 @@ targets.mixin(
 
 targets.mixin(
     name = "13-x64-emulator",
+    generate_pyl_entry = False,
     description = "Run with android_33_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
@@ -245,8 +248,8 @@ targets.mixin(
 
 targets.mixin(
     name = "14-desktop-x64-emulator",
-    description = "Run with android_34_desktop_x64",
     generate_pyl_entry = False,
+    description = "Run with android_34_desktop_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_34_desktop_x64.textpb",
     ],
@@ -268,6 +271,7 @@ targets.mixin(
 
 targets.mixin(
     name = "15-x64-emulator",
+    generate_pyl_entry = False,
     description = "Run with android_35_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
@@ -1457,6 +1461,7 @@ targets.mixin(
 
 targets.mixin(
     name = "marshmallow-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
     ],
@@ -1575,6 +1580,7 @@ targets.mixin(
 # Pixel 8
 targets.mixin(
     name = "shiba",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "shiba",
@@ -1594,6 +1600,7 @@ targets.mixin(
 # Pixel 7 on Android 14
 targets.mixin(
     name = "panther_on_14",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "panther",
@@ -1604,6 +1611,7 @@ targets.mixin(
 )
 targets.mixin(
     name = "pie-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
     ],
@@ -1682,6 +1690,7 @@ targets.mixin(
 # Pixel Tablet
 targets.mixin(
     name = "tangorpro",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "tangorpro",

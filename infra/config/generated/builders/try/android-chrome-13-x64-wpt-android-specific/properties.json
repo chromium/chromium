@@ -41,7 +41,8 @@
           "builder": "android-chrome-13-x64-wpt-android-specific",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-chrome-13-x64-wpt-android-specific/targets"
     }
   },
   "$build/reclient": {

@@ -36,24 +36,6 @@
   },
   'android_browsertests': {
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          # https://crbug.com/1289764
-          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          # https://crbug.com/1414886
-          '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
-        ],
-      },
-      'android-15-x64-fyi-rel': {
-        'args': [
-          # https://crbug.com/361042311
-          '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
-        ],
-      },
       'android-asan': {
         'swarming': {
           'shards': 2,
@@ -64,11 +46,6 @@
           'shards': 3,
         },
       },
-      'android-tablet-14-arm64-fyi-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'ci_only': True,
@@ -77,11 +54,6 @@
         },
       },
     },
-  },
-  'android_browsertests_no_fieldtrial': {
-    'remove_from': [
-      'android-12l-x64-fyi-dbg',
-    ],
   },
   'android_sync_integration_tests': {
    'modifications': {
@@ -128,26 +100,6 @@
       'ToTAndroid': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter',
-        ],
-      },
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.base_unittests.filter',
-        ],
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.tangorpro.base_unittests.filter',
         ],
       },
       'fuchsia-code-coverage': {
@@ -1004,11 +956,6 @@
           'shards': 3,
         },
       },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
-        ],
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -1066,16 +1013,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
-        ],
-      },
       'android-pie-arm64-rel-dev': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
@@ -1109,30 +1046,10 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter',
-        ],
-      },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
-        ],
-      },
-    },
-  },
-  'chrome_public_wpt': {
-    'modifications': {
-      'android-chrome-pie-x86-wpt-fyi-rel': {
-        'args': [
-          '--use-upstream-wpt',
-          '--timeout-multiplier=4',
         ],
       },
     },
@@ -1215,11 +1132,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.components_unittests.filter',
-        ],
       },
       'win-asan': {
         # TODO(crbug.com/41491387): With a single shard seems to hit time limit.
@@ -1334,30 +1246,6 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'android-15-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'android-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.content_browsertests.filter',
@@ -1370,11 +1258,6 @@
         'swarming': {
           'shards': 25,
         },
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.content_browsertests.filter',
-        ],
       },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
@@ -1517,16 +1400,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter',
-        ],
-      },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'swarming': {
@@ -1554,16 +1427,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter',
-        ],
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter',
-        ],
       },
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1660,21 +1523,6 @@
       'ToTAndroid': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.crashpad_tests.filter',
-        ],
-      },
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.crashpad_tests.filter',
         ],
       },
       # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
@@ -1794,20 +1642,6 @@
       'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
-  },
-  'device_unittests': {
-    'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
-    },
   },
   'expected_color_pixel_gl_passthrough_ganesh_test': {
     'replacements': {
@@ -2119,16 +1953,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
       'android-code-coverage-native': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
@@ -2220,20 +2044,6 @@
       # TODO: crbug.com/346921029 - fix broken tests.
       'linux-win-cross-rel',
     ],
-  },
-  'gwp_asan_unittests': {
-    'modifications': {
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter',
-        ],
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter',
-        ],
-      },
-    },
   },
   'hardware_accelerated_feature_tests': {
     'remove_from': [
@@ -2613,26 +2423,6 @@
   },
   'media_unittests': {
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.media_unittests.filter',
-        ],
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.media_unittests.filter',
-        ],
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 3,
@@ -2852,30 +2642,6 @@
   },
   'perfetto_unittests': {
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      'android-13-x64-fyi-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      'android-mte-arm64-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
         'args': [
@@ -3312,15 +3078,6 @@
       'win-rel-cft',
       'Win11 Tests x64',
     ],
-  },
-  'system_webview_wpt': {
-    'modifications': {
-      'android-webview-pie-x86-wpt-fyi-rel': {
-        'args': [
-          '--use-upstream-wpt',
-        ],
-      },
-    },
   },
   'tab_capture_end2end_tests': {
     # Run these only on Release bots.
@@ -4293,16 +4050,6 @@
       'android-asan',  # https://crbug.com/964562
     ],
     'modifications': {
-      'android-12l-x64-fyi-dbg': {
-        'swarming': {
-          'shards': 9,
-        },
-      },
-      'android-13-x64-fyi-rel': {
-        'swarming': {
-          'shards': 9,
-        },
-      },
       'android-code-coverage-native': {
         'args': [
           '--use-persistent-shell',
@@ -4312,11 +4059,6 @@
           # local coverage data merging time.
           'shards': 24,
         },
-      },
-      'android-tablet-14-arm64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
-        ],
       },
       # Keep this same as android-oreo-x86-rel
       'android-x86-code-coverage': {
@@ -4373,21 +4115,6 @@
         },
       },
     }
-  },
-   "webview_trichrome_64_cts_tests full_mode": {
-    'remove_from': [
-      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
-    ],
-  },
-   "webview_trichrome_64_cts_tests instant_mode": {
-    'remove_from': [
-      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
-    ],
-  },
-  "webview_trichrome_64_cts_tests_no_field_trial": {
-    'remove_from': [
-      'android-15-x64-fyi-rel',  # https://crbug.com/353915320
-    ],
   },
   'xr_browser_tests': {
     'remove_from': [

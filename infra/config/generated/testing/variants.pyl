@@ -449,20 +449,6 @@
       '--webview-command-line-arg=--fake-variations-channel=stable',
     ],
   },
-  'WEBVIEW_TRICHROME_FULL_CTS_TESTS': {
-    'identifier': 'full_mode',
-    'swarming': {
-      'shards': 2,
-    },
-  },
-  'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS': {
-    'identifier': 'instant_mode',
-    'args': [
-      '--exclude-annotation',
-      'AppModeFull',
-      '--test-apk-as-instant',
-    ],
-  },
   'WIN10_INTEL_UHD_630_STABLE': {
     'identifier': '8086:9bc5',
     'mixins': [

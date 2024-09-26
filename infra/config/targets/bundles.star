@@ -59,9 +59,9 @@ targets.bundle(
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
-        "jni_zero_sample_apk_test_suite",
+        "jni_zero_sample_apk_test",
         "linux_flavor_specific_chromium_gtests",
-        "minidump_uploader_tests",
+        "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         targets.bundle(
             targets = "webview_trichrome_64_cts_tests_suite",
@@ -70,6 +70,21 @@ targets.bundle(
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_12l_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -96,6 +111,33 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_13_emulator_gtests",
+    targets = [
+        "android_ci_only_fieldtrial_webview_tests",
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_profile_generator_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "fieldtrial_android_tests",
+        "jni_zero_sample_apk_test",
+        "linux_flavor_specific_chromium_gtests",
+        "minidump_uploader_test",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_14_device_gtests",
     targets = [
         "android_hardware_specific_gtests",
@@ -103,6 +145,21 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "chrome_public_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_14_device_fyi_gtests",
+    targets = [
+        "system_webview_shell_instrumentation_tests",
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_ui_instrumentation_tests",
     ],
 )
 
@@ -130,6 +187,45 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_14_tablet_gtests",
+    targets = [
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_15_emulator_fyi_gtests",
+    targets = [
+        "android_browsertests_fyi",
+        "android_content_browsertests_fyi",
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+    ],
+)
+
+targets.bundle(
     name = "android_15_emulator_gtests",
     targets = [
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
@@ -151,6 +247,55 @@ targets.bundle(
         # Name is vr_*, but actually has AR tests.
         "vr_android_unittests",
     ],
+)
+
+targets.bundle(
+    name = "android_browsertests_fyi",
+    targets = [
+        "android_browsertests",
+    ],
+    per_test_modifications = {
+        "android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "android_ci_only_fieldtrial_webview_tests",
+    targets = [
+        "webview_trichrome_64_cts_tests_no_field_trial",
+        "webview_ui_test_app_test_apk_no_field_trial",
+    ],
+    mixins = [
+        "ci_only",
+    ],
+    per_test_modifications = {
+        "webview_trichrome_64_cts_tests_no_field_trial": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "android_content_browsertests_fyi",
+    targets = [
+        "content_browsertests",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            android_swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+    },
 )
 
 # Android desktop tests that run on a Linux host.
@@ -396,6 +541,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_trichrome_smoke_tests",
+    targets = [
+        "trichrome_chrome_bundle_smoke_test",
+    ],
+)
+
+targets.bundle(
     name = "bfcache_android_gtests",
     targets = [
         "bf_cache_android_browsertests",
@@ -474,6 +626,36 @@ targets.bundle(
     mixins = [
         "linux-jammy",
     ],
+)
+
+targets.bundle(
+    name = "chrome_profile_generator_tests",
+    targets = [
+        "chrome_public_apk_profile_tests",
+    ],
+    per_test_modifications = {
+        "chrome_public_apk_profile_tests": targets.mixin(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "chrome_public_wpt_suite",
+    targets = "chrome_public_wpt",
+    per_test_modifications = {
+        "chrome_public_wpt": targets.mixin(
+            args = [
+                "--no-wpt-internal",
+            ],
+            swarming = targets.swarming(
+                shards = 36,
+                expiration_sec = 18000,
+                hard_timeout_sec = 14400,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -794,6 +976,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "system_webview_wpt_suite",
+    targets = "system_webview_wpt",
+    per_test_modifications = {
+        "system_webview_wpt": targets.mixin(
+            args = [
+                "--no-wpt-internal",
+            ],
+            swarming = targets.swarming(
+                shards = 25,
+                expiration_sec = 18000,
+                hard_timeout_sec = 14400,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_64_cts_tests_suite",
     targets = [
         "webview_64_cts_tests",
@@ -855,6 +1054,38 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webview_trichrome_64_cts_tests_no_field_trial_suite",
+    targets = [
+        "webview_trichrome_64_cts_tests_no_field_trial",
+    ],
+    per_test_modifications = {
+        "webview_trichrome_64_cts_tests_no_field_trial": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_trichrome_64_cts_tests_suite",
+    targets = "webview_trichrome_64_cts_tests",
+    per_test_modifications = {
+        "webview_trichrome_64_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_trichrome_cts_tests_suite",
     targets = "webview_trichrome_cts_tests",
     per_test_modifications = {
@@ -862,6 +1093,34 @@ targets.bundle(
             args = [
                 "--store-tombstones",
             ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "wpt_web_tests_android",
+    targets = [
+        "android_blink_wpt_tests",
+    ],
+    per_test_modifications = {
+        "android_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "wpt_web_tests_webview",
+    targets = [
+        "webview_blink_wpt_tests",
+    ],
+    per_test_modifications = {
+        "webview_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
         ),
     },
 )

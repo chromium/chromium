@@ -44,7 +44,8 @@
           "builder": "android-12l-x64-fyi-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-12l-x64-fyi-dbg/targets"
     }
   },
   "$build/reclient": {

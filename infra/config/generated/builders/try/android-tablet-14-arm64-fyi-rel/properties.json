@@ -41,7 +41,8 @@
           "builder": "android-tablet-14-arm64-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-tablet-14-arm64-fyi-rel/targets"
     }
   },
   "$build/reclient": {

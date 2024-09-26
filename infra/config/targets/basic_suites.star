@@ -15,24 +15,6 @@ load("//lib/targets.star", "targets")
 # consistent and move the information onto the binaries
 
 targets.legacy_basic_suite(
-    name = "android_ci_only_fieldtrial_webview_tests",
-    tests = {
-        "webview_trichrome_64_cts_tests_no_field_trial": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-            ci_only = True,
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "webview_ui_test_app_test_apk_no_field_trial": targets.legacy_test_config(
-            ci_only = True,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_emulator_specific_chrome_public_tests",
     tests = {
         "chrome_public_test_apk": targets.legacy_test_config(
@@ -81,17 +63,6 @@ targets.legacy_basic_suite(
     name = "android_smoke_tests",
     tests = {
         "chrome_public_smoke_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "android_browsertests_fyi",
-    tests = {
-        "android_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
     },
 )
 
@@ -156,13 +127,6 @@ targets.legacy_basic_suite(
                 shards = 3,
             ),
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "android_trichrome_smoke_tests",
-    tests = {
-        "trichrome_chrome_bundle_smoke_test": targets.legacy_test_config(),
     },
 )
 
@@ -281,16 +245,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chrome_profile_generator_tests",
-    tests = {
-        "chrome_public_apk_profile_tests": targets.legacy_test_config(
-            ci_only = True,
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chrome_public_tests",
     tests = {
         "chrome_public_test_apk": targets.legacy_test_config(
@@ -301,22 +255,6 @@ targets.legacy_basic_suite(
         "chrome_public_unit_test_apk": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chrome_public_wpt_suite",
-    tests = {
-        "chrome_public_wpt": targets.legacy_test_config(
-            args = [
-                "--no-wpt-internal",
-            ],
-            swarming = targets.swarming(
-                shards = 36,
-                expiration_sec = 18000,
-                hard_timeout_sec = 14400,
             ),
         ),
     },
@@ -899,17 +837,6 @@ targets.legacy_basic_suite(
                 dimensions = {
                     "cores": "2",
                 },
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "android_content_browsertests_fyi",
-    tests = {
-        "content_browsertests": targets.legacy_test_config(
-            android_swarming = targets.swarming(
-                shards = 15,
             ),
         ),
     },
@@ -3981,20 +3908,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "minidump_uploader_tests",
-    tests = {
-        "minidump_uploader_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "jni_zero_sample_apk_test_suite",
-    tests = {
-        "jni_zero_sample_apk_test": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "model_validation_tests_light_suite",
     tests = {
         "model_validation_tests_light": targets.legacy_test_config(
@@ -4592,22 +4505,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "system_webview_wpt_suite",
-    tests = {
-        "system_webview_wpt": targets.legacy_test_config(
-            args = [
-                "--no-wpt-internal",
-            ],
-            swarming = targets.swarming(
-                shards = 25,
-                expiration_sec = 18000,
-                hard_timeout_sec = 14400,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "telemetry_android_minidump_unittests_isolated_scripts",
     tests = {
         "telemetry_chromium_minidump_unittests": targets.legacy_test_config(),
@@ -4984,34 +4881,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_tests_suite",
-    tests = {
-        "webview_trichrome_64_cts_tests": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_tests_no_field_trial_suite",
-    tests = {
-        "webview_trichrome_64_cts_tests_no_field_trial": targets.legacy_test_config(
-            args = [
-                "--store-tombstones",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "webview_ui_instrumentation_tests",
     tests = {
         "webview_ui_test_app_test_apk": targets.legacy_test_config(),
@@ -5100,28 +4969,6 @@ targets.legacy_basic_suite(
                 shards = 36,
                 expiration_sec = 18000,
                 hard_timeout_sec = 14400,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "wpt_web_tests_android",
-    tests = {
-        "android_blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "wpt_web_tests_webview",
-    tests = {
-        "webview_blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
             ),
         ),
     },
