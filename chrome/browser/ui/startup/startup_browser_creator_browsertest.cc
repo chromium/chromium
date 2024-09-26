@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -3210,15 +3212,23 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
     BrowserList::RemoveObserver(this);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
+  bool SetUpUserDataDirectory() override {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
     std::string json;
     base::Value::Dict local_state;
     local_state.SetByDottedPath(prefs::kWasRestarted, true);
     base::JSONWriter::Write(local_state, &json);
-    ASSERT_TRUE(base::WriteFile(
-        temp_dir_.GetPath().Append(chrome::kLocalStateFilename), json));
+
+    base::FilePath local_state_path =
+        user_data_dir.Append(chrome::kLocalStateFilename);
+    if (!base::WriteFile(local_state_path, json)) {
+      ADD_FAILURE() << "base::WriteFile() failed, " << local_state_path;
+      return false;
+    }
+
+    return true;
   }
 
  protected:
@@ -3232,9 +3242,6 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
   }
 
   bool on_browser_added_hit_ = false;
-
- private:
-  base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWasRestartedFlag, Test) {
