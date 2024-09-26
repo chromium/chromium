@@ -592,8 +592,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that tapping on the show full history button leads to the history page.
 // Additionally, it tests that dismissing full history reveals back the Last
 // Visited subpage.
-// TODO(crbug.com/369631303): Re-enable this test once fixed.
-- (void)DISABLED_testLastVisitedSubpageOpensFullHistory {
+- (void)testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
@@ -606,13 +605,15 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openPageInfo];
 
-  // Open Last Visited page and then the full history.
+  // Open Last Visited page.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_PAGE_INFO_HISTORY))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_HISTORY_SHOWFULLHISTORY_LINK))]
+  // Open full history by pressing on the "Show Full History" button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kHistoryToolbarShowFullHistoryButtonIdentifier)]
       performAction:grey_tap()];
 
   // Check that full history page is displayed.
@@ -637,8 +638,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-// TODO(crbug.com/369631303): Re-enable this test once fixed.
-- (void)DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo {
+- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
@@ -651,13 +651,15 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openPageInfo];
 
-  // Open Last Visited page and then the full history.
+  // Open Last Visited page.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_PAGE_INFO_HISTORY))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_HISTORY_SHOWFULLHISTORY_LINK))]
+  // Open full history by pressing on the "Show Full History" button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kHistoryToolbarShowFullHistoryButtonIdentifier)]
       performAction:grey_tap()];
 
   // Check that tapping on a URL (from full history) dismisses both full history
