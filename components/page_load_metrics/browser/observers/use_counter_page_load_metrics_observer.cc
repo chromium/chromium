@@ -461,6 +461,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kAsyncClipboard},
           {WebFeature::kAsyncClipboardAPIWriteText,
            WebDXFeature::kAsyncClipboard},
+          {WebFeature::kHtmlClipboardApiUnsanitizedRead,
+           WebDXFeature::kClipboardUnsanitizedFormats},
       }};
 
   return *kMap;
