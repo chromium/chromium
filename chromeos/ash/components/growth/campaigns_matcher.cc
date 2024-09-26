@@ -941,11 +941,17 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
   }
 
   if (is_prematch) {
-    return MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
-           MatchDeviceTargeting(DeviceTargeting(targeting));
+    // TOOD(369188855): Re-enable demo mode prematch.
+    return MatchDeviceTargeting(DeviceTargeting(targeting));
   }
 
-  bool is_matched = false;
+  bool is_matched = MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting));
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Demo Mode targeting is NOT matched.";
+    return false;
+  }
+
   is_matched = MatchSessionTargeting(SessionTargeting(targeting));
   if (!is_matched) {
     CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
