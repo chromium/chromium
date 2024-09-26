@@ -6164,7 +6164,7 @@
   {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 132
   },
   {
     "name": "notification-permission-rationale-bottom-sheet",
