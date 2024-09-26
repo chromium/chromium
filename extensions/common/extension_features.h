@@ -217,11 +217,6 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 // limit.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 
-// If enabled, extensions installed from .zip files (from dev mode) are changed
-// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
-// persist until removed by the user.
-BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
-
 // If enabled, include JS call stack data in the extension API request
 // sent to the browser process. This data is used for telemetry purpose
 // only.

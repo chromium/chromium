@@ -1466,18 +1466,10 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
 
   ExtensionService* service = GetExtensionService(browser_context());
   if (path.MatchesExtension(FILE_PATH_LITERAL(".zip"))) {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
       ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
                                MakeRegisterInExtensionServiceCallback(service))
           ->InstallZipFileToUnpackedExtensionsDir(
               path, service->unpacked_install_directory());
-    } else {
-      ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                               MakeRegisterInExtensionServiceCallback(service))
-          ->InstallZipFileToTempDir(path);
-    }
-
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =

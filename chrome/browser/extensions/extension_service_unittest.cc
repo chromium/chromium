@@ -5357,45 +5357,21 @@ TEST_F(ExtensionServiceWithEmptyServiceTest,
   EXPECT_EQ(UnloadedExtensionReason::UNINSTALL, unloaded_reason());
 }
 
-// Test that allows testing the
-// extensions_features::kExtensionsZipFileInstalledInProfileDir feature for .zip
-// file installs.
+// Test uninstall to profile dir for .zip file installs.
 class ExtensionServiceZipUninstallProfileFeatureTest
-    : public ExtensionServiceWithEmptyServiceTest,
-      public testing::WithParamInterface<bool> {
+    : public ExtensionServiceWithEmptyServiceTest {
  public:
   void SetUp() override {
     ExtensionServiceWithEmptyServiceTest::SetUp();
-    const bool kFeatureEnabled = GetParam();
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsZipFileInstalledInProfileDir,
-        kFeatureEnabled);
-    if (kFeatureEnabled) {
       expected_extension_install_directory_ =
           service()->unpacked_install_directory();
-    } else {
-      base::FilePath dir_temp;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &dir_temp));
-      expected_extension_install_directory_ = dir_temp;
-    }
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath expected_extension_install_directory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ExtensionServiceZipUninstallProfileFeatureTest,
-    // extensions_features::kExtensionsZipFileInstalledInProfileDir enabled.
-    testing::Bool(),
-    [](const testing::TestParamInfo<
-        ExtensionServiceZipUninstallProfileFeatureTest::ParamType>& info) {
-      return info.param ? "ProfileDir" : "TempDir";
-    });
-
-TEST_P(ExtensionServiceZipUninstallProfileFeatureTest,
+TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
        UninstallExtensionFromZip) {
   MockExtensionRegistryObserver observer;
 
@@ -5412,30 +5388,18 @@ TEST_P(ExtensionServiceZipUninstallProfileFeatureTest,
 
   registry()->AddObserver(&observer);
 
-  const bool kFeatureEnabled = GetParam();
-  if (kFeatureEnabled) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
                        zipfile_installer, original_path,
                        service()->unpacked_install_directory()));
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ZipFileInstaller::InstallZipFileToTempDir,
-                                  zipfile_installer, original_path));
-  }
   task_environment()->RunUntilIdle();
 
   std::string extension_id = std::string(observer.last_extension_installed);
   EXPECT_EQ(observer.last_extension_installed, extension_id);
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
-  if (kFeatureEnabled) {
-    UninstallExtension(extension_id, /*delete_type=*/kDeletePath);
-
-  } else {
-    UninstallExtension(extension_id, /*delete_type=*/kDoNotDelete);
-  }
+  UninstallExtension(extension_id, /*delete_type=*/kDeletePath);
   EXPECT_FALSE(registry()->enabled_extensions().Contains(
       observer.last_extension_installed));
   EXPECT_TRUE(registry()->enabled_extensions().empty());

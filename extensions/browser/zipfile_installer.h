@@ -43,9 +43,6 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
       DoneCallback done_callback);
 
-  // Creates a temporary directory and unzips the extension in it.
-  void InstallZipFileToTempDir(const base::FilePath& zip_file);
-
   // First attempts to create `unpacked_extensions_dir` and does not load the
   // extension if unsuccessful. If successful, then unzips the extension into a
   // unique directory within `unpacked_extensions_dir`.

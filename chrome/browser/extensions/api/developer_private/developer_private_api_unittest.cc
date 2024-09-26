@@ -2070,36 +2070,15 @@ class DeveloperPrivateApiZipFileUnitTest
  public:
   void SetUp() override {
     DeveloperPrivateApiUnitTest::SetUp();
-    const bool kFeatureEnabled = GetParam();
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsZipFileInstalledInProfileDir,
-        kFeatureEnabled);
-    if (kFeatureEnabled) {
-      expected_extension_install_directory_ =
-          service()->unpacked_install_directory();
-    } else {
-      base::FilePath dir_temp;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &dir_temp));
-      expected_extension_install_directory_ = dir_temp;
-    }
+    expected_extension_install_directory_ =
+        service()->unpacked_install_directory();
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath expected_extension_install_directory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    DeveloperPrivateApiZipFileUnitTest,
-    // extensions_features::kExtensionsZipFileInstalledInProfileDir enabled.
-    testing::Bool(),
-    [](const testing::TestParamInfo<
-        DeveloperPrivateApiZipFileUnitTest::ParamType>& info) {
-      return info.param ? "ProfileDir" : "TempDir";
-    });
-
-TEST_P(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
+TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   base::FilePath zip_path = data_dir().AppendASCII("simple_empty.zip");
   base::AutoReset<bool> disable_ui =
       ExtensionInstallUI::disable_ui_for_tests(true);
