@@ -15,6 +15,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java",
     ]
 
     deps = [
@@ -82,6 +83,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
     ]
@@ -93,15 +95,21 @@ if (is_android) {
       "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
+      "//chrome/browser/tab_group_sync/messaging/android:factory_java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/styles/android:java_resources",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
+      "//components/messages/android:java",
+      "//components/saved_tab_groups/messaging/android:java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/android_sdk:android_window_extensions_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:url_java",
     ]
   }
@@ -185,9 +193,9 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/invitation_dialog/DataSharingInvitationDialogTest.java",
     ]
     deps = [
+      ":factory_java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",

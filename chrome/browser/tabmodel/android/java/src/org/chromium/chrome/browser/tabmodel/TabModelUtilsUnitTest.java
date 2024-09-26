@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static android.os.Looper.getMainLooper;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import androidx.test.filters.SmallTest;
 
@@ -24,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,6 +38,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link TabModelUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,6 +68,7 @@ public class TabModelUtilsUnitTest {
 
     @Before
     public void setUp() {
+        MockitoHelper.forwardBind(mTabModelSelectorCallback);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
@@ -158,6 +165,53 @@ public class TabModelUtilsUnitTest {
                 .removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
         mTabModelSelector.destroy();
         verify(mTabModelSelector).removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
+    }
+
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>();
+
+    @Test
+    @SmallTest
+    public void testOnInitializedTabModelSelector_AlreadyInit() {
+        mTabModelSelector.markTabStateInitialized();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
+                .onAvailable(mTabModelSelectorCallback);
+        shadowOf(getMainLooper()).idle();
+        verify(mTabModelSelectorCallback).onResult(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnInitializedTabModelSelector_LateSet() {
+        mTabModelSelector.markTabStateInitialized();
+        TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
+                .onAvailable(mTabModelSelectorCallback);
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        shadowOf(getMainLooper()).idle();
+        verify(mTabModelSelectorCallback).onResult(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnInitializedTabModelSelector_LateInit() {
+        TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
+                .onAvailable(mTabModelSelectorCallback);
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        mTabModelSelector.markTabStateInitialized();
+        shadowOf(getMainLooper()).idle();
+        verify(mTabModelSelectorCallback).onResult(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnInitializedTabModelSelector_BothLate() {
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
+                .onAvailable(mTabModelSelectorCallback);
+        mTabModelSelector.markTabStateInitialized();
+        shadowOf(getMainLooper()).idle();
+        verify(mTabModelSelectorCallback).onResult(any());
     }
 
     @Test

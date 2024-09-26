@@ -9,6 +9,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -227,6 +232,42 @@ public class TabModelUtils {
 
             tabModelSelector.addObserver(observer);
         }
+    }
+
+    /**
+     * Similar to {@link #runOnTabStateInitialized(TabModelSelector, Callback)} but instead of
+     * taking a callback, it exposes a {@link OneshotSupplier}. This can be convenient for callers
+     * that want to combine multiple suppliers with something like {@link
+     * SupplierUtils#waitForAll(Runnable, Supplier[])}.
+     *
+     * <p>Note that, unlike {@link #runOnTabStateInitialized(TabModelSelector, Callback)}, this
+     * approach does not take care to ensure synchronous execution even when things are already
+     * satisfied. Depending on the input supplier type, this approach is likely to get gets stuck on
+     * the resulting post from adding the {@link OneShotCallback} observer.
+     *
+     * @param tabModelSelectorSupplier A supplier of a maybe initialized tab model selector.
+     * @return A oneshot supplier that will only be set when initialization is done.
+     */
+    public static OneshotSupplier<TabModelSelector> onInitializedTabModelSelector(
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        OneshotSupplierImpl<TabModelSelector> delegate = new OneshotSupplierImpl<>();
+        new OneShotCallback<>(
+                tabModelSelectorSupplier,
+                (tabModelSelector) -> {
+                    if (tabModelSelector.isTabStateInitialized()) {
+                        delegate.set(tabModelSelector);
+                    } else {
+                        tabModelSelector.addObserver(
+                                new TabModelSelectorObserver() {
+                                    @Override
+                                    public void onTabStateInitialized() {
+                                        tabModelSelector.removeObserver(this);
+                                        delegate.set(tabModelSelector);
+                                    }
+                                });
+                    }
+                });
+        return delegate;
     }
 
     /**

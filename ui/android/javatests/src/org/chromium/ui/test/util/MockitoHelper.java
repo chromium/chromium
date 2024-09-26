@@ -4,6 +4,8 @@
 
 package org.chromium.ui.test.util;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.Stubber;
@@ -64,6 +66,18 @@ public class MockitoHelper {
     /** Similar to {@link #doFunction(Function) but with an explicit index. */
     public static <T, R> Stubber doFunction(Function<T, R> function, int index) {
         return Mockito.doAnswer(invocation -> function.apply(invocation.getArgument(index)));
+    }
+
+    /** Forwards {@link Callback#bind} back to the callback object, allowing mocks to work. */
+    public static <T> void forwardBind(Callback<T> callback) {
+        Mockito.doAnswer(
+                        (Answer<Runnable>)
+                                invocation -> {
+                                    T arg = invocation.getArgument(0);
+                                    return () -> callback.onResult(arg);
+                                })
+                .when(callback)
+                .bind(any());
     }
 
     /** Mockito.verify but with a timeout to reduce flakes. */

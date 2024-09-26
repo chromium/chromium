@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
+import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
+import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateImpl;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -115,6 +117,8 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -196,6 +200,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
+    protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -514,6 +519,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mDataSharingTabManager.destroy();
 
+        if (mInstantMessageDelegateImpl != null) {
+            mInstantMessageDelegateImpl.detachWindow(mWindowAndroid);
+        }
+
         super.onDestroy();
     }
 
@@ -704,6 +713,26 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initTabStripTransitionCoordinator();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) {
             PageInfoSharingControllerImpl.getInstance().initialize();
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            OneshotSupplier<TabModelSelector> wrappedSelector =
+                    TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier);
+            SupplierUtils.waitForAll(
+                    () -> {
+                        Profile profile = mProfileSupplier.get();
+                        mInstantMessageDelegateImpl =
+                                InstantMessageDelegateFactory.getForProfile(profile);
+                        TabGroupModelFilter tabGroupModelFilter =
+                                (TabGroupModelFilter)
+                                        wrappedSelector
+                                                .get()
+                                                .getTabModelFilterProvider()
+                                                .getTabModelFilter(/* incognito= */ false);
+                        mInstantMessageDelegateImpl.attachWindow(
+                                mWindowAndroid, tabGroupModelFilter);
+                    },
+                    mProfileSupplier,
+                    wrappedSelector);
         }
     }
 
