@@ -59,6 +59,10 @@ message FilledFormFieldData {
 
   // The predicted values for the field, allowing multiple predictions.
   repeated PredictedValue predicted_values = 2;
+
+  // A user-friendly version of the field's label, suitable for display.
+  // If empty or not provided, the original field label should be used.
+  string normalized_label = 3;
 }
 
 message PredictedValue {
