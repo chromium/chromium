@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
+#include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -30,6 +31,8 @@ class ColorChangeHandler;
 namespace history_clusters {
 class HistoryClustersHandler;
 }
+
+class HistoryEmbeddingsHandler;
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -73,6 +76,9 @@ class HistoryClustersSidePanelUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+          pending_page_handler);
 
   // Gets a weak pointer to this object.
   base::WeakPtr<HistoryClustersSidePanelUI> GetWeakPtr();
@@ -106,6 +112,7 @@ class HistoryClustersSidePanelUI : public TopChromeWebUIController,
       history_clusters_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
+  std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
 
   // The initial state that we have to cache here until the page finishes its
   // navigation to the WebUI host.

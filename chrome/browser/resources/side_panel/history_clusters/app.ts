@@ -39,6 +39,8 @@ export class HistoryClustersAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      enableHistoryEmbeddings_: {type: Boolean},
+
       /**
        * The current query for which related clusters are requested and shown.
        */
@@ -59,6 +61,8 @@ export class HistoryClustersAppElement extends CrLitElement {
   // Properties
   //============================================================================
 
+  protected enableHistoryEmbeddings_ =
+      loadTimeData.getBoolean('enableHistoryEmbeddings');
   query: string = '';
   protected scrollTarget_?: HTMLElement;
   protected searchIcon_?: string;
@@ -80,7 +84,7 @@ export class HistoryClustersAppElement extends CrLitElement {
     super.connectedCallback();
     this.scrollTarget_ = this.$.historyClusters;
 
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+    if (this.enableHistoryEmbeddings_) {
       this.searchIcon_ = 'history-embeddings:search';
     }
 
