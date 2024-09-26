@@ -13,6 +13,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
@@ -34,6 +36,7 @@
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
+#include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,11 +44,15 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -93,6 +100,12 @@ blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
       .SetType(blink::WebInputEvent::Type::kMouseMove)
       .SetPosition(position)
       .Build();
+}
+
+base::FilePath GetTextSelectionReferenceFilePath(
+    std::string_view test_filename) {
+  return base::FilePath(FILE_PATH_LITERAL("text_selection"))
+      .AppendASCII(test_filename);
 }
 
 class MockTestClient : public TestClient {
@@ -190,6 +203,68 @@ class PDFiumEngineTest : public PDFiumTestBase {
         ++available_pages;
     }
     return available_pages;
+  }
+
+  void SetSelection(PDFiumEngine& engine,
+                    uint32_t start_page_index,
+                    uint32_t start_char_index,
+                    uint32_t end_page_index,
+                    uint32_t end_char_index) {
+    engine.SetSelection({start_page_index, start_char_index},
+                        {end_page_index, end_char_index});
+  }
+
+  void DrawAndCompare(PDFiumEngine& engine,
+                      int page_index,
+                      std::string_view expected_png_filename) {
+    return DrawAndCompareImpl(engine, page_index, expected_png_filename,
+                              /*use_platform_suffix=*/false);
+  }
+
+  void DrawAndCompareWithPlatformExpectations(
+      PDFiumEngine& engine,
+      int page_index,
+      std::string_view expected_png_filename) {
+    return DrawAndCompareImpl(engine, page_index, expected_png_filename,
+                              /*use_platform_suffix=*/true);
+  }
+
+ private:
+  void DrawAndCompareImpl(PDFiumEngine& engine,
+                          int page_index,
+                          std::string_view expected_png_filename,
+                          bool use_platform_suffix) {
+    const gfx::Rect rect = engine.GetPageContentsRect(page_index);
+    ASSERT_TRUE(!rect.IsEmpty());
+
+    SkBitmap bitmap;
+    bitmap.allocPixels(
+        SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(rect.size())));
+    SkCanvas canvas(bitmap);
+    canvas.clear(SK_ColorWHITE);
+
+    const size_t progressive_index = engine.StartPaint(page_index, rect);
+    CHECK_EQ(0u, progressive_index);
+    engine.DrawSelections(progressive_index, bitmap);
+    engine.progressive_paints_.clear();
+
+    base::FilePath expectation_path =
+        GetTextSelectionReferenceFilePath(expected_png_filename);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // Note that the expectation files without a suffix is typically generated
+    // on Linux, so there is no code here to add a suffix for Linux.
+    if (use_platform_suffix) {
+#if BUILDFLAG(IS_WIN)
+      constexpr std::wstring_view kSuffix = L"_win";
+#else
+      constexpr std::string_view kSuffix = "_mac";
+#endif  // BUILDFLAG(IS_WIN)
+      expectation_path = expectation_path.InsertBeforeExtension(kSuffix);
+    }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+    EXPECT_TRUE(MatchesPngFile(bitmap.asImage().get(), expectation_path));
   }
 };
 
@@ -948,6 +1023,38 @@ TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   // This is still `kExpectedText` because of the unit test's uncanny ability to
   // move the mouse to `kEndPosition` in one move.
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, DrawTextSelectionsHelloWorld) {
+  constexpr int kPageIndex = 0;
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  DrawAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
+  EXPECT_EQ("e", engine->GetSelectedText());
+  DrawAndCompare(*engine, kPageIndex, "hello_world_selection_1.png");
+
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/0,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/3);
+  EXPECT_EQ("Hel", engine->GetSelectedText());
+  DrawAndCompareWithPlatformExpectations(*engine, kPageIndex,
+                                         "hello_world_selection_2.png");
+
+  SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/0,
+               /*end_page_index=*/kPageIndex, /*end_char_index=*/6);
+  EXPECT_EQ("Hello,", engine->GetSelectedText());
+  DrawAndCompareWithPlatformExpectations(*engine, kPageIndex,
+                                         "hello_world_selection_3.png");
 }
 
 TEST_P(PDFiumEngineTest, LinkNavigates) {
