@@ -814,6 +814,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       }
     return result
 
+  _SCRIPT_FIELDS = ('name', 'script', 'args', 'precommit_args',
+                    'non_precommit_args', 'resultdb')
+
   def generate_script_test(self, waterfall, tester_name, tester_config,
                            test_name, test_config):
     # TODO(crbug.com/40623237): Remove this check whenever a better
@@ -824,13 +827,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                      tester_name + ', which explicitly forbids script tests')
     if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
-    result = {
-        'name': test_config['name'],
-        'script': test_config['script'],
-    }
-    for a in ('args', 'precommit_args', 'non_precommit_args'):
-      if a in test_config:
-        result[a] = test_config[a]
+    result = copy.deepcopy(test_config)
     result = self.apply_common_transformations(waterfall,
                                                tester_name,
                                                tester_config,
@@ -838,6 +835,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                test_name,
                                                swarmable=False,
                                                supports_args=False)
+    result = {k: result[k] for k in self._SCRIPT_FIELDS if k in result}
     return result
 
   def generate_junit_test(self, waterfall, tester_name, tester_config,
