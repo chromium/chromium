@@ -115,7 +115,7 @@ export const FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME =
 export class FaceGazeUtils {
   /**
    * @param gesture The FacialGesture for which to return the display text.
-   * @returns the name of the string containing user-friendly display text for
+   * @return the name of the string containing user-friendly display text for
    *     the gesture.
    */
   static getGestureDisplayTextName(gesture: FacialGesture|null): string {
@@ -210,35 +210,35 @@ export class FaceGazeUtils {
 
   /**
    * @param macro The MacroName for which to return the display text.
-   * @returns a string containing the user-friendly display text for the macro.
+   * @return the name of the string containing the user-friendly display text
+   *     for the macro.
    */
-  static getMacroDisplayText(macro: MacroName): string {
-    // TODO(b:341770655): Localize these strings.
+  static getMacroDisplayTextName(macro: MacroName): string {
     switch (macro) {
       case MacroName.TOGGLE_FACEGAZE:
-        return 'Pause or resume face control';
+        return 'faceGazeMacroLabelToggleFaceGaze';
       case MacroName.MOUSE_CLICK_LEFT:
-        return 'Click a mouse button';
+        return 'faceGazeMacroLabelClickLeft';
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
-        return 'Double click the mouse';
+        return 'faceGazeMacroLabelClickLeftDouble';
       case MacroName.MOUSE_CLICK_RIGHT:
-        return 'Right-click the mouse';
+        return 'faceGazeMacroLabelClickRight';
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return 'Drag and drop';
+        return 'faceGazeMacroLabelLongClickLeft';
       case MacroName.RESET_CURSOR:
-        return 'Reset cursor to center';
+        return 'faceGazeMacroLabelResetCursor';
       case MacroName.TOGGLE_DICTATION:
-        return 'Start or stop dictation';
+        return 'faceGazeMacroLabelToggleDictation';
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
-        return 'Open overview of windows';
+        return 'faceGazeMacroLabelToggleOverview';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
-        return 'Play or pause media';
+        return 'faceGazeMacroLabelMediaPlayPause';
       case MacroName.TOGGLE_SCROLL_MODE:
-        return 'Toggle scroll mode';
+        return 'faceGazeMacroLabelToggleScrollMode';
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
-        return 'Show or hide the virtual keyboard';
+        return 'faceGazeMacroLabelToggleVirtualKeyboard';
       case MacroName.CUSTOM_KEY_COMBINATION:
-        return 'Perform a custom key combination';
+        return 'faceGazeMacroLabelCustomKeyCombo';
       default:
         // Other macros are not supported in FaceGaze.
         console.error('Display text requested for unsupported macro ' + macro);
@@ -255,7 +255,7 @@ export class FaceGazeUtils {
     // TODO(b:341770655): Localize this string.
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
-        return 'Once in scroll mode, use head movement to scroll';
+        return `Once you start scroll mode, move your head in the direction you'd like to scroll`;
       default:
         // Other macros do not have a sub-label, return null to indicate this.
         return null;

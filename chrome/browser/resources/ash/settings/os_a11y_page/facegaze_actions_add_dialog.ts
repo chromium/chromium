@@ -336,9 +336,9 @@ export class FaceGazeAddActionDialogElement extends
   private getLocalizedSelectGestureTitle_(): string {
     return this.i18n(
         'faceGazeActionsDialogSelectGestureTitle',
-        this.selectedAction_ ?
-            FaceGazeUtils.getMacroDisplayText(this.selectedAction_) :
-            '');
+        this.selectedAction_ ? this.i18n(FaceGazeUtils.getMacroDisplayTextName(
+                                   this.selectedAction_)) :
+                               '');
   }
 
   private getLocalizedGestureThresholdTitle_(): string {
@@ -363,7 +363,7 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private getActionDisplayText_(action: MacroName): string {
-    return FaceGazeUtils.getMacroDisplayText(action);
+    return this.i18n(FaceGazeUtils.getMacroDisplayTextName(action));
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {

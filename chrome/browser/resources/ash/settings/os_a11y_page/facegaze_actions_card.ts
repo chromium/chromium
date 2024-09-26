@@ -152,7 +152,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private getActionDisplayText_(action: MacroName): string {
-    return FaceGazeUtils.getMacroDisplayText(action);
+    return this.i18n(FaceGazeUtils.getMacroDisplayTextName(action));
   }
 
   private getSubLabel_(action: MacroName): string|null {
