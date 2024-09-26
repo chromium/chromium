@@ -129,20 +129,8 @@ void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object) {
       if (!type_and_value.has_value()) {
         continue;
       }
-      // First, there might be some counters on stack that are stale, remove
-      // those (e.g. remove counters whose parent is not ancestors from stack).
-      RemoveStaleCounters(layout_object, counter_name);
-      auto [counter_type, counter_value] = type_and_value.value();
-      // Reset counter always creates counter.
-      if (IsReset(counter_type)) {
-        CreateCounter(layout_object, counter_name, counter_value);
-        continue;
-      }
-      // Otherwise, get the value of last counter from stack and update its
-      // value.
-      // Note: this can create counter, if there are no counters on stack.
-      UpdateCounterValue(layout_object, counter_name, counter_type,
-                         counter_value);
+      auto [counter_type, value_argument] = type_and_value.value();
+      ProcessCounter(layout_object, counter_name, counter_type, value_argument);
     }
   }
   // If there were no explicit counter related property set for `list-item`
@@ -260,6 +248,26 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
     }
   }
   return result;
+}
+
+void CountersAttachmentContext::ProcessCounter(
+    const LayoutObject& layout_object,
+    const AtomicString& counter_name,
+    unsigned counter_type,
+    int value_argument) {
+  // First, there might be some counters on stack that are stale, remove
+  // those (e.g. remove counters whose parent is not ancestors from stack).
+  RemoveStaleCounters(layout_object, counter_name);
+
+  // Reset counter always creates counter.
+  if (IsReset(counter_type)) {
+    CreateCounter(layout_object, counter_name, value_argument);
+    return;
+  }
+
+  // Otherwise, get the value of last counter from stack and update its value.
+  // Note: this can create counter, if there are no counters on stack.
+  UpdateCounterValue(layout_object, counter_name, counter_type, value_argument);
 }
 
 // Push the counter on stack or create stack if there is none. Also set the

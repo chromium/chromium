@@ -75,6 +75,10 @@ class CORE_EXPORT CountersAttachmentContext {
   // The default copy constructor can be used to create shallow copies.
   CountersAttachmentContext(const CountersAttachmentContext&) = default;
 
+  void ProcessCounter(const LayoutObject& layout_object,
+                      const AtomicString& counter_name,
+                      unsigned counter_type,
+                      int value_argument);
   void CreateCounter(const LayoutObject&,
                      const AtomicString& counter_name,
                      int value);
