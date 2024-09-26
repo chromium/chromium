@@ -106,6 +106,15 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
 @implementation CacheTestCase
 
+// TODO(crbug.com/369821761): Test fails on ios simulator only.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testCachingBehaviorOnSelectOmniboxSuggestion \
+  DISABLED_testCachingBehaviorOnSelectOmniboxSuggestion
+#else
+#define MAYBE_testCachingBehaviorOnSelectOmniboxSuggestion \
+  testCachingBehaviorOnSelectOmniboxSuggestion
+#endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
@@ -113,7 +122,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   // running. This is done because it is inefficient to use
   // ensureAppLaunchedWithConfiguration for each test.
   if ([self isRunningTest:@selector
-            (testCachingBehaviorOnSelectOmniboxSuggestion)]) {
+            (MAYBE_testCachingBehaviorOnSelectOmniboxSuggestion)]) {
     // Explicitly disable feature OnDeviceHeadProviderNonIncognito, whose delay
     // (i.e. http://shortn/_o7kPJvU8ac) will otherwise cause flakiness for this
     // test in build iphone-device (crbug.com/1153136).
@@ -156,7 +165,10 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 
 // Tests that cache is not used when selecting omnibox suggested website, even
 // though cache for that website exists.
-- (void)testCachingBehaviorOnSelectOmniboxSuggestion {
+- (void)MAYBE_testCachingBehaviorOnSelectOmniboxSuggestion {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone 15 18.0.");
+  }
   web::test::SetUpHttpServer(std::make_unique<CacheTestResponseProvider>());
 
   // Clear the history to ensure expected omnibox autocomplete results.
