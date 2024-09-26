@@ -844,7 +844,7 @@ void HTMLInputElement::ParseAttribute(
     AddToRadioButtonGroup();
     TextControlElement::ParseAttribute(params);
   } else if (name == html_names::kAutocompleteAttr) {
-    if (EqualIgnoringASCIICase(value, "off")) {
+    if (EqualIgnoringASCIICase(value, keywords::kOff)) {
       autocomplete_ = kOff;
     } else {
       if (value.empty())

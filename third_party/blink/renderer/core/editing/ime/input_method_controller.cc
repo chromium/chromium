@@ -1722,17 +1722,19 @@ int InputMethodController::TextInputFlags() const {
 
   const AtomicString& autocomplete =
       element->FastGetAttribute(html_names::kAutocompleteAttr);
-  if (autocomplete == "on")
+  if (autocomplete == keywords::kOn) {
     flags |= kWebTextInputFlagAutocompleteOn;
-  else if (autocomplete == "off")
+  } else if (autocomplete == keywords::kOff) {
     flags |= kWebTextInputFlagAutocompleteOff;
+  }
 
   const AtomicString& autocorrect =
       element->FastGetAttribute(html_names::kAutocorrectAttr);
-  if (autocorrect == "on")
+  if (autocorrect == keywords::kOn) {
     flags |= kWebTextInputFlagAutocorrectOn;
-  else if (autocorrect == "off")
+  } else if (autocorrect == keywords::kOff) {
     flags |= kWebTextInputFlagAutocorrectOff;
+  }
 
   SpellcheckAttributeState spellcheck = element->GetSpellcheckAttributeState();
   if (spellcheck == kSpellcheckAttributeTrue)

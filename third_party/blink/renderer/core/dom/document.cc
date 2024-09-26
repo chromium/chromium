@@ -7079,15 +7079,15 @@ void Document::SetTransformSource(std::unique_ptr<TransformSource> source) {
 }
 
 String Document::designMode() const {
-  return InDesignMode() ? "on" : "off";
+  return InDesignMode() ? keywords::kOn : keywords::kOff;
 }
 
 void Document::setDesignMode(const String& value) {
   bool new_value = design_mode_;
-  if (EqualIgnoringASCIICase(value, "on")) {
+  if (EqualIgnoringASCIICase(value, keywords::kOn)) {
     new_value = true;
     UseCounter::Count(*this, WebFeature::kDocumentDesignModeEnabeld);
-  } else if (EqualIgnoringASCIICase(value, "off")) {
+  } else if (EqualIgnoringASCIICase(value, keywords::kOff)) {
     new_value = false;
   }
   if (new_value == design_mode_)

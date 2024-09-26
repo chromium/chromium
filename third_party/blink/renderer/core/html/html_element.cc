@@ -2505,7 +2505,6 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, kOff, ("off"));
   DEFINE_STATIC_LOCAL(const AtomicString, kNone, ("none"));
   DEFINE_STATIC_LOCAL(const AtomicString, kCharacters, ("characters"));
   DEFINE_STATIC_LOCAL(const AtomicString, kWords, ("words"));
@@ -2516,8 +2515,9 @@ const AtomicString& HTMLElement::autocapitalize() const {
     return g_empty_atom;
 
   if (EqualIgnoringASCIICase(value, kNone) ||
-      EqualIgnoringASCIICase(value, kOff))
+      EqualIgnoringASCIICase(value, keywords::kOff)) {
     return kNone;
+  }
   if (EqualIgnoringASCIICase(value, kCharacters))
     return kCharacters;
   if (EqualIgnoringASCIICase(value, kWords))
