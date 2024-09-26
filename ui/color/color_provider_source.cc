@@ -12,8 +12,8 @@ namespace ui {
 ColorProviderSource::ColorProviderSource() = default;
 
 ColorProviderSource::~ColorProviderSource() {
-  for (auto& observer : observers_)
-    observer.OnColorProviderSourceDestroying();
+  observers_.Notify(
+      &ColorProviderSourceObserver::OnColorProviderSourceDestroying);
 }
 
 void ColorProviderSource::AddObserver(ColorProviderSourceObserver* observer) {
@@ -26,8 +26,7 @@ void ColorProviderSource::RemoveObserver(
 }
 
 void ColorProviderSource::NotifyColorProviderChanged() {
-  for (auto& observer : observers_)
-    observer.OnColorProviderChanged();
+  observers_.Notify(&ColorProviderSourceObserver::OnColorProviderChanged);
 }
 
 ui::ColorProviderKey::ColorMode ColorProviderSource::GetColorMode() const {
