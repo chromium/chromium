@@ -301,13 +301,9 @@ public class UsageStatsService implements Destroyable {
         return "1";
     }
 
-    public void stopTrackingToken(String token) {
-        return;
-    }
+    public void stopTrackingToken(String token) {}
 
-    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {
-        return;
-    }
+    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {}
 
     public List<String> getAllSuspendedWebsites() {
         return new ArrayList<>();

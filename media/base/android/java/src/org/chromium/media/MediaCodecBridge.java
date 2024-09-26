@@ -264,7 +264,7 @@ class MediaCodecBridge {
     // Warning: This class may execute on an arbitrary thread for the lifetime
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
-    class MediaCodecCallback extends MediaCodec.Callback {
+    static class MediaCodecCallback extends MediaCodec.Callback {
         private MediaCodecBridge mMediaCodecBridge;
 
         MediaCodecCallback(MediaCodecBridge bridge) {

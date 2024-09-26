@@ -391,6 +391,7 @@ public class VariationsSeedFetcher {
         // Applies the {@code deltaPatch} to {@code previousSeedData} and returns the uncompressed
         // seed.
         @VisibleForTesting
+        @SuppressWarnings("IgnoredPureGetter")
         public static byte[] resolveDeltaCompression(
                 byte[] deltaPatch, byte[] previousSeedData, boolean isGzipCompressed)
                 throws DeltaPatchException {

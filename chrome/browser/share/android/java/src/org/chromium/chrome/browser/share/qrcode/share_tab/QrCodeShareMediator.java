@@ -225,7 +225,7 @@ class QrCodeShareMediator {
     }
 
     // Helps to limit number of text lines and shows ellipsis for only the last line.
-    class FixedLineCountLayout extends DynamicLayout {
+    static class FixedLineCountLayout extends DynamicLayout {
         int mMaxLines;
 
         FixedLineCountLayout(

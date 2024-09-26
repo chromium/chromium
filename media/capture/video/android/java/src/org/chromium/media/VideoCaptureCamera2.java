@@ -296,7 +296,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
             Log.e(TAG, "failed configuring capture session");
             notifyTakePhotoError(mCallbackId);
-            return;
         }
 
         @Override
@@ -748,7 +747,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    private class PhotoOptions {
+    private static class PhotoOptions {
         public final double zoom;
         public final int focusMode;
         public final double currentFocusDistance;

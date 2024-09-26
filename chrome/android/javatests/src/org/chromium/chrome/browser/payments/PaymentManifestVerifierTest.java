@@ -366,11 +366,11 @@ public class PaymentManifestVerifierTest {
         Mockito.verify(mCallback).onFinishedUsingResources();
     }
 
-    private class CountingParser extends PaymentManifestParser {
+    private static class CountingParser extends PaymentManifestParser {
         public int mParseWebAppManifestCounter;
     }
 
-    private class CountingDownloader extends PaymentManifestDownloader {
+    private static class CountingDownloader extends PaymentManifestDownloader {
         public int mDownloadWebAppManifestCounter;
     }
 

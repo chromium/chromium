@@ -65,7 +65,7 @@ class StatusStore {
     }
 
     /** Represents one or more consecutive reports of the same status message. */
-    class StatusRegion {
+    static class StatusRegion {
 
         private @Status int mStatus;
         private long mFirstTimestamp;

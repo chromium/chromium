@@ -94,7 +94,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     private TestOsWrapper mTestOsWrapper;
 
-    private class TestOsWrapper extends EdgeToEdgeOSWrapperImpl {
+    private static class TestOsWrapper extends EdgeToEdgeOSWrapperImpl {
         boolean mDidSetBottomPadding;
         int mBottomPadding;
 

@@ -199,7 +199,7 @@ public class OfflinePageUtilsTest {
      * Share callback to be used by tests. So that we can wait for the callback, it takes a param of
      * a semaphore to clear when the callback is finally called.
      */
-    class TestShareCallback implements Callback<ShareParams> {
+    static class TestShareCallback implements Callback<ShareParams> {
         private Semaphore mSemaphore;
         private String mText;
 

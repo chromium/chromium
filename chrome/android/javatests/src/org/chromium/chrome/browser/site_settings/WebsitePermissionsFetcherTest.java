@@ -478,7 +478,7 @@ public class WebsitePermissionsFetcherTest {
         waiter.waitForCallback(0, 1, 1000L, TimeUnit.MILLISECONDS);
     }
 
-    class FakeWebsitePreferenceBridge extends WebsitePreferenceBridge {
+    static class FakeWebsitePreferenceBridge extends WebsitePreferenceBridge {
         public List<PermissionInfo> mPermissionInfos;
         public List<ContentSettingException> mContentSettingExceptions;
         public List<ChosenObjectInfo> mChosenObjectInfos;

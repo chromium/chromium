@@ -94,7 +94,7 @@ public class PriceMessageService extends MessageService {
     }
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    class PriceMessageData implements MessageData {
+    static class PriceMessageData implements MessageData {
         private final int mType;
         private final ShoppingPersistedTabData.PriceDrop mPriceDrop;
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;

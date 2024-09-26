@@ -66,7 +66,7 @@ public class WebShareTest {
     private Intent mReceivedIntent;
 
     /** Waits until the JavaScript code supplies a result. */
-    private class WebShareUpdateWaiter extends EmptyTabObserver {
+    private static class WebShareUpdateWaiter extends EmptyTabObserver {
         private CallbackHelper mCallbackHelper;
         private String mStatus;
 

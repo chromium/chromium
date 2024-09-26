@@ -37,7 +37,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 public class ChromeBackgroundServiceTest {
     private MockTaskService mTaskService;
 
-    class MockTaskService extends ChromeBackgroundServiceImpl {
+    static class MockTaskService extends ChromeBackgroundServiceImpl {
         private boolean mDidLaunchBrowser;
         private boolean mDidCallOnPersistentSchedulerWakeUp;
         private boolean mDidCallOnBrowserUpgraded;

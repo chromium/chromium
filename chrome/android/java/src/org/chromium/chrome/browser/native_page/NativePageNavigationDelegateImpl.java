@@ -156,6 +156,5 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
         if (mTab != null) {
             androidPrerenderManager.initializeWithTab(mTab);
         }
-        return;
     }
 }

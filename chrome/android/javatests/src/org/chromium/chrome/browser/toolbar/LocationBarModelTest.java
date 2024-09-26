@@ -332,7 +332,7 @@ public class LocationBarModelTest {
         return tab != null ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 
-    private class TestLocationBarModel extends LocationBarModel {
+    private static class TestLocationBarModel extends LocationBarModel {
         public TestLocationBarModel(Context context) {
             super(
                     context,

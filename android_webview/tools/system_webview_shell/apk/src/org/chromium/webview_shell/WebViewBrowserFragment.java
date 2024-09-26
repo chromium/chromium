@@ -213,7 +213,7 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     /** Background Async Task to download file */
-    class DownloadFileFromURL extends AsyncTask<String> {
+    static class DownloadFileFromURL extends AsyncTask<String> {
         private String mFileUrl;
         private String mNameOfFile;
         private static final String DEFAULT_FILE_NAME = "default-filename";

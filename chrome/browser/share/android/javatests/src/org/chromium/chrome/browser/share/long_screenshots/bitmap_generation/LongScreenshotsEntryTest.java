@@ -42,7 +42,7 @@ public class LongScreenshotsEntryTest {
 
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
 
-    class TestEntryListener implements LongScreenshotsEntry.EntryListener {
+    static class TestEntryListener implements LongScreenshotsEntry.EntryListener {
         @EntryStatus int mReturnedStatus;
 
         @Override

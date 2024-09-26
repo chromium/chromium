@@ -159,7 +159,7 @@ public class ToastManager {
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private class ToastEventR implements ToastEvent {
+    private static class ToastEventR implements ToastEvent {
         private final android.widget.Toast.Callback mToastCallback;
 
         ToastEventR(Runnable finishRunnable) {

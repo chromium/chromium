@@ -43,7 +43,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ToolbarTabControllerImplTest {
-    private class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
+    private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
         LoadUrlParams mLoadUrlParams;
 
         public LoadUrlParamsMatcher(LoadUrlParams loadUrlParams) {

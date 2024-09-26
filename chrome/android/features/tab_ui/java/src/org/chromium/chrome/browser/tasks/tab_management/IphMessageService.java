@@ -34,7 +34,7 @@ public class IphMessageService extends MessageService {
             };
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    class IphMessageData implements MessageData {
+    static class IphMessageData implements MessageData {
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 

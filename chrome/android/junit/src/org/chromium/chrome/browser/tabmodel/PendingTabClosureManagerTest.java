@@ -34,7 +34,7 @@ import java.util.List;
 public class PendingTabClosureManagerTest {
     private PendingTabClosureManager mPendingTabClosureManager;
 
-    private class FakeTabModel extends EmptyTabModel {
+    private static class FakeTabModel extends EmptyTabModel {
         private LinkedList<Tab> mTabs = new LinkedList<Tab>();
         private int mIndex = TabModel.INVALID_TAB_INDEX;
 

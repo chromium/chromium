@@ -1193,7 +1193,7 @@ public class BottomSheetControllerTest {
                 .get();
     }
 
-    private class TestEdgeToEdgeController implements EdgeToEdgeController {
+    private static class TestEdgeToEdgeController implements EdgeToEdgeController {
         public int bottomInset;
 
         @Override

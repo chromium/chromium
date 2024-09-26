@@ -591,7 +591,7 @@ public class TileGroupUnitTest {
         return tileGroup;
     }
 
-    private class FakeImageFetcher extends ImageFetcher {
+    private static class FakeImageFetcher extends ImageFetcher {
         private final List<LargeIconCallback> mCallbackList = new ArrayList<>();
 
         public FakeImageFetcher() {

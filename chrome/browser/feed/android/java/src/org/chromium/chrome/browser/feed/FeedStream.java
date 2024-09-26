@@ -1496,7 +1496,7 @@ public class FeedStream implements Stream {
     }
 
     @VisibleForTesting
-    class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+    static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
         ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
 
         UnreadContentObserver(boolean isWebFeed) {

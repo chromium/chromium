@@ -145,7 +145,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     }
 
     /** Implementation that talks with the Android connectivity manager service. */
-    public class DelegateImpl implements Delegate {
+    public static class DelegateImpl implements Delegate {
         @Override
         public @ConnectionState int inferConnectionStateFromSystem() {
             // NET_CAPABILITY_VALIDATED and NET_CAPABILITY_CAPTIVE_PORTAL are only available on

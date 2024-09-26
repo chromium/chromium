@@ -46,14 +46,13 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
- * View for the header of the personalized feed that has a context menu to
- * manage the feed.
+ * View for the header of the personalized feed that has a context menu to manage the feed.
  *
- * This view can be inflated from one of two layouts, hence many @Nullables.
+ * <p>This view can be inflated from one of two layouts, hence many @Nullables.
  */
 public class SectionHeaderView extends LinearLayout {
     /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
-    private class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
+    private static class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
         private @Nullable OnSectionHeaderSelectedListener mListener;
 
         @Override
@@ -104,7 +103,7 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /** Holds additional state for a tab. */
-    private class TabState {
+    private static class TabState {
         // Whether the tab has unread content.
         public boolean hasUnreadContent;
         // Null when unread indicator isn't shown.

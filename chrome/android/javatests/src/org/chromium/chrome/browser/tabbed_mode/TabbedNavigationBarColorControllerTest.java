@@ -228,7 +228,7 @@ public class TabbedNavigationBarColorControllerTest {
                 .waitForCallback("Failed to exit full screen", onExitCallCount);
     }
 
-    private class FullscreenToggleObserver implements FullscreenManager.Observer {
+    private static class FullscreenToggleObserver implements FullscreenManager.Observer {
         private final CallbackHelper mOnEnterFullscreenHelper;
         private final CallbackHelper mOnExitFullscreenHelper;
 

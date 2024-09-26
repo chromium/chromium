@@ -1025,7 +1025,7 @@ class ClientManager {
         void run(SessionParams params);
     }
 
-    private synchronized <T> void callOnSession(
+    private synchronized void callOnSession(
             CustomTabsSessionToken session, SessionParamsRunnable runnable) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return;

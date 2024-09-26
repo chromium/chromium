@@ -264,7 +264,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         }
     }
 
-    private final class IIpProtectionGetInitialDataCallbackStub
+    private static final class IIpProtectionGetInitialDataCallbackStub
             extends IIpProtectionGetInitialDataCallback.Stub {
         private final CallbackTracker.TrackedCallback mCallback;
 
@@ -288,7 +288,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         }
     }
 
-    private final class IIpProtectionAuthAndSignCallbackStub
+    private static final class IIpProtectionAuthAndSignCallbackStub
             extends IIpProtectionAuthAndSignCallback.Stub {
         private final CallbackTracker.TrackedCallback mCallback;
 
@@ -312,7 +312,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         }
     }
 
-    private final class IIpProtectionGetProxyConfigCallbackStub
+    private static final class IIpProtectionGetProxyConfigCallbackStub
             extends IIpProtectionGetProxyConfigCallback.Stub {
         private final CallbackTracker.TrackedCallback mCallback;
 

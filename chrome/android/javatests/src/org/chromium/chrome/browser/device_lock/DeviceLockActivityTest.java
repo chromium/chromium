@@ -106,7 +106,7 @@ public class DeviceLockActivityTest {
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.RESUMED);
     }
 
-    private class MockIntentRequestTracker implements IntentRequestTracker {
+    private static class MockIntentRequestTracker implements IntentRequestTracker {
         boolean mOnActivityResultCalled;
 
         MockIntentRequestTracker() {}

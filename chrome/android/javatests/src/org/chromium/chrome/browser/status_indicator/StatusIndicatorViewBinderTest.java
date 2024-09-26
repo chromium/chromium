@@ -214,7 +214,7 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     /** Mock {@link StatusIndicatorSceneLayer} class to avoid native initialization. */
-    private class MockStatusIndicatorSceneLayer extends StatusIndicatorSceneLayer {
+    private static class MockStatusIndicatorSceneLayer extends StatusIndicatorSceneLayer {
         MockStatusIndicatorSceneLayer() {
             super(null);
         }

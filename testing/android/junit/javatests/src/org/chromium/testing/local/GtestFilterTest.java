@@ -15,9 +15,9 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class GtestFilterTest {
 
-    private class TestClass {}
+    private static class TestClass {}
 
-    private class OtherTestClass {}
+    private static class OtherTestClass {}
 
     @Test
     public void testDescription() {

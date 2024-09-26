@@ -42,7 +42,7 @@ public class LongScreenshotsTabServiceJUnitTest {
     @Mock private LongScreenshotsTabService.Natives mLongScreenshotsTabServiceJniMock;
     private TestCaptureProcessor mProcessor;
 
-    class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
+    static class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
         @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;

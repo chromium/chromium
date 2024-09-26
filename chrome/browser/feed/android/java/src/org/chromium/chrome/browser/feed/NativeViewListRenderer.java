@@ -141,7 +141,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         return viewItem;
     }
 
-    class NativeViewListLayoutHelper implements ListLayoutHelper {
+    static class NativeViewListLayoutHelper implements ListLayoutHelper {
         private LinearLayoutManager mLayoutManager;
 
         public NativeViewListLayoutHelper(LinearLayoutManager layoutManager) {

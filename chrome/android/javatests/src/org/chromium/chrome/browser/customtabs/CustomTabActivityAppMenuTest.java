@@ -138,7 +138,7 @@ public class CustomTabActivityAppMenuTest {
 
     private String mTestPage;
 
-    private class TestContext extends ContextWrapper {
+    private static class TestContext extends ContextWrapper {
         public TestContext(Context baseContext) {
             super(baseContext);
         }

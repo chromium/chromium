@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is a {@link MessageService.MessageObserver} that creates and owns different
- * {@link PropertyModel} based on the message type.
+ * This is a {@link MessageService.MessageObserver} that creates and owns different {@link
+ * PropertyModel} based on the message type.
  */
 public class MessageCardProviderMediator implements MessageService.MessageObserver {
     /** A class represents a Message. */
-    public class Message {
+    public static class Message {
         public final @MessageService.MessageType int type;
         public final PropertyModel model;
 

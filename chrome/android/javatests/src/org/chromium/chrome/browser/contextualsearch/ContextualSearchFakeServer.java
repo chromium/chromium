@@ -147,7 +147,7 @@ class ContextualSearchFakeServer
     // ============================================================================================
 
     /** Abstract class that represents a fake contextual search. */
-    public abstract class FakeSearch {
+    public abstract static class FakeSearch {
         private final String mNodeId;
 
         /**

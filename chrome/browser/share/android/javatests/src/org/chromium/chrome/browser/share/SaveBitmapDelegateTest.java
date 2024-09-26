@@ -107,7 +107,7 @@ public class SaveBitmapDelegateTest {
     }
 
     /** Test implementation of {@link WindowAndroid}. */
-    private class TestWindowAndroid extends WindowAndroid {
+    private static class TestWindowAndroid extends WindowAndroid {
         private boolean mHasPermission;
         private boolean mCanRequestPermission;
 

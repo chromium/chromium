@@ -104,7 +104,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private float mDpToPx;
 
-    class LayoutObserverCallbackHelper extends CallbackHelper {
+    static class LayoutObserverCallbackHelper extends CallbackHelper {
         @LayoutType public int layoutType;
     }
 

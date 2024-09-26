@@ -74,7 +74,7 @@ public class TracingControllerAndroidImplTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tracingController.destroy());
     }
 
-    private class TestCallback<T> extends CallbackHelper implements Callback<T> {
+    private static class TestCallback<T> extends CallbackHelper implements Callback<T> {
         public T mResult;
 
         @Override

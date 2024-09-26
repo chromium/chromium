@@ -252,7 +252,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
      * A {@link TabObserver} that observes navigation related events that originate from Feed
      * interactions. Calls reportPageLoaded when navigation completes.
      */
-    private class FeedTabNavigationObserver extends EmptyTabObserver {
+    private static class FeedTabNavigationObserver extends EmptyTabObserver {
         private final boolean mInNewTab;
         private final int mPageId;
         private final PageLoadObserver mPageLoadObserver;

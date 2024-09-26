@@ -53,7 +53,7 @@ public class PendingTabClosureManager {
     }
 
     /** Represents a set of tabs closed together. */
-    private class TabClosureEvent {
+    private static class TabClosureEvent {
         private final LinkedList<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
 

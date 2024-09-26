@@ -84,7 +84,7 @@ public class OfflinePageBridgeUnitTest {
     @Mock OfflinePageBridge.Natives mOfflinePageBridgeJniMock;
 
     /** Mocks the observer. */
-    public class MockOfflinePageModelObserver extends OfflinePageModelObserver {
+    public static class MockOfflinePageModelObserver extends OfflinePageModelObserver {
         public long lastDeletedOfflineId;
         public ClientId lastDeletedClientId;
 

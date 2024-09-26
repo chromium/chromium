@@ -78,7 +78,7 @@ public final class PageViewObserverTest {
     private UserDataHost mDestroyedUserDataHost;
     private WeakReference<Activity> mActivityRef;
 
-    private class MockTabViewManager implements TabViewManager {
+    private static class MockTabViewManager implements TabViewManager {
         private TabViewProvider mTabViewProvider;
 
         @Override

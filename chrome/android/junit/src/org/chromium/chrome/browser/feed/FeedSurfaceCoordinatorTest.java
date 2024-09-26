@@ -120,7 +120,7 @@ public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
 
-    private class TestLifecycleManager extends FeedSurfaceLifecycleManager {
+    private static class TestLifecycleManager extends FeedSurfaceLifecycleManager {
         public TestLifecycleManager(Activity activity, FeedSurfaceCoordinator coordinator) {
             super(activity, coordinator);
         }
@@ -146,7 +146,7 @@ public class FeedSurfaceCoordinatorTest {
         }
     }
 
-    private class TestTabModel extends EmptyTabModel {
+    private static class TestTabModel extends EmptyTabModel {
         public ArrayList<TabModelObserver> mObservers = new ArrayList<TabModelObserver>();
 
         @Override

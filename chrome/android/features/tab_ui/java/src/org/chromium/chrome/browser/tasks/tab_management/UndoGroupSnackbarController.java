@@ -41,7 +41,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
 
-    private class TabUndoInfo {
+    private static class TabUndoInfo {
         public final Tab tab;
         public final int tabOriginalIndex;
         public final int tabOriginalRootId;

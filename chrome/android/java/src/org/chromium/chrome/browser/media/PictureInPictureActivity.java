@@ -149,7 +149,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         private @PlaybackState int mPlaybackState;
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        class ToggleRemoteAction {
+        static class ToggleRemoteAction {
             private final RemoteAction mActionOn;
             private final RemoteAction mActionOff;
             private boolean mState;

@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)
 public class TileInteractionDelegateTest {
 
-    private class TileGroupForTest extends TileGroup {
+    private static class TileGroupForTest extends TileGroup {
         private Tile mTile;
 
         public TileGroupForTest(

@@ -154,7 +154,7 @@ public class SearchEngineSettingsRenderTest {
         return templateUrl;
     }
 
-    private class TestLargeIconBridge extends LargeIconBridge {
+    private static class TestLargeIconBridge extends LargeIconBridge {
         private final Map<GURL, LargeIconCallback> mCallbacks = new HashMap<>();
 
         TestLargeIconBridge(BrowserContextHandle browserContextHandle) {

@@ -289,7 +289,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         return shadowOf(notificationManager);
     }
 
-    private class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
+    private static class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
         @Override
         public void run() {
             notifyCalled();

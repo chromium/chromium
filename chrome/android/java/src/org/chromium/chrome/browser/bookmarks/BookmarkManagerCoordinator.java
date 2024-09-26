@@ -74,7 +74,7 @@ public class BookmarkManagerCoordinator
                 }
             };
 
-    private final class DragAndCancelAdapter extends DragReorderableRecyclerViewAdapter {
+    private static final class DragAndCancelAdapter extends DragReorderableRecyclerViewAdapter {
         DragAndCancelAdapter(Context context, ModelList modelList) {
             super(context, modelList);
         }

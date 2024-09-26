@@ -174,7 +174,7 @@ public class PageInfoHistoryController
     @Override
     public void clearData() {
         // TODO(crbug.com/40746014): Add functionality for clear history for this site.
-        return;
+
     }
 
     @Override
@@ -193,7 +193,6 @@ public class PageInfoHistoryController
     @Override
     public void onItemClicked(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_CLICKED);
-        return;
     }
 
     // HistoryContentManager.Observer
@@ -214,7 +213,7 @@ public class PageInfoHistoryController
     public void onClearBrowsingDataClicked() {
         // TODO(crbug.com/40746014): Add functionality for "clear history" button click and
         // change the name of the current clear browsing data button.
-        return;
+
     }
 
     // HistoryContentManager.Observer

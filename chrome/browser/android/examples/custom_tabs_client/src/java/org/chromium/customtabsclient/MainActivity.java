@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private class EngagementCallback implements EngagementSignalsCallback {
+    private static class EngagementCallback implements EngagementSignalsCallback {
         @Override
         public void onVerticalScrollEvent(boolean isDirectionUp, Bundle extras) {
             Log.w(
