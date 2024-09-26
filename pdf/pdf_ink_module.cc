@@ -27,6 +27,7 @@
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_cursor.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
@@ -326,12 +327,11 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
   state.page_index = page_index;
 
   // Start of the first segment of a stroke.
-  // TODO(crbug.com/353942909): Set `tool_type` appropriately.
+  // TODO(crbug.com/353942909): Set the tool type appropriately.
   StrokeInputSegment segment;
-  segment.push_back({
-      .tool_type = ink::StrokeInput::ToolType::kMouse,
-      .position = {page_position.x(), page_position.y()},
-  });
+  segment.push_back(CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse,
+                                         page_position,
+                                         /*elapsed_time=*/base::TimeDelta()));
   state.inputs.push_back(std::move(segment));
 
   // Invalidate area around this one point.
@@ -686,13 +686,9 @@ void PdfInkModule::RecordStrokePosition(const gfx::PointF& position) {
   gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, state.page_index);
   base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
-  // TODO(crbug.com/353942909): Set `tool_type` appropriately.
-  state.inputs.back().push_back({
-      .tool_type = ink::StrokeInput::ToolType::kMouse,
-      .position = {canonical_position.x(), canonical_position.y()},
-      .elapsed_time =
-          ink::Duration32::Seconds(static_cast<float>(time_diff.InSecondsF())),
-  });
+  // TODO(crbug.com/353942909): Set the tool type appropriately.
+  state.inputs.back().push_back(CreateInkStrokeInput(
+      ink::StrokeInput::ToolType::kMouse, canonical_position, time_diff));
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(
