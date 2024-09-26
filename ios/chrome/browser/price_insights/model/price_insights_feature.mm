@@ -18,14 +18,14 @@ const char kLowPriceParamGoodDealNow[] = "GoodDealNow";
 
 const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
 
-bool IsPriceInsightsEnabled(ChromeBrowserState* browser_state) {
+bool IsPriceInsightsEnabled(ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(commerce::kPriceInsightsIos)) {
     return false;
   }
 
-  DCHECK(browser_state);
+  DCHECK(profile);
   commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state);
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
 
   if (!service) {
     return false;

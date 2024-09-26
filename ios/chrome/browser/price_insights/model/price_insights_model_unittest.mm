@@ -43,14 +43,14 @@ class PriceInsightsModelTest : public PlatformTest {
   ~PriceInsightsModelTest() override {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
-    test_chrome_browser_state_ = std::move(builder).Build();
+    test_profile_ = std::move(builder).Build();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
         std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);
@@ -58,14 +58,13 @@ class PriceInsightsModelTest : public PlatformTest {
         navigation_manager->GetItemAtIndex(0));
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetNavigationManager(std::move(navigation_manager));
-    web_state_->SetBrowserState(test_chrome_browser_state_.get());
+    web_state_->SetBrowserState(test_profile_.get());
     web_state_->SetNavigationItemCount(1);
     web_state_->SetCurrentURL(GURL(kTestUrl));
-    web_state_->SetBrowserState(test_chrome_browser_state_.get());
+    web_state_->SetBrowserState(test_profile_.get());
     price_insights_model_ = std::make_unique<PriceInsightsModel>();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(
-            test_chrome_browser_state_.get()));
+        commerce::ShoppingServiceFactory::GetForProfile(test_profile_.get()));
     shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
     shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
     shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -100,7 +99,7 @@ class PriceInsightsModelTest : public PlatformTest {
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;
   int fetch_configuration_callback_count;
   std::unique_ptr<web::FakeWebState> web_state_;
-  std::unique_ptr<TestChromeBrowserState> test_chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> test_profile_;
 };
 
 // Tests that fetching the configuration for the price insights model returns no

@@ -23,7 +23,7 @@ extern const char kLowPriceParamGoodDealNow[];
 extern const char kLowPriceParamSeePriceHistory[];
 
 // Determine if the price insights and price tracking are enabled.
-bool IsPriceInsightsEnabled(ChromeBrowserState* browser_state);
+bool IsPriceInsightsEnabled(ProfileIOS* profile);
 
 // Determine if the price insights high price feature is enabled.
 bool IsPriceInsightsHighPriceEnabled();

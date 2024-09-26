@@ -80,7 +80,7 @@ void PriceInsightsModel::FetchConfigurationForWebState(
   price_insights_executions_[product_url] =
       std::make_unique<PriceInsightsExecution>();
 
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   shopping_service_->GetProductInfoForUrl(
       product_url, base::BindOnce(&PriceInsightsModel::OnProductInfoUrlReceived,

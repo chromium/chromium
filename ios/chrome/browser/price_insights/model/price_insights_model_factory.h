@@ -15,9 +15,6 @@ class PriceInsightsModel;
 // profile.
 class PriceInsightsModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PriceInsightsModel* GetForBrowserState(ProfileIOS* profile);
-
   static PriceInsightsModel* GetForProfile(ProfileIOS* profile);
   static PriceInsightsModelFactory* GetInstance();
 
