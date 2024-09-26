@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "components/soda/soda_features.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/public/browser/browser_context.h"
@@ -104,7 +105,9 @@ int GetResourceIdFromStringName(const std::string& name) {
 
 bool RecorderAppUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(ash::features::kConch);
+  return base::FeatureList::IsEnabled(ash::features::kConch) ||
+         base::FeatureList::IsEnabled(
+             speech::kFeatureManagementCrosSodaConchLanguages);
 }
 
 RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
