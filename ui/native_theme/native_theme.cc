@@ -141,8 +141,8 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   // Reset the ColorProviderManager's cache so that ColorProviders requested
   // from this point onwards incorporate the changes to the system theme.
   color_provider_manager.ResetColorProviderCache();
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnNativeThemeUpdated(this);
+  native_theme_observers_.Notify(&NativeThemeObserver::OnNativeThemeUpdated,
+                                 this);
 
   RecordNumColorProvidersInitializedDuringOnNativeThemeUpdated(
       color_provider_manager.num_providers_initialized() -
@@ -155,8 +155,7 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnCaptionStyleUpdated();
+  native_theme_observers_.Notify(&NativeThemeObserver::OnCaptionStyleUpdated);
 }
 
 void NativeTheme::NotifyOnPreferredContrastUpdated() {
@@ -164,8 +163,8 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (NativeThemeObserver& observer : native_theme_observers_)
-    observer.OnPreferredContrastChanged();
+  native_theme_observers_.Notify(
+      &NativeThemeObserver::OnPreferredContrastChanged);
 }
 
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
