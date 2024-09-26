@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
-    units="ms" expires_after="2024-11-01">
+    units="ms" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Coverage" enum="IMEAssistiveAction"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -619,7 +619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled" enum="IMEAssistiveAction"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -631,7 +631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled.Emoji"
-    enum="IMEAssistiveDisabledReason" expires_after="2024-11-01">
+    enum="IMEAssistiveDisabledReason" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled.MultiWord"
-    enum="IMEAssistiveDisabledReason" expires_after="2024-11-01">
+    enum="IMEAssistiveDisabledReason" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.EmojiSuggestAddition.AcceptanceIndex"
-    units="times" expires_after="2025-01-26">
+    units="times" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Grammar.Actions"
-    enum="IMEGrammarActions" expires_after="2025-03-09">
+    enum="IMEGrammarActions" expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -690,7 +690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Grammar.Count" enum="IMETextInputClient"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.CandidatesGenerated"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -740,7 +740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -765,7 +765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitRejection"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
-    enum="IMEAssistiveTextInputState" expires_after="2025-03-09">
+    enum="IMEAssistiveTextInputState" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.PrecedingTextLength"
-    units="chars" expires_after="2024-11-01">
+    units="chars" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.RequestCandidates"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -810,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionLength"
-    units="chars" expires_after="2024-11-01">
+    units="chars" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -821,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionOpportunity"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.SuggestionState.{Type}"
-    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2024-11-01">
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -864,7 +864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Success" enum="IMEAssistiveAction"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -874,7 +874,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.TimeToAccept.MultiWord" units="ms"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.TimeToDismiss.MultiWord" units="ms"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.Emoji" enum="BooleanEnabled"
-    expires_after="2024-11-01">
+    expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -908,7 +908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.MultiWord"
-    enum="BooleanEnabled" expires_after="2024-11-01">
+    enum="BooleanEnabled" expires_after="2025-11-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.UserPref.PhysicalKeyboardDiacriticsOnLongpress"
-    enum="BooleanEnabled" expires_after="2025-03-09">
+    enum="BooleanEnabled" expires_after="2025-11-01">
   <owner>jhtin@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
