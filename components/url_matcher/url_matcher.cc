@@ -723,7 +723,7 @@ URLMatcherPortFilter::Range URLMatcherPortFilter::CreateRange(int port) {
 //
 
 URLMatcherCidrBlockFilter::URLMatcherCidrBlockFilter(
-    const std::vector<URLMatcherCidrBlockFilter::CidrBlock>& cidr_blocks)
+    std::vector<URLMatcherCidrBlockFilter::CidrBlock>&& cidr_blocks)
     : cidr_blocks_(std::move(cidr_blocks)) {}
 
 URLMatcherCidrBlockFilter::~URLMatcherCidrBlockFilter() = default;
