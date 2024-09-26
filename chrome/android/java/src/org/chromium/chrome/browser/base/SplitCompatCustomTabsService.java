@@ -84,6 +84,15 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
+    @ExperimentalPrefetch
+    protected void prefetch(
+            CustomTabsSessionToken sessionToken, List<Uri> uris, PrefetchOptions options) {
+        for (Uri uri : uris) {
+            mImpl.prefetch(sessionToken, uri, options);
+        }
+    }
+
+    @Override
     protected Bundle extraCommand(String commandName, Bundle args) {
         return mImpl.extraCommand(commandName, args);
     }
