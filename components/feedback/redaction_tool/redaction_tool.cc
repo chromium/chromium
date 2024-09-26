@@ -52,6 +52,154 @@ BASE_FEATURE(kEnableIbanRedaction,
 
 namespace {
 
+// Helper macro: Non capturing group
+#define NCG(x) "(?:" x ")"
+// Helper macro: Optional non capturing group
+#define OPT_NCG(x) NCG(x) "?"
+
+//////////////////////////////////////////////////////////////////////////
+// Patterns for URLs, or better IRIs, based on RFC 3987 with an artificial
+// limitation on the scheme to increase precision. Otherwise anything
+// like "ID:" would be considered an IRI.
+
+#define UNRESERVED "[-a-z0-9._~]"
+#define RESERVED NGC(GEN_DELIMS "|" SUB_DELIMS)
+#define SUB_DELIMS "[!$&'()*+,;=]"
+#define GEN_DELIMS "[:/?#[\\]@]"
+
+#define DIGIT "[0-9]"
+#define HEXDIG "[0-9a-f]"
+
+#define PCT_ENCODED "%" HEXDIG HEXDIG
+
+#define DEC_OCTET NCG("1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]")
+
+#define IPV4ADDRESS DEC_OCTET "\\." DEC_OCTET "\\." DEC_OCTET "\\." DEC_OCTET
+
+#define H16 NCG(HEXDIG) "{1,4}"
+#define LS32 NCG(H16 ":" H16 "|" IPV4ADDRESS)
+#define WB "\\b"
+
+// clang-format off
+#define IPV6ADDRESS NCG( \
+                                          WB NCG(H16 ":") "{6}" LS32 WB "|" \
+                                        "::" NCG(H16 ":") "{5}" LS32 WB "|" \
+  OPT_NCG( WB                      H16) "::" NCG(H16 ":") "{4}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,1}" H16) "::" NCG(H16 ":") "{3}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,2}" H16) "::" NCG(H16 ":") "{2}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,3}" H16) "::" NCG(H16 ":")       LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,4}" H16) "::"                    LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,5}" H16) "::"                    H16  WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,6}" H16) "::")
+// clang-format on
+
+#define IPVFUTURE                     \
+  "v" HEXDIG                          \
+  "+"                                 \
+  "\\." NCG(UNRESERVED "|" SUB_DELIMS \
+                       "|"            \
+                       ":") "+"
+
+#define IP_LITERAL "\\[" NCG(IPV6ADDRESS "|" IPVFUTURE) "\\]"
+
+#define PORT DIGIT "*"
+
+// This is a diversion of RFC 3987
+#define SCHEME \
+  NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app")
+
+#define IPRIVATE            \
+  "["                       \
+  "\\x{E000}-\\x{F8FF}"     \
+  "\\x{F0000}-\\x{FFFFD}"   \
+  "\\x{100000}-\\x{10FFFD}" \
+  "]"
+
+#define UCSCHAR           \
+  "["                     \
+  "\\x{A0}-\\x{D7FF}"     \
+  "\\x{F900}-\\x{FDCF}"   \
+  "\\x{FDF0}-\\x{FFEF}"   \
+  "\\x{10000}-\\x{1FFFD}" \
+  "\\x{20000}-\\x{2FFFD}" \
+  "\\x{30000}-\\x{3FFFD}" \
+  "\\x{40000}-\\x{4FFFD}" \
+  "\\x{50000}-\\x{5FFFD}" \
+  "\\x{60000}-\\x{6FFFD}" \
+  "\\x{70000}-\\x{7FFFD}" \
+  "\\x{80000}-\\x{8FFFD}" \
+  "\\x{90000}-\\x{9FFFD}" \
+  "\\x{A0000}-\\x{AFFFD}" \
+  "\\x{B0000}-\\x{BFFFD}" \
+  "\\x{C0000}-\\x{CFFFD}" \
+  "\\x{D0000}-\\x{DFFFD}" \
+  "\\x{E1000}-\\x{EFFFD}" \
+  "]"
+
+#define IUNRESERVED  \
+  NCG("[-a-z0-9._~]" \
+      "|" UCSCHAR)
+
+#define IPCHAR                                   \
+  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
+                  "|"                            \
+                  "[:@]")
+#define IFRAGMENT \
+  NCG(IPCHAR      \
+      "|"         \
+      "[/?]")     \
+  "*"
+#define IQUERY            \
+  NCG(IPCHAR "|" IPRIVATE \
+             "|"          \
+             "[/?]")      \
+  "*"
+
+#define ISEGMENT IPCHAR "*"
+#define ISEGMENT_NZ IPCHAR "+"
+#define ISEGMENT_NZ_NC                           \
+  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
+                  "|"                            \
+                  "@")                           \
+  "+"
+
+#define IPATH_EMPTY ""
+#define IPATH_ROOTLESS ISEGMENT_NZ NCG("/" ISEGMENT) "*"
+#define IPATH_NOSCHEME ISEGMENT_NZ_NC NCG("/" ISEGMENT) "*"
+#define IPATH_ABSOLUTE "/" OPT_NCG(ISEGMENT_NZ NCG("/" ISEGMENT) "*")
+#define IPATH_ABEMPTY NCG("/" ISEGMENT) "*"
+
+#define IPATH                                                                \
+  NCG(IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME "|" IPATH_ROOTLESS \
+                    "|" IPATH_EMPTY)
+
+#define IREG_NAME NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS) "*"
+
+#define IHOST NCG(IP_LITERAL "|" IPV4ADDRESS "|" IREG_NAME)
+#define IUSERINFO                                \
+  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
+                  "|"                            \
+                  ":")                           \
+  "*"
+#define IAUTHORITY OPT_NCG(IUSERINFO "@") IHOST OPT_NCG(":" PORT)
+
+#define IRELATIVE_PART                                                    \
+  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME \
+                                    "|" IPATH_EMPTY)
+
+#define IRELATIVE_REF IRELATIVE_PART OPT_NCG("?" IQUERY) OPT_NCG("#" IFRAGMENT)
+
+// RFC 3987 requires IPATH_EMPTY here but it is omitted so that statements
+// that end with "Android:" for example are not considered a URL.
+#define IHIER_PART \
+  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_ROOTLESS)
+
+#define ABSOLUTE_IRI SCHEME ":" IHIER_PART OPT_NCG("?" IQUERY)
+
+#define IRI SCHEME ":" IHIER_PART OPT_NCG("\\?" IQUERY) OPT_NCG("#" IFRAGMENT)
+
+#define IRI_REFERENCE NCG(IRI "|" IRELATIVE_REF)
+
 // The |kCustomPatternsWithContext| array defines patterns to match and
 // redact. Each pattern needs to define three capturing parentheses groups:
 //
@@ -116,12 +264,16 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      PIIType::kSerial},
     {"Serial", "( Serial Number )(\\d+)(\\b)", PIIType::kSerial},
     // USB Serial numbers, as outputted from the lsusb --verbose tool.
-    // "iSerial" followed by some spaces, then up to 5 digits of the iSerial index
-    // which is not part of the serial number itself, followed by the serial number string.
-    // The iSerial index must be nonzero, as an index of zero indicates no string descriptor
-    // is present. The serial number string itself is up to the manufacturer, but is
-    // observed to be alphanumetric (numbers, and both upper and lower case letters).
-    {"Serial", "(iSerial\\s*[1-9]\\d{0,4}\\s)([0-9a-zA-Z-]+)(\\b)", PIIType::kSerial},
+    // "iSerial" followed by some spaces, then up to 5 digits of the iSerial
+    // index which is not part of the serial number itself, followed by the
+    // serial number string.
+    // The iSerial index must be nonzero, as an index of zero indicates no
+    // string descriptor is present.
+    // The serial number string itself is up to the manufacturer, but is
+    // observed to be alphanumetric (numbers, and both upper and lower case
+    // letters).
+    {"Serial", "(iSerial\\s*[1-9]\\d{0,4}\\s)([0-9a-zA-Z-]+)(\\b)",
+     PIIType::kSerial},
     // USB Serial number as generated by usbguard.
     {"Serial",
      "(?i-s)(\\bserial\\s\")"
@@ -346,154 +498,6 @@ bool ShouldSkipIPAddress(std::string_view skipped) {
   static const std::string_view dash("-");
   return skipped.ends_with(dash);
 }
-
-// Helper macro: Non capturing group
-#define NCG(x) "(?:" x ")"
-// Helper macro: Optional non capturing group
-#define OPT_NCG(x) NCG(x) "?"
-
-//////////////////////////////////////////////////////////////////////////
-// Patterns for URLs, or better IRIs, based on RFC 3987 with an artificial
-// limitation on the scheme to increase precision. Otherwise anything
-// like "ID:" would be considered an IRI.
-
-#define UNRESERVED "[-a-z0-9._~]"
-#define RESERVED NGC(GEN_DELIMS "|" SUB_DELIMS)
-#define SUB_DELIMS "[!$&'()*+,;=]"
-#define GEN_DELIMS "[:/?#[\\]@]"
-
-#define DIGIT "[0-9]"
-#define HEXDIG "[0-9a-f]"
-
-#define PCT_ENCODED "%" HEXDIG HEXDIG
-
-#define DEC_OCTET NCG("1[0-9][0-9]|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9]")
-
-#define IPV4ADDRESS DEC_OCTET "\\." DEC_OCTET "\\." DEC_OCTET "\\." DEC_OCTET
-
-#define H16 NCG(HEXDIG) "{1,4}"
-#define LS32 NCG(H16 ":" H16 "|" IPV4ADDRESS)
-#define WB "\\b"
-
-// clang-format off
-#define IPV6ADDRESS NCG( \
-                                          WB NCG(H16 ":") "{6}" LS32 WB "|" \
-                                        "::" NCG(H16 ":") "{5}" LS32 WB "|" \
-  OPT_NCG( WB                      H16) "::" NCG(H16 ":") "{4}" LS32 WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,1}" H16) "::" NCG(H16 ":") "{3}" LS32 WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,2}" H16) "::" NCG(H16 ":") "{2}" LS32 WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,3}" H16) "::" NCG(H16 ":")       LS32 WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,4}" H16) "::"                    LS32 WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,5}" H16) "::"                    H16  WB "|" \
-  OPT_NCG( WB NCG(H16 ":") "{0,6}" H16) "::")
-// clang-format on
-
-#define IPVFUTURE                     \
-  "v" HEXDIG                          \
-  "+"                                 \
-  "\\." NCG(UNRESERVED "|" SUB_DELIMS \
-                       "|"            \
-                       ":") "+"
-
-#define IP_LITERAL "\\[" NCG(IPV6ADDRESS "|" IPVFUTURE) "\\]"
-
-#define PORT DIGIT "*"
-
-// This is a diversion of RFC 3987
-#define SCHEME \
-  NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app")
-
-#define IPRIVATE            \
-  "["                       \
-  "\\x{E000}-\\x{F8FF}"     \
-  "\\x{F0000}-\\x{FFFFD}"   \
-  "\\x{100000}-\\x{10FFFD}" \
-  "]"
-
-#define UCSCHAR           \
-  "["                     \
-  "\\x{A0}-\\x{D7FF}"     \
-  "\\x{F900}-\\x{FDCF}"   \
-  "\\x{FDF0}-\\x{FFEF}"   \
-  "\\x{10000}-\\x{1FFFD}" \
-  "\\x{20000}-\\x{2FFFD}" \
-  "\\x{30000}-\\x{3FFFD}" \
-  "\\x{40000}-\\x{4FFFD}" \
-  "\\x{50000}-\\x{5FFFD}" \
-  "\\x{60000}-\\x{6FFFD}" \
-  "\\x{70000}-\\x{7FFFD}" \
-  "\\x{80000}-\\x{8FFFD}" \
-  "\\x{90000}-\\x{9FFFD}" \
-  "\\x{A0000}-\\x{AFFFD}" \
-  "\\x{B0000}-\\x{BFFFD}" \
-  "\\x{C0000}-\\x{CFFFD}" \
-  "\\x{D0000}-\\x{DFFFD}" \
-  "\\x{E1000}-\\x{EFFFD}" \
-  "]"
-
-#define IUNRESERVED  \
-  NCG("[-a-z0-9._~]" \
-      "|" UCSCHAR)
-
-#define IPCHAR                                   \
-  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
-                  "|"                            \
-                  "[:@]")
-#define IFRAGMENT \
-  NCG(IPCHAR      \
-      "|"         \
-      "[/?]")     \
-  "*"
-#define IQUERY            \
-  NCG(IPCHAR "|" IPRIVATE \
-             "|"          \
-             "[/?]")      \
-  "*"
-
-#define ISEGMENT IPCHAR "*"
-#define ISEGMENT_NZ IPCHAR "+"
-#define ISEGMENT_NZ_NC                           \
-  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
-                  "|"                            \
-                  "@")                           \
-  "+"
-
-#define IPATH_EMPTY ""
-#define IPATH_ROOTLESS ISEGMENT_NZ NCG("/" ISEGMENT) "*"
-#define IPATH_NOSCHEME ISEGMENT_NZ_NC NCG("/" ISEGMENT) "*"
-#define IPATH_ABSOLUTE "/" OPT_NCG(ISEGMENT_NZ NCG("/" ISEGMENT) "*")
-#define IPATH_ABEMPTY NCG("/" ISEGMENT) "*"
-
-#define IPATH                                                                \
-  NCG(IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME "|" IPATH_ROOTLESS \
-                    "|" IPATH_EMPTY)
-
-#define IREG_NAME NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS) "*"
-
-#define IHOST NCG(IP_LITERAL "|" IPV4ADDRESS "|" IREG_NAME)
-#define IUSERINFO                                \
-  NCG(IUNRESERVED "|" PCT_ENCODED "|" SUB_DELIMS \
-                  "|"                            \
-                  ":")                           \
-  "*"
-#define IAUTHORITY OPT_NCG(IUSERINFO "@") IHOST OPT_NCG(":" PORT)
-
-#define IRELATIVE_PART                                                    \
-  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_NOSCHEME \
-                                    "|" IPATH_EMPTY)
-
-#define IRELATIVE_REF IRELATIVE_PART OPT_NCG("?" IQUERY) OPT_NCG("#" IFRAGMENT)
-
-// RFC 3987 requires IPATH_EMPTY here but it is omitted so that statements
-// that end with "Android:" for example are not considered a URL.
-#define IHIER_PART \
-  "//" NCG(IAUTHORITY IPATH_ABEMPTY "|" IPATH_ABSOLUTE "|" IPATH_ROOTLESS)
-
-#define ABSOLUTE_IRI SCHEME ":" IHIER_PART OPT_NCG("?" IQUERY)
-
-#define IRI SCHEME ":" IHIER_PART OPT_NCG("\\?" IQUERY) OPT_NCG("#" IFRAGMENT)
-
-#define IRI_REFERENCE NCG(IRI "|" IRELATIVE_REF)
 
 // TODO(battre): Use http://tools.ietf.org/html/rfc5322 to represent email
 // addresses. Capture names as well ("First Lastname" <foo@bar.com>).
