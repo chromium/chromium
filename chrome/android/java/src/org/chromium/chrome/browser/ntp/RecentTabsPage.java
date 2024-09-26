@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -42,7 +44,7 @@ public class RecentTabsPage
                 InvalidationAwareThumbnailProvider,
                 BrowserControlsStateProvider.Observer {
     private final Activity mActivity;
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Nullable private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ExpandableListView mListView;
     private final String mTitle;
     private final ViewGroup mView;
@@ -187,7 +189,9 @@ public class RecentTabsPage
 
     @Override
     public int getHeightOverlappedWithTopControls() {
-        return mBrowserControlsStateProvider.getTopControlsHeight();
+        return mBrowserControlsStateProvider == null
+                ? 0
+                : mBrowserControlsStateProvider.getTopControlsHeight();
     }
 
     // View.OnAttachStateChangeListener
