@@ -131,11 +131,14 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -143,11 +146,16 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,6 +170,13 @@ using ::testing::AssertionSuccess;
 
 namespace autofill {
 namespace {
+
+bool EnableMLClassification() {
+  static bool enable_ml_classification =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "enable-ml-classification");
+  return enable_ml_classification;
+}
 
 // Helper class that aggregates metrics and diagnostic data about field
 // classifications that matched or mismatched the expecations.
@@ -415,10 +430,13 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 // is a mutable parameter.
 // `site` corresponds to an entry of `.sites[]` in the JSON input file in jq
 // syntax (https://jqlang.github.io/jq/)
+// If `ml_predictions_handler` is null, heuristics with regular expressions
+// are used for parsing. If it's non-null, the ML model is applied.
 [[nodiscard]] AssertionResult ClassifyFieldsOfSite(
     base::Value::Dict& site,
     const GeoIpCountryCode& client_country,
     LanguageCode page_language,
+    AutofillMlPredictionModelHandler* ml_predictions_handler,
     ResultAnalyzer& result_analyzer,
     LogManager* log_manager) {
   const std::string* site_url = site.FindString("site_url");
@@ -439,11 +457,27 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
         !result) {
       return result;
     }
-    FormStructure form_structure(form_data);
-    form_structure.set_current_page_language(page_language);
-    form_structure.DetermineHeuristicTypes(client_country, nullptr,
-                                           log_manager);
-    result_analyzer.AnalyzeClassification(form_structure, form.GetDict());
+    auto form_structure = std::make_unique<FormStructure>(form_data);
+    form_structure->set_current_page_language(page_language);
+    if (ml_predictions_handler) {
+      base::RunLoop run_loop;
+      ml_predictions_handler->GetModelPredictionsForForm(
+          std::move(form_structure),
+          base::BindLambdaForTesting(
+              [&form_structure,
+               &run_loop](std::unique_ptr<FormStructure> result_form) {
+                form_structure = std::move(result_form);
+                run_loop.Quit();
+              }));
+      run_loop.Run();
+    }
+    // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
+    // executed after the ML model. If ML predictions are enabled, this does
+    // not override the heuristic types but performs rationalization.
+    form_structure->DetermineHeuristicTypes(client_country, nullptr,
+                                            log_manager);
+
+    result_analyzer.AnalyzeClassification(*form_structure, form.GetDict());
   }
   return AssertionSuccess();
 }
@@ -491,9 +525,14 @@ class HeuristicClassificationTests
   void SetUp() override;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   LogRouter log_router_;
   std::unique_ptr<LogManager> log_manager_;
+
+  // Infrastructure for ML classifications.
+  optimization_guide::TestOptimizationGuideModelProvider model_provider_;
+  AutofillMlPredictionModelHandler ml_predictions_handler_{&model_provider_};
 };
 
 void HeuristicClassificationTests::SetUp() {
@@ -501,6 +540,29 @@ void HeuristicClassificationTests::SetUp() {
     log_router_.LogToTerminal();
   }
   log_manager_ = LogManager::Create(&log_router_, base::NullCallback());
+
+  // Set up ML model.
+  if (EnableMLClassification()) {
+    base::FilePath model_path =
+        GetInputDir().AppendASCII("internal").AppendASCII("mlmodel");
+    ASSERT_TRUE(base::PathExists(model_path));
+    std::string proto_content;
+    ASSERT_TRUE(base::ReadFileToString(model_path.AppendASCII("model-info.pb"),
+                                       &proto_content));
+    optimization_guide::proto::ModelInfo model_metadata;
+    ASSERT_TRUE(model_metadata.ParseFromString(proto_content));
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelMetadata(/*any_metadata*/ model_metadata.model_metadata())
+            .SetModelFilePath(model_path.AppendASCII("model.tflite"))
+            .Build();
+
+    ml_predictions_handler_.OnModelUpdated(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
+        *model_info);
+  }
 }
 
 TEST_P(HeuristicClassificationTests, EndToEnd) {
@@ -586,6 +648,18 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 
+  base::test::ScopedFeatureList ml_scoped_feature_list;
+  if (EnableMLClassification()) {
+    ASSERT_TRUE(BUILDFLAG(BUILD_WITH_TFLITE_LIB));
+    ASSERT_TRUE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+        "optimization-guide-model-override"))
+        << "No model specified.";
+    base::FieldTrialParams params;
+    params.emplace(features::kAutofillModelPredictionsAreActive.name, "true");
+    ml_scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillModelPredictions, params);
+  }
+
   // Configure page language.
   const std::string* language = config->FindString("language");
   ASSERT_TRUE(language);
@@ -607,9 +681,10 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ResultAnalyzer result_analyzer(std::move(fields_in_scope));
   for (base::Value& site : *sites) {
     ASSERT_TRUE(site.is_dict());
-    ASSERT_TRUE(ClassifyFieldsOfSite(site.GetDict(), GeoIpCountryCode(*country),
-                                     page_language, result_analyzer,
-                                     log_manager_.get()));
+    ASSERT_TRUE(ClassifyFieldsOfSite(
+        site.GetDict(), GeoIpCountryCode(*country), page_language,
+        EnableMLClassification() ? &ml_predictions_handler_ : nullptr,
+        result_analyzer, log_manager_.get()));
   }
 
   // Update statistics
