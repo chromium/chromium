@@ -120,7 +120,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) LocationBarMediator* mediator;
 @property(nonatomic, strong) LocationBarSteadyViewMediator* steadyViewMediator;
 @property(nonatomic, strong) LocationBarViewController* viewController;
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+@property(nonatomic, readonly) ProfileIOS* profile;
 @property(nonatomic, readonly) WebStateList* webStateList;
 
 // Tracks calls in progress to -cancelOmniboxEdit to avoid calling it from
@@ -136,8 +136,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 #pragma mark - Accessors
 
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
+- (ProfileIOS*)profile {
+  return self.browser ? self.browser->GetProfile() : nullptr;
 }
 
 - (WebStateList*)webStateList {
@@ -168,7 +168,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       startDispatchingToTarget:self
                    forProtocol:@protocol(LoadQueryCommands)];
 
-  BOOL isIncognito = self.browserState->IsOffTheRecord();
+  BOOL isIncognito = self.profile->IsOffTheRecord();
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
@@ -180,8 +180,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                      LoadQueryCommands, LensOverlayCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
   self.viewController.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
@@ -193,7 +193,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
   _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
-      self.browser->GetWebStateList(), self.browserState));
+      self.browser->GetWebStateList(), self.profile));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
@@ -201,9 +201,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       initWithBaseViewController:nil
                          browser:self.browser
                    omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
-                                     _locationBar.get(), self.browserState,
+                                     _locationBar.get(), self.profile,
                                      feature_engagement::TrackerFactory::
-                                         GetForBrowserState(self.browserState))
+                                         GetForProfile(self.profile))
                    isLensOverlay:NO];
   self.omniboxCoordinator.focusDelegate = self.delegate;
 
@@ -270,7 +270,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.mediator = [[LocationBarMediator alloc] initWithIsIncognito:isIncognito];
   self.mediator.templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
 
@@ -379,7 +379,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {
-    LoadJavaScriptURL(url, self.browserState,
+    LoadJavaScriptURL(url, self.profile,
                       self.webStateList->GetActiveWebState());
   } else {
     // TODO(crbug.com/40550038): Is it ok to call `cancelOmniboxEdit` after
@@ -393,7 +393,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     }
     NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
         [web_navigation_util::VariationHeadersForURL(
-            url, self.browserState->IsOffTheRecord()) mutableCopy];
+            url, self.profile->IsOffTheRecord()) mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
     web_params.extra_headers = [combinedExtraHeaders copy];
     UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
@@ -418,7 +418,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) &&
-      !self.browserState->IsOffTheRecord()) {
+      !self.profile->IsOffTheRecord()) {
     id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            BrowserCoordinatorCommands);
@@ -465,26 +465,25 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)recordShareButtonPressed {
-  if (!self.browserState) {
+  if (!self.profile) {
     return;
   }
 
   base::UmaHistogramEnumeration(
       "iOS.LocationBar.ShareButton.PerProfileType",
-      profile_metrics::GetBrowserProfileType(self.browserState));
+      profile_metrics::GetBrowserProfileType(self.profile));
 }
 
 - (void)locationBarVisitCopyLinkTapped {
   default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
-      self.browserState->IsOffTheRecord(),
-      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState),
+      self.profile->IsOffTheRecord(),
+      feature_engagement::TrackerFactory::GetForProfile(self.profile),
       self.browser->GetSceneState());
 }
 
 - (void)locationBarSearchCopiedTextTapped {
   default_browser::NotifyOmniboxTextCopyPasteAndNavigate(
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browserState));
+      feature_engagement::TrackerFactory::GetForProfile(self.profile));
 }
 
 - (void)searchCopiedImage {
@@ -573,8 +572,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       nullptr, &searchURL);
   if (type != metrics::OmniboxInputType::URL || !searchURL.is_valid()) {
     searchURL = GetDefaultSearchURLForSearchTerms(
-        ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState),
-        query);
+        ios::TemplateURLServiceFactory::GetForProfile(self.profile), query);
   }
   if (searchURL.is_valid()) {
     // It is necessary to include PAGE_TRANSITION_FROM_ADDRESS_BAR in the
@@ -628,8 +626,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   } else {
     web::NavigationManager::WebLoadParams webParams =
         ImageSearchParamGenerator::LoadParamsForImage(
-            image, ios::TemplateURLServiceFactory::GetForBrowserState(
-                       browser->GetBrowserState()));
+            image, ios::TemplateURLServiceFactory::GetForProfile(
+                       browser->GetProfile()));
     UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
     UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
   }

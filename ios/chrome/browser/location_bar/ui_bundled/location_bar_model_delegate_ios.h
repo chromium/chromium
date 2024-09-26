@@ -22,7 +22,7 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
  public:
   // `web_state_list` must outlive this LocationBarModelDelegateIOS object.
   explicit LocationBarModelDelegateIOS(WebStateList* web_state_list,
-                                       ChromeBrowserState* browser_state);
+                                       ProfileIOS* profile);
 
   LocationBarModelDelegateIOS(const LocationBarModelDelegateIOS&) = delete;
   LocationBarModelDelegateIOS& operator=(const LocationBarModelDelegateIOS&) =
@@ -58,7 +58,7 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
 
   raw_ptr<WebStateList> web_state_list_;  // weak
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MODEL_DELEGATE_IOS_H_

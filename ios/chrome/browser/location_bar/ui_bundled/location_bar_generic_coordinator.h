@@ -28,8 +28,8 @@ class WebStateList;
 @property(nonatomic, strong) CommandDispatcher* commandDispatcher;
 // View containing the omnibox.
 @property(nonatomic, strong, readonly) UIView* view;
-// Weak reference to ChromeBrowserState;
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+// Weak reference to ProfileIOS;
+@property(nonatomic, assign) ProfileIOS* profile;
 // The dispatcher for this view controller.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // Delegate for this coordinator.
