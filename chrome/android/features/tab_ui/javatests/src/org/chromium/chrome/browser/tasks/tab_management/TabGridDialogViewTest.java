@@ -112,6 +112,8 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testUpdateDialogWithOrientation() {
         mockDialogStatus(false);
+        int appHeaderHeight = 10;
+        mTabGridDialogView.setAppHeaderHeight(appHeaderHeight);
 
         mTabGridDialogView.updateDialogWithOrientation(Configuration.ORIENTATION_PORTRAIT);
 
@@ -128,7 +130,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         assertThat(
                 mContainerParams.leftMargin,
                 allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.topMargin, mMinMargin);
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
         assertEquals(View.GONE, mTabGridDialogView.getVisibility());
 
         mockDialogStatus(true);
@@ -148,7 +150,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         assertThat(
                 mContainerParams.leftMargin,
                 allOf(greaterThanOrEqualTo(mMinMargin), lessThanOrEqualTo(mMaxMargin)));
-        assertEquals(mContainerParams.topMargin, mMinMargin);
+        assertEquals(mContainerParams.topMargin, mMinMargin + appHeaderHeight);
         assertEquals(View.VISIBLE, mTabGridDialogView.getVisibility());
     }
 

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -100,7 +101,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -118,7 +120,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         modalDialogManager,
                         bottomSheetController,
                         dataSharingTabManager,
-                        backPressManager);
+                        backPressManager,
+                        desktopWindowStateProvider);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(

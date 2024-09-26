@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.APP_HEADER_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
@@ -133,6 +134,8 @@ class TabGridDialogViewBinder {
                 ((FrameLayout.LayoutParams) params).topMargin = model.get(CONTENT_TOP_MARGIN);
                 ViewUtils.requestLayout(viewHolder.contentView, "TabGridDialogViewBinder.bind");
             }
+        } else if (APP_HEADER_HEIGHT == propertyKey) {
+            viewHolder.dialogView.setAppHeaderHeight(model.get(APP_HEADER_HEIGHT));
         } else if (PRIMARY_COLOR == propertyKey) {
             viewHolder.toolbarView.setContentBackgroundColor(model.get(PRIMARY_COLOR));
             viewHolder.contentView.setBackgroundColor(model.get(PRIMARY_COLOR));

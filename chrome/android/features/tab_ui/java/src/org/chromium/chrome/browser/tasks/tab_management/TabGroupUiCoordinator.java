@@ -162,7 +162,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mScrimCoordinator,
                         mTabStripCoordinator.getTabGroupTitleEditor(),
                         mActionConfirmationSupplier.get(),
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        /* desktopWindowStateProvider= */ null);
         return mTabGridDialogCoordinator;
     }
 

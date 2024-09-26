@@ -40,6 +40,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserv
 import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER2;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -91,6 +92,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -164,6 +167,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
@@ -1539,6 +1543,7 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.capture());
         assertFalse(mCurrentTabModelFilterSupplier.hasObservers());
+        verify(mDesktopWindowStateProvider).removeObserver(mMediator);
     }
 
     @Test
@@ -1665,7 +1670,8 @@ public class TabGridDialogMediatorUnitTest {
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
                         mActionConfirmationManager,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        mDesktopWindowStateProvider);
     }
 
     @Test
@@ -1675,6 +1681,20 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onReset(null);
 
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    @Test
+    public void onAppHeaderStateChange_setAppHeaderHeight() {
+        // App header height not set.
+        assertThat(mModel.get(TabGridDialogProperties.APP_HEADER_HEIGHT), equalTo(0));
+        // Rect with height = 10.
+        Rect headerRect = new Rect(0, 0, 10, 10);
+        AppHeaderState state = new AppHeaderState(headerRect, headerRect, true);
+        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(state);
+
+        mMediator.onAppHeaderStateChanged(state);
+
+        assertThat(mModel.get(TabGridDialogProperties.APP_HEADER_HEIGHT), equalTo(10));
     }
 
     private void resetForDataSharing(boolean isShared, GroupMember... members) {

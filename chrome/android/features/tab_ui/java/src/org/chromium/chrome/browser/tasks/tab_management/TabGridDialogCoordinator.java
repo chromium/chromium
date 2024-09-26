@@ -40,9 +40,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -96,13 +99,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
             @Nullable TabSwitcherResetHandler resetHandler,
-            @Nullable
-                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
+            @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @Nullable AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
             TabGroupTitleEditor tabGroupTitleEditor,
             @Nullable ActionConfirmationManager actionConfirmationManager,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             boolean isDataSharingAndroidEnabled =
                     ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
@@ -185,7 +188,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mComponentName,
                             showColorPickerPopupRunnable,
                             actionConfirmationManager,
-                            modalDialogManager);
+                            modalDialogManager,
+                            desktopWindowStateProvider);
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -59,6 +60,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final @NonNull BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
     private final @NonNull BackPressManager mBackPressManager;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
@@ -79,6 +81,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
      * @param backPressManager Manages the different back press handlers throughout the app.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -94,7 +97,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -116,6 +120,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID;
         mBackPressManager = backPressManager;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
     }
 
     /**
@@ -167,7 +172,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                 /* supportsEmptyState= */ !isIncognito,
                 onTabGroupCreation,
                 () -> mMessageManagerTokenHolder.releaseToken(token),
-                edgeToEdgeSupplier);
+                edgeToEdgeSupplier,
+                mDesktopWindowStateProvider);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */

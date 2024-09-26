@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -175,6 +176,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param onDestroyed A {@link Runnable} to execute when {@link #destroy()} is invoked.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
@@ -198,7 +200,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             boolean supportsEmptyState,
             @Nullable Runnable onTabGroupCreation,
             @NonNull Runnable onDestroyed,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -258,7 +261,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 scrimCoordinator,
                                                 getTabGroupTitleEditor(),
                                                 actionConfirmationManager,
-                                                mModalDialogManager);
+                                                mModalDialogManager,
+                                                desktopWindowStateProvider);
                                 return mTabGridDialogCoordinator.getDialogController();
                             });
 

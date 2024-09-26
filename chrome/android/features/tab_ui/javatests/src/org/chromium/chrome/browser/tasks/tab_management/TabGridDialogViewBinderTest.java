@@ -688,4 +688,13 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
         verify(mCardViewBackground).setTint(color);
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetAppHeaderHeight() {
+        int appHeaderHeight = 10;
+        mModel.set(TabGridDialogProperties.APP_HEADER_HEIGHT, appHeaderHeight);
+        assertEquals(appHeaderHeight, mTabGridDialogView.getAppHeaderHeightForTesting());
+    }
 }

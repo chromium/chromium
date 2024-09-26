@@ -937,7 +937,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 isIncognito,
                                 adaptOnToolbarAlphaChange(),
                                 mBackPressManager,
-                                mEdgeToEdgeControllerSupplier);
+                                mEdgeToEdgeControllerSupplier,
+                                mRootUiCoordinator.getDesktopWindowStateProvider());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

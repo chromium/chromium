@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -102,6 +103,7 @@ public interface TabManagementDelegate {
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param backPressManager Manages different back press handlers throughout the app.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param desktopWindowStateProvider Provider to get desktop window and app header state.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -122,7 +124,8 @@ public interface TabManagementDelegate {
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

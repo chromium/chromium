@@ -113,6 +113,7 @@ public class TabGridDialogView extends FrameLayout {
     private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
     private int mSideMargin;
     private int mTopMargin;
+    private int mAppHeaderHeight;
     private int mOrientation;
     private int mParentHeight;
     private int mParentWidth;
@@ -792,14 +793,26 @@ public class TabGridDialogView extends FrameLayout {
         Resources res = mContext.getResources();
         int minMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_margin);
         int maxMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
+        int sideMargin;
+        int topMargin;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mSideMargin = minMargin;
-            mTopMargin = clampMargin(Math.round(mParentHeight * 0.1f), minMargin, maxMargin);
+            sideMargin = minMargin;
+            topMargin =
+                    clampMargin(
+                            Math.round(mParentHeight * 0.1f) + mAppHeaderHeight,
+                            minMargin,
+                            maxMargin);
         } else {
-            mSideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
-            mTopMargin = minMargin;
+            sideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
+            topMargin = clampMargin(minMargin + mAppHeaderHeight, minMargin, maxMargin);
         }
-        mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
+        if (mSideMargin != sideMargin || mTopMargin != topMargin) {
+            mSideMargin = sideMargin;
+            mTopMargin = topMargin;
+            mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
+            // Set params to force requestLayout() to reflect margin immediately.
+            mDialogContainerView.setLayoutParams(mContainerParams);
+        }
         mOrientation = orientation;
     }
 
@@ -808,6 +821,11 @@ public class TabGridDialogView extends FrameLayout {
         if (sizeAdjustedValue == 0) return upperBound;
 
         return MathUtils.clamp(sizeAdjustedValue, lowerBound, upperBound);
+    }
+
+    void setAppHeaderHeight(int height) {
+        mAppHeaderHeight = height;
+        updateDialogWithOrientation(mOrientation);
     }
 
     private void updateAnimationCardView(View view) {
@@ -1113,5 +1131,9 @@ public class TabGridDialogView extends FrameLayout {
 
     VisibilityListener getVisibilityListenerForTesting() {
         return mVisibilityListener;
+    }
+
+    int getAppHeaderHeightForTesting() {
+        return mAppHeaderHeight;
     }
 }

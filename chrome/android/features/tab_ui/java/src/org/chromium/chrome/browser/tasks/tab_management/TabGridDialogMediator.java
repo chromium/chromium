@@ -59,6 +59,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -87,7 +90,9 @@ import java.util.Objects;
 public class TabGridDialogMediator
         implements SnackbarManager.SnackbarController,
                 TabGridDialogView.VisibilityListener,
-                TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener {
+                TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener,
+                AppHeaderObserver {
+
     /** Defines an interface for a {@link TabGridDialogMediator} to control dialog. */
     interface DialogController extends BackPressHandler {
         /**
@@ -188,6 +193,7 @@ public class TabGridDialogMediator
     private final TabModelObserver mTabModelObserver;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final Runnable mScrimClickRunnable;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
@@ -214,7 +220,8 @@ public class TabGridDialogMediator
             String componentName,
             Runnable showColorPickerPopupRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager,
-            @Nullable ModalDialogManager modalDialogManager) {
+            @Nullable ModalDialogManager modalDialogManager,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mActivity = activity;
         mDialogController = dialogController;
         mModel = model;
@@ -237,6 +244,7 @@ public class TabGridDialogMediator
                         .getTabModel()
                         .getProfile()
                         .getOriginalProfile();
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
             mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
@@ -475,6 +483,12 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.UNGROUP_BAR_STATUS,
                 TabGridDialogView.UngroupBarStatus.HIDE);
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+            if (mDesktopWindowStateProvider.getAppHeaderState() != null) {
+                onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+            }
+        }
     }
 
     public void initWithNative(
@@ -609,6 +623,9 @@ public class TabGridDialogMediator
                     .getCollaborationIdSupplier()
                     .removeObserver(mOnCollaborationIdChanged);
             mTransitiveSharedGroupObserver.destroy();
+        }
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(this);
         }
     }
 
@@ -1265,5 +1282,11 @@ public class TabGridDialogMediator
         } else {
             removeCollaborationActivityMessageCard();
         }
+    }
+
+    /** AppHeaderObserver implementation */
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState state) {
+        mModel.set(TabGridDialogProperties.APP_HEADER_HEIGHT, state.getAppHeaderHeight());
     }
 }
