@@ -108,15 +108,37 @@ class TabStripViewBinder {
         }
     }
 
+    /**
+     * Handles any cleanup for recycled views that might be expensive to keep around in the pool.
+     *
+     * @param model The property model to possibly cleanup.
+     * @param view The view to possibly cleanup.
+     */
+    public static void onViewRecycled(PropertyModel model, View view) {
+        if (view instanceof ViewLookupCachingFrameLayout frameLayout) {
+            // There is a possibility the frameLayout is not for a tab strip item as the strip items
+            // don't have a specialized view type. setFavicon will check if an expected child view
+            // exists so that we know it is safe to update the model. Otherwise it is possible the
+            // PropertyKeys we try to modify might not be applicable to the model that was supplied.
+            if (setFavicon(frameLayout, model, /* faviconDrawable= */ null)) {
+                model.set(TabProperties.FAVICON_FETCHED, false);
+            }
+        }
+    }
+
     private static void onBindViewHolder(ViewGroup view, PropertyModel item) {
         for (PropertyKey propertyKey : TabProperties.ALL_KEYS_TAB_STRIP) {
             bind(item, view, propertyKey);
         }
     }
 
-    private static void setFavicon(
+    /** Returns true if the favicon was successfully set. */
+    private static boolean setFavicon(
             ViewLookupCachingFrameLayout view, PropertyModel model, Drawable faviconDrawable) {
+        @Nullable
         ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        if (button == null) return false;
+
         button.setBackgroundResource(
                 org.chromium.chrome.browser.tab_ui.R.drawable.tabstrip_favicon_background);
 
@@ -133,6 +155,7 @@ class TabStripViewBinder {
             button.getBackground().setAlpha(FAVICON_BACKGROUND_SELECTED_ALPHA);
         }
         button.setImageDrawable(faviconDrawable);
+        return true;
     }
 
     private static void setContentDescription(

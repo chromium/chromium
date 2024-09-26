@@ -189,6 +189,10 @@ public class TabListCoordinator
                         PropertyModel model = viewHolder.model;
                         if (mMode == TabListMode.GRID) {
                             TabGridViewBinder.onViewRecycled(model, viewHolder.itemView);
+                        } else if (mMode == TabListMode.LIST) {
+                            TabListViewBinder.onViewRecycled(model, viewHolder.itemView);
+                        } else if (mMode == TabListMode.STRIP) {
+                            TabStripViewBinder.onViewRecycled(model, viewHolder.itemView);
                         }
                         super.onViewRecycled(viewHolder);
                     }

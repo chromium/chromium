@@ -97,6 +97,8 @@ class TabGridViewBinder {
 
             ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
             if (fetcher != null) fetcher.cancel();
+
+            setFavicon(tabGridView, model, /* favicon= */ null);
         }
     }
 

@@ -72,6 +72,19 @@ class TabListViewBinder {
         }
     }
 
+    /**
+     * Handles any cleanup for recycled views that might be expensive to keep around in the pool.
+     *
+     * @param model The property model to possibly cleanup.
+     * @param view The view to possibly cleanup.
+     */
+    public static void onViewRecycled(PropertyModel model, View view) {
+        if (view instanceof TabListView tabListView) {
+            ImageView faviconView = tabListView.findViewById(R.id.start_icon);
+            faviconView.setImageDrawable(null);
+        }
+    }
+
     // TODO(crbug.com/40107066): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
