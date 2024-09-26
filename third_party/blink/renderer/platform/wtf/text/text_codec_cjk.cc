@@ -23,11 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 
 #include <utility>
@@ -78,12 +73,11 @@ constexpr std::array<const char*, 6> kSupportedCanonicalNames{
 void AppendUnencodableReplacement(UChar32 code_point,
                                   UnencodableHandling handling,
                                   Vector<uint8_t>& result) {
-  UnencodableReplacementArray replacement;
-  uint32_t replacement_len =
-      TextCodec::GetUnencodableReplacement(code_point, handling, replacement);
-  result.reserve(result.size() + replacement_len);
-  for (uint32_t i = 0; i < replacement_len; ++i) {
-    result.UncheckedAppend(replacement[i]);
+  String replacement =
+      TextCodec::GetUnencodableReplacement(code_point, handling);
+  result.reserve(result.size() + replacement.length());
+  for (uint8_t r : replacement) {
+    result.UncheckedAppend(r);
   }
 }
 

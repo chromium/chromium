@@ -119,6 +119,8 @@ class WTF_EXPORT TextCodec {
   static uint32_t GetUnencodableReplacement(unsigned code_point,
                                             UnencodableHandling,
                                             UnencodableReplacementArray);
+  static String GetUnencodableReplacement(UChar32 code_point,
+                                          UnencodableHandling);
 };
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);

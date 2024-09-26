@@ -58,4 +58,12 @@ uint32_t TextCodec::GetUnencodableReplacement(
   return 0;
 }
 
+String TextCodec::GetUnencodableReplacement(UChar32 code_point,
+                                            UnencodableHandling handling) {
+  UnencodableReplacementArray replacement;
+  uint32_t length =
+      GetUnencodableReplacement(code_point, handling, replacement);
+  return String(replacement, length);
+}
+
 }  // namespace WTF
