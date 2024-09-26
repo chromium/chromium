@@ -452,7 +452,7 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
     relay_policy_value = relay_connections_allowed_;
   }
-  UpdateNatPolicies(nat_policy_value.value(), relay_policy_value.value());
+  UpdateNatPolicies(*nat_policy_value, *relay_policy_value);
 
   const base::Value::List* host_domain_list =
       policies.FindList(policy::key::kRemoteAccessHostDomainList);

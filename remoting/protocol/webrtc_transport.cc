@@ -1033,7 +1033,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
     connection_relayed_ = connection_relayed;
     if (connection_relayed_.has_value()) {
       VLOG(0) << "Relay connection: "
-              << (connection_relayed_.value() ? "true" : "false");
+              << (*connection_relayed_ ? "true" : "false");
     } else {
       LOG(ERROR) << "Connection type unknown, treating as direct.";
     }

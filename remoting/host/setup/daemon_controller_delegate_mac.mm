@@ -290,7 +290,7 @@ void DaemonControllerDelegateMac::UpdateConfig(
   }
 
   host_config->Merge(std::move(config));
-  ElevateAndSetConfig(std::move(host_config.value()), std::move(done));
+  ElevateAndSetConfig(std::move(*host_config), std::move(done));
 }
 
 void DaemonControllerDelegateMac::Stop(
@@ -313,7 +313,7 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
     std::optional<bool> host_config_value =
         host_config->FindBool(kUsageStatsConsentConfigPath);
     if (host_config_value.has_value()) {
-      consent.allowed = host_config_value.value();
+      consent.allowed = *host_config_value;
     }
   }
 

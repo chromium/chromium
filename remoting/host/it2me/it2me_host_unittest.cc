@@ -387,7 +387,7 @@ void It2MeHostTest::StartHost() {
     it2me_host_->set_chrome_os_enterprise_params(*enterprise_params_);
   }
   if (authorized_helper_.has_value()) {
-    it2me_host_->set_authorized_helper(authorized_helper_.value());
+    it2me_host_->set_authorized_helper(*authorized_helper_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

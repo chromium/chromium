@@ -223,7 +223,7 @@ void It2MeNativeMessagingHostLacros::OnHostStateDisconnected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict message;
   if (disconnect_reason.has_value()) {
-    message.Set(kDisconnectReason, disconnect_reason.value());
+    message.Set(kDisconnectReason, *disconnect_reason);
   }
   HandleHostStateChange(It2MeHostState::kDisconnected, std::move(message));
 }

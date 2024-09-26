@@ -325,8 +325,8 @@ base::TimeDelta HeartbeatSender::CalculateDelay(
   switch (status.error_code()) {
     case ProtobufHttpStatus::Code::OK:
       if (optMinDelay.has_value()) {
-        LOG_IF(WARNING, optMinDelay.value() < kMinimumHeartbeatInterval)
-            << "Received suspicious interval_seconds: " << optMinDelay.value()
+        LOG_IF(WARNING, *optMinDelay < kMinimumHeartbeatInterval)
+            << "Received suspicious interval_seconds: " << *optMinDelay
             << ". Using minimum interval: " << kMinimumHeartbeatInterval;
       }
       delay = optMinDelay.value_or(kMinimumHeartbeatInterval);
