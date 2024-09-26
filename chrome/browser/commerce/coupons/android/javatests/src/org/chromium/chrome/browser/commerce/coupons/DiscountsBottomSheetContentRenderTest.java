@@ -20,10 +20,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -42,6 +46,10 @@ public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTe
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus().setBugComponent(UI_BROWSER_SHOPPING).build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Tab mMockTab;
+
     private ModelList mModelList;
     private View mContentView;
     private RecyclerView mRecyclerView;
@@ -53,7 +61,9 @@ public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTe
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator = new DiscountsBottomSheetContentCoordinator(getActivity());
+                    mCoordinator =
+                            new DiscountsBottomSheetContentCoordinator(
+                                    getActivity(), () -> mMockTab);
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();

@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.commerce.coupons;
 
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.CUSTOM_VIEW;
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.HAS_TITLE;
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.TITLE;
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.TYPE;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,18 +17,28 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator.ContentType;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator of the discounts bottom sheet content. */
-public class DiscountsBottomSheetContentCoordinator {
+public class DiscountsBottomSheetContentCoordinator implements CommerceBottomSheetContentProvider {
 
+    private Context mContext;
     private ModelList mModelList;
     private View mDiscountsContentContainer;
     private RecyclerView mContentRecyclerView;
+    private DiscountsBottomSheetContentMediator mMediator;
 
-    public DiscountsBottomSheetContentCoordinator(@NonNull Context context) {
+    public DiscountsBottomSheetContentCoordinator(
+            @NonNull Context context, @NonNull Supplier<Tab> tabSupplier) {
+        mContext = context;
         mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
@@ -35,6 +51,33 @@ public class DiscountsBottomSheetContentCoordinator {
         mContentRecyclerView =
                 mDiscountsContentContainer.findViewById(R.id.discounts_content_recycler_view);
         mContentRecyclerView.setAdapter(adapter);
+
+        mMediator = new DiscountsBottomSheetContentMediator(context, tabSupplier, mModelList);
+    }
+
+    @Override
+    public void requestContent(Callback<PropertyModel> contentReadyCallback) {
+        Callback<Boolean> showContentCallback =
+                (hasDiscountsContent) -> {
+                    contentReadyCallback.onResult(
+                            hasDiscountsContent ? buildContentProviderModel() : null);
+                };
+
+        mMediator.requestShowContent(showContentCallback);
+    }
+
+    @Override
+    public void hideContentView() {
+        mMediator.closeContent();
+    }
+
+    private PropertyModel buildContentProviderModel() {
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(TYPE, ContentType.DISCOUNTS)
+                .with(HAS_TITLE, true)
+                .with(TITLE, mContext.getResources().getString(R.string.discount_container_title))
+                .with(CUSTOM_VIEW, mDiscountsContentContainer)
+                .build();
     }
 
     RecyclerView getRecyclerViewForTesting() {
