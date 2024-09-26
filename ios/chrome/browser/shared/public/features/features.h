@@ -731,18 +731,6 @@ BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
 // The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
 bool IsPinnedTabsEnabled();
 
-// Feature flag to prefetch system capabilities on first run.
-BASE_DECLARE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun);
-
-// Returns true if the system capabilities are prefetched on first run.
-bool IsPrefetchingSystemCapabilitiesOnFirstRun();
-
-// Feature flag to prefetch system capabilities on app startup.
-BASE_DECLARE_FEATURE(kPrefetchSystemCapabilitiesOnAppStartup);
-
-// Returns true if the system capabilities are prefetched on app startup.
-bool IsPrefetchingSystemCapabilitiesOnAppStartup();
-
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 

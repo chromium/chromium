@@ -408,9 +408,6 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
 }
 
 TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      kPrefetchSystemCapabilitiesOnAppStartup);
-
   // Set up fake identity with account capabilities.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(identity);
@@ -444,44 +441,4 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
   EXPECT_TRUE(fake_system_identity_manager()
                   ->GetVisibleCapabilities(identity)
                   .AreAllCapabilitiesKnown());
-}
-
-TEST_F(StartSurfaceSceneAgentTest, DisablePrefetchCapabilitiesOnAppStart) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kPrefetchSystemCapabilitiesOnAppStartup);
-
-  // Set up fake identity with account capabilities.
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager()->AddIdentity(identity);
-
-  AccountCapabilitiesTestMutator* mutator =
-      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity);
-  mutator->SetAllSupportedCapabilities(true);
-
-  // Set up expected app state that prefetches capabilities.
-  app_state_.initStageForTesting = InitStageFinal;
-  [startup_information_ setIsColdStart:YES];
-
-  InsertNewWebState(0, GURL(kURL));
-  InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
-  web_state_list->ActivateWebStateAt(0);
-  favicon::WebFaviconDriver::CreateForWebState(
-      web_state_list->GetActiveWebState(),
-      /*favicon_service=*/nullptr);
-
-  ASSERT_FALSE(fake_system_identity_manager()
-                   ->GetVisibleCapabilities(identity)
-                   .AreAllCapabilitiesKnown());
-
-  [agent_ sceneState:scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(fake_system_identity_manager()
-                   ->GetVisibleCapabilities(identity)
-                   .AreAllCapabilitiesKnown());
 }

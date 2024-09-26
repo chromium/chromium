@@ -867,22 +867,6 @@ bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
-BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
-             "PrefetchSystemCapabilitiesOnFirstRun",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchSystemCapabilitiesOnAppStartup,
-             "PrefetchSystemCapabilitiesOnAppStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
-  return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
-}
-
-bool IsPrefetchingSystemCapabilitiesOnAppStartup() {
-  return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnAppStartup);
-}
-
 BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
              "SegmentationPlatformIosModuleRankerCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -147,11 +147,9 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
-  if (IsPrefetchingSystemCapabilitiesOnAppStartup()) {
-    RunSystemCapabilitiesPrefetch(
-        ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile())
-            ->GetAllIdentities());
-  }
+  RunSystemCapabilitiesPrefetch(
+      ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile())
+          ->GetAllIdentities());
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
