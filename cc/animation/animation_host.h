@@ -61,6 +61,12 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   AnimationHost& operator=(const AnimationHost&) = delete;
 
+  using IdToTimelineMap =
+      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
+  const IdToTimelineMap& timelines() const {
+    return id_to_timeline_map_.Read(*this);
+  }
+
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
 
@@ -96,6 +102,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
   bool needs_push_properties() const {
     return needs_push_properties_.Read(*this);
   }
@@ -265,8 +272,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<AnimationsList> ticking_animations_;
 
   // A list of all timelines which this host owns.
-  using IdToTimelineMap =
-      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
 
   // A list of IDs for detached timelines. A timeline may be detached on the

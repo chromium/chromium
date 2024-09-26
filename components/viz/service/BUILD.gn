@@ -267,6 +267,7 @@ viz_component("service") {
   deps = [
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//cc/animation",
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
@@ -299,6 +300,7 @@ viz_component("service") {
     "//third_party/libyuv",
     "//ui/base:ozone_buildflags",
     "//ui/display/types",
+    "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
   ]
 
@@ -307,7 +309,6 @@ viz_component("service") {
     ":viz_service_export",
     "//base",
     "//cc",
-    "//cc/animation",
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",

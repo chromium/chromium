@@ -18,10 +18,13 @@ cc_component("mojo_embedder") {
   deps = [
     "//base",
     "//cc",
+    "//cc/animation",
     "//components/viz/client",
     "//components/viz/common",
     "//gpu/ipc/client",
     "//mojo/public/cpp/bindings",
     "//services/viz/public/mojom",
+    "//ui/gfx/animation",
+    "//ui/gfx/animation/keyframe",
   ]
 }

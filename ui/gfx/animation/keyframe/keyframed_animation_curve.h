@@ -152,6 +152,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
       delete;
 
   void AddKeyframe(std::unique_ptr<ColorKeyframe> keyframe);
+  const TimingFunction* timing_function() const {
+    return timing_function_.get();
+  }
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
     timing_function_ = std::move(timing_function);
   }
@@ -175,6 +178,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
                                            SkColor new_target);
 
   using Keyframes = std::vector<std::unique_ptr<ColorKeyframe>>;
+  const Keyframes& keyframes() const { return keyframes_; }
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
 
  private:
@@ -201,6 +205,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
 
   void AddKeyframe(std::unique_ptr<FloatKeyframe> keyframe);
 
+  const TimingFunction* timing_function() const {
+    return timing_function_.get();
+  }
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
     timing_function_ = std::move(timing_function);
   }
@@ -226,6 +233,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t, float new_target);
 
   using Keyframes = std::vector<std::unique_ptr<FloatKeyframe>>;
+  const Keyframes& keyframes() const { return keyframes_; }
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
 
  private:
@@ -252,6 +260,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
       const KeyframedTransformAnimationCurve&) = delete;
 
   void AddKeyframe(std::unique_ptr<TransformKeyframe> keyframe);
+  const TimingFunction* timing_function() const {
+    return timing_function_.get();
+  }
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
     timing_function_ = std::move(timing_function);
   }
@@ -277,12 +288,15 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
       base::TimeDelta t,
       const gfx::TransformOperations& new_target);
 
+  using Keyframes = std::vector<std::unique_ptr<TransformKeyframe>>;
+  const Keyframes& keyframes() const { return keyframes_; }
+
  private:
   KeyframedTransformAnimationCurve();
 
   // Always sorted in order of increasing time. No two keyframes have the
   // same time.
-  std::vector<std::unique_ptr<TransformKeyframe>> keyframes_;
+  Keyframes keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
 };
@@ -300,6 +314,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
       delete;
 
   void AddKeyframe(std::unique_ptr<SizeKeyframe> keyframe);
+  const TimingFunction* timing_function() const {
+    return timing_function_.get();
+  }
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
     timing_function_ = std::move(timing_function);
   }
@@ -322,12 +339,15 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
                                            const gfx::SizeF& new_target);
 
+  using Keyframes = std::vector<std::unique_ptr<SizeKeyframe>>;
+  const Keyframes& keyframes() const { return keyframes_; }
+
  private:
   KeyframedSizeAnimationCurve();
 
   // Always sorted in order of increasing time. No two keyframes have the
   // same time.
-  std::vector<std::unique_ptr<SizeKeyframe>> keyframes_;
+  Keyframes keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
 };
@@ -345,6 +365,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
       delete;
 
   void AddKeyframe(std::unique_ptr<RectKeyframe> keyframe);
+  const TimingFunction* timing_function() const {
+    return timing_function_.get();
+  }
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
     timing_function_ = std::move(timing_function);
   }
@@ -367,12 +390,15 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
                                            const gfx::Rect& new_target);
 
+  using Keyframes = std::vector<std::unique_ptr<RectKeyframe>>;
+  const Keyframes& keyframes() const { return keyframes_; }
+
  private:
   KeyframedRectAnimationCurve();
 
   // Always sorted in order of increasing time. No two keyframes have the
   // same time.
-  std::vector<std::unique_ptr<RectKeyframe>> keyframes_;
+  Keyframes keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_ = 0.;
 };

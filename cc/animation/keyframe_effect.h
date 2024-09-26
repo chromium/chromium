@@ -85,6 +85,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   bool needs_push_properties() const { return needs_push_properties_; }
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
 
   void BindElementAnimations(ElementAnimations* element_animations);
   void UnbindElementAnimations();

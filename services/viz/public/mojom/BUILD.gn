@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
   sources = [
+    "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
     "compositing/bitmap_in_shared_memory.mojom",
     "compositing/compositing_mode_watcher.mojom",

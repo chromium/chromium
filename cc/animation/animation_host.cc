@@ -338,6 +338,10 @@ void AnimationHost::SetNeedsPushProperties() {
     mutator_host_client()->SetMutatorsNeedCommit();
 }
 
+void AnimationHost::ResetNeedsPushProperties() {
+  needs_push_properties_.Write(*this) = false;
+}
+
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
@@ -363,8 +367,11 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     PushTimelinesToImplThread(host_impl);
     RemoveTimelinesFromImplThread(host_impl);
     PushPropertiesToImplThread(host_impl);
-    // This is redundant but used in tests.
-    host_impl->needs_push_properties_.Write(*host_impl) = false;
+
+    // When using a display tree this ensures that any new animation updates are
+    // pushed to Viz on next display tree update. When not using display trees,
+    // setting this flag here is meaningless.
+    host_impl->needs_push_properties_.Write(*host_impl) = true;
   }
 }
 

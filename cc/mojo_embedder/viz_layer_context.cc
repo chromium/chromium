@@ -5,17 +5,31 @@
 #include "cc/mojo_embedder/viz_layer_context.h"
 
 #include <cstdint>
+#include <type_traits>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "cc/animation/animation.h"
+#include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
+#include "cc/animation/keyframe_effect.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "services/viz/public/mojom/compositing/layer.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/cubic_bezier.h"
+#include "ui/gfx/geometry/transform_operation.h"
 
 namespace cc::mojo_embedder {
 
@@ -404,6 +418,239 @@ void SerializeLayer(LayerImpl& layer,
   }
 }
 
+viz::mojom::TimingStepPosition SerializeTimingStepPosition(
+    gfx::StepsTimingFunction::StepPosition step_position) {
+  switch (step_position) {
+    case gfx::StepsTimingFunction::StepPosition::START:
+      return viz::mojom::TimingStepPosition::kStart;
+    case gfx::StepsTimingFunction::StepPosition::END:
+      return viz::mojom::TimingStepPosition::kEnd;
+    case gfx::StepsTimingFunction::StepPosition::JUMP_BOTH:
+      return viz::mojom::TimingStepPosition::kJumpBoth;
+    case gfx::StepsTimingFunction::StepPosition::JUMP_END:
+      return viz::mojom::TimingStepPosition::kJumpEnd;
+    case gfx::StepsTimingFunction::StepPosition::JUMP_NONE:
+      return viz::mojom::TimingStepPosition::kJumpNone;
+    case gfx::StepsTimingFunction::StepPosition::JUMP_START:
+      return viz::mojom::TimingStepPosition::kJumpStart;
+  }
+}
+
+viz::mojom::TimingFunctionPtr SerializeTimingFunction(
+    const gfx::TimingFunction& fn) {
+  viz::mojom::TimingFunctionPtr wire;
+  switch (fn.GetType()) {
+    case gfx::TimingFunction::Type::LINEAR: {
+      const auto& linear = static_cast<const gfx::LinearTimingFunction&>(fn);
+      std::vector<viz::mojom::LinearEasingPointPtr> points;
+      points.reserve(linear.Points().size());
+      for (const auto& point : linear.Points()) {
+        points.push_back(
+            viz::mojom::LinearEasingPoint::New(point.input, point.output));
+      }
+      wire = viz::mojom::TimingFunction::NewLinear(std::move(points));
+      break;
+    }
+    case gfx::TimingFunction::Type::CUBIC_BEZIER: {
+      const auto& bezier =
+          static_cast<const gfx::CubicBezierTimingFunction&>(fn);
+      auto wire_bezier = viz::mojom::CubicBezierTimingFunction::New();
+      wire_bezier->x1 = bezier.bezier().GetX1();
+      wire_bezier->y1 = bezier.bezier().GetY1();
+      wire_bezier->x2 = bezier.bezier().GetX2();
+      wire_bezier->y2 = bezier.bezier().GetY2();
+      wire = viz::mojom::TimingFunction::NewCubicBezier(std::move(wire_bezier));
+      break;
+    }
+    case gfx::TimingFunction::Type::STEPS: {
+      const auto& steps = static_cast<const gfx::StepsTimingFunction&>(fn);
+      auto wire_steps = viz::mojom::StepsTimingFunction::New();
+      wire_steps->num_steps = base::checked_cast<uint32_t>(steps.steps());
+      wire_steps->step_position =
+          SerializeTimingStepPosition(steps.step_position());
+      wire = viz::mojom::TimingFunction::NewSteps(std::move(wire_steps));
+      break;
+    }
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return wire;
+}
+
+std::vector<viz::mojom::TransformOperationPtr> SerializeTransformOperations(
+    const gfx::TransformOperations& ops) {
+  std::vector<viz::mojom::TransformOperationPtr> wire_ops;
+  wire_ops.reserve(ops.size());
+  for (size_t i = 0; i < ops.size(); ++i) {
+    const auto& op = ops.at(i);
+    switch (op.type) {
+      case gfx::TransformOperation::TRANSFORM_OPERATION_TRANSLATE:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewTranslate(
+            gfx::Vector3dF(op.translate.x, op.translate.y, op.translate.z)));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_ROTATE:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewRotate(
+            viz::mojom::AxisAngle::New(
+                gfx::Vector3dF(op.rotate.axis.x, op.rotate.axis.y,
+                               op.rotate.axis.z),
+                op.rotate.angle)));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_SCALE:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewScale(
+            gfx::Vector3dF(op.scale.x, op.scale.y, op.scale.z)));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_SKEWX:
+      case gfx::TransformOperation::TRANSFORM_OPERATION_SKEWY:
+      case gfx::TransformOperation::TRANSFORM_OPERATION_SKEW:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewSkew(
+            gfx::Vector2dF(op.skew.x, op.skew.y)));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewPerspectiveDepth(
+            op.perspective_m43 ? -1.0f / op.perspective_m43 : 0.0f));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_MATRIX:
+        wire_ops.push_back(
+            viz::mojom::TransformOperation::NewMatrix(op.matrix));
+        break;
+      case gfx::TransformOperation::TRANSFORM_OPERATION_IDENTITY:
+        wire_ops.push_back(viz::mojom::TransformOperation::NewIdentity(true));
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+  return wire_ops;
+}
+
+template <typename KeyframeValueType>
+viz::mojom::AnimationKeyframeValuePtr SerializeKeyframeValue(
+    KeyframeValueType&& value) {
+  using ValueType = std::remove_cvref_t<KeyframeValueType>;
+  if constexpr (std::is_same_v<ValueType, float>) {
+    return viz::mojom::AnimationKeyframeValue::NewScalar(value);
+  } else if constexpr (std::is_same_v<ValueType, SkColor>) {
+    return viz::mojom::AnimationKeyframeValue::NewColor(value);
+  } else if constexpr (std::is_same_v<ValueType, gfx::SizeF>) {
+    return viz::mojom::AnimationKeyframeValue::NewSize(value);
+  } else if constexpr (std::is_same_v<ValueType, gfx::Rect>) {
+    return viz::mojom::AnimationKeyframeValue::NewRect(value);
+  } else if constexpr (std::is_same_v<ValueType, gfx::TransformOperations>) {
+    return viz::mojom::AnimationKeyframeValue::NewTransform(
+        SerializeTransformOperations(value));
+  } else {
+    static_assert(false, "Unsupported curve type");
+  }
+}
+
+viz::mojom::AnimationDirection SerializeAnimationDirection(
+    const KeyframeModel& model) {
+  switch (model.direction()) {
+    case KeyframeModel::Direction::NORMAL:
+      return viz::mojom::AnimationDirection::kNormal;
+    case KeyframeModel::Direction::REVERSE:
+      return viz::mojom::AnimationDirection::kReverse;
+    case KeyframeModel::Direction::ALTERNATE_NORMAL:
+      return viz::mojom::AnimationDirection::kAlternateNormal;
+    case KeyframeModel::Direction::ALTERNATE_REVERSE:
+      return viz::mojom::AnimationDirection::kAlternateReverse;
+  }
+}
+
+viz::mojom::AnimationFillMode SerializeAnimationFillMode(
+    const KeyframeModel& model) {
+  switch (model.fill_mode()) {
+    case KeyframeModel::FillMode::NONE:
+      return viz::mojom::AnimationFillMode::kNone;
+    case KeyframeModel::FillMode::FORWARDS:
+      return viz::mojom::AnimationFillMode::kForwards;
+    case KeyframeModel::FillMode::BACKWARDS:
+      return viz::mojom::AnimationFillMode::kBackwards;
+    case KeyframeModel::FillMode::BOTH:
+      return viz::mojom::AnimationFillMode::kBoth;
+    case KeyframeModel::FillMode::AUTO:
+      return viz::mojom::AnimationFillMode::kAuto;
+  }
+}
+template <typename CurveType>
+void SerializeAnimationCurve(const KeyframeModel& model,
+                             viz::mojom::AnimationKeyframeModel& wire) {
+  const auto& curve = static_cast<const CurveType&>(*model.curve());
+  const auto* timing_function = curve.timing_function();
+  CHECK(!curve.keyframes().empty());
+  CHECK(timing_function);
+
+  wire.timing_function = SerializeTimingFunction(*timing_function);
+  wire.scaled_duration = curve.scaled_duration();
+  wire.direction = SerializeAnimationDirection(model);
+  wire.fill_mode = SerializeAnimationFillMode(model);
+  wire.playback_rate = model.playback_rate();
+  wire.iterations = model.iterations();
+  wire.iteration_start = model.iteration_start();
+  wire.time_offset = model.time_offset();
+  wire.keyframes.reserve(curve.keyframes().size());
+  for (const auto& keyframe : curve.keyframes()) {
+    auto wire_keyframe = viz::mojom::AnimationKeyframe::New();
+    wire_keyframe->value = SerializeKeyframeValue(keyframe->Value());
+    wire_keyframe->start_time = keyframe->Time();
+    if (keyframe->timing_function()) {
+      wire_keyframe->timing_function =
+          SerializeTimingFunction(*keyframe->timing_function());
+    }
+    wire.keyframes.push_back(std::move(wire_keyframe));
+  }
+}
+
+viz::mojom::AnimationKeyframeModelPtr SerializeAnimationKeyframeModel(
+    const KeyframeModel& model) {
+  auto wire = viz::mojom::AnimationKeyframeModel::New();
+  wire->id = base::checked_cast<int32_t>(model.id());
+  wire->group_id = base::checked_cast<int32_t>(model.group());
+  wire->target_property_type =
+      base::checked_cast<int32_t>(model.TargetProperty());
+  wire->element_id = model.element_id();
+
+  switch (static_cast<gfx::AnimationCurve::CurveType>(model.curve()->Type())) {
+    case gfx::AnimationCurve::COLOR:
+      SerializeAnimationCurve<gfx::KeyframedColorAnimationCurve>(model, *wire);
+      break;
+    case gfx::AnimationCurve::FLOAT:
+      SerializeAnimationCurve<gfx::KeyframedFloatAnimationCurve>(model, *wire);
+      break;
+    case gfx::AnimationCurve::TRANSFORM:
+      SerializeAnimationCurve<gfx::KeyframedTransformAnimationCurve>(model,
+                                                                     *wire);
+      break;
+    case gfx::AnimationCurve::SIZE:
+      SerializeAnimationCurve<gfx::KeyframedSizeAnimationCurve>(model, *wire);
+      break;
+    case gfx::AnimationCurve::RECT:
+      SerializeAnimationCurve<gfx::KeyframedRectAnimationCurve>(model, *wire);
+      break;
+    case gfx::AnimationCurve::FILTER:
+    case gfx::AnimationCurve::SCROLL_OFFSET:
+      // TODO(rockot): Support these curve types too.
+      return nullptr;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return wire;
+}
+
+viz::mojom::AnimationPtr SerializeAnimation(cc::Animation& animation) {
+  auto wire = viz::mojom::Animation::New();
+  wire->id = animation.id();
+  wire->element_id = animation.element_id();
+  for (const auto& model : animation.keyframe_effect()->keyframe_models()) {
+    auto wire_model = SerializeAnimationKeyframeModel(
+        *KeyframeModel::ToCcKeyframeModel(model.get()));
+    if (wire_model) {
+      wire->keyframe_models.push_back(std::move(wire_model));
+    }
+  }
+  return wire;
+}
+
 }  // namespace
 
 VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
@@ -479,6 +726,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
 
   last_committed_property_trees_ = property_trees;
 
+  SerializeAnimationUpdates(tree, *update);
   service_->UpdateDisplayTree(std::move(update));
 }
 
@@ -495,6 +743,77 @@ void VizLayerContext::UpdateDisplayTile(
 }
 
 void VizLayerContext::OnRequestCommitForFrame(const viz::BeginFrameArgs& args) {
+}
+
+void VizLayerContext::SerializeAnimationUpdates(
+    LayerTreeImpl& tree,
+    viz::mojom::LayerTreeUpdate& update) {
+  // Safe downcast: AnimationHost is the only subclass of MutatorHost.
+  AnimationHost* const animation_host =
+      static_cast<AnimationHost*>(tree.mutator_host());
+  CHECK(animation_host);
+  if (!animation_host->needs_push_properties()) {
+    return;
+  }
+
+  animation_host->ResetNeedsPushProperties();
+
+  const auto& current_timelines = animation_host->timelines();
+  auto& pushed_timelines = pushed_animation_timelines_;
+  std::vector<int32_t> removed_timelines;
+  for (auto it = pushed_timelines.begin(); it != pushed_timelines.end();) {
+    if (!base::Contains(current_timelines, it->first)) {
+      removed_timelines.push_back(it->first);
+      it = pushed_timelines.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  if (!removed_timelines.empty()) {
+    update.removed_animation_timelines = std::move(removed_timelines);
+  }
+  std::vector<viz::mojom::AnimationTimelinePtr> timelines;
+  for (const auto& [id, timeline] : current_timelines) {
+    if (auto wire = MaybeSerializeAnimationTimeline(*timeline)) {
+      timelines.push_back(std::move(wire));
+    }
+  }
+  if (!timelines.empty()) {
+    update.animation_timelines = std::move(timelines);
+  }
+}
+
+viz::mojom::AnimationTimelinePtr
+VizLayerContext::MaybeSerializeAnimationTimeline(
+    cc::AnimationTimeline& timeline) {
+  const auto& current_animations = timeline.animations();
+  auto& pushed_animations = pushed_animation_timelines_[timeline.id()];
+  std::vector<int32_t> removed_animations;
+  for (auto it = pushed_animations.begin(); it != pushed_animations.end();) {
+    if (!base::Contains(current_animations, *it)) {
+      removed_animations.push_back(*it);
+      it = pushed_animations.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  std::vector<viz::mojom::AnimationPtr> new_animations;
+  for (const auto& [id, animation] : current_animations) {
+    if (pushed_animations.insert(animation->id()).second) {
+      new_animations.push_back(SerializeAnimation(*animation));
+    }
+  }
+
+  if (removed_animations.empty() && new_animations.empty()) {
+    return nullptr;
+  }
+
+  auto wire = viz::mojom::AnimationTimeline::New();
+  wire->id = timeline.id();
+  wire->new_animations = std::move(new_animations);
+  wire->removed_animations = std::move(removed_animations);
+  return wire;
 }
 
 }  // namespace cc::mojo_embedder

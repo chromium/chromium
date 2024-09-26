@@ -83,6 +83,10 @@ void KeyframeEffect::SetNeedsPushProperties() {
   animation_->SetNeedsPushProperties();
 }
 
+void KeyframeEffect::ResetNeedsPushProperties() {
+  needs_push_properties_ = false;
+}
+
 void KeyframeEffect::BindElementAnimations(
     ElementAnimations* element_animations) {
   DCHECK(element_animations);
@@ -731,6 +735,8 @@ void KeyframeEffect::PushPropertiesTo(
   if (!needs_push_properties_)
     return;
   needs_push_properties_ = false;
+
+  keyframe_effect_impl->SetNeedsPushProperties();
 
   // Synchronize the keyframe_model target between main and impl side.
   if (element_id_ != keyframe_effect_impl->element_id_) {

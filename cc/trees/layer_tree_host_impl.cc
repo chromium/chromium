@@ -1089,7 +1089,7 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    SetNeedsRedrawOrUpdateDisplayTree();
+    SetNeedsRedraw();
   }
 }
 

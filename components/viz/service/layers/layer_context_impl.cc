@@ -16,6 +16,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
+#include "cc/animation/animation.h"
+#include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
@@ -29,6 +33,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace viz {
 
@@ -510,6 +515,300 @@ base::expected<void, std::string> DeserializeTiling(
   return base::ok();
 }
 
+gfx::StepsTimingFunction::StepPosition DeserializeTimingStepPosition(
+    mojom::TimingStepPosition step_position) {
+  switch (step_position) {
+    case mojom::TimingStepPosition::kStart:
+      return gfx::StepsTimingFunction::StepPosition::START;
+    case mojom::TimingStepPosition::kEnd:
+      return gfx::StepsTimingFunction::StepPosition::END;
+    case mojom::TimingStepPosition::kJumpBoth:
+      return gfx::StepsTimingFunction::StepPosition::JUMP_BOTH;
+    case mojom::TimingStepPosition::kJumpEnd:
+      return gfx::StepsTimingFunction::StepPosition::JUMP_END;
+    case mojom::TimingStepPosition::kJumpNone:
+      return gfx::StepsTimingFunction::StepPosition::JUMP_NONE;
+    case mojom::TimingStepPosition::kJumpStart:
+      return gfx::StepsTimingFunction::StepPosition::JUMP_START;
+  }
+}
+
+std::unique_ptr<gfx::TimingFunction> DeserializeTimingFunction(
+    mojom::TimingFunction& wire) {
+  switch (wire.which()) {
+    case mojom::TimingFunction::Tag::kLinear: {
+      const auto& wire_points = wire.get_linear();
+      std::vector<gfx::LinearEasingPoint> points;
+      points.reserve(wire_points.size());
+      for (const auto& wire_point : wire_points) {
+        points.emplace_back(wire_point->in, wire_point->out);
+      }
+      if (points.empty()) {
+        return gfx::LinearTimingFunction::Create();
+      }
+      return gfx::LinearTimingFunction::Create(std::move(points));
+    }
+    case mojom::TimingFunction::Tag::kCubicBezier: {
+      const auto& bezier = *wire.get_cubic_bezier();
+      return gfx::CubicBezierTimingFunction::Create(bezier.x1, bezier.y1,
+                                                    bezier.x2, bezier.y2);
+    }
+    case mojom::TimingFunction::Tag::kSteps: {
+      const auto& steps = *wire.get_steps();
+      return gfx::StepsTimingFunction::Create(
+          base::saturated_cast<int32_t>(steps.num_steps),
+          DeserializeTimingStepPosition(steps.step_position));
+    }
+  }
+}
+
+gfx::TransformOperations DeserializeTransformOperations(
+    const std::vector<mojom::TransformOperationPtr>& wire_ops) {
+  gfx::TransformOperations transform;
+  for (const auto& wire_op : wire_ops) {
+    switch (wire_op->which()) {
+      case mojom::TransformOperation::Tag::kIdentity:
+        transform.AppendIdentity();
+        break;
+      case mojom::TransformOperation::Tag::kPerspectiveDepth: {
+        std::optional<float> depth;
+        if (wire_op->get_perspective_depth()) {
+          depth = wire_op->get_perspective_depth();
+        }
+        transform.AppendPerspective(depth);
+        break;
+      }
+      case mojom::TransformOperation::Tag::kSkew: {
+        const auto& skew = wire_op->get_skew();
+        transform.AppendSkew(skew.x(), skew.y());
+        break;
+      }
+      case mojom::TransformOperation::Tag::kScale: {
+        const auto& scale = wire_op->get_scale();
+        transform.AppendScale(scale.x(), scale.y(), scale.z());
+        break;
+      }
+      case mojom::TransformOperation::Tag::kTranslate: {
+        const auto& translate = wire_op->get_translate();
+        transform.AppendTranslate(translate.x(), translate.y(), translate.z());
+        break;
+      }
+      case mojom::TransformOperation::Tag::kRotate: {
+        const auto& axis = wire_op->get_rotate()->axis;
+        const float angle = wire_op->get_rotate()->angle;
+        transform.AppendRotate(axis.x(), axis.y(), axis.z(), angle);
+        break;
+      }
+      case mojom::TransformOperation::Tag::kMatrix:
+        transform.AppendMatrix(wire_op->get_matrix());
+        break;
+    }
+  }
+  return transform;
+}
+
+template <typename CurveType>
+using KeyframeType = CurveType::Keyframes::value_type::element_type;
+
+template <typename CurveType>
+base::expected<std::unique_ptr<KeyframeType<CurveType>>, std::string>
+DeserializeKeyframe(const mojom::AnimationKeyframeValue& value,
+                    base::TimeDelta start_time,
+                    std::unique_ptr<gfx::TimingFunction> timing_function) {
+  using ValueType = std::remove_cvref_t<
+      decltype(std::declval<KeyframeType<CurveType>>().Value())>;
+  std::unique_ptr<KeyframeType<CurveType>> keyframe;
+  if constexpr (std::is_same_v<ValueType, float>) {
+    if (value.is_scalar()) {
+      keyframe = gfx::FloatKeyframe::Create(start_time, value.get_scalar(),
+                                            std::move(timing_function));
+    }
+  } else if constexpr (std::is_same_v<ValueType, SkColor>) {
+    if (value.is_color()) {
+      keyframe = gfx::ColorKeyframe::Create(start_time, value.get_color(),
+                                            std::move(timing_function));
+    }
+  } else if constexpr (std::is_same_v<ValueType, gfx::SizeF>) {
+    if (value.is_size()) {
+      keyframe = gfx::SizeKeyframe::Create(start_time, value.get_size(),
+                                           std::move(timing_function));
+    }
+  } else if constexpr (std::is_same_v<ValueType, gfx::Rect>) {
+    if (value.is_rect()) {
+      keyframe = gfx::RectKeyframe::Create(start_time, value.get_rect(),
+                                           std::move(timing_function));
+    }
+  } else if constexpr (std::is_same_v<ValueType, gfx::TransformOperations>) {
+    if (value.is_transform()) {
+      keyframe = gfx::TransformKeyframe::Create(
+          start_time, DeserializeTransformOperations(value.get_transform()),
+          std::move(timing_function));
+    }
+  } else {
+    static_assert(false, "Unsupported curve type");
+  }
+
+  if (!keyframe) {
+    return base::unexpected("Invalid keyframe value");
+  }
+  return keyframe;
+}
+
+cc::KeyframeModel::Direction DeserializeAnimationDirection(
+    mojom::AnimationDirection direction) {
+  switch (direction) {
+    case mojom::AnimationDirection::kNormal:
+      return cc::KeyframeModel::Direction::NORMAL;
+    case mojom::AnimationDirection::kReverse:
+      return cc::KeyframeModel::Direction::REVERSE;
+    case mojom::AnimationDirection::kAlternateNormal:
+      return cc::KeyframeModel::Direction::ALTERNATE_NORMAL;
+    case mojom::AnimationDirection::kAlternateReverse:
+      return cc::KeyframeModel::Direction::ALTERNATE_REVERSE;
+  }
+}
+
+cc::KeyframeModel::FillMode DeserializeAnimationFillMode(
+    mojom::AnimationFillMode fill_mode) {
+  switch (fill_mode) {
+    case mojom::AnimationFillMode::kNone:
+      return cc::KeyframeModel::FillMode::NONE;
+    case mojom::AnimationFillMode::kForwards:
+      return cc::KeyframeModel::FillMode::FORWARDS;
+    case mojom::AnimationFillMode::kBackwards:
+      return cc::KeyframeModel::FillMode::BACKWARDS;
+    case mojom::AnimationFillMode::kBoth:
+      return cc::KeyframeModel::FillMode::BOTH;
+    case mojom::AnimationFillMode::kAuto:
+      return cc::KeyframeModel::FillMode::AUTO;
+  }
+}
+
+template <typename CurveType>
+base::expected<void, std::string> DeserializeAnimationCurve(
+    const mojom::AnimationKeyframeModel& wire,
+    cc::Animation& animation) {
+  auto curve = CurveType::Create();
+  curve->SetTimingFunction(DeserializeTimingFunction(*wire.timing_function));
+  curve->set_scaled_duration(wire.scaled_duration);
+  for (const auto& wire_keyframe : wire.keyframes) {
+    std::unique_ptr<gfx::TimingFunction> keyframe_timing_function;
+    if (wire_keyframe->timing_function) {
+      keyframe_timing_function =
+          DeserializeTimingFunction(*wire_keyframe->timing_function);
+    }
+    ASSIGN_OR_RETURN(auto keyframe,
+                     DeserializeKeyframe<CurveType>(
+                         *wire_keyframe->value, wire_keyframe->start_time,
+                         std::move(keyframe_timing_function)));
+    curve->AddKeyframe(std::move(keyframe));
+  }
+
+  auto model = cc::KeyframeModel::Create(
+      std::move(curve), wire.id, wire.group_id,
+      cc::KeyframeModel::TargetPropertyId(wire.target_property_type));
+  model->set_direction(DeserializeAnimationDirection(wire.direction));
+  model->set_fill_mode(DeserializeAnimationFillMode(wire.fill_mode));
+  model->set_playback_rate(wire.playback_rate);
+  model->set_iterations(wire.iterations);
+  model->set_iteration_start(wire.iteration_start);
+  model->set_time_offset(wire.time_offset);
+  model->set_element_id(wire.element_id);
+  animation.keyframe_effect()->AddKeyframeModel(std::move(model));
+  return base::ok();
+}
+
+base::expected<void, std::string> DeserializeAnimation(
+    const mojom::Animation& wire,
+    cc::AnimationTimeline& timeline) {
+  if (timeline.GetAnimationById(wire.id)) {
+    return base::unexpected("Unexpected duplicate animation ID");
+  }
+
+  scoped_refptr<cc::Animation> animation = cc::Animation::Create(wire.id);
+  timeline.AttachAnimation(animation);
+
+  if (wire.element_id) {
+    animation->AttachElement(wire.element_id);
+  }
+
+  for (const auto& wire_model : wire.keyframe_models) {
+    if (wire_model->keyframes.empty()) {
+      return base::unexpected("Unexpected anmation with no keyframes");
+    }
+    // We use the first keyframe to determine the curve type. All keyframes will
+    // be validated against this type.
+    switch (wire_model->keyframes[0]->value->which()) {
+      case mojom::AnimationKeyframeValue::Tag::kScalar:
+        RETURN_IF_ERROR(
+            DeserializeAnimationCurve<gfx::KeyframedFloatAnimationCurve>(
+                *wire_model, *animation));
+        break;
+      case mojom::AnimationKeyframeValue::Tag::kColor:
+        RETURN_IF_ERROR(
+            DeserializeAnimationCurve<gfx::KeyframedColorAnimationCurve>(
+                *wire_model, *animation));
+        break;
+      case mojom::AnimationKeyframeValue::Tag::kSize:
+        RETURN_IF_ERROR(
+            DeserializeAnimationCurve<gfx::KeyframedSizeAnimationCurve>(
+                *wire_model, *animation));
+        break;
+      case mojom::AnimationKeyframeValue::Tag::kRect:
+        RETURN_IF_ERROR(
+            DeserializeAnimationCurve<gfx::KeyframedRectAnimationCurve>(
+                *wire_model, *animation));
+        break;
+      case mojom::AnimationKeyframeValue::Tag::kTransform:
+        RETURN_IF_ERROR(
+            DeserializeAnimationCurve<gfx::KeyframedTransformAnimationCurve>(
+                *wire_model, *animation));
+        break;
+    }
+  }
+  animation->keyframe_effect()->UpdateTickingState();
+  return base::ok();
+}
+
+base::expected<void, std::string> DeserializeAnimationTimeline(
+    const mojom::AnimationTimeline& wire,
+    cc::AnimationHost& host) {
+  scoped_refptr<cc::AnimationTimeline> timeline = host.GetTimelineById(wire.id);
+  if (!timeline) {
+    timeline = cc::AnimationTimeline::Create(wire.id);
+    host.AddAnimationTimeline(timeline);
+  }
+  for (int32_t id : wire.removed_animations) {
+    if (auto* animation = timeline->GetAnimationById(id)) {
+      timeline->DetachAnimation(animation);
+    }
+  }
+  for (const auto& wire_animation : wire.new_animations) {
+    RETURN_IF_ERROR(DeserializeAnimation(*wire_animation, *timeline));
+  }
+  return base::ok();
+}
+
+base::expected<void, std::string> DeserializeAnimationUpdates(
+    const mojom::LayerTreeUpdate& update,
+    cc::AnimationHost& host) {
+  if (update.removed_animation_timelines) {
+    for (int32_t id : *update.removed_animation_timelines) {
+      if (auto* timeline = host.GetTimelineById(id)) {
+        host.RemoveAnimationTimeline(timeline);
+      }
+    }
+  }
+
+  if (update.animation_timelines) {
+    for (const auto& wire : *update.animation_timelines) {
+      RETURN_IF_ERROR(DeserializeAnimationTimeline(*wire, host));
+    }
+  }
+
+  return base::ok();
+}
+
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
@@ -588,7 +887,7 @@ void LayerContextImpl::SetNeedsRedrawOnImplThread() {
 }
 
 void LayerContextImpl::SetNeedsOneBeginImplFrameOnImplThread() {
-  NOTIMPLEMENTED();
+  compositor_sink_->SetLayerContextWantsBeginFrames(true);
 }
 
 void LayerContextImpl::SetNeedsUpdateDisplayTreeOnImplThread() {
@@ -703,6 +1002,9 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
   next_frame_resources_.clear();
   compositor_sink_->SubmitCompositorFrame(host_impl_->target_local_surface_id(),
                                           std::move(frame));
+
+  constexpr bool start_ready_animations = true;
+  host_impl_->UpdateAnimationState(start_ready_animations);
 }
 
 void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
@@ -845,6 +1147,11 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     // least one EffectNode that was inducing a render surface.
     layers.set_needs_update_draw_properties();
   }
+
+  // Safe down-cast: AnimationHost is the only subclass of MutatorHost.
+  auto* animation_host = static_cast<cc::AnimationHost*>(layers.mutator_host());
+  RETURN_IF_ERROR(DeserializeAnimationUpdates(*update, *animation_host));
+  host_impl_->ActivateAnimations();
 
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
   return base::ok();
