@@ -185,6 +185,16 @@ std::optional<IPEndPoint> HttpStreamPool::QuicTask::GetPreferredIPEndPoint(
 }
 
 void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
+  if (rv == OK) {
+    QuicChromiumClientSession* session =
+        quic_session_pool()->FindExistingSession(quic_session_key(),
+                                                 stream_key().destination());
+    if (!session) {
+      // QUIC session is closed before stream can be created.
+      rv = ERR_CONNECTION_CLOSED;
+    }
+  }
+
   net_log_.AddEventWithNetErrorCode(
       NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_END, rv);
 

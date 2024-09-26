@@ -568,6 +568,19 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     mock_quic_datas_.emplace_back(std::move(quic_data));
   }
 
+  QuicTestPacketMaker* CreateQuicClientPacketMaker(
+      std::string_view host = kDefaultServerName) {
+    auto client_maker = std::make_unique<QuicTestPacketMaker>(
+        quic_version(),
+        quic::QuicUtils::CreateRandomConnectionId(
+            session_deps_.quic_context->random_generator()),
+        session_deps_.quic_context->clock(), std::string(host),
+        quic::Perspective::IS_CLIENT);
+    QuicTestPacketMaker* raw_client_maker = client_maker.get();
+    quic_client_makers_.emplace_back(std::move(client_maker));
+    return raw_client_maker;
+  }
+
   std::set<HostPortPair>& origins_to_force_quic_on() {
     return origins_to_force_quic_on_;
   }
@@ -4068,6 +4081,31 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectFail) {
   preconnector.Preconnect(pool());
   RunUntilIdle();
   EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicSessionGoneBeforeUsing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  origins_to_force_quic_on().insert(
+      HostPortPair::FromURL(GURL(kDefaultDestination)));
+  InitializeSession();
+
+  QuicTestPacketMaker* client_maker = CreateQuicClientPacketMaker();
+  MockQuicData quic_data(quic_version());
+  quic_data.AddWrite(SYNCHRONOUS, client_maker->MakeInitialSettingsPacket(
+                                      /*packet_number=*/1));
+  quic_data.AddRead(ASYNC, ERR_SOCKET_NOT_CONNECTED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination).RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_CLOSED)));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, GetInfoAsValue) {
