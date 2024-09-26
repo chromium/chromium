@@ -91,20 +91,43 @@ void RecordProfileSizeTask(const base::FilePath& path) {
   UMA_HISTOGRAM_COUNTS_10000("Profile.ExtensionSize", size_MB);
 }
 
+// Returns whether `name` matches "TestProfile[0-9]+" regex which is the
+// pattern used to name test profiles during an experiment run while the
+// support for multi-profile was added.
+bool IsTestProfile(std::string_view name) {
+  constexpr std::string_view kTestProfilePrefix = "TestProfile";
+  if (!name.starts_with(kTestProfilePrefix)) {
+    return false;
+  }
+
+  std::string_view tail = name.substr(kTestProfilePrefix.size());
+  if (tail.empty()) {
+    return false;
+  }
+
+  for (const char c : tail) {
+    if (c < '0' || '9' < c) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // Returns the names of the recently active profiles.
 std::set<std::string> GetRecentlyActiveProfiles(PrefService* local_state) {
   std::set<std::string> profiles;
   for (const auto& value : local_state->GetList(prefs::kLastActiveProfiles)) {
     if (value.is_string()) {
       const std::string& name = value.GetString();
-      if (!name.empty()) {
+      if (!name.empty() && !IsTestProfile(name)) {
         profiles.insert(name);
       }
     }
   }
 
   std::string last_used = local_state->GetString(prefs::kLastUsedProfile);
-  if (!last_used.empty()) {
+  if (!last_used.empty() && !IsTestProfile(last_used)) {
     profiles.insert(last_used);
   }
 

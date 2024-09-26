@@ -30,6 +30,8 @@ namespace {
 // Profile names.
 const char kProfileName1[] = "Profile1";
 const char kProfileName2[] = "Profile2";
+const char kTestProfile1[] = "TestProfile1";
+const char kTestProfile2[] = "TestProfile2";
 
 // A scoped ProfileManagerObserverIOS which records which events have been
 // received.
@@ -268,6 +270,28 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_3) {
 
   // Exactly one Profile must be loaded, named `kProfileName2`.
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName2}));
+}
+
+// Tests that LoadProfiles() ignores profile named "TestProfile[0-9]+" which
+// were test profiles created for an experiment and should no longer be used.
+TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IgnoreTestProfiles) {
+  ASSERT_NE(kTestProfile1, kIOSChromeInitialBrowserState);
+  ASSERT_NE(kTestProfile2, kIOSChromeInitialBrowserState);
+
+  // There should be no Profile loaded yet.
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
+
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetString(prefs::kLastUsedProfile, std::string());
+  local_state->SetList(prefs::kLastActiveProfiles, base::Value::List()
+                                                       .Append(kProfileName1)
+                                                       .Append(kTestProfile1)
+                                                       .Append(kTestProfile2));
+
+  profile_manager().LoadProfiles();
+
+  // Exactly one Profile must be loaded, named `kProfileName1`.
+  EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{kProfileName1}));
 }
 
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that
