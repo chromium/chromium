@@ -9,12 +9,15 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
 namespace {
 
 constexpr LChar kAnyLevel[] = "*";
+constexpr LChar kBaseLevel[] = "0";
+constexpr UChar kLevelDelimiter = kComma;
 
 const Node* FindOuterMostRubyContainerInBlockContaienr(const Node& node,
                                                        const Node& block) {
@@ -31,6 +34,34 @@ const Node* FindOuterMostRubyContainerInBlockContaienr(const Node& node,
     }
   }
   return ruby_container;
+}
+
+bool IsParentRubyContainer(const Node& node) {
+  const Node* parent = &node;
+  while ((parent = FlatTreeTraversal::ParentElement(*parent))) {
+    const auto* style = parent->GetComputedStyle();
+    if (!style) {
+      break;
+    }
+    EDisplay display = style->Display();
+    if (display == EDisplay::kContents) {
+      continue;
+    }
+    return display == EDisplay::kRuby || display == EDisplay::kBlockRuby;
+  }
+  return false;
+}
+
+String CreateLevel(
+    const Vector<std::pair<wtf_size_t, wtf_size_t>>& depth_context) {
+  StringBuilder builder;
+  String delimiter;
+  for (const auto [max, current] : depth_context) {
+    builder.Append(delimiter);
+    delimiter = String(&kLevelDelimiter, 1u);
+    builder.AppendNumber(max - current + 1);
+  }
+  return builder.ToString();
 }
 
 class ChunkGraphBuilder {
@@ -135,23 +166,133 @@ class ChunkGraphBuilder {
       }
       node = FlatTreeTraversal::NextSibling(*node);
     }
+    if (chunk_text_list_.size() > 0) {
+      parent_chunk_->Link(PushChunk(String(kAnyLevel)));
+    }
     return node;
   }
 
  private:
-  void HandleAnnotationStart(const Node& node) {}
+  CorpusChunk* PushChunk(const String& level) {
+    auto* new_chunk =
+        MakeGarbageCollected<CorpusChunk>(chunk_text_list_, level);
+    corpus_chunk_list_.push_back(new_chunk);
+    chunk_text_list_.resize(0);
+    return new_chunk;
+  }
+
+  CorpusChunk* PushBaseChunk() {
+    if (depth_context_.size() > 0) {
+      return PushChunk(CreateLevel(depth_context_));
+    } else if (ruby_depth_ == 0) {
+      return PushChunk(String(kAnyLevel));
+    } else {
+      return PushChunk(String(kBaseLevel));
+    }
+  }
+
+  void PushBaseChunkAndLink() {
+    auto* new_base_chunk = PushBaseChunk();
+    parent_chunk_->Link(new_base_chunk);
+    parent_chunk_ = new_base_chunk;
+  }
+
+  void HandleAnnotationStart(const Node& node) {
+    CorpusChunk* new_base_chunk = PushBaseChunk();
+    parent_chunk_->Link(new_base_chunk);
+    if (IsParentRubyContainer(node)) {
+      parent_chunk_ = parent_chunk_stack_.back();
+      parent_chunk_stack_.pop_back();
+    } else {
+      parent_chunk_ = new_base_chunk;
+      OpenRubyContainer();
+      new_base_chunk = PushBaseChunk();
+      parent_chunk_->Link(new_base_chunk);
+    }
+    base_last_chunk_stack_.push_back(new_base_chunk);
+    depth_context_.push_back(std::make_pair(max_ruby_depth_, ruby_depth_));
+    max_ruby_depth_ = 0;
+    ruby_depth_ = 0;
+    String level = CreateLevel(depth_context_);
+    if (!level_list_.Contains(level)) {
+      level_list_.push_back(level);
+    }
+  }
 
   // Returns true if we should exit the loop.
   bool HandleAnnotationEnd(const Node& node, bool did_see_range_end_node) {
+    auto* rt_last_chunk = PushChunk(CreateLevel(depth_context_));
+    parent_chunk_->Link(rt_last_chunk);
+
+    CorpusChunk* base_last_chunk = base_last_chunk_stack_.back();
+    base_last_chunk_stack_.pop_back();
+    auto* void_chunk = MakeGarbageCollected<CorpusChunk>();
+    corpus_chunk_list_.push_back(void_chunk);
+    base_last_chunk->Link(void_chunk);
+    rt_last_chunk->Link(void_chunk);
+    parent_chunk_ = void_chunk;
+    parent_chunk_stack_.push_back(parent_chunk_);
+
+    auto pair = depth_context_.back();
+    depth_context_.pop_back();
+    max_ruby_depth_ = pair.first;
+    ruby_depth_ = pair.second;
+    if (ruby_depth_ == 1) {
+      max_ruby_depth_ = 1;
+    }
+    return !IsParentRubyContainer(node) &&
+           CloseRubyContainer(did_see_range_end_node);
+  }
+
+  void HandleRubyContainerStart() {
+    if (chunk_text_list_.size() > 0) {
+      PushBaseChunkAndLink();
+    }
+    // Save to use it on the start of the corresponding ruby-text.
+    parent_chunk_stack_.push_back(parent_chunk_);
+
+    OpenRubyContainer();
+  }
+
+  // Returns true if we should exit the loop.
+  bool HandleRubyContainerEnd(bool did_see_range_end_node) {
+    if (chunk_text_list_.size() > 0) {
+      PushBaseChunkAndLink();
+    }
+    return CloseRubyContainer(did_see_range_end_node);
+  }
+
+  void OpenRubyContainer() {
+    if (ruby_depth_ == 0) {
+      max_ruby_depth_ = 1;
+    }
+    ++ruby_depth_;
+    max_ruby_depth_ = std::max(ruby_depth_, max_ruby_depth_);
+  }
+
+  // Returns true if we should exit the loop.
+  bool CloseRubyContainer(bool did_see_range_end_node) {
+    parent_chunk_stack_.pop_back();
+    if (--ruby_depth_ == 0) {
+      max_ruby_depth_ = 0;
+      if (depth_context_.empty() && did_see_range_end_node) {
+        return true;
+      }
+    }
     return false;
   }
 
-  void HandleRubyContainerStart() {}
+  // `corpus_chunk_list_` and `level_list_` are the deliverables of this class.
+  HeapVector<Member<CorpusChunk>> corpus_chunk_list_;
+  Vector<String> level_list_;
 
-  // Returns true if we should exit the loop.
-  bool HandleRubyContainerEnd(bool did_see_range_end_node) { return false; }
-
+  // Fields required for intermediate data.
+  CorpusChunk* parent_chunk_ = nullptr;
   wtf_size_t ruby_depth_ = 0;
+  wtf_size_t max_ruby_depth_ = 0;
+  Vector<std::pair<wtf_size_t, wtf_size_t>> depth_context_;
+  HeapVector<Member<CorpusChunk>> parent_chunk_stack_;
+  HeapVector<Member<CorpusChunk>> base_last_chunk_stack_;
   HeapVector<TextOrChar> chunk_text_list_;
 };
 
