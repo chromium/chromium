@@ -1291,6 +1291,13 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
                        shill::kEnableRFC8925Property));
 
     ash::ShillManagerClient::Get()->SetProperty(
+        shill::kUseLegacyDHCPCDProperty,
+        base::Value(base::FeatureList::IsEnabled(features::kUseLegacyDHCPCD)),
+        base::DoNothing(),
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kUseLegacyDHCPCDProperty));
+
+    ash::ShillManagerClient::Get()->SetProperty(
         shill::kDisconnectWiFiOnEthernetProperty,
         base::Value(base::FeatureList::IsEnabled(
                         features::kDisconnectWiFiOnEthernetConnected)
