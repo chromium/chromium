@@ -707,7 +707,14 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedAppUnknown) {
                                   State::PENDING_ENGAGEMENT);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PreferRelatedChromeApp) {
+// Flaky on Android. crbug.com/369804412
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PreferRelatedChromeApp DISABLED_PreferRelatedChromeApp
+#else
+#define MAYBE_PreferRelatedChromeApp PreferRelatedChromeApp
+#endif
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_PreferRelatedChromeApp) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::HistogramTester histograms;
 
@@ -1061,7 +1068,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PendingServiceWorker) {
             u"Manifest test app");
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, ValidManifestShowBanner) {
+// Flaky on Android. crbug.com/369804412
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ValidManifestShowBanner DISABLED_ValidManifestShowBanner
+#else
+#define MAYBE_ValidManifestShowBanner ValidManifestShowBanner
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_ValidManifestShowBanner) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(
       web_contents(), manager.get(),
