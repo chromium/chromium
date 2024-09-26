@@ -49,9 +49,6 @@ public class TriStateCookieSettingsPreference extends Preference
         public boolean isRelatedWebsiteSetsDataAccessEnabled;
     }
 
-    public static final String TP_LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=tracking_protection";
-
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
     private Params mInitializationParams;
 

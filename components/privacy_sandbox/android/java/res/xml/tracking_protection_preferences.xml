@@ -69,7 +69,6 @@ found in the LICENSE file.
             app:allowDividerBelow="false"
             app:isPreferenceVisible="false" />
 
-
     </PreferenceCategory>
 
     <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup

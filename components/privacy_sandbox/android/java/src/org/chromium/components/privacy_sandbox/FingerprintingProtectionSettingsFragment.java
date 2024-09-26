@@ -39,8 +39,7 @@ public class FingerprintingProtectionSettingsFragment extends PreferenceFragment
     private static final String PREF_FP_PROTECTION_LEARN_MORE = "fp_protection_learn_more";
 
     // TODO(b/325599577): Update the URL once it's finalized.
-    public static final String LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=tracking_protection";
+    public static final String LEARN_MORE_URL = "https://support.google.com/chrome/";
 
     protected static final String FP_PROTECTION_PREF_HISTOGRAM_NAME =
             "Settings.FingerprintingProtection.Enabled";

@@ -70,7 +70,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     @VisibleForTesting static final String PREF_DNT_TOGGLE = "dnt_toggle";
 
     public static final String LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=tracking_protection";
+            "https://support.google.com/chrome/?p=pause_protections";
 
     // The number of sites that are on the Allowed list.
     private int mAllowedSiteCount;
