@@ -1213,6 +1213,7 @@ void USBDevice::OnConnectionError() {
                                        kDeviceDisconnected);
     }
   }
+  device_requests_.clear();
 }
 
 void USBDevice::MarkRequestComplete(ScriptPromiseResolverBase* resolver) {
