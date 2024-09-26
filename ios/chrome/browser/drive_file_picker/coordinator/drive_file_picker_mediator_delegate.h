@@ -25,8 +25,8 @@
                          sortingDirection:
                              (DriveItemsSortingOrder)sortingDirection;
 
-// Called when the mediator has submitted file selection to the web page.
-- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator;
+// Called when the mediator has stopped file selection in the web page.
+- (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator;
 
 // Returns to the parent coordinator.
 - (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator;

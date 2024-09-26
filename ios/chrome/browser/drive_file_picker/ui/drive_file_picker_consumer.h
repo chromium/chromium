@@ -18,8 +18,11 @@
 // Sets the consumer's selected user identity email.
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail;
 
-// Sets the title of the consumer in the navigation bar.
+// Sets the title in the navigation bar to `title`.
 - (void)setTitle:(NSString*)title;
+
+// Sets the title in the navigation bar to the root title.
+- (void)setRootTitle;
 
 // Sets the background of the file picker view.
 - (void)setBackground:(DriveFilePickerBackground)background;
@@ -29,12 +32,14 @@
 // the list of items should have a heading title "Recent" above it. If
 // `nextPageAvailable` is YES then scrolling to the end of the list of items
 // should fetch the next page. If `animated` is YES then the new items should be
-// animated into the presented ones.
-- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
-               append:(BOOL)append
-     showSearchHeader:(BOOL)showSearchHeader
-    nextPageAvailable:(BOOL)nextPageAvailable
-             animated:(BOOL)animated;
+// animated into the presented ones. Primary items are presented in the first
+// section and secondary items are presented in the second section.
+- (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems
+              secondaryItems:(NSArray<DriveFilePickerItem*>*)secondaryItems
+                      append:(BOOL)append
+            showSearchHeader:(BOOL)showSearchHeader
+           nextPageAvailable:(BOOL)nextPageAvailable
+                    animated:(BOOL)animated;
 
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
@@ -65,6 +70,9 @@
 
 // Sets whether the search bar is focused and the text it contains.
 - (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText;
+
+// Sets whether the leading "Cancel" button should be visible.
+- (void)setCancelButtonVisible:(BOOL)visible;
 
 @end
 

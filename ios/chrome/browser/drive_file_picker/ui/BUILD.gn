@@ -15,8 +15,6 @@ source_set("ui") {
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
     "drive_file_picker_table_view_controller_delegate.h",
-    "root_drive_file_picker_table_view_controller.h",
-    "root_drive_file_picker_table_view_controller.mm",
   ]
   deps = [
     ":alert_utils",

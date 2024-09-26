@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/root_drive_file_picker_table_view_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -38,7 +38,7 @@
 @implementation RootDriveFilePickerCoordinator {
   DriveFilePickerNavigationController* _navigationController;
   DriveFilePickerMediator* _mediator;
-  RootDriveFilePickerTableViewController* _viewController;
+  DriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -73,7 +73,7 @@
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
           browserState->GetSharedURLLoaderFactory());
-  _viewController = [[RootDriveFilePickerTableViewController alloc] init];
+  _viewController = [[DriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
   _mediator = [[DriveFilePickerMediator alloc]
@@ -179,11 +179,11 @@
   [_childBrowseCoordinator start];
 }
 
-- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+- (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator {
   __weak id<DriveFilePickerCommands> driveFilePickerHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          DriveFilePickerCommands);
-  [self.baseNavigationController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
                            [driveFilePickerHandler hideDriveFilePicker];

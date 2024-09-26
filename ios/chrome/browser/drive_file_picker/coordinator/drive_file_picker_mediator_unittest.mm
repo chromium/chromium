@@ -67,7 +67,7 @@
   self.sortingDirection = sortingDirection;
 }
 
-- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+- (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator {
   self.fileSelectionSubmitted = YES;
 }
 
@@ -82,7 +82,8 @@
 @property(nonatomic, assign) DriveFileDownloadStatus downloadStatus;
 @property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
 @property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
-@property(nonatomic, strong) NSArray<DriveFilePickerItem*>* driveItems;
+@property(nonatomic, strong) NSArray<DriveFilePickerItem*>* primaryItems;
+@property(nonatomic, strong) NSArray<DriveFilePickerItem*>* secondaryItems;
 
 @end
 
@@ -91,7 +92,8 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _driveItems = [NSMutableArray array];
+    _primaryItems = [NSMutableArray array];
+    _secondaryItems = [NSMutableArray array];
   }
   return self;
 }
@@ -102,19 +104,26 @@
 - (void)setTitle:(NSString*)title {
 }
 
+- (void)setRootTitle {
+}
+
 - (void)setBackground:(DriveFilePickerBackground)background {
 }
 
-- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
-               append:(BOOL)append
-     showSearchHeader:(BOOL)showSearchHeader
-    nextPageAvailable:(BOOL)nextPageAvailable
-             animated:(BOOL)animated {
+- (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems
+              secondaryItems:(NSArray<DriveFilePickerItem*>*)secondaryItems
+                      append:(BOOL)append
+            showSearchHeader:(BOOL)showSearchHeader
+           nextPageAvailable:(BOOL)nextPageAvailable
+                    animated:(BOOL)animated {
   if (append) {
-    self.driveItems =
-        [self.driveItems arrayByAddingObjectsFromArray:driveItems];
+    self.primaryItems =
+        [self.primaryItems arrayByAddingObjectsFromArray:primaryItems];
+    self.secondaryItems =
+        [self.secondaryItems arrayByAddingObjectsFromArray:secondaryItems];
   } else {
-    self.driveItems = driveItems;
+    self.primaryItems = primaryItems;
+    self.secondaryItems = secondaryItems;
   }
 }
 
@@ -146,13 +155,13 @@
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
 }
 
-- (void)setLoadingIndicatorVisible:(BOOL)visible {
-}
-
 - (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers {
 }
 
 - (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText {
+}
+
+- (void)setCancelButtonVisible:(BOOL)visible {
 }
 
 @end
@@ -309,10 +318,10 @@ TEST_F(DriveFilePickerMediatorTest, SelectCollectionItemBrowsesCollection) {
   [mediator_ setSearchBarFocused:YES];
   task_environment_.RunUntilQuit();
   // Test items have been forwarded to the consumer.
-  EXPECT_NE(nil, fake_consumer_.driveItems);
-  EXPECT_EQ(1U, fake_consumer_.driveItems.count);
+  EXPECT_NE(nil, fake_consumer_.primaryItems);
+  EXPECT_EQ(1U, fake_consumer_.primaryItems.count);
   EXPECT_NSEQ(folder_to_browse.identifier,
-              fake_consumer_.driveItems[0].identifier);
+              fake_consumer_.primaryItems[0].identifier);
   // Select the folder.
   [mediator_ selectDriveItem:folder_to_browse.identifier];
   EXPECT_EQ(DriveFilePickerCollectionType::kFolder,
@@ -330,7 +339,7 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   EXPECT_EQ(DriveItemsSortingType::kName, fake_consumer_.sortingCriteria);
   EXPECT_EQ(DriveItemsSortingOrder::kAscending,
             fake_consumer_.sortingDirection);
-  EXPECT_EQ(0U, fake_consumer_.driveItems.count);
+  EXPECT_EQ(0U, fake_consumer_.primaryItems.count);
   // Changing either criteria or direction should update consumer and fetch
   // new items.
   drive_list_->SetListItemsCompletionQuitClosure(
@@ -344,8 +353,8 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   task_environment_.RunUntilQuit();
   // This test assumes that the fake DriveList object returns items by
   // default.
-  EXPECT_NE(0U, fake_consumer_.driveItems.count);
-  fake_consumer_.driveItems = nil;
+  EXPECT_NE(0U, fake_consumer_.primaryItems.count);
+  fake_consumer_.primaryItems = nil;
 }
 
 // Tests that selecting a file and submitting the selection works as expected.
@@ -364,19 +373,19 @@ TEST_F(DriveFilePickerMediatorTest, SubmitFileSelection) {
   // Fetch items.
   drive_list_->SetListItemsCompletionQuitClosure(
       task_environment_.QuitClosure());
-  [mediator_ fetchNextPage];
+  [mediator_ fetchFirstPage];
   task_environment_.RunUntilQuit();
-  EXPECT_NE(nil, fake_consumer_.driveItems);
-  EXPECT_EQ(1U, fake_consumer_.driveItems.count);
+  EXPECT_NE(nil, fake_consumer_.primaryItems);
+  EXPECT_EQ(1U, fake_consumer_.primaryItems.count);
   EXPECT_NSEQ(file_to_select.identifier,
-              fake_consumer_.driveItems[0].identifier);
+              fake_consumer_.primaryItems[0].identifier);
 
   // Download the file.
   file_downloader_->SetDownloadFileCompletionQuitClosure(
       task_environment_.QuitClosure());
   EXPECT_EQ(DriveFileDownloadStatus::kNotStarted,
             fake_consumer_.downloadStatus);
-  [mediator_ selectDriveItem:fake_consumer_.driveItems[0].identifier];
+  [mediator_ selectDriveItem:fake_consumer_.primaryItems[0].identifier];
   EXPECT_EQ(DriveFileDownloadStatus::kInProgress,
             fake_consumer_.downloadStatus);
   task_environment_.RunUntilQuit();

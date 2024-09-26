@@ -148,11 +148,14 @@ NSString* kMyDriveFolderIdentifier = @"root";
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
   [self configureConsumerIdentitiesMenu];
-  [_consumer setTitle:_title];
+  [self updateTitle];
   [_consumer setFilter:_filter];
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
   [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  if (_collectionType == DriveFilePickerCollectionType::kRoot) {
+    [_consumer setCancelButtonVisible:YES];
+  }
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -260,7 +263,16 @@ NSString* kMyDriveFolderIdentifier = @"root";
   }
 }
 
+- (void)fetchFirstPage {
+  if (_collectionType == DriveFilePickerCollectionType::kRoot) {
+    [self populateRootItems];
+  } else {
+    [self fetchItemsAppending:NO delayed:NO animated:YES];
+  }
+}
+
 - (void)fetchNextPage {
+  CHECK(_pageToken);
   [self fetchItemsAppending:YES delayed:NO animated:YES];
 }
 
@@ -312,7 +324,7 @@ NSString* kMyDriveFolderIdentifier = @"root";
   }
   CHECK(_selectedFileDestinationURL);
   tab_helper->StopChoosingFiles(@[ _selectedFileDestinationURL ], nil, nil);
-  [self.delegate mediatorDidSubmitFileSelection:self];
+  [self.delegate mediatorDidStopFileSelection:self];
 }
 
 - (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes {
@@ -357,6 +369,12 @@ NSString* kMyDriveFolderIdentifier = @"root";
   }
   NSString* previousSearchText = _searchText;
   _searchText = searchText;
+  if (!_searchBarFocused) {
+    // If the search bar is not focused while the search text changes, it means
+    // that the search bar was just unfocused. The search text should now be
+    // empty, the consequences of unfocusing the search bar are handled already.
+    return;
+  }
   if (_searchText.length == 0 || previousSearchText.length == 0) {
     // When switching from zero-state to non-zero-state search or the other way
     // around, items are trashed and the loading indicator is presented.
@@ -370,25 +388,62 @@ NSString* kMyDriveFolderIdentifier = @"root";
 }
 
 - (void)browseBack {
+  [self.delegate browseToParentWithMediator:self];
+}
+
+- (void)hideSearchItemsOrCancelFileSelection {
   if (_shouldShowSearchItems) {
-    // If tapping "Back" from search items, simply hide search items.
     [self setShouldShowSearchItems:NO];
   } else {
-    // If tapping "Back" outside of search, browse back to parent.
-    [self.delegate browseToParentWithMediator:self];
+    [self.delegate mediatorDidStopFileSelection:self];
   }
 }
 
 #pragma mark - Private
 
+// Updates the title in the consumer.
+- (void)updateTitle {
+  if (_shouldShowSearchItems) {
+    // No title in search mode.
+    [self.consumer setTitle:nil];
+  } else if (_collectionType == DriveFilePickerCollectionType::kRoot) {
+    // When presenting the root collection, out of search mode, show root title.
+    [self.consumer setRootTitle];
+  } else {
+    // Otherwise, out of search mode, show the provided collection title.
+    [self.consumer setTitle:_title];
+  }
+}
+
+// Populates the consumer with root items e.g. "My Drive", "Shared Drives", etc.
+- (void)populateRootItems {
+  // There is no next page at the root.
+  _pageToken = nil;
+  NSArray<DriveFilePickerItem*>* primaryItems = @[
+    [DriveFilePickerItem myDriveItem], [DriveFilePickerItem sharedDrivesItem],
+    [DriveFilePickerItem computersItem], [DriveFilePickerItem starredItem]
+  ];
+  NSArray<DriveFilePickerItem*>* secondaryItems = @[
+    [DriveFilePickerItem recentItem], [DriveFilePickerItem sharedWithMeItem]
+  ];
+  [self.consumer populatePrimaryItems:primaryItems
+                       secondaryItems:secondaryItems
+                               append:NO
+                     showSearchHeader:NO
+                    nextPageAvailable:NO
+                             animated:YES];
+  [self.consumer setBackground:DriveFilePickerBackground::kNoBackground];
+}
+
 // Clears items in the mediator and consumer.
 - (void)clearItems {
   _fetchedDriveItems = {};
-  [self.consumer populateItems:@[]
-                        append:NO
-              showSearchHeader:NO
-             nextPageAvailable:NO
-                      animated:NO];
+  [self.consumer populatePrimaryItems:nil
+                       secondaryItems:nil
+                               append:NO
+                     showSearchHeader:NO
+                    nextPageAvailable:NO
+                             animated:NO];
 }
 
 - (void)setShouldShowSearchItems:(BOOL)shouldShowSearchItems {
@@ -415,9 +470,13 @@ NSString* kMyDriveFolderIdentifier = @"root";
   // is cleared and the loading indicator is presented.
   [self clearItems];
   [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
-  // When showing search items, the title is hidden.
-  [self.consumer setTitle:_shouldShowSearchItems ? nil : _title];
-  [self fetchItemsAppending:NO delayed:YES animated:NO];
+  [self updateTitle];
+  if (_collectionType == DriveFilePickerCollectionType::kRoot &&
+      !shouldShowSearchItems) {
+    [self populateRootItems];
+  } else {
+    [self fetchItemsAppending:NO delayed:NO animated:YES];
+  }
 }
 
 // Clears the selected identifier and updates the consumer accordingly.
@@ -551,11 +610,12 @@ NSString* kMyDriveFolderIdentifier = @"root";
   // If the next page token is nil, then the consumer does not need to try and
   // fetch new items when the end of the list is reached.
   BOOL nextPageAvailable = _pageToken != nil;
-  [self.consumer populateItems:res
-                        append:append
-              showSearchHeader:showSearchHeader
-             nextPageAvailable:nextPageAvailable
-                      animated:animated];
+  [self.consumer populatePrimaryItems:res
+                       secondaryItems:nil
+                               append:append
+                     showSearchHeader:showSearchHeader
+                    nextPageAvailable:nextPageAvailable
+                             animated:animated];
   // If some items were already in the previous list, reconfigure these items.
   [self.consumer reconfigureItemsWithIdentifiers:itemsToReconfigure];
   // Update background of the file picker view.

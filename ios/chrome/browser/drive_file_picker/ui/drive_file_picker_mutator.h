@@ -16,6 +16,9 @@
 // item in case of a folder or download it in case of a file.
 - (void)selectDriveItem:(NSString*)itemIdentifier;
 
+// Ask the mutator to fetch the first drive items.
+- (void)fetchFirstPage;
+
 // Ask the mutator to fetch the next drive items.
 - (void)fetchNextPage;
 
@@ -36,6 +39,10 @@
 
 // Called when the user taps the "Back" navigation button.
 - (void)browseBack;
+
+// Hides search items if search items are displayed. Otherwise cancels the file
+// selection altogether.
+- (void)hideSearchItemsOrCancelFileSelection;
 
 // Informs the mutator as to whether the search bar is currently focused.
 - (void)setSearchBarFocused:(BOOL)focused;

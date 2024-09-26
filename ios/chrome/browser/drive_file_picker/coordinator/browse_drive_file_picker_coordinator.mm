@@ -186,7 +186,7 @@
   [_childBrowseCoordinator start];
 }
 
-- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+- (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator {
   __weak id<DriveFilePickerCommands> driveFilePickerHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          DriveFilePickerCommands);

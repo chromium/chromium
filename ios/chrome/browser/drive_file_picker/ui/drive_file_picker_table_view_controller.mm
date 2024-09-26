@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -29,14 +31,53 @@ namespace {
 
 constexpr CGFloat kCellIconCornerRadius = 10;
 
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+constexpr CGFloat kTitleLogoSpacing = 3.0;
+constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
+
+// Creates the google drive branded title view for the navigation.
+BrandedNavigationItemTitleView* CreateGoogleDriveImageView() {
+  BrandedNavigationItemTitleView* title_view =
+      [[BrandedNavigationItemTitleView alloc] init];
+  title_view.title =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
+  title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+  title_view.titleLogoSpacing = kTitleLogoSpacing;
+  return title_view;
+}
+#else
+// Creates the google drive title label for the navigation.
+UILabel* CreateGoogleDriveTitleLabel() {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE);
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  return titleLabel;
+}
+#endif
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierDriveMainFolders = kSectionIdentifierEnumZero,
+  SectionIdentifierPrimaryItems = kSectionIdentifierEnumZero,
+  SectionIdentifierSecondaryItems,
 };
 
+// Returns the first occurrence of an item with `identifier` either in
+// `primary_items` or otherwise in `secondary_items`.
 DriveFilePickerItem* FindDriveFilePickerItem(
     NSString* identifier,
-    NSArray<DriveFilePickerItem*>* items) {
-  for (DriveFilePickerItem* item in items) {
+    NSArray<DriveFilePickerItem*>* primary_items,
+    NSArray<DriveFilePickerItem*>* secondary_items) {
+  for (DriveFilePickerItem* item in primary_items) {
+    if ([item.identifier isEqual:identifier]) {
+      return item;
+    }
+  }
+  for (DriveFilePickerItem* item in secondary_items) {
     if ([item.identifier isEqual:identifier]) {
       return item;
     }
@@ -79,6 +120,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   UIImage* _sortDescendingSymbol;
 
   // The filter and sort button.
+  UIBarButtonItem* _cancelButton;
   UIBarButtonItem* _filterButton;
   UIBarButtonItem* _sortButton;
 
@@ -92,7 +134,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   NSString* _driveFolderTitle;
 
   UITableViewDiffableDataSource<NSNumber*, NSString*>* _diffableDataSource;
-  NSMutableArray<DriveFilePickerItem*>* _items;
+  // Primary items i.e. items in the first section.
+  NSMutableArray<DriveFilePickerItem*>* _primaryItems;
+  // Secondary items i.e. items in the second section.
+  NSMutableArray<DriveFilePickerItem*>* _secondaryItems;
 
   // Search header view presented at the top of the first section.
   UIView* _searchHeader;
@@ -118,10 +163,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     _status = DriveFileDownloadStatus::kNotStarted;
     [self initFilterActions];
     [self initSortActions];
-    [self initSortingDirectionSymbols];
+    [self initSortDirectionSymbols];
     [self initBackgroundViews];
     _nextPageAvailable = YES;
-    _items = [NSMutableArray array];
+    _primaryItems = [NSMutableArray array];
+    _secondaryItems = [NSMutableArray array];
   }
   return self;
 }
@@ -131,14 +177,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  __weak __typeof(self) weakSelf = self;
 
   [self configureToolbar];
 
-  self.navigationItem.backAction =
-      [UIAction actionWithHandler:^(UIAction* action) {
-        [weakSelf.mutator browseBack];
-      }];
+  _cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self.mutator
+                           action:@selector
+                           (hideSearchItemsOrCancelFileSelection)];
+
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
 
   // Add the search bar.
@@ -164,6 +211,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _loadingIndicator.hidesWhenStopped = YES;
   self.tableView.tableFooterView = _loadingIndicator;
 
+  __weak __typeof(self) weakSelf = self;
   auto cellProvider = ^UITableViewCell*(UITableView* tableView,
                                         NSIndexPath* indexPath,
                                         NSString* itemIdentifier) {
@@ -189,7 +237,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   AddSameConstraintsWithInsets(searchTitle, _searchHeader,
                                NSDirectionalEdgeInsetsMake(6, 0, 6, 0));
 
-  [self.mutator fetchNextPage];
+  [self.mutator fetchFirstPage];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -199,24 +247,17 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
-#pragma mark - DriveFilePickerConsumer
-
-- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
-  _selectedEmail = selectedUserIdentityEmail;
-}
-
-- (void)setTitle:(NSString*)title {
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  titleLabel.text = title;
-  titleLabel.textAlignment = NSTextAlignmentLeft;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.1;
-  self.navigationItem.titleView = titleLabel;
-}
-
 #pragma mark - UI actions
+
+- (void)cancelSelection {
+  __weak __typeof(self) weakSelf = self;
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf
+                                   .driveFilePickerHandler hideDriveFilePicker];
+                         }];
+}
 
 - (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
   UIAction* selectedSortingAction =
@@ -418,7 +459,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 // Initializes the sorting direction symbols.
-- (void)initSortingDirectionSymbols {
+- (void)initSortDirectionSymbols {
   _sortAscendingSymbol =
       DefaultSymbolWithPointSize(kChevronUpSymbol, kSymbolAccessoryPointSize);
   _sortDescendingSymbol =
@@ -451,7 +492,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                       itemIdentifier:(NSString*)itemIdentifier {
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
-  DriveFilePickerItem* item = FindDriveFilePickerItem(itemIdentifier, _items);
+  DriveFilePickerItem* item =
+      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
   if (!item) {
     // When an item is removed from the data source in an animated way, the data
     // source might still want to configure the associated cell for the removal
@@ -489,8 +531,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   if (!item.icon) {
     [self.mutator fetchIconForDriveItem:itemIdentifier];
   } else {
+    BOOL isSymbol = item.icon.isSymbolImage;
     [cell setIconImage:item.icon
-              tintColor:nil
+              tintColor:isSymbol ? [UIColor colorNamed:kGrey600Color] : nil
         backgroundColor:cell.backgroundColor
            cornerRadius:kCellIconCornerRadius];
   }
@@ -508,6 +551,33 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 #pragma mark - DriveFilePickerConsumer
+
+- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
+  _selectedEmail = selectedUserIdentityEmail;
+}
+
+- (void)setTitle:(NSString*)title {
+  if (!title) {
+    self.navigationItem.titleView = nil;
+    return;
+  }
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.text = title;
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  self.navigationItem.titleView = titleLabel;
+}
+
+- (void)setRootTitle {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  self.navigationItem.titleView = CreateGoogleDriveImageView();
+#else
+  self.navigationItem.titleView = CreateGoogleDriveTitleLabel();
+#endif
+}
 
 - (void)setBackground:(DriveFilePickerBackground)background {
   UIView* newBackgroundView;
@@ -537,11 +607,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
-- (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
-               append:(BOOL)append
-     showSearchHeader:(BOOL)showSearchHeader
-    nextPageAvailable:(BOOL)nextPageAvailable
-             animated:(BOOL)animated {
+- (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems
+              secondaryItems:(NSArray<DriveFilePickerItem*>*)secondaryItems
+                      append:(BOOL)append
+            showSearchHeader:(BOOL)showSearchHeader
+           nextPageAvailable:(BOOL)nextPageAvailable
+                    animated:(BOOL)animated {
   // Reset scroll if necessary.
   if (!append) {
     [self.view layoutIfNeeded];
@@ -552,30 +623,39 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 
   if (append) {
-    [_items addObjectsFromArray:driveItems];
+    [_primaryItems addObjectsFromArray:primaryItems];
+    [_secondaryItems addObjectsFromArray:secondaryItems];
   } else {
-    _items = [driveItems mutableCopy];
+    _primaryItems = [primaryItems mutableCopy];
+    _secondaryItems = [secondaryItems mutableCopy];
   }
 
   // Rebuild the list of identifiers.
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
+  // First section.
   [snapshot
-      appendSectionsWithIdentifiers:@[ @(SectionIdentifierDriveMainFolders) ]];
-  NSMutableArray<NSString*>* identifiers = [NSMutableArray array];
-  for (DriveFilePickerItem* item in _items) {
-    [identifiers addObject:item.identifier];
+      appendSectionsWithIdentifiers:@[ @(SectionIdentifierPrimaryItems) ]];
+  NSMutableArray<NSString*>* primaryIdentifiers = [NSMutableArray array];
+  for (DriveFilePickerItem* item in _primaryItems) {
+    [primaryIdentifiers addObject:item.identifier];
   }
-  [snapshot appendItemsWithIdentifiers:identifiers];
+  [snapshot appendItemsWithIdentifiers:primaryIdentifiers];
+  // Second section.
+  [snapshot
+      appendSectionsWithIdentifiers:@[ @(SectionIdentifierSecondaryItems) ]];
+  NSMutableArray<NSString*>* secondaryIdentifiers = [NSMutableArray array];
+  for (DriveFilePickerItem* item in _secondaryItems) {
+    [secondaryIdentifiers addObject:item.identifier];
+  }
+  [snapshot appendItemsWithIdentifiers:secondaryIdentifiers];
 
   _nextPageAvailable = nextPageAvailable;
   // Update the loading indicator.
   [_loadingIndicator stopAnimating];
-  [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
   // Update the search header.
   _searchHeader.hidden = !showSearchHeader;
-  self.tableView.sectionHeaderHeight =
-      showSearchHeader ? UITableViewAutomaticDimension : 0;
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
@@ -584,9 +664,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
-  for (size_t i = 0; i < _items.count; ++i) {
-    if ([_items[i].identifier isEqual:itemIdentifier]) {
-      _items[i].icon = iconImage;
+  for (size_t i = 0; i < _primaryItems.count; ++i) {
+    if ([_primaryItems[i].identifier isEqual:itemIdentifier]) {
+      _primaryItems[i].icon = iconImage;
+      break;
+    }
+  }
+  for (size_t i = 0; i < _secondaryItems.count; ++i) {
+    if ([_secondaryItems[i].identifier isEqual:itemIdentifier]) {
+      _secondaryItems[i].icon = iconImage;
       break;
     }
   }
@@ -608,7 +694,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 - (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
   NSMutableArray<NSString*>* identifiersToReconfigure = [NSMutableArray array];
-  for (DriveFilePickerItem* item in _items) {
+  for (DriveFilePickerItem* item in _primaryItems) {
+    BOOL itemShouldBeEnabled = [identifiers containsObject:item.identifier];
+    if (item.enabled == itemShouldBeEnabled) {
+      continue;
+    }
+    item.enabled = itemShouldBeEnabled;
+    [identifiersToReconfigure addObject:item.identifier];
+  }
+  for (DriveFilePickerItem* item in _secondaryItems) {
     BOOL itemShouldBeEnabled = [identifiers containsObject:item.identifier];
     if (item.enabled == itemShouldBeEnabled) {
       continue;
@@ -721,6 +815,16 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       FROM_HERE, base::BindOnce(SetSearchBarText, searchBar, searchText));
 }
 
+- (void)setCancelButtonVisible:(BOOL)visible {
+  self.navigationItem.leftBarButtonItem = visible ? _cancelButton : nil;
+  __weak __typeof(self) weakSelf = self;
+  // If `backAction` is not nil then the "Back" button will be visible.
+  self.navigationItem.backAction =
+      visible ? nil : [UIAction actionWithHandler:^(UIAction* action) {
+        [weakSelf.mutator browseBack];
+      }];
+}
+
 #pragma mark - UI element creation helpers
 
 // Helper to create the menu presented by `_filterButton`.
@@ -752,11 +856,21 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 #pragma mark - UITableViewDelegate
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  // This is expected to be called when applying a snapshot to the data source.
+  if (section == 0 && !_searchHeader.hidden) {
+    return UITableViewAutomaticDimension;
+  }
+  return 0;
+}
+
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  DriveFilePickerItem* item = FindDriveFilePickerItem(itemIdentifier, _items);
+  DriveFilePickerItem* item =
+      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
   CHECK(item);
   if (!item.enabled) {
     // If selecting a disabled item, nothing should happen.
