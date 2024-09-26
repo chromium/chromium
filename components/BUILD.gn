@@ -222,8 +222,8 @@ test("components_unittests") {
     "//components/encrypted_messages:unit_tests",
     "//components/enterprise:unit_tests",
     "//components/enterprise/common:unit_tests",
-    "//components/enterprise/connectors/core:unit_tests",
     "//components/enterprise/obfuscation/core:unit_tests",
+    "//components/enterprise/connectors/core:unit_tests",
     "//components/facilitated_payments/core/metrics:unit_tests",
     "//components/facilitated_payments/core/util:unit_tests",
     "//components/favicon/core:unit_tests",
@@ -327,6 +327,7 @@ test("components_unittests") {
     "//components/security_state/core:unit_tests",
     "//components/segmentation_platform:unit_tests",
     "//components/services/heap_profiling/public/cpp:unit_tests",
+    "//components/services/on_device_translation:unit_tests",
     "//components/services/unzip:unit_tests",
     "//components/sessions:unit_tests",
     "//components/shared_highlighting/core/common:unit_tests",
@@ -872,10 +873,6 @@ test("components_unittests") {
 
   if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting:unit_tests" ]
-  }
-
-  if (is_linux || is_win || is_mac) {
-    deps += [ "//components/services/on_device_translation:unit_tests" ]
   }
 
   # On LaCrOS, tests use ash - chrome as a window manager, thus the dependency.
