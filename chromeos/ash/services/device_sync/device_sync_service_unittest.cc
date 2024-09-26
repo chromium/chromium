@@ -515,7 +515,6 @@ class FakeRemoteDeviceProviderFactory
 
   // RemoteDeviceProviderImpl::Factory:
   std::unique_ptr<RemoteDeviceProvider> CreateInstance(
-      CryptAuthDeviceManager* device_manager,
       CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
       const std::string& user_private_key) override {

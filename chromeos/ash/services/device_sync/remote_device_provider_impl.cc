@@ -67,17 +67,16 @@ RemoteDeviceProviderImpl::Factory*
 
 // static
 std::unique_ptr<RemoteDeviceProvider> RemoteDeviceProviderImpl::Factory::Create(
-    CryptAuthDeviceManager* v1_device_manager,
     CryptAuthV2DeviceManager* v2_device_manager,
     const std::string& user_email,
     const std::string& user_private_key) {
   if (factory_instance_) {
-    return factory_instance_->CreateInstance(
-        v1_device_manager, v2_device_manager, user_email, user_private_key);
+    return factory_instance_->CreateInstance(v2_device_manager, user_email,
+                                             user_private_key);
   }
 
   return base::WrapUnique(new RemoteDeviceProviderImpl(
-      v1_device_manager, v2_device_manager, user_email, user_private_key));
+      v2_device_manager, user_email, user_private_key));
 }
 
 // static
@@ -88,20 +87,12 @@ void RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(Factory* factory) {
 RemoteDeviceProviderImpl::Factory::~Factory() = default;
 
 RemoteDeviceProviderImpl::RemoteDeviceProviderImpl(
-    CryptAuthDeviceManager* v1_device_manager,
     CryptAuthV2DeviceManager* v2_device_manager,
     const std::string& user_email,
     const std::string& user_private_key)
-    : v1_device_manager_(v1_device_manager),
-      v2_device_manager_(v2_device_manager),
+    : v2_device_manager_(v2_device_manager),
       user_email_(user_email),
       user_private_key_(user_private_key) {
-  if (features::ShouldUseV1DeviceSync()) {
-    DCHECK(v1_device_manager_);
-    v1_device_manager_->AddObserver(this);
-    LoadV1RemoteDevices();
-  }
-
   if (features::ShouldUseV2DeviceSync()) {
     DCHECK(v2_device_manager_);
     v2_device_manager_->AddObserver(this);
@@ -110,23 +101,8 @@ RemoteDeviceProviderImpl::RemoteDeviceProviderImpl(
 }
 
 RemoteDeviceProviderImpl::~RemoteDeviceProviderImpl() {
-  if (v1_device_manager_)
-    v1_device_manager_->RemoveObserver(this);
-
   if (v2_device_manager_)
     v2_device_manager_->RemoveObserver(this);
-}
-
-void RemoteDeviceProviderImpl::OnSyncFinished(
-    CryptAuthDeviceManager::SyncResult sync_result,
-    CryptAuthDeviceManager::DeviceChangeResult device_change_result) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  if (sync_result == CryptAuthDeviceManager::SyncResult::SUCCESS &&
-      device_change_result ==
-          CryptAuthDeviceManager::DeviceChangeResult::CHANGED) {
-    LoadV1RemoteDevices();
-  }
 }
 
 void RemoteDeviceProviderImpl::OnDeviceSyncFinished(
@@ -137,15 +113,6 @@ void RemoteDeviceProviderImpl::OnDeviceSyncFinished(
       device_sync_result.did_device_registry_change()) {
     LoadV2RemoteDevices();
   }
-}
-
-void RemoteDeviceProviderImpl::LoadV1RemoteDevices() {
-  remote_device_v1_loader_ = RemoteDeviceLoader::Factory::Create(
-      v1_device_manager_->GetSyncedDevices(), user_email_, user_private_key_,
-      multidevice::SecureMessageDelegateImpl::Factory::Create());
-  remote_device_v1_loader_->Load(
-      base::BindOnce(&RemoteDeviceProviderImpl::OnV1RemoteDevicesLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RemoteDeviceProviderImpl::LoadV2RemoteDevices() {

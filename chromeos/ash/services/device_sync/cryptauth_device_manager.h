@@ -27,6 +27,7 @@ namespace device_sync {
 // CryptAuthDeviceManager periodically syncs the user's devices from CryptAuth
 // to keep the list of unlock keys fresh. If a sync attempts fails, the manager
 // will schedule the next sync more aggressively to recover.
+// TODO: bug 365057260 - This is now unused and can be removed.
 class CryptAuthDeviceManager {
  public:
   // Registers the prefs used by this class to the given |registry|.

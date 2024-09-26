@@ -479,11 +479,6 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
     return;
   }
 
-  if (features::ShouldUseV1DeviceSync()) {
-    cryptauth_device_manager_->ForceSyncNow(
-        cryptauth::INVOCATION_REASON_MANUAL);
-  }
-
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
         cryptauthv2::ClientMetadata::MANUAL, std::nullopt /* session_id */);
@@ -563,35 +558,9 @@ void DeviceSyncImpl::SetSoftwareFeatureState(
     bool enabled,
     bool is_exclusive,
     SetSoftwareFeatureStateCallback callback) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  if (status_ != InitializationStatus::kReady) {
-    PA_LOG(WARNING) << "DeviceSyncImpl::SetSoftwareFeatureState() invoked "
-                    << "before initialization was complete. Cannot set state.";
-    std::move(callback).Run(
-        mojom::NetworkRequestResult::kServiceNotYetInitialized);
-
-    RecordSetSoftwareFeatureStateResult(false /* success */);
-    RecordSetSoftwareFeatureStateResultFailureReason(
-        DeviceSyncRequestFailureReason::kServiceNotYetInitialized);
-    RecordSetSoftwareFailedFeature(enabled, software_feature);
-    return;
-  }
-
-  auto request_id = base::UnguessableToken::Create();
-  id_to_pending_set_software_feature_request_map_.emplace(
-      request_id, std::make_unique<PendingSetSoftwareFeatureRequest>(
-                      device_public_key, software_feature, enabled,
-                      remote_device_provider_.get(), std::move(callback)));
-  StartSetSoftwareFeatureTimer();
-
-  software_feature_manager_->SetSoftwareFeatureState(
-      device_public_key, software_feature, enabled,
-      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateError,
-                     weak_ptr_factory_.GetWeakPtr(), request_id),
-      is_exclusive);
+  // This method is deprecated.
+  std::move(callback).Run(mojom::NetworkRequestResult::kUnknown);
+  return;
 }
 
 void DeviceSyncImpl::SetFeatureStatus(const std::string& device_instance_id,
@@ -616,58 +585,20 @@ void DeviceSyncImpl::SetFeatureStatus(const std::string& device_instance_id,
                       device_instance_id, feature, status_change,
                       remote_device_provider_.get(), std::move(callback)));
 
-  // Before v1 DeviceSync is disabled, we need to use the
-  // CryptAuthFeatureStatusSetter indirectly via the SoftwareFeatureManager to
-  // ensure an ordering of SetSoftwareFeatureState() and SetFeatureStatus()
-  // calls. These two functions have similar effects on the CryptAuth backend,
-  // so the order of the calls matters. For example, say that, during setup, we
-  // select a device without an Instance ID to be the multi-device host, then we
-  // change our mind and select a device with an Instance ID. These calls to
-  // SetSoftwareFeatureState() and SetFeatureStatus(), respectively, need to be
-  // ordered so that the device with the Instance ID will always be set as the
-  // multi-device host. When v1 DeviceSync is disabled,
-  // SetSoftwareFeatureState() will not longer be called, and the queue
-  // maintained by the FeatureStatusSetter will be sufficient.
-  if (features::ShouldUseV1DeviceSync()) {
-    software_feature_manager_->SetFeatureStatus(
-        device_instance_id, feature, status_change,
-        base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusSuccess,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusError,
-                       weak_ptr_factory_.GetWeakPtr(), request_id));
-  } else {
-    feature_status_setter_->SetFeatureStatus(
-        device_instance_id, feature, status_change,
-        base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusSuccess,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusError,
-                       weak_ptr_factory_.GetWeakPtr(), request_id));
-  }
+  feature_status_setter_->SetFeatureStatus(
+      device_instance_id, feature, status_change,
+      base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DeviceSyncImpl::OnSetFeatureStatusError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void DeviceSyncImpl::FindEligibleDevices(
     multidevice::SoftwareFeature software_feature,
     FindEligibleDevicesCallback callback) {
-  DCHECK(features::ShouldUseV1DeviceSync());
-
-  if (status_ != InitializationStatus::kReady) {
-    PA_LOG(WARNING) << "DeviceSyncImpl::FindEligibleDevices() invoked before "
-                    << "initialization was complete. Cannot find devices.";
-    std::move(callback).Run(
-        mojom::NetworkRequestResult::kServiceNotYetInitialized,
-        nullptr /* response */);
-    return;
-  }
-
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  software_feature_manager_->FindEligibleDevices(
-      software_feature,
-      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.first)),
-      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.second)));
+  // This method is deprecated.
+  std::move(callback).Run(mojom::NetworkRequestResult::kUnknown, nullptr);
+  return;
 }
 
 void DeviceSyncImpl::NotifyDevices(
@@ -746,16 +677,6 @@ void DeviceSyncImpl::GetDebugInfo(GetDebugInfoCallback callback) {
             base::TimeDelta::Max()),
         cryptauth_v2_device_manager_->IsRecoveringFromFailure(),
         cryptauth_v2_device_manager_->IsDeviceSyncInProgress()));
-  } else {
-    std::move(callback).Run(mojom::DebugInfo::New(
-        cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
-        cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
-        cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
-        cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
-        cryptauth_device_manager_->GetLastSyncTime(),
-        cryptauth_device_manager_->GetTimeToNextAttempt(),
-        cryptauth_device_manager_->IsRecoveringFromFailure(),
-        cryptauth_device_manager_->IsSyncInProgress()));
   }
 }
 
@@ -812,11 +733,9 @@ void DeviceSyncImpl::OnSyncDeviceListChanged() {
 
 void DeviceSyncImpl::Shutdown() {
   cryptauth_device_activity_getter_.reset();
-  software_feature_manager_.reset();
   feature_status_setter_.reset();
   device_notifier_.reset();
   remote_device_provider_.reset();
-  cryptauth_device_manager_.reset();
   cryptauth_enrollment_manager_.reset();
   cryptauth_v2_device_manager_.reset();
   cryptauth_device_registry_.reset();
@@ -1067,14 +986,7 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
           cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
           cryptauth_scheduler_.get(), profile_prefs_, clock_);
 
-  // Initialize v1 and v2 CryptAuth device managers (depending on feature
-  // flags). Start() is not called yet since the device has not completed
-  // enrollment.
-  if (features::ShouldUseV1DeviceSync()) {
-    cryptauth_device_manager_ = CryptAuthDeviceManagerImpl::Factory::Create(
-        clock_, cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
-        profile_prefs_);
-  }
+  // Start() is not called yet since the device has not completed enrollment.
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_device_registry_ =
         CryptAuthDeviceRegistryImpl::Factory::Create(profile_prefs_);
@@ -1097,16 +1009,12 @@ void DeviceSyncImpl::CompleteInitializationAfterSuccessfulEnrollment() {
 
   // Now that enrollment has completed, the current device has been registered
   // with the CryptAuth back-end and can begin monitoring synced devices.
-  if (features::ShouldUseV1DeviceSync()) {
-    cryptauth_device_manager_->Start();
-  }
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->Start();
   }
 
   remote_device_provider_ = RemoteDeviceProviderImpl::Factory::Create(
-      cryptauth_device_manager_.get(), cryptauth_v2_device_manager_.get(),
-      primary_account_info_.email,
+      cryptauth_v2_device_manager_.get(), primary_account_info_.email,
       cryptauth_enrollment_manager_->GetUserPrivateKey());
   remote_device_provider_->AddObserver(this);
 
@@ -1120,11 +1028,6 @@ void DeviceSyncImpl::CompleteInitializationAfterSuccessfulEnrollment() {
         client_app_metadata_->instance_id(),
         client_app_metadata_->instance_id_token(),
         cryptauth_client_factory_.get());
-  }
-
-  if (features::ShouldUseV1DeviceSync()) {
-    software_feature_manager_ = SoftwareFeatureManagerImpl::Factory::Create(
-        cryptauth_client_factory_.get(), feature_status_setter_.get());
   }
 
   status_ = InitializationStatus::kReady;
@@ -1155,9 +1058,6 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess() {
   PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess(): "
                   << "Successfully completed SetSoftwareFeatureState() call; "
                   << "requesting force sync.";
-
-  cryptauth_device_manager_->ForceSyncNow(
-      cryptauth::INVOCATION_REASON_FEATURE_TOGGLED);
 
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
@@ -1199,11 +1099,6 @@ void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
   PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetFeatureStatusSuccess(): "
                   << "Successfully completed SetFeatureStatus() call; "
                   << "requesting force sync.";
-
-  if (features::ShouldUseV1DeviceSync()) {
-    cryptauth_device_manager_->ForceSyncNow(
-        cryptauth::INVOCATION_REASON_FEATURE_TOGGLED);
-  }
 
   cryptauth_v2_device_manager_->ForceDeviceSyncNow(
       cryptauthv2::ClientMetadata::FEATURE_TOGGLED,

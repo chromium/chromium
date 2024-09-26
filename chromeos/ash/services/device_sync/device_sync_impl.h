@@ -53,7 +53,6 @@ namespace device_sync {
 
 class ClientAppMetadataProvider;
 class CryptAuthClientFactory;
-class CryptAuthDeviceManager;
 class CryptAuthDeviceNotifier;
 class CryptAuthDeviceRegistry;
 class CryptAuthFeatureStatusSetter;
@@ -61,7 +60,6 @@ class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
 class GcmDeviceInfoProvider;
-class SoftwareFeatureManager;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:
@@ -339,9 +337,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
 
   std::unique_ptr<CryptAuthEnrollmentManager> cryptauth_enrollment_manager_;
-  std::unique_ptr<CryptAuthDeviceManager> cryptauth_device_manager_;
   std::unique_ptr<RemoteDeviceProvider> remote_device_provider_;
-  std::unique_ptr<SoftwareFeatureManager> software_feature_manager_;
   std::unique_ptr<CryptAuthDeviceActivityGetter>
       cryptauth_device_activity_getter_;
 
