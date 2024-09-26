@@ -46,8 +46,12 @@ void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  NOTREACHED() << "Non-const ref version of this method should be used as a "
-                  "performance optimization.";
+  // TODO: crbug.com/332706093 - This path was getting hit by the
+  // iphone-simulator bot in unittests. See if this can be turned into a
+  // NOTREACHED().
+  ResourceRequest copy(request);
+  CreateLoaderAndStart(std::move(loader), request_id, options, copy,
+                       std::move(client), traffic_annotation);
 }
 
 void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(
