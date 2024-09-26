@@ -26782,23 +26782,6 @@
             ]
         }
     ],
-    "WhatsNewV2Study": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WhatsNewVersion2"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [

@@ -51,7 +51,10 @@ class WhatsNewHandlerTest : public testing::Test {
   WhatsNewHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
         profile_(std::make_unique<TestingProfile>()),
-        web_contents_(factory_.CreateWebContents(profile_.get())) {}
+        web_contents_(factory_.CreateWebContents(profile_.get())) {
+    feature_list_.InitWithFeatures(
+        {}, {user_education::features::kWhatsNewVersion2});
+  }
   ~WhatsNewHandlerTest() override = default;
 
   void SetUp() override {
@@ -75,6 +78,7 @@ class WhatsNewHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList feature_list_;
 
   // NOTE: The initialization order of these members matters.
   ScopedTestingLocalState local_state_;
