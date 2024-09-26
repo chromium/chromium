@@ -26,10 +26,6 @@ class Profile;
 class Browser;
 class TabStripModel;
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace content {
 class WebContents;
 }  // namespace content
