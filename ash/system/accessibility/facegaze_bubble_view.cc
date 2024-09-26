@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -23,19 +24,25 @@ namespace ash {
 
 namespace {
 
-constexpr int kIconSizeDip = 16;
-constexpr int kSpaceBetweenIconAndTextDip = 4;
+constexpr int kIconSizeDip = 24;
+constexpr int kSpaceBetweenIconAndTextDip = 8;
+
+const ui::ResourceBundle::FontStyle kKeyLabelFontStyle =
+    ui::ResourceBundle::MediumFont;
 
 std::unique_ptr<views::Label> CreateLabelView(
     raw_ptr<views::Label>* destination_view,
     const std::u16string& text,
     ui::ColorId enabled_color_id) {
+  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
+
   return views::Builder<views::Label>()
       .CopyAddressTo(destination_view)
       .SetText(text)
       .SetEnabledColorId(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       .SetMultiLine(false)
+      .SetFontList(rb->GetFontList(kKeyLabelFontStyle))
       .Build();
 }
 
@@ -73,7 +80,8 @@ void FaceGazeBubbleView::Init() {
       views::BoxLayout::Orientation::kHorizontal);
   layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
   SetLayoutManager(std::move(layout));
-  UseCompactMargins();
+  set_margins(
+      gfx::Insets().set_top(8).set_bottom(8).set_left(16).set_right(16));
   AddChildView(CreateImageView(&image_, kFacegazeIcon));
   AddChildView(
       CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
