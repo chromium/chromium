@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_sources_exported = [
+  "web_ai_features.cc",
   "web_array_buffer.cc",
   "web_array_buffer_converter.cc",
   "web_blob.cc",

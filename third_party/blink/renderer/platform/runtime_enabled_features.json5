@@ -304,22 +304,41 @@
     },
     {
       name: "AIPromptAPI",
+      public: true,
       status: "test",
       base_feature: "EnableAIPromptAPI",
+      implied_by: ["AIPromptAPIForWebPlatform"]
+    },
+    {
+      name: "AIPromptAPIForExtension",
+      public: true,
+      origin_trial_feature_name: "AIPromptAPIForExtension",
+      status: "test",
+      base_feature: "EnableAIPromptAPIForExtension",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
+      name: "AIPromptAPIForWebPlatform",
+      public: true,
+      status: "test",
+      base_feature: "EnableAIPromptAPIForWebPlatform",
     },
     {
       name: "AIRewriterAPI",
+      public: true,
       status: "test",
       base_feature: "EnableAIRewriterAPI",
     },
     {
       name: "AISummarizationAPI",
+      public: true,
       status: "test",
       origin_trial_feature_name: "AISummarizationAPI",
       base_feature: "EnableAISummarizationAPI",
     },
     {
       name: "AIWriterAPI",
+      public: true,
       status: "test",
       base_feature: "EnableAIWriterAPI",
     },

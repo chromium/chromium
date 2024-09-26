@@ -17660,6 +17660,7 @@ from previous Chrome versions.
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
   <int value="-1085842725" label="SysUiShouldHoldbackForest:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
+  <int value="-1085391277" label="EnableAIPromptAPIForWebPlatform:disabled"/>
   <int value="-1085157892" label="FeedContainment:disabled"/>
   <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
   <int value="-1084500756" label="EnableViewPpd:enabled"/>
@@ -18342,6 +18343,7 @@ from previous Chrome versions.
   <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
+  <int value="-797457946" label="EnableAIPromptAPIForWebPlatform:enabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
   <int value="-797152302" label="ScreenlockReauthPromoCard:enabled"/>
   <int value="-796775379" label="FoldableJankFix:disabled"/>

@@ -3951,6 +3951,7 @@ if (!is_android) {
         "../browser/controlled_frame/controlled_frame_wpt_browsertest.cc",
         "../browser/controlled_frame/scoped_test_driver_proxy.cc",
         "../browser/controlled_frame/scoped_test_driver_proxy.h",
+        "../browser/extensions/ai_assistant_browsertest.cc",
         "../browser/extensions/alert_apitest.cc",
         "../browser/extensions/all_urls_apitest.cc",
         "../browser/extensions/api/activity_log_private/activity_log_private_apitest.cc",

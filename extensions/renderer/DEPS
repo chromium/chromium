@@ -67,5 +67,9 @@ specific_include_rules = {
   ],
   "localization_peer_unittest.cc": [
     "+net/url_request/redirect_info.h",
+  ],
+
+  "native_extension_bindings_system.cc": [
+    "+third_party/blink/public/common/features_generated.h",
   ]
 }

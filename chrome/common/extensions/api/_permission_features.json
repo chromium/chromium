@@ -56,6 +56,12 @@
       "5107DE9024C329EEA9C9A72D94C16723790C6422"   // Apps Developer Tool Dev.
     ]
   },
+  "aiAssistantOriginTrial": {
+    "channel": "trunk",
+    "extension_types": [
+      "extension"
+    ]
+  },
   "autofillPrivate": {
     "channel": "trunk",
     "extension_types": ["extension", "platform_app"],

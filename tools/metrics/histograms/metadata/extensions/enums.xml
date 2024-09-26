@@ -3148,6 +3148,7 @@ Called by update_extension_permission.py.-->
   <int value="256" label="kOdfsConfigPrivate"/>
   <int value="257" label="kChromeOSManagementAudio"/>
   <int value="258" label="kChromeOSDiagnosticsNetworkInfoForMlab"/>
+  <int value="259" label="kAIAssistantOriginTrial"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">
