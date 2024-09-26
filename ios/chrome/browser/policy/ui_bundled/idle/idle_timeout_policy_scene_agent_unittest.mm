@@ -93,7 +93,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 
   void SetUpAppState() {
     // Set up scene state.
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     startup_information_ = [[FakeStartupInformation alloc] init];
     app_state_ = [[FakeAppStateForAgent alloc]
         initWithStartupInformation:startup_information_];
@@ -101,13 +101,13 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 
   void InitIdleService() {
     idle_service_ = std::make_unique<enterprise_idle::IdleService>(
-        browser_state_->GetOriginalChromeBrowserState());
+        profile_->GetOriginalProfile());
     idle_service_->SetActionRunnerForTesting(
         base::WrapUnique(new MockActionRunner()));
   }
 
   void SetIdleTimeoutPolicies() {
-    PrefService* prefs = browser_state_->GetPrefs();
+    PrefService* prefs = profile_->GetPrefs();
     prefs->SetTimeDelta(enterprise_idle::prefs::kIdleTimeout, base::Minutes(1));
     base::Value::List actions;
     actions.Append(
@@ -119,9 +119,8 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   }
 
   void InitSceneWithAgent() {
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
@@ -161,7 +160,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<enterprise_idle::IdleService> idle_service_;
   FakeStartupInformation* startup_information_;
   FakeAppStateForAgent* app_state_;

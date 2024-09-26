@@ -175,7 +175,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   BrowserPolicyConnectorIOS* connector =
       GetApplicationContext()->GetBrowserPolicyConnector();
   DCHECK(connector);
-  policy_schema_registry_ = BuildSchemaRegistryForBrowserState(
+  policy_schema_registry_ = BuildSchemaRegistryForProfile(
       this, connector->GetChromeSchema(), connector->GetSchemaRegistry());
 
   // Create the UserCloudPolicyManager and force it to load immediately since

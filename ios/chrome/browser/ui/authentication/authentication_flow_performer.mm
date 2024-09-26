@@ -390,7 +390,7 @@ NSString* const kAuthenticationSnackbarCategory =
           base::SysNSStringToUTF8(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile);
 
   __weak __typeof(self) weakSelf = self;
 
@@ -430,7 +430,7 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK([clientID length] > 0);
 
   policy::UserPolicySigninService* policyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
   AccountId accountID =

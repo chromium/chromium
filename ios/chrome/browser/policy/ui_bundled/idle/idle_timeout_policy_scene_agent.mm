@@ -200,7 +200,7 @@
 }
 
 - (PrefService*)prefService {
-  return _mainBrowser->GetBrowserState()->GetPrefs();
+  return _mainBrowser->GetProfile()->GetPrefs();
 }
 
 // Returns whether the scene and app states allow for the idle timeout snackbar

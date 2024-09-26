@@ -51,7 +51,7 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
       bool is_machine_scope) override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace enterprise_reporting

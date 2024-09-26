@@ -19,7 +19,7 @@ class DeviceManagementService;
 class UserPolicySigninService;
 
 // Singleton that owns all UserPolicySigninServices and creates/deletes them as
-// new BrowserStates are created/shutdown.
+// new Profiles are created/shutdown.
 //
 // Warning: ONLY use the service when Enterprise Policy is enabled where
 // the policy system objects are enabled (eg. the BrowserPolicyConnector object
@@ -32,12 +32,9 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the instance of UserPolicySigninService for the `context`.
   static UserPolicySigninService* GetForProfile(ProfileIOS* profile);
 
-  // Deprecated: use GetForProfile(...).
-  static UserPolicySigninService* GetForBrowserState(ProfileIOS* profile);
-
   // Allows setting a mock DeviceManagementService for tests. Does not take
   // ownership, and should be reset to nullptr at the end of the test.
-  // Set this before an instance is built for a BrowserState.
+  // Set this before an instance is built for a Profile.
   static void SetDeviceManagementServiceForTesting(
       DeviceManagementService* device_management_service);
 

@@ -34,18 +34,17 @@ class ReportGeneratorIOSTest : public PlatformTest {
   ReportGeneratorIOSTest() : generator_(&delegate_factory_) {
     InitPolicyMap();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
-    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   ReportGeneratorIOSTest(const ReportGeneratorIOSTest&) = delete;
@@ -98,19 +97,15 @@ class ReportGeneratorIOSTest : public PlatformTest {
         /*basic request size floor to KB*/ 0, 1);
   }
 
-  base::FilePath GetBrowserStatePath() {
-    return browser_state_->GetStatePath();
-  }
+  base::FilePath GetProfilePath() { return profile_->GetStatePath(); }
 
-  const std::string& GetProfileName() {
-    return browser_state_->GetProfileName();
-  }
+  const std::string& GetProfileName() { return profile_->GetProfileName(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   ReportingDelegateFactoryIOS delegate_factory_;
   ReportGenerator generator_;
@@ -160,7 +155,7 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   // Verify the profile report
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
   auto profile_info = browser_report.chrome_user_profile_infos(0);
-  EXPECT_EQ(GetBrowserStatePath().AsUTF8Unsafe(), profile_info.id());
+  EXPECT_EQ(GetProfilePath().AsUTF8Unsafe(), profile_info.id());
   EXPECT_EQ(GetProfileName(), profile_info.name());
   EXPECT_TRUE(profile_info.has_is_detail_available());
   EXPECT_TRUE(profile_info.is_detail_available());

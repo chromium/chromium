@@ -49,10 +49,10 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 // Returns the AuthenticationService of the browser.
 - (AuthenticationService*)authService {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  DCHECK(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  DCHECK(profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   return authService;
 }
 

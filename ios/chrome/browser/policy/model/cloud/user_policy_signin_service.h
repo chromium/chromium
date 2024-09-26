@@ -21,9 +21,9 @@ class CloudPolicyClientRegistrationHelper;
 class UserPolicySigninService : public UserPolicySigninServiceBase,
                                 public signin::IdentityManager::Observer {
  public:
-  // Creates a UserPolicySigninService associated with the `browser_state`.
+  // Creates a UserPolicySigninService associated with the profile.
   UserPolicySigninService(
-      PrefService* browser_state_prefs,
+      PrefService* pref_service,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
@@ -59,8 +59,8 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // Helper used to register for user policy.
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 
-  // The PrefService associated with the BrowserState.
-  raw_ptr<PrefService> browser_state_prefs_;
+  // The PrefService associated with the Profile.
+  raw_ptr<PrefService> pref_service_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

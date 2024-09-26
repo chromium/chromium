@@ -111,7 +111,7 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
 // Returns the idle timeout the admin has set.
 - (int)idleTimeout {
-  return self.browser->GetBrowserState()
+  return self.browser->GetProfile()
       ->GetPrefs()
       ->GetTimeDelta(enterprise_idle::prefs::kIdleTimeout)
       .InMinutes();
@@ -126,13 +126,13 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 }
 
 - (enterprise_idle::IdleService*)idleService {
-  return enterprise_idle::IdleServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return enterprise_idle::IdleServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 - (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 - (void)setInitialVoiceOverFocus {

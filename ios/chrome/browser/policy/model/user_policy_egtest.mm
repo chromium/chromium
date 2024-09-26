@@ -103,11 +103,11 @@ void SetUpPolicyServer(policy::EmbeddedPolicyTestServer* policy_server) {
   policy_storage->set_policy_invalidation_topic("test_policy_topic");
 }
 
-// Waits on user policy data to be accessible from the browser state.
+// Waits on user policy data to be accessible from the Profile.
 void WaitOnUserPolicy(base::TimeDelta timeout) {
   // Wait for user policy fetch.
   ConditionBlock condition = ^{
-    return [PolicyAppInterface hasUserPolicyDataInCurrentBrowserState];
+    return [PolicyAppInterface hasUserPolicyDataInCurrentProfile];
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(timeout, condition),
              @"No user policy data found");
@@ -118,17 +118,16 @@ void VerifyThatPoliciesAreSet() {
   WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);
 
   // Verify that the policy is set.
-  GREYAssertTrue(
-      [PolicyAppInterface
-          hasUserPolicyInCurrentBrowserState:@"IncognitoModeAvailability"
-                            withIntegerValue:1],
-      @"No policy data for IncognitoModeAvailability");
+  GREYAssertTrue([PolicyAppInterface
+                     hasUserPolicyInCurrentProfile:@"IncognitoModeAvailability"
+                                  withIntegerValue:1],
+                 @"No policy data for IncognitoModeAvailability");
 }
 
 // Verifies from the UI and the policy store that the user policies are not set.
 void VerifyThatPoliciesAreNotSet() {
   // Verify that there is no policy data in the store.
-  GREYAssertFalse([PolicyAppInterface hasUserPolicyDataInCurrentBrowserState],
+  GREYAssertFalse([PolicyAppInterface hasUserPolicyDataInCurrentProfile],
                   @"There should not be user policy data in the store");
 }
 

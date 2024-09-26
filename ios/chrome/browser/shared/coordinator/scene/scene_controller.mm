@@ -1056,7 +1056,7 @@ void OnListFamilyMembersResponse(
   if (IsUserPolicyNotificationNeeded(authService, prefService,
                                      userPolicyManager)) {
     policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
+        policy::UserPolicySigninServiceFactory::GetForProfile(profile);
     [sceneState
         addAgent:[[UserPolicySceneAgent alloc]
                         initWithSceneUIProvider:self

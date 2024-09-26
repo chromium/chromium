@@ -40,7 +40,7 @@ AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
 namespace policy {
 
 UserPolicySigninService::UserPolicySigninService(
-    PrefService* browser_state_prefs,
+    PrefService* pref_service,
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
@@ -51,7 +51,7 @@ UserPolicySigninService::UserPolicySigninService(
                                   policy_manager,
                                   identity_manager,
                                   system_url_loader_factory),
-      browser_state_prefs_(browser_state_prefs) {
+      pref_service_(pref_service) {
   if (identity_manager) {
     scoped_identity_manager_observation_.Observe(identity_manager);
   }
@@ -121,13 +121,13 @@ std::string UserPolicySigninService::GetProfileId() {
 }
 
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
-  return GetTryRegistrationDelayFromPrefs(browser_state_prefs_);
+  return GetTryRegistrationDelayFromPrefs(pref_service_);
 }
 
 void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
 
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
-  UpdateLastPolicyCheckTimeInPrefs(browser_state_prefs_);
+  UpdateLastPolicyCheckTimeInPrefs(pref_service_);
 }
 
 signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {

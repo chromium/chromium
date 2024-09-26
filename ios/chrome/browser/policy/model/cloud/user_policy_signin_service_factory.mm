@@ -42,12 +42,6 @@ UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
 }
 
 // static
-UserPolicySigninService* UserPolicySigninServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
   return base::Singleton<UserPolicySigninServiceFactory>::get();
 }
@@ -73,14 +67,12 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
           : connector->device_management_service();
   DCHECK(device_management_service);
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
 
   return std::make_unique<UserPolicySigninService>(
-      chrome_browser_state->GetPrefs(),
-      GetApplicationContext()->GetLocalState(), device_management_service,
-      chrome_browser_state->GetUserCloudPolicyManager(),
-      IdentityManagerFactory::GetForProfile(chrome_browser_state),
+      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      device_management_service, profile->GetUserCloudPolicyManager(),
+      IdentityManagerFactory::GetForProfile(profile),
       browser_state->GetSharedURLLoaderFactory());
 }
 

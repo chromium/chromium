@@ -16,19 +16,19 @@
 PolicyConversionsClientIOS::PolicyConversionsClientIOS(
     web::BrowserState* browser_state) {
   DCHECK(browser_state);
-  browser_state_ = ChromeBrowserState::FromBrowserState(
+  profile_ = ProfileIOS::FromBrowserState(
       GetBrowserStateRedirectedInIncognito(browser_state));
 }
 
 PolicyConversionsClientIOS::~PolicyConversionsClientIOS() = default;
 
 policy::PolicyService* PolicyConversionsClientIOS::GetPolicyService() const {
-  return browser_state_->GetPolicyConnector()->GetPolicyService();
+  return profile_->GetPolicyConnector()->GetPolicyService();
 }
 
 policy::SchemaRegistry* PolicyConversionsClientIOS::GetPolicySchemaRegistry()
     const {
-  return browser_state_->GetPolicyConnector()->GetSchemaRegistry();
+  return profile_->GetPolicyConnector()->GetSchemaRegistry();
 }
 
 const policy::ConfigurationPolicyHandlerList*
@@ -37,7 +37,7 @@ PolicyConversionsClientIOS::GetHandlerList() const {
 }
 
 bool PolicyConversionsClientIOS::HasUserPolicies() const {
-  return browser_state_ != nullptr;
+  return profile_ != nullptr;
 }
 
 base::Value::List PolicyConversionsClientIOS::GetExtensionPolicies(

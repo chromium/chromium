@@ -77,8 +77,8 @@ class PolicyWatcherBrowserAgent
   // Registrar for local state pref change notifications.
   PrefChangeRegistrar prefs_change_observer_;
 
-  // Registrar for browser state pref change notifications.
-  PrefChangeRegistrar browser_prefs_change_observer_;
+  // Registrar for profile pref change notifications.
+  PrefChangeRegistrar profile_prefs_change_observer_;
 
   // List of observers notified of changes to the policy.
   base::ObserverList<PolicyWatcherBrowserAgentObserver, true> observers_;

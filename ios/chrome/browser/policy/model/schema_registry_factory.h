@@ -15,8 +15,8 @@ class Schema;
 class SchemaRegistry;
 }  // namespace policy
 
-std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForBrowserState(
-    ChromeBrowserState* browser_state,
+std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForProfile(
+    ProfileIOS* profile,
     const policy::Schema& chrome_schema,
     policy::CombinedSchemaRegistry* global_registry);
 
