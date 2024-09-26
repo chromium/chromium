@@ -267,6 +267,7 @@ void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
 
   DCHECK(delegated_ink_points_.find(pointer_id) ==
              delegated_ink_points_.end() ||
+         delegated_ink_points_[pointer_id].empty() ||
          point.timestamp() >
              delegated_ink_points_[pointer_id].rbegin()->first.timestamp());
 
