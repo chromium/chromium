@@ -31,8 +31,8 @@ class ElementGeneratorTest(unittest.TestCase):
     self.assertEquals(['  "bar\\n",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string'}, None, lines, '  ', {})
-    self.assertEquals(['  NULL,'], lines)
-    lines = [];
+    self.assertEquals(['  nullptr,'], lines)
+    lines = []
     GenerateFieldContent('', {'type': 'string'}, 'foo', lines, '  ', {})
     self.assertEquals(['  "foo",'], lines)
 
@@ -48,8 +48,8 @@ class ElementGeneratorTest(unittest.TestCase):
     self.assertEquals(['  u"b\\xc3a5" u"r",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16'}, None, lines, '  ', {})
-    self.assertEquals(['  NULL,'], lines)
-    lines = [];
+    self.assertEquals(['  nullptr,'], lines)
+    lines = []
     GenerateFieldContent('', {'type': 'string16'}, u'foo\\u1234', lines, '  ',
                          {})
     self.assertEquals(['  u"foo\\\\u1234",'], lines)
@@ -88,29 +88,30 @@ class ElementGeneratorTest(unittest.TestCase):
     lines = ['STRUCT BEGINS'];
     GenerateFieldContent('test', {'type': 'array', 'contents': {'type': 'int'}},
                          None, lines, '  ', {})
-    self.assertEquals(['STRUCT BEGINS', '  NULL,', '  0,'], lines)
-    lines = ['STRUCT BEGINS'];
-    GenerateFieldContent('test', {'field': 'my_array', 'type': 'array',
-                                  'contents': {'type': 'int'}},
-                         [3, 4], lines, '  ', {})
-    self.assertEquals('const int array_test_my_array[] = {\n' +
-      '  3,\n' +
-      '  4,\n' +
-      '};\n' +
-      'STRUCT BEGINS\n' +
-      '  array_test_my_array,\n' +
-      '  2,', '\n'.join(lines))
-    lines = ['STRUCT BEGINS'];
-    GenerateFieldContent('test', {'field': 'my_array', 'type': 'array',
-                                  'contents': {'type': 'int'}},
-                         [3, 4], lines, '  ', {'array_test_my_array': 1})
-    self.assertEquals('const int array_test_my_array_1[] = {\n' +
-      '  3,\n' +
-      '  4,\n' +
-      '};\n' +
-      'STRUCT BEGINS\n' +
-      '  array_test_my_array_1,\n' +
-      '  2,', '\n'.join(lines))
+    self.assertEquals(['STRUCT BEGINS', '  {},'], lines)
+    lines = ['STRUCT BEGINS']
+    GenerateFieldContent('test', {
+        'field': 'my_array',
+        'type': 'array',
+        'contents': {
+            'type': 'int'
+        }
+    }, [3, 4], lines, '  ', {})
+    self.assertEquals(
+        'const int array_test_my_array[] = {\n' + '  3,\n' + '  4,\n' + '};\n' +
+        'STRUCT BEGINS\n' + '  array_test_my_array,', '\n'.join(lines))
+    lines = ['STRUCT BEGINS']
+    GenerateFieldContent('test', {
+        'field': 'my_array',
+        'type': 'array',
+        'contents': {
+            'type': 'int'
+        }
+    }, [3, 4], lines, '  ', {'array_test_my_array': 1})
+    self.assertEquals(
+        'const int array_test_my_array_1[] = {\n' + '  3,\n' + '  4,\n' +
+        '};\n' + 'STRUCT BEGINS\n' + '  array_test_my_array_1,',
+        '\n'.join(lines))
 
   def testGenerateElements(self):
     schema = [
@@ -166,22 +167,18 @@ class ElementGeneratorTest(unittest.TestCase):
         '  5,\n'
         '  "foo",\n'
         '  SURE,\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '  {0},\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '};\n',
         'elem1':
         'const MyType elem1 = {\n'
         '  -2,\n'
         '  "bar",\n'
         '  NOWAY,\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '  {0},\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '};\n',
         'elem2':
         'const char16_t* const array_elem2_f3[] = {\n'
@@ -193,23 +190,19 @@ class ElementGeneratorTest(unittest.TestCase):
         '  "foo_bar",\n'
         '  MAYBE,\n'
         '  array_elem2_f3,\n'
-        '  2,\n'
         '  {0},\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '};\n',
         'elem3':
         'const MyType elem3 = {\n'
         '  1000,\n'
         '  "foo",\n'
         '  MAYBE,\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '  {\n'
         '    "test",\n'
         '  },\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '};\n',
         'elem4':
         'const InnerType array_elem4_f5[] = {\n'
@@ -222,11 +215,9 @@ class ElementGeneratorTest(unittest.TestCase):
         '  1000,\n'
         '  "foo",\n'
         '  MAYBE,\n'
-        '  NULL,\n'
-        '  0,\n'
+        '  {},\n'
         '  {0},\n'
         '  array_elem4_f5,\n'
-        '  1,\n'
         '};\n'
     }
     expected = ''

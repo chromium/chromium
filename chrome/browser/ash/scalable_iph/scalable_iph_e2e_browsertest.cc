@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
@@ -40,10 +35,9 @@ bool IsGoogleChrome() {
 const variations::FieldTrialTestingStudy* FindStudy() {
   const variations::FieldTrialTestingConfig& config =
       variations::kFieldTrialConfig;
-  for (size_t i = 0; i < config.studies_size; ++i) {
-    const variations::FieldTrialTestingStudy* study = config.studies + i;
-    if (std::string(study->name) == kStudyName) {
-      return study;
+  for (const variations::FieldTrialTestingStudy& study : config.studies) {
+    if (std::string(study.name) == kStudyName) {
+      return &study;
     }
   }
   return nullptr;
@@ -52,11 +46,10 @@ const variations::FieldTrialTestingStudy* FindStudy() {
 const variations::FieldTrialTestingExperiment* FindExperiment(
     const variations::FieldTrialTestingStudy* study,
     const std::string& experiment_name) {
-  for (size_t i = 0; i < study->experiments_size; ++i) {
-    const variations::FieldTrialTestingExperiment* experiment =
-        study->experiments + i;
-    if (experiment->name == experiment_name) {
-      return experiment;
+  for (const variations::FieldTrialTestingExperiment& experiment :
+       study->experiments) {
+    if (experiment.name == experiment_name) {
+      return &experiment;
     }
   }
   return nullptr;
@@ -92,15 +85,14 @@ base::FieldTrialParams GetFieldTrialParams(
     size_t& params_size) {
   base::FieldTrialParams params;
 
-  for (size_t i = 0; i < experiment->params_size; ++i) {
-    const variations::FieldTrialTestingExperimentParams* experiment_params =
-        experiment->params + i;
-    std::string param_key(experiment_params->key);
+  for (const variations::FieldTrialTestingExperimentParams& experiment_params :
+       experiment->params) {
+    std::string param_key(experiment_params.key);
     if (!base::StartsWith(param_key, prefix)) {
       continue;
     }
 
-    std::string param_value(experiment_params->value);
+    std::string param_value(experiment_params.value);
     params[param_key] = param_value;
 
     params_size += param_key.size();
@@ -115,8 +107,8 @@ void ApplyExperiment(
     const variations::FieldTrialTestingExperiment* experiment) {
   size_t params_size = 0;
   std::vector<base::test::FeatureRefAndParams> enable_features;
-  for (size_t i = 0; i < experiment->enable_features_size; ++i) {
-    std::string_view feature_name(*(experiment->enable_features + i));
+  for (const auto* enabled_feature : experiment->enable_features) {
+    std::string_view feature_name(enabled_feature);
 
     // `ScopedIphFeatureList` uses `ScopedFeatureList` internally.
     // `ScopedFeatureList` creates a field trial for each feature. Parse params
@@ -138,10 +130,9 @@ void ApplyExperiment(
          "about details.";
 
   std::vector<base::test::FeatureRef> disable_features;
-  for (size_t i = 0; i < experiment->disable_features_size; ++i) {
-    const char* const* feature_name = experiment->disable_features + i;
+  for (const auto* disabled_feature : experiment->disable_features) {
     disable_features.push_back(
-        base::test::FeatureRef(*GetFeature(std::string(*feature_name))));
+        base::test::FeatureRef(*GetFeature(std::string(disabled_feature))));
   }
 
   // Enable `ScalableIphDebug` for easier debug.

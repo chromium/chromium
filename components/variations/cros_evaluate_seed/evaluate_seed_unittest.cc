@@ -139,34 +139,22 @@ const FieldTrialTestingExperiment
     array_kEarlyBootFieldTrialConfig_experiments[] = {
         {/*name=*/"Enabled",
          /*platforms=*/array_kEarlyBootFieldTrialConfig_platforms,
-         /*platforms_size=*/
-         std::size(array_kEarlyBootFieldTrialConfig_platforms),
          /*form_factors=*/{},
-         /*form_factors_size=*/0,
          /*is_low_end_device=*/std::nullopt,
          /*min_os_version=*/nullptr,
          /*params=*/array_kEarlyBootFieldTrialConfig_params,
-         /*params_size=*/std::size(array_kEarlyBootFieldTrialConfig_params),
          /*enable_features=*/early_boot_enable_features,
-         /*enable_features_size=*/std::size(early_boot_enable_features),
-         /*disable_features=*/nullptr,
-         /*disable_features_size=*/0,
-         /*forcing_flag=*/nullptr,
-         /*override_ui_string=*/nullptr,
-         /*override_ui_string_size=*/0},
-};
+         /*disable_features=*/{},
+         /*forcing_flag=*/{},
+         /*override_ui_string=*/{}}};
 
 const FieldTrialTestingStudy array_kEarlyBootFieldTrialConfig_studies[] = {
     {/*name=*/"CrOSEarlyBootTestStudy",
-     /*experiments=*/array_kEarlyBootFieldTrialConfig_experiments,
-     /*experiments_size=*/
-     std::size(array_kEarlyBootFieldTrialConfig_experiments)},
+     /*experiments=*/array_kEarlyBootFieldTrialConfig_experiments},
 };
 
 const FieldTrialTestingConfig kEarlyBootTestingConfig = {
-    array_kEarlyBootFieldTrialConfig_studies,
-    std::size(array_kEarlyBootFieldTrialConfig_studies),
-};
+    array_kEarlyBootFieldTrialConfig_studies};
 
 std::unique_ptr<ClientFilterableState> GetBasicClientFilterableState() {
   CrosVariationsServiceClient client;

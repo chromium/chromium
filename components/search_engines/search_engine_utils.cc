@@ -51,7 +51,7 @@ SearchEngineType GetEngineType(const GURL& url) {
 
     // Then check the alternate URLs.
     for (size_t j = 0;
-         j < TemplateURLPrepopulateData::kAllEngines[i]->alternate_urls_size;
+         j < TemplateURLPrepopulateData::kAllEngines[i]->alternate_urls.size();
          ++j) {
       if (SameDomain(url, GURL(TemplateURLPrepopulateData::kAllEngines[i]
                                    ->alternate_urls[j])))

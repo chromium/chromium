@@ -267,7 +267,10 @@ json_to_struct("prepopulated_engines") {
   source = "prepopulated_engines.json"
   schema_file = "prepopulated_engines_schema.json"
   namespace = "TemplateURLPrepopulateData"
-  deps = [ ":search_engine_type" ]
+  deps = [
+    ":search_engine_type",
+    "//base",
+  ]
 }
 
 if (is_android) {

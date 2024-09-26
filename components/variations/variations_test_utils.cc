@@ -175,26 +175,19 @@ const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params_0[] = {
 const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
     {/*name=*/"Enabled",
      /*platforms=*/array_kFieldTrialConfig_platforms_0,
-     /*platforms_size=*/10,
      /*form_factors=*/{},
-     /*form_factors_size=*/0,
      /*is_low_end_device=*/std::nullopt,
      /*min_os_version=*/nullptr,
      /*params=*/array_kFieldTrialConfig_params_0,
-     /*params_size=*/1,
      /*enable_features=*/enable_features_0,
-     /*enable_features_size=*/1,
-     /*disable_features=*/nullptr,
-     /*disable_features_size=*/0,
+     /*disable_features=*/{},
      /*forcing_flag=*/nullptr,
-     /*override_ui_string=*/nullptr,
-     /*override_ui_string_size=*/0},
+     /*override_ui_string=*/{}},
 };
 
 const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
     {/*name=*/"UnitTest",
-     /*experiments=*/array_kFieldTrialConfig_experiments_0,
-     /*experiments_size=*/1},
+     /*experiments=*/array_kFieldTrialConfig_experiments_0},
 };
 
 }  // namespace
@@ -301,9 +294,7 @@ void ResetVariations() {
 }
 
 const FieldTrialTestingConfig kTestingConfig = {
-    array_kFieldTrialConfig_studies,
-    1,
-};
+    array_kFieldTrialConfig_studies};
 
 std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
   auto client_state = std::make_unique<ClientFilterableState>(
