@@ -772,6 +772,14 @@ class CORE_EXPORT Node : public EventTarget {
     CountersAttachmentContext counters_context;
 
     AttachContext() = default;
+    AttachContext(const AttachContext& other)
+        : previous_in_flow(other.previous_in_flow),
+          parent(other.parent),
+          next_sibling(other.next_sibling),
+          performing_reattach(other.performing_reattach),
+          use_previous_in_flow(other.use_previous_in_flow),
+          next_sibling_valid(other.next_sibling_valid),
+          counters_context(other.counters_context.ShallowClone()) {}
   };
 
   // Attaches this node to the layout tree. This calculates the style to be

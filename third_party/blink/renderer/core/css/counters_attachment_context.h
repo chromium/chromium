@@ -45,6 +45,18 @@ class CORE_EXPORT CountersAttachmentContext {
 
   CountersAttachmentContext();
 
+  CountersAttachmentContext(CountersAttachmentContext&&) = default;
+  CountersAttachmentContext& operator=(CountersAttachmentContext&&) = default;
+
+  CountersAttachmentContext& operator=(const CountersAttachmentContext&) =
+      delete;
+
+  // Create a shallow copy of this object, meaning that the counter stacks will
+  // be shared between this and the copy.
+  CountersAttachmentContext ShallowClone() const {
+    return CountersAttachmentContext(*this);
+  }
+
   void EnterObject(const LayoutObject&);
   void LeaveObject(const LayoutObject&);
   // only_last = true for counter(), = false for counters().
@@ -60,6 +72,9 @@ class CORE_EXPORT CountersAttachmentContext {
   static bool ElementGeneratesListItemCounter(const Element& element);
 
  private:
+  // The default copy constructor can be used to create shallow copies.
+  CountersAttachmentContext(const CountersAttachmentContext&) = default;
+
   void CreateCounter(const LayoutObject&,
                      const AtomicString& counter_name,
                      int value);
