@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -38,6 +39,9 @@ const CGFloat kCountBorderWidth = 24;
     ]];
 
     self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
+    if (@available(iOS 17, *)) {
+      [self registerViewForTraitChanges];
+    }
   }
   return self;
 }
@@ -51,6 +55,10 @@ const CGFloat kCountBorderWidth = 24;
     _iconView.contentMode = UIViewContentModeCenter;
 
     [self updateConfiguration:config];
+
+    if (@available(iOS 17, *)) {
+      [self registerViewForTraitChanges];
+    }
   }
   return self;
 }
@@ -129,13 +137,19 @@ const CGFloat kCountBorderWidth = 24;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.titleLabel.font = [self titleLabelFont];
+    [self updateTitleLabelFontOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Private
 
@@ -144,6 +158,21 @@ const CGFloat kCountBorderWidth = 24;
       UIFontTextStyleCaption2,
       self.traitCollection.preferredContentSizeCategory,
       UIContentSizeCategoryAccessibilityLarge);
+}
+
+// Registers a list of UITraits to observe and invokes the
+// `updateTitleLabelFontOnTraitChange` function whenever one of the observed
+// trait's values change.
+- (void)registerViewForTraitChanges API_AVAILABLE(ios(17.0)) {
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.self ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateTitleLabelFontOnTraitChange)];
+}
+
+// Update the `titleLabel` font when the device's content size changes.
+- (void)updateTitleLabelFontOnTraitChange {
+  self.titleLabel.font = [self titleLabelFont];
 }
 
 @end
