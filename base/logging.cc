@@ -421,29 +421,6 @@ void CloseLogFileUnlocked() {
     g_logging_destination &= ~LOG_TO_FILE;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
-    LogSeverity severity) {
-  switch (severity) {
-    case LOGGING_INFO:
-      return FUCHSIA_LOG_INFO;
-    case LOGGING_WARNING:
-      return FUCHSIA_LOG_WARNING;
-    case LOGGING_ERROR:
-      return FUCHSIA_LOG_ERROR;
-    case LOGGING_FATAL:
-      // Don't use FX_LOG_FATAL, otherwise fx_logger_log() will abort().
-      return FUCHSIA_LOG_ERROR;
-  }
-  if (severity > -3) {
-    // LOGGING_VERBOSE levels 1 and 2.
-    return FUCHSIA_LOG_DEBUG;
-  }
-  // LOGGING_VERBOSE levels 3 and higher, or incorrect levels.
-  return FUCHSIA_LOG_TRACE;
-}
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
   long rv;
@@ -908,7 +885,7 @@ void LogMessage::Flush() {
     const auto message = std::string_view(str_newline).substr(message_start_);
     GetScopedFxLogger().LogMessage(file_, static_cast<uint32_t>(line_),
                                    message.substr(0, message.size() - 1),
-                                   LogSeverityToFuchsiaLogSeverity(severity_));
+                                   severity_);
 #endif  // BUILDFLAG(IS_FUCHSIA)
   }
 
