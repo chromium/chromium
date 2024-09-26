@@ -2599,6 +2599,9 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
+[ Mac12 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
+[ Mac14 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369668292 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369236537 [ Mac12 ] external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Failure Timeout ]
 crbug.com/369236537 [ Mac11 ] external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Failure Timeout ]
