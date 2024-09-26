@@ -637,8 +637,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                                    TabCloseTypes::CLOSE_NONE);
 }
 
-// TODO(crbug.com/359368807): Re-enable on Linux MSAN once not flaky.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/359368807): Re-enable on Linux and ChromiumOS MSAN once not
+// flaky.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(MEMORY_SANITIZER)
 #define MAYBE_TestShouldExecuteEntryPointShow \
   DISABLED_TestShouldExecuteEntryPointShow
 #else
