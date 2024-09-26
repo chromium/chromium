@@ -21,12 +21,6 @@ BASE_FEATURE(kDisableQuotaDbFullFSync,
              "DisableQuotaDbFullFSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A kill switch for the new approach to storage eviction on low disk space. See
-// crbug.com/1382847
-BASE_FEATURE(kNewQuotaEvictionRoutine,
-             "NewQuotaEvictionRoutine",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Storage Pressure Event.
 BASE_FEATURE(kStoragePressureEvent,
              "StoragePressureEvent",

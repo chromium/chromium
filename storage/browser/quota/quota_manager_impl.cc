@@ -2608,11 +2608,8 @@ void QuotaManagerImpl::GetEvictionBuckets(int64_t target_usage,
 
   // The usage map should have been cached recently due to
   // `GetEvictionRoundInfo()`.
-  std::map<BucketLocator, int64_t> usage_map;
-  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
-    usage_map =
-        GetUsageTracker(StorageType::kTemporary)->GetCachedBucketsUsage();
-  }
+  std::map<BucketLocator, int64_t> usage_map =
+      GetUsageTracker(StorageType::kTemporary)->GetCachedBucketsUsage();
 
   GetBucketsForEvictionFromDatabase(
       target_usage, std::move(usage_map),

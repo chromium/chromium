@@ -151,13 +151,7 @@ void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
 
 void QuotaTemporaryStorageEvictor::ConsiderEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
-    CHECK(!in_round());
-  } else if (in_round()) {
-    // Only look for expired buckets once per round.
-    OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode::kOk);
-    return;
-  }
+  CHECK(!in_round());
   OnEvictionRoundStarted();
   quota_eviction_handler_->EvictExpiredBuckets(
       base::BindOnce(&QuotaTemporaryStorageEvictor::OnEvictedExpiredBuckets,
@@ -214,9 +208,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
     // TODO(michaeln): if the reason for eviction is low physical disk space,
     // make 'unlimited' storage keys subject to eviction too.
     quota_eviction_handler_->GetEvictionBuckets(
-        base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)
-            ? amount_to_evict
-            : 1,
+        amount_to_evict,
         base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionBuckets,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -258,21 +250,9 @@ void QuotaTemporaryStorageEvictor::OnEvictionComplete(
   statistics_.num_evicted_buckets += actual_evicted_buckets;
   round_statistics_.num_evicted_buckets += actual_evicted_buckets;
 
-  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
-    StartEvictionTimerWithDelay(interval_ms_);
-    OnEvictionRoundFinished();
-    return;
-  }
-
-  const bool success = expected_evicted_buckets == actual_evicted_buckets;
-  if (success) {
-    // We many need to get rid of more space so reconsider immediately.
-    ConsiderEviction();
-  } else {
-    // Sleep for a while and retry again until we see too many errors.
-    StartEvictionTimerWithDelay(interval_ms_);
-    OnEvictionRoundFinished();
-  }
+  StartEvictionTimerWithDelay(interval_ms_);
+  OnEvictionRoundFinished();
+  return;
 }
 
 }  // namespace storage
