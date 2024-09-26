@@ -28,7 +28,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './history_embeddings.html.js';
 import type {SearchQuery, SearchResult, SearchResultItem} from './history_embeddings.mojom-webui.js';
-import {UserFeedback} from './history_embeddings.mojom-webui.js';
+import {AnswerStatus, UserFeedback} from './history_embeddings.mojom-webui.js';
 
 function jsDateToMojoDate(date: Date): Time {
   const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
@@ -78,7 +78,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         type: String,
         value: CrFeedbackOption.UNSPECIFIED,
       },
-      loading_: Boolean,
+      loadingAnswer_: Boolean,
+      loadingResults_: Boolean,
       searchResult_: Object,
       searchQuery: String,
       timeRangeStart: Object,
@@ -86,7 +87,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         type: Boolean,
         reflectToAttribute: true,
         value: true,
-        computed: 'computeIsEmpty_(loading_, searchResult_.items.length)',
+        computed:
+            'computeIsEmpty_(loadingResults_, searchResult_.items.length)',
         notify: true,
       },
       enableAnswers_: {
@@ -99,8 +101,9 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsImages'),
       },
       answerSource_: {
-        type: Boolean,
+        type: Object,
         computed: 'computeAnswerSource_(searchResult_.items)',
+        value: null,
       },
     };
   }
@@ -112,11 +115,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private actionMenuItem_: SearchResultItem|null = null;
+  private answerSource_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private clickedIndices_: Set<number> = new Set();
   private enableAnswers_: boolean;
   private feedbackState_: CrFeedbackOption;
-  private loading_ = false;
+  private loadingAnswer_ = false;
+  private loadingResults_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   private searchResult_: SearchResult;
@@ -163,15 +168,15 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     }
   }
 
-  private computeAnswerSource_(): SearchResultItem|undefined {
+  private computeAnswerSource_(): SearchResultItem|null {
     if (!this.enableAnswers_) {
-      return undefined;
+      return null;
     }
-    return this.searchResult_.items.find(item => item.answerData);
+    return this.searchResult_.items.find(item => item.answerData) || null;
   }
 
   private computeIsEmpty_(): boolean {
-    return !this.loading_ && this.searchResult_?.items.length === 0;
+    return !this.loadingResults_ && this.searchResult_?.items.length === 0;
   }
 
   private getFavicon_(item: SearchResultItem|undefined): string {
@@ -180,14 +185,14 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private getHeadingText_(): string {
-    if (this.loading_) {
+    if (this.loadingResults_) {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
   private hasAnswer_(): boolean {
-    if (!this.enableAnswers_ || this.loading_) {
+    if (!this.enableAnswers_) {
       return false;
     }
     return this.searchResult_?.answer !== '';
@@ -265,7 +270,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // immediately change when a new query is performed.
     this.numCharsForLastResultQuery_ = this.numCharsForQuery;
 
-    this.loading_ = true;
+    this.loadingResults_ = true;
+    this.loadingAnswer_ = true;
     const query: SearchQuery = {
       query: this.searchQuery,
       timeRangeStart:
@@ -296,9 +302,14 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // Reset feedback state for new results.
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.searchResult_ = result;
-    this.loading_ = false;
+    this.loadingResults_ = false;
+    this.loadingAnswer_ = result.answerStatus === AnswerStatus.kUnspecified;
 
     this.resultPendingMetricsTimestamp_ = performance.now();
+  }
+
+  private showAnswerSection_(): boolean {
+    return this.searchResult_?.answerStatus !== AnswerStatus.kModelUnavailable;
   }
 
   /**

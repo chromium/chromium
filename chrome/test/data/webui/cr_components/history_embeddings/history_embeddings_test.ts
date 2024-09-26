@@ -111,16 +111,37 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       element.overrideLoadingStateMinimumMsForTesting(100);
       element.searchQuery = 'my new query';
       await handler.whenCalled('search');
-      const loadingEl = element.shadowRoot!.querySelector('.loading');
-      assertTrue(!!loadingEl);
+      const loadingResultsEl =
+          element.shadowRoot!.querySelector('.loading-results');
+      assertTrue(!!loadingResultsEl);
       assertTrue(
-          isVisible(loadingEl),
+          isVisible(loadingResultsEl),
           'Loading state should be visible even if search immediately resolved');
 
       await new Promise(resolve => setTimeout(resolve, 100));
       assertFalse(
-          isVisible(loadingEl),
+          isVisible(loadingResultsEl),
           'Loading state should disappear once the minimum of 100ms is over');
+
+      if (enableAnswers) {
+        // Answer data should still be loading.
+        const loadingAnswersEl =
+            element.shadowRoot!.querySelector('.loading-answer');
+        assertTrue(!!loadingAnswersEl);
+        assertTrue(
+            isVisible(loadingAnswersEl), 'Answers should still be loading');
+
+        // Answer status changes to success, which should hide loading state.
+        element.searchResultChangedForTesting({
+          query: 'my new query',
+          answerStatus: AnswerStatus.kSuccess,
+          answer: 'some answer',
+          items: [...mockResults],
+        });
+        await flushTasks();
+        assertFalse(
+            isVisible(loadingAnswersEl), 'Answers should no longer be loading');
+      }
     });
 
     test('DisplaysResults', async () => {
@@ -374,10 +395,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         return;
       }
 
-      const answersSection =
-          element.shadowRoot!.querySelector<HTMLElement>('.answer-section');
-      assertTrue(!!answersSection);
-      assertTrue(answersSection.hidden);
+      const answerElement =
+          element.shadowRoot!.querySelector<HTMLElement>('.answer');
+      assertTrue(!!answerElement);
+      assertTrue(answerElement.hidden);
 
       element.searchResultChangedForTesting({
         query: 'some query',
@@ -386,10 +407,8 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         items: [...mockResults],
       });
       await flushTasks();
-      assertFalse(answersSection.hidden);
-      assertEquals(
-          'some answer',
-          answersSection.querySelector<HTMLElement>('.answer')!.innerText);
+      assertFalse(answerElement.hidden);
+      assertEquals('some answer', answerElement!.innerText);
     });
 
     test('DisplaysAnswerSource', async () => {

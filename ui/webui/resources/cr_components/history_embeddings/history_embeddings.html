@@ -70,6 +70,10 @@ h2 cr-icon {
   padding-block-start: 4px;
 }
 
+:host([enable-answers_]) .loading {
+  padding-block-end: 8px;
+}
+
 hr {
   border: 0;
   height: 1px;
@@ -202,10 +206,10 @@ a {
   <div id="cardWithoutAnswers" class="card">
     <h2 class="heading results-heading">
       <cr-icon icon="history-embeddings:heading"></cr-icon>
-      [[getHeadingText_(loading_, searchQuery)]]
+      [[getHeadingText_(loadingResults_, searchQuery)]]
     </h2>
 
-    <div class="loading" hidden$="[[!loading_]]">
+    <div class="loading loading-results" hidden$="[[!loadingResults_]]">
       <cr-loading-gradient>
         <svg width="482" height="40">
           <clipPath>
@@ -217,7 +221,7 @@ a {
       </cr-loading-gradient>
     </div>
 
-    <div hidden$="[[loading_]]">
+    <div hidden$="[[loadingResults_]]">
       <div class="result-items">
         <template is="dom-repeat" items="[[searchResult_.items]]">
           <cr-url-list-item url="[[item.url.url]]" title="[[item.title]]"
@@ -254,10 +258,24 @@ a {
 <template is="dom-if" if="[[enableAnswers_]]">
   <div id="cardWithAnswers" class="card">
     <div class="answer-section"
-        hidden$="[[!hasAnswer_(loading_, searchResult_.answer)]]">
+        hidden$="[[!showAnswerSection_(searchResult_.*)]]">
       <h2 class="heading">[[i18n('historyEmbeddingsAnswerHeading')]]</h2>
-      <div class="answer">[[searchResult_.answer]]</div>
-      <a class="answer-source" hidden$="[[!answerSource_]]"
+      <div class="loading loading-answer" hidden$="[[!loadingAnswer_]]">
+        <cr-loading-gradient>
+          <svg width="770" height="72" viewBox="0 0 770 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <clipPath>
+              <rect width="770" height="12" rx="4"></rect>
+              <rect y="20" width="656" height="12" rx="4"></rect>
+              <rect y="40" width="576" height="12" rx="4"></rect>
+              <rect y="60" width="256" height="12" rx="4"></rect>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      </div>
+      <div class="answer" hidden="[[loadingAnswer_]]">
+        [[searchResult_.answer]]
+      </div>
+      <a class="answer-source" hidden="[[!answerSource_]]"
           href="[[answerSource_.url.url]]" target="_blank">
         <div>Source:</div>
         <div class="favicon"
@@ -267,9 +285,9 @@ a {
     </div>
 
     <h2 class="heading results-heading">
-      [[getHeadingText_(loading_, searchQuery)]]
+      [[getHeadingText_(loadingResults_, searchQuery)]]
     </h2>
-    <div class="loading" hidden$="[[!loading_]]">
+    <div class="loading loading-results" hidden$="[[!loadingResults_]]">
       <cr-loading-gradient>
         <svg width="482" height="40">
           <clipPath>
