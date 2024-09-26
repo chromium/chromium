@@ -468,6 +468,7 @@ export class SearchContainer extends EventTarget {
     // Increase the default maxPathParts to allow for longer path display.
     element.maxPathParts = 100;
     element.id = 'search-breadcrumb';
+    element.small = true;
     element.addEventListener(
         XfBreadcrumb.events.BREADCRUMB_CLICKED,
         this.breadcrumbClick_.bind(this));
