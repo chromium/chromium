@@ -116,20 +116,34 @@ void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
 void ScopedStyleResolver::AppendActiveStyleSheets(
     unsigned index,
     const ActiveStyleSheetVector& active_sheets) {
-  for (const auto& active_sheet : base::span(active_sheets).subspan(index)) {
+  for (const ActiveStyleSheet& active_sheet :
+       base::span(active_sheets).subspan(index)) {
     CSSStyleSheet* sheet = active_sheet.first;
     media_query_result_flags_.Add(sheet->GetMediaQueryResultFlags());
     if (!active_sheet.second) {
       continue;
     }
+
     const RuleSet& rule_set = *active_sheet.second;
-    active_style_sheets_.push_back(active_sheet);
-    AddKeyframeRules(rule_set);
-    AddFontFaceRules(rule_set);
-    AddCounterStyleRules(rule_set);
-    AddPositionTryRules(rule_set);
-    AddFunctionRules(rule_set);
-    AddFontFeatureValuesRules(rule_set);
+    if (!active_style_sheets_.empty() &&
+        active_style_sheets_.back().second == active_sheet.second) {
+      // Some frameworks generate a ton of identical <style> tags;
+      // we have already deduplicated them earlier to have the same
+      // pointer, so we can just discard them here. Of course,
+      // this assumes they come immediately after each other,
+      // but this is a cheap win for something that is rather pathological.
+      //
+      // TODO(sesse): Consider deduplicating noncontiguous stylesheets;
+      // however, we'd need to make sure this doesn't change @layer ordering.
+    } else {
+      active_style_sheets_.push_back(active_sheet);
+      AddKeyframeRules(rule_set);
+      AddFontFaceRules(rule_set);
+      AddCounterStyleRules(rule_set);
+      AddPositionTryRules(rule_set);
+      AddFunctionRules(rule_set);
+      AddFontFeatureValuesRules(rule_set);
+    }
     AddImplicitScopeTriggers(*sheet, rule_set);
   }
 }
