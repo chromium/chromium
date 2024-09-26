@@ -478,6 +478,8 @@ static std::optional<unsigned> GetTextContentOffset(const Position& position) {
   DCHECK(ShouldUseLayoutNGTextContent(*position.AnchorNode()));
   const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
+  if (offset_mapping == nullptr)
+    return std::nullopt;
   const std::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);
   return ng_offset;
