@@ -18,6 +18,7 @@ if (!is_chromeos_device) {
       "//ash",
       "//ash/constants",
       "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",

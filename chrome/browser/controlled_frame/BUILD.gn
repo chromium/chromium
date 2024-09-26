@@ -51,6 +51,7 @@ source_set("test_support") {
     "//base",
     "//base/version_info",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",

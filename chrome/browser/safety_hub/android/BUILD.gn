@@ -241,6 +241,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions:permissions",
     "//chrome/browser/ui",
     "//chrome/browser/ui/safety_hub",

@@ -26,6 +26,7 @@ source_set("impl") {
 
   deps = [
     ":cookie_controls",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common",
@@ -41,6 +42,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":cookie_controls",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/fingerprinting_protection",
     "//chrome/test:test_support",
     "//components/content_settings/browser",

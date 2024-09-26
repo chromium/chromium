@@ -159,6 +159,7 @@ static_library("safe_browsing") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/safety_hub",
@@ -495,6 +496,7 @@ source_set("verdict_cache_manager_factory") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
@@ -572,6 +574,7 @@ source_set("test_support") {
     deps = [
       ":safe_browsing",
       "//chrome/browser:browser",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui",
       "//chrome/common",

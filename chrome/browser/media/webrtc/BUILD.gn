@@ -121,6 +121,8 @@ source_set("webrtc") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
