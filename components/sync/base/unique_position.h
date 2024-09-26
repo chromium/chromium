@@ -16,6 +16,8 @@ class UniquePosition;
 
 namespace syncer {
 
+class ClientTagHash;
+
 // A class to represent positions.
 //
 // Valid UniquePosition objects have the following properties:
@@ -35,9 +37,6 @@ namespace syncer {
 //
 // The cost for all these features is potentially unbounded space usage.  In
 // practice, however, most ordinals should be not much longer than the suffix.
-//
-// This class currently has several bookmarks-related assumptions built in,
-// though it could be adapted to be more generally useful.
 class UniquePosition {
  public:
   static constexpr size_t kSuffixLength = 28;
@@ -49,6 +48,10 @@ class UniquePosition {
   // Returns a valid, but mostly random suffix.
   // Avoid using this; it can lead to inconsistent sort orderings if misused.
   static std::string RandomSuffix();
+
+  // Returns a valid suffix based on the given client tag hash.
+  // TODO(crbug.com/351357559): replace string with array.
+  static std::string GenerateSuffix(const ClientTagHash& client_tag_hash);
 
   // Converts from a 'sync_pb::UniquePosition' protobuf to a UniquePosition.
   // This may return an invalid position if the parsing fails.

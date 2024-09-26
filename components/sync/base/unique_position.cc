@@ -7,10 +7,14 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "third_party/zlib/zlib.h"
 
@@ -42,6 +46,15 @@ std::string UniquePosition::RandomSuffix() {
   // Users random data for all but the last byte.  The last byte must not be
   // zero.  We arbitrarily set it to 0x7f.
   return base::RandBytesAsString(kSuffixLength - 1) + "\x7f";
+}
+
+// static.
+std::string UniquePosition::GenerateSuffix(
+    const ClientTagHash& client_tag_hash) {
+  std::string result = base::Base64Encode(
+      base::SHA1Hash(base::as_byte_span(client_tag_hash.value())));
+  CHECK_EQ(result.size(), UniquePosition::kSuffixLength);
+  return result;
 }
 
 // static.

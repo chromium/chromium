@@ -14,7 +14,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -625,7 +624,7 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
         client_tag_hash,
         GenerateSharedTabGroupTabSpecifics(
             guid, UniquePosition::InitialPosition(
-                      GenerateUniquePositionSuffix(client_tag_hash))
+                      UniquePosition::GenerateSuffix(client_tag_hash))
                       .ToProto()),
         collaboration_id);
   }

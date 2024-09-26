@@ -22,7 +22,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
@@ -1512,7 +1511,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
     return target_entity->metadata().unique_position();
   }
 
-  return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
+  return UniquePosition::After(position_before, UniquePosition::GenerateSuffix(
                                                     target_client_tag_hash))
       .ToProto();
 }
@@ -1542,7 +1541,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
     return target_entity->metadata().unique_position();
   }
 
-  return UniquePosition::Before(position_after, GenerateUniquePositionSuffix(
+  return UniquePosition::Before(position_after, UniquePosition::GenerateSuffix(
                                                     target_client_tag_hash))
       .ToProto();
 }
@@ -1575,8 +1574,9 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
     // model. This normally should not happen but generate some meaningful
     // unique position to prevent data loss (in case the bridge verifies unique
     // position validness).
-    return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
-                                                      target_client_tag_hash))
+    return UniquePosition::After(
+               position_before,
+               UniquePosition::GenerateSuffix(target_client_tag_hash))
         .ToProto();
   }
 
@@ -1590,7 +1590,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
 
   return UniquePosition::Between(
              position_before, position_after,
-             GenerateUniquePositionSuffix(target_client_tag_hash))
+             UniquePosition::GenerateSuffix(target_client_tag_hash))
       .ToProto();
 }
 
@@ -1609,7 +1609,7 @@ ClientTagBasedDataTypeProcessor::UniquePositionForInitialEntity(
   }
 
   return UniquePosition::InitialPosition(
-             GenerateUniquePositionSuffix(target_client_tag_hash))
+             UniquePosition::GenerateSuffix(target_client_tag_hash))
       .ToProto();
 }
 

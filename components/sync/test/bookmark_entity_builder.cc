@@ -15,7 +15,6 @@
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
@@ -24,7 +23,6 @@
 #include "components/sync/protocol/unique_position.pb.h"
 
 using std::string;
-using syncer::GenerateUniquePositionSuffix;
 using syncer::LoopbackServerEntity;
 
 // A version must be passed when creating a LoopbackServerEntity, but this value
@@ -39,8 +37,12 @@ namespace fake_server {
 namespace {
 
 std::string GenerateUniquePositionStringForBookmark(const base::Uuid& uuid) {
-  return GenerateUniquePositionSuffix(syncer::ClientTagHash::FromUnhashed(
-      syncer::BOOKMARKS, uuid.AsLowercaseString()));
+  if (!uuid.is_valid()) {
+    return syncer::UniquePosition::RandomSuffix();
+  }
+  return syncer::UniquePosition::GenerateSuffix(
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                          uuid.AsLowercaseString()));
 }
 
 }  // namespace
@@ -192,10 +194,9 @@ void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
 sync_pb::UniquePosition BookmarkEntityBuilder::GenerateUniquePosition() const {
   base::Uuid uuid =
       base::Uuid::ParseCaseInsensitive(originator_client_item_id_);
-  const string suffix = uuid.is_valid()
-                            ? GenerateUniquePositionStringForBookmark(uuid)
-                            : syncer::UniquePosition::RandomSuffix();
-  return syncer::UniquePosition::FromInt64(index_, suffix).ToProto();
+  return syncer::UniquePosition::FromInt64(
+             index_, GenerateUniquePositionStringForBookmark(uuid))
+      .ToProto();
 }
 
 }  // namespace fake_server

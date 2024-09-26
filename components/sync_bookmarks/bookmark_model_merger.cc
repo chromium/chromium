@@ -20,7 +20,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -970,7 +969,7 @@ void BookmarkModelMerger::ProcessLocalCreation(
   // (e.g. incompatible types).
   const int64_t server_version = syncer::kUncommittedVersion;
   const base::Time creation_time = base::Time::Now();
-  const std::string suffix = syncer::GenerateUniquePositionSuffix(
+  const std::string suffix = syncer::UniquePosition::GenerateSuffix(
       SyncedBookmarkTracker::GetClientTagHashFromUuid(node->uuid()));
   // Locally created nodes aren't tracked and hence don't have a unique position
   // yet so we need to produce new ones.
