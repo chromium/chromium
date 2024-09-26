@@ -88,7 +88,7 @@ public class AutofillLocalIbanEditorTest {
                     try {
                         autofillLocalIbanEditorFragment.mNickname.setText(nickname);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set Nickname");
+                        throw new AssertionError("Failed to set Nickname", e);
                     }
                 });
     }
@@ -100,7 +100,7 @@ public class AutofillLocalIbanEditorTest {
                     try {
                         autofillLocalIbanEditorFragment.mValue.setText(value);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set IBAN");
+                        throw new AssertionError("Failed to set IBAN", e);
                     }
                 });
     }

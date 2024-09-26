@@ -91,7 +91,7 @@ public class KeySystemTest extends AwParameterizedTest {
                     mActivityTestRule.executeJavaScriptAndWaitForResult(
                             mAwContents, mContentsClient, "result");
         } catch (Exception e) {
-            Assert.fail("Unable to get result");
+            throw new AssertionError("Unable to get result", e);
         }
         return result;
     }

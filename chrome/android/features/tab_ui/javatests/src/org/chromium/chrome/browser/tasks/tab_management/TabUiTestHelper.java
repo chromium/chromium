@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
@@ -175,7 +174,7 @@ public class TabUiTestHelper {
         try {
             finishedHidingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
-            fail("LayoutType.TAB_SWITCHER never finished hiding.");
+            throw new AssertionError("LayoutType.TAB_SWITCHER never finished hiding.", e);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

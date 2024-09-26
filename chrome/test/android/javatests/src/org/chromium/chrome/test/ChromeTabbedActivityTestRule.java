@@ -171,12 +171,12 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab created event");
+            throw new AssertionError("Never received tab created event", ex);
         }
         try {
             selectedCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab selected event");
+            throw new AssertionError("Never received tab selected event", ex);
         }
         ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 

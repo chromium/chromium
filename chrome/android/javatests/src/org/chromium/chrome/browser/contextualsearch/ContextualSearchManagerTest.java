@@ -1099,9 +1099,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 mPanel.getPanelHeightFromState(PanelState.PEEKED),
                                 Matchers.equalTo(defaultHeight));
                     } catch (CriteriaNotSatisfiedException ex) {
-                        Assert.fail(
+                        throw new AssertionError(
                                 "Error - Peek Height or Bar Height is not the normal expected value"
-                                        + " for these tests.");
+                                        + " for these tests.",
+                                ex);
                     }
                 });
         closePanel();
@@ -1119,9 +1120,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 mPanel.getPanelHeightFromState(PanelState.PEEKED),
                                 Matchers.equalTo(defaultHeight + arbitraryGestureNavHeight));
                     } catch (CriteriaNotSatisfiedException ex) {
-                        Assert.fail(
+                        throw new AssertionError(
                                 "When EdgeToEdge is active the Peek position should be inset for"
-                                        + " the Bottom Gesture Nav  Bar.");
+                                        + " the Bottom Gesture Nav  Bar.",
+                                ex);
                     }
                 });
         closePanel();

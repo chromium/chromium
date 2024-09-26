@@ -526,7 +526,7 @@ public class AutofillOptionsTest {
             mediator.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
             return;
         }
-        assertNotNull(optButtonToClick.get());
+        assertTrue(optButtonToClick.isPresent());
         mediator.onClick(model, optButtonToClick.get());
         if (optButtonToClick.get() == ButtonType.NEGATIVE) {
             verify(mDialogManager)

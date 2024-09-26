@@ -1239,7 +1239,7 @@ public class TabStripTest {
         try {
             tabModelSelectedCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Tab model selected event never occurred.");
+            throw new AssertionError("Tab model selected event never occurred.", e);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

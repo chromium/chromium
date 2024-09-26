@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -418,7 +417,7 @@ public class RadioButtonWithDescriptionLayoutTest {
         try {
             layout.onButtonCheckedStateChanged(b1);
         } catch (NullPointerException e) {
-            fail("No exception should be thrown when the observer is null");
+            throw new AssertionError("No exception should be thrown when the observer is null", e);
         }
     }
 

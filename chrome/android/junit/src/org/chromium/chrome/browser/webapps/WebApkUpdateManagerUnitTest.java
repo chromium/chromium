@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -81,7 +80,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 /** Unit tests for WebApkUpdateManager. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -414,25 +412,20 @@ public class WebApkUpdateManagerUnitTest {
     }
 
     private void registerStorageForWebApkPackage(String webApkPackageName) throws Exception {
-        try {
-            CallbackHelper helper = new CallbackHelper();
-            WebappRegistry.getInstance()
-                    .register(
-                            WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
-                            new WebappRegistry.FetchWebappDataStorageCallback() {
-                                @Override
-                                public void onWebappDataStorageRetrieved(
-                                        WebappDataStorage storage) {
-                                    helper.notifyCalled();
-                                }
-                            });
+        CallbackHelper helper = new CallbackHelper();
+        WebappRegistry.getInstance()
+                .register(
+                        WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                helper.notifyCalled();
+                            }
+                        });
             BackgroundShadowAsyncTask.runBackgroundTasks();
-            ShadowLooper.runUiThreadTasks();
+        ShadowLooper.runUiThreadTasks();
 
-            helper.waitForOnly();
-        } catch (TimeoutException e) {
-            fail();
-        }
+        helper.waitForOnly();
     }
 
     private static WebappDataStorage getStorage(String packageName) {

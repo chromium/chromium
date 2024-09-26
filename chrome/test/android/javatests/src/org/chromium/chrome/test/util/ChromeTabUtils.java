@@ -333,14 +333,15 @@ public class ChromeTabUtils {
         try {
             startedCallback.waitForCallback(0, 1, secondsToWait, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail(
+            throw new AssertionError(
                     "Page did not start loading.  Tab information at time of failure --"
                             + " url: "
                             + tab.getUrl().getSpec()
                             + ", load progress: "
                             + tab.getProgress()
                             + ", is loading: "
-                            + Boolean.toString(tab.isLoading()));
+                            + Boolean.toString(tab.isLoading()),
+                    e);
         }
     }
 
@@ -409,7 +410,7 @@ public class ChromeTabUtils {
         try {
             interactableCallback.waitForCallback(0, 1, 10L, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail("Page never became interactable.");
+            throw new AssertionError("Page never became interactable.", e);
         }
     }
 
@@ -465,7 +466,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(null, 0, 1, 10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
     }
 
@@ -519,12 +520,12 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab created event");
+            throw new AssertionError("Never received tab created event", ex);
         }
         try {
             selectedCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab selected event");
+            throw new AssertionError("Never received tab selected event", ex);
         }
         ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
 
@@ -654,7 +655,7 @@ public class ChromeTabUtils {
         try {
             closeCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Tab closed event was never received");
+            throw new AssertionError("Tab closed event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -701,7 +702,7 @@ public class ChromeTabUtils {
         try {
             closeCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("All tabs pending closure event was never received");
+            throw new AssertionError("All tabs pending closure event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -753,7 +754,7 @@ public class ChromeTabUtils {
         try {
             selectCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Tab selected event was never received");
+            throw new AssertionError("Tab selected event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -862,7 +863,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
 
         if (expectIncognito) {
@@ -924,7 +925,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
 
         if (expectIncognito) {
@@ -951,9 +952,10 @@ public class ChromeTabUtils {
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail(
+            throw new AssertionError(
                     String.format(
-                            Locale.ENGLISH, "Tab title didn't update to %s in time.", newTitle));
+                            Locale.ENGLISH, "Tab title didn't update to %s in time.", newTitle),
+                    e);
         }
     }
 

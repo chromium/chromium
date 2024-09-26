@@ -65,7 +65,7 @@ public class ContactsProviderTest {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(TEST_URL);
         } catch (Throwable t) {
-            Assert.fail("Couldn't load test page.");
+            throw new AssertionError("Couldn't load test page.", t);
         }
     }
 

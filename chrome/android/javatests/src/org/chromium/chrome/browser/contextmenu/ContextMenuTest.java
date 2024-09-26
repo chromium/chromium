@@ -299,7 +299,7 @@ public class ContextMenuTest {
         try {
             newTabCallback.waitForCallback(callbackCount);
         } catch (TimeoutException ex) {
-            Assert.fail("New tab never created from context menu press");
+            throw new AssertionError("New tab never created from context menu press", ex);
         }
 
         // Only check for the URL matching as the tab will not be fully created in svelte mode.

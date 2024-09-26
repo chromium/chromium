@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,7 @@ public class OmahaServiceStartDelayerIntegrationTest {
         try {
             callback.waitForOnly();
         } catch (TimeoutException e) {
-            Assert.fail("OmahaServiceStartDelayer never initialized");
+            throw new AssertionError("OmahaServiceStartDelayer never initialized", e);
         }
     }
 }

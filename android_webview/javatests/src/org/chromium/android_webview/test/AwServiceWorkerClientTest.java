@@ -156,7 +156,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
                             mActivityTestRule.executeJavaScriptAndWaitForResult(
                                     mAwContents, mContentsClient, "success"));
         } catch (Exception e) {
-            Assert.fail("Unable to get success");
+            throw new AssertionError("Unable to get success", e);
         }
         return result;
     }

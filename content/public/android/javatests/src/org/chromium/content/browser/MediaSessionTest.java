@@ -134,7 +134,7 @@ public class MediaSessionTest {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(MEDIA_SESSION_TEST_URL);
         } catch (Throwable t) {
-            Assert.fail("Couldn't load test page");
+            throw new AssertionError("Couldn't load test page", t);
         }
 
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();

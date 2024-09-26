@@ -45,7 +45,7 @@ public class ImportantFileWriterAndroidTest {
                 Assert.assertEquals("Data byte wrong", data[i], fileData[i]);
             }
         } catch (IOException e) {
-            Assert.fail("Failed to read file");
+            throw new AssertionError("Failed to read file", e);
         }
     }
 

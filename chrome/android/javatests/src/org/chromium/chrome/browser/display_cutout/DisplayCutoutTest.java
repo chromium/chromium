@@ -10,7 +10,6 @@ import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,7 +117,8 @@ public class DisplayCutoutTest {
             mTestRule.waitForLayoutInDisplayCutoutMode(
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
         } catch (AssertionError e) {
-            Assert.fail("When not in Fullscreen the Safe Area should not include the cutout!");
+            throw new AssertionError(
+                    "When not in Fullscreen the Safe Area should not include the cutout!", e);
         }
     }
 

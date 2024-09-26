@@ -133,7 +133,7 @@ public class GeolocationTest extends AwParameterizedTest {
                             mActivityTestRule.executeJavaScriptAndWaitForResult(
                                     mAwContents, mContentsClient, "positionCount"));
         } catch (Exception e) {
-            Assert.fail("Unable to get positionCount");
+            throw new AssertionError("Unable to get positionCount", e);
         }
         return result;
     }
@@ -243,7 +243,7 @@ public class GeolocationTest extends AwParameterizedTest {
             mActivityTestRule.executeJavaScriptAndWaitForResult(
                     mAwContents, mContentsClient, "positionCount = 0");
         } catch (Exception e) {
-            Assert.fail("Unable to clear positionCount");
+            throw new AssertionError("Unable to clear positionCount", e);
         }
         Assert.assertEquals(0, getPositionCountFromJS());
 

@@ -468,7 +468,8 @@ public class TabStateFileManagerUnitTest {
         try {
             TabStateFileManager.deleteFlatBufferFiles(null);
         } catch (NullPointerException e) {
-            Assert.fail("deleteFlatBufferFiles should not throw NullPointerException");
+            throw new AssertionError(
+                    "deleteFlatBufferFiles should not throw NullPointerException", e);
         }
     }
 
@@ -479,7 +480,8 @@ public class TabStateFileManagerUnitTest {
             Mockito.doReturn(null).when(stateDirectory).listFiles();
             TabStateFileManager.deleteFlatBufferFiles(stateDirectory);
         } catch (NullPointerException e) {
-            Assert.fail("deleteFlatBufferFiles should not throw NullPointerException");
+            throw new AssertionError(
+                    "deleteFlatBufferFiles should not throw NullPointerException", e);
         }
     }
 

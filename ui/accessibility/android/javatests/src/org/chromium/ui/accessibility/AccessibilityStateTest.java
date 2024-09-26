@@ -485,7 +485,8 @@ public class AccessibilityStateTest {
                         AccessibilityServiceInfo.class.getMethod("setCapabilities", int.class);
                 setResolveInfoMethod.invoke(info, capabilities);
             } catch (Exception ex) {
-                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+                throw new AssertionError(
+                        "Unable to call AccessibilityServiceInfo hidden method.", ex);
             }
         }
 
@@ -497,9 +498,9 @@ public class AccessibilityStateTest {
                                 ResolveInfo.class, Context.class);
                 return ctr.newInstance(resolveInfo, context);
             } catch (Exception ex) {
-                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+                throw new AssertionError(
+                        "Unable to call AccessibilityServiceInfo hidden method.", ex);
             }
-            return null;
         }
     }
 }

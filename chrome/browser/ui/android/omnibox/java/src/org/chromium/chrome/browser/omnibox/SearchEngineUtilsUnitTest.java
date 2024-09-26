@@ -319,7 +319,7 @@ public class SearchEngineUtilsUnitTest {
         try {
             mSearchEngineUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
-            Assert.fail("No exception should be thrown.");
+            throw new AssertionError("No exception should be thrown.", e);
         }
     }
 
@@ -332,7 +332,7 @@ public class SearchEngineUtilsUnitTest {
         try {
             mSearchEngineUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
-            Assert.fail("No exception should be thrown.");
+            throw new AssertionError("No exception should be thrown.", e);
         }
     }
 

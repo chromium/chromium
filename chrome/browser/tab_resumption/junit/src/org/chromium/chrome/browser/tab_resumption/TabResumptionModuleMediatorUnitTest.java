@@ -526,7 +526,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
             shadowOf(getMainLooper()).idle();
             mReloadSessionCallbackHelper.waitForNext();
         } catch (TimeoutException e) {
-            Assert.fail("Timed out waiting for reload callback.");
+            throw new AssertionError("Timed out waiting for reload callback.", e);
         }
         Assert.assertEquals(1, mReloadSessionCounter);
 

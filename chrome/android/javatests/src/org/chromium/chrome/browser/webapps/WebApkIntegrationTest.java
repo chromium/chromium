@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -204,7 +203,8 @@ public class WebApkIntegrationTest {
                             assertEquals(actualSmallIconId, expectedSmallIconId);
                             callbackHelper.notifyCalled();
                         } catch (Exception e) {
-                            fail("WebApkService binder call threw exception");
+                            throw new AssertionError(
+                                    "WebApkService binder call threw exception", e);
                         }
                     }
                 });

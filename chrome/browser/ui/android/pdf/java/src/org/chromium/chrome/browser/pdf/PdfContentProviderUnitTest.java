@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -158,8 +157,7 @@ public class PdfContentProviderUnitTest {
             outputStream.write(1234);
             return tempFile;
         } catch (IOException e) {
-            fail("Cannot create temporary file.");
+            throw new AssertionError("Cannot create temporary file.", e);
         }
-        return null;
     }
 }

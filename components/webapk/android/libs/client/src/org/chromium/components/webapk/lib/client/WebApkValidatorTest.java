@@ -25,7 +25,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,7 +127,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.queryFirstWebApkPackage(
                             RuntimeEnvironment.application, URL_OF_WEBAPK));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -153,7 +152,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.queryFirstWebApkPackage(
                             RuntimeEnvironment.application, URL_OF_WEBAPK));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -179,7 +178,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.queryFirstWebApkPackage(
                             RuntimeEnvironment.application, URL_WITHOUT_WEBAPK));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -206,7 +205,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.canWebApkHandleUrl(
                             RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -230,7 +229,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.canWebApkHandleUrl(
                             RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -253,7 +252,7 @@ public class WebApkValidatorTest {
                     WebApkValidator.canWebApkHandleUrl(
                             RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -283,7 +282,7 @@ public class WebApkValidatorTest {
                             URL_WITHOUT_WEBAPK,
                             0));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 
@@ -781,7 +780,7 @@ public class WebApkValidatorTest {
                     newPackageInfoWithBrowserSignature(
                             packageName, new Signature(signature), startUrl, null));
         } catch (URISyntaxException e) {
-            Assert.fail("URI is invalid.");
+            throw new AssertionError("URI is invalid.", e);
         }
     }
 }

@@ -33,7 +33,6 @@ import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -2079,14 +2078,9 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK)
-    public void testBackgroundPlayback_doesntCrashWhenNoPlayer() {
-        try {
-            // App is backgrounded with the screen off. Playback should continue if the flag is on.
-            setIsScreenOnAndUnlocked(false);
-            mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
-        } catch (NullPointerException ex) {
-            Assert.fail();
-        }
+    public void testBackgroundPlayback_doesntCrashWhenNoPlayer() throws NullPointerException {
+        setIsScreenOnAndUnlocked(false);
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
     }
 
     @Test

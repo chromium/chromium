@@ -253,9 +253,8 @@ public class XRWOriginTrialTest extends AwParameterizedTest {
                                                 mAwContents, mContentsClient, "window.test_done"))
                                 == 1;
                     } catch (Exception e) {
-                        Assert.fail("Unable to get success");
+                        throw new AssertionError("Unable to get success", e);
                     }
-                    return false;
                 });
     }
 

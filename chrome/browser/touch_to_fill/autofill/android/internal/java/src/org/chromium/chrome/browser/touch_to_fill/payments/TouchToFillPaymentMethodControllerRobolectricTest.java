@@ -764,7 +764,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         Optional<PropertyModel> ibanModel =
                 getIbanModelByAutofillName(
                         mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), LOCAL_IBAN);
-        assertNotNull(ibanModel.get());
+        assertTrue(ibanModel.isPresent());
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         ibanModel.get().get(ON_IBAN_CLICK_ACTION).run();
         verify(mDelegateMock).localIbanSuggestionSelected(LOCAL_IBAN.getGuid());

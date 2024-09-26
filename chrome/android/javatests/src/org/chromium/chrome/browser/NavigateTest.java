@@ -769,7 +769,7 @@ public class NavigateTest {
                             Origin origin = params.getInitiatorOrigin();
                             Assert.assertEquals(url.getHost(), origin.getHost());
                         } catch (Exception e) {
-                            Assert.fail("Cannot parse URL:" + finalUrl);
+                            throw new AssertionError("Cannot parse URL:" + finalUrl, e);
                         }
                     }
                 };

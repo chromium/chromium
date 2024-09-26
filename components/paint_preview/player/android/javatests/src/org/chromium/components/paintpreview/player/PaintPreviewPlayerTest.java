@@ -583,7 +583,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         try {
             firstPaint.waitForOnly();
         } catch (Exception e) {
-            Assert.fail("First paint not issued.");
+            throw new AssertionError("First paint not issued.", e);
         }
     }
 
