@@ -80,14 +80,9 @@ class WebRtcMedium : public api::WebRtcMedium {
   // These rtc::Thread* are jingle thread wrappers around the corresponding
   // base::Thread. They get cleaned up on thread shutdown so we don't need to
   // manage lifetime.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
+  // RAW_PTR_EXCLUSION: Performance.
   RAW_PTR_EXCLUSION rtc::Thread* rtc_network_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   RAW_PTR_EXCLUSION rtc::Thread* rtc_signaling_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   RAW_PTR_EXCLUSION rtc::Thread* rtc_worker_thread_ = nullptr;
 
   // Used to guard access to peer_connection_factory_.
