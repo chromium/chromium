@@ -188,8 +188,6 @@ source_set("video_frame_resource") {
 source_set("video_frame_utils") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.cc",
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.h",
     "platform_video_frame_utils.cc",
     "platform_video_frame_utils.h",
   ]
@@ -236,25 +234,9 @@ if (is_chromeos) {
   }
 }
 
-source_set(
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils_test_support") {
-  testonly = true
-  sources = [
-    "fake_chromeos_intel_compressed_gpu_memory_buffer.cc",
-    "fake_chromeos_intel_compressed_gpu_memory_buffer.h",
-  ]
-  deps = [
-    ":common",
-    "//base",
-    "//build/config/linux/libdrm",
-    "//ui/gfx",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   deps = [
-    ":chromeos_compressed_gpu_memory_buffer_video_frame_utils_test_support",
     ":common",
     "//base",
     "//base/test:test_support",
@@ -271,7 +253,6 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
   sources = [
-    "chromeos_compressed_gpu_memory_buffer_video_frame_utils_unittest.cc",
     "fourcc_unittests.cc",
     "mailbox_frame_registry_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",

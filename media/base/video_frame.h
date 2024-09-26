@@ -964,13 +964,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // equal or less than the number of planes of the frame. If it is less, then
   // the memory area represented by the last FD contains the remaining planes.
   std::vector<base::ScopedFD> dmabuf_fds_;
-
-  friend scoped_refptr<VideoFrame>
-  WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-      base::TimeDelta timestamp);
 #endif
 
 #if BUILDFLAG(IS_APPLE)
