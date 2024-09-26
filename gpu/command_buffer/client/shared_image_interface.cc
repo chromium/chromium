@@ -98,6 +98,19 @@ void SharedImageInterface::CopyToGpuMemoryBufferAsync(
   NOTREACHED_IN_MIGRATION();
 }
 
+bool SharedImageInterface::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
+}
+
 void SharedImageInterface::Release() const {
   bool should_destroy = false;
 

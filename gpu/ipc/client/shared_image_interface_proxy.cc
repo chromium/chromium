@@ -278,6 +278,23 @@ void SharedImageInterfaceProxy::UpdateSharedImage(
                   d3d_shared_fence->GetFenceValue()))),
       std::move(dependencies), /*release_count=*/0);
 }
+
+void SharedImageInterfaceProxy::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    bool* status) {
+  mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
+  host_->CopyNativeGmbToSharedMemorySync(std::move(buffer_handle),
+                                         std::move(memory_region), status);
+}
+
+void SharedImageInterfaceProxy::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  host_->CopyNativeGmbToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(memory_region), std::move(callback));
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void SharedImageInterfaceProxy::UpdateSharedImage(const SyncToken& sync_token,

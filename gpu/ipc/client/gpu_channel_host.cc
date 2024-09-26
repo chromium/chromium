@@ -121,6 +121,22 @@ void GpuChannelHost::CopyToGpuMemoryBufferAsync(
       mailbox, std::move(sync_token_dependencies), release_count,
       std::move(callback));
 }
+
+void GpuChannelHost::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    bool* status) {
+  GetGpuChannel().CopyNativeGmbToSharedMemorySync(
+      std::move(buffer_handle), std::move(memory_region), status);
+}
+
+void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  GetGpuChannel().CopyNativeGmbToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(memory_region), std::move(callback));
+}
 #endif
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {

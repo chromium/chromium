@@ -226,6 +226,23 @@ class GPU_EXPORT SharedImageInterface
       const Mailbox& mailbox,
       base::OnceCallback<void(bool)> callback);
 
+  // On windows, native GMB can not be mapped in any process other than the GPU
+  // process. So during GpuMemoryBuffer::Map() operation, an IPC to GPU process
+  // is done to copy the content of |buffer_handle| into a shared memory
+  // |memory_region| via below methods. This shared memory is mappable in any
+  // process and is used internally during GpuMemoryBuffer::Map().
+  // This will block on calling client thread.
+  virtual bool CopyNativeGmbToSharedMemorySync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region);
+
+  // This is non-blocking version of above method. The |callback| will be run
+  // when the copy is done.
+  virtual void CopyNativeGmbToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback);
+
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
   // the image any more, however if the image was imported into other APIs,
