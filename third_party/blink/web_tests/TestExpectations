@@ -8118,3 +8118,7 @@ crbug.com/363034702 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass
 # Gardener 2024-09-24
 crbug.com/369241615 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash Failure ]
 crbug.com/369241615 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-selectlist-element/selectlist-validity.tentative.html [ Crash Failure ]
+
+# Gardener 2024-09-26
+# Flaky on WebKit Linux ASAN
+crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
