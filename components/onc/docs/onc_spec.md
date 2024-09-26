@@ -566,10 +566,7 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
 
 * **AllowGatewayARPPolling**
     * (optional, defaults to *true*) - **boolean**
-    * Indicaties if ARP polling of default gateway is allowed.
-      When it is allowed, periodic ARP messages will be sent to
-      the default gateway. This is used for monitoring the status
-      of the current connection.
+    * DEPRECATED.
 
 * **AutoConnect**
     * (optional, defaults to *false*) - **boolean**

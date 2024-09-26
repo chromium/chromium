@@ -350,13 +350,6 @@ void LocalTranslator::TranslateWiFi() {
   // We currently only support managed and no adhoc networks.
   shill_dictionary_->Set(shill::kModeProperty, shill::kModeManaged);
 
-  std::optional<bool> allow_gateway_arp_polling =
-      onc_object_->FindBool(::onc::wifi::kAllowGatewayARPPolling);
-  if (allow_gateway_arp_polling) {
-    shill_dictionary_->Set(shill::kLinkMonitorDisableProperty,
-                           !*allow_gateway_arp_polling);
-  }
-
   CopyFieldsAccordingToSignature();
 }
 

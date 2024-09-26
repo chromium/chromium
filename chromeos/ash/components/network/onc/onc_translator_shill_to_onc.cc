@@ -488,13 +488,6 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
   if (!unknown_encoding && !ssid.empty())
     onc_object_.Set(::onc::wifi::kSSID, ssid);
 
-  std::optional<bool> link_monitor_disable =
-      shill_dictionary_->FindBool(shill::kLinkMonitorDisableProperty);
-  if (link_monitor_disable) {
-    onc_object_.Set(::onc::wifi::kAllowGatewayARPPolling,
-                    !*link_monitor_disable);
-  }
-
   CopyPropertiesAccordingToSignature();
   TranslateAndAddNestedObject(::onc::wifi::kEAP);
 }
