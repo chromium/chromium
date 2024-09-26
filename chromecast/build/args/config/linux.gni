@@ -1,3 +1,5 @@
+import("//chromecast/build/args/config/common.gni")
+
 # Args common to ALL Linux builds targeting Linux TVs.
 is_castos = true
 is_cast_desktop_build = true
@@ -11,6 +13,7 @@ enable_widevine = true
 enable_extensions = true
 enable_plugins = true
 
-# //pdf:buildflags seems to be leaking, but does not add to actual binary.
+# //pdf:buildflags seems to be leaking into the deps tree, but does not add deps
+# the actual binary.
 enable_pdf = true
 enable_printing = true

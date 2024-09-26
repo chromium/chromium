@@ -1,3 +1,5 @@
+import("//chromecast/build/args/config/common.gni")
+
 # Args common to ALL Android builds.
 is_cast_android = true
 target_os = "android"
