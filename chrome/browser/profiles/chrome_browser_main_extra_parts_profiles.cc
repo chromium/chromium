@@ -371,7 +371,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #endif
 
@@ -824,7 +824,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DevToolsAndroidBridge::Factory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DiceResponseHandler::EnsureFactoryBuilt();
+  DiceResponseHandlerFactory::GetInstance();
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
   DIPSBrowserSigninDetectorFactory::GetInstance();

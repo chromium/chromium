@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -713,10 +714,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
     EXPECT_EQ(count, token_revoked_count_);
   }
 
-  DiceResponseHandler* GetDiceResponseHandler() {
-    return DiceResponseHandler::GetForProfile(browser()->profile());
-  }
-
   void CloseBrowser() {
     identity_manager_observation_.Reset();
     account_reconcilor_observation_.Reset();
@@ -827,7 +824,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
-  DiceResponseHandler* dice_response_handler = GetDiceResponseHandler();
+  DiceResponseHandler* dice_response_handler =
+      DiceResponseHandlerFactory::GetForProfile(browser()->profile());
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   dice_response_handler->SetTaskRunner(task_runner);

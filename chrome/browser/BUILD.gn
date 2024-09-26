@@ -7406,6 +7406,8 @@ static_library("browser") {
       "signin/dice_intercepted_session_startup_helper.h",
       "signin/dice_response_handler.cc",
       "signin/dice_response_handler.h",
+      "signin/dice_response_handler_factory.cc",
+      "signin/dice_response_handler_factory.h",
       "signin/dice_signed_in_profile_creator.cc",
       "signin/dice_signed_in_profile_creator.h",
       "signin/dice_tab_helper.cc",

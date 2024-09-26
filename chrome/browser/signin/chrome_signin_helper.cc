@@ -70,6 +70,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #endif
 
@@ -388,7 +389,7 @@ void ProcessDiceHeader(
     return;
 
   DiceResponseHandler* dice_response_handler =
-      DiceResponseHandler::GetForProfile(profile);
+      DiceResponseHandlerFactory::GetForProfile(profile);
   dice_response_handler->ProcessDiceHeader(
       dice_params, ProcessDiceHeaderDelegateImpl::Create(web_contents));
 }

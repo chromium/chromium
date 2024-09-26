@@ -7294,6 +7294,7 @@ test("unit_tests") {
     sources += [
       "../browser/password_manager/multi_profile_credentials_filter_unittest.cc",
       "../browser/profiles/batch_upload/batch_upload_controller_unittest.cc",
+      "../browser/signin/dice_response_handler_factory_unittest.cc",
       "../browser/signin/dice_response_handler_unittest.cc",
       "../browser/signin/dice_signed_in_profile_creator_unittest.cc",
       "../browser/signin/dice_tab_helper_unittest.cc",

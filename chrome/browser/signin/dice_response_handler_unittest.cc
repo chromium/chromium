@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -37,7 +36,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/browser_task_environment.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1449,21 +1447,6 @@ TEST_F(DiceResponseHandlerTest,
   // Check that the reconcilor was not blocked.
   EXPECT_EQ(0, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
-}
-
-// Tests that the DiceResponseHandler is created for a normal profile but not
-// for off-the-record profiles.
-TEST(DiceResponseHandlerFactoryTest, NotInOffTheRecord) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  EXPECT_THAT(DiceResponseHandler::GetForProfile(&profile), testing::NotNull());
-  EXPECT_THAT(DiceResponseHandler::GetForProfile(
-                  profile.GetPrimaryOTRProfile(/*create_if_needed=*/true)),
-              testing::IsNull());
-  EXPECT_THAT(DiceResponseHandler::GetForProfile(profile.GetOffTheRecordProfile(
-                  Profile::OTRProfileID::CreateUniqueForTesting(),
-                  /*create_if_needed=*/true)),
-              testing::IsNull());
 }
 
 class ExplicitBrowserSigninDiceResponseHandlerSignoutTest
