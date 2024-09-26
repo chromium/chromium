@@ -29,6 +29,8 @@ enum class EdidColorSpaceChecksOutcome {
   kMaxValue = kErrorBadGamma
 };
 
+const float kDefaultHdrMaxLuminanceRelative = 1.2f;
+
 // Returns true if a given size is allowed. Will return false for certain bogus
 // sizes in mm that should be ignored.
 DISPLAY_UTIL_EXPORT bool IsDisplaySizeValid(const gfx::Size& physical_size);

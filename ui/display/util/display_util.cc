@@ -354,9 +354,10 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
         gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
     // TODO(b/165822222): Set initial luminance values based on display
     // brightness
+    display_color_spaces.SetSDRMaxLuminanceNits(
+        hdr_static_metadata->max / kDefaultHdrMaxLuminanceRelative);
     display_color_spaces.SetHDRMaxLuminanceRelative(
-        hdr_static_metadata->max /
-        display_color_spaces.GetSDRMaxLuminanceNits());
+        kDefaultHdrMaxLuminanceRelative);
   }
 #endif
   return display_color_spaces;

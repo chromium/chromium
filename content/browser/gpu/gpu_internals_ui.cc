@@ -386,7 +386,10 @@ base::Value::List GetDisplayInfo() {
       for (size_t i = 0; i < names.size(); ++i) {
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Color space (%s)", names[i].c_str()),
-            color_spaces[i].ToString()));
+            color_spaces[i]
+                .GetWithSdrWhiteLevel(
+                    display_color_spaces.GetSDRMaxLuminanceNits())
+                .ToString()));
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Buffer format (%s)", names[i].c_str()),
             gfx::BufferFormatToString(buffer_formats[i])));

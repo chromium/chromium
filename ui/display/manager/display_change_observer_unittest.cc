@@ -30,6 +30,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -590,7 +591,8 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
       gfx::ColorSpace::CreateHDR10(),
       display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
                                                /*needs_alpha=*/true));
-  EXPECT_EQ(3.f, display_color_spaces.GetHDRMaxLuminanceRelative());
+  EXPECT_EQ(kDefaultHdrMaxLuminanceRelative,
+            display_color_spaces.GetHDRMaxLuminanceRelative());
 }
 
 TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
