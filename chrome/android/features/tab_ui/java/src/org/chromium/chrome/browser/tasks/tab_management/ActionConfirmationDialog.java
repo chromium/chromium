@@ -56,37 +56,12 @@ public class ActionConfirmationDialog {
      * @param titleResolver Resolves a title for the dialog.
      * @param descriptionResolver Resolves a description for the dialog.
      * @param positiveButtonRes The string to show for the positive button.
-     * @param supportStopShowing Whether to show a checkbox to permanently disable the dialog via a
-     *     pref.
-     * @param onResult The callback to invoke on exit of the dialog.
-     */
-    public void show(
-            Function<Resources, String> titleResolver,
-            Function<Resources, String> descriptionResolver,
-            @StringRes int positiveButtonRes,
-            boolean supportStopShowing,
-            @NonNull ConfirmationDialogResult onResult) {
-        showWithCustomNegativeAction(
-                titleResolver,
-                descriptionResolver,
-                positiveButtonRes,
-                R.string.cancel,
-                supportStopShowing,
-                onResult);
-    }
-
-    /**
-     * Shows an action confirmation dialog with custom negative behavior.
-     *
-     * @param titleResolver Resolves a title for the dialog.
-     * @param descriptionResolver Resolves a description for the dialog.
-     * @param positiveButtonRes The string to show for the positive button.
      * @param negativeButtonRes The string to show for the negative button.
      * @param supportStopShowing Whether to show a checkbox to permanently disable the dialog via a
      *     pref.
      * @param onResult The callback to invoke on exit of the dialog.
      */
-    public void showWithCustomNegativeAction(
+    public void show(
             Function<Resources, String> titleResolver,
             Function<Resources, String> descriptionResolver,
             @StringRes int positiveButtonRes,

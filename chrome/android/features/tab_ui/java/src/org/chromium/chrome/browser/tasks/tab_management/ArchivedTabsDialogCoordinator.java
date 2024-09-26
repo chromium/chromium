@@ -568,6 +568,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 titleResolver,
                 descriptionResolver,
                 R.string.archive_dialog_close_all_inactive_tabs_confirmation,
+                R.string.cancel,
                 /* supportStopShowing= */ false,
                 (buttonClickResult, stopShowing) -> {
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {

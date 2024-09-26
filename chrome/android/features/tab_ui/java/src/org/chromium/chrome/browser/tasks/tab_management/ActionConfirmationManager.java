@@ -307,6 +307,7 @@ public class ActionConfirmationManager {
                 titleResolver,
                 descriptionResolver,
                 actionRes,
+                R.string.cancel,
                 /* supportStopShowing= */ true,
                 onDialogResult);
     }
@@ -341,6 +342,7 @@ public class ActionConfirmationManager {
                 titleResolver,
                 descriptionResolver,
                 actionRes,
+                R.string.cancel,
                 /* supportStopShowing= */ false,
                 onDialogResult);
     }
@@ -374,7 +376,7 @@ public class ActionConfirmationManager {
                                 buttonClickResult, userActionBaseString, onResult);
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
-        dialog.showWithCustomNegativeAction(
+        dialog.show(
                 titleResolver,
                 descriptionResolver,
                 positiveButtonRes,
