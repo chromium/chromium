@@ -10591,6 +10591,83 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Mv2Deprecation.Disabled.Dismissed">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user dismissed the MV2 deprecation panel in chrome://extensions for the
+    rest of the MV2 'disable with re-enable' experiment stage.
+  </description>
+</action>
+
+<action name="Extensions.Mv2Deprecation.Disabled.DismissedForExtension">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the dismiss button for an extension in
+    chrome://extensions during the MV2 'disable with re-enable' experiment
+    stage.
+  </description>
+</action>
+
+<action
+    name="Extensions.Mv2Deprecation.Disabled.DismissedForExtension.DetailPage">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the dismiss button in the extension's detail page in
+    chrome://extensions during the MV2 'disable with re-enable' experiment
+    stage.
+  </description>
+</action>
+
+<action
+    name="Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension.DetailPage">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the find alternative button in the extenion's detail
+    page in chrome://extensions during the MV2 'disable with re-enable'
+    experiment stage.
+  </description>
+</action>
+
+<action name="Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtensionV2">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the find alternative button for an extension in
+    chrome://extensions during the MV2 'disable with re-enable' experiment
+    stage. Note: In M128
+    Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension was recorded
+    in two locations and was never added to actions.xml. In M131, we introduced
+    a new action name for each of the action location triggers to make sure we
+    properly reflect the user action. Actions are:
+    Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtensionV2 and
+    Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension.DetailPage.
+  </description>
+</action>
+
+<action name="Extensions.Mv2Deprecation.Disabled.RemoveExtension">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the remove button for an extension in
+    chrome://extensions during the MV2 'disable with re-enable' experiment
+    stage.
+  </description>
+</action>
+
+<action name="Extensions.Mv2Deprecation.DisableWithReEnable.Remove">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the remove button in the extension's detail page in
+    chrome://extensions during the MV2 'disable with re-enable' experiment
+    stage.
+  </description>
+</action>
+
 <action name="Extensions.Mv2Deprecation.Unsupported.Dismissed">
   <owner>emiliapaz@chomium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -10662,6 +10739,16 @@ should be able to be added at any place in this file.
   <description>
     The user clicked on the find alternative button for an extension in
     chrome://extensions during the MV2 warning experiment stage.
+  </description>
+</action>
+
+<action
+    name="Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension.Entry">
+  <owner>emiliapaz@chomium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked on the find alternative button in the extension's detailed
+    page in chrome://extensions during the MV2 'warning' experiment stage.
   </description>
 </action>
 

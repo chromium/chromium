@@ -413,7 +413,7 @@ export class ExtensionsDetailViewElement extends
         assertNotReached();
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.RemoveExtension.DetailPage');
+            'Extensions.Mv2Deprecation.DisableWithReEnable.Remove');
         break;
       case Mv2ExperimentStage.UNSUPPORTED:
         chrome.metricsPrivate.recordUserAction(

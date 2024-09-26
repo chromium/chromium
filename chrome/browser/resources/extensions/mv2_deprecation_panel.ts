@@ -262,7 +262,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Warning.Dismissed');
         break;
-      case Mv2ExperimentStage.WARNING:
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Disabled.Dismissed');
         break;
@@ -337,7 +337,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         assertNotReached();
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+            'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtensionV2');
         break;
       case Mv2ExperimentStage.UNSUPPORTED:
         chrome.metricsPrivate.recordUserAction(
