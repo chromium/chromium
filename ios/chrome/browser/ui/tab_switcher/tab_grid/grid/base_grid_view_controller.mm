@@ -616,8 +616,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
-    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
-                                         point:(CGPoint)point {
+    contextMenuConfigurationForItemsAtIndexPaths:
+        (NSArray<NSIndexPath*>*)indexPaths
+                                           point:(CGPoint)point {
+  if (indexPaths.count != 1) {
+    return nil;
+  }
+
+  NSIndexPath* indexPath = indexPaths[0];
+
   // Context menu shouldn't appear in the selection mode.
   if (_mode == TabGridMode::kSelection) {
     return nil;

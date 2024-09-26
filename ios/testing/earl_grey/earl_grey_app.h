@@ -8,6 +8,7 @@
 // Import all EarlGrey2 headers that are required for the App Process.
 
 #import <AppFramework/Action/GREYActionsShorthand.h>
+#import <AppFramework/Action/GREYTapper.h>
 #import <AppFramework/Core/GREYElementInteraction.h>
 #import <AppFramework/EarlGreyApp.h>
 #import <AppFramework/Event/GREYSyntheticEvents.h>
