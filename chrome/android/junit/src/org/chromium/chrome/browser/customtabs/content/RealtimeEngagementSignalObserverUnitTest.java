@@ -182,28 +182,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void doesNotSendUserInteractionWhenIncognito() {
-        env.isOffTheRecord = true;
-        initializeTabForTest();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onDestroyed(env.tabProvider.getTab());
-        }
-        verify(mEngagementSignalsCallback, never()).onSessionEnded(anyBoolean(), any(Bundle.class));
-    }
-
-    @Test
-    public void doesNotSendUserInteractionWhenUmaUploadDisabled() {
-        doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
-        initializeTabForTest();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onDestroyed(env.tabProvider.getTab());
-        }
-        verify(mEngagementSignalsCallback, never()).onSessionEnded(anyBoolean(), any(Bundle.class));
-    }
-
-    @Test
     public void sendsSignalsForScrollStartThenEnd() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener();
@@ -638,6 +616,51 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onAllTabsClosed();
 
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(true), any(Bundle.class));
+    }
+
+    @Test
+    public void sendOnSessionEnded_HadInteractionButIncognito() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        // Turn on Incognito.
+        doReturn(true).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // User interacted.
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.webContentsWillSwap(tab);
+        // Close all tabs.
+        mEngagementSignalObserver.onClosingStateChanged(tab, true);
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
+        mEngagementSignalObserver.onAllTabsClosed();
+
+        // didUserInteract is false, even though they did
+        verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
+    }
+
+    @Test
+    public void sendOnSessionEnded_HadInteractionButUmaUploadDisabled() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        // Disable UMA upload.
+        doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(false).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        // User interacted.
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.webContentsWillSwap(tab);
+        // Close all tabs.
+        mEngagementSignalObserver.onClosingStateChanged(tab, true);
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
+        mEngagementSignalObserver.onAllTabsClosed();
+
+        // didUserInteract is false, even though they did
+        verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
     }
 
     @Test
