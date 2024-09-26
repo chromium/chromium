@@ -54,6 +54,10 @@
   self.areOmniboxChangesQueued = NO;
   self.inProgressAnimationCount = 0;
 
+  if (omniboxFocused) {
+    [self prepareToFocusOmniboxAnimated:animated];
+  }
+
   if (toolbarExpanded) {
     [self updateUIToExpandedState:animated];
   } else {
@@ -89,6 +93,29 @@
 
 #pragma mark - Private
 
+// Sets some initial state that needs to be set immediately, before any
+// `dispatch_async` calls, in order to avoid flicker at the start of the
+// animation.
+- (void)prepareToFocusOmniboxAnimated:(BOOL)animated {
+  if (!animated) {
+    return;
+  }
+
+  if ([self isTriggerUnpinnedFakebox]) {
+    // If focus trigger is the unpinned fakebox, the edit view will appear
+    // in-place (without animation) and the steady view will not slide and
+    // fade out - it will be hidden from the start.
+    [UIView performWithoutAnimation:^{
+      // This can be triggered inside of another animation on the NTP, so
+      // `performWithoutAnimation` is used to ensure that these changes happen
+      // immediately.
+      [self.locationBarAnimatee resetTextFieldOffsetAndOffsetSteadyViewToMatch];
+      [self.locationBarAnimatee setEditViewFaded:NO];
+      [self.locationBarAnimatee setSteadyViewFaded:YES];
+    }];
+  }
+}
+
 - (void)focusOmniboxAnimated:(BOOL)animated {
   // Cleans up after the animation.
   void (^cleanup)() = ^{
@@ -103,19 +130,10 @@
 
   if (animated) {
     // Prepare for animation.
-    BOOL shouldCrossfadeEditAndSteadyViews =
-        _trigger != OmniboxFocusTrigger::kUnpinnedLargeFakebox &&
-        _trigger != OmniboxFocusTrigger::kUnpinnedFakebox;
+    BOOL shouldCrossfadeEditAndSteadyViews = ![self isTriggerUnpinnedFakebox];
     if (shouldCrossfadeEditAndSteadyViews) {
       [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
       [self.locationBarAnimatee setEditViewFaded:YES];
-    } else {
-      // If focus trigger is the unpinned fakebox, the edit view will appear
-      // in-place (without animation) and the steady view will not slide and
-      // fade out - it will be hidden from the start.
-      [self.locationBarAnimatee resetTextFieldOffsetAndOffsetSteadyViewToMatch];
-      [self.locationBarAnimatee setEditViewFaded:NO];
-      [self.locationBarAnimatee setSteadyViewFaded:YES];
     }
 
     // Hide badge and entrypoint views before the transform regardless of
@@ -417,4 +435,17 @@
   }
 }
 
+// Returns YES if the focus event was triggered by the NTP Fakebox in its
+// unpinned state.
+- (BOOL)isTriggerUnpinnedFakebox {
+  switch (_trigger) {
+    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+    case OmniboxFocusTrigger::kUnpinnedFakebox:
+      return YES;
+    case OmniboxFocusTrigger::kOther:
+    case OmniboxFocusTrigger::kPinnedFakebox:
+    case OmniboxFocusTrigger::kPinnedLargeFakebox:
+      return NO;
+  }
+}
 @end
