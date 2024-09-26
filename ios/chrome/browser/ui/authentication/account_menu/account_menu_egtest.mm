@@ -235,6 +235,20 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [self assertAccountMenuIsNotShown];
 }
 
+// Tests that the account menu is not dismissed if the app was backgrounded.
+- (void)testAccountMenuStaysIfAppBackgrounded {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  // Select the identity disc particle.
+  [self selectIdentityDiscAndVerify];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Ensure the Account Menu is still displayed.
+  [[EarlGrey selectElementWithMatcher:accountMenuMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Test tapping on views
 
 // Test the manage account menu entry opens the manage account view.
