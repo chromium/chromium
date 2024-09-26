@@ -1,0 +1,99 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+config("classic_com") {
+  # This macro is used in <wrl/module.h>. Since only the COM functionality is
+  # used here (while WinRT isn't being used), define this macro to optimize
+  # compilation of <wrl/module.h> for COM-only.
+  defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
+}
+
+config("winver") {
+  # <wrl/module.h> will try to use RuntimeObject.lib symbols when targeting
+  # Windows 8.1 and up. Target Windows 8.0 to avoid this extra dependency.
+  # Note that "//build/config/win:winver" must be removed from each target's
+  # `configs` when adding this; even if this is added to a target's
+  # `public_configs`.
+  defines = [
+    "NTDDI_VERSION=NTDDI_WIN8",
+
+    # See //build/config/win/BUILD.gn for why not to use _WIN32_WINNT_WIN8.
+    "_WIN32_WINNT=0x0602",
+    "WINVER=0x0602",
+  ]
+}
+
+source_set("service_program") {
+  public = [ "service_program_main.h" ]
+  sources = [ "service_program_main.cc" ]
+  deps = [
+    ":delegate",
+    ":lib",
+    "//base",
+    "//chrome/install_static:install_static_util",
+  ]
+}
+
+source_set("common") {
+  public = [
+    "get_calling_process.h",
+    "scoped_client_impersonation.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "get_calling_process.cc",
+    "scoped_client_impersonation.cc",
+  ]
+}
+
+source_set("lib") {
+  public = [
+    "process_wrl_module.h",
+    "service.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "process_wrl_module.cc",
+    "service.cc",
+  ]
+  configs -= [ "//build/config/win:winver" ]
+  configs += [
+    ":classic_com",
+    ":winver",
+  ]
+  deps = [
+    ":common",
+    ":delegate",
+    "//chrome/install_static:install_static_util",
+    "//third_party/abseil-cpp:absl",
+  ]
+  visibility = [
+    ":service_program",
+    "//chrome/elevation_service:elevation_service_unittests",
+    "//chrome/windows_services/tracing_service:tracing_service_unittests",
+  ]
+}
+
+# Implementations of ServiceDelegate will need to include wrl/module.h, so they
+# must include `//chrome/windows_services/service_program:classic_com` and
+# `//chrome/windows_services/service_program:winver` in their own configs (and,
+# as described above, remove `//build/config/win:winver`).
+source_set("delegate") {
+  public = [
+    "factory_and_clsid.h",
+    "service_delegate.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [ "factory_and_clsid.cc" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "scoped_mock_context.h" ]
+  public_deps = [ "//base" ]
+  sources = [ "scoped_mock_context.cc" ]
+  deps = [ "//testing/gtest" ]
+}

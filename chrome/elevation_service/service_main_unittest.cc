@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/elevation_service/service_main.h"
-
 #include <wrl/client.h>
+
 #include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/test/mock_callback.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/elevation_service/elevation_service_delegate.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
-#include "chrome/elevation_service/scoped_mock_context.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/windows_services/service_program/process_wrl_module.h"
+#include "chrome/windows_services/service_program/scoped_mock_context.h"
+#include "chrome/windows_services/service_program/service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -31,34 +34,32 @@ const base::FilePath TestFile(const std::string& file) {
 class ServiceMainTest : public testing::Test {
  protected:
   ServiceMainTest() = default;
+  ~ServiceMainTest() override {
+    SetModuleReleasedCallback({});
+    service_main_.UnregisterClassObjects();
+  }
 
   void SetUp() override {
     ASSERT_TRUE(com_initializer_.Succeeded());
 
-    auto* service_main = elevation_service::ServiceMain::GetInstance();
-    ASSERT_HRESULT_SUCCEEDED(service_main->RegisterClassObject());
-    service_main_ = service_main;
-    service_main_->ResetExitSignaled();
+    ASSERT_HRESULT_SUCCEEDED(service_main_.RegisterClassObjects());
   }
 
-  void TearDown() override {
-    if (service_main_)
-      std::exchange(service_main_, nullptr)->UnregisterClassObject();
-  }
-
-  elevation_service::ServiceMain* service_main() { return service_main_; }
+  Service& service_main() { return service_main_; }
 
  private:
   base::win::ScopedCOMInitializer com_initializer_;
-  raw_ptr<elevation_service::ServiceMain> service_main_ = nullptr;
+  elevation_service::Delegate service_delegate_;
+  Service service_main_{service_delegate_};
 };
 
 TEST_F(ServiceMainTest, ExitSignalTest) {
-  // The waitable event starts unsignaled.
-  ASSERT_FALSE(service_main()->IsExitSignaled());
+  ::testing::StrictMock<base::MockCallback<base::OnceClosure>>
+      module_released_callback;
+  SetModuleReleasedCallback(module_released_callback.Get());
 
   {
-    elevation_service::ScopedMockContext mock_context;
+    ScopedMockContext mock_context;
     ASSERT_TRUE(mock_context.Succeeded());
 
     Microsoft::WRL::ComPtr<IUnknown> unknown;
@@ -79,19 +80,18 @@ TEST_F(ServiceMainTest, ExitSignalTest) {
                   ::GetCurrentProcessId(), &proc_handle));
 
     // An object instance has been created upon the request, and is held by the
-    // server module. Therefore, the waitable event remains unsignaled.
-    ASSERT_FALSE(service_main()->IsExitSignaled());
+    // server module. Therefore, the callback has not yet run.
+    ::testing::Mock::VerifyAndClearExpectations(&module_released_callback);
 
     // Release the instance object. Now that the last (and the only) instance
     // object of the module is released, the event becomes signaled.
+    EXPECT_CALL(module_released_callback, Run());
     elevator.Reset();
   }
-
-  ASSERT_TRUE(service_main()->IsExitSignaled());
 }
 
 TEST_F(ServiceMainTest, EncryptDecryptTest) {
-  elevation_service::ScopedMockContext mock_context;
+  ScopedMockContext mock_context;
   ASSERT_TRUE(mock_context.Succeeded());
 
   Microsoft::WRL::ComPtr<IUnknown> unknown;

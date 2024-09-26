@@ -24,34 +24,14 @@
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/install_static/install_util.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "chrome/windows_services/service_program/get_calling_process.h"
+#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/elevation_service/internal/elevation_service_internal.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace elevation_service {
-
-namespace {
-
-// Returns a base::Process of the process making the RPC call to us, or invalid
-// base::Process if could not be determined.
-base::Process GetCallingProcess() {
-  // Validation should always be done impersonating the caller.
-  HANDLE calling_process_handle;
-  RPC_STATUS status = I_RpcOpenClientProcess(
-      nullptr, PROCESS_QUERY_LIMITED_INFORMATION, &calling_process_handle);
-  // RPC_S_NO_CALL_ACTIVE indicates that the caller is local process.
-  if (status == RPC_S_NO_CALL_ACTIVE)
-    return base::Process::Current();
-
-  if (status != RPC_S_OK)
-    return base::Process();
-
-  return base::Process(calling_process_handle);
-}
-
-}  // namespace
 
 HRESULT Elevator::RunRecoveryCRXElevated(const wchar_t* crx_path,
                                          const wchar_t* browser_appid,
@@ -89,14 +69,8 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
   plaintext_str.swap(*pre_process_result);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-
   DATA_BLOB intermediate = {};
-  {
-    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
-
+  if (ScopedClientImpersonation impersonate; impersonate.is_valid()) {
     const auto calling_process = GetCallingProcess();
     if (!calling_process.IsValid())
       return kErrorCouldNotObtainCallingProcess;
@@ -126,6 +100,8 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
       *last_error = ::GetLastError();
       return kErrorCouldNotEncryptWithUserContext;
     }
+  } else {
+    return impersonate.result();
   }
   DATA_BLOB output = {};
   {
@@ -175,14 +151,9 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
 
   base::win::ScopedLocalAlloc intermediate_freer(intermediate.pbData);
 
-  HRESULT hr = ::CoImpersonateClient();
-
-  if (FAILED(hr))
-    return hr;
   std::string plaintext_str;
-  {
+  if (ScopedClientImpersonation impersonate; impersonate.is_valid()) {
     DATA_BLOB output = {};
-    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
     // Decrypt using the user store.
     if (!::CryptUnprotectData(&intermediate, nullptr, nullptr, nullptr, nullptr,
                               0, &output)) {
@@ -221,6 +192,8 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
       return validation_result;
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);
+  } else {
+    return impersonate.result();
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto post_process_result = PostProcessData(plaintext_str);

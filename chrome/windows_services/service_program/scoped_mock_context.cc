@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/elevation_service/scoped_mock_context.h"
+#include "chrome/windows_services/service_program/scoped_mock_context.h"
 
 #include <objbase.h>
 
@@ -54,8 +54,6 @@ class MockServerSecurity
 
 }  // namespace
 
-namespace elevation_service {
-
 ScopedMockContext::ScopedMockContext() {
   base::win::AssertComInitialized();
   auto mock_call_context = Microsoft::WRL::Make<MockServerSecurity>();
@@ -66,8 +64,9 @@ ScopedMockContext::ScopedMockContext() {
   auto hresult = ::CoSwitchCallContext(
       mock_call_context.Get(), &original_call_context_.AsEphemeralRawAddr());
   EXPECT_HRESULT_SUCCEEDED(hresult);
-  if (FAILED(hresult))
+  if (FAILED(hresult)) {
     return;
+  }
 
   mock_call_context_ = std::move(mock_call_context);
   EXPECT_EQ(original_call_context_, nullptr);
@@ -75,8 +74,9 @@ ScopedMockContext::ScopedMockContext() {
 
 ScopedMockContext::~ScopedMockContext() {
   base::win::AssertComInitialized();
-  if (!Succeeded())
+  if (!Succeeded()) {
     return;
+  }
 
   IUnknown* this_call_context = nullptr;
   EXPECT_HRESULT_SUCCEEDED(
@@ -84,5 +84,3 @@ ScopedMockContext::~ScopedMockContext() {
   EXPECT_EQ(this_call_context, mock_call_context_.Get())
       << "CoSwitchCallContext switched out someone else's context.";
 }
-
-}  // namespace elevation_service

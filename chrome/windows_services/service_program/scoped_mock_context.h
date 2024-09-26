@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_ELEVATION_SERVICE_SCOPED_MOCK_CONTEXT_H_
-#define CHROME_ELEVATION_SERVICE_SCOPED_MOCK_CONTEXT_H_
+#ifndef CHROME_WINDOWS_SERVICES_SERVICE_PROGRAM_SCOPED_MOCK_CONTEXT_H_
+#define CHROME_WINDOWS_SERVICES_SERVICE_PROGRAM_SCOPED_MOCK_CONTEXT_H_
 
 #include <unknwn.h>
 
 #include <wrl/client.h>
 
 #include "base/memory/raw_ptr.h"
-
-namespace elevation_service {
 
 // Installs an implementation of IServerSecurity that allows code under test to
 // successfully call ::CoImpersonateClient().
@@ -29,6 +27,4 @@ class ScopedMockContext {
   raw_ptr<IUnknown> original_call_context_ = nullptr;
 };
 
-}  // namespace elevation_service
-
-#endif  // CHROME_ELEVATION_SERVICE_SCOPED_MOCK_CONTEXT_H_
+#endif  // CHROME_WINDOWS_SERVICES_SERVICE_PROGRAM_SCOPED_MOCK_CONTEXT_H_
