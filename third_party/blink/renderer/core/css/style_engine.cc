@@ -3583,6 +3583,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   }
   GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
       container.GetLayoutObject());
+  GetDocument().InvalidatePendingSVGResources();
 }
 
 void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
