@@ -32,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -384,8 +385,7 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
-ExtensionBrowserTest::~ExtensionBrowserTest() {
-}
+ExtensionBrowserTest::~ExtensionBrowserTest() = default;
 
 ExtensionService* ExtensionBrowserTest::extension_service() {
   return ExtensionSystem::Get(profile())->extension_service();
@@ -678,10 +678,20 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     const extensions::ExtensionId& id,
     const base::FilePath& path,
     std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
-                                  std::move(expected_change),
-                                  ManifestLocation::kInternal, browser(),
-                                  Extension::NO_FLAGS, false, false);
+  return InstallOrUpdateExtension(
+      id, path, InstallUIType::kNone, std::move(expected_change),
+      ManifestLocation::kInternal, GetWindowController(), Extension::NO_FLAGS,
+      false, false);
+}
+
+const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
+    const base::FilePath& path,
+    std::optional<int> expected_change,
+    Browser* browser) {
+  return InstallOrUpdateExtension(
+      std::string(), path, InstallUIType::kAutoConfirm,
+      std::move(expected_change), browser->extension_window_controller(),
+      Extension::NO_FLAGS);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
@@ -689,8 +699,8 @@ const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), ManifestLocation::kInternal, browser(),
-      Extension::FROM_WEBSTORE, true, false);
+      std::move(expected_change), ManifestLocation::kInternal,
+      GetWindowController(), Extension::FROM_WEBSTORE, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -699,8 +709,9 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     InstallUIType ui_type,
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal, browser(),
-                                  Extension::NO_FLAGS, true, false);
+                                  ManifestLocation::kInternal,
+                                  GetWindowController(), Extension::NO_FLAGS,
+                                  true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -708,11 +719,12 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     std::optional<int> expected_change,
-    Browser* browser,
+    WindowController* window_controller,
     Extension::InitFromValueFlags creation_flags) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal, browser,
-                                  creation_flags, true, false);
+                                  ManifestLocation::kInternal,
+                                  window_controller, creation_flags, true,
+                                  false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -722,7 +734,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     std::optional<int> expected_change,
     ManifestLocation install_source) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  install_source, browser(),
+                                  install_source, GetWindowController(),
                                   Extension::NO_FLAGS, true, false);
 }
 
@@ -732,7 +744,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     InstallUIType ui_type,
     std::optional<int> expected_change,
     ManifestLocation install_source,
-    Browser* browser,
+    WindowController* window_controller,
     Extension::InitFromValueFlags creation_flags,
     bool install_immediately,
     bool grant_permissions) {
@@ -767,7 +779,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
       install_ui = std::make_unique<ExtensionInstallPrompt>(
-          browser->tab_strip_model()->GetActiveWebContents());
+          window_controller->GetActiveTab());
     }
     installer =
         CrxInstaller::Create(extension_service(), std::move(install_ui));
@@ -1055,6 +1067,15 @@ bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
 
   *out_path = extension_root;
   return true;
+}
+
+WindowController* ExtensionBrowserTest::GetWindowController() {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // TODO(b/361838438): Provide an implementation for the desktop android build.
+  return nullptr;
+#else
+  return browser()->extension_window_controller();
+#endif
 }
 
 }  // namespace extensions
