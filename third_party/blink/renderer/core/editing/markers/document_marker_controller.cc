@@ -539,8 +539,8 @@ DocumentMarker* DocumentMarkerController::FirstMarkerAroundPosition(
   const PositionInFlatTree& end = SearchAroundPositionEnd(position);
 
   if (start > end) {
-    // TODO(crbug/1114021): Investigate why this might happen.
-    DUMP_WILL_BE_NOTREACHED() << "|start| should be before |end|.";
+    // TODO(crbug.com/1114021, crbug.com/40710583): This is unexpected, happens
+    // frequently, but no good idea how to diagnose it.
     return nullptr;
   }
 
