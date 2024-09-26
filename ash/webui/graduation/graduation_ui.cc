@@ -9,6 +9,7 @@
 
 #include "ash/webui/graduation/graduation_ui.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "ash/webui/graduation/graduation_ui_handler.h"
+#include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/grit/ash_graduation_resources_map.h"
 #include "base/containers/span.h"
@@ -25,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,7 +43,12 @@ void AddResources(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"backButtonLabel", IDS_GRADUATION_APP_BACK_BUTTON_LABEL},
       {"doneButtonLabel", IDS_GRADUATION_APP_DONE_BUTTON_LABEL},
-      {"webviewLoadingMessage", IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE}};
+      {"getStartedButtonLabel", IDS_GRADUATION_APP_GET_STARTED_BUTTON_LABEL},
+      {"webviewLoadingMessage", IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE},
+      {"welcomePageTitle", IDS_GRADUATION_APP_WELCOME_PAGE_TITLE},
+      {"welcomePageDescription", IDS_GRADUATION_APP_WELCOME_PAGE_DESCRIPTION},
+      {"welcomePageSubDescription",
+       IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -62,7 +71,7 @@ bool GraduationUIConfig::IsWebUIEnabled(
 }
 
 GraduationUI::GraduationUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, false) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   const url::Origin host_origin =
       url::Origin::Create(GURL(kChromeUIGraduationAppURL));
@@ -82,6 +91,17 @@ GraduationUI::GraduationUI(content::WebUI* web_ui)
 }
 
 GraduationUI::~GraduationUI() = default;
+
+void GraduationUI::BindInterface(
+    mojo::PendingReceiver<graduation_ui::mojom::GraduationUiHandler> receiver) {
+  ui_handler_ = std::make_unique<GraduationUiHandler>(std::move(receiver));
+}
+
+void GraduationUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GraduationUI)
 

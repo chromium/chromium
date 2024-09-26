@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.graduation_ui.mojom;
+
+// Struct containing the user's profile info used to display the user's email
+// and icon on the welcome page.
+struct ProfileInfo {
+  // The email of the current user.
+  string email;
+
+  // The URL of the current user's profile photo.
+  string photo_url;
+};
+
+// Interface that supports integration between ChromeOS and the Content Transfer
+// System Web App.
+interface GraduationUiHandler {
+  // Returns a struct containing the current user's email and profile photo URL.
+  GetProfileInfo() => (ProfileInfo profile_info);
+};

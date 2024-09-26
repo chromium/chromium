@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "graduation_ui_handler.cc": [
+    "+components/user_manager/user.h",
+    "+components/user_manager/user_manager.h",
+  ],
+}

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://graduation/js/graduation_ui.js';
+import 'chrome://graduation/js/graduation_takeout_ui.js';
 import 'chrome://graduation/strings.m.js';
 
-import {GraduationUi} from 'chrome://graduation/js/graduation_ui.js';
+import {ScreenSwitchEvents} from 'chrome://graduation/js/graduation_app.js';
+import {GraduationTakeoutUi} from 'chrome://graduation/js/graduation_takeout_ui.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 
-suite('GraduationUiTest', function() {
-  let graduationUi: GraduationUi;
+suite('GraduationTakeoutUiTest', function() {
+  let graduationUi: GraduationTakeoutUi;
 
   function getBackButton(): CrButtonElement {
     const backButton =
@@ -47,7 +48,7 @@ suite('GraduationUiTest', function() {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    graduationUi = new GraduationUi();
+    graduationUi = new GraduationTakeoutUi();
     document.body.appendChild(graduationUi);
     flush();
   });
@@ -74,5 +75,17 @@ suite('GraduationUiTest', function() {
     getWebview().dispatchEvent(new CustomEvent('loadabort'));
     assertTrue(getSpinner().hidden);
     assertFalse(getWebview().hidden);
+  });
+
+  test('TriggerWelcomePageOnBackButtonClick', function() {
+    let welcomePageTriggered = false;
+    getWebview().dispatchEvent(new CustomEvent('contentload'));
+    assertFalse(getBackButton().hidden);
+
+    graduationUi.addEventListener(ScreenSwitchEvents.SHOW_WELCOME, () => {
+      welcomePageTriggered = true;
+    });
+    getBackButton().click();
+    assertTrue(welcomePageTriggered);
   });
 });

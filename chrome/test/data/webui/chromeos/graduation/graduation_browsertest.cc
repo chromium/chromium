@@ -40,6 +40,14 @@ class GraduationMochaTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GraduationMochaTest, Ui) {
-  RunGraduationTest("graduation_ui_test.js");
+IN_PROC_BROWSER_TEST_F(GraduationMochaTest, App) {
+  RunGraduationTest("graduation_app_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationMochaTest, TakeoutUi) {
+  RunGraduationTest("graduation_takeout_ui_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationMochaTest, WelcomeScreen) {
+  RunGraduationTest("graduation_welcome_test.js");
 }

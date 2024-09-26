@@ -30,6 +30,7 @@ test("ash_webui_unittests") {
     "//ash/webui/eche_app_ui:unit_tests",
     "//ash/webui/eche_app_ui/mojom:unit_tests",
     "//ash/webui/file_manager:unit_tests",
+    "//ash/webui/graduation:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
     "//ash/webui/metrics:unit_tests",
     "//ash/webui/os_feedback_ui/backend:unit_tests",

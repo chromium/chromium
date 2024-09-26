@@ -680,18 +680,30 @@
           ChromeOS Input Method Service
         </message>
 
-        <!-- Graduation App -->
-        <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Graduation app in the app shelf. Graduation allows user to transfer data from their EDU account to their consumer account.">
-          Graduation
+        <!-- Content Transfer App -->
+        <message name="IDS_GRADUATION_APP_TITLE" desc="Name of the Content Transfer app in the app shelf. The Content Transfer app allows user to transfer data from their EDU account to their consumer account.">
+          Content Transfer
         </message>
-        <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Graduation flow.">
+        <message name="IDS_GRADUATION_APP_BACK_BUTTON_LABEL" desc="Text for a button that navigates to the previous step of the Transfer flow.">
           Back
         </message>
-        <message name="IDS_GRADUATION_APP_DONE_BUTTON_LABEL" desc="Text for a button that is clicked to indicate that the Graduation flow is complete.">
+        <message name="IDS_GRADUATION_APP_DONE_BUTTON_LABEL" desc="Text for a button that is clicked to indicate that the Transfer flow is complete.">
           Done
+        </message>
+        <message name="IDS_GRADUATION_APP_GET_STARTED_BUTTON_LABEL" desc="Text for a button that is clicked to navigate to the Transfer tool.">
+          Get Started
         </message>
         <message name="IDS_GRADUATION_APP_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Takeout webview is loading.">
           Please wait...
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_TITLE" desc="The title of the welcome page shown when the Content Transfer app is opened.">
+          Take your Gmail and Google Drive files with you
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_DESCRIPTION" desc="The description of the welcome page shown when the Content Transfer app is opened.">
+          When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides, and more.
+        </message>
+        <message name="IDS_GRADUATION_APP_WELCOME_PAGE_SUB_DESCRIPTION" desc="An additional description shown on the welcome page when the Content Transfer app is opened.">
+          Make sure to use the Content Transfer app by Google to move your school account data to your personal account before you lose access.
         </message>
 
         <!-- Help App -->

@@ -1,0 +1,108 @@
+<style include="cr-shared-style cros-color-overrides">
+  html,
+  body {
+    height: 100%;
+  }
+
+  #graduationWelcomeDiv {
+    background-color: var(--cros-sys-app_base_shaded);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .main-content-container {
+    bottom: 0;
+    display: flex;
+    flex: 1;
+    gap: 80px;
+    height: 85%;
+    margin: 0 40px;
+    /* min-height matches the height of the illustration plus the top padding */
+    min-height: 572px;
+  }
+
+  .main-content {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    gap: 24px;
+    height: 100%;
+    /* Prevents the element from overflowing the parent container. */
+    max-height: 464px;
+    padding-top: 108px;
+  }
+
+  #title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-3_regular-font);
+  }
+
+  #profileInfo {
+    display: flex;
+    gap: 8px;
+  }
+
+  #profileEmail {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+  }
+
+  #profilePhoto {
+    background: center / cover no-repeat;
+    border-radius: 12px;
+    flex-shrink: 0;
+    height: 24px;
+    width: 24px;
+  }
+
+  .description {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-0-font);
+  }
+
+  .illustration {
+    height: 100%;
+    /* Prevents the element from overflowing the parent container. */
+    max-height: 464px;
+    padding-top: 108px;
+  }
+
+  .button-container {
+    align-content: center;
+    height: 15%;
+    min-height: 32px;
+  }
+
+  #getStartedButton {
+    border-radius: 18px;
+    float: inline-end;
+    margin-inline-end: 40px;
+  }
+</style>
+<div id="graduationWelcomeDiv" role="application">
+  <div class="main-content-container">
+    <div class="main-content">
+      <div id="title">$i18n{welcomePageTitle}</div>
+      <div id="profileInfo">
+        <div id="profilePhoto"
+            style="background-image: [[getIconImageSet(profilePhotoUrl)]];">
+        </div>
+        <div id="profileEmail">[[profileEmail]]</div>
+      </div>
+      <div class="description">$i18n{welcomePageDescription}</div>
+      <div class="description">$i18n{welcomePageSubDescription}</div>
+    </div>
+    <div class="illustration">
+      <svg id="illustration" width="464" height="464" viewBox="0 0 464 464" fill="none">
+        <use href="../images/welcome.svg#welcomeSvg"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="button-container">
+    <cr-button id="getStartedButton" class="action-button"
+        on-click="onGetStartedClicked">
+      $i18n{getStartedButtonLabel}
+    </cr-button>
+  </div>
+</div>

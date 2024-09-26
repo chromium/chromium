@@ -281,6 +281,8 @@
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 #include "ash/webui/focus_mode/mojom/focus_mode.mojom.h"
+#include "ash/webui/graduation/graduation_ui.h"
+#include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "ash/webui/growth_internals/growth_internals.mojom.h"
 #include "ash/webui/growth_internals/growth_internals_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
@@ -1242,7 +1244,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::EmojiUI, ash::RemoteMaintenanceCurtainUI,
       ash::app_install::AppInstallDialogUI, ash::SanitizeDialogUI,
       ash::printing::print_preview::PrintPreviewCrosUI,
-      ash::extended_updates::ExtendedUpdatesUI,
+      ash::extended_updates::ExtendedUpdatesUI, ash::graduation::GraduationUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
@@ -1903,6 +1905,14 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterWebUIControllerInterfaceBinder<
       ash::sanitize_ui::mojom::SettingsResetter, ash::SanitizeDialogUI>(map);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsGraduationEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::graduation_ui::mojom::GraduationUiHandler,
+        ash::graduation::GraduationUI>(map);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

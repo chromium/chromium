@@ -14,7 +14,8 @@ import {isRTL} from '//resources/js/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './graduation_ui.html.js';
+import {ScreenSwitchEvents} from './graduation_app.js';
+import {getTemplate} from './graduation_takeout_ui.html.js';
 
 /**
  * The base URL of the banner shown in Takeout indicating that the user has
@@ -24,14 +25,9 @@ import {getTemplate} from './graduation_ui.html.js';
 const TAKEOUT_COMPLETED_BANNER_BASE_URL: string =
     'https://www.gstatic.com/ac/takeout/migration/migration-banner';
 
-export interface GraduationUi {
-  $: {
-    webview: chrome.webviewTag.WebView,
-  };
-}
-export class GraduationUi extends PolymerElement {
+export class GraduationTakeoutUi extends PolymerElement {
   static get is() {
-    return 'graduation-ui' as const;
+    return 'graduation-takeout-ui' as const;
   }
 
   static get template() {
@@ -89,12 +85,19 @@ export class GraduationUi extends PolymerElement {
     this.webview.src = webviewUrl.toString();
   }
 
+  setWebviewForTest(webview: chrome.webviewTag.WebView) {
+    this.webview = webview;
+  }
+
   private getBackButtonIcon_(): string {
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
   }
 
   private onBackClicked_(): void {
-    /** TODO(b/357877542): Trigger navigation to the welcome screen. */
+    this.dispatchEvent(new CustomEvent(ScreenSwitchEvents.SHOW_WELCOME, {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onDoneClicked_(): void {
@@ -104,8 +107,8 @@ export class GraduationUi extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [GraduationUi.is]: GraduationUi;
+    [GraduationTakeoutUi.is]: GraduationTakeoutUi;
   }
 }
 
-customElements.define(GraduationUi.is, GraduationUi);
+customElements.define(GraduationTakeoutUi.is, GraduationTakeoutUi);
