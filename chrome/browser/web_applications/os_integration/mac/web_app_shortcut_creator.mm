@@ -30,6 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/info_plist_data.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
@@ -75,9 +76,6 @@ OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
                                              SecStaticCodeRef code,
                                              SecCSFlags flags,
                                              CFErrorRef* errors);
-
-// Key used within CoreFoundation for loaded Info plists
-extern const CFStringRef _kCFBundleNumericVersionKey;
 
 }  // extern "C"
 
@@ -251,26 +249,10 @@ bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
   // Pass NSBundle's cached copy of the app's Info.plist data to the helper tool
   // for use in dynamic signature validation. The data is validated against a
   // hash recorded in the code signature before being used during requirement
-  // validation. NSBundle's cached copy is used to ensure that any changes to
-  // Info.plist on disk due to pending updates do not result in a version of the
-  // data being used that doesn't match the code signature of the running app.
-  NSMutableDictionary* info_plist_dictionary =
-      [base::apple::OuterBundle().infoDictionary mutableCopy];
-  // NSBundle inserts CFBundleNumericVersion into its in-memory copy of the info
-  // dictionary despite it not being present on disk. Remove it so that the
-  // serialized dictionary matches the Info.plist that was present at signing
-  // time.
-  info_plist_dictionary[base::apple::CFToNSPtrCast(
-      _kCFBundleNumericVersionKey)] = nil;
-  NS_VALID_UNTIL_END_OF_SCOPE NSData* info_plist_xml_data =
-      [NSPropertyListSerialization
-          dataWithPropertyList:info_plist_dictionary
-                        format:NSPropertyListXMLFormat_v1_0
-                       options:0
-                         error:nullptr];
-  command_line.AppendArg(
-      std::string_view(static_cast<const char*>(info_plist_xml_data.bytes),
-                       info_plist_xml_data.length));
+  // validation.
+  std::vector<uint8_t> info_plist_data =
+      base::mac::OuterBundleCachedInfoPlistData();
+  command_line.AppendArg(base::as_string_view(info_plist_data));
 
   // Synchronously wait for the copy to complete to match the semantics of
   // `base::CopyDirectory`.
