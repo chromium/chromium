@@ -282,7 +282,7 @@ void GifTenorApiFetcher::TenorGifsApiResponseHandler(
   }
   std::move(callback).Run(
       GetError(std::move(response)),
-      emoji_picker::mojom::TenorGifResponse::New(
+      emoji_picker::mojom::PaginatedGifResponses::New(
           "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 }
 
@@ -293,13 +293,13 @@ void GifTenorApiFetcher::OnGifsJsonParsed(
   if (!gifs) {
     std::move(callback).Run(
         emoji_picker::mojom::Status::kHttpError,
-        emoji_picker::mojom::TenorGifResponse::New(
+        emoji_picker::mojom::PaginatedGifResponses::New(
             "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
     return;
   }
   const auto* next = result->GetDict().FindString("next");
   std::move(callback).Run(emoji_picker::mojom::Status::kHttpOk,
-                          emoji_picker::mojom::TenorGifResponse::New(
+                          emoji_picker::mojom::PaginatedGifResponses::New(
                               next ? *next : "", ParseGifs(gifs)));
 }
 

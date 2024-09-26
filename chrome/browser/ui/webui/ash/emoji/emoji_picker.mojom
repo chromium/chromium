@@ -81,7 +81,7 @@ struct GifResponse {
   gfx.mojom.Size full_size;
 };
 
-struct TenorGifResponse {
+struct PaginatedGifResponses {
   // A cursor for the next set of GIFs to fetch.
   string next;
   // A list of GIFs.
@@ -126,13 +126,13 @@ interface PageHandler {
   // Returns a list of the current global featured GIFs from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-featured).
   GetFeaturedGifs(string? pos) => (Status status,
-                                   TenorGifResponse featured_gifs);
+                                   PaginatedGifResponses featured_gifs);
 
   // Returns a list of the most relevant GIFs for a given search set of search
   // terms or categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-search).
   SearchGifs(string query, string? pos) => (Status status,
-                                            TenorGifResponse search_gifs);
+                                            PaginatedGifResponses search_gifs);
 
   // Returns a list of GIFs for the specified IDs
   // (https://developers.google.com/tenor/guides/endpoints#posts).

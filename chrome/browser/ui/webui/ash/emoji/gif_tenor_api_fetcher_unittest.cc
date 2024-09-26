@@ -210,77 +210,79 @@ TEST_F(GifTenorApiFetcherTest, FetchCategories) {
 TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
   task_environment_.RunUntilIdle();
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_http_error;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(
       create_future_http_error.GetCallback(), url_loader_factory_, "");
   ASSERT_EQ(create_future_http_error.Get<0>(),
             emoji_picker::mojom::Status::kHttpError);
   ASSERT_EQ(create_future_http_error.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New(
+            emoji_picker::mojom::PaginatedGifResponses::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_net_error;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(
       create_future_net_error.GetCallback(), url_loader_factory_, "");
   ASSERT_EQ(create_future_net_error.Get<0>(),
             emoji_picker::mojom::Status::kNetError);
   ASSERT_EQ(create_future_net_error.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New(
+            emoji_picker::mojom::PaginatedGifResponses::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
   response_.response = kFakeGifsResponse;
   response_.http_status_code = net::HTTP_OK;
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_http_ok;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(create_future_http_ok.GetCallback(),
                                            url_loader_factory_, "");
   ASSERT_EQ(create_future_http_ok.Get<0>(),
             emoji_picker::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New("1", GetFakeGifs()));
+  ASSERT_EQ(
+      create_future_http_ok.Get<1>(),
+      emoji_picker::mojom::PaginatedGifResponses::New("1", GetFakeGifs()));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
   task_environment_.RunUntilIdle();
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_http_error;
   gif_tenor_api_fetcher_.FetchGifSearch(create_future_http_error.GetCallback(),
                                         url_loader_factory_, "", "");
   ASSERT_EQ(create_future_http_error.Get<0>(),
             emoji_picker::mojom::Status::kHttpError);
   ASSERT_EQ(create_future_http_error.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New(
+            emoji_picker::mojom::PaginatedGifResponses::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_net_error;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(
       create_future_net_error.GetCallback(), url_loader_factory_, "");
   ASSERT_EQ(create_future_net_error.Get<0>(),
             emoji_picker::mojom::Status::kNetError);
   ASSERT_EQ(create_future_net_error.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New(
+            emoji_picker::mojom::PaginatedGifResponses::New(
                 "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
 
   response_.response = kFakeGifsResponse;
   response_.http_status_code = net::HTTP_OK;
   base::test::TestFuture<emoji_picker::mojom::Status,
-                         emoji_picker::mojom::TenorGifResponsePtr>
+                         emoji_picker::mojom::PaginatedGifResponsesPtr>
       create_future_http_ok;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(create_future_http_ok.GetCallback(),
                                            url_loader_factory_, "");
   ASSERT_EQ(create_future_http_ok.Get<0>(),
             emoji_picker::mojom::Status::kHttpOk);
-  ASSERT_EQ(create_future_http_ok.Get<1>(),
-            emoji_picker::mojom::TenorGifResponse::New("1", GetFakeGifs()));
+  ASSERT_EQ(
+      create_future_http_ok.Get<1>(),
+      emoji_picker::mojom::PaginatedGifResponses::New("1", GetFakeGifs()));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {

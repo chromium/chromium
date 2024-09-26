@@ -13,7 +13,7 @@ export {EmojiPickerApp} from './app.js';
 export {EMOJI_PICKER_TOTAL_EMOJI_WIDTH, GIF_VALIDATION_DATE, TRENDING, TRENDING_GROUP_ID} from './constants.js';
 export {EmojiButton} from './emoji_button.js';
 export {EmojiGroupComponent} from './emoji_group.js';
-export {Category, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+export {Category, PaginatedGifResponses, Status} from './emoji_picker.mojom-webui.js';
 export {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 export {EmojiSearch} from './emoji_search.js';
 export {EMOJI_IMG_BUTTON_CLICK, EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
