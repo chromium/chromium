@@ -264,7 +264,10 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
       return nullptr;
     DCHECK(!paint_image.IsTextureBacked());
 
-    output_resource->TakeSkImage(paint_image.GetSwSkImage());
+    // Note that the resource *must* be a CanvasResourceSharedBitmap as this
+    // class creates CanvasResourceSharedBitmap instances exclusively.
+    static_cast<CanvasResourceSharedBitmap*>(output_resource.get())
+        ->TakeSkImage(paint_image.GetSwSkImage());
 
     return output_resource;
   }

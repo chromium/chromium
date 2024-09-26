@@ -887,10 +887,6 @@ bool ExternalCanvasResource::IsValid() const {
   return is_cross_thread() || context_provider_wrapper_;
 }
 
-void ExternalCanvasResource::TakeSkImage(sk_sp<SkImage> image) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Bitmap");
   if (!IsValid())
@@ -1035,10 +1031,6 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
 
 bool CanvasResourceSwapChain::IsValid() const {
   return !!context_provider_wrapper_;
-}
-
-void CanvasResourceSwapChain::TakeSkImage(sk_sp<SkImage> image) {
-  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {

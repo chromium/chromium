@@ -169,10 +169,6 @@ class PLATFORM_EXPORT CanvasResource
   // snapshots not used in compositing (for instance to draw to another canvas).
   virtual scoped_refptr<StaticBitmapImage> Bitmap() = 0;
 
-  // Copies the contents of |image| to the resource's backing memory. Only
-  // CanvasResourceProvider and derivatives should call this.
-  virtual void TakeSkImage(sk_sp<SkImage> image) = 0;
-
   // Called when the resource is marked lost. Losing a resource does not mean
   // that the backing memory has been destroyed, since the resource itself keeps
   // a ref on that memory.
@@ -290,7 +286,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) final;
   gfx::Size Size() const final;
-  void TakeSkImage(sk_sp<SkImage> image) final;
+
+  // Copies the contents of |image| to the resource's backing memory.
+  void TakeSkImage(sk_sp<SkImage> image);
+
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool flag) final { is_origin_clean_ = flag; }
@@ -336,7 +335,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
-  void TakeSkImage(sk_sp<SkImage> image) final { NOTREACHED_IN_MIGRATION(); }
   void NotifyResourceLost() final;
   void BeginReadAccess();
   void EndReadAccess();
@@ -477,7 +475,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return transferable_resource_.size; }
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
-  void TakeSkImage(sk_sp<SkImage> image) final;
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
@@ -533,7 +530,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   gfx::Size Size() const final { return size_; }
-  void TakeSkImage(sk_sp<SkImage> image) final;
   void NotifyResourceLost() override {
     // Used for single buffering mode which doesn't need to care about sync
     // token synchronization.
