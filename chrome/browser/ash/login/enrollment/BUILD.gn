@@ -18,6 +18,10 @@ static_library("enrollment") {
     "enrollment_screen_view.h",
     "enrollment_uma.cc",
     "enrollment_uma.h",
+    "oauth2_token_revoker.cc",
+    "oauth2_token_revoker.h",
+    "timebound_user_context_holder.cc",
+    "timebound_user_context_holder.h",
   ]
 
   public_deps = [
@@ -71,6 +75,8 @@ static_library("test_support") {
     "mock_enrollment_launcher.h",
     "mock_enrollment_screen.cc",
     "mock_enrollment_screen.h",
+    "mock_oauth2_token_revoker.cc",
+    "mock_oauth2_token_revoker.h",
   ]
 
   public_deps = [

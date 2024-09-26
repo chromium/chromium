@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
+#include "chrome/browser/ash/login/enrollment/mock_oauth2_token_revoker.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -1429,6 +1431,17 @@ class KioskEnrollmentTestWithAddUserFlowEnabled : public KioskEnrollmentTest {
     feature_list_.InitAndEnableFeature(features::kOobeAddUserDuringEnrollment);
   }
 
+  void ExpectCachedTokenRevoked() {
+    std::unique_ptr<MockOAuth2TokenRevoker> mock_token_revoker =
+        std::make_unique<MockOAuth2TokenRevoker>();
+    EXPECT_CALL(*mock_token_revoker, Start(FakeGaiaMixin::kFakeRefreshToken))
+        .Times(::testing::Exactly(1));
+    TimeboundUserContextHolder* holder =
+        host()->GetWizardContext()->timebound_user_context_holder.get();
+    EXPECT_TRUE(holder);
+    holder->InjectTokenRevokerForTesting(std::move(mock_token_revoker));
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1441,24 +1454,14 @@ IN_PROC_BROWSER_TEST_F(
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+  // The tokens should be revoked when the Kiosk session starts.
+  ExpectCachedTokenRevoked();
 
   ScopedDeviceSettings settings;
 
   SetupAutoLaunchApp(settings.owner_settings_service());
   enrollment_screen()->OnConfirmationClosed();
-
-  // TODO(b/362725459) Once the cleanup is implemented, we should expect
-  // here the user_context to not be saved.
-  UserContext* user_context =
-      LoginDisplayHost::default_host()->GetWizardContext()->user_context.get();
-  EXPECT_TRUE(user_context);
-  EXPECT_EQ(user_context->GetAccountId().GetUserEmail(),
-            FakeGaiaMixin::kFakeUserEmail);
-  EXPECT_EQ(user_context->GetGaiaID(), FakeGaiaMixin::kFakeUserGaiaId);
-  EXPECT_TRUE(user_context->GetPassword());
-  EXPECT_EQ(user_context->GetPassword().value(),
-            PasswordInput(FakeGaiaMixin::kFakeUserPassword));
-  EXPECT_EQ(user_context->GetRefreshToken(), FakeGaiaMixin::kFakeRefreshToken);
+  enrollment_ui_.LeaveSuccessScreen();
 
   // Wait for app to be launched.
   KioskSessionInitializedWaiter().Wait();

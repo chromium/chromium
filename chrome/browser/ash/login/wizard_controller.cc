@@ -1401,7 +1401,7 @@ void WizardController::OnUserCreationScreenExit(
       break;
     case UserCreationScreen::Result::SKIPPED:
       if (features::IsOobeAddUserDuringEnrollmentEnabled() &&
-          wizard_context_->add_user_from_cached_credentials) {
+          wizard_context_->timebound_user_context_holder) {
         ShowAccountSelectionScreen();
       } else {
         AdvanceToScreen(GaiaView::kScreenId);

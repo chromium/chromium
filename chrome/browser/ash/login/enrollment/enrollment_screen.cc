@@ -24,6 +24,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
+#include "chrome/browser/ash/login/enrollment/timebound_user_context_holder.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -255,7 +256,7 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
 
   const bool revoke_oauth2_tokens =
       !(features::IsOobeAddUserDuringEnrollmentEnabled() &&
-        context()->add_user_from_cached_credentials);
+        context()->timebound_user_context_holder);
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -1020,8 +1021,8 @@ void EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   CHECK(wizard_context);
   // Make sure we aren't overwriting any existing information.
   CHECK(!wizard_context->user_context);
-  wizard_context->user_context = std::move(user_context);
-  wizard_context->add_user_from_cached_credentials = true;
+  wizard_context->timebound_user_context_holder =
+      std::make_unique<TimeboundUserContextHolder>(std::move(user_context));
 
   return;
 }

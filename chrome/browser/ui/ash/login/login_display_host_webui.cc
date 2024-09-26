@@ -85,6 +85,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -247,8 +248,7 @@ bool ShouldPreserveUserContext() {
   }
   WizardContext* wizard_context =
       LoginDisplayHost::default_host()->GetWizardContext();
-  if (!wizard_context || !wizard_context->add_user_from_cached_credentials ||
-      !wizard_context->user_context) {
+  if (!wizard_context || !wizard_context->timebound_user_context_holder) {
     return false;
   }
   return true;
@@ -269,14 +269,14 @@ void ShowLoginWizardFinish(
     return;
   }
 
-  std::unique_ptr<UserContext> user_context;
+  std::unique_ptr<TimeboundUserContextHolder> user_context;
   if (ShouldShowSigninScreen(first_screen)) {
     if (ShouldPreserveUserContext()) {
       // Move the user context to the local variable before it's destroyed.
       WizardContext* wizard_context =
           LoginDisplayHost::default_host()->GetWizardContext();
       CHECK(wizard_context);
-      user_context = std::move(wizard_context->user_context);
+      user_context = std::move(wizard_context->timebound_user_context_holder);
     }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
@@ -317,8 +317,7 @@ void ShowLoginWizardFinish(
     // Restore the user context within the wizard context.
     WizardContext* wizard_context = display_host->GetWizardContext();
     CHECK(wizard_context);
-    wizard_context->user_context = std::move(user_context);
-    wizard_context->add_user_from_cached_credentials = true;
+    wizard_context->timebound_user_context_holder = std::move(user_context);
   }
 
   // Restore system timezone.

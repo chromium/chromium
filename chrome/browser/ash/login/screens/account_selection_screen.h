@@ -10,9 +10,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
@@ -48,10 +50,7 @@ class AccountSelectionScreen : public BaseScreen {
 
   static std::string GetResultString(Result result);
 
-  // Once the credentials are stored during enrollment a delayed task is
-  // scheduled to cleanup the credentials within few minutes. Once that happens
-  // this function is called which will cause the screen to exit if it's shown.
-  void OnCredentialsExpired();
+  void OnCredentialsExpiredCallback();
 
  private:
   // BaseScreen:

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 
@@ -58,10 +59,11 @@ void AccountSelectionScreen::ShowImpl() {
   if (!view_) {
     return;
   }
+
+  CHECK(context());
   CHECK(IsUserContextComplete(context()));
-  CHECK(context()->user_context->GetAuthCode().empty());
   const std::string email =
-      context()->user_context->GetAccountId().GetUserEmail();
+      context()->timebound_user_context_holder->GetAccountId().GetUserEmail();
   view_->SetUserEmail(email);
   view_->Show();
 }
@@ -81,7 +83,7 @@ void AccountSelectionScreen::OnUserAction(const base::Value::List& args) {
   }
 }
 
-void AccountSelectionScreen::OnCredentialsExpired() {
+void AccountSelectionScreen::OnCredentialsExpiredCallback() {
   if (!is_hidden()) {
     std::move(exit_callback_).Run(Result::kGaiaFallback);
   }
@@ -92,17 +94,19 @@ bool AccountSelectionScreen::IsUserContextComplete(
   if (!wizard_context) {
     return false;
   }
-  const UserContext* const user_context = wizard_context->user_context.get();
-  if (!user_context) {
+  const TimeboundUserContextHolder* const user_context_holder =
+      wizard_context->timebound_user_context_holder.get();
+  if (!user_context_holder || !user_context_holder->HasUserContext()) {
     return false;
   }
   const bool user_context_available =
-      user_context && !user_context->GetAccountId().empty() &&
-      user_context->GetPassword() && !user_context->GetRefreshToken().empty();
-  if (!wizard_context->add_user_from_cached_credentials ||
-      !user_context_available) {
+      !user_context_holder->GetAccountId().empty() &&
+      user_context_holder->GetPassword() &&
+      !user_context_holder->GetRefreshToken().empty();
+  if (!user_context_available) {
     return false;
   }
+
   return true;
 }
 
@@ -117,9 +121,11 @@ bool AccountSelectionScreen::MaybeLoginWithCachedCredentials() {
   if (view_) {
     view_->ShowStepProgress();
   }
-  wizard_context->add_user_from_cached_credentials = false;
-  LoginDisplayHost::default_host()->CompleteLogin(
-      *std::move(wizard_context->user_context));
+
+  std::unique_ptr<UserContext> user_context =
+      wizard_context->timebound_user_context_holder->GetUserContext();
+  wizard_context->timebound_user_context_holder.reset();
+  LoginDisplayHost::default_host()->CompleteLogin(*std::move(user_context));
 
   return true;
 }
