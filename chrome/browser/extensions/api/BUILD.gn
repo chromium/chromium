@@ -44,6 +44,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/preference",
     "//chrome/browser/extensions/api/processes",
     "//chrome/browser/extensions/api/proxy",
+    "//chrome/browser/extensions/api/reading_list",
     "//chrome/browser/extensions/api/resources_private",
     "//chrome/browser/extensions/api/safe_browsing_private",
     "//chrome/browser/extensions/api/scripting",

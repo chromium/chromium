@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("reading_list") {
+  sources = [
+    "reading_list_api.cc",
+    "reading_list_api.h",
+    "reading_list_api_constants.cc",
+    "reading_list_api_constants.h",
+    "reading_list_event_router.cc",
+    "reading_list_event_router.h",
+    "reading_list_event_router_factory.cc",
+    "reading_list_event_router_factory.h",
+    "reading_list_util.cc",
+    "reading_list_util.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//components/keyed_service/core",
+    "//components/reading_list/core",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/reading_list",
+    "//url",
+  ]
+}
