@@ -110,7 +110,7 @@ proto_library("net_quic_proto") {
 
   proto_in_dir = "src"
 
-  deps = [ "//base" ]
+  link_deps = [ "//base" ]
 
   defines = [ "IS_QUICHE_IMPL" ]
 
@@ -125,7 +125,7 @@ proto_library("net_quic_test_tools_proto") {
   cc_include = "net/base/net_export.h"
   component_build_force_source_set = true
 
-  deps = [ "//net:net_export_header" ]
+  link_deps = [ "//net:net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
 
@@ -896,7 +896,7 @@ proto_library("blind_sign_auth_proto") {
 
   proto_in_dir = "src"
 
-  deps = [ "//base" ]
+  link_deps = [ "//base" ]
 
   proto_deps = [ "//third_party/anonymous_tokens:anonymous_tokens_cc_proto" ]
 

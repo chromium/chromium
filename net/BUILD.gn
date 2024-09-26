@@ -1842,7 +1842,7 @@ proto_library("net_nqe_proto") {
   cc_include = "net/base/net_export.h"
   component_build_force_source_set = true
 
-  deps = [ ":net_export_header" ]
+  link_deps = [ ":net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
 
