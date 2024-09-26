@@ -20,11 +20,11 @@
 // BrowserImpl is the concrete implementation of the Browser interface.
 class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
  public:
-  // Constructs an instance attached to `browser_state`, `scene_state`. If
+  // Constructs an instance attached to `profile`, `scene_state`. If
   // `active_browser` is not null, then the Browser is an inactive Browser
   // and is considered to be attached to it. The `insertion_policy` and
   // `activation_policy` are passed to BrowserWebStateListDelegate constructor.
-  BrowserImpl(ChromeBrowserState* browser_state,
+  BrowserImpl(ProfileIOS* profile,
               SceneState* scene_state,
               CommandDispatcher* command_dispatcher,
               BrowserImpl* active_browser,
@@ -41,8 +41,8 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   Type type() const override;
   // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
   // remove this method.
-  ChromeBrowserState* GetBrowserState() final;
-  ChromeBrowserState* GetProfile() final;
+  ProfileIOS* GetBrowserState() final;
+  ProfileIOS* GetProfile() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
@@ -59,8 +59,8 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   // The type of this browser.
   const Type type_;
 
-  // The ChromeBrowserState this Browser is attached to. Must not be null.
-  raw_ptr<ChromeBrowserState> const browser_state_;
+  // The ProfileIOS this Browser is attached to. Must not be null.
+  raw_ptr<ProfileIOS> const profile_;
 
   // The owned WebStateList.
   WebStateList web_state_list_;

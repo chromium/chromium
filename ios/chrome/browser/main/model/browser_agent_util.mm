@@ -48,8 +48,7 @@ void AttachBrowserAgents(Browser* browser) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
 
-  const bool browser_is_off_record =
-      browser->GetBrowserState()->IsOffTheRecord();
+  const bool browser_is_off_record = browser->GetProfile()->IsOffTheRecord();
   const bool browser_is_inactive = browser->IsInactive();
 
   LiveTabContextBrowserAgent::CreateForBrowser(browser);
@@ -105,7 +104,7 @@ void AttachBrowserAgents(Browser* browser) {
   WebStateListMetricsBrowserAgent::CreateForBrowser(
       browser, SessionMetrics::FromProfile(browser->GetProfile()));
 
-  // Normal browser states are the only ones to get tab usage recorder.
+  // Normal profiles are the only ones to get tab usage recorder.
   if (!browser_is_off_record) {
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser);
   }
