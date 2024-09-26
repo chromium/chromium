@@ -194,11 +194,6 @@ bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
          NavigationQueueingFeatureLevel::kFull;
 }
 
-bool ShouldRestrictCanAccessDataForOriginToUIThread() {
-  return base::FeatureList::IsEnabled(
-      features::kRestrictCanAccessDataForOriginToUIThread);
-}
-
 bool ShouldCreateSiteInstanceForDataUrls() {
   return base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls);
 }

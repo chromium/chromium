@@ -1793,14 +1793,9 @@ bool ChildProcessSecurityPolicyImpl::HostsOrigin(int child_id,
 bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
                                                      const url::Origin& origin,
                                                      AccessType access_type) {
-  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
-    // Ensure this is only called on the UI thread, which is the only thread
-    // with sufficient information to do the full set of checks.
-    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  } else {
-    // For legacy cases, this may be called on multiple threads.
-    DCHECK(IsRunningOnExpectedThread());
-  }
+  // Ensure this is only called on the UI thread, which is the only thread
+  // with sufficient information to do the full set of checks.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   GURL url_to_check;
   if (origin.opaque()) {
@@ -1891,14 +1886,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
-  if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
-    // Ensure this is only called on the UI thread, which is the only thread
-    // with sufficient information to do the full set of checks.
-    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  } else {
-    // For legacy cases, this may be called on multiple threads.
-    DCHECK(IsRunningOnExpectedThread());
-  }
+  // Ensure this is only called on the UI thread, which is the only thread
+  // with sufficient information to do the full set of checks.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   base::AutoLock lock(lock_);
 
@@ -2128,20 +2118,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
           // Citadel-style enforcement - an unlocked process should not be
           // able to access data from origins that require a lock.
 
-          // Skip these checks on the IO thread, since we can't use
-          // RenderProcessHost or ShouldLockProcessToSite() there.
-          //
-          // TODO(crbug.com/40539942): Remove this once this is reachable only
-          // on the UI thread.
-          if (!ShouldRestrictCanAccessDataForOriginToUIThread() &&
-              BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-            return true;
-          }
-
           DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-          // TODO(lukasza): Consider making the checks below IO-thread-friendly,
-          // by storing |is_unused| inside SecurityState.
           RenderProcessHost* process = RenderProcessHostImpl::FromID(child_id);
           if (process) {  // |process| can be null in unittests
             // Unlocked process can be legitimately used when navigating from an
