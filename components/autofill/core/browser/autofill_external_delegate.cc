@@ -589,7 +589,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillFullAddress:
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
+          suggestion.type, backend_id,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
@@ -597,7 +597,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillFullName:
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
+          suggestion.type, backend_id,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
@@ -605,7 +605,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillFullPhoneNumber:
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
+          suggestion.type, backend_id,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
@@ -614,7 +614,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillFullEmail:
       FillAutofillFormData(
-          suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
+          suggestion.type, backend_id,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
