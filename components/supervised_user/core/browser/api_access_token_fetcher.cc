@@ -35,30 +35,43 @@ ToSingleReturnValue(GoogleServiceAuthError error,
 
 ApiAccessTokenFetcher::ApiAccessTokenFetcher(
     signin::IdentityManager& identity_manager,
-    const AccessTokenConfig& access_token_config,
-    Consumer consumer)
-    : consumer_(std::move(consumer)) {
+    const AccessTokenConfig& access_token_config)
+    : identity_manager_(identity_manager),
+      access_token_config_(access_token_config) {
   CHECK(!access_token_config.oauth2_scope.empty())
       << "OAuth2 scope is required";
-  OAuth2AccessTokenManager::ScopeSet scope_set(
-      {std::string(access_token_config.oauth2_scope)});
   // base::Unretained(.) is safe, because no extra on-destroyed semantics are
   // needed and this instance must outlive the callback execution.
-  CHECK(access_token_config.mode.has_value())
+  CHECK(access_token_config_.mode.has_value())
       << "signin::PrimaryAccountAccessTokenFetcher::Mode is required";
-  primary_account_access_token_fetcher_ =
-      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*oauth_consumer_name=*/"supervised_user_fetcher", &identity_manager,
-          scope_set,
-          base::BindOnce(&ApiAccessTokenFetcher::OnAccessTokenFetchComplete,
-                         base::Unretained(this)),
-          *(access_token_config.mode), signin::ConsentLevel::kSignin);
 }
 ApiAccessTokenFetcher::~ApiAccessTokenFetcher() = default;
 
+void ApiAccessTokenFetcher::GetToken(Consumer consumer) {
+  OAuth2AccessTokenManager::ScopeSet scope_set(
+      {std::string(access_token_config_.oauth2_scope)});
+  primary_account_access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          /*oauth_consumer_name=*/"supervised_user_fetcher",
+          &identity_manager_.get(), scope_set,
+          base::BindOnce(&ApiAccessTokenFetcher::OnAccessTokenFetchComplete,
+                         base::Unretained(this), std::move(consumer)),
+          *(access_token_config_.mode), signin::ConsentLevel::kSignin);
+}
+
+void ApiAccessTokenFetcher::InvalidateToken() {
+  CHECK(!access_token_info_.token.empty());
+  identity_manager_->RemoveAccessTokenFromCache(
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      {std::string(access_token_config_.oauth2_scope)},
+      access_token_info_.token);
+}
+
 void ApiAccessTokenFetcher::OnAccessTokenFetchComplete(
+    Consumer consumer,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  std::move(consumer_).Run(ToSingleReturnValue(error, access_token_info));
+  access_token_info_ = access_token_info;
+  std::move(consumer).Run(ToSingleReturnValue(error, access_token_info_));
 }
 }  // namespace supervised_user
