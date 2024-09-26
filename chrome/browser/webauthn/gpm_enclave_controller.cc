@@ -831,6 +831,7 @@ void GPMEnclaveController::RecoverSecurityDomain() {
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnRecoverFromICloudRecoveryKey)) {
+    model_->DisableUiOrShowLoadingDialog();
     device::enclave::ICloudRecoveryKey::Retrieve(
         base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
                        weak_ptr_factory_.GetWeakPtr()),
