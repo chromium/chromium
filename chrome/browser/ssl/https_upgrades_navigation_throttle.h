@@ -54,7 +54,7 @@ class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
       override;
   const char* GetNameForLogging() override;
 
-  static void set_timeout_for_testing(int timeout_in_seconds);
+  static void set_timeout_for_testing(base::TimeDelta timeout);
 
  private:
   raw_ptr<Profile> profile_;

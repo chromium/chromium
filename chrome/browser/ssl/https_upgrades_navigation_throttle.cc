@@ -204,6 +204,11 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
 
+  // Slow loading fallback URLs should be handled by the net stack.
+  if (tab_helper->is_navigation_fallback()) {
+    handle->CancelNavigationTimeout();
+  }
+
   if (tab_helper->is_navigation_fallback() &&
       !handle->GetURL().SchemeIsCryptographic() &&
       IsInterstitialEnabled(interstitial_state_) &&
@@ -285,6 +290,6 @@ const char* HttpsUpgradesNavigationThrottle::GetNameForLogging() {
 
 // static
 void HttpsUpgradesNavigationThrottle::set_timeout_for_testing(
-    int timeout_in_seconds) {
-  g_fallback_delay = base::Seconds(timeout_in_seconds);
+    base::TimeDelta timeout) {
+  g_fallback_delay = timeout;
 }
