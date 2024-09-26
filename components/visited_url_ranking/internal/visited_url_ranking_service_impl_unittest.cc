@@ -5,6 +5,7 @@
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -161,18 +162,21 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     segmentation_platform_service_ = nullptr;
   }
 
-  using Result = std::pair<ResultStatus, std::vector<URLVisitAggregate>>;
-  Result RunFetchURLVisitAggregates(const FetchOptions& options) {
-    Result result;
+  using GetURLResult = std::
+      tuple<ResultStatus, URLVisitsMetadata, std::vector<URLVisitAggregate>>;
+  GetURLResult RunFetchURLVisitAggregates(const FetchOptions& options) {
+    GetURLResult result;
     std::vector<URLVisitAggregate> aggregates;
     base::RunLoop wait_loop;
     service_impl_->FetchURLVisitAggregates(
         options,
         base::BindOnce(
-            [](base::OnceClosure stop_waiting, Result* result,
-               ResultStatus status, std::vector<URLVisitAggregate> aggregates) {
-              result->first = status;
-              result->second = std::move(aggregates);
+            [](base::OnceClosure stop_waiting, GetURLResult* result,
+               ResultStatus status, URLVisitsMetadata url_visits_metadata,
+               std::vector<URLVisitAggregate> aggregates) {
+              std::get<0>(*result) = status;
+              std::get<1>(*result) = std::move(url_visits_metadata);
+              std::get<2>(*result) = std::move(aggregates);
               std::move(stop_waiting).Run();
             },
             wait_loop.QuitClosure(), &result));
@@ -180,6 +184,7 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     return result;
   }
 
+  using Result = std::pair<ResultStatus, std::vector<URLVisitAggregate>>;
   Result RunRankURLVisitAggregates(
       const Config& config,
       std::vector<URLVisitAggregate> visit_aggregates) {
@@ -260,10 +265,11 @@ TEST_F(VisitedURLRankingServiceImplTest, FetchURLVisitAggregates) {
            FetchOptions::FetchSources({URLVisit::Source::kForeign})},
       },
       base::Time::Now() - base::Days(1), {});
-  VisitedURLRankingServiceImplTest::Result result =
+  VisitedURLRankingServiceImplTest::GetURLResult result =
       RunFetchURLVisitAggregates(fetch_options);
-  EXPECT_EQ(result.first, ResultStatus::kSuccess);
-  EXPECT_EQ(result.second.size(), 1u);
+  EXPECT_EQ(std::get<0>(result), ResultStatus::kSuccess);
+  EXPECT_EQ(std::get<1>(result).aggregates_count_before_transforms, 1u);
+  EXPECT_EQ(std::get<2>(result).size(), 1u);
 
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.Request.Step.Fetch.Status",
@@ -289,10 +295,11 @@ TEST_F(VisitedURLRankingServiceImplTest, FetchWhenHistoryIsNotAvailable) {
           {Fetcher::kHistory, FetchOptions::kOriginSources},
       },
       base::Time::Now() - base::Days(1), {});
-  VisitedURLRankingServiceImplTest::Result result =
+  VisitedURLRankingServiceImplTest::GetURLResult result =
       RunFetchURLVisitAggregates(fetch_options);
-  EXPECT_EQ(result.first, ResultStatus::kSuccess);
-  EXPECT_EQ(result.second.size(), 1u);
+  EXPECT_EQ(std::get<0>(result), ResultStatus::kSuccess);
+  EXPECT_EQ(std::get<1>(result).aggregates_count_before_transforms, 1u);
+  EXPECT_EQ(std::get<2>(result).size(), 1u);
 
   histogram_tester.ExpectTotalCount(
       "VisitedURLRanking.Request.Step.Fetch.Status", 2);
@@ -346,10 +353,11 @@ TEST_F(VisitedURLRankingServiceImplTest,
       },
       base::Time::Now() - base::Days(1),
       {URLVisitAggregatesTransformType::kBookmarkData});
-  VisitedURLRankingServiceImplTest::Result result =
+  VisitedURLRankingServiceImplTest::GetURLResult result =
       RunFetchURLVisitAggregates(fetch_options);
-  EXPECT_EQ(result.first, ResultStatus::kSuccess);
-  EXPECT_EQ(result.second.size(), 1u);
+  EXPECT_EQ(std::get<0>(result), ResultStatus::kSuccess);
+  EXPECT_EQ(std::get<1>(result).aggregates_count_before_transforms, 2u);
+  EXPECT_EQ(std::get<2>(result).size(), 1u);
 
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.Request.Step.Transform.Status",
@@ -380,10 +388,10 @@ TEST_F(VisitedURLRankingServiceImplTest,
       },
       base::Time::Now() - base::Days(1),
       {URLVisitAggregatesTransformType::kSegmentationMetricsData});
-  VisitedURLRankingServiceImplTest::Result result =
+  VisitedURLRankingServiceImplTest::GetURLResult result =
       RunFetchURLVisitAggregates(fetch_options);
-  EXPECT_EQ(result.first, ResultStatus::kError);
-  EXPECT_EQ(result.second.size(), 0u);
+  EXPECT_EQ(std::get<0>(result), ResultStatus::kError);
+  EXPECT_EQ(std::get<2>(result).size(), 0u);
 
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.Request.Step.Transform.Status",
@@ -423,10 +431,10 @@ TEST_F(VisitedURLRankingServiceImplTest,
       },
       base::Time::Now() - base::Days(1),
       {URLVisitAggregatesTransformType::kSegmentationMetricsData});
-  VisitedURLRankingServiceImplTest::Result result =
+  VisitedURLRankingServiceImplTest::GetURLResult result =
       RunFetchURLVisitAggregates(fetch_options);
-  EXPECT_EQ(result.first, ResultStatus::kError);
-  EXPECT_EQ(result.second.size(), 0u);
+  EXPECT_EQ(std::get<0>(result), ResultStatus::kError);
+  EXPECT_EQ(std::get<2>(result).size(), 0u);
 
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.Request.Step.Transform.Status",

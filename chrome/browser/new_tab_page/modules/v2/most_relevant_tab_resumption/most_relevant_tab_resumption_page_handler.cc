@@ -324,6 +324,7 @@ void MostRelevantTabResumptionPageHandler::RestoreURLVisit(
 void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
     GetURLVisitsCallback callback,
     visited_url_ranking::ResultStatus status,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   if (status == visited_url_ranking::ResultStatus::kError) {
     std::move(callback).Run({});
