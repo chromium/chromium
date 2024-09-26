@@ -21,6 +21,8 @@ struct TextOrChar {
 
   Member<const Text> text;
   // This field is valid if `text` is nullptr.
+  // The type is UChar, not UChar32 because it stores a return value of
+  // CharConstantForNode(), and is appended to Vector<UChar>.
   UChar code_point = 0;
 
   TextOrChar(const Text* arg_text, UChar arg_code_point)
