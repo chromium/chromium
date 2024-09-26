@@ -1524,21 +1524,16 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
 
 auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
     -> base::expected<OperatorOffset, std::string> {
+  // TODO(crbug.com/369649350): Support float16 without dequantize operator.
   std::vector<int32_t> operator_inputs_index;
   operator_inputs_index.reserve(concat.input_operand_ids.size());
-  ::tflite::TensorType input_tensor_type;
   for (auto input_operand_id : concat.input_operand_ids) {
-    ASSIGN_OR_RETURN(
-        const TensorInfo& input_tensor_info,
-        SerializeInputTensorInfo(input_operand_id,
-                                 /*operation_supports_float16=*/true));
+    ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                     SerializeInputTensorInfo(input_operand_id));
     operator_inputs_index.push_back(input_tensor_info.index);
-    input_tensor_type = input_tensor_info.data_type;
   }
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(
-                       concat.output_operand_id,
-                       /*operation_supports_float16=*/true, input_tensor_type));
+                   SerializeOutputTensorInfo(concat.output_operand_id));
 
   return SerializeConcatOperation(operator_inputs_index,
                                   output_tensor_info.index, concat.axis);
