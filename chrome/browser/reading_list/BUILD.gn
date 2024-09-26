@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reading_list") {
+  sources = [
+    "reading_list_model_factory.cc",
+    "reading_list_model_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/reading_list/core",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/sync:factories",
+    "//chrome/common:non_code_constants",
+    "//components/pref_registry",
+    "//components/reading_list/features:flags",
+    "//components/sync/base:features",
+    "//components/sync/model",
+  ]
+}

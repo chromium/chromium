@@ -79,6 +79,7 @@ source_set("sync") {
     "//chrome/browser:browser_process",
     "//chrome/browser/favicon",
     "//chrome/browser/promos:utils",
+    "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/ui:ui_features",

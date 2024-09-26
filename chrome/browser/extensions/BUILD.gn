@@ -762,6 +762,7 @@ source_set("extensions") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile_attributes",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/reading_list",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engine_choice",

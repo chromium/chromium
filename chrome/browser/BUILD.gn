@@ -1339,8 +1339,6 @@ static_library("browser") {
     "push_messaging/push_messaging_service_impl.h",
     "push_messaging/push_messaging_utils.cc",
     "push_messaging/push_messaging_utils.h",
-    "reading_list/reading_list_model_factory.cc",
-    "reading_list/reading_list_model_factory.h",
     "reduce_accept_language/reduce_accept_language_factory.cc",
     "reduce_accept_language/reduce_accept_language_factory.h",
     "renderer_context_menu/context_menu_content_type_factory.cc",
@@ -1824,7 +1822,7 @@ static_library("browser") {
   public_deps = [
     # WARNING WARNING WARNING
     # New dependencies outside of //chrome/browser should be added to
-    # browser_public_depedenencies.
+    # browser_public_dependencies.
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
@@ -1927,6 +1925,7 @@ static_library("browser") {
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
+    "//chrome/browser/reading_list",
     "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resources/accessibility:resources",
     "//chrome/browser/safe_browsing",
