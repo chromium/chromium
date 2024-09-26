@@ -1111,16 +1111,6 @@ BASE_FEATURE(kFederatedStringsServiceScheduleTasks,
              "FederatedStringsServiceScheduleTasks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the scheduling of timezone code federated analytics tasks.
-BASE_FEATURE(kFederatedTimezoneCodePhh,
-             "FederatedTimezoneCodePhh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables scheduling of launcher query federated analytics tasks.
-BASE_FEATURE(kFederatedLauncherQueryAnalyticsTask,
-             "FederatedLauncherQueryAnalyticsTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables scheduling of launcher query federated analytics version 2 tasks.
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
              "FederatedLauncherQueryAnalyticsVersion2Task",
