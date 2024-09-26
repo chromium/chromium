@@ -12,9 +12,14 @@
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_app_handler.h"
+#include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 
 class PrefService;
+
+namespace gcm {
+class GCMDriver;
+}  // namespace gcm
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -31,6 +36,7 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   class Factory {
    public:
     static std::unique_ptr<CryptAuthGCMManager> Create(
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* pref_service);
 
@@ -39,6 +45,7 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<CryptAuthGCMManager> CreateInstance(
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* pref_service) = 0;
 
@@ -67,7 +74,8 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   // |pref_service|: Contains preferences across browser restarts, and should
   //     have been registered through RegisterPrefs(). The service is not owned
   //     and must outlive this instance.
-  CryptAuthGCMManagerImpl(instance_id::InstanceIDDriver* instance_id_driver,
+  CryptAuthGCMManagerImpl(gcm::GCMDriver* gcm_driver,
+                          instance_id::InstanceIDDriver* instance_id_driver,
                           PrefService* pref_service);
 
  private:
@@ -88,6 +96,8 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   void OnRegistrationCompleted(const std::string& registration_id,
 
                                instance_id::InstanceID::Result result);
+
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   // Handles the communications with GCM. Not owned.
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
