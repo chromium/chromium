@@ -113,14 +113,15 @@ void TabInfoCollector::SortWindowList(
     std::vector<std::vector<ash::TabInfo>>& windows_list) {
   for (std::vector<ash::TabInfo>& window : windows_list) {
     // Sort tab on non-ascending order of last access time.
-    base::ranges::sort(window, [](const ash::TabInfo a, const ash::TabInfo b) {
-      return a.last_access_timetick > b.last_access_timetick;
-    });
+    base::ranges::sort(window,
+                       [](const ash::TabInfo& a, const ash::TabInfo& b) {
+                         return a.last_access_timetick > b.last_access_timetick;
+                       });
   }
 
   // Sort window on non-ascending order of last access time.
-  base::ranges::sort(windows_list, [](const std::vector<ash::TabInfo> a,
-                                      const std::vector<ash::TabInfo> b) {
+  base::ranges::sort(windows_list, [](const std::vector<ash::TabInfo>& a,
+                                      const std::vector<ash::TabInfo>& b) {
     return a[0].last_access_timetick > b[0].last_access_timetick;
   });
 }
