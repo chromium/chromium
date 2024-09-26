@@ -266,7 +266,7 @@ BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
 // requires that the card number be valid before saving is allowed.
 BASE_FEATURE(kAutofillRequireValidLocalCardsInSettings,
              "AutofillRequireValidLocalCardsInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, manual fill view will be shown directly from form focusing
