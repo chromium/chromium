@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/signin/web_signin_bridge.h"
+#include "chrome/browser/signin/android//web_signin_bridge.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -45,8 +45,9 @@ WebSigninBridge::WebSigninBridge(signin::IdentityManager* identity_manager,
 
   signin::AccountsInCookieJarInfo info =
       identity_manager_->GetAccountsInCookieJar();
-  if (info.accounts_are_fresh)
+  if (info.accounts_are_fresh) {
     OnAccountsInCookieUpdated(info, GoogleServiceAuthError::AuthErrorNone());
+  }
 }
 
 WebSigninBridge::~WebSigninBridge() {

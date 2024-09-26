@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_SIGNIN_WEB_SIGNIN_BRIDGE_H_
-#define CHROME_BROWSER_ANDROID_SIGNIN_WEB_SIGNIN_BRIDGE_H_
+#ifndef CHROME_BROWSER_SIGNIN_ANDROID_WEB_SIGNIN_BRIDGE_H_
+#define CHROME_BROWSER_SIGNIN_ANDROID_WEB_SIGNIN_BRIDGE_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -44,4 +44,4 @@ class WebSigninBridge : public signin::IdentityManager::Observer,
   OnSigninCompletedCallback on_signin_completed_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_SIGNIN_WEB_SIGNIN_BRIDGE_H_
+#endif  // CHROME_BROWSER_SIGNIN_ANDROID_WEB_SIGNIN_BRIDGE_H_

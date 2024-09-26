@@ -38,7 +38,7 @@
 #include "net/http/http_response_headers.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/signin/signin_bridge.h"
+#include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/android/view_android.h"
 #else

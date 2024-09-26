@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/signin/signin_manager_android.h"
+#include "chrome/browser/signin/android/signin_manager_android.h"
 
 #include <utility>
 #include <vector>
@@ -170,8 +170,7 @@ SigninManagerAndroid::SigninManagerAndroid(
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      profile_->GetJavaObject(),
-      identity_manager_->GetJavaObject(),
+      profile_->GetJavaObject(), identity_manager_->GetJavaObject(),
       identity_manager_->GetIdentityMutatorJavaObject(),
       SyncServiceFactory::GetForProfile(profile_)->GetJavaObject());
 }
