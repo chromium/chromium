@@ -243,9 +243,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
     // If gesture is already mapped to another action, remove that pairing as
     // gesture can only be mapped to one action.
-    const unassignIndex = this.commandPairs_.findIndex(
-        (item) => item.gesture === newCommandPair.gesture &&
-            item.action !== newCommandPair.action);
+    const unassignIndex = this.commandPairs_.findIndex((item) => {
+      return item.gesture === newCommandPair.gesture &&
+          !item.actionsEqual(newCommandPair);
+    });
 
     if (unassignIndex >= 0) {
       const unassignGesture = this.commandPairs_[unassignIndex].gesture;

@@ -322,8 +322,62 @@ suite('<facegaze-actions-card>', () => {
         assertActionSettingsRow(reassignGestureCommandPair);
         assertActionSettingsRow(unchangedCommandPair);
 
-        keyComboCommandPair.gesture = null;
+        const compareCommandPair =
+            new FaceGazeCommandPair(MacroName.CUSTOM_KEY_COMBINATION, null);
+        compareCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify({
+              key: 67,
+              keyDisplay: 'c',
+              modifiers: {
+                ctrl: true,
+              },
+            }));
+        assertActionSettingsRow(compareCommandPair);
+        assertFalse(isGestureToKeyComboPrefSet(keyComboCommandPair));
+      });
+
+  test(
+      'actions update UI to un-assign command pair gesture with custom keyboard shortcut with new custom keyboard shortcut',
+      async () => {
+        await initPage();
+
+        const keyComboCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.JAW_OPEN);
+        keyComboCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify({
+              key: 68,
+              keyDisplay: 'd',
+            }));
+        await openAddDialogAndFireCommandPairAddedEvent(keyComboCommandPair);
+        assertTrue(isGestureToMacroPrefSet(keyComboCommandPair));
+        assertTrue(isGestureToKeyComboPrefSet(keyComboCommandPair));
         assertActionSettingsRow(keyComboCommandPair);
+
+        const reassignGestureCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.JAW_OPEN);
+        reassignGestureCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify({
+              key: 67,
+              keyDisplay: 'c',
+              modifiers: {
+                ctrl: true,
+              },
+            }));
+        await openAddDialogAndFireCommandPairAddedEvent(
+            reassignGestureCommandPair);
+        assertTrue(isGestureToMacroPrefSet(reassignGestureCommandPair));
+        assertTrue(isGestureToKeyComboPrefSet(reassignGestureCommandPair));
+        assertActionSettingsRow(reassignGestureCommandPair);
+
+        const compareCommandPair =
+            new FaceGazeCommandPair(MacroName.CUSTOM_KEY_COMBINATION, null);
+        compareCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify({
+              key: 68,
+              keyDisplay: 'd',
+            }));
+        assertActionSettingsRow(compareCommandPair);
+        assertFalse(isGestureToKeyComboPrefSet(keyComboCommandPair));
       });
 
   test('actions update UI to assign command pair gesture', async () => {
