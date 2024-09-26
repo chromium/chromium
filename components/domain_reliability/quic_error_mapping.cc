@@ -480,6 +480,11 @@ const struct QuicErrorMapping {
     {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
      "quic.quic_handshake_failed_packets_buffered_too_long"},
 
+    // Handshake failed due to invalid hostname in ClientHello. Only sent from
+    // server.
+    {quic::QUIC_HANDSHAKE_FAILED_INVALID_HOSTNAME,
+     "quic.quic_handshake_failed_invalid_hostname"},
+
     // Client application lost network access.
     {quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
      "quic.quic_client_lost_network_access"},
