@@ -212,6 +212,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // this request.
     ConditionalUITreatment conditional_ui_treatment =
         ConditionalUITreatment::kDefault;
+
+    COMPONENT_EXPORT(DEVICE_FIDO)
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const TransportAvailabilityInfo& t);
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

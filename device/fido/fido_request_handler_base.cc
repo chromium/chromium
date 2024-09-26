@@ -15,6 +15,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -146,6 +148,41 @@ FidoRequestHandlerBase::TransportAvailabilityInfo::operator=(
 FidoRequestHandlerBase::TransportAvailabilityInfo::
     ~TransportAvailabilityInfo() = default;
 
+namespace {
+
+std::string TransportsToString(
+    const base::flat_set<device::FidoTransportProtocol>& transports) {
+  std::vector<std::string> strings;
+  base::ranges::transform(transports, std::back_inserter(strings), [](auto t) {
+    return base::NumberToString(static_cast<int>(t));
+  });
+  return base::JoinString(strings, ",");
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const device::DiscoverableCredentialMetadata& cred) {
+  return os << "{" << static_cast<int>(cred.source) << ","
+            << base::HexEncode(cred.cred_id) << "}";
+}
+
+}  // namespace
+
+// TODO b/366128135: Revert the CL that introduced this and all associated
+// logging once root cause for this bug has been established.
+std::ostream& operator<<(
+    std::ostream& os,
+    const FidoRequestHandlerBase::TransportAvailabilityInfo& t) {
+  os << "{available_transports={" << TransportsToString(t.available_transports)
+     << "}, has_platform_authenticator_credential="
+     << static_cast<int>(t.has_platform_authenticator_credential)
+     << ", recognized_credentials=(" << t.recognized_credentials.size() << "){";
+  for (const device::DiscoverableCredentialMetadata& cred :
+       t.recognized_credentials) {
+    os << cred << ",";
+  }
+  return os << "}}";
+}
+
 // FidoRequestHandlerBase::Observer -------------------------------------------
 
 FidoRequestHandlerBase::Observer::~Observer() = default;
@@ -193,6 +230,9 @@ void FidoRequestHandlerBase::InitDiscoveries(
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
     base::flat_set<FidoTransportProtocol> available_transports,
     bool consider_enclave) {
+  FIDO_LOG(DEBUG) << "InitDiscoveries() transports="
+                  << TransportsToString(available_transports);
+
 #if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
@@ -314,6 +354,9 @@ void FidoRequestHandlerBase::InitDiscoveries(
         base::BindOnce(&FidoRequestHandlerBase::ConstructBleAdapterPowerManager,
                        weak_factory_.GetWeakPtr()));
   }
+
+  FIDO_LOG(DEBUG) << "InitDiscoveries() complete "
+                  << transport_availability_info_;
 
 #if BUILDFLAG(IS_MAC)
   transport_availability_info_.platform_has_biometrics =
@@ -606,6 +649,7 @@ void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {
   }
 
   transport_availability_callback_readiness_->callback_made = true;
+  FIDO_LOG(DEBUG) << "TransportsEnumerated: " << transport_availability_info_;
   observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
 }
 
