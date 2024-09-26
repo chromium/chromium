@@ -374,49 +374,45 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
 
 // Test the base structure of the menu.
 TEST_F(BrowserEditMenuHandlerTest, CheckBaseMenuDescription) {
-  if (@available(iOS 16, *)) {
-    NSMutableArray* expectedMenuDescription = GetExpectedMenu();
-    AddOpenInNewCanvas(expectedMenuDescription);
-    [base_view_controller_.view addSubview:web_state_->GetView()];
-    web::test::LoadHtml(kPageHTML, web_state_.get());
+  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+  AddOpenInNewCanvas(expectedMenuDescription);
+  [base_view_controller_.view addSubview:web_state_->GetView()];
+  web::test::LoadHtml(kPageHTML, web_state_.get());
 
-    EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
-  }
+  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
 }
 
 // Test the structure of the menu with Chrome actions.
 TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
-  if (@available(iOS 16, *)) {
-    NSMutableArray* expectedMenuDescription = GetExpectedMenu();
-    AddOpenInNewCanvas(expectedMenuDescription);
-    AddPartialTranslate(expectedMenuDescription);
-    AddLinkToText(expectedMenuDescription);
-    SetupTranslateControllerFactory();
-    PartialTranslateMediator* partial_translate_mediator =
-        [[PartialTranslateMediator alloc]
-              initWithWebStateList:&web_state_list_
-            withBaseViewController:base_view_controller_
-                       prefService:browser_state_->GetPrefs()
-              fullscreenController:nullptr
-                         incognito:NO];
+  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+  AddOpenInNewCanvas(expectedMenuDescription);
+  AddPartialTranslate(expectedMenuDescription);
+  AddLinkToText(expectedMenuDescription);
+  SetupTranslateControllerFactory();
+  PartialTranslateMediator* partial_translate_mediator =
+      [[PartialTranslateMediator alloc]
+            initWithWebStateList:&web_state_list_
+          withBaseViewController:base_view_controller_
+                     prefService:browser_state_->GetPrefs()
+            fullscreenController:nullptr
+                       incognito:NO];
 
-    LinkToTextMediator* link_to_text_mediator =
-        [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_];
-    BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
-    handler.partialTranslateDelegate = partial_translate_mediator;
-    handler.linkToTextDelegate = link_to_text_mediator;
-    BrowserContainerViewController* container_vc =
-        [[BrowserContainerViewController alloc] init];
-    container_vc.browserEditMenuHandler = handler;
-    [container_vc willMoveToParentViewController:base_view_controller_];
-    [base_view_controller_ addChildViewController:container_vc];
-    [base_view_controller_.view addSubview:container_vc.view];
-    [container_vc didMoveToParentViewController:base_view_controller_];
+  LinkToTextMediator* link_to_text_mediator =
+      [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_];
+  BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
+  handler.partialTranslateDelegate = partial_translate_mediator;
+  handler.linkToTextDelegate = link_to_text_mediator;
+  BrowserContainerViewController* container_vc =
+      [[BrowserContainerViewController alloc] init];
+  container_vc.browserEditMenuHandler = handler;
+  [container_vc willMoveToParentViewController:base_view_controller_];
+  [base_view_controller_ addChildViewController:container_vc];
+  [base_view_controller_.view addSubview:container_vc.view];
+  [container_vc didMoveToParentViewController:base_view_controller_];
 
-    [container_vc setContentView:web_state_->GetView()];
-    web::test::LoadHtml(kPageHTML, web_state_.get());
-    EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
-    handler.partialTranslateDelegate = nil;
-    [partial_translate_mediator shutdown];
-  }
+  [container_vc setContentView:web_state_->GetView()];
+  web::test::LoadHtml(kPageHTML, web_state_.get());
+  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
+  handler.partialTranslateDelegate = nil;
+  [partial_translate_mediator shutdown];
 }

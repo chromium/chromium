@@ -173,14 +173,9 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   } else {
     titleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-    NSString* settingsMenuItemString = nil;
-    if (@available(iOS 16, *)) {
-      settingsMenuItemString = l10n_util::GetNSString(
-          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
-    } else {
-      settingsMenuItemString = l10n_util::GetNSString(
-          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
-    }
+    NSString* settingsMenuItemString = settingsMenuItemString =
+        l10n_util::GetNSString(
+            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
     DCHECK(settingsMenuItemString.length > 0);
     subtitleString = l10n_util::GetNSStringF(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,

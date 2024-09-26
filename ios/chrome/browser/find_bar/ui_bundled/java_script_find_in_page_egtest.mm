@@ -185,13 +185,7 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
     return;
   }
-  if (@available(iOS 16, *)) {
-    [self typeFindInPageText:@"find"];
-  } else {
-    // On iOS 15, the keyboard is not passing the accessibility test. Press
-    // enter to dismiss it.
-    [self typeFindInPageText:@"find\n"];
-  }
+  [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];

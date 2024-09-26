@@ -298,23 +298,21 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // Setup the minimized height (if the table has more than
   // `initialNumberOfVisibleCells` rows).
   NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
-  if (@available(iOS 16, *)) {
-    if (useMinimizedState) {
-      // Show gradient view when the user is in minimized state to show that the
-      // view can be scrolled.
-      [self displayGradientView:YES];
+  if (useMinimizedState) {
+    // Show gradient view when the user is in minimized state to show that the
+    // view can be scrolled.
+    [self displayGradientView:YES];
 
-      CGFloat bottomSheetHeight = [self initialHeight];
-      auto detentBlock = ^CGFloat(
-          id<UISheetPresentationControllerDetentResolutionContext> context) {
-        return bottomSheetHeight;
-      };
-      UISheetPresentationControllerDetent* customDetent =
-          [UISheetPresentationControllerDetent
-              customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                                resolver:detentBlock];
-      [currentDetents addObject:customDetent];
-    }
+    CGFloat bottomSheetHeight = [self initialHeight];
+    auto detentBlock = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      return bottomSheetHeight;
+    };
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                              resolver:detentBlock];
+    [currentDetents addObject:customDetent];
   }
 
   // Done calculating the height for the bottom sheet for
@@ -324,22 +322,20 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   // Calculate the full height of the bottom sheet with the minimized height
   // constraint disabled.
-  if (@available(iOS 16, *)) {
-    __weak __typeof(self) weakSelf = self;
-    auto fullHeightBlock = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return [weakSelf computeHeight:context.maximumDetentValue];
-    };
-    UISheetPresentationControllerDetent* customDetentExpand =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomDetentIdentifier
-                              resolver:fullHeightBlock];
-    [currentDetents addObject:customDetentExpand];
-    presentationController.detents = currentDetents;
-    presentationController.selectedDetentIdentifier =
-        useMinimizedState ? kCustomMinimizedDetentIdentifier
-                          : kCustomDetentIdentifier;
-  }
+  __weak __typeof(self) weakSelf = self;
+  auto fullHeightBlock = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf computeHeight:context.maximumDetentValue];
+  };
+  UISheetPresentationControllerDetent* customDetentExpand =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomDetentIdentifier
+                            resolver:fullHeightBlock];
+  [currentDetents addObject:customDetentExpand];
+  presentationController.detents = currentDetents;
+  presentationController.selectedDetentIdentifier =
+      useMinimizedState ? kCustomMinimizedDetentIdentifier
+                        : kCustomDetentIdentifier;
 }
 
 // Returns whether the provided index path points to the last row of the table

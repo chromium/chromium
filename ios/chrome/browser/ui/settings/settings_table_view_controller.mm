@@ -1164,11 +1164,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (TableViewSwitchItem*)viewSourceSwitchItem {
   UIImage* image;
-  if (@available(iOS 16, *)) {
-    image = DefaultSettingsRootSymbol(@"keyboard.badge.eye");
-  } else {
-    image = DefaultSettingsRootSymbol(@"keyboard");
-  }
+  image = DefaultSettingsRootSymbol(@"keyboard.badge.eye");
   TableViewSwitchItem* viewSourceItem =
       [self switchItemWithType:SettingsItemTypeViewSource
                             title:@"View source menu"

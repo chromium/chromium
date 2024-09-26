@@ -28,16 +28,6 @@ using chrome_test_util::SettingsMenuBackButton;
 
 namespace {
 
-// Checks if the current device is running iOS 16 and above. This may seem
-// overly verbose, but the @available guard needs to be wrapped in an if() or
-// else the compiler complains.
-bool isIOS16AndAbove() {
-  if (@available(iOS 16, *)) {
-    return true;
-  }
-  return false;
-}
-
 // Matcher for view
 id<GREYMatcher> PasswordsInOtherAppsViewMatcher() {
   return grey_accessibilityID(kPasswordsInOtherAppsViewAccessibilityIdentifier);
@@ -68,10 +58,7 @@ id<GREYMatcher> PasswordsInOtherAppsListItemMatcher() {
 
 // Matcher for turn off instructions.
 id<GREYMatcher> PasswordsInOtherAppsTurnOffInstruction() {
-  return grey_text(
-      isIOS16AndAbove()
-          ? @"To turn off, open Settings and go to Password Options."
-          : @"To turn off, open Settings and go to AutoFill Passwords.");
+  return grey_text(@"To turn off, open Settings and go to Password Options.");
 }
 
 // Matcher for the Show password button in Password Details view.
@@ -148,9 +135,7 @@ void OpensPasswordsInOtherApps() {
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
     l10n_util::GetNSString(
-        isIOS16AndAbove()
-            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
-            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
   for (NSString* step in steps) {
@@ -171,9 +156,7 @@ void OpensPasswordsInOtherApps() {
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
     l10n_util::GetNSString(
-        isIOS16AndAbove()
-            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
-            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
   for (NSString* step in steps) {
@@ -260,9 +243,7 @@ void OpensPasswordsInOtherApps() {
   // Check backup instructions are visible.
   NSArray<NSString*>* steps = @[
     l10n_util::GetNSString(
-        isIOS16AndAbove()
-            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16
-            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
     l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
   ];

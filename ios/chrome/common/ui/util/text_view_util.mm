@@ -9,7 +9,5 @@
 // is resolved.
 // Creates a UITextView with TextKit1 by disabling TextKit2.
 UITextView* CreateUITextViewWithTextKit1() {
-  if (@available(iOS 16, *))
-    return [UITextView textViewUsingTextLayoutManager:NO];
-  return [[UITextView alloc] init];
+  return [UITextView textViewUsingTextLayoutManager:NO];
 }

@@ -30,17 +30,10 @@ UIImage* kImage = ios::provider::GetBrandedImage(
     ios::provider::BrandedImage::kPasswordSuggestionKey);
 
 NSString* LearnMoreSubtitleString() {
-  if (@available(iOS 16, *)) {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
-        base::SysNSStringToUTF16(l10n_util::GetNSString(
-            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16)));
-  } else {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
-        base::SysNSStringToUTF16(l10n_util::GetNSString(
-            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16)));
-  }
+  return l10n_util::GetNSStringF(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+      base::SysNSStringToUTF16(l10n_util::GetNSString(
+          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16)));
 }
 
 }  // namespace

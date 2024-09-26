@@ -348,22 +348,11 @@ constexpr CGFloat preferredCornerRadius = 20;
       // be an option).
       return @[ [self preferredHeightDetent] ];
     }
-    // Having the large detent as an option makes the modal expandable to
-    // the maximum size.
-    return @[
-      [self preferredHeightDetent],
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  } else if (@available(iOS 16, *)) {
-    // Having the large detent as an option makes the modal expandable to
-    // the maximum size.
-    return @[
-      [self preferredHeightDetent],
-      UISheetPresentationControllerDetent.largeDetent
-    ];
   }
+  // Having the large detent as an option makes the modal expandable to
+  // the maximum size.
   return @[
-    UISheetPresentationControllerDetent.mediumDetent,
+    [self preferredHeightDetent],
     UISheetPresentationControllerDetent.largeDetent
   ];
 }

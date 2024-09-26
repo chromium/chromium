@@ -560,14 +560,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // Wait for the accessory icon to appear.
     [ChromeEarlGrey waitForKeyboardToAppear];
 
-    if (@available(iOS 16, *)) {
-      // TODO(crbug.com/40227513): Move this logic into EG.
-      XCUIApplication* app = [[XCUIApplication alloc] init];
-      [[[app keyboards] buttons][@"go"] tap];
-    } else {
-      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-          performAction:grey_tap()];
-    }
+    // TODO(crbug.com/40227513): Move this logic into EG.
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [[[app keyboards] buttons][@"go"] tap];
   }
 }
 

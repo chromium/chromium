@@ -124,10 +124,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _searchController.searchResultsUpdater = self;
   self.navigationItem.searchController = _searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
-  if (@available(iOS 16, *)) {
-    self.navigationItem.preferredSearchBarPlacement =
-        UINavigationItemSearchBarPlacementStacked;
-  }
+  self.navigationItem.preferredSearchBarPlacement =
+      UINavigationItemSearchBarPlacementStacked;
 
   [self updateTitle];
 

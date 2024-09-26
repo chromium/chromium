@@ -35,12 +35,6 @@
   [super viewDidLoad];
   self.view.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  if (@available(iOS 16, *)) {
-  } else {
-    [self addLinkToTextInEditMenu];
-  }
-#endif
 }
 
 - (void)viewDidLayoutSubviews {
@@ -162,13 +156,6 @@
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if (@available(iOS 16, *)) {
-  } else {
-    if (action == @selector(linkToText:) && self.linkToTextDelegate) {
-      return [self.linkToTextDelegate shouldOfferLinkToText];
-    }
-  }
-
   return [super canPerformAction:action withSender:sender];
 }
 

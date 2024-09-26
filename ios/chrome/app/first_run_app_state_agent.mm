@@ -187,10 +187,8 @@
 // The FRE only displays in "portrait" on iPhone. When the FRE is done, iOS
 // must be notified that the supported interface orientations have changed.
 - (void)unlockInterfaceOrientation {
-  if (@available(iOS 16, *)) {
-    [self.presentingInterface
-            .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
-  }
+  [self.presentingInterface
+          .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
 }
 
 #pragma mark - FirstRunCoordinatorDelegate

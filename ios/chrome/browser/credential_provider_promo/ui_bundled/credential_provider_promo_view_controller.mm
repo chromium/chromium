@@ -106,13 +106,8 @@ NSString* const kCredentialProviderPromoAccessibilityId =
                           stringByAppendingString:kDarkModeAnimationSuffix]];
 
   NSString* passwordSettingsTitle;
-  if (@available(iOS 16, *)) {
-    passwordSettingsTitle = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
-  } else {
-    passwordSettingsTitle = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
-  }
+  passwordSettingsTitle = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
   // Set the text localization.
   NSDictionary* textProvider =
       @{kPasswordOptionsKeypath : passwordSettingsTitle};

@@ -57,34 +57,25 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)expandBottomSheet {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    // Expand to custom size (only available for iOS 16+).
-    CGFloat fullHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-      [self displayGradientView:tooLarge];
-      return tooLarge ? context.maximumDetentValue : fullHeight;
-    };
-    UISheetPresentationControllerDetent* customDetentExpand =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomExpandedDetentIdentifier
-                              resolver:resolver];
-    NSMutableArray* currentDetents =
-        [presentationController.detents mutableCopy];
-    [currentDetents addObject:customDetentExpand];
-    presentationController.detents = currentDetents;
-    [presentationController animateChanges:^{
-      presentationController.selectedDetentIdentifier =
-          kCustomExpandedDetentIdentifier;
-    }];
-  } else {
-    // Expand to large detent.
-    [presentationController animateChanges:^{
-      presentationController.selectedDetentIdentifier =
-          UISheetPresentationControllerDetentIdentifierLarge;
-    }];
-  }
+  // Expand to custom size (only available for iOS 16+).
+  CGFloat fullHeight = [self preferredHeightForContent];
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    BOOL tooLarge = (fullHeight > context.maximumDetentValue);
+    [self displayGradientView:tooLarge];
+    return tooLarge ? context.maximumDetentValue : fullHeight;
+  };
+  UISheetPresentationControllerDetent* customDetentExpand =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomExpandedDetentIdentifier
+                            resolver:resolver];
+  NSMutableArray* currentDetents = [presentationController.detents mutableCopy];
+  [currentDetents addObject:customDetentExpand];
+  presentationController.detents = currentDetents;
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        kCustomExpandedDetentIdentifier;
+  }];
 }
 
 - (void)setUpBottomSheetPresentationController {
@@ -99,27 +90,18 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)setUpBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    CGFloat bottomSheetHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return bottomSheetHeight;
-    };
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:resolver];
-    presentationController.detents = @[ customDetent ];
-    presentationController.selectedDetentIdentifier =
-        kCustomMinimizedDetentIdentifier;
-  } else {
-    presentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-    presentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierMedium;
-  }
+  CGFloat bottomSheetHeight = [self preferredHeightForContent];
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return bottomSheetHeight;
+  };
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                            resolver:resolver];
+  presentationController.detents = @[ customDetent ];
+  presentationController.selectedDetentIdentifier =
+      kCustomMinimizedDetentIdentifier;
 }
 
 #pragma mark - Private
