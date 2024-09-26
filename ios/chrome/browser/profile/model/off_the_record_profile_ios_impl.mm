@@ -27,7 +27,7 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
                          std::move(io_task_runner)),
       original_chrome_browser_state_(original_chrome_browser_state),
       start_time_(base::Time::Now()),
-      prefs_(CreateIncognitoBrowserStatePrefs(
+      prefs_(CreateIncognitoProfilePrefs(
           static_cast<sync_preferences::PrefServiceSyncable*>(
               original_chrome_browser_state->GetPrefs()))) {
   BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);

@@ -176,11 +176,10 @@ void TestChromeBrowserState::Init() {
     // If user passed a custom PrefServiceSyncable, then leave `testing_prefs_`
     // unset as it is not possible to determine its type.
   } else if (IsOffTheRecord()) {
-    // This leaves `testing_prefs_` unset as CreateIncognitoBrowserStatePrefs()
+    // This leaves `testing_prefs_` unset as CreateIncognitoProfilePrefs()
     // does not return a TestingPrefServiceSyncable.
     DCHECK(original_browser_state_);
-    prefs_ =
-        CreateIncognitoBrowserStatePrefs(original_browser_state_->prefs_.get());
+    prefs_ = CreateIncognitoProfilePrefs(original_browser_state_->prefs_.get());
   } else {
     testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable();
     RegisterProfilePrefs(testing_prefs_->registry());
@@ -189,7 +188,7 @@ void TestChromeBrowserState::Init() {
   user_prefs::UserPrefs::Set(this, prefs_.get());
 
   // Prefs for incognito TestChromeBrowserState are set in
-  // CreateIncognitoBrowserStatePrefs().
+  // CreateIncognitoProfilePrefs().
   if (!IsOffTheRecord()) {
     user_prefs::PrefRegistrySyncable* pref_registry =
         static_cast<user_prefs::PrefRegistrySyncable*>(

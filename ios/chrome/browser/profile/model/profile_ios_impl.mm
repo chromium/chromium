@@ -203,7 +203,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   supervised_user_prefs->OnNewSettingsAvailable(base::Value::Dict());
   DCHECK(supervised_user_prefs->IsInitializationComplete());
 
-  prefs_ = CreateBrowserStatePrefs(
+  prefs_ = CreateProfilePrefs(
       state_path, GetIOTaskRunner().get(), pref_registry_,
       policy_connector_ ? policy_connector_->GetPolicyService() : nullptr,
       GetApplicationContext()->GetBrowserPolicyConnector(),
