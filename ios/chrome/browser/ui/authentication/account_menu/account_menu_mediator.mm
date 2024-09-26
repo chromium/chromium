@@ -237,7 +237,7 @@
   }
   _blockUpdates = YES;
   _blockUserInteractions = YES;
-  [self.delegate blockScene];
+  [self.delegate blockOtherScene];
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                               callback:^(BOOL success) {
@@ -391,7 +391,7 @@
 
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success {
-  [self.delegate unblockScene];
+  [self.delegate unblockOtherScene];
   if (!success) {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;

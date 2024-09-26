@@ -385,8 +385,8 @@ TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
                      callback = value;
                      return true;
                    }]]);
-  OCMExpect([delegate_ blockScene]);
+  OCMExpect([delegate_ blockOtherScene]);
   [mediator_ signOutFromTargetRect:rect];
-  OCMExpect([delegate_ unblockScene]);
+  OCMExpect([delegate_ unblockOtherScene]);
   callback(YES);
 }

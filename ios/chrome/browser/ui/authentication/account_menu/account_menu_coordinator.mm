@@ -278,12 +278,12 @@
                          signInCompletion:signInCompletion];
 }
 
-- (void)blockScene {
+- (void)blockOtherScene {
   SceneState* sceneState = self.browser->GetSceneState();
   _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 
-- (void)unblockScene {
+- (void)unblockOtherScene {
   _UIBlocker.reset();
 }
 

@@ -42,10 +42,10 @@
 - (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
 
 // Blocks the user from using Chromium.
-- (void)blockScene;
+- (void)blockOtherScene;
 
-// Stops the `blockScene`.
-- (void)unblockScene;
+// Stops the `blockOtherScene`.
+- (void)unblockOtherScene;
 
 @end
 
