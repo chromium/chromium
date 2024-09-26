@@ -36,7 +36,7 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   std::optional<std::string> parent_context_id;
   if (browser_context->IsOffTheRecord()) {
     content::BrowserContext* parent_context =
-        chrome::GetBrowserContextRedirectedInIncognito(browser_context);
+        GetBrowserContextRedirectedInIncognito(browser_context);
     parent_context_id = parent_context->UniqueId();
   }
 

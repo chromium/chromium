@@ -106,7 +106,7 @@ std::unique_ptr<KeyedService> BuildServiceInstanceLacros(
     return nullptr;
 
   Profile* original_profile = Profile::FromBrowserContext(
-      chrome::GetBrowserContextRedirectedInIncognito(profile));
+      GetBrowserContextRedirectedInIncognito(profile));
   // Only allow trusted policy-provided certificates for non-guest primary
   // users. Guest users don't have user policy, but set
   // `may_use_profile_wide_trust_anchors`=false for them out of caution against

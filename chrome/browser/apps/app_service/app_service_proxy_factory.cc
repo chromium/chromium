@@ -125,7 +125,7 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   // are served.
   if (profile->IsGuestSession()) {
     return profile->IsOffTheRecord()
-               ? chrome::GetBrowserContextOwnInstanceInIncognito(context)
+               ? GetBrowserContextOwnInstanceInIncognito(context)
                : nullptr;
   }
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
@@ -136,7 +136,7 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   // TODO(crbug.com/40146603): replace this with
   // BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context) once
   // all non-guest incognito accesses have been removed.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+  return GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool AppServiceProxyFactory::ServiceIsCreatedWithBrowserContext() const {

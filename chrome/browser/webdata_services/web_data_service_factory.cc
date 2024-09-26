@@ -167,7 +167,7 @@ WebDataServiceFactory::GetDefaultFactory() {
 
 content::BrowserContext* WebDataServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+  return GetBrowserContextRedirectedInIncognito(context);
 }
 
 std::unique_ptr<KeyedService>

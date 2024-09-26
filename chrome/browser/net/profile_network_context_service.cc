@@ -963,7 +963,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (!Profile::FromBrowserContext(
-           chrome::GetBrowserContextRedirectedInIncognito(profile_))
+           GetBrowserContextRedirectedInIncognito(profile_))
            ->IsMainProfile()) {
     // TODO(crbug.com/40156976): At the moment client certs are only enabled for
     // the main profile and its incognito profile (similarly to how it worked in
