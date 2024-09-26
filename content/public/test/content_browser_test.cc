@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -64,9 +65,13 @@ ContentBrowserTest::ContentBrowserTest() {
   content_shell_path = content_shell_path.Append(
       FILE_PATH_LITERAL("Content Shell.app/Contents/MacOS/Content Shell"));
   CHECK(base::CreateDirectory(content_shell_path.DirName()));
-  CHECK(base::File(content_shell_path,
-                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE)
-            .IsValid());
+  if (base::File file(content_shell_path,
+                      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+      !file.IsValid()) {
+    // Diagnostics for https://crbug.com/345765743.
+    NOTREACHED() << "Failed to create \"" << content_shell_path
+                 << "\": " << base::File::ErrorToString(file.error_details());
+  }
   file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
                              /*is_absolute=*/false, /*create=*/false);
 #endif
