@@ -179,6 +179,7 @@ config("skia_library_config") {
   if (use_blink) {
     defines += [
       "SK_TYPEFACE_FACTORY_FREETYPE",
+      "SK_TYPEFACE_FACTORY_FONTATIONS",
       "SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE",
     ]
   }
@@ -419,7 +420,7 @@ component("skia") {
   # Fontations is the backend we are migrating to. In preparation for rollout
   # default compile-in Fontations as well.
   if (use_blink) {
-    # See SK_TYPEFACE_FACTORY_FREETYPE
+    # See SK_TYPEFACE_FACTORY_FREETYPE and SK_TYPEFACE_FACTORY_FONTATIONS
     sources += skia_ports_freetype_sources
     sources += skia_ports_fontmgr_custom_sources
     sources += skia_ports_typeface_fontations_sources
@@ -720,6 +721,13 @@ skia_source_set("skia_core_and_effects") {
     # sk_gpu_dawn_public, which we add to the "skia" target, which depends on
     # skia_core_and_effects rather than the other way around.
     public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
+  }
+  if (use_blink) {
+    # Fontations Rust/C++ bridge interfaces, needed by SkTypeface.
+    deps += [
+      ":bridge_rust_side",
+      ":path_bridge",
+    ]
   }
   visibility = [ ":skia" ]
 }
