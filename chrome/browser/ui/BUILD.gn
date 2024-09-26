@@ -2027,6 +2027,8 @@ static_library("ui") {
 
     # Non-android public_deps for "ui" target.
     public_deps += [
+      "//chrome/browser/importer",
+      "//chrome/browser/importer:impl",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
