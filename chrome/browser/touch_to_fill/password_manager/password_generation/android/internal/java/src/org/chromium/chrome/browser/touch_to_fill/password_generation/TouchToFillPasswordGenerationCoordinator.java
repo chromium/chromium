@@ -90,7 +90,7 @@ class TouchToFillPasswordGenerationCoordinator {
                     // This is only called when the user swipes or touches the area outside the
                     // sheet to dismiss it. When the user clicks on one of the button inside the
                     // sheet, this observer is removed before the sheet is actually dismissed.
-                    onDismissed(sheetStateChangeReasonToInteractionResult(reason));
+                    onDismissed(InteractionResult.DISMISSED_SHEET);
                 }
             };
 
@@ -189,21 +189,6 @@ class TouchToFillPasswordGenerationCoordinator {
         }
         // DISMISSED_FROM_NATIVE doesn't stem from a user choice and as such isn't counted as a user
         // dismissal.
-    }
-
-    private @InteractionResult int sheetStateChangeReasonToInteractionResult(
-            @StateChangeReason int reason) {
-        if (reason == StateChangeReason.SWIPE
-                || reason == StateChangeReason.BACK_PRESS
-                || reason == StateChangeReason.TAP_SCRIM
-                || reason == StateChangeReason.OMNIBOX_FOCUS) {
-            return InteractionResult.DISMISSED_SHEET;
-        }
-        assert false
-                : "Unsupported value. Cannot convert StateChangeReason "
-                        + reason
-                        + "to InteractionResult.";
-        return InteractionResult.DISMISSED_SHEET;
     }
 
     View getContentViewForTesting() {
