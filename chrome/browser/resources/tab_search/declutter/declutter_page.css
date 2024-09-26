@@ -42,13 +42,37 @@ tab-search-item {
   gap: 4px;
 }
 
+#scrollable {
+  --external-margin: 20px;
+  --scrollbar-width: 4px;
+  --scroll-border: solid 1px var(--color-tab-search-divider);
+  --non-scroll-border: solid 1px transparent;
+  border-bottom: var(--non-scroll-border);
+  border-top: var(--non-scroll-border);
+  /* Render the scroll bar and scroll borders at the edge of the dialog */
+  margin: 0 calc(-1 * var(--external-margin));
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 0 calc(var(--external-margin) - var(--scrollbar-width))
+           0 var(--external-margin);
+  scrollbar-gutter: stable;
+}
+
+#scrollable.can-scroll.is-scrolled {
+  border-top: var(--scroll-border);
+}
+
+#scrollable.can-scroll:not(.scrolled-to-bottom) {
+  border-bottom: var(--scroll-border);
+}
+
 #tabList {
   background-color: var(--color-tab-search-card-background);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 0px;
+  padding: 12px 0;
 }
 
 .action-button {

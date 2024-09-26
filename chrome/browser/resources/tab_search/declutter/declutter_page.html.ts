@@ -17,16 +17,18 @@ export function getHtml(this: DeclutterPageElement) {
         <div class="subheading">$i18n{declutterBody}</div>
       </div>
     </div>
-    <div id="tabList">
-      ${this.staleTabDatas_.map((item, index) => html`
-          <tab-search-item class="mwb-list-item" .data="${item}"
-              close-button-icon="tab-search:remove"
-              role="option"
-              data-index="${index}"
-              @close="${this.onTabRemove_}"
-              hide-url>
-          </tab-search-item>
-      `)}
+    <div id="scrollable">
+      <div id="tabList">
+        ${this.staleTabDatas_.map((item, index) => html`
+            <tab-search-item class="mwb-list-item" .data="${item}"
+                close-button-icon="tab-search:remove"
+                role="option"
+                data-index="${index}"
+                @close="${this.onTabRemove_}"
+                hide-url>
+            </tab-search-item>
+        `)}
+      </div>
     </div>
     <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
       Close tabs
