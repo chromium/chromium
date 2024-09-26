@@ -64,7 +64,7 @@ BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
 // plane that fits the cursor bitmap.
 BASE_FEATURE(kUseDynamicCursorSize,
              "UseDynamicCursorSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
