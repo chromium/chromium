@@ -4250,7 +4250,11 @@ static_library("browser") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/webui/signin:signin_impl",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
@@ -4379,11 +4383,13 @@ static_library("browser") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/picture_in_picture:impl",
       "//chrome/browser/ui/signin:impl",
-      "//chrome/browser/ui/webui/signin:impl",
       "//chrome/browser/ui/webui/whats_new:impl",
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/importer:impl",
       "//chrome/browser/ui/webui/settings:impl",
+      "//chrome/browser/ui/webui/signin:signin_impl",
+      "//chrome/browser/ui/webui/signin:signin_utils_impl",
+      "//chrome/browser/ui/webui/signin:login_impl",
     ]
 
     #!is_android
@@ -4462,6 +4468,16 @@ static_library("browser") {
         "upgrade_detector/upgrade_detector_impl.cc",
         "upgrade_detector/upgrade_detector_impl.h",
       ]
+      deps += [
+        "//chrome/browser/ui/webui/signin:profile",
+        "//chrome/browser/ui/webui/signin:profile_impl",
+      ]
+
+      #!is_android && !is_chromeos_ash
+      # Any circular includes must depend on the target
+      # "browser_public_dependencies".
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/webui/signin:profile_impl" ]
     }
 
     if (!is_chromeos_lacros) {

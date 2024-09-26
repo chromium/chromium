@@ -18,6 +18,9 @@ if (!is_android && !is_fuchsia) {
       "signin_util.cc",
       "signin_util.h",
     ]
+
+    deps = [ "//chrome/browser/ui/webui/signin:test_support_ui" ]
+
     public_deps = [
       ":test_accounts",
       "//base",

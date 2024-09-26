@@ -1771,10 +1771,6 @@ static_library("ui") {
       "webui/side_panel/reading_list/reading_list_page_handler.h",
       "webui/side_panel/reading_list/reading_list_ui.cc",
       "webui/side_panel/reading_list/reading_list_ui.h",
-      "webui/signin/login_ui_service.cc",
-      "webui/signin/login_ui_service.h",
-      "webui/signin/login_ui_service_factory.cc",
-      "webui/signin/login_ui_service_factory.h",
       "webui/suggest_internals/suggest_internals_handler.cc",
       "webui/suggest_internals/suggest_internals_handler.h",
       "webui/suggest_internals/suggest_internals_ui.cc",
@@ -1900,7 +1896,11 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/webui/signin:signin_impl",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/util",
@@ -2041,7 +2041,9 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
 
       "//chrome/browser/ui/signin:impl",
-      "//chrome/browser/ui/webui/signin:impl",
+      "//chrome/browser/ui/webui/signin:signin_impl",
+      "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/whats_new:impl",
 
       "//chrome/browser/ui:browser_list_impl",
@@ -3408,7 +3410,16 @@ static_library("ui") {
       "webui/signin/turn_sync_on_helper_policy_fetch_tracker.h",
     ]
 
-    deps += [ "//components/country_codes" ]
+    deps += [
+      "//chrome/browser/ui/webui/signin:profile",
+      "//chrome/browser/ui/webui/signin:profile_impl",
+      "//components/country_codes",
+    ]
+
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
+    # Non-android and non-chromeos-ash circular deps.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/signin:profile_impl" ]
 
     if (enable_dice_support) {
       sources += [

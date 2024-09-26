@@ -186,6 +186,7 @@ source_set("impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/feedback",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/webui/signin:login",
       "//components/autofill_prediction_improvements/core/browser",
       "//components/password_manager/core/browser/features:password_features",
       "//components/plus_addresses",

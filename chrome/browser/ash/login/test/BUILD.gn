@@ -143,6 +143,7 @@ static_library("test_support") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/cryptohome",

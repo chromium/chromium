@@ -703,6 +703,7 @@ static_library("test_support") {
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/constrained_window",
       "//components/performance_manager",
@@ -2011,6 +2012,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/webui/whats_new",
@@ -5210,7 +5212,6 @@ if (!is_android) {
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
-        "../browser/ui/webui/signin/turn_sync_on_helper_browsertest.cc",
       ]
 
       if (!is_chromeos_lacros) {
@@ -7302,7 +7303,6 @@ test("unit_tests") {
       "../browser/ui/startup/first_run_service_unittest.cc",
       "../browser/ui/startup/startup_browser_policy_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
-      "../browser/ui/webui/signin/dice_web_signin_intercept_handler_unittest.cc",
     ]
   }
 
@@ -7986,11 +7986,6 @@ test("unit_tests") {
       "../browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler_unittest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler_unittest.cc",
       "../browser/ui/webui/side_panel/reading_list/reading_list_page_handler_unittest.cc",
-      "../browser/ui/webui/signin/login_ui_service_unittest.cc",
-      "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
-      "../browser/ui/webui/signin/signin_url_utils_unittest.cc",
-      "../browser/ui/webui/signin/sync_confirmation_handler_unittest.cc",
-      "../browser/ui/webui/signin/sync_confirmation_ui_unittest.cc",
       "../browser/ui/webui/support_tool/support_tool_ui_utils_unittest.cc",
       "../browser/ui/webui/tab_search/tab_search_page_handler_unittest.cc",
       "../browser/ui/webui/theme_source_unittest.cc",
@@ -8420,7 +8415,6 @@ test("unit_tests") {
       "../browser/policy/cloud/user_policy_signin_service_util_unittest.cc",
       "../browser/profiles/gaia_info_update_service_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
-      "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
     ]
     sources += [
       "../browser/browser_process_platform_part_ash_unittest.cc",
@@ -9960,7 +9954,6 @@ test("unit_tests") {
       "../browser/ui/views/download/bubble/download_toolbar_button_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_dialog_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_icon_view_unittest.cc",
-      "../browser/ui/webui/signin/signin_error_handler_unittest.cc",
       "../browser/upgrade_detector/installed_version_poller_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_impl_unittest.cc",
       "../common/channel_info_unittest.cc",
@@ -10291,8 +10284,6 @@ test("unit_tests") {
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/profiles/profile_customization_util_unittest.cc",
       "../browser/ui/profiles/profile_picker_unittest.cc",
-      "../browser/ui/webui/signin/managed_user_profile_notice_handler_unittest.cc",
-      "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
     ]
   }
 
@@ -10455,8 +10446,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
-      "../browser/ui/webui/signin/login_ui_test_utils.cc",
-      "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",
       "../browser/web_applications/test/profile_test_helper.h",
       "../browser/web_applications/test/web_app_icon_test_utils.cc",
@@ -12017,6 +12006,8 @@ source_set("sync_integration_test_support") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
       "//components/trusted_vault",
