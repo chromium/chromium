@@ -180,10 +180,6 @@ bool ExtensionsMenuTestUtil::HidePopup() {
   return !HasPopup();
 }
 
-ExtensionsContainer* ExtensionsMenuTestUtil::GetExtensionsContainer() {
-  return extensions_container_;
-}
-
 void ExtensionsMenuTestUtil::WaitForExtensionsContainerLayout() {
   views::test::WaitForAnimatingLayoutManager(
       static_cast<views::View*>(extensions_container_));
@@ -195,10 +191,6 @@ gfx::Size ExtensionsMenuTestUtil::GetMinPopupSize() {
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxPopupSize() {
   return ExtensionPopup::kMaxSize;
-}
-
-gfx::Size ExtensionsMenuTestUtil::GetToolbarActionSize() {
-  return extensions_container_->GetToolbarActionSize();
 }
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(

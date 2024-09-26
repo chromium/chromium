@@ -39,11 +39,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   gfx::NativeView GetPopupNativeView() override;
   bool HasPopup() override;
   bool HidePopup() override;
-  ExtensionsContainer* GetExtensionsContainer() override;
   void WaitForExtensionsContainerLayout() override;
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
-  gfx::Size GetToolbarActionSize() override;
   gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
       const extensions::ExtensionId& id) override;
 

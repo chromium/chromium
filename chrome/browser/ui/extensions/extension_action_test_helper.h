@@ -14,7 +14,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
-class ExtensionsContainer;
 
 namespace gfx {
 class Image;
@@ -71,17 +70,11 @@ class ExtensionActionTestHelper {
   // Hides the given popup and returns whether the hide was successful.
   virtual bool HidePopup() = 0;
 
-  // Returns the associated ExtensionsContainer.
-  virtual ExtensionsContainer* GetExtensionsContainer() = 0;
-
   // Waits for the ExtensionContainer's layout to be done.
   virtual void WaitForExtensionsContainerLayout() = 0;
 
   // Returns the minimum allowed size of an extension popup.
   virtual gfx::Size GetMinPopupSize() = 0;
-
-  // Returns the size of the toolbar actions.
-  virtual gfx::Size GetToolbarActionSize() = 0;
 
   // Returns the maximum allowed size of an extension popup.
   virtual gfx::Size GetMaxPopupSize() = 0;
