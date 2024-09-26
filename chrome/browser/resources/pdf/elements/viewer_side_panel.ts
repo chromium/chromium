@@ -230,16 +230,7 @@ export class ViewerSidePanelElement extends CrLitElement {
   }
 
   protected onSizeClick_(e: Event) {
-    const targetElement = e.currentTarget as HTMLElement;
-    const size = Number(targetElement.dataset['size']);
-
-    const currentBrush = this.getCurrentBrush_();
-    if (currentBrush.size === size) {
-      return;
-    }
-
-    currentBrush.size = size;
-    this.brushDirty_ = true;
+    this.setBrushSize_(e.currentTarget as HTMLElement);
   }
 
   protected onColorClick_(e: Event) {
@@ -260,6 +251,32 @@ export class ViewerSidePanelElement extends CrLitElement {
 
     currentBrush.color = newColor;
     this.brushDirty_ = true;
+  }
+
+
+  protected onSizeKeydown_(e: KeyboardEvent) {
+    // Only handle arrow keys.
+    const isPrevious = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
+    const isNext = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+    if (!isPrevious && !isNext) {
+      return;
+    }
+    e.preventDefault();
+
+    const currSizeButton = e.target as HTMLElement;
+    const currIndex = Number(currSizeButton.dataset['index']);
+
+    const brushSizes = this.getCurrentBrushSizes_();
+    const numOptions = brushSizes.length;
+    const delta = isNext ? 1 : -1;
+    const newIndex = (numOptions + currIndex + delta) % numOptions;
+
+    const newSize = brushSizes[newIndex]!.size;
+    const newSizeButton =
+        this.shadowRoot!.querySelector<HTMLElement>(`[data-size='${newSize}']`);
+    assert(newSizeButton);
+    this.setBrushSize_(newSizeButton);
+    newSizeButton.focus();
   }
 
   protected getIcon_(type: AnnotationBrushType): string {
@@ -350,6 +367,18 @@ export class ViewerSidePanelElement extends CrLitElement {
     const brush = this.brushes_.get(this.currentType_);
     assert(brush);
     return brush;
+  }
+
+  private setBrushSize_(sizeButton: HTMLElement): void {
+    const size = Number(sizeButton.dataset['size']);
+
+    const currentBrush = this.getCurrentBrush_();
+    if (currentBrush.size === size) {
+      return;
+    }
+
+    currentBrush.size = size;
+    this.brushDirty_ = true;
   }
 }
 

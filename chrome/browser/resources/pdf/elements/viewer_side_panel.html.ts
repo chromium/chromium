@@ -39,10 +39,10 @@ export function getHtml(this: ViewerSidePanelElement) {
     </div>
     <div id="brush-options">
       <h2>Size</h2>
-      <div id="sizes" role="listbox">
-        ${this.getCurrentBrushSizes_().map(item => html`
+      <div id="sizes" role="listbox" @keydown="${this.onSizeKeydown_}">
+        ${this.getCurrentBrushSizes_().map((item, index) => html`
           <cr-icon-button iron-icon="pdf:${item.icon}" role="option"
-              data-size="${item.size}"
+              data-index="${index}" data-size="${item.size}"
               data-selected="${this.isCurrentSize_(item.size)}"
               aria-selected="${this.isCurrentSize_(item.size)}"
               @click="${this.onSizeClick_}"></cr-icon-button>`)}
