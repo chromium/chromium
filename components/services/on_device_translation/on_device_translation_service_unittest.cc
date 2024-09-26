@@ -4,10 +4,12 @@
 
 #include "components/services/on_device_translation/on_device_translation_service.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/native_library.h"
+#include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -19,13 +21,18 @@ namespace on_device_translation {
 namespace {
 
 const char kTestString[] = "test";
+const char kMockLibraryName[] = "mock_translate_kit_lib";
 
 class MockOnDeviceTranslationServiceTest : public testing::Test {
  public:
   MockOnDeviceTranslationServiceTest()
       : service_impl_(service_remote_.BindNewPipeAndPassReceiver()),
         weak_factory_(this) {
-    feature_list_.InitAndDisableFeature(kEnableTranslateKitComponent);
+    base::FilePath exe_path;
+    CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+    base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+        kTranslateKitBinaryPath,
+        exe_path.AppendASCII(base::GetNativeLibraryName(kMockLibraryName)));
   }
 
   mojo::PendingReceiver<mojom::Translator>
@@ -90,7 +97,6 @@ class MockOnDeviceTranslationServiceTest : public testing::Test {
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
   mojo::Remote<mojom::Translator> translator_remote_;
   OnDeviceTranslationService service_impl_;
-  base::test::ScopedFeatureList feature_list_;
 
   base::WeakPtrFactory<MockOnDeviceTranslationServiceTest> weak_factory_;
 };

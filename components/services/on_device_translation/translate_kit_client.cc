@@ -111,6 +111,7 @@ TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
   LogLoadTranslateKitResult(load_lib_result_, lib_.GetError());
 }
 
+DISABLE_CFI_DLSYM
 bool TranslateKitClient::MaybeInitialize() {
   if (failed_to_initialize_ ||
       load_lib_result_ != LoadTranslateKitResult::kSuccess) {
@@ -132,6 +133,7 @@ bool TranslateKitClient::MaybeInitialize() {
   return !!kit_ptr_;
 }
 
+DISABLE_CFI_DLSYM
 void TranslateKitClient::SetConfig(
     mojom::OnDeviceTranslationServiceConfigPtr config) {
   if (!MaybeInitialize()) {
@@ -179,6 +181,7 @@ void TranslateKitClient::SetConfig(
       << "Failed to set config";
 }
 
+DISABLE_CFI_DLSYM
 TranslateKitClient::~TranslateKitClient() {
   if (!kit_ptr_) {
     return;
@@ -234,7 +237,6 @@ TranslateKitClient::TranslatorImpl::MaybeCreate(
                                           client, translator_ptr);
 }
 
-DISABLE_CFI_DLSYM
 TranslateKitClient::TranslatorImpl::TranslatorImpl(
     base::PassKey<TranslatorImpl>,
     TranslateKitClient* client,

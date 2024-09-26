@@ -6,9 +6,8 @@
 
 #include <memory>
 
-#include "components/services/on_device_translation/mock_translator.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/services/on_device_translation/translate_kit_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -57,12 +56,6 @@ void OnDeviceTranslationService::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
     CreateTranslatorCallback create_translator_callback) {
-  if (!base::FeatureList::IsEnabled(kEnableTranslateKitComponent)) {
-    MockTranslator::Create(source_lang, target_lang, std::move(receiver),
-                           std::move(create_translator_callback));
-    return;
-  }
-
   auto* translator =
       TranslateKitClient::Get()->GetTranslator(source_lang, target_lang);
   if (!translator) {
@@ -80,12 +73,6 @@ void OnDeviceTranslationService::CanTranslate(
     const std::string& source_lang,
     const std::string& target_lang,
     CanTranslateCallback can_translate_callback) {
-  if (!base::FeatureList::IsEnabled(kEnableTranslateKitComponent)) {
-    MockTranslator::CanTranslate(source_lang, target_lang,
-                                 std::move(can_translate_callback));
-    return;
-  }
-
   std::move(can_translate_callback)
       .Run(TranslateKitClient::Get()->CanTranslate(source_lang, target_lang));
 }
