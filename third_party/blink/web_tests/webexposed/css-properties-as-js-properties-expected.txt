@@ -417,10 +417,6 @@ scrollStart
 scrollStartBlock
 scrollStartInline
 scrollStartTarget
-scrollStartTargetBlock
-scrollStartTargetInline
-scrollStartTargetX
-scrollStartTargetY
 scrollStartX
 scrollStartY
 scrollTimeline

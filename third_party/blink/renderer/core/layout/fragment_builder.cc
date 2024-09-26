@@ -259,10 +259,8 @@ void FragmentBuilder::PropagateScrollStartTarget(
     }
   };
   const auto* child_box = DynamicTo<LayoutBox>(child.GetLayoutObject());
-  if (child.Style().ScrollStartTargetY() != EScrollStartTarget::kNone) {
+  if (child.Style().ScrollStartTarget() != EScrollStartTarget::kNone) {
     UpdateScrollStartTarget(EnsureScrollStartTargets().y, child_box);
-  }
-  if (child.Style().ScrollStartTargetX() != EScrollStartTarget::kNone) {
     UpdateScrollStartTarget(EnsureScrollStartTargets().x, child_box);
   }
 

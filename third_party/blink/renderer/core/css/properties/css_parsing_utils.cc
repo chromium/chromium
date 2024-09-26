@@ -6726,10 +6726,6 @@ CSSValue* ConsumeScrollStart(CSSParserTokenStream& stream,
                                 CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-CSSValue* ConsumeScrollStartTarget(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(stream);
-}
-
 CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
   if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(stream)) {
