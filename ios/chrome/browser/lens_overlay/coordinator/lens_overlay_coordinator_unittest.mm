@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -399,6 +400,39 @@ TEST_F(LensOverlayCoordinatorTest, DoesntPromptForConsentWhenAlreadyReceived) {
 
   EXPECT_FALSE(
       [presentedVC isKindOfClass:[LensOverlayConsentViewController class]]);
+}
+
+// Tests that timing metrics are recorded.
+TEST_F(LensOverlayCoordinatorTest, TimingMetricsRecorded) {
+  base::HistogramTester histogram_tester;
+  // Given a started `LensOverlayCoordinator`.
+  [coordinator_ start];
+
+  // No metrics should be emitted before anything happens.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionForegroundDuration",
+                                    /*expected_count=*/0);
+
+  id<LensOverlayCommands> lens_overlay_handler =
+      HandlerForProtocol(dispatcher_, LensOverlayCommands);
+
+  // Create and show lens UI.
+  [lens_overlay_handler createAndShowLensUI:NO
+                                 entrypoint:LensOverlayEntrypoint::kOverflowMenu
+                                 completion:^(BOOL success) {
+                                   run_loop_.Quit();
+                                 }];
+
+  run_loop_.Run();
+
+  // Destroy Lens UI.
+  [lens_overlay_handler destroyLensUI:NO];
+
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionForegroundDuration",
+                                    /*expected_count=*/1);
 }
 
 }  // namespace

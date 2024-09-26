@@ -23,6 +23,11 @@ std::string InvocationSourceToString(LensOverlayInvocationSource entrypoint);
 void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                            base::TimeDelta duration);
 
+// Records the time in foreground of a lens overlay. Both sliced and unsliced.
+void RecordSessionForegroundDuration(
+    LensOverlayInvocationSource invocation_source,
+    base::TimeDelta duration);
+
 // Records the elapsed time between when the overlay was invoked and when the
 // user first interacts with the overlay. Sliced, unsliced, UMA and UKM.
 void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,

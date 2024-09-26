@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_OVERLAY_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_OVERLAY_COMMANDS_H_
 
-enum class LensOverlayEntrypoint { kLocationBar, kOverflowMenu };
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 
 /// Commands related to Lens Overlay.
 @protocol LensOverlayCommands

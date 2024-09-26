@@ -25,6 +25,18 @@ source_set("model") {
   public_deps = [ "//base" ]
 }
 
+source_set("entrypoint") {
+  sources = [
+    "lens_overlay_entrypoint.h",
+    "lens_overlay_entrypoint.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/lens",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "lens_overlay_tab_helper_unittest.mm" ]

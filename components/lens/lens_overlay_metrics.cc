@@ -46,6 +46,26 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
+void RecordSessionForegroundDuration(
+    LensOverlayInvocationSource invocation_source,
+    base::TimeDelta duration) {
+  // UMA unsliced session duration.
+  base::UmaHistogramCustomTimes("Lens.Overlay.SessionForegroundDuration",
+                                duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+
+  // UMA session duration sliced by entry point.
+  const auto sliced_session_duration_histogram_name =
+      "Lens.Overlay.ByInvocationSource." +
+      InvocationSourceToString(invocation_source) +
+      ".SessionForegroundDuration";
+  base::UmaHistogramCustomTimes(sliced_session_duration_histogram_name,
+                                duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
+
 void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,
                                   base::TimeDelta time_to_first_interaction,
                                   ukm::SourceId source_id) {
@@ -62,6 +82,10 @@ void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,
                                 time_to_first_interaction,
                                 /*min=*/base::Milliseconds(1),
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
+
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
 
   // UKM unsliced TimeToFirstInteraction.
   ukm::builders::Lens_Overlay_TimeToFirstInteraction(source_id)
@@ -99,6 +123,9 @@ void RecordUKMSessionEndMetrics(ukm::SourceId source_id,
                                 LensOverlayInvocationSource invocation_source,
                                 bool search_performed_in_session,
                                 base::TimeDelta session_duration) {
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
   ukm::builders::Lens_Overlay_SessionEnd(source_id)
       .SetInvocationSource(static_cast<int64_t>(invocation_source))
       .SetInvocationResultedInSearch(search_performed_in_session)

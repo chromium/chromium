@@ -70,6 +70,8 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   void OnSnapshotCaptureBegin() override;
   void OnSnapshotCaptureEnd() override;
 
+  web::WebState* GetWebState() const { return web_state_; }
+
   // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
   void WasShown(web::WebState* web_state) override;

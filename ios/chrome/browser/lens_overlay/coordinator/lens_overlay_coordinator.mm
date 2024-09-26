@@ -9,7 +9,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/timer/elapsed_timer.h"
+#import "components/lens/lens_overlay_metrics.h"
 #import "components/prefs/pref_service.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
@@ -121,6 +125,19 @@ const CGFloat kMenuSymbolSize = 18;
   // controller is displayed. Note that selection UI isn't started, so it won't
   // accept many interactions, but we do this to be extra safe.
   UIView* _selectionInteractionBlockingView;
+
+  /// Entrypoint used for the current lens overlay invocation.
+  LensOverlayEntrypoint _currentEntrypoint;
+  /// The time at which the overlay was invoked.
+  base::ElapsedTimer _invocationTime;
+  /// The time at which the overlay UI was `shown`. null when hidden.
+  base::TimeTicks _foregroundTime;
+  /// The total foregroud duration since invoked.
+  base::TimeDelta _foregroundDuration;
+  /// Whether a lens request has been performed during this session.
+  BOOL _searchPerformedInSession;
+  /// Whether the first interaction has been recorded.
+  BOOL _firstInteractionRecorded;
 }
 
 #pragma mark - public
@@ -149,7 +166,7 @@ const CGFloat kMenuSymbolSize = 18;
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.lensHandler = _selectionViewController;
   _mediator.commandsHandler = self;
-  // The mediator might destory lens UI if the search engine doesn't support
+  // The mediator might destroy lens UI if the search engine doesn't support
   // lens.
   _mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
@@ -250,6 +267,12 @@ const CGFloat kMenuSymbolSize = 18;
     // animation.
     [self destroyLensUI:NO];
   }
+  _currentEntrypoint = entrypoint;
+  _invocationTime = base::ElapsedTimer();
+  _foregroundTime = base::TimeTicks();
+  _foregroundDuration = base::TimeDelta();
+  _searchPerformedInSession = NO;
+  _firstInteractionRecorded = NO;
 
   _associatedTabHelper = [self activeTabHelper];
   CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
@@ -295,6 +318,7 @@ const CGFloat kMenuSymbolSize = 18;
   if (![self isUICreated]) {
     return;
   }
+  _foregroundTime = base::TimeTicks::Now();
 
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController
@@ -328,6 +352,10 @@ const CGFloat kMenuSymbolSize = 18;
   if (![self isUICreated]) {
     return;
   }
+  // Add the foreground duration and reset the timer.
+  _foregroundDuration =
+      _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
+  _foregroundTime = base::TimeTicks();
 
   [_containerViewController.presentingViewController
       dismissViewControllerAnimated:animated
@@ -336,6 +364,24 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)destroyLensUI:(BOOL)animated {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
+
+  // Session foreground duration metrics.
+  if (_foregroundTime != base::TimeTicks()) {
+    _foregroundDuration =
+        _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
+  }
+  lens::RecordSessionForegroundDuration(self.currentInvocationSource,
+                                        _foregroundDuration);
+
+  // Session duration metrics.
+  base::TimeDelta sessionDuration = _invocationTime.Elapsed();
+  lens::RecordSessionDuration(self.currentInvocationSource, sessionDuration);
+
+  // Session end UKM metrics.
+  lens::RecordUKMSessionEndMetrics(self.associatedTabSourceId,
+                                   self.currentInvocationSource,
+                                   _searchPerformedInSession, sessionDuration);
+
   // The reason the UI is destroyed can be that Omnient gets associated to a
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
@@ -434,6 +480,12 @@ const CGFloat kMenuSymbolSize = 18;
 // lazy initialization of the result UI.
 - (void)loadResultsURL:(GURL)url {
   DCHECK(!_resultMediator);
+
+  // Time to first interaction metrics.
+  if (!_searchPerformedInSession) {
+    _searchPerformedInSession = YES;
+    [self recordFirstInteraction];
+  }
 
   [self startResultPage];
   [_resultMediator loadResultsURL:url];
@@ -858,6 +910,32 @@ const CGFloat kMenuSymbolSize = 18;
   for (UIGestureRecognizer* recognizer in panRecognizersAfterPresenting) {
     recognizer.cancelsTouchesInView = NO;
   }
+}
+
+/// Converts the current entrypoint to LensOverlayInvocationSource.
+- (lens::LensOverlayInvocationSource)currentInvocationSource {
+  return lens::InvocationSourceFromEntrypoint(_currentEntrypoint);
+}
+
+/// Returns the UKM source id from the associated tab.
+- (ukm::SourceId)associatedTabSourceId {
+  if (_associatedTabHelper) {
+    if (web::WebState* webState = _associatedTabHelper->GetWebState()) {
+      return ukm::GetSourceIdForWebStateDocument(webState);
+    }
+  }
+  return ukm::kInvalidSourceId;
+}
+
+/// Records the first interaction time.
+- (void)recordFirstInteraction {
+  if (_firstInteractionRecorded) {
+    return;
+  }
+  _firstInteractionRecorded = YES;
+  lens::RecordTimeToFirstInteraction(self.currentInvocationSource,
+                                     _invocationTime.Elapsed(),
+                                     self.associatedTabSourceId);
 }
 
 @end

@@ -15,4 +15,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+components/lens",
+  "+components/ukm",
 ]

@@ -115,6 +115,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SessionForegroundDuration"
+    units="ms" expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by
+    invocation source. It measures the total duration that the overlay is in the
+    foreground. Sum of all times that the overlay tab is returned to the
+    foreground.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.TimeToFirstInteraction"
     units="ms" expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>
@@ -264,6 +278,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SessionForegroundDuration" units="ms"
+    expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. It measures the
+    total duration that the overlay is in the foreground. Sum of all times that
+    the overlay tab is returned to the foreground.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.Shown" enum="BooleanEnabled" expires_after="M135">
   <owner>erikchen@chromium.org</owner>
   <owner>mercerd@google.com</owner>
@@ -291,7 +316,8 @@ chromium-metrics-reviews@google.com.
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded once when the Lens Overlay WebUI is ready. Measures the elapsed
-    time between when the overlay was invoked and when its WebUI was ready.
+    time between when the overlay was invoked and when its WebUI was ready. On
+    iOS, when the LensUI is ready.
   </summary>
 </histogram>
 
