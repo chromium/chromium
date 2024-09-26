@@ -103,20 +103,6 @@ BASE_FEATURE(kDisableErrorHandlingForReadback,
              "kDisableErrorHandlingForReadback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPaintCacheBudgetConfigurableFeature,
-             "PaintCacheBudgetConfigurableFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_INT(GetNormalPaintCacheBudget,
-                          kPaintCacheBudgetConfigurableFeature,
-                          "NormalPaintCacheBudgetBytes",
-                          4 * 1024 * 1024)
-
-MIRACLE_PARAMETER_FOR_INT(GetLowEndPaintCacheBudget,
-                          kPaintCacheBudgetConfigurableFeature,
-                          "LowEndPaintCacheBudgetBytes",
-                          256 * 1024)
-
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
 
@@ -1940,9 +1926,9 @@ cc::ClientPaintCache* RasterImplementation::GetOrCreatePaintCache() {
   if (!paint_cache_) {
     size_t paint_cache_budget = 0u;
     if (base::SysInfo::IsLowEndDevice()) {
-      paint_cache_budget = GetLowEndPaintCacheBudget();
+      paint_cache_budget = 256 * 1024;
     } else {
-      paint_cache_budget = GetNormalPaintCacheBudget();
+      paint_cache_budget = 4 * 1024 * 1024;
     }
     paint_cache_ = std::make_unique<cc::ClientPaintCache>(paint_cache_budget);
   }

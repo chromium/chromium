@@ -16322,29 +16322,6 @@
             ]
         }
     ],
-    "PaintCacheBudget": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "paint_cache_budget_04M_20230913",
-                    "params": {
-                        "NormalPaintCacheBudgetBytes": "4194304"
-                    },
-                    "enable_features": [
-                        "PaintCacheBudgetConfigurableFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [
