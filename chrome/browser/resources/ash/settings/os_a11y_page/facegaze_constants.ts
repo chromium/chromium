@@ -248,14 +248,13 @@ export class FaceGazeUtils {
 
   /**
    * @param macro The MacroName for which to return the display sub-label.
-   * @returns a string containing the user-friendly sub-label for the macro if
-   *     available, or null otherwise.
+   * @return the name of a string containing the user-friendly sub-label for the
+   *     macro if available, or null otherwise.
    */
-  static getMacroDisplaySubLabel(macro: MacroName): string|null {
-    // TODO(b:341770655): Localize this string.
+  static getMacroDisplaySubLabelName(macro: MacroName): string|null {
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
-        return `Once you start scroll mode, move your head in the direction you'd like to scroll`;
+        return 'faceGazeMacroSubLabelToggleScrollMode';
       default:
         // Other macros do not have a sub-label, return null to indicate this.
         return null;

@@ -1400,6 +1400,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CUSTOM_KEY_COMBO" desc="This text describes an action that a user can take on their computer to fire a custom key combination.">
     Create custom key combination
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
+    Once you start scroll mode, move your head in the direction you'd like to scroll
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_BROW_INNER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyebrows up. See go/face-gestures-loc for illustrations of the gestures.">
     Raise eyebrows
   </message>

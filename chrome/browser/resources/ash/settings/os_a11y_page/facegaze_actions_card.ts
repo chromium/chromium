@@ -156,7 +156,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private getSubLabel_(action: MacroName): string|null {
-    return FaceGazeUtils.getMacroDisplaySubLabel(action);
+    const name = FaceGazeUtils.getMacroDisplaySubLabelName(action);
+    return name ? this.i18n(name) : null;
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {

@@ -1004,6 +1004,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_VIRTUAL_KEYBOARD},
       {"faceGazeMacroLabelCustomKeyCombo",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CUSTOM_KEY_COMBO},
+      {"faceGazeMacroSubLabelToggleScrollMode",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE},
       {"faceGazeGestureLabelBrowInnerUp",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_BROW_INNER_UP},
       {"faceGazeGestureLabelBrowsDown",
