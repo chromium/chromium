@@ -1772,6 +1772,9 @@ crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
 # Temporarily disabled to unblock https://crrev.com/c/5882140
 crbug.com/350426235 http/tests/devtools/console/console-uncaught-promise-in-worker.js [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/5893199
+crbug.com/369788368 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
+
 # During work on crbug.com/1171767, we discovered a bug demonstrable through
 # WPT. Marking as a failing test until we update our implementation.
 crbug.com/1223118 external/wpt/resource-timing/initiator-type/link.html [ Failure ]
