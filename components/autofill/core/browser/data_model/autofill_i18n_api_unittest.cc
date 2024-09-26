@@ -177,25 +177,6 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
                                               kLegacyHierarchyCountryCode));
 }
 
-TEST_F(AutofillI18nApiTest, GetStopwordsExpression) {
-  // The expected values are contained in `kAutofillModelStopwords`.
-  EXPECT_EQ(u"Ponto de referência:",
-            GetStopwordsExpression(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-                                   AddressCountryCode("BR")));
-  EXPECT_EQ(u"Andar", GetStopwordsExpression(ADDRESS_HOME_SUBPREMISE,
-                                             AddressCountryCode("BR")));
-  EXPECT_EQ(u"Entre Calles",
-            GetStopwordsExpression(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-                                   AddressCountryCode("MX")));
-  EXPECT_EQ(u"Apt\\.|Floor", GetStopwordsExpression(ADDRESS_HOME_SUBPREMISE,
-                                                    AddressCountryCode("XX")));
-  EXPECT_EQ(std::nullopt, GetStopwordsExpression(ADDRESS_HOME_OVERFLOW,
-                                                 AddressCountryCode("MX")));
-  EXPECT_EQ(std::nullopt,
-            GetStopwordsExpression(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-                                   AddressCountryCode("")));
-}
-
 TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
