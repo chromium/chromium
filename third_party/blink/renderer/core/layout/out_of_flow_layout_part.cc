@@ -2621,6 +2621,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
           node, GetConstraintSpace(), index, previous_fragmentainer,
           &needs_total_page_count);
       needs_total_page_count_ |= needs_total_page_count;
+      additional_pages_were_added_ = true;
     } else {
       new_fragmentainer = &ColumnLayoutAlgorithm::CreateEmptyColumn(
           node, GetConstraintSpace(), previous_fragmentainer);

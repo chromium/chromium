@@ -57,8 +57,12 @@ class CORE_EXPORT CountersAttachmentContext {
     return CountersAttachmentContext(*this);
   }
 
-  void EnterObject(const LayoutObject&);
-  void LeaveObject(const LayoutObject&);
+  // Create a deep copy of this object, including all counter stacks.
+  CountersAttachmentContext DeepClone() const;
+
+  void EnterObject(const LayoutObject&, bool is_page_box = false);
+  void LeaveObject(const LayoutObject&, bool is_page_box = false);
+
   // only_last = true for counter(), = false for counters().
   Vector<int> GetCounterValues(const LayoutObject&,
                                const AtomicString& counter_name,
@@ -78,7 +82,22 @@ class CORE_EXPORT CountersAttachmentContext {
   void ProcessCounter(const LayoutObject& layout_object,
                       const AtomicString& counter_name,
                       unsigned counter_type,
-                      int value_argument);
+                      int value_argument,
+                      bool is_page_box);
+
+  // When a counter is incremented or reset in a page or page margin context,
+  // this may obscure all counters of the same name within the document. When
+  // this happens, insert a boundary on the stack, create a new counter, and
+  // return true.
+  bool ObscurePageCounterIfNeeded(const LayoutObject& layout_object,
+                                  const AtomicString& counter_name,
+                                  unsigned counter_type,
+                                  int value_argument,
+                                  bool is_page_box);
+  void UnobscurePageCounterIfNeeded(const AtomicString& counter_name,
+                                    unsigned counter_type,
+                                    bool is_page_box);
+
   void CreateCounter(const LayoutObject&,
                      const AtomicString& counter_name,
                      int value);

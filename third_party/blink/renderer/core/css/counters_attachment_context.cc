@@ -38,11 +38,6 @@ std::optional<std::pair<unsigned, int>> DetermineCounterTypeAndValue(
   if (layout_object.IsText() && !layout_object.IsBR()) {
     return std::nullopt;
   }
-  Node* generating_node = layout_object.GeneratingNode();
-  // We must have a generating node or else we cannot have a counter.
-  if (!generating_node) {
-    return std::nullopt;
-  }
   const ComputedStyle& style = layout_object.StyleRef();
   switch (style.StyleType()) {
     case kPseudoIdNone:
@@ -116,7 +111,22 @@ bool CountersAttachmentContext::ElementGeneratesListItemCounter(
          IsA<HTMLDirectoryElement>(element);
 }
 
-void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object) {
+CountersAttachmentContext CountersAttachmentContext::DeepClone() const {
+  CountersAttachmentContext clone(*this);
+  clone.counter_inheritance_table_ =
+      MakeGarbageCollected<CounterInheritanceTable>(
+          *counter_inheritance_table_);
+  for (auto& [counter_name, stack] : *clone.counter_inheritance_table_) {
+    stack = MakeGarbageCollected<CounterStack>(*stack);
+    for (Member<CounterEntry>& entry : *stack) {
+      entry = MakeGarbageCollected<CounterEntry>(*entry);
+    }
+  }
+  return clone;
+}
+
+void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object,
+                                            bool is_page_box) {
   if (!attachment_root_is_document_element_) {
     return;
   }
@@ -130,7 +140,8 @@ void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object) {
         continue;
       }
       auto [counter_type, value_argument] = type_and_value.value();
-      ProcessCounter(layout_object, counter_name, counter_type, value_argument);
+      ProcessCounter(layout_object, counter_name, counter_type, value_argument,
+                     is_page_box);
     }
   }
   // If there were no explicit counter related property set for `list-item`
@@ -142,6 +153,21 @@ void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object) {
       MaybeCreateListItemCounter(*element);
     }
   }
+
+  if (is_page_box) {
+    // By default, @page boxes keep track of the page number. If the special
+    // counter named "page" has no directives at all, increment it by one.
+    //
+    // See https://drafts.csswg.org/css-page-3/#page-based-counters
+    const AtomicString page_str("page");
+    if (!counter_directives ||
+        counter_directives->find(page_str) == counter_directives->end()) {
+      ProcessCounter(layout_object, page_str,
+                     static_cast<unsigned>(Type::kIncrementType),
+                     /*value_argument=*/1, is_page_box);
+    }
+  }
+
   // Create style containment boundary if the element has contains style.
   // Doing it after counters creation as the element itself is not included
   // in the style containment scope.
@@ -150,7 +176,8 @@ void CountersAttachmentContext::EnterObject(const LayoutObject& layout_object) {
   }
 }
 
-void CountersAttachmentContext::LeaveObject(const LayoutObject& layout_object) {
+void CountersAttachmentContext::LeaveObject(const LayoutObject& layout_object,
+                                            bool is_page_box) {
   if (!attachment_root_is_document_element_) {
     return;
   }
@@ -169,6 +196,9 @@ void CountersAttachmentContext::LeaveObject(const LayoutObject& layout_object) {
         continue;
       }
       auto [counter_type, counter_value] = type_and_value.value();
+      if (!layout_object.GetNode()) {
+        UnobscurePageCounterIfNeeded(counter_name, counter_type, is_page_box);
+      }
       if (!IsReset(counter_type)) {
         continue;
       }
@@ -237,14 +267,27 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
     return {0};
   }
 
+  // Counters changed within a page or page margin context obscure all counters
+  // of the same name within the document.
+  bool is_page_counter = false;
+
   for (const CounterEntry* entry : base::Reversed(counter_stack)) {
     // counter() and counters() can cross style containment boundaries.
     if (!entry) {
+      if (is_page_counter) {
+        // The boundary in this case is there to obscure counters defined in the
+        // document (and also also page context, if we're in a page margin
+        // context).
+        break;
+      }
       continue;
     }
     result.push_back(entry->value);
     if (only_last) {
       break;
+    }
+    if (!is_page_counter) {
+      is_page_counter = !entry->layout_object->GetNode();
     }
   }
   return result;
@@ -254,10 +297,19 @@ void CountersAttachmentContext::ProcessCounter(
     const LayoutObject& layout_object,
     const AtomicString& counter_name,
     unsigned counter_type,
-    int value_argument) {
+    int value_argument,
+    bool is_page_box) {
   // First, there might be some counters on stack that are stale, remove
   // those (e.g. remove counters whose parent is not ancestors from stack).
   RemoveStaleCounters(layout_object, counter_name);
+
+  // Counters in page boxes and page margin boxes may be special. If they are,
+  // do the special stuff and return.
+  if (!layout_object.GetNode() &&
+      ObscurePageCounterIfNeeded(layout_object, counter_name, counter_type,
+                                 value_argument, is_page_box)) {
+    return;
+  }
 
   // Reset counter always creates counter.
   if (IsReset(counter_type)) {
@@ -268,6 +320,73 @@ void CountersAttachmentContext::ProcessCounter(
   // Otherwise, get the value of last counter from stack and update its value.
   // Note: this can create counter, if there are no counters on stack.
   UpdateCounterValue(layout_object, counter_name, counter_type, value_argument);
+}
+
+bool CountersAttachmentContext::ObscurePageCounterIfNeeded(
+    const LayoutObject& layout_object,
+    const AtomicString& counter_name,
+    unsigned counter_type,
+    int value_argument,
+    bool is_page_box) {
+  DCHECK(!layout_object.GetNode());
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
+
+  // If a counter is reset within a page context, this obscures all counters of
+  // the same name within the document. The spec additionally says that this
+  // should also happen to counters that are just incremented. But that would
+  // make page counters completely useless, as we'd be unable to increment
+  // counters across pages. So don't do that.
+  // See https://github.com/w3c/csswg-drafts/issues/4759
+  //
+  // Similarly, if a counter is incremented or reset within a page *margin*
+  // context, this obscures all counters of the same name within the document,
+  // and in the page context.
+  if (counter_stack_it == counter_inheritance_table_->end() ||
+      (is_page_box && !IsReset(counter_type))) {
+    return false;
+  }
+  CounterStack& counter_stack = *counter_stack_it->value;
+  if (!counter_stack.empty() && counter_stack.back()) {
+    int counter_value = CalculateCounterValue(counter_type, value_argument,
+                                              counter_stack.back()->value);
+    auto* new_entry =
+        MakeGarbageCollected<CounterEntry>(layout_object, counter_value);
+    // To obscure previous counters, push an empty entry onto the stack.
+    counter_stack.push_back(nullptr);
+    // Pushing nullptr entries is also a trick used by style containment. But
+    // since the 'contain' property doesn't apply in a page / page margin
+    // context, there should be no conflicts.
+    DCHECK(!layout_object.ShouldApplyStyleContainment());
+    // Then add the new counter with the new value.
+    counter_stack.push_back(new_entry);
+
+    return true;
+  }
+
+  return false;
+}
+
+void CountersAttachmentContext::UnobscurePageCounterIfNeeded(
+    const AtomicString& counter_name,
+    unsigned counter_type,
+    bool is_page_box) {
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
+  if (counter_stack_it == counter_inheritance_table_->end() ||
+      (is_page_box && !IsReset(counter_type))) {
+    return;
+  }
+  CounterStack& counter_stack = *counter_stack_it->value;
+  while (!counter_stack.empty()) {
+    // We should only pop page / page margin boxes.
+    DCHECK(!counter_stack.back() ||
+           !counter_stack.back()->layout_object->GetNode());
+
+    bool is_boundary = !counter_stack.back();
+    counter_stack.pop_back();
+    if (is_boundary) {
+      break;
+    }
+  }
 }
 
 // Push the counter on stack or create stack if there is none. Also set the

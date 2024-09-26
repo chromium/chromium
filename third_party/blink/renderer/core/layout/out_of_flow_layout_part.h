@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
@@ -116,6 +117,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // pages that were laid out need to know the total page count (to support
   // counter(pages) in page margin boxes).
   bool NeedsTotalPageCount() { return needs_total_page_count_; }
+
+  bool AdditionalPagesWereAdded() const { return additional_pages_were_added_; }
 
   // Information needed to position descendant within a containing block.
   // Geometry expressed here is complicated:
@@ -477,6 +480,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // Set if any additional pages that were laid out need to know the total page
   // count.
   bool needs_total_page_count_ = false;
+
+  bool additional_pages_were_added_ = false;
 };
 
 }  // namespace blink

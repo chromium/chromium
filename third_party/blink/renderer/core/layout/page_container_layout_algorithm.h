@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PAGE_CONTAINER_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -47,6 +48,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
       wtf_size_t total_page_count,
       const AtomicString& page_name,
       const BlockNode& content_node,
+      const CountersAttachmentContext&,
       const PageAreaLayoutParams&,
       bool ignore_author_page_style,
       const PhysicalBoxFragment* existing_page_container);
@@ -60,6 +62,10 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   // Return the outgoing break token from the fragmentainer (page area).
   const BlockBreakToken* FragmentainerBreakToken() const {
     return fragmentainer_break_token_;
+  }
+
+  const CountersAttachmentContext& GetCountersContext() const {
+    return counters_context_;
   }
 
   bool NeedsTotalPageCount() const { return needs_total_page_count_; }
@@ -228,6 +234,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
 
   const AtomicString& page_name_;
   const BlockNode& content_node_;
+  CountersAttachmentContext counters_context_;
   const PageAreaLayoutParams& page_area_params_;
   bool ignore_author_page_style_;
   bool needs_total_page_count_ = false;
