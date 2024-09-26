@@ -12022,6 +12022,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kDefaultBrowserPromoAndroid2)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-mall-url", flag_descriptions::kCrosMallUrlName,
+     flag_descriptions::kCrosMallUrlDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kMallUrl, "")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

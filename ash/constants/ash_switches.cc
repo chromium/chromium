@@ -976,6 +976,9 @@ const char kBrowserDataBackwardMigrationMode[] =
 const char kForceBrowserDataMigrationForTesting[] =
     "force-browser-data-migration-for-testing";
 
+// The base URL for the App Mall.
+const char kMallUrl[] = "mall-url";
+
 // Determines the URL to be used when calling the backend.
 const char kMarketingOptInUrl[] = "marketing-opt-in-url";
 
