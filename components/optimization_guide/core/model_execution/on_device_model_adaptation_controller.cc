@@ -18,6 +18,27 @@
 
 namespace optimization_guide {
 
+namespace {
+
+// Invoked when adaptation assets are loaded. Calls the controller to continue
+// loading the model if its still alive. Otherwise the loaded assets are closed
+// in background task.
+void OnAdaptationAssetsLoaded(
+    base::WeakPtr<OnDeviceModelAdaptationController> adaptation_controller,
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+    on_device_model::AdaptationAssets assets) {
+  if (!adaptation_controller) {
+    // Close the files on a background thread.
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::DoNothingWithBoundArgs(std::move(assets)));
+    return;
+  }
+  adaptation_controller->LoadAdaptationModelFromAssets(std::move(model),
+                                                       std::move(assets));
+}
+
+}  // namespace
+
 OnDeviceModelAdaptationController::OnDeviceModelAdaptationController(
     ModelBasedCapabilityKey feature,
     base::WeakPtr<OnDeviceModelServiceController> controller)
@@ -38,10 +59,8 @@ OnDeviceModelAdaptationController::GetOrCreateModelRemote(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&on_device_model::LoadAdaptationAssets,
                        adaptation_assets),
-        base::BindOnce(
-            &OnDeviceModelAdaptationController::OnAdaptationAssetsLoaded,
-            weak_ptr_factory_.GetWeakPtr(),
-            model_remote_.BindNewPipeAndPassReceiver()));
+        base::BindOnce(OnAdaptationAssetsLoaded, weak_ptr_factory_.GetWeakPtr(),
+                       model_remote_.BindNewPipeAndPassReceiver()));
     model_remote_.set_disconnect_handler(base::BindOnce(
         &OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected,
         controller_, feature_, ModelRemoteDisconnectReason::kDisconncted));
@@ -55,7 +74,7 @@ OnDeviceModelAdaptationController::GetOrCreateModelRemote(
   return model_remote_;
 }
 
-void OnDeviceModelAdaptationController::OnAdaptationAssetsLoaded(
+void OnDeviceModelAdaptationController::LoadAdaptationModelFromAssets(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::AdaptationAssets assets) {
   auto& base_model_remote = controller_->base_model_remote();

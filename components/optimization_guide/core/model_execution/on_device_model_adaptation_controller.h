@@ -25,14 +25,15 @@ class OnDeviceModelAdaptationController {
   OnDeviceModelAdaptationController& operator=(
       const OnDeviceModelAdaptationController&) = delete;
 
+  // Loads the adaptation model from the loaded assets.
+  void LoadAdaptationModelFromAssets(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      on_device_model::AdaptationAssets assets);
+
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       const on_device_model::AdaptationAssetPaths& adaptation_assets);
 
  private:
-  void OnAdaptationAssetsLoaded(
-      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
-      on_device_model::AdaptationAssets assets);
-
   void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
 
   ModelBasedCapabilityKey feature_;

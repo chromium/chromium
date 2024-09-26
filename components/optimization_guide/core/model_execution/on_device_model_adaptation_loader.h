@@ -89,6 +89,11 @@ class OnDeviceModelAdaptationLoader
 
   // OnDeviceModelComponentStateManager::Observer.
   void StateChanged(const OnDeviceModelComponentState* state) final;
+  void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
+
+  // Registers for adaptation model download, if the conditions are right.
+  void MaybeRegisterModelDownload(const OnDeviceModelComponentState* state,
+                                  bool was_feature_recently_used);
 
   base::expected<std::unique_ptr<on_device_model::AdaptationAssetPaths>,
                  OnDeviceModelAdaptationAvailability>
@@ -106,6 +111,9 @@ class OnDeviceModelAdaptationLoader
   base::ScopedObservation<OnDeviceModelComponentStateManager,
                           OnDeviceModelComponentStateManager::Observer>
       component_state_manager_observation_{this};
+
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
 
   raw_ptr<PrefService> local_state_;
 
