@@ -709,3 +709,16 @@
 -SecurityExploitBrowserTest.InvalidBeginNavigationOpaqueInitiator
 -SecurityExploitBrowserTest.PostMessageOpaqueSourceOrigin
 -SecurityExploitViaDisabledWebSecurityTest.ValidateInitiatorBaseUrlNotEmpty
+
+# TODO(crbug.com/369224662): These tests have been failing since
+# https://crrev.com/c/5831814 and https://crrev.com/c/5840289.
+-All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
