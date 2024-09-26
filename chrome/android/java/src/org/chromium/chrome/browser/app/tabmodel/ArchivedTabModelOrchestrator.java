@@ -92,6 +92,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 }
             };
 
+    private final TabArchiver.Observer mTabArchiverObserver =
+            new TabArchiver.Observer() {
+                @Override
+                public void onDeclutterPassCompleted() {
+                    saveState();
+                }
+            };
+
     private final Profile mProfile;
     // TODO(crbug.com/331689555): Figure out how to do synchronization. Only one instance should
     // really be using this at a time and it makes things like undo messy if it is supported in
@@ -199,6 +207,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
             mTabArchiveSettings.destroy();
             mTabArchiveSettings = null;
+        }
+
+        if (mTabArchiver != null) {
+            mTabArchiver.removeObserver(mTabArchiverObserver);
         }
 
         // Null out TabWindowManager's reference so TabState isn't cleared.
@@ -413,6 +425,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         TabWindowManagerSingleton.getInstance(),
                         mTabArchiveSettings,
                         System::currentTimeMillis);
+        mTabArchiver.addObserver(mTabArchiverObserver);
     }
 
     @Override
@@ -459,7 +472,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTaskRunner.postDelayedTask(
                 mCallbackController.makeCancelable(this::postDeclutterTaskToUiThread),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
-        saveState();
     }
 
     private void postDeclutterTaskToUiThread() {

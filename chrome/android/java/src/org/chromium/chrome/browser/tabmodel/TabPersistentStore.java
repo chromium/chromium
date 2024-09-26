@@ -217,6 +217,17 @@ public class TabPersistentStore {
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
                         saveTabListAsynchronously();
                     }
+
+                    @Override
+                    public void didAddTab(
+                            Tab tab, int type, int creationState, boolean markedForSelection) {
+                        saveTabListAsynchronously();
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        saveTabListAsynchronously();
+                    }
                 };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
