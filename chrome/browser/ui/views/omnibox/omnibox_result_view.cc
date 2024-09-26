@@ -214,7 +214,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
               OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)));
   thumbs_up_button_->SetProperty(views::kMarginsKey,
-                                 gfx::Insets::TLBR(0, 0, 0, 16));
+                                 gfx::Insets::TLBR(0, 0, 0, 8));
   views::InstallCircleHighlightPathGenerator(thumbs_up_button_);
   thumbs_up_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_THUMBS_UP_SUGGESTION));
