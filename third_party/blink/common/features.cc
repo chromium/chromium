@@ -1002,7 +1002,7 @@ BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
 const base::FeatureParam<int>
     kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue{
         &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-        "GroupByOriginContextLimit", 1};
+        "GroupByOriginContextLimit", 10};
 const base::FeatureParam<bool>
     kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting{
         &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,

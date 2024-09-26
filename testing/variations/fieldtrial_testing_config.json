@@ -18743,40 +18743,6 @@
             ]
         }
     ],
-    "ProtectedAudienceMoreGroupByOriginContextsStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2_Contexts",
-                    "params": {
-                        "GroupByOriginContextLimit": "2",
-                        "IncludeFacilitatedTestingGroups": "true"
-                    },
-                    "enable_features": [
-                        "FledgeBidderWorkletGroupByOriginContextsToKeep"
-                    ]
-                },
-                {
-                    "name": "Enabled_5_Contexts",
-                    "params": {
-                        "GroupByOriginContextLimit": "5",
-                        "IncludeFacilitatedTestingGroups": "true"
-                    },
-                    "enable_features": [
-                        "FledgeBidderWorkletGroupByOriginContextsToKeep"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceMultiThreadedBidderWorklet": [
         {
             "platforms": [
