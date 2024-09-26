@@ -299,7 +299,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feedback/android:delegate_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/locale:delegate_public_impl_java",
-      "//chrome/browser/readaloud/android:hooks_public_impl_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_impl_java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
       "//chrome/browser/ui/android/cars:delegate_public_impl_java",

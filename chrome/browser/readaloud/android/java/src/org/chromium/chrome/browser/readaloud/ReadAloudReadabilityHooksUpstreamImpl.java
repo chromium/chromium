@@ -12,8 +12,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.HashSet;
 
 /** Empty implementation of ReadAloudReadabilityHooks. */
-public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
-    public ReadAloudReadabilityHooksImpl(Context context, Profile profile) {}
+public class ReadAloudReadabilityHooksUpstreamImpl implements ReadAloudReadabilityHooks {
+    public ReadAloudReadabilityHooksUpstreamImpl(Context context, Profile profile) {}
 
     @Override
     public boolean isEnabled() {

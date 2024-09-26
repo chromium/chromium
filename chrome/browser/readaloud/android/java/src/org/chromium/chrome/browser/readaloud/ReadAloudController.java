@@ -554,7 +554,7 @@ public class ReadAloudController
         if (factory != null) {
             mReadabilityHooks = factory.create(mActivity, profile);
         } else {
-            mReadabilityHooks = new ReadAloudReadabilityHooksImpl(mActivity, profile);
+            mReadabilityHooks = new ReadAloudReadabilityHooksUpstreamImpl(mActivity, profile);
         }
         if (mReadabilityHooks.isEnabled()) {
             boolean isAllowed = ReadAloudFeatures.isAllowed(profile);
