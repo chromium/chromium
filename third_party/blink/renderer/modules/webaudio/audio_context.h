@@ -214,11 +214,11 @@ class MODULES_EXPORT AudioContext final
   // Called when the context is being closed to stop rendering audio and clean
   // up handlers. This clears the self-referencing pointer, making this object
   // available for the potential GC.
-  void StopRendering();
+  void StopRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // Called when suspending the context to stop reundering audio, but don't
   // clean up handlers because we expect to be resuming where we left off.
-  void SuspendRendering();
+  void SuspendRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void DidClose();
 
@@ -226,12 +226,15 @@ class MODULES_EXPORT AudioContext final
   // posting a main thread task to perform the actual resolving, if needed.
   void ResolvePromisesForUnpause();
 
-  AudioIOPosition OutputPosition() const;
+  AudioIOPosition OutputPosition() const
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // Send notification to browser that an AudioContext has started or stopped
   // playing audible audio.
-  void NotifyAudibleAudioStarted();
-  void NotifyAudibleAudioStopped();
+  void NotifyAudibleAudioStarted()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
+  void NotifyAudibleAudioStopped()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void EnsureAudioContextManagerService();
   void OnAudioContextManagerServiceConnectionError();
@@ -258,7 +261,8 @@ class MODULES_EXPORT AudioContext final
   // prerendering.
   void ResumeOnPrerenderActivation();
 
-  void HandleRenderError();
+  void HandleRenderError()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const char* const function_name, const String& message);
@@ -360,6 +364,8 @@ class MODULES_EXPORT AudioContext final
   // If a sink ID is given via the constructor or `setSinkId()` method,
   // this is set to `true`.
   bool is_sink_id_given_ = false;
+
+  SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };
 
 }  // namespace blink

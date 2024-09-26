@@ -339,7 +339,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
 }
 
 void AudioContext::Uninitialize() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   DCHECK_NE(hardware_context_count, 0u);
   SendLogMessage(__func__, "");
   --hardware_context_count;
@@ -351,6 +351,8 @@ void AudioContext::Uninitialize() {
 }
 
 AudioContext::~AudioContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
   RecordAudioContextOperation(AudioContextOperation::kDelete);
 
   // TODO(crbug.com/945379) Disable this DCHECK for now.  It's not terrible if
@@ -381,7 +383,7 @@ void AudioContext::Trace(Visitor* visitor) const {
 ScriptPromise<IDLUndefined> AudioContext::suspendContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   if (ContextState() == kClosed) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
@@ -408,7 +410,7 @@ ScriptPromise<IDLUndefined> AudioContext::suspendContext(
 ScriptPromise<IDLUndefined> AudioContext::resumeContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   if (ContextState() == kClosed) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
@@ -453,7 +455,7 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
 }
 
 bool AudioContext::IsPullingAudioGraph() const {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   if (!destination()) {
     return false;
@@ -470,7 +472,7 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
     ScriptState* script_state) const {
   AudioTimestamp* result = AudioTimestamp::Create();
 
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (!window) {
     return result;
@@ -507,6 +509,8 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
 ScriptPromise<IDLUndefined> AudioContext::closeContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
   if (ContextState() == kClosed) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
@@ -552,7 +556,7 @@ bool AudioContext::IsContextCleared() const {
 }
 
 void AudioContext::StartRendering() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   SendLogMessage(__func__, "");
 
   if (!keep_alive_) {
@@ -562,7 +566,6 @@ void AudioContext::StartRendering() {
 }
 
 void AudioContext::StopRendering() {
-  DCHECK(IsMainThread());
   DCHECK(destination());
   SendLogMessage(__func__, "");
 
@@ -578,7 +581,6 @@ void AudioContext::StopRendering() {
 }
 
 void AudioContext::SuspendRendering() {
-  DCHECK(IsMainThread());
   DCHECK(destination());
   SendLogMessage(__func__, "");
 
@@ -589,14 +591,14 @@ void AudioContext::SuspendRendering() {
 }
 
 double AudioContext::baseLatency() const {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   DCHECK(destination());
 
   return base_latency_;
 }
 
 double AudioContext::outputLatency() const {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   DCHECK(destination());
 
   DeferredTaskHandler::GraphAutoLocker locker(this);
@@ -606,7 +608,7 @@ double AudioContext::outputLatency() const {
 }
 
 AudioPlayoutStats* AudioContext::playoutStats() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   if (!RuntimeEnabledFeatures::AudioContextPlayoutStatsEnabled()) {
     return nullptr;
   }
@@ -620,7 +622,7 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
     ScriptState* script_state,
     const V8UnionAudioSinkOptionsOrString* v8_sink_id,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   TRACE_EVENT0("webaudio", "AudioContext::setSinkId");
 
   // setSinkId invoked from a detached document should throw kInvalidStateError
@@ -665,7 +667,7 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
 MediaElementAudioSourceNode* AudioContext::createMediaElementSource(
     HTMLMediaElement* media_element,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   return MediaElementAudioSourceNode::Create(*this, *media_element,
                                              exception_state);
@@ -674,7 +676,7 @@ MediaElementAudioSourceNode* AudioContext::createMediaElementSource(
 MediaStreamAudioSourceNode* AudioContext::createMediaStreamSource(
     MediaStream* media_stream,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   return MediaStreamAudioSourceNode::Create(*this, *media_stream,
                                             exception_state);
@@ -682,14 +684,14 @@ MediaStreamAudioSourceNode* AudioContext::createMediaStreamSource(
 
 MediaStreamAudioDestinationNode* AudioContext::createMediaStreamDestination(
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   // Set number of output channels to stereo by default.
   return MediaStreamAudioDestinationNode::Create(*this, 2, exception_state);
 }
 
 void AudioContext::NotifySourceNodeStart() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   // Do nothing when the context is already closed. (crbug.com/1292101)
   if (ContextState() == AudioContextState::kClosed) {
@@ -882,8 +884,6 @@ bool AudioContext::HandlePreRenderTasks(
 }
 
 void AudioContext::NotifyAudibleAudioStarted() {
-  DCHECK(IsMainThread());
-
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStarted(context_id_);
@@ -953,14 +953,11 @@ void AudioContext::ResolvePromisesForUnpause() {
 }
 
 AudioIOPosition AudioContext::OutputPosition() const {
-  DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(this);
   return output_position_;
 }
 
 void AudioContext::NotifyAudibleAudioStopped() {
-  DCHECK(IsMainThread());
-
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStopped(context_id_);
@@ -1040,7 +1037,7 @@ double AudioContext::GetOutputLatencyQuantizingFactor() const {
 }
 
 void AudioContext::NotifySetSinkIdBegins() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   // This performs step 5 to 9 from the second part of setSinkId() algorithm:
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid
@@ -1053,7 +1050,7 @@ void AudioContext::NotifySetSinkIdBegins() {
 
 void AudioContext::NotifySetSinkIdIsDone(
     WebAudioSinkDescriptor pending_sink_descriptor) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   sink_descriptor_ = pending_sink_descriptor;
 
@@ -1125,7 +1122,7 @@ void AudioContext::DevicesEnumerated(
 
 void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   SendLogMessage(__func__, "");
 
   if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
@@ -1204,7 +1201,7 @@ bool AudioContext::IsValidSinkDescriptor(
 }
 
 void AudioContext::OnRenderError() {
-  DCHECK(IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
     return;
@@ -1239,7 +1236,6 @@ void AudioContext::TransferAudioFrameStatsTo(
 }
 
 void AudioContext::HandleRenderError() {
-  DCHECK(IsMainThread());
   SendLogMessage(__func__, "");
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
