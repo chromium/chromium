@@ -898,16 +898,19 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   // Test pause/resume when only one client is present.
   EXPECT_CALL(*video_capture_device_factory_, WillSuspendDevice()).Times(1);
   PauseClient(client_id);
-  EXPECT_CALL(*video_capture_device_factory_, WillResumeDevice()).Times(1);
+  EXPECT_CALL(*video_capture_device_factory_, WillResumeDevice()).Times(2);
   ResumeClient(video_session_id, client_id);
 
-  // Attempting to resume the client a second time should not cause any calls to
-  // VideoCaptureDevice::Resume().
+  // Attempting to resume the same client a second time should not cause any
+  // calls to VideoCaptureDevice::Resume() because VideoCaptureManager will
+  // not attempt to resume the device if the client is not paused.
   ResumeClient(video_session_id, client_id);
 
   // Add a second client that is never paused, then pause/resume the first
-  // client, and no calls to VideoCaptureDevice::MaybeSuspend() or Resume() are
-  // made.
+  // client, and no calls to VideoCaptureDevice::MaybeSuspend() is made.
+  // However, a call to VideoCaptureDevice::Resume() is still made because
+  // VideoCaptureManager will attempt to resume the device if the client is
+  // paused.
   EXPECT_CALL(*frame_observer_, OnStarted(_));
   const VideoCaptureControllerID client_id2 =
       StartClient(video_session_id, true);

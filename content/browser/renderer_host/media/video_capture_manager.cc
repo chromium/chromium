@@ -575,10 +575,9 @@ void VideoCaptureManager::ResumeCaptureForClient(
   if (!IsControllerPointerValid(controller))
     NOTREACHED_IN_MIGRATION() << "Got Null controller while resuming capture";
 
-  const bool had_active_client = controller->HasActiveClient();
-  controller->ResumeClient(client_id, client_handler);
-  if (had_active_client || !controller->HasActiveClient())
+  if (!controller->ResumeClient(client_id, client_handler)) {
     return;
+  }
   if (!controller->IsDeviceAlive())
     return;
   controller->Resume();
