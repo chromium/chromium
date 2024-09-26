@@ -121,20 +121,22 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
                                      VideoCodecProfile profile) {
   VideoEncoderInfo info;
   info.implementation_name = "VideoToolbox";
-#if BUILDFLAG(IS_MAC)
-  info.is_hardware_accelerated = false;
-
-  base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
-  if (VTSessionCopyProperty(
-          compression_session,
-          kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
-          kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
-    info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware.get());
-  }
-#else
-  // iOS is always hardware-accelerated.
+  // iOS and HEVC are always hardware-accelerated.
   info.is_hardware_accelerated = true;
-#endif
+
+#if !BUILDFLAG(IS_IOS)
+  if (VideoCodecProfileToVideoCodec(profile) == VideoCodec::kH264) {
+    base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
+    if (VTSessionCopyProperty(
+            compression_session,
+            kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
+            kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
+      info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware.get());
+    } else {
+      info.is_hardware_accelerated = false;
+    }
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 
   std::optional<int> max_frame_delay_property;
   base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
