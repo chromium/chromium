@@ -524,15 +524,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that the Last Visited section is displayed when there exists a previous
 // visit, and also, it tests that the correct timestamp of the last visit is
 // presented.
-// TODO(crbug.com/366003628): Test is flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testLastVisitedSectionDisplaysYesterday \
-  testLastVisitedSectionDisplaysYesterday
-#else
-#define MAYBE_testLastVisitedSectionDisplaysYesterday \
-  DISABLED_testLastVisitedSectionDisplaysYesterday
-#endif
-- (void)MAYBE_testLastVisitedSectionDisplaysYesterday {
+- (void)testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
@@ -545,10 +537,10 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI openPageInfo];
 
-  // Check that the Last Visited row is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_PAGE_INFO_HISTORY))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Wait for the Last Visited row to be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(l10n_util::GetNSString(
+                                              IDS_PAGE_INFO_HISTORY))];
 
   // Check that the Last Visited summary displays "Yesterday".
   [[EarlGrey
