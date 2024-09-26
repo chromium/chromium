@@ -98,6 +98,12 @@ class UrlCheckerDelegate
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) = 0;
 
+  // Returns if the user has enhanced protection enabled to help determine if
+  // the background HPRT lookups can be sent.
+  virtual bool AreBackgroundHashRealTimeSampleLookupsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) = 0;
+
   virtual const SBThreatTypeSet& GetThreatTypes() = 0;
   virtual SafeBrowsingDatabaseManager* GetDatabaseManager() = 0;
   virtual BaseUIManager* GetUIManager() = 0;

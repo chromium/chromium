@@ -124,6 +124,12 @@ void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {}
 
+bool UrlCheckerDelegateImpl::AreBackgroundHashRealTimeSampleLookupsAllowed(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  return false;
+}
+
 const safe_browsing::SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
 }

@@ -62,6 +62,8 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD2(SendUrlRealTimeAndHashRealTimeDiscrepancyReport,
                void(std::unique_ptr<ClientSafeBrowsingReportRequest>,
                     const base::RepeatingCallback<content::WebContents*()>&));
+  MOCK_METHOD1(AreBackgroundHashRealTimeSampleLookupsAllowed,
+               bool(const base::RepeatingCallback<content::WebContents*()>&));
 
   SafeBrowsingDatabaseManager* GetDatabaseManager() override { return nullptr; }
 

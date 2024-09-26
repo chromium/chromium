@@ -216,12 +216,23 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
     return database_manager_;
   }
 
+  bool AreBackgroundHashRealTimeSampleLookupsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&) override {
+    return are_background_hprt_lookups_allowed_;
+  }
+
+  void SetAllowHashRealTimeSampleLookups(
+      bool are_background_hprt_lookups_allowed) {
+    are_background_hprt_lookups_allowed_ = are_background_hprt_lookups_allowed;
+  }
+
  protected:
   ~MockUrlCheckerDelegate() override = default;
 
  private:
   raw_ptr<SafeBrowsingDatabaseManager> database_manager_;
   SBThreatTypeSet threat_types_;
+  bool are_background_hprt_lookups_allowed_ = true;
 };
 
 class FakeRealTimeUrlLookupService
@@ -1988,6 +1999,55 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
       /*sample=*/1,
       /*expected_count=*/1);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_BackgroundHashRealTimeLookups_EnhancedProtectionDisabled) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      safe_browsing::kHashPrefixRealTimeLookupsSamplePing,
+      {{"HashPrefixRealTimeLookupsSampleRate",
+        /** Override to 0% to make sure it will not be sampled. */
+        "100"}});
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+
+  GURL url("https://example.test/");
+  url_checker_delegate_->SetAllowHashRealTimeSampleLookups(false);
+  hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                              /*should_fail_lookup=*/false,
+                                              /*should_delay_lookup=*/false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      url, /*match=*/false,
+      /*logging_details=*/std::nullopt);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  // The SendUrlRealTimeAndHashRealTimeDiscrepancyReport method should not be
+  // called because the user has enhanced protection off.
+  EXPECT_CALL(*url_checker_delegate_,
+              SendUrlRealTimeAndHashRealTimeDiscrepancyReport(_, _))
+      .Times(0);
+
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/
+      "SafeBrowsing.CheckUrl."
+      "UrlRealTimeWithBackgroundHashRealTimeMechanismTriggered",
+      /*sample=*/1,
+      /*expected_count=*/0);
+
+  // The normal URT lookup should be performed.
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,

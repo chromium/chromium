@@ -66,6 +66,9 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
+  bool AreBackgroundHashRealTimeSampleLookupsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
   const safe_browsing::SBThreatTypeSet& GetThreatTypes() override;
   safe_browsing::SafeBrowsingDatabaseManager* GetDatabaseManager() override;
   safe_browsing::BaseUIManager* GetUIManager() override;

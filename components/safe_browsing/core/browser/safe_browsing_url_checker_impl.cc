@@ -525,12 +525,12 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   if (CanPerformFullURLLookup(url)) {
     performed_check = PerformedCheck::kUrlRealTimeCheck;
 
-    // We will sample eligible lookups and send both Protego and HPRT lookups
-    // based on the configurable percentage. Otherwise, perform URL real-time
-    // lookup only.
-    // TODO(crbug.com/359609447): Check ESB value as well; We will pass the
-    // relevant value through in the following up CL.
+    // For ESB users, we will sample eligible lookups and send both Protego and
+    // HPRT lookups based on the configurable percentage. Otherwise, perform URL
+    // real-time lookup only.
     bool should_run_background_hprt_check =
+        url_checker_delegate_->AreBackgroundHashRealTimeSampleLookupsAllowed(
+            web_contents_getter_) &&
         base::FeatureList::IsEnabled(kHashPrefixRealTimeLookupsSamplePing) &&
         base::RandDouble() * 100 < kHashPrefixRealTimeLookupsSampleRate.Get() &&
         (can_use_hash_real_time_service || can_use_hash_real_time_db_manager);

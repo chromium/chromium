@@ -67,6 +67,9 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   const safe_browsing::SBThreatTypeSet& GetThreatTypes() override;
   safe_browsing::SafeBrowsingDatabaseManager* GetDatabaseManager() override;
   safe_browsing::BaseUIManager* GetUIManager() override;
+  bool AreBackgroundHashRealTimeSampleLookupsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   base::WeakPtr<SafeBrowsingClient> client_;
