@@ -9910,7 +9910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
-    expires_after="2025-09-05">
+    expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
   <owner>wutao@chromium.org</owner>
   <summary>
@@ -9923,9 +9923,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
-    units="%" expires_after="2025-09-05">
+    units="%" expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
     Dragging the window back to the top of the screen will expand the window.
@@ -9939,9 +9939,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
-    units="%" expires_after="2025-09-05">
+    units="%" expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     When dragging a maximized window, the window will shrink to restore bounds.
     This histogram is fired everytime we drag a maximized window to normal
@@ -9953,9 +9953,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
-    expires_after="2025-09-05">
+    expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of hiding window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -9966,8 +9966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Minimize" units="%"
-    expires_after="2025-01-26">
-  <owner>oshima@chromium.org</owner>
+    expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -9980,8 +9979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
-    expires_after="2025-02-16">
-  <owner>oshima@chromium.org</owner>
+    expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -9995,8 +9993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Unminimize" units="%"
-    expires_after="2024-10-16">
-  <owner>oshima@chromium.org</owner>
+    expires_after="2025-10-16">
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
