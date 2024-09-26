@@ -6430,11 +6430,13 @@ const char kCameraSuperResOverrideDescription[] =
     "Overrides the default to enable or disable the single frame super "
     "resolution feature.";
 
-const char kChromeboxUsbPassthroughLimitName[] =
+const char kChromeboxUsbPassthroughRestrictionsName[] =
     "Limit primary mice/keyboards from USB passthrough on chromeboxes";
-const char kChromeboxUsbPassthroughLimitDescription[] =
+const char kChromeboxUsbPassthroughRestrictionsDescription[] =
     "When enabled, attempts to prevent primary mice/keyboard from being passed "
-    "through to guest environments on chromebox-style devices";
+    "through to guest environments on chromebox-style devices.  If you have "
+    "issues with passing through a USB peripheral on a chromebox, you can "
+    "try disabling this feature.";
 
 const char kDisableBruschettaInstallChecksName[] =
     "Disable Bruschetta Installer Checks";

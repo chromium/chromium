@@ -497,12 +497,6 @@ BASE_FEATURE(kCryptauthAttestationSyncing,
              "CryptauthAttestationSyncing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables PrimaryIoManager functionality - which attempts to
-// prevent primary mice/keyboards from USB passthrough on chromebox devices.
-BASE_FEATURE(kChromeboxUsbPassthroughLimit,
-             "ChromeboxUsbPassthroughLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Crostini GPU support.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE virtio_gpu flag.
