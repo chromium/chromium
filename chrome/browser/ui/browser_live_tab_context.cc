@@ -154,10 +154,13 @@ std::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
 const tab_groups::TabGroupVisualData*
 BrowserLiveTabContext::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
-  return browser_->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group)
-      ->visual_data();
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+  TabGroupModel* group_model = tab_strip_model->group_model();
+  CHECK(group_model);
+  TabGroup* tab_group = group_model->GetTabGroup(group);
+  CHECK(tab_group);
+  return tab_group->visual_data();
 }
 
 const std::optional<base::Uuid>
@@ -186,8 +189,13 @@ bool BrowserLiveTabContext::IsTabPinned(int index) const {
 void BrowserLiveTabContext::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
-  browser_->tab_strip_model()->group_model()->GetTabGroup(group)->SetVisualData(
-      std::move(visual_data));
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+  TabGroupModel* group_model = tab_strip_model->group_model();
+  CHECK(group_model);
+  TabGroup* tab_group = group_model->GetTabGroup(group);
+  CHECK(tab_group);
+  tab_group->SetVisualData(std::move(visual_data));
 }
 
 const gfx::Rect BrowserLiveTabContext::GetRestoredBounds() const {
@@ -218,7 +226,11 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
                 ->session_storage_namespace()
           : nullptr;
 
-  std::optional<tab_groups::TabGroupId> group_id = tab.group;
+  // If the browser does not support tabs groups, restore the grouped tab as a
+  // normal tab instead. See crbug.com/368139715.
+  std::optional<tab_groups::TabGroupId> group_id =
+      browser_->tab_strip_model()->SupportsTabGroups() ? tab.group
+                                                       : std::nullopt;
   std::optional<base::Uuid> saved_group_id = tab.saved_group_id;
   content::WebContents* web_contents = nullptr;
 
