@@ -112,9 +112,9 @@ PerformanceManager::GetProcessNodeForRenderProcessHost(
   DCHECK(rph);
   auto* user_data = RenderProcessUserData::GetForRenderProcessHost(rph);
   // There is a window after a RenderProcessHost is created before
-  // CreateProcessNodeAndExposeInterfacesToRendererProcess is called, during
-  // which time the RenderProcessUserData is not attached to the RPH yet. (It's
-  // called indirectly from RenderProcessHost::Init.)
+  // PerformanceManagerRegistry::CreateProcessNode() is called, during which
+  // time the RenderProcessUserData is not attached to the RPH yet. (It's called
+  // indirectly from RenderProcessHost::Init.)
   if (!user_data)
     return nullptr;
   return user_data->process_node()->GetWeakPtrOnUIThread();

@@ -7,3 +7,5 @@ pmonette@chromium.org
 # For IPC security review
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file binders.cc=set noparent
+per-file binders.cc=file://ipc/SECURITY_OWNERS

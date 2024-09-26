@@ -80,7 +80,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 #include "components/performance_manager/embedder/binders.h"
-#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -975,10 +975,10 @@ void PopulateChromeFrameBinders(
   map->Add<blink::mojom::NoStatePrefetchProcessor>(
       base::BindRepeating(&BindNoStatePrefetchProcessor));
 
-  if (performance_manager::PerformanceManager::IsAvailable()) {
-    map->Add<performance_manager::mojom::DocumentCoordinationUnit>(
-        base::BindRepeating(
-            &performance_manager::BindDocumentCoordinationUnit));
+  auto* pm_registry =
+      performance_manager::PerformanceManagerRegistry::GetInstance();
+  if (pm_registry) {
+    pm_registry->GetBinders().ExposeInterfacesToRenderFrame(map);
   }
 
   map->Add<translate::mojom::ContentTranslateDriver>(

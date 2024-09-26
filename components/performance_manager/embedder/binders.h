@@ -8,24 +8,39 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_BINDERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_BINDERS_H_
 
-#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
 class RenderFrameHost;
+class RenderProcessHost;
 }  // namespace content
 
 namespace performance_manager {
 
-void BindProcessCoordinationUnit(
-    int render_process_host_id,
-    mojo::PendingReceiver<performance_manager::mojom::ProcessCoordinationUnit>
-        receiver);
+// Binds Mojo interfaces used by PerformanceManager. Accessed through
+// PerformanceManagerRegistry::GetBinders().
+class Binders {
+ public:
+  Binders() = default;
+  ~Binders() = default;
 
-void BindDocumentCoordinationUnit(
-    content::RenderFrameHost* host,
-    mojo::PendingReceiver<performance_manager::mojom::DocumentCoordinationUnit>
-        receiver);
+  Binders(const Binders&) = delete;
+  Binders& operator=(const Binders&) = delete;
+
+  // Allows the remote renderer process to bind to the corresponding ProcessNode
+  // in the graph. Typically wired up via
+  // ContentBrowserClient::ExposeInterfacesToRenderer().
+  void ExposeInterfacesToRendererProcess(
+      service_manager::BinderRegistry* registry,
+      content::RenderProcessHost* host);
+
+  // Allows the remote renderer frame to bind to its corresponding FrameNode in
+  // the graph. Typically wired up via
+  // ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame().
+  void ExposeInterfacesToRenderFrame(
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
+};
 
 }  // namespace performance_manager
 
