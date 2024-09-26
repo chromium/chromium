@@ -127,7 +127,7 @@ ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedURL(
 
 ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedOrigin(
     JNIEnv* env) {
-  return render_frame_host_->GetLastCommittedOrigin().ToJavaObject();
+  return render_frame_host_->GetLastCommittedOrigin().ToJavaObject(env);
 }
 
 ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetMainFrame(JNIEnv* env) {
@@ -218,7 +218,7 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     const base::android::JavaParamRef<jobject>& effective_origin,
     jboolean is_payment_credential_get_assertion,
     const base::android::JavaParamRef<jobject>& callback) const {
-  url::Origin origin = url::Origin::FromJavaObject(effective_origin);
+  url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
   render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_get_assertion,
@@ -240,7 +240,7 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     const base::android::JavaParamRef<jobject>& effective_origin,
     jboolean is_payment_credential_creation,
     const base::android::JavaParamRef<jobject>& callback) const {
-  url::Origin origin = url::Origin::FromJavaObject(effective_origin);
+  url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
   render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_creation,

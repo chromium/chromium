@@ -45,7 +45,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToByteVector;
@@ -55,6 +54,7 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+using jni_zero::AttachCurrentThread;
 
 namespace media {
 

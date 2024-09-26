@@ -127,9 +127,16 @@ public class Origin {
     }
 
     @CalledByNative
-    private long toNativeOrigin() {
-        return OriginJni.get()
-                .createNative(mScheme, mHost, mPort, mIsOpaque, mTokenHighBits, mTokenLowBits);
+    private void assignNativeOrigin(long nativeOrigin) {
+        OriginJni.get()
+                .assignNativeOrigin(
+                        mScheme,
+                        mHost,
+                        mPort,
+                        mIsOpaque,
+                        mTokenHighBits,
+                        mTokenLowBits,
+                        nativeOrigin);
     }
 
     @NativeMethods
@@ -140,13 +147,14 @@ public class Origin {
         /** Constructs an Origin from a GURL. */
         Origin createFromGURL(GURL gurl);
 
-        /** Reconstructs the native Origin for this Java Origin, returning its native pointer. */
-        long createNative(
+        /** Initialize nativeOrigin. */
+        void assignNativeOrigin(
                 @JniType("std::string") String scheme,
                 @JniType("std::string") String host,
                 short port,
                 boolean isOpaque,
                 long tokenHighBits,
-                long tokenLowBits);
+                long tokenLowBits,
+                long nativeOrigin);
     }
 }

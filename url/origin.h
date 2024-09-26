@@ -315,12 +315,12 @@ class COMPONENT_EXPORT(URL) Origin {
   std::string GetDebugString(bool include_nonce = true) const;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
-  base::android::ScopedJavaLocalRef<jobject> ToJavaObject() const;
-  static Origin FromJavaObject(
-      const base::android::JavaRef<jobject>& java_origin);
+  jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env) const;
+  static Origin FromJavaObject(JNIEnv* env,
+                               const jni_zero::JavaRef<jobject>& java_origin);
   static jlong CreateNative(JNIEnv* env,
-                            const base::android::JavaRef<jstring>& java_scheme,
-                            const base::android::JavaRef<jstring>& java_host,
+                            const jni_zero::JavaRef<jstring>& java_scheme,
+                            const jni_zero::JavaRef<jstring>& java_host,
                             uint16_t port,
                             bool is_opaque,
                             uint64_t tokenHighBits,
@@ -506,5 +506,23 @@ class COMPONENT_EXPORT(URL) ScopedOriginCrashKey {
 }  // namespace debug
 
 }  // namespace url
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline url::Origin FromJniType<url::Origin>(JNIEnv* env,
+                                            const JavaRef<jobject>& j_obj) {
+  return url::Origin::FromJavaObject(env, j_obj);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             const url::Origin& obj) {
+  return obj.ToJavaObject(env);
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // URL_ORIGIN_H_

@@ -51,7 +51,7 @@ void InternalAuthenticatorAndroid::SetEffectiveOrigin(
   DCHECK(!obj.is_null());
 
   Java_InternalAuthenticator_setEffectiveOrigin(env, obj,
-                                                origin.ToJavaObject());
+                                                origin.ToJavaObject(env));
 }
 
 void InternalAuthenticatorAndroid::SetPaymentOptions(

@@ -75,7 +75,7 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
 
   ClientDataJsonParams client_data_json_params(
       /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
-      /*top_origin=*/url::Origin::FromJavaObject(jtop_origin),
+      /*top_origin=*/url::Origin::FromJavaObject(env, jtop_origin),
       /*challenge=*/challenge, /*is_cross_origin_iframe=*/is_cross_origin);
   client_data_json_params.payment_options = std::move(options);
   client_data_json_params.payment_rp = relying_party_id;

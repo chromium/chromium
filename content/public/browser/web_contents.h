@@ -61,7 +61,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 #endif
 
 namespace base {
@@ -1625,5 +1625,26 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 };
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline content::WebContents* FromJniType<content::WebContents*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  content::WebContents* ret = content::WebContents::FromJavaWebContents(j_obj);
+  CHECK(ret);
+  return ret;
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             content::WebContents* obj) {
+  return obj->GetJavaWebContents();
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_H_

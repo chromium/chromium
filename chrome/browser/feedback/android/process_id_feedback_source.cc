@@ -22,10 +22,10 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feedback/android/jni_headers/ProcessIdFeedbackSource_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserThread;
+using jni_zero::AttachCurrentThread;
 
 namespace chrome {
 namespace android {

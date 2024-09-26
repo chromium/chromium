@@ -350,7 +350,7 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
 
   url::Origin initiator_origin;
   if (jinitiator_origin) {
-    initiator_origin = url::Origin::FromJavaObject(jinitiator_origin);
+    initiator_origin = url::Origin::FromJavaObject(env, jinitiator_origin);
   }
   // TODO(crbug.com/40062134): Deal with getting initiator_base_url
   // plumbed here too.

@@ -49,7 +49,7 @@ class DownloadCallback {
       Java_ManifestDownloadCallback_onPaymentMethodManifestDownloadSuccess(
           env, jcallback_,
           url::GURLAndroid::FromNativeGURL(env, url_after_redirects),
-          url::Origin::Create(url_after_redirects).ToJavaObject(),
+          url::Origin::Create(url_after_redirects).ToJavaObject(env),
           base::android::ConvertUTF8ToJavaString(env, content));
     }
   }
@@ -91,7 +91,7 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadPaymentMethodManifest(
-      url::Origin::FromJavaObject(jmerchant_origin),
+      url::Origin::FromJavaObject(env, jmerchant_origin),
       url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnPaymentMethodManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
@@ -104,7 +104,7 @@ void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     const base::android::JavaParamRef<jobject>& jurl,
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadWebAppManifest(
-      url::Origin::FromJavaObject(jpayment_method_manifest_origin),
+      url::Origin::FromJavaObject(env, jpayment_method_manifest_origin),
       url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnWebAppManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
@@ -140,8 +140,8 @@ static jlong JNI_PaymentManifestDownloader_Init(
 
 // Static free function declared and called directly from java.
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* unused_env) {
-  return url::Origin().ToJavaObject();
+JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* env) {
+  return url::Origin().ToJavaObject(env);
 }
 
 }  // namespace payments

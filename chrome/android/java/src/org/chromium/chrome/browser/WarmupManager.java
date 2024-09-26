@@ -753,12 +753,13 @@ public class WarmupManager {
     interface Natives {
         void startPreconnectPredictorInitialization(@JniType("Profile*") Profile profile);
 
-        void preconnectUrlAndSubresources(@JniType("Profile*") Profile profile, String url);
+        void preconnectUrlAndSubresources(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String url);
 
         void startPrefetchFromCCT(
-                WebContents webcontents,
-                GURL url,
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("GURL") GURL url,
                 boolean usePrefetchProxy,
-                org.chromium.url.Origin verifiedSourceOrigin);
+                @JniType("std::optional<url::Origin>") Origin verifiedSourceOrigin);
     }
 }

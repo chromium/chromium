@@ -251,7 +251,7 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
       Java_InterceptNavigationDelegate_handleSubframeExternalProtocol(
           env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
           page_transition, has_user_gesture,
-          initiating_origin ? initiating_origin->ToJavaObject() : nullptr);
+          initiating_origin ? initiating_origin->ToJavaObject(env) : nullptr);
   if (j_gurl.is_null())
     return;
   subframe_redirect_url_ =

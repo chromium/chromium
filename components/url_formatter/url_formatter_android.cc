@@ -114,7 +114,7 @@ JNI_UrlFormatter_FormatOriginForSecurityDisplay(
     const JavaParamRef<jobject>& j_origin,
     jint scheme_display) {
   DCHECK(j_origin);
-  url::Origin origin = url::Origin::FromJavaObject(j_origin);
+  url::Origin origin = url::Origin::FromJavaObject(env, j_origin);
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatOriginForSecurityDisplay(
                origin, static_cast<SchemeDisplay>(scheme_display)));
