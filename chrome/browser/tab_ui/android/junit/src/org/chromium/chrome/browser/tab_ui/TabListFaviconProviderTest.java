@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_ui;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -19,18 +20,21 @@ import androidx.annotation.ColorInt;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ComposedTabFavicon;
@@ -42,6 +46,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.UrlTabFavicon;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.ComposedFaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -51,19 +56,22 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabListFaviconProviderTest {
-    private GURL mUrl1;
-    private GURL mUrl2;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    private Activity mActivity;
     @Mock private Profile mProfile;
+    @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private FaviconHelper mMockFaviconHelper;
+
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
 
     @Captor
     private ArgumentCaptor<ComposedFaviconImageCallback> mComposedFaviconImageCallbackCaptor;
 
+    private Activity mActivity;
+    private GURL mUrl1;
+    private GURL mUrl2;
     private TabListFaviconProvider mTabListFaviconProvider;
-
     private int mUniqueColorValue;
 
     private Bitmap newBitmap() {
@@ -82,10 +90,11 @@ public class TabListFaviconProviderTest {
 
     @Before
     public void setUp() {
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
+        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        MockitoAnnotations.initMocks(this);
         mUrl1 = JUnitTestGURLs.URL_1;
         mUrl2 = JUnitTestGURLs.URL_2;
 
@@ -95,7 +104,8 @@ public class TabListFaviconProviderTest {
                         false,
                         org.chromium.components.browser_ui.styles.R.dimen
                                 .default_favicon_corner_radius);
-        mTabListFaviconProvider.initForTesting(mProfile, mMockFaviconHelper);
+        mTabListFaviconProvider.initWithNative(mProfile);
+        mTabListFaviconProvider.setFaviconHelperForTesting(mMockFaviconHelper);
     }
 
     @Test
