@@ -124,7 +124,6 @@
 #include "chrome/browser/ash/net/apn_migrator.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
-#include "chrome/browser/ash/net/network_portal_detector_impl.h"
 #include "chrome/browser/ash/net/network_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
@@ -308,15 +307,8 @@ void InitializeNetworkPortalDetector() {
   if (network_portal_detector::SetForTesting()) {
     return;
   }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kTestType) ||
-      features::IsRemoveDetectPortalFromChromeEnabled()) {
-    network_portal_detector::SetNetworkPortalDetector(
-        new NetworkPortalDetectorStub());
-  } else {
-    network_portal_detector::SetNetworkPortalDetector(
-        new NetworkPortalDetectorImpl());
-  }
+  network_portal_detector::SetNetworkPortalDetector(
+      new NetworkPortalDetectorStub());
   network_portal_detector::GetInstance()->Enable();
 }
 

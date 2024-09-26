@@ -30,8 +30,6 @@ static_library("net") {
     "delay_network_call.h",
     "dhcp_wpad_url_client.cc",
     "dhcp_wpad_url_client.h",
-    "network_portal_detector_impl.cc",
-    "network_portal_detector_impl.h",
     "network_portal_detector_test_impl.cc",
     "network_portal_detector_test_impl.h",
     "network_pref_state_observer.cc",
@@ -129,7 +127,6 @@ source_set("unit_tests") {
     "apn_migrator_unittest.cc",
     "client_cert_store_ash_unittest.cc",
     "client_cert_store_kcer_unittest.cc",
-    "network_portal_detector_impl_unittest.cc",
     "network_pref_state_observer_unittest.cc",
     "network_throttling_observer_unittest.cc",
     "secure_dns_manager_unittest.cc",
@@ -183,7 +180,6 @@ source_set("browser_tests") {
     "alwayson_vpn_pre_connect_url_allowlist_service_browsertest.cc",
     "ash_proxy_monitor_browsertest.cc",
     "device_event_log_error_browsertest.cc",
-    "network_portal_detector_impl_browsertest.cc",
     "system_proxy_manager_browsertest.cc",
   ]
 
