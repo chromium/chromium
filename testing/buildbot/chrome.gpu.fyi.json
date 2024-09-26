@@ -41,10 +41,10 @@
           "-v",
           "--stable-jobs",
           "--enforce-browser-version",
+          "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}",
           "--jobs=1",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
@@ -155,10 +155,10 @@
           "-v",
           "--stable-jobs",
           "--enforce-browser-version",
+          "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}",
           "--jobs=1",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],

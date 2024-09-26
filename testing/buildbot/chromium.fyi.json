@@ -3910,13 +3910,13 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--test-launcher-bot-mode",
           "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",
           "17.5",
-          "--git-revision=${got_revision}",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -3966,13 +3966,13 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--test-launcher-bot-mode",
           "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
           "--platform",
           "iPhone 15",
           "--version",
           "18.0",
-          "--git-revision=${got_revision}",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",

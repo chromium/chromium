@@ -8,8 +8,12 @@
 
     'android_emulator_specific_chrome_public_tests': {
       'chrome_public_test_apk': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
         'mixins': [
-          'skia_gold_test',
           'emulator-8-cores',
         ],
         'swarming': {
@@ -17,9 +21,11 @@
         },
       },
       'chrome_public_unit_test_apk': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
         'swarming': {
           'shards': 4,
         },
@@ -28,25 +34,29 @@
 
     'android_emulator_specific_network_enabled_content_browsertests': {
       'content_browsertests_with_emulator_network': {
+        'test_common': {
+          'mixins': [
+            'emulator-enable-network',
+          ],
+          'args': [
+            '--gtest_filter=QuicConnectionMigrationTest.*',
+          ],
+        },
         'test': 'content_browsertests',
-        'mixins': [
-          'emulator-enable-network',
-        ],
-        'args': [
-          '--gtest_filter=QuicConnectionMigrationTest.*',
-        ],
       },
     },
 
     'android_isolated_scripts': {
       'content_shell_crash_test': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
+        },
         'args': [
           '--platform=android',
         ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
-        },
       },
     },
 
@@ -80,19 +90,23 @@
         },
       },
       'gl_tests_validating': {
+        'test_common': {
+          'args': [
+            '--use-cmd-decoder=validating',
+          ],
+        },
         'test': 'gl_tests',
-        'args': [
-          '--use-cmd-decoder=validating',
-        ],
       },
       'gl_unittests': {},
       'mojo_test_apk': {},
       'ui_android_unittests': {},
       'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test_common': {
+          'args': [
+            '--webview-process-mode=multiple',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=multiple',
-        ],
         'swarming': {
           'shards': 5,
         },
@@ -107,19 +121,23 @@
       },
       'mojo_test_apk': {},
       'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test_common': {
+          'args': [
+            '--webview-process-mode=multiple',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=multiple',
-        ],
         'swarming': {
           'shards': 5,
         },
       },
       'webview_instrumentation_test_apk_single_process_mode': {
+        'test_common': {
+          'args': [
+            '--webview-process-mode=single',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=single',
-        ],
         'swarming': {
           'shards': 3,
         },
@@ -128,10 +146,14 @@
 
     'android_webview_gpu_telemetry_tests': {
       'android_webview_pixel_skia_gold_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -144,20 +166,24 @@
 
     'android_wpr_record_replay_tests': {
       'chrome_java_test_wpr_tests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
       },
     },
 
     'ash_pixel_gtests': {
       'ash_pixeltests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--enable-pixel-output-in-tests',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'args': [
+            '--enable-pixel-output-in-tests',
+          ],
+        },
       },
     },
 
@@ -169,10 +195,12 @@
 
     'bfcache_generic_gtests': {
       'bf_cache_content_browsertests': {
+        'test_common': {
+          'args': [
+            '--disable-features=BackForwardCache',
+          ],
+        },
         'test': 'content_browsertests',
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
         'swarming': {
           'shards': 20,
         },
@@ -181,10 +209,12 @@
 
     'bfcache_linux_specific_gtests': {
       'bf_cache_browser_tests': {
+        'test_common': {
+          'args': [
+            '--disable-features=BackForwardCache',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
         'swarming': {
           'shards': 10,
         },
@@ -199,27 +229,37 @@
 
     'blink_web_tests_ppapi_isolated_scripts': {
       'ppapi_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+            '--test-list=../../third_party/blink/web_tests/TestLists/ppapi',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-          '--test-list=../../third_party/blink/web_tests/TestLists/ppapi',
-        ],
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
     },
 
     'chrome_ai_wpt_tests_suite': {
       'chrome_ai_wpt_tests': {
+        'test_common': {
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -232,42 +272,42 @@
         'swarming': {
           'shards': 1,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
     },
 
     'chrome_android_finch_smoke_tests': {
       'variations_android_smoke_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--target-platform=android',
+          ],
+        },
         'test': 'variations_desktop_smoke_tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--target-platform=android',
-        ],
       },
       'variations_webview_smoke_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--target-platform=webview',
+          ],
+        },
         'test': 'variations_desktop_smoke_tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--target-platform=webview',
-        ],
       },
     },
 
     'chrome_finch_smoke_tests': {
       'variations_desktop_smoke_tests': {
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'chromeos_args': [
           '--target-platform=cros',
         ],
@@ -279,20 +319,24 @@
 
     'chrome_isolated_script_tests': {
       'chrome_sizes': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
         },
       },
       'variations_smoke_tests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
     },
@@ -303,17 +347,21 @@
 
     'chrome_public_tests': {
       'chrome_public_test_apk': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
         'swarming': {
           'shards': 19,
         },
       },
       'chrome_public_unit_test_apk': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
         'swarming': {
           'shards': 2,
         },
@@ -322,9 +370,14 @@
 
     'chrome_sizes_android': {
       'chrome_sizes': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
+        },
         'remove_mixins': [
           'chromium_nexus_5x_oreo',
           'chromium_pixel_2_pie',
@@ -338,39 +391,42 @@
             'os': 'Ubuntu-22.04',
           },
         },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-        },
       },
     },
 
     'chrome_sizes_suite': {
       'chrome_sizes': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
         },
       },
     },
 
     'chromedriver_py_tests_isolated_scripts': {
       'chromedriver_py_tests': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'args': [
           '--test-type=integration',
         ],
-        'resultdb': {
-          'enable': True,
-        },
       },
       'chromedriver_py_tests_headless_shell': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'args': [
           '--test-type=integration',
         ],
-        'resultdb': {
-          'enable': True,
-        },
       },
       'chromedriver_replay_unittests': {},
     },
@@ -383,24 +439,28 @@
 
     'chromeos_arm_gtests': {
       'video_decode_accelerator_tests_v4l2_vp8': {
+        'test_common': {
+          'args': [
+            '--as-root',
+            '--validator_type=none',
+            '../../media/test/data/test-25fps.vp8',
+            '../../media/test/data/test-25fps.vp8.json',
+          ],
+        },
         'test': 'video_decode_accelerator_tests',
-        'args': [
-          '--as-root',
-          '--validator_type=none',
-          '../../media/test/data/test-25fps.vp8',
-          '../../media/test/data/test-25fps.vp8.json',
-        ],
         'ci_only': True,
         'experiment_percentage': 100,
       },
       'video_decode_accelerator_tests_v4l2_vp9': {
+        'test_common': {
+          'args': [
+            '--as-root',
+            '--validator_type=none',
+            '../../media/test/data/test-25fps.vp9',
+            '../../media/test/data/test-25fps.vp9.json',
+          ],
+        },
         'test': 'video_decode_accelerator_tests',
-        'args': [
-          '--as-root',
-          '--validator_type=none',
-          '../../media/test/data/test-25fps.vp9',
-          '../../media/test/data/test-25fps.vp9.json',
-        ],
         'ci_only': True,
         'experiment_percentage': 100,
       },
@@ -454,6 +514,11 @@
 
     'chromeos_browser_integration_tests': {
       'disk_usage_tast_test': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
+        },
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -462,9 +527,6 @@
         ],
         'swarming': {
           'idempotent': False,
-        },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
         },
       },
     },
@@ -567,14 +629,16 @@
       'crypto_unittests': {},
       'display_unittests': {},
       'fake_libva_driver_unittest': {
-        'args': [
-          '--env-var',
-          'LIBVA_DRIVERS_PATH',
-          './',
-          '--env-var',
-          'LIBVA_DRIVER_NAME',
-          'libfake',
-        ],
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+          ],
+        },
         'experiment_percentage': 100,
       },
       'google_apis_unittests': {},
@@ -632,45 +696,51 @@
       'sql_unittests': {},
       'url_unittests': {},
       'video_decode_accelerator_tests_fake_vaapi': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp9',
+            '../../media/test/data/test-25fps.vp9.json',
+          ],
+        },
         'test': 'video_decode_accelerator_tests',
-        'args': [
-          '--env-var',
-          'LIBVA_DRIVERS_PATH',
-          './',
-          '--env-var',
-          'LIBVA_DRIVER_NAME',
-          'libfake',
-          '../../media/test/data/test-25fps.vp9',
-          '../../media/test/data/test-25fps.vp9.json',
-        ],
         'ci_only': True,
       },
     },
 
     'chromeos_system_friendly_gtests_fails_vmlab': {
       'fake_libva_driver_unittest': {
-        'args': [
-          '--env-var',
-          'LIBVA_DRIVERS_PATH',
-          './',
-          '--env-var',
-          'LIBVA_DRIVER_NAME',
-          'libfake',
-        ],
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+          ],
+        },
         'experiment_percentage': 100,
       },
       'video_decode_accelerator_tests_fake_vaapi': {
+        'test_common': {
+          'args': [
+            '--env-var',
+            'LIBVA_DRIVERS_PATH',
+            './',
+            '--env-var',
+            'LIBVA_DRIVER_NAME',
+            'libfake',
+            '../../media/test/data/test-25fps.vp9',
+            '../../media/test/data/test-25fps.vp9.json',
+          ],
+        },
         'test': 'video_decode_accelerator_tests',
-        'args': [
-          '--env-var',
-          'LIBVA_DRIVERS_PATH',
-          './',
-          '--env-var',
-          'LIBVA_DRIVER_NAME',
-          'libfake',
-          '../../media/test/data/test-25fps.vp9',
-          '../../media/test/data/test-25fps.vp9.json',
-        ],
         'ci_only': True,
       },
     },
@@ -854,9 +924,11 @@
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
       },
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
@@ -1288,75 +1360,81 @@
 
     'chromium_web_tests_brfetch_isolated_scripts': {
       'brfetch_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=background-resource-fetch',
+            '--skipped=always',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=background-resource-fetch',
-          '--skipped=always',
-          '--num-retries=3',
-        ],
         'ci_only': True,
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
         'experiment_percentage': 100,
       },
       'brfetch_blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=background-resource-fetch',
+            '--skipped=always',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=background-resource-fetch',
-          '--skipped=always',
-          '--num-retries=3',
-        ],
         'ci_only': True,
         'swarming': {
           'shards': 3,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
         'experiment_percentage': 100,
       },
       'brfetch_headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=background-resource-fetch',
+            '--skipped=always',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=background-resource-fetch',
-          '--skipped=always',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'ci_only': True,
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
         'experiment_percentage': 100,
       },
@@ -1364,227 +1442,247 @@
 
     'chromium_web_tests_graphite_isolated_scripts': {
       'graphite_enabled_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=enable-skia-graphite',
+            '--skipped=always',
+            '--timeout-ms=20000',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=enable-skia-graphite',
-          '--skipped=always',
-          '--timeout-ms=20000',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 2,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'graphite_enabled_blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=enable-skia-graphite',
+            '--skipped=always',
+            '--timeout-ms=20000',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=enable-skia-graphite',
-          '--skipped=always',
-          '--timeout-ms=20000',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 7,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'graphite_enabled_headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=enable-skia-graphite',
+            '--skipped=always',
+            '--timeout-multiplier=2',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=enable-skia-graphite',
-          '--skipped=always',
-          '--timeout-multiplier=2',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
 
     'chromium_web_tests_high_dpi_isolated_scripts': {
       'high_dpi_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=highdpi',
+            '--skipped=always',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=highdpi',
-          '--skipped=always',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
       'high_dpi_blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=highdpi',
+            '--skipped=always',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=highdpi',
-          '--skipped=always',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 3,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'high_dpi_headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=highdpi',
+            '--skipped=always',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=highdpi',
-          '--skipped=always',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
 
     'chromium_webkit_isolated_scripts': {
       'blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 5,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 7,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'chrome_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
       'headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-type',
+            'testharness',
+            'reftest',
+            'crashtest',
+            'print-reftest',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
@@ -1643,17 +1741,21 @@
 
     'client_v8_chromium_isolated_scripts': {
       'content_shell_crash_test': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
       'telemetry_gpu_unittests': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'swarming': {
           'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
         },
       },
       'telemetry_perf_unittests': {
@@ -1686,15 +1788,17 @@
 
     'components_perftests_isolated_scripts': {
       'components_perftests': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'args': [
           '--gtest-benchmark-name=components_perftests',
         ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
-        },
       },
     },
 
@@ -1728,114 +1832,132 @@
 
     'desktop_chromium_isolated_scripts': {
       'blink_python_tests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
       'blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 5,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 7,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'chrome_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-        ],
         'swarming': {
           'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
       'content_shell_crash_test': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
       'flatbuffers_unittests': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
       'grit_python_unittests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
       'headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-type',
+            'testharness',
+            'reftest',
+            'crashtest',
+            'print-reftest',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'swarming': {
           'shards': 1,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'telemetry_gpu_unittests': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'swarming': {
           'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
         },
       },
       'telemetry_unittests': {
@@ -1852,42 +1974,52 @@
         },
       },
       'views_perftests': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'args': [
           '--gtest-benchmark-name=views_perftests',
         ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
-        },
       },
     },
 
     'desktop_chromium_mac_osxbeta_scripts': {
       'content_shell_crash_test': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
       'flatbuffers_unittests': {
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+            'result_format': 'single',
+          },
         },
       },
       'grit_python_unittests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
       'telemetry_gpu_unittests': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'swarming': {
           'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
         },
       },
       'telemetry_unittests': {
@@ -1904,37 +2036,45 @@
         },
       },
       'views_perftests': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'args': [
           '--gtest-benchmark-name=views_perftests',
         ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
-        },
       },
     },
 
     'desktop_once_isolated_scripts': {
       'test_env_py_unittests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
       'xvfb_py_unittests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
     },
 
     'devtools_browser_tests_suite': {
       'devtools_browser_tests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*DevTools*',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--gtest_filter=*DevTools*',
-        ],
         'swarming': {
           'shards': 1,
         },
@@ -1943,22 +2083,24 @@
 
     'devtools_web_isolated_scripts': {
       'blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 5,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
@@ -2006,10 +2148,12 @@
 
     'fieldtrial_android_tests': {
       'android_browsertests_no_fieldtrial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'android_browsertests',
-        'args': [
-          '--disable-field-trial-config',
-        ],
         'ci_only': True,
         'swarming': {
           'shards': 3,
@@ -2019,34 +2163,42 @@
 
     'fieldtrial_browser_tests': {
       'browser_tests_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--disable-field-trial-config',
-        ],
         'ci_only': True,
         'swarming': {
           'shards': 10,
         },
       },
       'components_browsertests_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'components_browsertests',
-        'args': [
-          '--disable-field-trial-config',
-        ],
         'ci_only': True,
       },
       'interactive_ui_tests_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'interactive_ui_tests',
-        'args': [
-          '--disable-field-trial-config',
-        ],
         'ci_only': True,
       },
       'sync_integration_tests_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'sync_integration_tests',
-        'args': [
-          '--disable-field-trial-config',
-        ],
         'ci_only': True,
       },
     },
@@ -2064,9 +2216,11 @@
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
       },
       'blink_unittests': {},
       'boringssl_crypto_tests': {},
@@ -2175,12 +2329,14 @@
 
     'fuchsia_sizes_tests': {
       'fuchsia_sizes': {
-        'args': [
-          '--sizes-path',
-          'tools/fuchsia/size_tests/fyi_sizes_smoketest.json',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
+        'test_common': {
+          'args': [
+            '--sizes-path',
+            'tools/fuchsia/size_tests/fyi_sizes_smoketest.json',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
         },
       },
     },
@@ -2196,10 +2352,12 @@
 
     'gl_gtests_passthrough': {
       'gl_tests_passthrough': {
+        'test_common': {
+          'args': [
+            '--use-cmd-decoder=passthrough',
+          ],
+        },
         'test': 'gl_tests',
-        'args': [
-          '--use-cmd-decoder=passthrough',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2246,6 +2404,14 @@
 
     'gpu_command_buffer_perf_passthrough_isolated_scripts': {
       'passthrough_command_buffer_perftests': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'test': 'command_buffer_perftests',
         'args': [
           '--gtest-benchmark-name=passthrough_command_buffer_perftests',
@@ -2254,20 +2420,18 @@
           '--use-angle=gl-null',
           '--fast-run',
         ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
-        },
       },
     },
 
     'gpu_common_and_optional_telemetry_tests': {
       'info_collection_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'info_collection',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2277,8 +2441,12 @@
         ],
       },
       'trace_test': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
@@ -2286,9 +2454,13 @@
 
     'gpu_common_gtests_passthrough': {
       'gl_tests_passthrough': {
+        'test_common': {
+          'args': [
+            '--use-cmd-decoder=passthrough',
+          ],
+        },
         'test': 'gl_tests',
         'args': [
-          '--use-cmd-decoder=passthrough',
           '--use-gl=angle',
         ],
         'chromeos_args': [
@@ -2324,10 +2496,12 @@
 
     'gpu_common_gtests_validating': {
       'gl_tests_validating': {
+        'test_common': {
+          'args': [
+            '--use-cmd-decoder=validating',
+          ],
+        },
         'test': 'gl_tests',
-        'args': [
-          '--use-cmd-decoder=validating',
-        ],
         'chromeos_args': [
           '--stop-ui',
           '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile',
@@ -2358,24 +2532,28 @@
 
     'gpu_dawn_common_isolated_scripts': {
       'telemetry_gpu_unittests': {
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
+        },
         'swarming': {
           'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
         },
       },
     },
 
     'gpu_dawn_gtests': {
       'dawn_end2end_implicit_device_sync_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--enable-implicit-device-sync',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--enable-implicit-device-sync',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2385,13 +2563,15 @@
         },
       },
       'dawn_end2end_skip_validation_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--enable-toggles=skip_validation',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--enable-toggles=skip_validation',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2400,9 +2580,11 @@
         },
       },
       'dawn_end2end_tests': {
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+        },
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2411,13 +2593,15 @@
         },
       },
       'dawn_end2end_wire_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--use-wire',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--use-wire',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2429,13 +2613,15 @@
 
     'gpu_dawn_gtests_no_dxc': {
       'dawn_end2end_no_dxc_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--disable-toggles=use_dxc',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--disable-toggles=use_dxc',
-        ],
         'swarming': {
           'shards': 2,
         },
@@ -2444,14 +2630,16 @@
 
     'gpu_dawn_gtests_no_dxc_with_validation': {
       'dawn_end2end_no_dxc_validation_layers_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--disable-toggles=use_dxc',
+            '--enable-backend-validation',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--disable-toggles=use_dxc',
-          '--enable-backend-validation',
-        ],
         'swarming': {
           'shards': 2,
         },
@@ -2460,13 +2648,15 @@
 
     'gpu_dawn_gtests_use_tint_ir': {
       'dawn_end2end_use_tint_ir_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--enable-toggles=use_tint_ir',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--enable-toggles=use_tint_ir',
-        ],
         'swarming': {
           'shards': 1,
         },
@@ -2475,13 +2665,15 @@
 
     'gpu_dawn_gtests_with_validation': {
       'dawn_end2end_validation_layers_tests': {
+        'test_common': {
+          'mixins': [
+            'dawn_end2end_gpu_test',
+          ],
+          'args': [
+            '--enable-backend-validation',
+          ],
+        },
         'test': 'dawn_end2end_tests',
-        'mixins': [
-          'dawn_end2end_gpu_test',
-        ],
-        'args': [
-          '--enable-backend-validation',
-        ],
         'linux_args': [
           '--no-xvfb',
         ],
@@ -2493,25 +2685,31 @@
 
     'gpu_dawn_perf_smoke_isolated_scripts': {
       'dawn_perf_tests': {
-        'args': [
-          '--override-steps=1',
-          '--gtest-benchmark-name=dawn_perf_tests',
-          '-v',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
+        'test_common': {
           'args': [
-            '--smoke-test-mode',
+            '--override-steps=1',
+            '--gtest-benchmark-name=dawn_perf_tests',
+            '-v',
           ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
         },
       },
     },
 
     'gpu_dawn_web_platform_webgpu_cts_force_swiftshader': {
       'webgpu_swiftshader_web_platform_cts_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2525,9 +2723,13 @@
         },
       },
       'webgpu_swiftshader_web_platform_cts_with_validation_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2545,8 +2747,12 @@
 
     'gpu_dawn_webgpu_blink_web_tests': {
       'webgpu_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'mixins': [
-          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
         'args': [
@@ -2554,9 +2760,13 @@
         ],
       },
       'webgpu_blink_web_tests_with_backend_validation': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'test': 'webgpu_blink_web_tests',
         'mixins': [
-          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
         'args': [
@@ -2568,9 +2778,13 @@
 
     'gpu_dawn_webgpu_blink_web_tests_force_swiftshader': {
       'webgpu_swiftshader_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'test': 'webgpu_blink_web_tests',
         'mixins': [
-          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
         'args': [
@@ -2578,9 +2792,13 @@
         ],
       },
       'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'test': 'webgpu_blink_web_tests',
         'mixins': [
-          'has_native_resultdb_integration',
           'webgpu_cts',
         ],
         'args': [
@@ -2592,9 +2810,13 @@
 
     'gpu_dawn_webgpu_compat_cts': {
       'webgpu_cts_compat_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_compat_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
         ],
@@ -2618,15 +2840,19 @@
 
     'gpu_dawn_webgpu_cts': {
       'webgpu_cts_dedicated_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=dedicated',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=dedicated',
         ],
         'swarming': {
           'shards': 1,
@@ -2636,15 +2862,19 @@
         },
       },
       'webgpu_cts_service_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=service',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=service',
         ],
         'swarming': {
           'shards': 1,
@@ -2654,15 +2884,19 @@
         },
       },
       'webgpu_cts_shared_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=shared',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=shared',
         ],
         'swarming': {
           'shards': 1,
@@ -2672,9 +2906,13 @@
         },
       },
       'webgpu_cts_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2687,9 +2925,13 @@
         },
       },
       'webgpu_cts_with_validation_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2708,24 +2950,32 @@
 
     'gpu_dawn_webgpu_cts_asan': {
       'webgpu_cts_dedicated_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=dedicated',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=dedicated',
         ],
         'swarming': {
           'shards': 1,
         },
       },
       'webgpu_cts_fxc_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2738,39 +2988,51 @@
         },
       },
       'webgpu_cts_service_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=service',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=service',
         ],
         'swarming': {
           'shards': 1,
         },
       },
       'webgpu_cts_shared_worker_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--use-worker=shared',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
-        ],
-        'args': [
-          '--use-worker=shared',
         ],
         'swarming': {
           'shards': 1,
         },
       },
       'webgpu_cts_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2783,9 +3045,13 @@
 
     'gpu_dawn_webgpu_cts_fxc': {
       'webgpu_cts_fxc_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2799,9 +3065,13 @@
         },
       },
       'webgpu_cts_fxc_with_validation_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
@@ -2819,9 +3089,13 @@
 
     'gpu_default_and_optional_win_media_foundation_specific_gtests': {
       'media_foundation_browser_tests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=MediaFoundationEncryptedMediaTest*',
+          ],
+        },
         'test': 'browser_tests',
         'args': [
-          '--gtest_filter=MediaFoundationEncryptedMediaTest*',
           '--use-gpu-in-tests',
         ],
       },
@@ -2856,9 +3130,13 @@
 
     'gpu_fyi_and_optional_win_specific_gtests': {
       'services_webnn_unittests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=WebNN*',
+          ],
+        },
         'test': 'services_unittests',
         'args': [
-          '--gtest_filter=WebNN*',
           '--use-gpu-in-tests',
         ],
       },
@@ -2896,9 +3174,13 @@
 
     'gpu_gl_passthrough_ganesh_telemetry_tests': {
       'context_lost_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2906,10 +3188,14 @@
         ],
       },
       'expected_color_pixel_gl_passthrough_ganesh_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2920,24 +3206,36 @@
         ],
       },
       'gpu_process_launch_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_gl_passthrough_ganesh_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2948,9 +3246,13 @@
         ],
       },
       'screenshot_sync_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2962,9 +3264,13 @@
 
     'gpu_info_collection_telemetry_tests': {
       'info_collection_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'info_collection',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -2998,9 +3304,13 @@
 
     'gpu_metal_passthrough_ganesh_telemetry_tests': {
       'context_lost_metal_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3008,10 +3318,14 @@
         ],
       },
       'expected_color_pixel_metal_passthrough_ganesh_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3022,24 +3336,36 @@
         ],
       },
       'gpu_process_launch_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_metal_passthrough_ganesh_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3050,9 +3376,13 @@
         ],
       },
       'screenshot_sync_metal_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3064,9 +3394,13 @@
 
     'gpu_metal_passthrough_graphite_telemetry_tests': {
       'context_lost_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3074,10 +3408,14 @@
         ],
       },
       'expected_color_pixel_metal_passthrough_graphite_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3088,24 +3426,36 @@
         ],
       },
       'gpu_process_launch_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_metal_passthrough_graphite_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3116,9 +3466,13 @@
         ],
       },
       'screenshot_sync_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3139,9 +3493,13 @@
 
     'gpu_passthrough_graphite_telemetry_tests': {
       'context_lost_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3150,10 +3508,14 @@
         'ci_only': True,
       },
       'expected_color_pixel_passthrough_graphite_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3167,10 +3529,14 @@
         ],
       },
       'pixel_skia_gold_passthrough_graphite_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3184,9 +3550,13 @@
         ],
       },
       'screenshot_sync_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3201,9 +3571,13 @@
 
     'gpu_passthrough_telemetry_tests': {
       'context_lost_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3211,10 +3585,14 @@
         ],
       },
       'expected_color_pixel_passthrough_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3228,24 +3606,36 @@
         ],
       },
       'gpu_process_launch_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_passthrough_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3259,9 +3649,13 @@
         ],
       },
       'screenshot_sync_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3276,10 +3670,14 @@
 
     'gpu_skia_renderer_vulkan_passthrough_telemetry_tests': {
       'vulkan_pixel_skia_gold_test': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3296,9 +3694,13 @@
 
     'gpu_validating_telemetry_tests': {
       'context_lost_validating_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'context_lost',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3306,9 +3708,13 @@
         ],
       },
       'expected_color_pixel_validating_test': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'has_native_resultdb_integration',
           'skia_gold_test',
           'gpu_integration_test_common_args',
         ],
@@ -3323,23 +3729,35 @@
         ],
       },
       'gpu_process_launch_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'gpu_process',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_validating_test': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'has_native_resultdb_integration',
           'skia_gold_test',
           'gpu_integration_test_common_args',
         ],
@@ -3354,9 +3772,13 @@
         ],
       },
       'screenshot_sync_validating_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3382,48 +3804,64 @@
 
     'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test': {
       'webcodecs_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
+          ],
+        },
         'telemetry_test_name': 'webcodecs',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
         ],
       },
     },
 
     'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test': {
       'webcodecs_metal_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
+          ],
+        },
         'telemetry_test_name': 'webcodecs',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
         ],
       },
     },
 
     'gpu_webcodecs_metal_passthrough_graphite_telemetry_test': {
       'webcodecs_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
+          ],
+        },
         'telemetry_test_name': 'webcodecs',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
         ],
       },
     },
 
     'gpu_webcodecs_telemetry_test': {
       'webcodecs_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webcodecs',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
       },
@@ -3431,9 +3869,13 @@
 
     'gpu_webcodecs_validating_telemetry_test': {
       'webcodecs_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webcodecs',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3444,9 +3886,13 @@
 
     'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests': {
       'webgl2_conformance_d3d11_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3462,15 +3908,19 @@
 
     'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests': {
       'webgl2_conformance_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--webgl-conformance-version=2.0.1',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+            '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--webgl-conformance-version=2.0.1',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
         ],
         'swarming': {
           'shards': 20,
@@ -3480,15 +3930,19 @@
 
     'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
       'webgl2_conformance_gl_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--webgl-conformance-version=2.0.1',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+            '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--webgl-conformance-version=2.0.1',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'swarming': {
           'shards': 5,
@@ -3498,9 +3952,13 @@
 
     'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
       'webgl2_conformance_gles_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3516,16 +3974,20 @@
 
     'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests': {
       'webgl2_conformance_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--webgl-conformance-version=2.0.1',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+            '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
+            '--enable-metal-debug-layers',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--webgl-conformance-version=2.0.1',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
-          '--enable-metal-debug-layers',
         ],
         'swarming': {
           'shards': 20,
@@ -3535,9 +3997,13 @@
 
     'gpu_webgl2_conformance_validating_telemetry_tests': {
       'webgl2_conformance_validating_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3553,9 +4019,13 @@
 
     'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests': {
       'webgl_conformance_d3d11_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3570,9 +4040,13 @@
 
     'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests': {
       'webgl_conformance_d3d9_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3587,14 +4061,18 @@
 
     'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests': {
       'webgl_conformance_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
         ],
         'swarming': {
           'shards': 2,
@@ -3604,9 +4082,13 @@
 
     'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
       'webgl_conformance_gl_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3621,9 +4103,13 @@
 
     'gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests': {
       'webgl_conformance_gles_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3638,9 +4124,13 @@
 
     'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
       'webgl_conformance_gles_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3655,39 +4145,51 @@
 
     'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests': {
       'webgl_conformance_metal_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+            '--enable-metal-debug-layers',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--enable-metal-debug-layers',
         ],
       },
     },
 
     'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests': {
       'webgl_conformance_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
+            '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+            '--enable-metal-debug-layers',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--enable-metal-debug-layers',
         ],
       },
     },
 
     'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests': {
       'webgl_conformance_swangle_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3702,9 +4204,13 @@
 
     'gpu_webgl_conformance_swangle_passthrough_telemetry_tests': {
       'webgl_conformance_swangle_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3719,9 +4225,13 @@
 
     'gpu_webgl_conformance_telemetry_tests': {
       'webgl_conformance_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3742,9 +4252,13 @@
 
     'gpu_webgl_conformance_validating_telemetry_tests': {
       'webgl_conformance_validating_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3762,9 +4276,13 @@
 
     'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
       'webgl_conformance_vulkan_passthrough_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
-          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'args': [
@@ -3783,22 +4301,24 @@
 
     'headless_shell_wpt_tests_isolated_scripts': {
       'headless_shell_wpt_tests_include_all': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-        ],
         'swarming': {
           'shards': 10,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
@@ -3818,9 +4338,11 @@
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
@@ -3901,23 +4423,31 @@
         ],
       },
       'media_unittests_skia_graphite_dawn': {
+        'test_common': {
+          'args': [
+            '--test-launcher-bot-mode',
+            '--enable-features=SkiaGraphite',
+            '--skia-graphite-backend=dawn',
+            '--use-gpu-in-tests',
+          ],
+        },
         'test': 'media_unittests',
         'args': [
-          '--test-launcher-bot-mode',
-          '--enable-features=SkiaGraphite',
-          '--skia-graphite-backend=dawn',
-          '--use-gpu-in-tests',
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter',
         ],
       },
       'media_unittests_skia_graphite_metal': {
+        'test_common': {
+          'args': [
+            '--test-launcher-bot-mode',
+            '--enable-features=SkiaGraphite',
+            '--skia-graphite-backend=metal',
+            '--use-gpu-in-tests',
+          ],
+        },
         'test': 'media_unittests',
         'args': [
-          '--test-launcher-bot-mode',
-          '--enable-features=SkiaGraphite',
-          '--skia-graphite-backend=metal',
-          '--use-gpu-in-tests',
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter',
         ],
@@ -4053,26 +4583,28 @@
 
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
+        'test_common': {
+          'args': [
+            '--pageset-repeat=1',
+            '--test-shard-map-filename=linux_leak_detection_shard_map.json',
+            '--upload-results',
+            '--output-format=histograms',
+            '--browser=release',
+            '--xvfb',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'test': 'performance_test_suite',
-        'args': [
-          '--pageset-repeat=1',
-          '--test-shard-map-filename=linux_leak_detection_shard_map.json',
-          '--upload-results',
-          '--output-format=histograms',
-          '--browser=release',
-          '--xvfb',
-        ],
         'swarming': {
           'shards': 10,
           'expiration': 36000,
           'hard_timeout': 10800,
           'io_timeout': 3600,
-        },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
         },
       },
     },
@@ -4088,10 +4620,12 @@
 
     'linux_chromeos_oobe_specific_tests': {
       'oobe_only_browser_tests': {
+        'test_common': {
+          'args': [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter',
-        ],
         'swarming': {
           'shards': 20,
         },
@@ -4137,86 +4671,94 @@
 
     'linux_specific_chromium_isolated_scripts': {
       'not_site_per_process_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=disable-site-isolation-trials',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=disable-site-isolation-trials',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 8,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'not_site_per_process_blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=disable-site-isolation-trials',
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=disable-site-isolation-trials',
-          '--num-retries=3',
-        ],
         'swarming': {
           'shards': 10,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'not_site_per_process_headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--flag-specific=disable-site-isolation-trials',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--flag-specific=disable-site-isolation-trials',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
-        ],
         'swarming': {
           'shards': 1,
         },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'webdriver_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-type=wdspec',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-type=wdspec',
-        ],
         'swarming': {
           'shards': 2,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },
@@ -4232,9 +4774,11 @@
       'base_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
-        'mixins': [
-          'skia_gold_test',
-        ],
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+        },
       },
       'blink_unittests': {},
       'cc_unittests': {},
@@ -4303,8 +4847,10 @@
 
     'mojo_python_unittests_isolated_scripts': {
       'mojo_python_unittests': {
-        'resultdb': {
-          'enable': True,
+        'test_common': {
+          'resultdb': {
+            'enable': True,
+          },
         },
       },
     },
@@ -4330,10 +4876,12 @@
 
     'network_service_fyi_gtests': {
       'network_service_web_request_proxy_browser_tests': {
+        'test_common': {
+          'args': [
+            '--enable-features=ForceWebRequestProxyForTest',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--enable-features=ForceWebRequestProxyForTest',
-        ],
         'swarming': {
           'shards': 15,
         },
@@ -4490,25 +5038,31 @@
 
     'optimization_guide_android_gtests': {
       'optimization_guide_components_unittests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+          ],
+        },
         'test': 'components_unittests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-        ],
       },
     },
 
     'optimization_guide_cros_gtests': {
       'optimization_guide_browser_tests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
-        ],
       },
       'optimization_guide_components_unittests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+          ],
+        },
         'test': 'components_unittests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-        ],
       },
     },
 
@@ -4530,19 +5084,23 @@
         ],
       },
       'optimization_guide_browser_tests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
-        ],
         'linux_args': [
           '--use-xvfb',
         ],
       },
       'optimization_guide_components_unittests': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+          ],
+        },
         'test': 'components_unittests',
-        'args': [
-          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-        ],
         'linux_args': [
           '--use-xvfb',
         ],
@@ -4594,6 +5152,14 @@
 
     'performance_smoke_test_isolated_scripts': {
       'performance_test_suite': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--smoke-test-mode',
+            ],
+          },
+        },
         'args': [
           '--pageset-repeat=1',
           '--test-shard-map-filename=smoke_test_benchmark_shard_map.json',
@@ -4601,12 +5167,6 @@
         'swarming': {
           'shards': 2,
           'hard_timeout': 960,
-        },
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
-          'args': [
-            '--smoke-test-mode',
-          ],
         },
         'resultdb': {
           'enable': True,
@@ -4616,73 +5176,89 @@
 
     'pixel_browser_tests_gtests': {
       'pixel_browser_tests': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'args': [
+            '--browser-ui-tests-verify-pixels',
+            '--enable-pixel-output-in-tests',
+            '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
+            '--test-launcher-jobs=1',
+          ],
+        },
         'test': 'browser_tests',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--browser-ui-tests-verify-pixels',
-          '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
-          '--test-launcher-jobs=1',
-        ],
         'swarming': {
           'shards': 3,
         },
       },
       'pixel_interactive_ui_tests': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'args': [
+            '--browser-ui-tests-verify-pixels',
+            '--enable-pixel-output-in-tests',
+            '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
+          ],
+        },
         'test': 'interactive_ui_tests',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--browser-ui-tests-verify-pixels',
-          '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
-        ],
       },
     },
 
     'pixel_experimental_browser_tests_gtests': {
       'pixel_experimental_browser_tests': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'args': [
+            '--browser-ui-tests-verify-pixels',
+            '--enable-pixel-output-in-tests',
+            '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter',
+          ],
+        },
         'test': 'browser_tests',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--browser-ui-tests-verify-pixels',
-          '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter',
-        ],
         'experiment_percentage': 100,
       },
     },
 
     'pytype_tests': {
       'blink_pytype': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
       },
       'fuchsia_pytype': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
       },
       'gold_common_pytype': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
       },
       'gpu_pytype': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
       },
       'testing_pytype': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+        },
       },
     },
 
@@ -4702,81 +5278,99 @@
 
     'site_isolation_android_fyi_gtests': {
       'site_per_process_android_browsertests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'android_browsertests',
-        'args': [
-          '--site-per-process',
-        ],
         'swarming': {
           'shards': 1,
         },
       },
       'site_per_process_chrome_public_test_apk': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'chrome_public_test_apk',
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--site-per-process',
-        ],
         'swarming': {
           'shards': 20,
         },
       },
       'site_per_process_chrome_public_unit_test_apk': {
+        'test_common': {
+          'mixins': [
+            'skia_gold_test',
+          ],
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'chrome_public_unit_test_apk',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'args': [
-          '--site-per-process',
-        ],
       },
       'site_per_process_components_browsertests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'components_browsertests',
-        'args': [
-          '--site-per-process',
-        ],
       },
       'site_per_process_components_unittests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'components_unittests',
-        'args': [
-          '--site-per-process',
-        ],
         'swarming': {
           'shards': 5,
         },
       },
       'site_per_process_content_browsertests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+            '--test-launcher-filter-file=../../testing/buildbot/filters/site_isolation_android.content_browsertests.filter',
+          ],
+        },
         'test': 'content_browsertests',
-        'args': [
-          '--site-per-process',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/site_isolation_android.content_browsertests.filter',
-        ],
         'swarming': {
           'shards': 10,
         },
       },
       'site_per_process_content_shell_test_apk': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'content_shell_test_apk',
-        'args': [
-          '--site-per-process',
-        ],
         'swarming': {
           'shards': 3,
         },
       },
       'site_per_process_content_unittests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'content_unittests',
-        'args': [
-          '--site-per-process',
-        ],
       },
       'site_per_process_unit_tests': {
+        'test_common': {
+          'args': [
+            '--site-per-process',
+          ],
+        },
         'test': 'unit_tests',
-        'args': [
-          '--site-per-process',
-        ],
         'swarming': {
           'shards': 10,
         },
@@ -4885,36 +5479,42 @@
 
     'telemetry_android_minidump_unittests_isolated_scripts': {
       'telemetry_chromium_minidump_unittests': {
+        'test_common': {
+          'args': [
+            'BrowserMinidumpTest',
+            '--browser=android-chromium',
+            '-v',
+            '--passthrough',
+            '--retry-limit=2',
+          ],
+        },
         'test': 'telemetry_perf_unittests_android_chrome',
-        'args': [
-          'BrowserMinidumpTest',
-          '--browser=android-chromium',
-          '-v',
-          '--passthrough',
-          '--retry-limit=2',
-        ],
       },
       'telemetry_monochrome_minidump_unittests': {
+        'test_common': {
+          'args': [
+            'BrowserMinidumpTest',
+            '--browser=android-chromium-monochrome',
+            '-v',
+            '--passthrough',
+            '--retry-limit=2',
+          ],
+        },
         'test': 'telemetry_perf_unittests_android_monochrome',
-        'args': [
-          'BrowserMinidumpTest',
-          '--browser=android-chromium-monochrome',
-          '-v',
-          '--passthrough',
-          '--retry-limit=2',
-        ],
       },
     },
 
     'telemetry_desktop_minidump_unittests_isolated_scripts': {
       'telemetry_desktop_minidump_unittests': {
+        'test_common': {
+          'args': [
+            'BrowserMinidumpTest',
+            '-v',
+            '--passthrough',
+            '--retry-limit=2',
+          ],
+        },
         'test': 'telemetry_perf_unittests',
-        'args': [
-          'BrowserMinidumpTest',
-          '-v',
-          '--passthrough',
-          '--retry-limit=2',
-        ],
         'resultdb': {
           'enable': True,
         },
@@ -4966,10 +5566,12 @@
 
     'test_traffic_annotation_auditor_script': {
       'test_traffic_annotation_auditor': {
+        'test_common': {
+          'precommit_args': [
+            '--no-update-sheet',
+          ],
+        },
         'script': 'test_traffic_annotation_auditor.py',
-        'precommit_args': [
-          '--no-update-sheet',
-        ],
       },
     },
 
@@ -5042,23 +5644,25 @@
 
     'vulkan_swiftshader_isolated_scripts': {
       'vulkan_swiftshader_blink_web_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+            '--skipped=always',
+            '--flag-specific=skia-vulkan-swiftshader',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'blink_web_tests',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-          '--skipped=always',
-          '--flag-specific=skia-vulkan-swiftshader',
-        ],
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
     },
 
@@ -5075,12 +5679,14 @@
         ],
       },
       'browser_tests_functional': {
+        'test_common': {
+          'args': [
+            '--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter',
+            '--run-manual',
+            '--test-launcher-jobs=1',
+          ],
+        },
         'test': 'browser_tests',
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter',
-          '--run-manual',
-          '--test-launcher-jobs=1',
-        ],
       },
       'content_browsertests': {
         'args': [
@@ -5088,21 +5694,25 @@
         ],
       },
       'content_browsertests_sequential': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=UsingRealWebcam*',
+            '--run-manual',
+            '--test-launcher-jobs=1',
+          ],
+        },
         'test': 'content_browsertests',
-        'args': [
-          '--gtest_filter=UsingRealWebcam*',
-          '--run-manual',
-          '--test-launcher-jobs=1',
-        ],
       },
       'content_browsertests_stress': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*',
+            '--run-manual',
+            '--ui-test-action-max-timeout=110000',
+            '--test-launcher-timeout=120000',
+          ],
+        },
         'test': 'content_browsertests',
-        'args': [
-          '--gtest_filter=WebRtc*MANUAL*:-UsingRealWebcam*',
-          '--run-manual',
-          '--ui-test-action-max-timeout=110000',
-          '--test-launcher-timeout=120000',
-        ],
       },
       'content_unittests': {
         'args': [
@@ -5123,24 +5733,36 @@
         ],
       },
       'content_browsertests_sequential': {
+        'test_common': {
+          'args': [
+            '--gtest_filter=UsingRealWebcam*',
+            '--run-manual',
+            '--test-launcher-jobs=1',
+          ],
+        },
         'test': 'content_browsertests',
-        'args': [
-          '--gtest_filter=UsingRealWebcam*',
-          '--run-manual',
-          '--test-launcher-jobs=1',
-        ],
       },
     },
 
     'webrtc_chromium_wpt_tests': {
       'blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
         'args': [
-          '--num-retries=3',
           '-t',
           'Release',
           'external/wpt/webrtc',
@@ -5150,27 +5772,31 @@
           'external/wpt/webrtc-stats',
           'external/wpt/webrtc-svc',
         ],
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
       'headless_shell_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--test-type',
+            'testharness',
+            'reftest',
+            'crashtest',
+            'print-reftest',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
+            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
         'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-          '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
           '-t',
           'Release',
           'external/wpt/webrtc',
@@ -5180,12 +5806,6 @@
           'external/wpt/webrtc-stats',
           'external/wpt/webrtc-svc',
         ],
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
       },
     },
 
@@ -5202,11 +5822,13 @@
 
     'webview_bot_instrumentation_test_apk_mutations_gtest': {
       'webview_instrumentation_test_apk_mutations': {
+        'test_common': {
+          'args': [
+            '--use-apk-under-test-flags-file',
+            '--webview-mutations-enabled',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--use-apk-under-test-flags-file',
-          '--webview-mutations-enabled',
-        ],
         'swarming': {
           'shards': 12,
         },
@@ -5215,9 +5837,13 @@
 
     'webview_bot_instrumentation_test_apk_no_field_trial_gtest': {
       'webview_instrumentation_test_apk_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
         'args': [
-          '--disable-field-trial-config',
           '--use-apk-under-test-flags-file',
         ],
         'swarming': {
@@ -5232,9 +5858,11 @@
 
     'webview_cts_tests_gtest': {
       'webview_cts_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
+        'test_common': {
+          'mixins': [
+            'webview_cts_archive',
+          ],
+        },
         'args': [
           '--store-tombstones',
         ],
@@ -5246,12 +5874,16 @@
 
     'webview_cts_tests_gtest_no_field_trial': {
       'webview_cts_tests_no_field_trial': {
+        'test_common': {
+          'mixins': [
+            'webview_cts_archive',
+          ],
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'webview_cts_tests',
-        'mixins': [
-          'webview_cts_archive',
-        ],
         'args': [
-          '--disable-field-trial-config',
           '--store-tombstones',
         ],
         'swarming': {
@@ -5262,10 +5894,12 @@
 
     'webview_instrumentation_test_apk_single_process_mode_gtests': {
       'webview_instrumentation_test_apk_single_process_mode': {
+        'test_common': {
+          'args': [
+            '--webview-process-mode=single',
+          ],
+        },
         'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--webview-process-mode=single',
-        ],
         'swarming': {
           'shards': 3,
         },
@@ -5274,9 +5908,11 @@
 
     'webview_trichrome_64_cts_field_trial_tests': {
       'webview_trichrome_64_cts_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
+        'test_common': {
+          'mixins': [
+            'webview_cts_archive',
+          ],
+        },
         'args': [
           '--store-data-dependencies-in-temp',
           '--store-tombstones',
@@ -5293,10 +5929,12 @@
 
     'webview_ui_instrumentation_tests_no_field_trial': {
       'webview_ui_test_app_test_apk_no_field_trial': {
+        'test_common': {
+          'args': [
+            '--disable-field-trial-config',
+          ],
+        },
         'test': 'webview_ui_test_app_test_apk',
-        'args': [
-          '--disable-field-trial-config',
-        ],
       },
     },
 
@@ -5350,23 +5988,33 @@
 
     'win_specific_xr_perf_tests': {
       'xr.webxr.static': {
-        'test': 'vr_perf_tests',
-        'args': [
-          '--benchmarks=xr.webxr.static',
-          '-v',
-          '--upload-results',
-          '--output-format=histograms',
-          '--browser=release_x64',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
+        'test_common': {
+          'args': [
+            '--benchmarks=xr.webxr.static',
+            '-v',
+            '--upload-results',
+            '--output-format=histograms',
+            '--browser=release_x64',
+          ],
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+          },
         },
+        'test': 'vr_perf_tests',
         'experiment_percentage': 100,
       },
     },
 
     'wpt_tests_ios_suite': {
       'wpt_tests_ios': {
+        'test_common': {
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
         'test': 'chrome_ios_wpt',
         'results_handler': 'layout tests',
         'args': [
@@ -5376,12 +6024,6 @@
           'shards': 36,
           'expiration': 18000,
           'hard_timeout': 14400,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
         },
       },
     },

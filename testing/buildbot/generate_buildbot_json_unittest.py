@@ -2604,6 +2604,23 @@ FOO_TEST_SUITE_WITH_MIXIN = """\
 }
 """
 
+FOO_TEST_SUITE_WITH_TEST_COMMON = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'test_common': {
+          'args': ['test-common-arg'],
+          'mixins': ['test-common-mixin'],
+        },
+        'args': ['test-arg'],
+        'mixins': ['test-mixin'],
+      },
+    },
+  },
+}
+"""
+
 MIXIN_ARGS = """\
 {
   'builder_mixin': {
@@ -2736,6 +2753,17 @@ SWARMING_MIXINS_SORTED = """\
   },
   'c_mixin': {
     'c': 'c',
+  },
+}
+"""
+
+TEST_COMMON_MIXINS = """\
+{
+  'test-common-mixin': {
+    'args': ['test-common-mixin-arg'],
+  },
+  'test-mixin': {
+    'args': ['test-mixin-arg'],
   },
 }
 """
@@ -3013,6 +3041,16 @@ class MixinTests(TestCase):
                     mixins=SWARMING_MIXINS)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
+
+  def test_test_common(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_TEST_COMMON,
+                    LUCI_MILO_CFG,
+                    mixins=TEST_COMMON_MIXINS)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
 
 TEST_SUITE_WITH_PARAMS = """\
 {

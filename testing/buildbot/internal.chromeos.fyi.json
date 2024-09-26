@@ -5,8 +5,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--target-platform=cros",
           "--git-revision=${got_revision}",
+          "--target-platform=cros",
           "--board=betty",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],

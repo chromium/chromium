@@ -634,6 +634,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     test.setdefault('swarming', {}).setdefault('can_use_on_swarming_builders',
                                                swarmable)
 
+    # Test common mixins are mixins specified in the test declaration itself. To
+    # match the order of expansion in starlark, they take effect before anything
+    # specified in the legacy_test_config.
+    test_common = test.pop('test_common', {})
+    if test_common:
+      test_common_mixins = test_common.pop('mixins', [])
+      self.ensure_valid_mixin_list(test_common_mixins,
+                                   f'test {test_name} test_common mixins')
+      test_common = self.apply_mixins(test_common, test_common_mixins, [],
+                                      builder)
+      test = self.apply_mixin(test, test_common, builder)
+
     mixins_to_ignore = test.pop('remove_mixins', [])
     self.ensure_valid_mixin_list(mixins_to_ignore,
                                  f'test {test_name} remove_mixins')
@@ -1715,6 +1727,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       for test in suite.values():
         assert isinstance(test, dict)
         seen_mixins = seen_mixins.union(test.get('mixins', set()))
+        seen_mixins = seen_mixins.union(
+            test.get('test_common', {}).get('mixins', set()))
 
     for variant in self.variants:
       # Unpack the variant from variants.pyl if it's string based.
