@@ -2104,7 +2104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded"
-    enum="BooleanSuccess" expires_after="2024-11-03">
+    enum="BooleanSuccess" expires_after="2025-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2115,7 +2115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodUserKnown"
-    enum="BooleanKnown" expires_after="2024-11-03">
+    enum="BooleanKnown" expires_after="2025-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2126,7 +2126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs"
-    enum="BooleanValid" expires_after="2024-11-03">
+    enum="BooleanValid" expires_after="2025-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -2149,7 +2149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs"
-    enum="BooleanValid" expires_after="2024-11-03">
+    enum="BooleanValid" expires_after="2025-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
