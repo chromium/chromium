@@ -405,6 +405,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kReportingEndpoints,
     prefs::kReportingEndpoints,
     base::Value::Type::DICT },
+  { key::kDownloadRestrictions,
+    prefs::kDownloadRestrictions,
+    base::Value::Type::INTEGER },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
@@ -576,9 +579,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDisableScreenshots,
     prefs::kDisableScreenshots,
     base::Value::Type::BOOLEAN },
-  { key::kDownloadRestrictions,
-    prefs::kDownloadRestrictions,
-    base::Value::Type::INTEGER },
   { key::kEnableAuthNegotiatePort,
     prefs::kEnableAuthNegotiatePort,
     base::Value::Type::BOOLEAN },

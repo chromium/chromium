@@ -20,7 +20,7 @@ desc: |-
 
         4: Blocks malicious files flagged by the Safe Browsing server, does not block dangerous file types. Recommended.
 
-        Note: These restrictions apply to downloads triggered from webpage content, as well as the Download link... menu option. They don't apply to the download of the currently displayed page or to saving as PDF from the printing options. Read more about Safe Browsing ( https://developers.google.com/safe-browsing ).
+        Note: These restrictions apply to downloads triggered from webpage content, as well as the Download link… menu option. They don't apply to the download of the currently displayed page or to saving as PDF from the printing options. Read more about Safe Browsing ( https://developers.google.com/safe-browsing ).
 example_value: 4
 features:
   can_be_recommended: true
@@ -60,6 +60,7 @@ schema:
 supported_on:
 - chrome.*:61-
 - chrome_os:61-
+- android:131-
 tags:
 - local-data-access
 type: int-enum
