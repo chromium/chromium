@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -40,8 +39,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
-import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -54,9 +51,6 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 /** Robolectric tests for {@link GeolocationHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,35 +65,6 @@ public class GeolocationHeaderUnitTest {
     private static final long LOCATION_TIME = 400;
     // Encoded location for LOCATION_LAT, LOCATION_LONG, LOCATION_ACCURACY and LOCATION_TIME.
     private static final String ENCODED_PROTO_LOCATION = "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRg==";
-
-    private static final VisibleWifi VISIBLE_WIFI1 =
-            VisibleWifi.create("ssid1", "11:11:11:11:11:11", -1, 10L);
-    private static final VisibleWifi VISIBLE_WIFI_NO_LEVEL =
-            VisibleWifi.create("ssid1", "11:11:11:11:11:11", null, 10L);
-    private static final VisibleWifi VISIBLE_WIFI2 =
-            VisibleWifi.create("ssid2", "11:11:11:11:11:12", -10, 20L);
-    private static final VisibleWifi VISIBLE_WIFI3 =
-            VisibleWifi.create("ssid3", "11:11:11:11:11:13", -30, 30L);
-    private static final VisibleWifi VISIBLE_WIFI_NOMAP =
-            VisibleWifi.create("ssid1_nomap", "11:11:11:11:11:11", -1, 10L);
-    private static final VisibleWifi VISIBLE_WIFI_OPTOUT =
-            VisibleWifi.create("ssid1_optout", "11:11:11:11:11:11", -1, 10L);
-    private static final VisibleCell VISIBLE_CELL1 =
-            VisibleCell.builder(VisibleCell.RadioType.CDMA)
-                    .setCellId(10)
-                    .setLocationAreaCode(11)
-                    .setMobileCountryCode(12)
-                    .setMobileNetworkCode(13)
-                    .setTimestamp(10L)
-                    .build();
-    private static final VisibleCell VISIBLE_CELL2 =
-            VisibleCell.builder(VisibleCell.RadioType.GSM)
-                    .setCellId(20)
-                    .setLocationAreaCode(21)
-                    .setMobileCountryCode(22)
-                    .setMobileNetworkCode(23)
-                    .setTimestamp(20L)
-                    .build();
     private static int sRefreshLastKnownLocation;
 
     public @Rule JniMocker mocker = new JniMocker();
@@ -117,7 +82,6 @@ public class GeolocationHeaderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         GeolocationTracker.setLocationAgeForTesting(null);
@@ -149,13 +113,6 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     public void testGetGeoHeaderFreshLocation() {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI1,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-        VisibleNetworksTracker.setVisibleNetworksForTesting(visibleNetworks);
         Location location = generateMockLocation("should_not_matter", LOCATION_TIME);
         GeolocationTracker.setLocationForTesting(location, null);
         // 1 minute should be good enough and not require visible networks.
@@ -177,14 +134,14 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
+    @Config(shadows = {ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeader() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(1, sRefreshLastKnownLocation);
     }
 
     @Test
-    @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
+    @Config(shadows = {ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeaderPermissionOff() {
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
@@ -192,7 +149,7 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowVisibleNetworksTracker.class, ShadowGeolocationTracker.class})
+    @Config(shadows = {ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeaderDseAutograntOff() {
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
@@ -204,12 +161,7 @@ public class GeolocationHeaderUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
-    @Config(
-            shadows = {
-                ShadowVisibleNetworksTracker.class,
-                ShadowGeolocationTracker.class,
-                ShadowLocationServices.class
-            })
+    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
     public void testFusedLocationProvider() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         verify(mLocationProviderClient)
@@ -243,13 +195,6 @@ public class GeolocationHeaderUnitTest {
     }
 
     private void checkOldLocation(String expectedHeader) {
-        VisibleNetworks visibleNetworks =
-                VisibleNetworks.create(
-                        VISIBLE_WIFI1,
-                        VISIBLE_CELL1,
-                        new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                        new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-        VisibleNetworksTracker.setVisibleNetworksForTesting(visibleNetworks);
         Location location = generateMockLocation("should_not_matter", LOCATION_TIME);
         GeolocationTracker.setLocationForTesting(location, null);
         // 6 minutes should hit the age limit, but the feature is off.
@@ -267,13 +212,6 @@ public class GeolocationHeaderUnitTest {
         location.setElapsedRealtimeNanos(
                 SystemClock.elapsedRealtimeNanos() + 1000000 * (time - System.currentTimeMillis()));
         return location;
-    }
-
-    /** Shadow for VisibleNetworksTracker */
-    @Implements(VisibleNetworksTracker.class)
-    public static class ShadowVisibleNetworksTracker {
-        @Implementation
-        public static void refreshVisibleNetworks(final Context context) {}
     }
 
     /** Shadow for GeolocationTracker */
