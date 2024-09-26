@@ -38,16 +38,15 @@ class LensResultPageMediatorTest : public PlatformTest {
  public:
   LensResultPageMediatorTest() {
     // AuthenticationService in required in AttachTabHelpers.
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     mediator_ = [[LensResultPageMediator alloc]
          initWithWebStateParams:params
         browserWebStateDelegate:&browser_web_state_delegate_
@@ -101,7 +100,7 @@ class LensResultPageMediatorTest : public PlatformTest {
   // Replaces the web state from LensResultPageMediator with a fake one.
   void AttachFakeWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetIsRealized(true);
     web_state->SetWebFramesManager(
         web::ContentWorld::kAllContentWorlds,
@@ -124,7 +123,7 @@ class LensResultPageMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   LensResultPageMediator* mediator_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebStateDelegate browser_web_state_delegate_;
   OCMockObject<LensResultPageConsumer>* mock_consumer_;
   OCMockObject<ApplicationCommands>* mock_application_handler_;

@@ -36,11 +36,11 @@
 class LensOmniboxClientTest : public PlatformTest {
  public:
   LensOmniboxClientTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     tracker_ = feature_engagement::CreateTestTracker();
 
@@ -52,8 +52,7 @@ class LensOmniboxClientTest : public PlatformTest {
         [OCMockObject mockForProtocol:@protocol(LensOmniboxClientDelegate)];
 
     lens_omnibox_client_ = std::make_unique<LensOmniboxClient>(
-        browser_state_.get(), tracker_.get(), fake_web_provider_,
-        mock_delegate_);
+        profile_.get(), tracker_.get(), fake_web_provider_, mock_delegate_);
   }
 
   void UseAutocompleteMatch(const std::u16string& input_text,
@@ -68,7 +67,7 @@ class LensOmniboxClientTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
 
   std::unique_ptr<web::FakeWebState> fake_web_state_;

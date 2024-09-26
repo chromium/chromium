@@ -33,8 +33,8 @@ class LensOverlayTabHelperTest : public PlatformTest {
       GTEST_SKIP() << "Feature unsupported on iPad";
     }
 
-    browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
@@ -43,7 +43,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     id dispatcher = [[CommandDispatcher alloc] init];
@@ -65,7 +65,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
   id handler_;

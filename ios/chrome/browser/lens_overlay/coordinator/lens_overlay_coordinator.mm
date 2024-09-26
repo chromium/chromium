@@ -152,8 +152,7 @@ const CGFloat kMenuSymbolSize = 18;
   // The mediator might destory lens UI if the search engine doesn't support
   // lens.
   _mediator.templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
 
   if ([self termsOfServiceAccepted]) {
     [_selectionViewController start];
@@ -461,7 +460,7 @@ const CGFloat kMenuSymbolSize = 18;
 #pragma mark - LensOverlayConsentViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+  self.browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kLensOverlayConditionsAccepted, true);
   _consentViewController = nil;
 
@@ -480,8 +479,7 @@ const CGFloat kMenuSymbolSize = 18;
 - (void)didPressLearnMore {
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kLearnMoreLensURL)
-                   inIncognito:self.browser->GetBrowserState()
-                                   ->IsOffTheRecord()];
+                   inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
@@ -521,7 +519,7 @@ const CGFloat kMenuSymbolSize = 18;
     (LensOverlayEntrypoint)entrypoint {
   Browser* browser = self.browser;
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
-  BOOL isIncognito = browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isIncognito = browser->GetProfile()->IsOffTheRecord();
   configuration.isIncognito = isIncognito;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
@@ -529,8 +527,7 @@ const CGFloat kMenuSymbolSize = 18;
 
   if (!isIncognito) {
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(
-            browser->GetBrowserState());
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
         ::signin::ConsentLevel::kSignin);
     configuration.identity = identity;
@@ -540,23 +537,22 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (BOOL)termsOfServiceAccepted {
-  return self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+  return self.browser->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLensOverlayConditionsAccepted);
 }
 
 - (void)startResultPage {
   Browser* browser = self.browser;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
 
-  web::WebState::CreateParams params =
-      web::WebState::CreateParams(browserState);
+  web::WebState::CreateParams params = web::WebState::CreateParams(profile);
   web::WebStateDelegate* browserWebStateDelegate =
       WebStateDelegateBrowserAgent::FromBrowser(browser);
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
       browserWebStateDelegate:browserWebStateDelegate
                  webStateList:browser->GetWebStateList()
-                  isIncognito:browserState->IsOffTheRecord()];
+                  isIncognito:profile->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _resultMediator.snackbarHandler =
@@ -585,8 +581,7 @@ const CGFloat kMenuSymbolSize = 18;
   // TODO(crbug.com/355179986): Implement omnibox navigation with
   // omnibox_delegate.
   auto omniboxClient = std::make_unique<LensOmniboxClient>(
-      browserState,
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState),
+      profile, feature_engagement::TrackerFactory::GetForProfile(profile),
       /*web_provider=*/_resultMediator,
       /*omnibox_delegate=*/_mediator);
   _mediator.omniboxClient = omniboxClient.get();

@@ -42,11 +42,11 @@
 #import "url/gurl.h"
 
 LensOmniboxClient::LensOmniboxClient(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     feature_engagement::Tracker* tracker,
     id<LensWebProvider> web_provider,
     id<LensOmniboxClientDelegate> omnibox_delegate)
-    : browser_state_(browser_state),
+    : profile_(profile),
       engagement_tracker_(tracker),
       web_provider_(web_provider),
       delegate_(omnibox_delegate),
@@ -58,7 +58,7 @@ LensOmniboxClient::~LensOmniboxClient() = default;
 
 std::unique_ptr<AutocompleteProviderClient>
 LensOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<AutocompleteProviderClientImpl>(browser_state_);
+  return std::make_unique<AutocompleteProviderClientImpl>(profile_);
 }
 
 bool LensOmniboxClient::CurrentPageExists() const {
@@ -95,15 +95,15 @@ SessionID LensOmniboxClient::GetSessionID() const {
 }
 
 PrefService* LensOmniboxClient::GetPrefs() {
-  return browser_state_->GetPrefs();
+  return profile_->GetPrefs();
 }
 
 const PrefService* LensOmniboxClient::GetPrefs() const {
-  return browser_state_->GetPrefs();
+  return profile_->GetPrefs();
 }
 
 bookmarks::BookmarkModel* LensOmniboxClient::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+  return ios::BookmarkModelFactory::GetForProfile(profile_);
 }
 
 AutocompleteControllerEmitter*
@@ -112,7 +112,7 @@ LensOmniboxClient::GetAutocompleteControllerEmitter() {
 }
 
 TemplateURLService* LensOmniboxClient::GetTemplateURLService() {
-  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+  return ios::TemplateURLServiceFactory::GetForProfile(profile_);
 }
 
 const AutocompleteSchemeClassifier& LensOmniboxClient::GetSchemeClassifier()
@@ -121,7 +121,7 @@ const AutocompleteSchemeClassifier& LensOmniboxClient::GetSchemeClassifier()
 }
 
 AutocompleteClassifier* LensOmniboxClient::GetAutocompleteClassifier() {
-  return ios::AutocompleteClassifierFactory::GetForBrowserState(browser_state_);
+  return ios::AutocompleteClassifierFactory::GetForProfile(profile_);
 }
 
 bool LensOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
@@ -129,12 +129,12 @@ bool LensOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
 }
 
 int LensOmniboxClient::GetHttpsPortForTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(profile_)
       ->GetHttpsPortForTesting();
 }
 
 bool LensOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(profile_)
       ->IsUsingFakeHttpsForTesting();
 }
 
@@ -146,7 +146,7 @@ gfx::Image LensOmniboxClient::GetIconIfExtensionMatch(
 
 std::u16string LensOmniboxClient::GetFormattedFullURL() const {
   std::optional<TemplateURLService::SearchMetadata> metadata =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_)
+      ios::TemplateURLServiceFactory::GetForProfile(profile_)
           ->ExtractSearchMetadata(GetURL());
   if (metadata) {
     return metadata->search_terms;

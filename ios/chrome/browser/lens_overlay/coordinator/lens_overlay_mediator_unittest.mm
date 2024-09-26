@@ -100,14 +100,14 @@ class LensOverlayMediatorTest : public PlatformTest {
 
     fake_web_provider_ = [[FakeLensWebProviderImpl alloc] init];
     fake_web_provider_.webState = fake_web_state_.get();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     lens_omnibox_client_ = std::make_unique<LensOmniboxClient>(
-        browser_state_.get(), tracker_.get(), fake_web_provider_, nil);
+        profile_.get(), tracker_.get(), fake_web_provider_, nil);
 
     mediator_.resultConsumer = fake_result_consumer_;
     mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
@@ -250,7 +250,7 @@ class LensOverlayMediatorTest : public PlatformTest {
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeLensWebProviderImpl* fake_web_provider_;
   std::unique_ptr<LensOmniboxClient> lens_omnibox_client_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.

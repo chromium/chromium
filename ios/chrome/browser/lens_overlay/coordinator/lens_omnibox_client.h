@@ -24,7 +24,7 @@ class Tracker;
 /// Interface that allows the omnibox component to interact with its embedder.
 class LensOmniboxClient final : public OmniboxClient {
  public:
-  LensOmniboxClient(ChromeBrowserState* browser_state,
+  LensOmniboxClient(ProfileIOS* profile,
                     feature_engagement::Tracker* tracker,
                     id<LensWebProvider> web_provider,
                     id<LensOmniboxClientDelegate> omnibox_delegate);
@@ -97,7 +97,7 @@ class LensOmniboxClient final : public OmniboxClient {
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;

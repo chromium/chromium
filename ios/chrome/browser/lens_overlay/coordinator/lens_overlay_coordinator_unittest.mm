@@ -62,19 +62,19 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
 
     // Browser state
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_, std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_, std::make_unique<FakeAuthenticationServiceDelegate>());
 
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_);
+        AuthenticationServiceFactory::GetForProfile(profile_);
 
-    browser_ = std::make_unique<TestBrowser>(browser_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_);
     dispatcher_ = [[CommandDispatcher alloc] init];
 
     GetApplicationContext()->GetLocalState()->SetInteger(
@@ -163,7 +163,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
-  raw_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
@@ -348,8 +348,8 @@ TEST_F(LensOverlayCoordinatorTest,
 // When the user consent have not been received yet, lens coordinator should
 // present the consent view controller.
 TEST_F(LensOverlayCoordinatorTest, ShouldPresentConsentDialog) {
-  browser_state_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
-                                         false);
+  profile_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
+                                   false);
 
   // Given a started `LensOverlayCoordinator`.
   [coordinator_ start];
@@ -378,8 +378,7 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentConsentDialog) {
 // When the user consent accepted TOS, lens coordinator shouldn't present the
 // consent view controller.
 TEST_F(LensOverlayCoordinatorTest, DoesntPromptForConsentWhenAlreadyReceived) {
-  browser_state_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
-                                         true);
+  profile_->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted, true);
 
   // Given a started `LensOverlayCoordinator`.
   [coordinator_ start];
