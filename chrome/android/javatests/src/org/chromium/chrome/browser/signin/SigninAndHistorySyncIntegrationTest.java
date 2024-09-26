@@ -384,9 +384,6 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        mSigninTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -396,6 +393,9 @@ public class SigninAndHistorySyncIntegrationTest {
         // Select "Add Account" on the shown expanded sign-in bottom-sheet.
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
+        mSigninTestRule.setUpNextAddAccountFlow(
+                AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
@@ -506,12 +506,18 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync_cancelAddAccount() {
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
-
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
+        // Start sign-in from the 0-account sign-in bottom-sheet shown.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_no_account)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+        onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         onViewWaiting(
                 allOf(
@@ -528,13 +534,14 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
-        mSigninTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
 
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
+        mSigninTestRule.setUpNextAddAccountFlow(
+                AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         signinStartedWatcher.assertExpected();
@@ -543,12 +550,11 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithNoAccount_instantSignin_requiredHistorySync_cancelAddAccount() {
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
-
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
+        onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -597,10 +603,6 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
-        mSigninTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK,
-                AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail(),
-                /* isMinorModeEnabled= */ false);
 
         // Start sign-in from the 0-account sign-in bottom-sheet shown.
         onView(
@@ -609,6 +611,9 @@ public class SigninAndHistorySyncIntegrationTest {
                                 withParent(withId(R.id.account_picker_state_no_account)),
                                 isCompletelyDisplayed()))
                 .perform(click());
+        mSigninTestRule.setUpNextAddAccountFlow(
+                AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         signinStartedWatcher.assertExpected();
 

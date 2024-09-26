@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -291,9 +290,6 @@ public class UpgradePromoIntegrationTest {
     @Test
     @MediumTest
     public void testAddAccount() {
-        mSigninTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
-
         launchActivity();
 
         // Verify that the fullscreen sign-in promo is shown with the default account.
@@ -304,6 +300,8 @@ public class UpgradePromoIntegrationTest {
         // Add the second account.
         onView(withText(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mSigninTestRule.setUpNextAddAccountFlow(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
