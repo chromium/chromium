@@ -19,10 +19,6 @@
 @class NewTabPageState;
 class PrefService;
 
-namespace base {
-class Time;
-}  // namespace base
-
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
 
