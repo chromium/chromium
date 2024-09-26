@@ -31,6 +31,9 @@ const int kSaveAsImageTaskCompletionID = 233326;
 const int kSelectTextTaskCompletionID = 198157;
 const int kTranslateTaskCompletionID = 198158;
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
+constexpr char kRequestTypeQueryParameter[] = "rt";
+constexpr char kFullPageObjectsFetchRequestType[] = "fpof";
+constexpr char kFullPageTranslateFetchRequestType[] = "fptf";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay_gen204", R"(
@@ -94,14 +97,17 @@ void LensOverlayGen204Controller::SetGen204Id(uint64_t gen204_id) {
 }
 
 void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
-    int64_t latency_ms) {
+    int64_t latency_ms,
+    bool is_translate_query) {
   if (profile_ && lens::features::GetLensOverlaySendLatencyGen204() &&
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
-    std::string query =
-        base::StringPrintf("gen_204?atyp=csi&%s=%s&rt=fpof.%s&s=web",
-                           kGen204IdentifierQueryParameter,
-                           base::NumberToString(gen204_id_).c_str(),
-                           base::NumberToString(latency_ms).c_str());
+    std::string query = base::StringPrintf(
+        "gen_204?atyp=csi&%s=%s&%s=%s.%s&s=web",
+        kGen204IdentifierQueryParameter,
+        base::NumberToString(gen204_id_).c_str(), kRequestTypeQueryParameter,
+        is_translate_query ? kFullPageTranslateFetchRequestType
+                           : kFullPageObjectsFetchRequestType,
+        base::NumberToString(latency_ms).c_str());
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
                               .GoogleBaseURLValue())

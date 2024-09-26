@@ -449,8 +449,10 @@ void LensOverlayQueryController::PerformFetchRequest(
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
-    int64_t latency_ms) {
-  gen204_controller_->SendLatencyGen204IfEnabled(latency_ms);
+    int64_t latency_ms,
+    bool is_translate_query) {
+  gen204_controller_->SendLatencyGen204IfEnabled(latency_ms,
+                                                 is_translate_query);
 }
 
 LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
@@ -686,7 +688,8 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   base::TimeDelta elapsed_time =
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
-  SendLatencyGen204IfEnabled(elapsed_time.InMilliseconds());
+  SendLatencyGen204IfEnabled(elapsed_time.InMilliseconds(),
+                             translate_options_.has_value());
 
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
