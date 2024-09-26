@@ -156,6 +156,14 @@ suite('<facegaze-actions-add-dialog>', () => {
     gestureList.selectedItem = FacialGesture.BROW_INNER_UP as Object;
   }
 
+  function assertVideoElement(): HTMLVideoElement {
+    const videoElement =
+        faceGazeAddActionDialog.shadowRoot!.querySelector<HTMLVideoElement>(
+            '#cameraStream');
+    assertTrue(!!videoElement);
+    return videoElement;
+  }
+
   function getGestureSlider(): CrSliderElement|null {
     const gestureSlider =
         faceGazeAddActionDialog.shadowRoot!.querySelector<CrSliderElement>(
@@ -264,7 +272,9 @@ suite('<facegaze-actions-add-dialog>', () => {
     gestureNextButton.click();
     flush();
 
+    assertVideoElement();
     assertGestureSlider();
+    assertGestureDynamicBar();
     assertNullGesturesList();
   }
 

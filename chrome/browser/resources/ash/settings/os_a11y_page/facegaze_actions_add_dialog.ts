@@ -254,6 +254,8 @@ export class FaceGazeAddActionDialogElement extends
       FACEGAZE_DEFINED_MACRO_FLOW;
   private detectedGestureCount_ = 0;
   private eventTracker_: EventTracker = new EventTracker();
+  private stream_: MediaStream|null;
+  private streamTrack_: MediaStreamTrack|null;
 
   // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
@@ -526,6 +528,24 @@ export class FaceGazeAddActionDialogElement extends
     }
   }
 
+  private async onThresholdPageDomChanged_(): Promise<void> {
+    if (this.currentPage_ !== AddDialogPage.GESTURE_THRESHOLD) {
+      return;
+    }
+
+    const videoElement =
+        this.shadowRoot!.querySelector<HTMLMediaElement>('#cameraStream');
+
+    if (videoElement) {
+      this.stream_ = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {facingMode: 'user'},
+      });
+      this.streamTrack_ = this.stream_.getVideoTracks()[0];
+      videoElement!.srcObject = this.stream_;
+    }
+  }
+
   private onDecreaseThresholdButtonClick_(): void {
     this.gestureThresholdValue_ = Math.max(
         FACEGAZE_CONFIDENCE_MIN,
@@ -558,8 +578,15 @@ export class FaceGazeAddActionDialogElement extends
 
     info.forEach((entry) => {
       if (entry.gesture === this.selectedGesture_) {
+        const previewContainer = this.shadowRoot!.querySelector<HTMLElement>(
+            '#cameraPreviewContainer');
+        assert(previewContainer);
+
         if (entry.confidence >= this.gestureThresholdValue_) {
           this.detectedGestureCount_++;
+          previewContainer.className = 'gesture-detected';
+        } else {
+          previewContainer.className = 'gesture-not-detected';
         }
 
         // Show confidence values for all gestures in dynamic bar.
@@ -597,6 +624,14 @@ export class FaceGazeAddActionDialogElement extends
   private close_(): void {
     if (this.shortcutInput) {
       this.shortcutInput.stopObserving();
+    }
+
+    if (this.streamTrack_) {
+      this.streamTrack_.stop();
+    }
+
+    if (this.stream_) {
+      this.stream_ = null;
     }
 
     this.commandPairToConfigure = null;

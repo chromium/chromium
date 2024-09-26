@@ -118,6 +118,26 @@
     text-align: center;
   }
 
+  #cameraPreviewContainer {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+    margin: 20px;
+    border-radius: 16px;
+  }
+
+  .gesture-not-detected {
+    background-color: var(--cros-sys-secondary_container);
+  }
+
+  .gesture-detected {
+    background-color: var(--cros-sys-success_container);
+  }
+
+  #cameraStream {
+    width: 90%;
+  }
+
   .gesture-icon {
     height: 40px;
     width: 40px;
@@ -244,8 +264,7 @@
     </div>
   </template>
 
-  <!-- TODO(b:341770753): Build custom webcam component for setting the gesture threshold. -->
-  <template is="dom-if" if="[[showGestureThreshold_]]" restamp>
+  <template is="dom-if" if="[[showGestureThreshold_]]" restamp on-dom-change="onThresholdPageDomChanged_">
     <div slot="title">
       <iron-icon class="gesture-icon"
           icon="[[getGestureIconName_(selectedGesture_)]]">
@@ -256,6 +275,9 @@
       $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
     </div>
     <div slot="body">
+      <div id="cameraPreviewContainer" class="gesture-not-detected">
+        <video class="preview" id="cameraStream" autoplay playsinline></video>
+      </div>
       <div id="sliderContainer">
         <cr-icon-button
             id="faceGazeGestureThresholdDecrementButton"
