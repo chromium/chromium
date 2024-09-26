@@ -749,15 +749,15 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram
-    name="Signin.BoundSessionCredentials.Covered{Type}RequestWasDeferred"
+    name="Signin.BoundSessionCredentials.Covered{Type}RequestWasDeferred{Result}"
     enum="BooleanWasDeferred" expires_after="2025-02-16">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether a request was deferred due to a missing bound cookie.
-    Recorded every time a request covered by a bound session completes either
-    with a success or a failure.
+    Recorded every time a request covered by a bound session completes with
+    {Result}.
 
     &quot;Covered by a bound session&quot; means that a request will be deferred
     if it's missing a bound cookie.
@@ -768,6 +768,11 @@ prefs when the profile is loaded.  -->
     <variant name="" summary="Includes all requests."/>
     <variant name="Navigation"
         summary="Includes only main frame navigation requests."/>
+  </token>
+  <token key="Result">
+    <variant name="" summary="either a success or a failure"/>
+    <variant name=".Failure" summary="a failure"/>
+    <variant name=".Success" summary="a success"/>
   </token>
 </histogram>
 

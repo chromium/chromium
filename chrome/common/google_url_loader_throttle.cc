@@ -81,13 +81,35 @@ bool IsCoveredRequestBoundSessionStatus(RequestBoundSessionStatus status) {
 }
 
 void RecordBoundSessionStatusMetrics(bool was_deferred,
-                                     bool is_main_frame_navigation) {
+                                     bool is_main_frame_navigation,
+                                     bool is_request_succeeded) {
   UMA_HISTOGRAM_BOOLEAN(
       "Signin.BoundSessionCredentials.CoveredRequestWasDeferred", was_deferred);
+  if (is_request_succeeded) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Signin.BoundSessionCredentials.CoveredRequestWasDeferred.Success",
+        was_deferred);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Signin.BoundSessionCredentials.CoveredRequestWasDeferred.Failure",
+        was_deferred);
+  }
+
   if (is_main_frame_navigation) {
     UMA_HISTOGRAM_BOOLEAN(
         "Signin.BoundSessionCredentials.CoveredNavigationRequestWasDeferred",
         was_deferred);
+    if (is_request_succeeded) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Signin.BoundSessionCredentials.CoveredNavigationRequestWasDeferred."
+          "Success",
+          was_deferred);
+    } else {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Signin.BoundSessionCredentials.CoveredNavigationRequestWasDeferred."
+          "Failure",
+          was_deferred);
+    }
   }
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -281,7 +303,8 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (is_covered_by_bound_session_) {
     RecordBoundSessionStatusMetrics(is_deferred_for_bound_session_,
-                                    is_main_frame_navigation_);
+                                    is_main_frame_navigation_,
+                                    /*is_request_succeeded=*/true);
   }
   if (deferred_request_resume_trigger_) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -316,7 +339,8 @@ void GoogleURLLoaderThrottle::WillOnCompleteWithError(
     const network::URLLoaderCompletionStatus& status) {
   if (is_covered_by_bound_session_) {
     RecordBoundSessionStatusMetrics(is_deferred_for_bound_session_,
-                                    is_main_frame_navigation_);
+                                    is_main_frame_navigation_,
+                                    /*is_request_succeeded=*/false);
   }
   if (deferred_request_resume_trigger_) {
     UMA_HISTOGRAM_ENUMERATION(
