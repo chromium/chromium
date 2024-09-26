@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
+#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/webrtc_audio_private/webrtc_audio_private_api.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -130,6 +131,8 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::VerifyTrustAPI::GetFactoryInstance();
 #endif
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
+  extensions::WebAuthenticationProxyRegistrarFactory::GetInstance();
+  extensions::WebAuthenticationProxyServiceFactory::GetInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();
   extensions::WebrtcAudioPrivateEventService::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
