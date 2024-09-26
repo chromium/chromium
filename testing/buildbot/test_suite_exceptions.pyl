@@ -3335,6 +3335,16 @@
       },
     },
   },
+  'updater_tests_system': {
+    'modifications': {
+      'win-asan': {
+        # crbug.com/369478225: These are slow and could timeout on the ASAN
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+  },
   'variations_smoke_tests': {
     'modifications': {
       'linux-chrome': {
