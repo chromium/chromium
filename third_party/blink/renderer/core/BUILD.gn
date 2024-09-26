@@ -1732,7 +1732,7 @@ fuzzer_test("css_parser_proto_fuzzer") {
 proto_library("css_proto") {
   sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
   proto_out_dir = "third_party/blink/renderer/core/css/parser"
-  deps = [ ":make_css_proto" ]
+  proto_deps = [ ":make_css_proto" ]
 }
 
 proto_library("element_locator_proto") {
