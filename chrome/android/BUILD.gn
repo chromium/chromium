@@ -293,8 +293,6 @@ if (current_toolchain == default_toolchain) {
   java_group("delegate_public_impl_java") {
     deps = [
       "//chrome/android/modules/readaloud/public:provider_public_java",
-      "//chrome/browser/accessibility/hierarchysnapshotter/android:delegate_public_impl_java",
-      "//chrome/browser/android/metrics:delegate_public_impl_java",
       "//chrome/browser/auxiliary_search:delegate_public_impl_java",
       "//chrome/browser/feedback/android:delegate_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
