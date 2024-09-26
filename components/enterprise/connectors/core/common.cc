@@ -327,4 +327,12 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting) {
   return DataRegion::NO_PREFERENCE;
 }
 
+EnterpriseReportingEventType GetUmaEnumFromEventName(
+    std::string_view eventName) {
+  auto it = kEventNameToUmaEnumMap.find(eventName);
+  return it != kEventNameToUmaEnumMap.end()
+             ? it->second
+             : EnterpriseReportingEventType::kUnknownEvent;
+}
+
 }  // namespace enterprise_connectors
