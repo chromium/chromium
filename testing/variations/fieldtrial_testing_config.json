@@ -16239,7 +16239,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UnimportantFramesPriority"
+                        "PMProcessPriorityPolicy"
                     ]
                 }
             ]
