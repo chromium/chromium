@@ -57,7 +57,7 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
  public:
-  static void ConvertEventToTarget(const EventTarget* new_target,
+  static void ConvertEventToTarget(EventTarget* new_target,
                                    LocatedEvent* event);
 
   WaylandEventSource(wl_display* display,

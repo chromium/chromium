@@ -82,20 +82,33 @@ bool WaylandPopup::CreateShellPopup() {
       wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window);
   bounds_dip.Inset(delegate()->CalculateInsetsInDIP(GetPlatformWindowState()));
 
+  // At this point, both `bounds` and `anchor_rect` parameters here are in
+  // UI coordinates space (i.e ui_scale'd), as they have just been provided by
+  // upper UI layers. As they are going to be used to issue Wayland requests,
+  // eg: xdg_positioner, they must be reverse-transformed to Wayland DIP
+  // coordinates space.
+  const float ui_scale = applied_state().ui_scale;
+
   ShellPopupParams params;
-  params.bounds = bounds_dip;
+  params.bounds = gfx::ScaleToEnclosingRectIgnoringError(bounds_dip, ui_scale);
   params.anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
   if (params.anchor.has_value()) {
-    // The anchor should originate from the window geometry, not from the
-    // surface.  See https://crbug.com/1292486.
-    params.anchor->anchor_rect =
+    // The anchor rectangle must be relative to the window geometry, rather
+    // than the root surface origin. See https://crbug.com/1292486.
+    gfx::Rect anchor_rect(
         wl::TranslateBoundsToParentCoordinates(
             params.anchor->anchor_rect, xdg_parent_window->GetBoundsInDIP()) -
-        xdg_parent_window->GetWindowGeometryOffsetInDIP();
+        xdg_parent_window->GetWindowGeometryOffsetInDIP());
+
+    // Convert `anchor_rect` to Wayland coordinates space.
+    anchor_rect = gfx::ScaleToEnclosingRectIgnoringError(anchor_rect, ui_scale);
 
     // If size is empty, set 1x1.
-    if (params.anchor->anchor_rect.size().IsEmpty())
-      params.anchor->anchor_rect.set_size({1, 1});
+    if (anchor_rect.size().IsEmpty()) {
+      anchor_rect.set_size({1, 1});
+    }
+
+    params.anchor->anchor_rect = anchor_rect;
   }
 
   // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
@@ -228,9 +241,13 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     return;
   }
 
-  gfx::Rect pending_bounds_dip(bounds_dip);
-  if (pending_bounds_dip.IsEmpty())
-    pending_bounds_dip.set_size(GetBoundsInDIP().size());
+  // Use UI scale to scale the bounds received from the Wayland compositor (ie:
+  // non-empty `bounds_dip`) as it is an internal scaling factor, which the
+  // compositor is not aware of.
+  gfx::Rect pending_bounds_dip(
+      bounds_dip.IsEmpty() ? GetBoundsInDIP()
+                           : gfx::ScaleToEnclosingRectIgnoringError(
+                                 bounds_dip, 1.0f / applied_state().ui_scale));
 
   // The origin is relative to parent's window geometry.
   // See https://crbug.com/1292486.
@@ -349,7 +366,13 @@ void WaylandPopup::SetWindowGeometry(
   if (!shell_popup_) {
     return;
   }
-  gfx::Rect geometry_dip(state.bounds_dip.size());
+
+  // State's `bounds_dip` is in UI coordinates space (ie: ui_scale'd), thus
+  // before sending it through Wayland, it must be reverse-transformed to
+  // Wayland coordinates space.
+  gfx::Rect geometry_dip(gfx::ScaleToEnclosingRectIgnoringError(
+      gfx::Rect(state.bounds_dip.size()), state.ui_scale));
+
   geometry_dip.Inset(delegate()->CalculateInsetsInDIP(state.window_state));
   shell_popup_->SetWindowGeometry(geometry_dip);
 }

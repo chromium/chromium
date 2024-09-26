@@ -5947,6 +5947,80 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
   EXPECT_EQ(new_window->root_surface()->state_.buffer_scale_float, 2.0f);
 }
 
+TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  // Set font scale to 1.25.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+  connection_->window_manager()->SetFontScale(1.25f);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  WaylandTestBase::SyncDisplay();
+  EXPECT_EQ(1.25f, window_->applied_state().ui_scale);
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(640, 480), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
+
+  // Initialize create and show a 20x80 popup at (100, 100) ui size/location
+  // (1.25 ui inv-scaled). So it must be positioned at (125, 125) with 25x100
+  // dip wayland pixels.
+  auto* toplevel = window_.get();
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> menu_delegate;
+  ui::OwnedWindowAnchor anchor{
+      .anchor_rect = gfx::Rect(100, 100, 20, 20),
+      .anchor_position = OwnedWindowAnchorPosition::kBottomRight,
+      .anchor_gravity = OwnedWindowAnchorGravity::kBottomLeft};
+  EXPECT_CALL(menu_delegate, GetOwnedWindowAnchorAndRectInDIP())
+      .WillOnce(Return(anchor));
+  auto menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(100, 100, 20, 80), &menu_delegate,
+      toplevel->GetWidget());
+  ASSERT_TRUE(menu_window);
+  const uint32_t menu_surface_id =
+      menu_window->root_surface()->get_surface_id();
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    auto* popup = GetTestXdgPopupByWindow(server, menu_surface_id);
+    ASSERT_TRUE(popup);
+    EXPECT_EQ(popup->anchor_rect(), gfx::Rect(125, 125, 25, 25));
+    EXPECT_EQ(popup->size(), gfx::Size(25, 100));
+  });
+  PlatformWindowDelegate::State initial_state(menu_window->applied_state());
+
+  // Emulate a popup configure with empty geometry rectangle, in which case the
+  // current popup bounds is expected to be used.
+  SendConfigureEvent(menu_surface_id, gfx::Size(0, 0), wl::ScopedWlArray({}));
+  EXPECT_EQ(initial_state.ToString(), menu_window->applied_state().ToString());
+
+  // Now emulate a popup configure with a 100x200 geometry, and verifies that:
+  // 1. A state change request is triggered with the ui_scale'd equivalent dip
+  // geometry 80x160.
+  // 2. The expected wayland requests (along with the correct geometry and scale
+  // related parameters) are issued once the new frame is received from Viz.
+  const uint32_t kLatestConfigureSerial = 11u;
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface =
+        server->GetObject<wl::MockSurface>(menu_surface_id);
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_CALL(*mock_surface, Damage(0, 0, 100, 200));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(100, 200)));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kLatestConfigureSerial)));
+  });
+  SendConfigureEvent(menu_surface_id, gfx::Size(100, 200),
+                     wl::ScopedWlArray({}), kLatestConfigureSerial);
+  EXPECT_EQ(menu_window->applied_state().bounds_dip, gfx::Rect(80, 160));
+  CreateBufferAndPresentAsNewFrame(menu_window.get(), menu_delegate,
+                                   /*buffer_size=*/gfx::Size(100, 200),
+                                   /*buffer_scale=*/1.25f);
+  // Sync display and verify the expectations.
+  VerifyAndClearExpectations(menu_delegate, menu_surface_id);
+  EXPECT_EQ(menu_window->applied_state(), menu_window->latched_state());
+  EXPECT_EQ(menu_window->latched_state().ui_scale, 1.25f);
+  EXPECT_EQ(menu_window->latched_state().window_scale, 1.0f);
+  EXPECT_EQ(menu_window->root_surface()->state_.buffer_scale_float, 1.0f);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
