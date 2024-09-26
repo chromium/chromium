@@ -11,14 +11,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Provides access to internal AuxiliarySearch implementation parts, if they are available. */
 public interface AuxiliarySearchHooks {
-    /** Whether the internal components of the Auxiliary Search are available.*/
-    default boolean isEnabled() {
-        return false;
-    }
+    /** Whether the internal components of the Auxiliary Search are available. */
+    boolean isEnabled();
 
     /** Create a AuxiliarySearchController. */
-    default @Nullable AuxiliarySearchController createAuxiliarySearchController(
-            Profile profile, TabModelSelector tabModelSelector) {
-        return null;
-    }
+    @Nullable
+    AuxiliarySearchController createAuxiliarySearchController(
+            Profile profile, TabModelSelector tabModelSelector);
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -13,8 +14,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 public class AuxiliarySearchControllerFactory {
     public static @Nullable AuxiliarySearchController createAuxiliarySearchController(
             Profile profile, TabModelSelector tabModelSelector) {
-        AuxiliarySearchHooks hooks = AuxiliarySearchHooksImpl.getInstance();
-        if (!hooks.isEnabled()) return null;
+        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+        if (hooks == null || !hooks.isEnabled()) {
+            return null;
+        }
 
         return hooks.createAuxiliarySearchController(profile, tabModelSelector);
     }
