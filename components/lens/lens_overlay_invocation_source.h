@@ -20,17 +20,17 @@ enum class LensOverlayInvocationSource {
 
   // The content area context menu entry that is available when the user
   // right-clicks on any area of the page that doesn't contain text, links or
-  // media.
+  // media. Only used on Desktop.
   kContentAreaContextMenuPage = 1,
 
   // The content area context menu entry that is available when the user
-  // right-clicks on an image.
+  // right-clicks on an image. Only used on Desktop.
   kContentAreaContextMenuImage = 2,
 
-  // The pinned toolbar action button.
+  // The pinned toolbar action button. Only used on Desktop.
   kToolbar = 3,
 
-  // The find in page (Ctrl/Cmd-f) dialog button.
+  // The find in page (Ctrl/Cmd-f) dialog button. Only used on Desktop.
   kFindInPage = 4,
 
   // The button in the omnibox (address bar).

@@ -265,7 +265,8 @@ const CGFloat kMenuSymbolSize = 18;
   if ([self isUICreated]) {
     // The UI is probably associated with the non-active tab. Destroy it with no
     // animation.
-    [self destroyLensUI:NO];
+    [self destroyLensUI:NO
+                 reason:lens::LensOverlayDismissalSource::kNewLensInvocation];
   }
   _currentEntrypoint = entrypoint;
   _invocationTime = base::ElapsedTimer();
@@ -306,7 +307,9 @@ const CGFloat kMenuSymbolSize = 18;
   if (success) {
     [self showLensUI:animated];
   } else {
-    [self destroyLensUI:NO];
+    [self destroyLensUI:NO
+                 reason:lens::LensOverlayDismissalSource::
+                            kErrorScreenshotCreationFailed];
   }
 
   if (completion) {
@@ -362,7 +365,8 @@ const CGFloat kMenuSymbolSize = 18;
                          completion:nil];
 }
 
-- (void)destroyLensUI:(BOOL)animated {
+- (void)destroyLensUI:(BOOL)animated
+               reason:(lens::LensOverlayDismissalSource)dismissalSource {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Closed"));
 
   // Session foreground duration metrics.
@@ -451,7 +455,9 @@ const CGFloat kMenuSymbolSize = 18;
       presentationController.presentedViewController;
 
   if (presentedViewController == _resultViewController) {
-    [self destroyLensUI:YES];
+    [self
+        destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
   }
 }
 
@@ -525,7 +531,8 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)didTapSecondaryActionButton {
-  [self destroyLensUI:YES];
+  [self destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
 }
 
 - (void)didPressLearnMore {
@@ -796,7 +803,7 @@ const CGFloat kMenuSymbolSize = 18;
     return;
   }
 
-  [self destroyLensUI:NO];
+  [self destroyLensUI:NO reason:lens::LensOverlayDismissalSource::kLowMemory];
 }
 
 - (BOOL)isLensOverlayVisible {

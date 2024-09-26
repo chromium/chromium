@@ -77,7 +77,9 @@ class LensOverlayTabHelperTest : public PlatformTest {
 // Test that web state destruction causes lens UI to destroy with no animation.
 TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
   helper_->SetLensOverlayShown(true);
-  OCMExpect([mock_commands_handler_ destroyLensUI:NO]);
+  OCMExpect([mock_commands_handler_
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kTabClosed]);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -85,7 +87,9 @@ TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
 // Test that destroyLensUI should not be called if the lens overlay is not
 // shown.
 TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
-  [[mock_commands_handler_ reject] destroyLensUI:[OCMArg any]];
+  [[[mock_commands_handler_ reject] ignoringNonObjectArgs]
+      destroyLensUI:[OCMArg any]
+             reason:lens::LensOverlayDismissalSource::kTabClosed];
   helper_->SetLensOverlayShown(false);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);

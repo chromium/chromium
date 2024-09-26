@@ -85,7 +85,9 @@
 #pragma mark - Actions
 
 - (void)closeOverlayRequested {
-  [_overlayCommandsHandler destroyLensUI:YES];
+  [_overlayCommandsHandler destroyLensUI:YES
+                                  reason:lens::LensOverlayDismissalSource::
+                                             kAccessibilityEscapeGesture];
 }
 
 - (void)escapeButtonPressed {

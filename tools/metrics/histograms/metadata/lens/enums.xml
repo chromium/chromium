@@ -53,6 +53,12 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Error: Overlay renderer exited unexpectedly"/>
   <int value="21" label="Underlying page renderer exited normally"/>
   <int value="22" label="Error: Underlying page renderer exited unexpectedly"/>
+  <int value="23" label="Default search engine changed"/>
+  <int value="24" label="Bottom sheet dismissed"/>
+  <int value="25" label="Accessibility escape gesture"/>
+  <int value="26" label="New lens overlay invocation in another tab"/>
+  <int value="27" label="Lens permission declined"/>
+  <int value="28" label="Low memory"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

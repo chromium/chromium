@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/lens/lens_overlay_dismissal_source.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 
 /// Commands related to Lens Overlay.
@@ -25,7 +26,8 @@
 - (void)hideLensUI:(BOOL)animated;
 
 /// Destroy lens overlay (called e.g. in response to memory pressure).
-- (void)destroyLensUI:(BOOL)animated;
+- (void)destroyLensUI:(BOOL)animated
+               reason:(lens::LensOverlayDismissalSource)dismissalSource;
 
 @end
 

@@ -86,6 +86,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//components/lens",
     "//components/tab_groups",
     "//ios/chrome/browser/browsing_data/model:util",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",

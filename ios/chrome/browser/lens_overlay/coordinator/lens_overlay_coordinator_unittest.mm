@@ -214,7 +214,9 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDestroyTheUIUponRequest) {
   EXPECT_TRUE(tab_helper_->IsLensOverlayShown());
 
   // When the destroy command is dispatched.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) destroyLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands)
+      destroyLensUI:NO
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 
   // Then the UI should not appear shown anymore.
   EXPECT_FALSE(tab_helper_->IsLensOverlayShown());
@@ -427,7 +429,8 @@ TEST_F(LensOverlayCoordinatorTest, TimingMetricsRecorded) {
   run_loop_.Run();
 
   // Destroy Lens UI.
-  [lens_overlay_handler destroyLensUI:NO];
+  [lens_overlay_handler destroyLensUI:NO
+                               reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 
   histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
                                     /*expected_count=*/1);

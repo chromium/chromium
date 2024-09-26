@@ -73,7 +73,9 @@ void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   }
 
   if (is_showing_lens_overlay_) {
-    [commands_handler_ destroyLensUI:NO];
+    [commands_handler_
+        destroyLensUI:NO
+               reason:lens::LensOverlayDismissalSource::kTabClosed];
   }
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;

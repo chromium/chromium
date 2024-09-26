@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/lens/lens_overlay_dismissal_source.h",
+]
+

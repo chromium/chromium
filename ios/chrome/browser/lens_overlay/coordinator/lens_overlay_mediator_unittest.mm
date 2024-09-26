@@ -382,7 +382,10 @@ TEST_F(LensOverlayMediatorTest, SearchEngineChange) {
   const TemplateURL* google_provider =
       template_url_service->GetDefaultSearchProvider();
 
-  OCMExpect([mock_lens_commands_ destroyLensUI:[OCMArg any]]);
+  OCMExpect([mock_lens_commands_
+      destroyLensUI:[OCMArg any]
+             reason:lens::LensOverlayDismissalSource::
+                        kDefaultSearchEngineChange]);
 
   // Change the default search provider to a non-Google one.
   TemplateURLData non_google_provider_data;

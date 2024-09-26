@@ -110,7 +110,9 @@
   BOOL isLensAvailable =
       search_engines::SupportsSearchImageWithLens(_templateURLService);
   if (!isLensAvailable) {
-    [self.commandsHandler destroyLensUI:YES];
+    [self.commandsHandler destroyLensUI:YES
+                                 reason:lens::LensOverlayDismissalSource::
+                                            kDefaultSearchEngineChange];
   }
 }
 
@@ -231,7 +233,9 @@
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
-  [self.commandsHandler destroyLensUI:YES];
+  [self.commandsHandler
+      destroyLensUI:YES
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
