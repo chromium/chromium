@@ -21,7 +21,7 @@
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
-#include "third_party/ink/src/ink/strokes/input/stroke_input.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -91,8 +91,6 @@ class PdfInkModule {
       const;
 
  private:
-  using StrokeInputSegment = std::vector<ink::StrokeInput>;
-
   struct DrawingStrokeState {
     DrawingStrokeState();
     DrawingStrokeState(const DrawingStrokeState&) = delete;
@@ -114,12 +112,12 @@ class PdfInkModule {
     // the page boundary.
     std::optional<gfx::PointF> input_last_event_position;
 
-    // The points that make up the current stroke, divided into
-    // StrokeInputSegments.  A new segment will be necessary each time the input
-    // leaves the page during collection and then returns back into the original
-    // starting page.  The coordinates added into each segment are stored in a
-    // canonical format specified in pdf_ink_transform.h.
-    std::vector<StrokeInputSegment> inputs;
+    // The points that make up the current stroke, divided into segments.
+    // A new segment will be necessary each time the input leaves the page
+    // during collection and then returns back into the original starting page.
+    // The coordinates added into each segment are stored in a canonical format
+    // specified in pdf_ink_transform.h.
+    std::vector<ink::StrokeInputBatch> inputs;
   };
 
   // A stroke that has been completed, its ID, and whether it should be drawn

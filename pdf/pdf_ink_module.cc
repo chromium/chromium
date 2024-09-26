@@ -40,6 +40,7 @@
 #include "third_party/ink/src/ink/geometry/rect.h"
 #include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -328,10 +329,11 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position) {
 
   // Start of the first segment of a stroke.
   // TODO(crbug.com/353942909): Set the tool type appropriately.
-  StrokeInputSegment segment;
-  segment.push_back(CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse,
-                                         page_position,
-                                         /*elapsed_time=*/base::TimeDelta()));
+  ink::StrokeInputBatch segment;
+  auto result = segment.Append(
+      CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, page_position,
+                           /*elapsed_time=*/base::TimeDelta()));
+  CHECK(result.ok());
   state.inputs.push_back(std::move(segment));
 
   // Invalidate area around this one point.
@@ -398,8 +400,8 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
   if (last_page_index != state.page_index) {
     // If the stroke left the page and is now re-entering, then start a new
     // segment.
-    CHECK(!state.inputs.back().empty());
-    state.inputs.push_back(StrokeInputSegment());
+    CHECK(!state.inputs.back().IsEmpty());
+    state.inputs.push_back(ink::StrokeInputBatch());
     const gfx::PointF boundary_position = CalculatePageBoundaryIntersectPoint(
         client_->GetPageContentsRect(state.page_index), position,
         last_position);
@@ -645,7 +647,7 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   stroke_segments.reserve(state.inputs.size());
   for (size_t segment_number = 0; const auto& segment : state.inputs) {
     ++segment_number;
-    if (segment.empty()) {
+    if (segment.IsEmpty()) {
       // Only the last segment can possibly be empty, if the stroke left the
       // page but never returned back in.
       CHECK_EQ(segment_number, state.inputs.size());
@@ -653,12 +655,9 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
     }
 
     ink::InProgressStroke stroke;
-    auto input_batch = ink::StrokeInputBatch::Create(segment);
-    CHECK(input_batch.ok());
-
     stroke.Start(state.brush->GetInkBrush());
     auto enqueue_results =
-        stroke.EnqueueInputs(*input_batch, /*predicted_inputs=*/{});
+        stroke.EnqueueInputs(segment, /*predicted_inputs=*/{});
     CHECK(enqueue_results.ok());
     stroke.FinishInputs();
     auto update_results = stroke.UpdateShape(ink::Duration32());
@@ -687,8 +686,9 @@ void PdfInkModule::RecordStrokePosition(const gfx::PointF& position) {
       ConvertEventPositionToCanonicalPosition(position, state.page_index);
   base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
   // TODO(crbug.com/353942909): Set the tool type appropriately.
-  state.inputs.back().push_back(CreateInkStrokeInput(
+  auto result = state.inputs.back().Append(CreateInkStrokeInput(
       ink::StrokeInput::ToolType::kMouse, canonical_position, time_diff));
+  CHECK(result.ok());
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(
