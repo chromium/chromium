@@ -113,6 +113,7 @@ cr-url-list-item:hover + hr {
   border-radius: 8px;
   flex-shrink: 0;
   height: 58px;
+  overflow: hidden;
   width: 104px;
 }
 
@@ -303,7 +304,10 @@ a {
         <template is="dom-if" if="[[enableImages_]]">
           <a class="result-item" href="[[item.url.url]]" target="_blank"
               on-click="onResultClick_" on-auxclick="onResultClick_">
-            <div class="result-image"></div>
+            <div class="result-image">
+              <cr-history-embeddings-result-image search-result="[[item]]">
+              </cr-history-embeddings-result-image>
+            </div>
             <div class="result-metadata">
               <div class="result-title">[[item.title]]</div>
               <div class="result-url-and-favicon">

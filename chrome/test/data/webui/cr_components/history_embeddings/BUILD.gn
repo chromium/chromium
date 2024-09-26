@@ -10,6 +10,7 @@ build_webui_tests("build") {
   files = [
     "filter_chips_test.ts",
     "history_embeddings_test.ts",
+    "result_image_test.ts",
   ]
 
   ts_deps = [

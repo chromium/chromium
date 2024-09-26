@@ -23,7 +23,6 @@ ts_library("build_ts") {
     # dependency to CrOS-only UIs (to reduce coupling between Desktop and CrOS
     # and reduce the maintenance burden for the Desktop WebUI team).
 
-    "//components/flags_ui/resources:build_ts",
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
@@ -70,11 +69,13 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/signin:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
     "//chrome/test/data/webui/welcome:build_ts",
+    "//components/flags_ui/resources:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
