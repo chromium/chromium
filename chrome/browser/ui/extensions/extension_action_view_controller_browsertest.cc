@@ -36,10 +36,16 @@
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -51,6 +57,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -62,52 +69,34 @@ using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 using UserSiteSetting = extensions::PermissionsManager::UserSiteSetting;
 using HoverCardState = ToolbarActionViewController::HoverCardState;
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildSidePanelService(
-    content::BrowserContext* context) {
-  return std::make_unique<extensions::SidePanelService>(context);
-}
-
-}  // namespace
-
-class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
+class ExtensionActionViewControllerBrowserTest : public InProcessBrowserTest {
  public:
-  ExtensionActionViewControllerUnitTest() = default;
-  ExtensionActionViewControllerUnitTest(
-      const ExtensionActionViewControllerUnitTest& other) = delete;
-  ExtensionActionViewControllerUnitTest& operator=(
-      const ExtensionActionViewControllerUnitTest& other) = delete;
+  ExtensionActionViewControllerBrowserTest() = default;
+  ExtensionActionViewControllerBrowserTest(
+      const ExtensionActionViewControllerBrowserTest& other) = delete;
+  ExtensionActionViewControllerBrowserTest& operator=(
+      const ExtensionActionViewControllerBrowserTest& other) = delete;
 
-  ~ExtensionActionViewControllerUnitTest() override = default;
+  ~ExtensionActionViewControllerBrowserTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void Init() { AddTab(browser(), GURL(u"https://example.com")); }
 
-    // Initialize the various pieces of the extensions system.
-    extensions::LoadErrorReporter::Init(false);
-    extensions::TestExtensionSystem* extension_system =
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(profile()));
-    extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    toolbar_model_ =
-        extensions::extension_action_test_util::CreateToolbarModelForProfile(
-            profile());
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-
-    // Create web contents before creating the test helper since the
-    // extensions menu needs them (e.g compute the string for current site).
-    AddTab(browser(), GURL(u"https://example.com"));
-
-    test_util_ = ExtensionActionTestHelper::Create(browser(), false);
-    view_size_ = test_util_->GetToolbarActionSize();
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void TearDown() override {
-    test_util_.reset();
-    BrowserWithTestWindowTest::TearDown();
+  void AddTab(Browser* browser, GURL gurl) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser, gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  void NavigateAndCommitActiveTab(const GURL& gurl) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   // Sets whether the given |action| wants to run on the |web_contents|.
@@ -116,8 +105,8 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
                                 bool wants_to_run) {
     action->SetIsVisible(
         sessions::SessionTabHelper::IdForTab(web_contents).id(), wants_to_run);
-    extensions::ExtensionActionAPI::Get(profile())->NotifyChange(
-        action, web_contents, profile());
+    extensions::ExtensionActionAPI::Get(browser()->profile())
+        ->NotifyChange(action, web_contents, browser()->profile());
   }
 
   // Returns the active WebContents for the primary browser.
@@ -130,7 +119,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
     // It's safe to static cast here, because these tests only deal with
     // extensions.
     return static_cast<ExtensionActionViewController*>(
-        test_util_->GetExtensionsContainer()->GetActionForId(action_id));
+        container()->GetActionForId(action_id));
   }
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
@@ -152,40 +141,35 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
             .AddHostPermissions(permissions)
             .Build();
 
-    if (!permissions.empty())
+    if (!permissions.empty()) {
       extension_service()->GrantPermissions(extension.get());
+    }
 
     extension_service()->AddExtension(extension.get());
     return extension;
   }
 
   extensions::ExtensionService* extension_service() {
-    return extension_service_;
+    return extensions::ExtensionSystem::Get(browser()->profile())
+        ->extension_service();
   }
-  ToolbarActionsModel* toolbar_model() { return toolbar_model_; }
-  ExtensionsContainer* container() {
-    return test_util_->GetExtensionsContainer();
+  ToolbarActionsModel* toolbar_model() {
+    return ToolbarActionsModel::Get(browser()->profile());
   }
-  const gfx::Size& view_size() const { return view_size_; }
 
- private:
-  // The ExtensionService associated with the primary profile.
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
-
-  // ToolbarActionsModel associated with the main profile.
-  raw_ptr<ToolbarActionsModel, DanglingUntriaged> toolbar_model_ = nullptr;
-
-  std::unique_ptr<ExtensionActionTestHelper> test_util_;
+  ExtensionsToolbarContainer* container() {
+    return browser()->GetBrowserView().toolbar()->extensions_container();
+  }
 
   // The standard size associated with a toolbar action view.
-  gfx::Size view_size_;
+  gfx::Size view_size() { return container()->GetToolbarActionSize(); }
 };
 
 // Tests the icon appearance of extension actions in the toolbar.
 // Extensions that don't want to run should have their icons grayscaled.
-TEST_F(ExtensionActionViewControllerUnitTest,
-       ExtensionActionWantsToRunAppearance) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       ExtensionActionWantsToRunAppearance) {
+  Init();
   const std::string id =
       CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
           ->id();
@@ -206,13 +190,15 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 }
 
 // Tests the appearance of browser actions with blocked script actions.
-TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       BrowserActionBlockedActions) {
+  Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "browser_action", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
   AddTab(browser(), GURL("https://www.google.com/"));
@@ -249,13 +235,15 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
 }
 
 // Tests the appearance of page actions with blocked script actions.
-TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       PageActionBlockedActions) {
+  Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "page_action", extensions::ActionInfo::Type::kPage,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
   AddTab(browser(), GURL("https://www.google.com/"));
 
@@ -291,7 +279,9 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
 
 // Tests the appearance of extension actions for extensions without a browser or
 // page action defined in their manifest, but with host permissions on a page.
-TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       OnlyHostPermissionsAppearance) {
+  Init();
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just hosts")
           .SetLocation(ManifestLocation::kInternal)
@@ -300,8 +290,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 
   extension_service()->GrantPermissions(extension.get());
   extension_service()->AddExtension(extension.get());
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
   ExtensionActionViewController* const action_controller =
@@ -346,8 +336,9 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
             action_controller->GetTooltip(web_contents));
 }
 
-TEST_F(ExtensionActionViewControllerUnitTest,
-       ExtensionActionContextMenuVisibility) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       ExtensionActionContextMenuVisibility) {
+  Init();
   std::string id =
       CreateAndAddExtension("extension", extensions::ActionInfo::Type::kBrowser)
           ->id();
@@ -391,7 +382,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 // TODO(devlin): Now that this is only parameterized in one way, it could be a
 // TestWithParamInterface<PermissionType>.
 class ExtensionActionViewControllerGrayscaleTest
-    : public ExtensionActionViewControllerUnitTest {
+    : public ExtensionActionViewControllerBrowserTest {
  public:
   enum class PermissionType {
     kScriptableHost,
@@ -427,8 +418,8 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
   extension_service()->GrantPermissions(extension.get());
   extension_service()->AddExtension(extension.get());
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
   const GURL kHasPermissionUrl("https://www.google.com/");
   const GURL kNoPermissionsUrl("https://www.chromium.org/");
@@ -497,8 +488,8 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionAction* extension_action =
-      extensions::ExtensionActionManager::Get(profile())->GetExtensionAction(
-          *extension);
+      extensions::ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -555,8 +546,9 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
         image_source->paint_blocked_actions_decoration());
 
     // Clean up permissions state.
-    if (test_case.page_access == PageAccessStatus::kGranted)
+    if (test_case.page_access == PageAccessStatus::kGranted) {
       permissions_modifier.RemoveGrantedHostPermission(kHasPermissionUrl);
+    }
     action_runner->ClearInjectionsForTesting(*extension);
   }
 }
@@ -601,22 +593,26 @@ ExtensionActionViewControllerGrayscaleTest::GetPageAccess(
 // Tests the behavior for icon grayscaling. Ideally, these would be a single
 // parameterized test, but toolbar tests are already parameterized with the UI
 // mode.
-TEST_F(ExtensionActionViewControllerGrayscaleTest,
-       GrayscaleIcon_ExplicitHosts) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerGrayscaleTest,
+                       GrayscaleIcon_ExplicitHosts) {
+  Init();
   RunGrayscaleTest(PermissionType::kExplicitHost);
 }
-TEST_F(ExtensionActionViewControllerGrayscaleTest,
-       GrayscaleIcon_ScriptableHosts) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerGrayscaleTest,
+                       GrayscaleIcon_ScriptableHosts) {
+  Init();
   RunGrayscaleTest(PermissionType::kScriptableHost);
 }
 
-TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       RuntimeHostsTooltip) {
+  Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "extension name", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
   const GURL kUrl("https://www.google.com/");
   AddTab(browser(), kUrl);
@@ -652,7 +648,9 @@ TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
 
 // Tests the appearance of extension actions for an extension with the activeTab
 // permission and no browser or page action defined in their manifest.
-TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       ActiveTabIconAppearance) {
+  Init();
   const GURL kUnlistedHost("https://www.example.com");
   const GURL kGrantedHost("https://www.google.com");
   const GURL kRestrictedHost("chrome://extensions");
@@ -722,7 +720,9 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
 
 // Tests that an extension with the activeTab permission has active tab site
 // interaction except for restricted URLs.
-TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       GetSiteInteractionWithActiveTab) {
+  Init();
   // Note: Not using `CreateAndAddExtensionWithGrantedHostPermissions` because
   // this adds an API permission (activeTab).
   scoped_refptr<const extensions::Extension> extension =
@@ -766,8 +766,9 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
 
 // Tests that file URLs only have active tab site interaction if the extension
 // has active tab permission and file URL access.
-TEST_F(ExtensionActionViewControllerUnitTest,
-       GetSiteInteractionActiveTabWithFileURL) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       GetSiteInteractionActiveTabWithFileURL) {
+  Init();
   // We need to use a TestExtensionDir here to allow for the reload when giving
   // an extension file URL access.
   extensions::TestExtensionDir test_dir;
@@ -780,7 +781,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
       "browser_action": {},
       "permissions": ["activeTab"]
     })");
-  extensions::ChromeTestExtensionLoader loader(profile());
+  extensions::ChromeTestExtensionLoader loader(browser()->profile());
   loader.set_allow_file_access(false);
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(test_dir.UnpackedPath());
@@ -805,8 +806,9 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   // show as "pending". A click will grant activeTab, giving access to the page
   // and will change the page interaction status to "active".
   extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(profile()), extension->id());
-  extensions::util::SetAllowFileAccess(extension->id(), profile(),
+      extensions::ExtensionRegistry::Get(browser()->profile()),
+      extension->id());
+  extensions::util::SetAllowFileAccess(extension->id(), browser()->profile(),
                                        true /*allow*/);
   extension = observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
@@ -824,13 +826,15 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 // null web contents if the tab strip model doesn't know of an active tab
 // (though it's a bit unclear when this is the case).
 // See https://crbug.com/888121
-TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
+                       TestGetIconWithNullWebContents) {
+  Init();
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "extension name", extensions::ActionInfo::Type::kAction,
       {"https://example.com/"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(
+      browser()->profile(), extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
   // Try getting an icon with no active web contents. Nothing should crash, and
@@ -841,18 +845,18 @@ TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   EXPECT_FALSE(icon.IsEmpty());
 }
 
-class ExtensionActionViewControllerFeatureUnitTest
-    : public ExtensionActionViewControllerUnitTest {
+class ExtensionActionViewControllerFeatureBrowserTest
+    : public ExtensionActionViewControllerBrowserTest {
  public:
-  ExtensionActionViewControllerFeatureUnitTest() {
+  ExtensionActionViewControllerFeatureBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionsMenuAccessControl);
   }
-  ~ExtensionActionViewControllerFeatureUnitTest() override = default;
-  ExtensionActionViewControllerFeatureUnitTest(
-      const ExtensionActionViewControllerFeatureUnitTest&) = delete;
-  ExtensionActionViewControllerFeatureUnitTest& operator=(
-      const ExtensionActionViewControllerFeatureUnitTest&) = delete;
+  ~ExtensionActionViewControllerFeatureBrowserTest() override = default;
+  ExtensionActionViewControllerFeatureBrowserTest(
+      const ExtensionActionViewControllerFeatureBrowserTest&) = delete;
+  ExtensionActionViewControllerFeatureBrowserTest& operator=(
+      const ExtensionActionViewControllerFeatureBrowserTest&) = delete;
 
   HoverCardState::SiteAccess GetHoverCardSiteAccessState(
       ExtensionActionViewController* controller,
@@ -865,8 +869,14 @@ class ExtensionActionViewControllerFeatureUnitTest
 };
 
 // Tests hover card status after changing user site settings and site access.
-TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerFeatureBrowserTest,
+                       GetHoverCardStatus) {
+  Init();
   std::string url_string = "https://example.com/";
+
+  const GURL gurl =
+      embedded_https_test_server().GetURL("example.com", "/simple.html");
+
   auto extensionA = CreateAndAddExtension(
       "Extension A", extensions::ActionInfo::Type::kAction);
   auto extensionB = CreateAndAddExtensionWithGrantedHostPermissions(
@@ -874,7 +884,8 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
       "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
-  AddTab(browser(), GURL(url_string));
+  AddTab(browser(), gurl);
+
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto url = url::Origin::Create(web_contents->GetLastCommittedURL());
@@ -905,7 +916,7 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
 
   // Withhold extension C host permissions. Verify only extension C changed
   // hover card state to "requests access".
-  extensions::ScriptingPermissionsModifier(profile(), extensionC)
+  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionC)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
             HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
@@ -939,15 +950,21 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
 }
 
 // Tests correct tooltip text after changing user site settings and site access.
-TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerFeatureBrowserTest,
+                       GetTooltip) {
+  Init();
   std::u16string extension_name = u"Extension";
-  std::string requested_url_string = "https://requested.com/";
+  std::string requested_url_string = "https://a.com/";
+  const GURL requested_gurl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  const GURL not_requested_gurl =
+      embedded_https_test_server().GetURL("b.com", "/simple.html");
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       base::UTF16ToUTF8(extension_name), extensions::ActionInfo::Type::kAction,
       {requested_url_string});
 
   // Navigate to a site the extension requests access to.
-  AddTab(browser(), GURL(requested_url_string));
+  AddTab(browser(), requested_gurl);
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto requested_url = url::Origin::Create(web_contents->GetLastCommittedURL());
@@ -973,7 +990,7 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
 
   // Withhold extension host permissions. Verify extension tooltip is "requests
   // access".
-  extensions::ScriptingPermissionsModifier(profile(), extension)
+  extensions::ScriptingPermissionsModifier(browser()->profile(), extension)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(
       controller->GetTooltip(web_contents),
@@ -996,7 +1013,7 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
           u"\n"));
 
   // Navigate to a site that the extension didn't request access to.
-  AddTab(browser(), GURL(u"https://not-requested.com/"));
+  AddTab(browser(), not_requested_gurl);
   web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto non_requested_url =
@@ -1023,24 +1040,28 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
           u"\n"));
 }
 
-class ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest
-    : public ExtensionActionViewControllerFeatureUnitTest {
+class ExtensionActionViewControllerFeatureWithPermittedSitesBrowserTest
+    : public ExtensionActionViewControllerFeatureBrowserTest {
  public:
-  ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest() {
+  ExtensionActionViewControllerFeatureWithPermittedSitesBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionsMenuAccessControlWithPermittedSites);
   }
-  ~ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest() override =
-      default;
+  ~ExtensionActionViewControllerFeatureWithPermittedSitesBrowserTest()
+      override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests hover card status after changing user site settings and site access.
-TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
-       GetHoverCardStatus) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionActionViewControllerFeatureWithPermittedSitesBrowserTest,
+    GetHoverCardStatus) {
+  Init();
   std::string url_string = "https://example.com/";
+  const GURL gurl =
+      embedded_https_test_server().GetURL("example.com", "/simple.html");
   auto extensionA = CreateAndAddExtension(
       "Extension A", extensions::ActionInfo::Type::kAction);
   auto extensionB = CreateAndAddExtensionWithGrantedHostPermissions(
@@ -1048,7 +1069,7 @@ TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
       "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
-  AddTab(browser(), GURL(url_string));
+  AddTab(browser(), gurl);
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto url = url::Origin::Create(web_contents->GetLastCommittedURL());
@@ -1079,7 +1100,7 @@ TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
 
   // Withhold extension C host permissions. Verify only extension C changed
   // hover card state to "requests access".
-  extensions::ScriptingPermissionsModifier(profile(), extensionC)
+  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionC)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
             HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
@@ -1100,25 +1121,19 @@ TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
             HoverCardState::SiteAccess::kAllExtensionsAllowed);
 }
 
-class ExtensionActionViewControllerWithSidePanelUnitTest
-    : public ExtensionActionViewControllerUnitTest {
- public:
-  void SetUp() override {
-    ExtensionActionViewControllerUnitTest::SetUp();
-    extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildSidePanelService));
-  }
-
+class ExtensionActionViewControllerWithSidePanelBrowserTest
+    : public ExtensionActionViewControllerBrowserTest {
  protected:
   extensions::SidePanelService* side_panel_service() {
-    return extensions::SidePanelService::Get(profile());
+    return extensions::SidePanelService::Get(browser()->profile());
   }
 };
 
 // Test that the extension action is enabled if opening the side panel on icon
 // click is enabled and the extension has a side panel for the current tab.
-TEST_F(ExtensionActionViewControllerWithSidePanelUnitTest,
-       ActionEnabledIfSidePanelPresent) {
+IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerWithSidePanelBrowserTest,
+                       ActionEnabledIfSidePanelPresent) {
+  Init();
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just side panel")
           .SetLocation(ManifestLocation::kInternal)
