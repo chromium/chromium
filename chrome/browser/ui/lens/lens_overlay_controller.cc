@@ -1161,6 +1161,11 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
+    // Exit early if the overlay is already closing.
+    if (lens_overlay_controller_->IsOverlayClosing()) {
+      return;
+    }
+
     lens_overlay_controller_->CloseUISync(
         status == base::TERMINATION_STATUS_NORMAL_TERMINATION
             ? lens::LensOverlayDismissalSource::kPageRendererClosedNormally
