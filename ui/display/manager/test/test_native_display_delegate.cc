@@ -80,8 +80,7 @@ void TestNativeDisplayDelegate::RelinquishDisplayControl(
 
 void TestNativeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
   // This mimics the behavior of Ozone DRM when new display state arrives.
-  for (NativeDisplayObserver& observer : observers_)
-    observer.OnDisplaySnapshotsInvalidated();
+  observers_.Notify(&NativeDisplayObserver::OnDisplaySnapshotsInvalidated);
   cached_outputs_.clear();
 
   if (run_async_) {

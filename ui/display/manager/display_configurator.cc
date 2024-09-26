@@ -939,9 +939,7 @@ void DisplayConfigurator::OnConfigurationChanged() {
 void DisplayConfigurator::OnDisplaySnapshotsInvalidated() {
   VLOG(1) << "Display snapshots invalidated.";
   cached_displays_.clear();
-  for (Observer& observer : observers_) {
-    observer.OnDisplaySnapshotsInvalidated();
-  }
+  observers_.Notify(&Observer::OnDisplaySnapshotsInvalidated);
 }
 
 void DisplayConfigurator::AddObserver(Observer* observer) {
@@ -1161,18 +1159,16 @@ void DisplayConfigurator::NotifyDisplayStateObservers(
     bool success,
     MultipleDisplayState attempted_state) {
   if (success) {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChanged(cached_displays_);
+    observers_.Notify(&Observer::OnDisplayConfigurationChanged,
+                      cached_displays_);
   } else {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChangeFailed(cached_displays_,
-                                                  attempted_state);
+    observers_.Notify(&Observer::OnDisplayConfigurationChangeFailed,
+                      cached_displays_, attempted_state);
   }
 }
 
 void DisplayConfigurator::NotifyPowerStateObservers() {
-  for (Observer& observer : observers_)
-    observer.OnPowerStateChanged(current_power_state_);
+  observers_.Notify(&Observer::OnPowerStateChanged, current_power_state_);
 }
 
 bool DisplayConfigurator::IsDisplayOn() const {

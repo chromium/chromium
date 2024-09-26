@@ -2593,9 +2593,8 @@ void DisplayManager::RunPendingTasksForTest() {
 
 void DisplayManager::SetTabletState(const TabletState& tablet_state) {
   tablet_state_ = tablet_state;
-  for (auto& display_observer : display_observers_) {
-    display_observer.OnDisplayTabletStateChanged(tablet_state);
-  }
+  display_observers_.Notify(&DisplayObserver::OnDisplayTabletStateChanged,
+                            tablet_state);
 }
 
 void DisplayManager::NotifyMetricsChanged(const Display& display,
@@ -2604,9 +2603,8 @@ void DisplayManager::NotifyMetricsChanged(const Display& display,
     delegate_->UpdateDisplayMetrics(display, metrics);
   }
 
-  for (auto& display_observer : display_observers_) {
-    display_observer.OnDisplayMetricsChanged(display, metrics);
-  }
+  display_observers_.Notify(&DisplayObserver::OnDisplayMetricsChanged, display,
+                            metrics);
 }
 
 void DisplayManager::NotifyDisplayAdded(const Display& display) {
@@ -2616,33 +2614,24 @@ void DisplayManager::NotifyDisplayAdded(const Display& display) {
     in_creating_display_.reset();
   }
 
-  for (auto& display_observer : display_observers_) {
-    display_observer.OnDisplayAdded(display);
-  }
+  display_observers_.Notify(&DisplayObserver::OnDisplayAdded, display);
 }
 
 void DisplayManager::NotifyWillRemoveDisplays(const Displays& displays) {
-  for (auto& display_observer : display_observers_) {
-    display_observer.OnWillRemoveDisplays(displays);
-  }
+  display_observers_.Notify(&DisplayObserver::OnWillRemoveDisplays, displays);
 }
 
 void DisplayManager::NotifyDisplaysRemoved(const Displays& displays) {
-  for (auto& display_observer : display_observers_) {
-    display_observer.OnDisplaysRemoved(displays);
-  }
+  display_observers_.Notify(&DisplayObserver::OnDisplaysRemoved, displays);
 }
 
 void DisplayManager::NotifyDisplaysInitialized() {
-  for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnDisplaysInitialized();
-  }
+  manager_observers_.Notify(&DisplayManagerObserver::OnDisplaysInitialized);
 }
 
 void DisplayManager::NotifyWillProcessDisplayChanges() {
-  for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnWillProcessDisplayChanges();
-  }
+  manager_observers_.Notify(
+      &DisplayManagerObserver::OnWillProcessDisplayChanges);
 }
 
 void DisplayManager::NotifyDidProcessDisplayChanges(
@@ -2652,23 +2641,18 @@ void DisplayManager::NotifyDidProcessDisplayChanges(
   CHECK(!pending_display_changes_.has_value());
   BeginEndNotifier notifier(this, /*notify_on_pending_change_only=*/true);
 
-  for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnDidProcessDisplayChanges(config_change);
-  }
+  manager_observers_.Notify(&DisplayManagerObserver::OnDidProcessDisplayChanges,
+                            config_change);
 }
 
 void DisplayManager::NotifyWillApplyDisplayChanges(bool clear_focus) {
   delegate_->PreDisplayConfigurationChange(clear_focus);
-  for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnWillApplyDisplayChanges();
-  }
+  manager_observers_.Notify(&DisplayManagerObserver::OnWillApplyDisplayChanges);
 }
 
 void DisplayManager::NotifyDidApplyDisplayChanges() {
   delegate_->PostDisplayConfigurationChange();
-  for (auto& manager_observer : manager_observers_) {
-    manager_observer.OnDidApplyDisplayChanges();
-  }
+  manager_observers_.Notify(&DisplayManagerObserver::OnDidApplyDisplayChanges);
 }
 
 void DisplayManager::AddDisplayObserver(DisplayObserver* display_observer) {
